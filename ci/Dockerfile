@@ -17,6 +17,9 @@ RUN apt-get -y install rlwrap && \
     dpkg -i /tmp/nodejs.deb && \
     rm -rf /tmp/nodejs.deb
 
+# Elm
+RUN npm install -g elm
+
 # Erlang and Elixir
 RUN curl -o /tmp/erlang.deb http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && \
     dpkg -i /tmp/erlang.deb && \
