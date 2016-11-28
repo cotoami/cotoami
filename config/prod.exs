@@ -19,9 +19,6 @@ config :cotoami, Cotoami.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :cotoami, Cotoami.Endpoint,
-  secret_key_base: "secret_key_base"
-
 # Configure your database
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
