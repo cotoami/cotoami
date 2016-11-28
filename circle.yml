@@ -15,4 +15,4 @@ dependencies:
     
 test:
   override:
-    - docker run -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t trusty /bin/sh -c 'service postgresql start && cd /build && ./ci/test.sh'
+    - docker run -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t elixir /bin/sh -c 'service postgresql start && cd /build && ./ci/test.sh'
