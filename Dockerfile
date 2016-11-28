@@ -12,6 +12,7 @@ RUN mix deps.get --only prod
 RUN MIX_ENV=prod mix compile
 
 RUN npm install
+RUN npm install -g elm
 RUN node_modules/brunch/bin/brunch build --production
 RUN MIX_ENV=prod mix phoenix.digest
 
