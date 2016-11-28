@@ -1,0 +1,18 @@
+machine:
+  timezone:
+    Asia/Tokyo
+  services:
+    - docker
+  node:
+    version: 5.1.0
+
+dependencies:
+  cache_directories:
+    - ~/docker
+  override:
+    - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
+    - if [[ ! -e ~/docker/elixir.tar ]]; then mkdir -p ~/docker; docker save elixir > ~/docker/elixir.tar; fi
+    
+test:
+  override:
+    - docker run -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t trusty /bin/sh -c 'service postgresql start && cd /build && ./ci/test.sh'
