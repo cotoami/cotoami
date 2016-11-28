@@ -19,9 +19,24 @@ defmodule Cotoami.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {Cotoami, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+    [
+      mod: {Cotoami, []},
+      applications: apps_from_deps ++ [
+        :logger
+      ]
+    ]
+  end
+  
+  defp apps_from_deps do
+    Enum.filter(deps, fn
+      {_, _}       -> true
+      {_, _, opts} ->
+        case opts[:only] do
+          nil -> true
+          env -> env |> List.wrap |> Enum.member?(:prod)
+        end
+    end)
+    |> Enum.map(&(elem(&1, 0)))
   end
 
   # Specifies which paths to compile per environment.
