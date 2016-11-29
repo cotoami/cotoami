@@ -21,4 +21,6 @@ deployment:
   release:
     branch: master
     commands:
-      - docker build --rm=false -t cotoami/cotoami .
+      - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push cotoami/cotoami:$CIRCLE_SHA1
