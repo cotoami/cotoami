@@ -1,7 +1,7 @@
 # From a local image 'elixir' built in CircleCI
 FROM elixir
 
-ENV APP_PORT 8080
+ENV APP_PORT 80
 
 EXPOSE ${APP_PORT}
 
