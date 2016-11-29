@@ -1,7 +1,10 @@
 module App exposing (..)
+import Html.Attributes exposing (..)
 
-import Html exposing (Html, text)
+import Html exposing (..)
 
 main : Html msg
 main =
-  text "Hello Cotoami!"
+  div [class "title"]
+    [ h1 [] [text "Cotoami"]
+    ]
