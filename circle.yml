@@ -12,6 +12,7 @@ dependencies:
   override:
     - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
     - if [[ ! -e ~/docker/elixir.tar ]]; then mkdir -p ~/docker; docker save elixir > ~/docker/elixir.tar; fi
+    - ./ci/ensure-kubectl.sh
     
 test:
   override:
@@ -21,6 +22,7 @@ deployment:
   release:
     branch: master
     commands:
-      - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push cotoami/cotoami:$CIRCLE_SHA1
+      # - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
+      # - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      # - docker push cotoami/cotoami:$CIRCLE_SHA1
+      - ~/.kube/kubectl get nodes
