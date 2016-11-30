@@ -9,6 +9,7 @@ machine:
 dependencies:
   cache_directories:
     - ~/docker
+    - ~/.kube
   override:
     - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
     - if [[ ! -e ~/docker/elixir.tar ]]; then mkdir -p ~/docker; docker save elixir > ~/docker/elixir.tar; fi
