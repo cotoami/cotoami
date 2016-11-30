@@ -6,5 +6,5 @@ import Html exposing (..)
 main : Html msg
 main =
   div [class "title"]
-    [ h1 [] [text "Cotoami☃"]
+    [ h1 [] [text "Cotoami♨"]
     ]
