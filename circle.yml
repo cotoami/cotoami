@@ -26,4 +26,5 @@ deployment:
       - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cotoami/cotoami:$CIRCLE_SHA1
+      - docker push cotoami/cotoami:latest
       - ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
