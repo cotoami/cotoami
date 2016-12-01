@@ -8,9 +8,11 @@ EXPOSE ${APP_PORT}
 ADD . /app
 WORKDIR /app
 
+# Compile elixir code
 RUN mix deps.get --only prod
 RUN MIX_ENV=prod mix compile
 
+# Assets
 RUN npm install
 RUN node_modules/brunch/bin/brunch build --production
 RUN MIX_ENV=prod mix phoenix.digest

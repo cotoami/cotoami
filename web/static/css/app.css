@@ -9,13 +9,19 @@ html, body, #elm-container, div.title {
 
 div.title {
   text-align: center;
-}
-
-h1 {
-  font-size: 100px;
   margin: auto;
   position: absolute;
-  top: 36%; 
+  height: 250px;
+  top: 34%; 
   left: 0; 
   right: 0;
+}
+
+div.title h1 {
+  font-size: 100px;
+  margin: 0;
+}
+
+div.title p {
+  margin: 0;
 }
