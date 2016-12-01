@@ -7,7 +7,8 @@ main : Html msg
 main =
   div [class "title"] [ 
     h1 [] [text "Cotoami☺"], 
-    p [] [ 
+    p [] [
+      text "Developing at ",
       a [href "https://github.com/cotoami", target "_blank"] [
         text "https://github.com/cotoami"
       ]

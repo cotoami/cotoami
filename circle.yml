@@ -26,5 +26,6 @@ deployment:
       - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cotoami/cotoami:$CIRCLE_SHA1
+      - ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
+      - ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
       # Waiting for the fix of https://github.com/kubernetes/kubernetes/issues/29206
-      - ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1 || /bin/true
