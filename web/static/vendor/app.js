@@ -8166,7 +8166,7 @@ var _user$project$App$main = _elm_lang$virtual_dom$Native_VirtualDom.staticProgr
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Developing at '),
+						_0: _elm_lang$html$Html$text('➥ Developing at '),
 						_1: {
 							ctor: '::',
 							_0: A2(
