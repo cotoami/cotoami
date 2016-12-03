@@ -1,27 +1,47 @@
 /* This file is for your main application css. */
 
-html, body, #elm-container, div.title {
-  position: relative;
+html, body, #elm-container, #app {
   height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
-div.title {
-  text-align: center;
-  margin: auto;
+#app {
+  padding: 10px;
+}
+
+#timeline-column {
+  height: 100%;
+  position: relative;
+}
+
+#timeline {
+  overflow-x: hidden;
+  overflow-y: auto;;
   position: absolute;
-  height: 250px;
-  top: 34%; 
-  left: 0; 
+  top: 0;
+  bottom: 70px;
+  left: 0;
   right: 0;
 }
 
-div.title h1 {
-  font-size: 100px;
-  margin: 0;
+#timeline div.post {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 8px;
+}
+#timeline div.post:hover {
+  border: 1px solid #ddd;
 }
 
-div.title p {
+#new-post {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+}
+
+textarea {
+  width: 100%;
+  height: 40px;
   margin: 0;
 }
