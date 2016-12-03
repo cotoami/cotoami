@@ -29,7 +29,7 @@ html, body, #elm-container, #app {
   padding: 8px;
 }
 #timeline div.post:hover {
-  border: 1px solid #ddd;
+  border: 1px solid #eee;
 }
 
 #new-post {
