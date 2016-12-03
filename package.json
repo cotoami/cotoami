@@ -16,6 +16,7 @@
     "css-brunch": "~2.0.0",
     "elm-brunch": "^0.7.0",
     "javascript-brunch": "~2.0.0",
+    "sass-brunch": "^2.7.0",
     "uglify-js-brunch": "~2.0.1"
   }
 }
