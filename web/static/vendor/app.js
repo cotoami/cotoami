@@ -8292,13 +8292,25 @@ var _user$project$App$update = F2(
 				};
 		}
 	});
-var _user$project$App$Model = F2(
-	function (a, b) {
-		return {editingNewPost: a, newPost: b};
+var _user$project$App$Model = F3(
+	function (a, b, c) {
+		return {editingNewPost: a, newPost: b, posts: c};
 	});
 var _user$project$App$init = {
 	ctor: '_Tuple2',
-	_0: A2(_user$project$App$Model, false, ''),
+	_0: A3(
+		_user$project$App$Model,
+		false,
+		'',
+		{
+			ctor: '::',
+			_0: 'Hello',
+			_1: {
+				ctor: '::',
+				_0: 'Bye',
+				_1: {ctor: '[]'}
+			}
+		}),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _user$project$App$InputNewPost = function (a) {
@@ -8349,23 +8361,10 @@ var _user$project$App$view = function (model) {
 								_1: {ctor: '[]'}
 							}
 						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('post'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Hello'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
+						A2(
+							_elm_lang$core$List$map,
+							function (post) {
+								return A2(
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
@@ -8374,14 +8373,11 @@ var _user$project$App$view = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(
-												_elm_lang$core$String$length(model.newPost))),
+										_0: _elm_lang$html$Html$text(post),
 										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
+									});
+							},
+							model.posts)),
 					_1: {
 						ctor: '::',
 						_0: A2(

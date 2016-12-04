@@ -19,12 +19,13 @@ main =
 
 type alias Model = {
   editingNewPost : Bool,
-  newPost: String
+  newPost: String,
+  posts : List String
 }
 
 init : (Model, Cmd Msg)
 init = 
-  (Model False "", Cmd.none)
+  (Model False "" ["Hello", "Bye"], Cmd.none)
 
 
 -- UPDATE
@@ -59,14 +60,8 @@ view : Model -> Html Msg
 view model =
   div [id "app", class "container"] [ 
     div [id "timeline-column"] [
-      div [id "timeline", style [("bottom", newPostHeight model)]] [
-        div [class "post"] [
-          text "Hello"
-        ],
-        div [class "post"] [
-          text (toString (String.length model.newPost))
-        ]
-      ],
+      div [id "timeline", style [("bottom", newPostHeight model)]] 
+        (List.map (\post -> div [class "post"] [text post]) model.posts),
       div [id "new-post", style [("height", newPostHeight model)]] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
           button [class "button-primary", disabled (String.isEmpty model.newPost)] [text "Post"]
