@@ -145,3 +145,10 @@ input {
     box-sizing: border-box;
   }
 }
+
+button[disabled],
+button[disabled]:hover {
+  background: #ccc;
+  border-color: #ccc;
+  text-shadow:none;
+}

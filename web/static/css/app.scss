@@ -8,6 +8,8 @@ html, body, #elm-container, #app {
   padding: 10px;
 }
 
+$new-post-height: 110px !default;
+
 #timeline-column {
   height: 100%;
   position: relative;
@@ -18,7 +20,7 @@ html, body, #elm-container, #app {
   overflow-y: auto;;
   position: absolute;
   top: 0;
-  bottom: 70px;
+  bottom: $new-post-height;
   left: 0;
   right: 0;
 }
@@ -37,10 +39,18 @@ html, body, #elm-container, #app {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 70px;
+  height: $new-post-height;
 }
 
-textarea {
+#new-post div.toolbar {
+  text-align: right;
+}
+
+#new-post div.toolbar button {
+  margin-bottom: 3px;
+}
+
+textarea.post {
   width: 100%;
   height: 40px;
   margin: 0;

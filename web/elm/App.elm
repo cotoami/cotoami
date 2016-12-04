@@ -1,7 +1,8 @@
 module App exposing (..)
-import Html.Attributes exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
+-- import Html.Events exposing (onFocus)
 
 main : Html msg
 main =
@@ -16,7 +17,10 @@ main =
         ]
       ],
       div [id "new-post"] [
-        textarea[] []
+        div [class "toolbar"] [
+          button [class "button-primary", disabled True] [text "Post"]
+        ],
+        textarea[class "post"] []
       ]
     ]
   ]
