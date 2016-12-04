@@ -8265,31 +8265,44 @@ var _user$project$App$subscriptions = function (model) {
 var _user$project$App$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0.ctor === 'FocusNewPostEditor') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{editingNewPost: true}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{editingNewPost: false}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
+		switch (_p0.ctor) {
+			case 'FocusNewPostEditor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewPost: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'BlurNewPostEditor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewPost: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{newPost: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
-var _user$project$App$Model = function (a) {
-	return {editingNewPost: a};
-};
+var _user$project$App$Model = F2(
+	function (a, b) {
+		return {editingNewPost: a, newPost: b};
+	});
 var _user$project$App$init = {
 	ctor: '_Tuple2',
-	_0: _user$project$App$Model(false),
+	_0: A2(_user$project$App$Model, false, ''),
 	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _user$project$App$InputNewPost = function (a) {
+	return {ctor: 'InputNewPost', _0: a};
 };
 var _user$project$App$BlurNewPostEditor = {ctor: 'BlurNewPostEditor'};
 var _user$project$App$FocusNewPostEditor = {ctor: 'FocusNewPostEditor'};
@@ -8361,7 +8374,9 @@ var _user$project$App$view = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Bye'),
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(
+												_elm_lang$core$String$length(model.newPost))),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -8411,7 +8426,8 @@ var _user$project$App$view = function (model) {
 												_0: _elm_lang$html$Html_Attributes$class('button-primary'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$disabled(true),
+													_0: _elm_lang$html$Html_Attributes$disabled(
+														_elm_lang$core$String$isEmpty(model.newPost)),
 													_1: {ctor: '[]'}
 												}
 											},
@@ -8435,7 +8451,11 @@ var _user$project$App$view = function (model) {
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
-													_1: {ctor: '[]'}
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+														_1: {ctor: '[]'}
+													}
 												}
 											}
 										},
