@@ -8282,12 +8282,23 @@ var _user$project$App$update = F2(
 						{editingNewPost: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'InputNewPost':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{newPost: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							posts: {ctor: '::', _0: model.newPost, _1: model.posts},
+							newPost: ''
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -8302,17 +8313,10 @@ var _user$project$App$init = {
 		_user$project$App$Model,
 		false,
 		'',
-		{
-			ctor: '::',
-			_0: 'Hello',
-			_1: {
-				ctor: '::',
-				_0: 'Bye',
-				_1: {ctor: '[]'}
-			}
-		}),
+		{ctor: '[]'}),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
+var _user$project$App$Post = {ctor: 'Post'};
 var _user$project$App$InputNewPost = function (a) {
 	return {ctor: 'InputNewPost', _0: a};
 };
@@ -8424,7 +8428,11 @@ var _user$project$App$view = function (model) {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$disabled(
 														_elm_lang$core$String$isEmpty(model.newPost)),
-													_1: {ctor: '[]'}
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
+														_1: {ctor: '[]'}
+													}
 												}
 											},
 											{
@@ -8443,14 +8451,18 @@ var _user$project$App$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('post'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
+												_0: _elm_lang$html$Html_Attributes$value(model.newPost),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+													_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}

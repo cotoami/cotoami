@@ -2,7 +2,7 @@ module App exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onFocus, onBlur, onInput)
+import Html.Events exposing (onFocus, onBlur, onInput, onMouseDown)
 import String
 
 main : Program Never Model Msg
@@ -25,7 +25,7 @@ type alias Model = {
 
 init : (Model, Cmd Msg)
 init = 
-  (Model False "" ["Hello", "Bye"], Cmd.none)
+  (Model False "" [], Cmd.none)
 
 
 -- UPDATE
@@ -34,6 +34,7 @@ type Msg
   = FocusNewPostEditor
   | BlurNewPostEditor
   | InputNewPost String
+  | Post
   
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -46,6 +47,10 @@ update msg model =
       
     InputNewPost content ->
       ({ model | newPost = content }, Cmd.none)
+      
+    Post ->
+      ({ model | posts = model.newPost :: model.posts, newPost = "" }, Cmd.none)
+      
 
 -- SUBSCRIPTIONS
 
@@ -64,9 +69,17 @@ view model =
         (List.map (\post -> div [class "post"] [text post]) model.posts),
       div [id "new-post", style [("height", newPostHeight model)]] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
-          button [class "button-primary", disabled (String.isEmpty model.newPost)] [text "Post"]
+          button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
+            text "Post"
+          ]
         ],
-        textarea[class "post", onFocus FocusNewPostEditor, onBlur BlurNewPostEditor, onInput InputNewPost] []
+        textarea[
+          class "post", 
+          value model.newPost, 
+          onFocus FocusNewPostEditor, 
+          onBlur BlurNewPostEditor, 
+          onInput InputNewPost
+        ] []
       ]
     ]
   ]
