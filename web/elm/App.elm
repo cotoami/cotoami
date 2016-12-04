@@ -64,10 +64,10 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div [id "app", class "container"] [ 
-    div [id "timeline-column"] [
-      div [id "timeline", style [("bottom", newPostHeight model)]] 
+    div [id "timeline-column", class (timelineClass model)] [
+      div [id "timeline"] 
         (List.map (\post -> div [class "post"] [text post]) (List.reverse model.posts)),
-      div [id "new-post", style [("height", newPostHeight model)]] [
+      div [id "new-post"] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
           button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
             text "Post"
@@ -75,6 +75,7 @@ view model =
         ],
         textarea[
           class "post", 
+          placeholder "Post your idea",
           value model.newPost, 
           onFocus FocusNewPostEditor, 
           onBlur BlurNewPostEditor, 
@@ -83,8 +84,9 @@ view model =
       ]
     ]
   ]
-  
-newPostHeight : Model -> String
-newPostHeight model =
-  if model.editingNewPost then "110px" else "70px"
+
+timelineClass : Model -> String
+timelineClass model =
+  if model.editingNewPost then "editing" else ""
+
   

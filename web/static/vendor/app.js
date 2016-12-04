@@ -8256,8 +8256,8 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$App$newPostHeight = function (model) {
-	return model.editingNewPost ? '110px' : '70px';
+var _user$project$App$timelineClass = function (model) {
+	return model.editingNewPost ? 'editing' : '';
 };
 var _user$project$App$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -8341,7 +8341,12 @@ var _user$project$App$view = function (model) {
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class(
+							_user$project$App$timelineClass(model)),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
@@ -8350,20 +8355,7 @@ var _user$project$App$view = function (model) {
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$id('timeline'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$style(
-									{
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'bottom',
-											_1: _user$project$App$newPostHeight(model)
-										},
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						},
 						A2(
 							_elm_lang$core$List$map,
@@ -8389,20 +8381,7 @@ var _user$project$App$view = function (model) {
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html_Attributes$id('new-post'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$style(
-										{
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'height',
-												_1: _user$project$App$newPostHeight(model)
-											},
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
@@ -8451,17 +8430,21 @@ var _user$project$App$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('post'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.newPost),
+												_0: _elm_lang$html$Html_Attributes$placeholder('Post your idea'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
+													_0: _elm_lang$html$Html_Attributes$value(model.newPost),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+														_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
-															_1: {ctor: '[]'}
+															_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+																_1: {ctor: '[]'}
+															}
 														}
 													}
 												}
