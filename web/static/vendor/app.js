@@ -8381,7 +8381,7 @@ var _user$project$App$view = function (model) {
 										_1: {ctor: '[]'}
 									});
 							},
-							model.posts)),
+							_elm_lang$core$List$reverse(model.posts))),
 					_1: {
 						ctor: '::',
 						_0: A2(

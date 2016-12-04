@@ -66,7 +66,7 @@ view model =
   div [id "app", class "container"] [ 
     div [id "timeline-column"] [
       div [id "timeline", style [("bottom", newPostHeight model)]] 
-        (List.map (\post -> div [class "post"] [text post]) model.posts),
+        (List.map (\post -> div [class "post"] [text post]) (List.reverse model.posts)),
       div [id "new-post", style [("height", newPostHeight model)]] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
           button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
