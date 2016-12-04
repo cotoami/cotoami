@@ -3,6 +3,6 @@ defmodule Cotoami.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"
-    assert html_response(conn, 200) =~ "Hello Cotoami!"
+    assert html_response(conn, 200) =~ "Cotoami"
   end
 end
