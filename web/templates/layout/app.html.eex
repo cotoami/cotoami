@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Hello Cotoami!</title>
+    <title>Cotoami</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
   <body>
