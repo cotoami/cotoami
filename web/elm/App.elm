@@ -2,9 +2,12 @@ module App exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onFocus, onBlur, onInput, onMouseDown)
+import Html.Events exposing (on, keyCode, onFocus, onBlur, onInput, onMouseDown)
+import Keyboard exposing (..)
+import Json.Decode as Json
 import String
 import Markdown
+
 
 main : Program Never Model Msg
 main = 
@@ -19,27 +22,47 @@ main =
 -- MODEL
 
 type alias Model = {
+  ctrlDown : Bool,
   editingNewPost : Bool,
   newPost: String,
   posts : List String
 }
 
+initModel : Model
+initModel = 
+  {
+    ctrlDown = False,
+    editingNewPost = False,
+    newPost = "",
+    posts = []
+  }
+
 init : (Model, Cmd Msg)
 init = 
-  (Model False "" [], Cmd.none)
+  (initModel, Cmd.none)
 
 
 -- UPDATE
 
 type Msg 
-  = FocusNewPostEditor
+  = KeyDown KeyCode
+  | KeyUp KeyCode
+  | FocusNewPostEditor
   | BlurNewPostEditor
   | InputNewPost String
   | Post
+  | KeyDownInNewPostEditor KeyCode
   
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    KeyDown 17 -> ({ model | ctrlDown = True }, Cmd.none)
+    KeyUp 17 -> ({ model | ctrlDown = False }, Cmd.none)
+    KeyDown 91 -> ({ model | ctrlDown = True }, Cmd.none)
+    KeyUp 91 -> ({ model | ctrlDown = False }, Cmd.none)
+    KeyDown key -> (model, Cmd.none)
+    KeyUp key -> (model, Cmd.none)
+      
     FocusNewPostEditor ->
       ({ model | editingNewPost = True }, Cmd.none)
 
@@ -52,12 +75,21 @@ update msg model =
     Post ->
       ({ model | posts = model.newPost :: model.posts, newPost = "" }, Cmd.none)
       
+    KeyDownInNewPostEditor key ->
+      if key == 13 && model.ctrlDown then
+        ({ model | posts = model.newPost :: model.posts, newPost = "" }, Cmd.none)
+      else
+        (model, Cmd.none)
+      
 
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Sub.batch [ 
+    Keyboard.downs KeyDown, 
+    Keyboard.ups KeyUp
+  ]
   
 
 -- VIEW
@@ -86,7 +118,8 @@ view model =
           value model.newPost, 
           onFocus FocusNewPostEditor, 
           onBlur BlurNewPostEditor, 
-          onInput InputNewPost
+          onInput InputNewPost,
+          onKeyDown KeyDownInNewPostEditor
         ] []
       ]
     ]
@@ -96,4 +129,6 @@ timelineClass : Model -> String
 timelineClass model =
   if model.editingNewPost then "editing" else ""
 
-  
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+  on "keydown" (Json.map tagger keyCode)
