@@ -8602,7 +8602,7 @@ var _user$project$App$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('post'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$placeholder('Post your idea'),
+												_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$value(model.newPost),

@@ -81,7 +81,7 @@ view model =
         ],
         textarea[
           class "post", 
-          placeholder "Post your idea",
+          placeholder "Write your idea in Markdown",
           value model.newPost, 
           onFocus FocusNewPostEditor, 
           onBlur BlurNewPostEditor, 
