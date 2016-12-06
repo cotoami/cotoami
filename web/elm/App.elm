@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onFocus, onBlur, onInput, onMouseDown)
 import String
+import Markdown
 
 main : Program Never Model Msg
 main = 
@@ -66,7 +67,7 @@ view model =
   div [id "app", class "container"] [ 
     div [id "timeline-column", class (timelineClass model)] [
       div [id "timeline"] 
-        (List.map (\post -> div [class "post"] [text post]) (List.reverse model.posts)),
+        (List.map (\post -> div [class "post"] [Markdown.toHtml [class "content"] post]) (List.reverse model.posts)),
       div [id "new-post"] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
           span [class "user"] [
