@@ -21,19 +21,20 @@ html, body, #elm-container, #app {
   bottom: 58px;
   left: 0;
   right: 0;
+  
+  div.post {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+    
+    &:hover {
+      border: 2px solid #eee;
+    }
+  }
 }
 .editing #timeline {
-  bottom: 140px;
-}
-
-#timeline div.post {
-  border: 2px solid transparent;
-  border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 10px;
-}
-#timeline div.post:hover {
-  border: 2px solid #eee;
+  bottom: 140px !important;
 }
 
 #new-post {
@@ -42,33 +43,37 @@ html, body, #elm-container, #app {
   right: 0;
   bottom: 0;
   height: 48px;
+  
+  div.toolbar {
+    position: relative;
+    height: 40px;
+    
+    span.user {
+      line-height: 40px;
+      vertical-align: middle;
+    }
+    
+    div.tool-buttons {
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      
+      span.shortcut-help {
+        margin-left: 4px;
+        text-transform: none;
+      }
+    }
+  }
+  
+  textarea.post {
+    margin: 0;
+    width: 100%;
+    height: 38px;
+  }
 }
 .editing #new-post {
-  height: 130px;
+  height: 130px !important;
 }
-
-#new-post div.toolbar {
-  position: relative;
-  height: 40px;
-}
-
-#new-post div.toolbar span.user {
-  line-height: 40px;
-  vertical-align: middle;
-}
-
-#new-post div.toolbar div.tool-buttons {
-  display: inline-block;
-  position: absolute;
-  right: 0;
-}
-
-textarea.post {
-  margin: 0;
-  width: 100%;
-  height: 38px;
-}
-
-.editing textarea.post {
-  height: 80px;
+.editing #new-post textarea.post {
+  height: 80px !important;
 }

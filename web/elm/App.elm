@@ -75,7 +75,8 @@ view model =
           ],
           div [class "tool-buttons"] [
             button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
-              text "Post"
+              text "Post",
+              span [class "shortcut-help"] [text "(Ctrl + Enter)"]
             ]
           ]
         ],
