@@ -27,13 +27,13 @@ html, body, #elm-container, #app {
 }
 
 #timeline div.post {
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: 4px;
   padding: 8px;
   margin-bottom: 10px;
 }
 #timeline div.post:hover {
-  border: 1px solid #eee;
+  border: 2px solid #eee;
 }
 
 #new-post {
