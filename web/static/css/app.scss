@@ -49,6 +49,7 @@ html, body, #elm-container, #app {
     height: 40px;
     
     span.user {
+      margin-left: 5px;
       line-height: 40px;
       vertical-align: middle;
     }
@@ -61,6 +62,7 @@ html, body, #elm-container, #app {
       span.shortcut-help {
         margin-left: 4px;
         text-transform: none;
+        opacity: 0.7;
       }
     }
   }
