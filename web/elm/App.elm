@@ -69,8 +69,13 @@ view model =
         (List.map (\post -> div [class "post"] [text post]) (List.reverse model.posts)),
       div [id "new-post"] [
         div [class "toolbar", hidden (not model.editingNewPost)] [
-          button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
-            text "Post"
+          span [class "user"] [
+            text "Anonymous"
+          ],
+          div [class "tool-buttons"] [
+            button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
+              text "Post"
+            ]
           ]
         ],
         textarea[

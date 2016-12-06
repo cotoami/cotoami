@@ -47,8 +47,19 @@ html, body, #elm-container, #app {
 }
 
 #new-post div.toolbar {
-  text-align: right;
+  position: relative;
   height: 40px;
+}
+
+#new-post div.toolbar span.user {
+  line-height: 40px;
+  vertical-align: middle;
+}
+
+#new-post div.toolbar div.tool-buttons {
+  display: inline-block;
+  position: absolute;
+  right: 0;
 }
 
 textarea.post {

@@ -8399,27 +8399,53 @@ var _user$project$App$view = function (model) {
 									{
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$button,
+											_elm_lang$html$Html$span,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('button-primary'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$disabled(
-														_elm_lang$core$String$isEmpty(model.newPost)),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
-														_1: {ctor: '[]'}
-													}
-												}
+												_0: _elm_lang$html$Html_Attributes$class('user'),
+												_1: {ctor: '[]'}
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Post'),
+												_0: _elm_lang$html$Html$text('Anonymous'),
 												_1: {ctor: '[]'}
 											}),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('button-primary'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$disabled(
+																	_elm_lang$core$String$isEmpty(model.newPost)),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
+																	_1: {ctor: '[]'}
+																}
+															}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Post'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}),
 								_1: {
 									ctor: '::',
