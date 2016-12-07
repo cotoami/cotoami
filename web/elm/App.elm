@@ -102,6 +102,9 @@ view : Model -> Html Msg
 view model =
   div [id "app"] [
     div [id "app-header"] [
+      div [class "title"] [
+        i [class "material-icons"] [text "https"]
+      ]
     ],
     div [id "app-body", class "container"] [
       div [id "timeline-column", class (timelineClass model)] [

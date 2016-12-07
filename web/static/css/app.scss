@@ -17,6 +17,20 @@ html, body, #elm-container, #app, #app-body {
   z-index: 100;
   border-bottom: 1px solid #eee;
   background-color: rgba(255,255,255,0.9);
+  
+  div.title {
+    width: 300px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 35px;
+    vertical-align: middle;
+    
+    .material-icons {
+      line-height: 35px;
+      font-size: 28px;
+      opacity: 0.3;
+    }
+  }
 }
 
 #app-body {
