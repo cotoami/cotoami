@@ -96,10 +96,10 @@ update msg model =
 post : Model -> (Model, Cmd Msg)
 post model =
   { model | posts = model.newPost :: model.posts, newPost = "" }
-    ! [Task.attempt processScroll (Dom.Scroll.toBottom "timeline")]
+    ! [Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline")]
 
-processScroll : Result Dom.Error () -> Msg
-processScroll result =
+handleScrollResult : Result Dom.Error () -> Msg
+handleScrollResult result =
   case result of
     Ok _ -> NoOp
     Err _ -> NoOp

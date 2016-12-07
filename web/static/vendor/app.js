@@ -9565,7 +9565,7 @@ var _user$project$App$subscriptions = function (model) {
 		});
 };
 var _user$project$App$NoOp = {ctor: 'NoOp'};
-var _user$project$App$processScroll = function (result) {
+var _user$project$App$handleScrollResult = function (result) {
 	var _p0 = result;
 	if (_p0.ctor === 'Ok') {
 		return _user$project$App$NoOp;
@@ -9586,7 +9586,7 @@ var _user$project$App$post = function (model) {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$core$Task$attempt,
-				_user$project$App$processScroll,
+				_user$project$App$handleScrollResult,
 				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
 			_1: {ctor: '[]'}
 		});
