@@ -9271,11 +9271,7 @@ var _user$project$App$view = function (model) {
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$id('app'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('container'),
-				_1: {ctor: '[]'}
-			}
+			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
@@ -9283,55 +9279,36 @@ var _user$project$App$view = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class(
-							_user$project$App$timelineClass(model)),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html_Attributes$id('app-header'),
+					_1: {ctor: '[]'}
 				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('app-body'),
+						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$id('timeline'),
+							_0: _elm_lang$html$Html_Attributes$class('container'),
 							_1: {ctor: '[]'}
-						},
-						A2(
-							_elm_lang$core$List$map,
-							function (post) {
-								return A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('post'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_evancz$elm_markdown$Markdown$toHtml,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('content'),
-												_1: {ctor: '[]'}
-											},
-											post),
-										_1: {ctor: '[]'}
-									});
-							},
-							_elm_lang$core$List$reverse(model.posts))),
-					_1: {
+						}
+					},
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$id('new-post'),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class(
+										_user$project$App$timelineClass(model)),
+									_1: {ctor: '[]'}
+								}
 							},
 							{
 								ctor: '::',
@@ -9339,120 +9316,165 @@ var _user$project$App$view = function (model) {
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('toolbar'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewPost),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Attributes$id('timeline'),
+										_1: {ctor: '[]'}
 									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$span,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('user'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Anonymous'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
+									A2(
+										_elm_lang$core$List$map,
+										function (post) {
+											return A2(
 												_elm_lang$html$Html$div,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
+													_0: _elm_lang$html$Html_Attributes$class('post'),
 													_1: {ctor: '[]'}
 												},
 												{
 													ctor: '::',
 													_0: A2(
-														_elm_lang$html$Html$button,
+														_evancz$elm_markdown$Markdown$toHtml,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('button-primary'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$disabled(
-																	_elm_lang$core$String$isEmpty(model.newPost)),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
-																	_1: {ctor: '[]'}
-																}
-															}
+															_0: _elm_lang$html$Html_Attributes$class('content'),
+															_1: {ctor: '[]'}
 														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('Post'),
-															_1: {
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$html$Html$span,
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
-																		_1: {ctor: '[]'}
-																	},
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
-																		_1: {ctor: '[]'}
-																	}),
-																_1: {ctor: '[]'}
-															}
-														}),
+														post),
 													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}),
+												});
+										},
+										_elm_lang$core$List$reverse(model.posts))),
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$textarea,
+										_elm_lang$html$Html$div,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('post'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
-												_1: {
+											_0: _elm_lang$html$Html_Attributes$id('new-post'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value(model.newPost),
+													_0: _elm_lang$html$Html_Attributes$class('toolbar'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
+														_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewPost),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('user'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Anonymous'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$div,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$button,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('button-primary'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$disabled(
+																				_elm_lang$core$String$isEmpty(model.newPost)),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
+																				_1: {ctor: '[]'}
+																			}
+																		}
+																	},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('Post'),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(
+																				_elm_lang$html$Html$span,
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
+																					_1: {ctor: '[]'}
+																				},
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
+																					_1: {ctor: '[]'}
+																				}),
+																			_1: {ctor: '[]'}
+																		}
+																	}),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$textarea,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('post'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+															_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+																_0: _elm_lang$html$Html_Attributes$value(model.newPost),
 																_1: {
 																	ctor: '::',
-																	_0: _user$project$App$onKeyDown(_user$project$App$KeyDownInNewPostEditor),
-																	_1: {ctor: '[]'}
+																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+																			_1: {
+																				ctor: '::',
+																				_0: _user$project$App$onKeyDown(_user$project$App$KeyDownInNewPostEditor),
+																				_1: {ctor: '[]'}
+																			}
+																		}
+																	}
 																}
 															}
 														}
-													}
-												}
+													},
+													{ctor: '[]'}),
+												_1: {ctor: '[]'}
 											}
-										},
-										{ctor: '[]'}),
+										}),
 									_1: {ctor: '[]'}
 								}
 							}),
 						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$App$KeyUp = function (a) {

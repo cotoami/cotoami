@@ -100,31 +100,35 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  div [id "app", class "container"] [ 
-    div [id "timeline-column", class (timelineClass model)] [
-      div [id "timeline"] 
-        (List.map (\post -> div [class "post"] [Markdown.toHtml [class "content"] post]) (List.reverse model.posts)),
-      div [id "new-post"] [
-        div [class "toolbar", hidden (not model.editingNewPost)] [
-          span [class "user"] [
-            text "Anonymous"
-          ],
-          div [class "tool-buttons"] [
-            button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
-              text "Post",
-              span [class "shortcut-help"] [text "(Ctrl + Enter)"]
+  div [id "app"] [
+    div [id "app-header"] [
+    ],
+    div [id "app-body", class "container"] [
+      div [id "timeline-column", class (timelineClass model)] [
+        div [id "timeline"] 
+          (List.map (\post -> div [class "post"] [Markdown.toHtml [class "content"] post]) (List.reverse model.posts)),
+        div [id "new-post"] [
+          div [class "toolbar", hidden (not model.editingNewPost)] [
+            span [class "user"] [
+              text "Anonymous"
+            ],
+            div [class "tool-buttons"] [
+              button [class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post] [
+                text "Post",
+                span [class "shortcut-help"] [text "(Ctrl + Enter)"]
+              ]
             ]
-          ]
-        ],
-        textarea[
-          class "post", 
-          placeholder "Write your idea in Markdown",
-          value model.newPost, 
-          onFocus FocusNewPostEditor, 
-          onBlur BlurNewPostEditor, 
-          onInput InputNewPost,
-          onKeyDown KeyDownInNewPostEditor
-        ] []
+          ],
+          textarea[
+            class "post", 
+            placeholder "Write your idea in Markdown",
+            value model.newPost, 
+            onFocus FocusNewPostEditor, 
+            onBlur BlurNewPostEditor, 
+            onInput InputNewPost,
+            onKeyDown KeyDownInNewPostEditor
+          ] []
+        ]
       ]
     ]
   ]

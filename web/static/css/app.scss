@@ -1,11 +1,26 @@
 /* This file is for your main application css. */
 
-html, body, #elm-container, #app {
+html, body, #elm-container, #app, #app-body {
   height: 100%;
 }
 
 #app {
-  padding: 10px;
+  position: relative;
+}
+
+#app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  z-index: 100;
+  border-bottom: 1px solid #eee;
+  background-color: rgba(255,255,255,0.9);
+}
+
+#app-body {
+  z-index: 1;
 }
 
 #timeline-column {
@@ -14,6 +29,7 @@ html, body, #elm-container, #app {
 }
 
 #timeline {
+  padding-top: 40px;
   overflow-x: hidden;
   overflow-y: auto;;
   position: absolute;
