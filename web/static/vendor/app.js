@@ -6352,8 +6352,34 @@ return {
 
 }();
 
+var _elm_lang$dom$Dom$blur = _elm_lang$dom$Native_Dom.blur;
+var _elm_lang$dom$Dom$focus = _elm_lang$dom$Native_Dom.focus;
+var _elm_lang$dom$Dom$NotFound = function (a) {
+	return {ctor: 'NotFound', _0: a};
+};
+
 var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
 var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
+var _elm_lang$dom$Dom_Size$width = _elm_lang$dom$Native_Dom.width;
+var _elm_lang$dom$Dom_Size$height = _elm_lang$dom$Native_Dom.height;
+var _elm_lang$dom$Dom_Size$VisibleContentWithBordersAndMargins = {ctor: 'VisibleContentWithBordersAndMargins'};
+var _elm_lang$dom$Dom_Size$VisibleContentWithBorders = {ctor: 'VisibleContentWithBorders'};
+var _elm_lang$dom$Dom_Size$VisibleContent = {ctor: 'VisibleContent'};
+var _elm_lang$dom$Dom_Size$Content = {ctor: 'Content'};
+
+var _elm_lang$dom$Dom_Scroll$toX = _elm_lang$dom$Native_Dom.setScrollLeft;
+var _elm_lang$dom$Dom_Scroll$x = _elm_lang$dom$Native_Dom.getScrollLeft;
+var _elm_lang$dom$Dom_Scroll$toRight = _elm_lang$dom$Native_Dom.toRight;
+var _elm_lang$dom$Dom_Scroll$toLeft = function (id) {
+	return A2(_elm_lang$dom$Dom_Scroll$toX, id, 0);
+};
+var _elm_lang$dom$Dom_Scroll$toY = _elm_lang$dom$Native_Dom.setScrollTop;
+var _elm_lang$dom$Dom_Scroll$y = _elm_lang$dom$Native_Dom.getScrollTop;
+var _elm_lang$dom$Dom_Scroll$toBottom = _elm_lang$dom$Native_Dom.toBottom;
+var _elm_lang$dom$Dom_Scroll$toTop = function (id) {
+	return A2(_elm_lang$dom$Dom_Scroll$toY, id, 0);
+};
 
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
@@ -9175,76 +9201,6 @@ var _user$project$App$onKeyDown = function (tagger) {
 var _user$project$App$timelineClass = function (model) {
 	return model.editingNewPost ? 'editing' : '';
 };
-var _user$project$App$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'KeyDown':
-				var _p1 = _p0._0;
-				return (_elm_lang$core$Native_Utils.eq(_p1, 17) || _elm_lang$core$Native_Utils.eq(_p1, 91)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'KeyUp':
-				var _p2 = _p0._0;
-				return (_elm_lang$core$Native_Utils.eq(_p2, 17) || _elm_lang$core$Native_Utils.eq(_p2, 91)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'FocusNewPostEditor':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewPost: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'BlurNewPostEditor':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewPost: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'InputNewPost':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newPost: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Post':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							posts: {ctor: '::', _0: model.newPost, _1: model.posts},
-							newPost: ''
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return (_elm_lang$core$Native_Utils.eq(_p0._0, 13) && model.ctrlDown) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							posts: {ctor: '::', _0: model.newPost, _1: model.posts},
-							newPost: ''
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
 var _user$project$App$initModel = {
 	ctrlDown: false,
 	editingNewPost: false,
@@ -9521,6 +9477,90 @@ var _user$project$App$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$App$NoOp = {ctor: 'NoOp'};
+var _user$project$App$processScroll = function (result) {
+	var _p0 = result;
+	if (_p0.ctor === 'Ok') {
+		return _user$project$App$NoOp;
+	} else {
+		return _user$project$App$NoOp;
+	}
+};
+var _user$project$App$post = function (model) {
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				posts: {ctor: '::', _0: model.newPost, _1: model.posts},
+				newPost: ''
+			}),
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$Task$attempt,
+				_user$project$App$processScroll,
+				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$App$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'KeyDown':
+				var _p2 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p2, 17) || _elm_lang$core$Native_Utils.eq(_p2, 91)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'KeyUp':
+				var _p3 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p3, 17) || _elm_lang$core$Native_Utils.eq(_p3, 91)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'FocusNewPostEditor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewPost: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'BlurNewPostEditor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewPost: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'InputNewPost':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{newPost: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Post':
+				return _user$project$App$post(model);
+			default:
+				return (_elm_lang$core$Native_Utils.eq(_p1._0, 13) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
 var _user$project$App$main = _elm_lang$html$Html$program(
 	{init: _user$project$App$init, view: _user$project$App$view, update: _user$project$App$update, subscriptions: _user$project$App$subscriptions})();
 

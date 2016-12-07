@@ -4,6 +4,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, keyCode, onFocus, onBlur, onInput, onMouseDown)
 import Keyboard exposing (..)
+import Dom
+import Dom.Scroll
+import Task
 import Json.Decode as Json
 import String
 import Markdown
@@ -45,7 +48,8 @@ init =
 -- UPDATE
 
 type Msg 
-  = KeyDown KeyCode
+  = NoOp
+  | KeyDown KeyCode
   | KeyUp KeyCode
   | FocusNewPostEditor
   | BlurNewPostEditor
@@ -56,6 +60,9 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    NoOp ->
+      model ! []
+
     KeyDown key -> 
       if key == 17 || key == 91 then
         ({ model | ctrlDown = True }, Cmd.none)
@@ -77,15 +84,26 @@ update msg model =
       ({ model | newPost = content }, Cmd.none)
       
     Post ->
-      ({ model | posts = model.newPost :: model.posts, newPost = "" }, Cmd.none)
+      post model
       
     KeyDownInNewPostEditor key ->
       if key == 13 && model.ctrlDown then
-        ({ model | posts = model.newPost :: model.posts, newPost = "" }, Cmd.none)
+        post model
       else
         (model, Cmd.none)
-      
 
+post : Model -> (Model, Cmd Msg)
+post model =
+  { model | posts = model.newPost :: model.posts, newPost = "" }
+    ! [Task.attempt processScroll (Dom.Scroll.toBottom "timeline")]
+
+processScroll : Result Dom.Error () -> Msg
+processScroll result =
+  case result of
+    Ok _ -> NoOp
+    Err _ -> NoOp
+            
+            
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
