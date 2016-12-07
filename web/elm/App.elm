@@ -56,12 +56,16 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    KeyDown 17 -> ({ model | ctrlDown = True }, Cmd.none)
-    KeyUp 17 -> ({ model | ctrlDown = False }, Cmd.none)
-    KeyDown 91 -> ({ model | ctrlDown = True }, Cmd.none)
-    KeyUp 91 -> ({ model | ctrlDown = False }, Cmd.none)
-    KeyDown key -> (model, Cmd.none)
-    KeyUp key -> (model, Cmd.none)
+    KeyDown key -> 
+      if key == 17 || key == 91 then
+        ({ model | ctrlDown = True }, Cmd.none)
+      else
+        (model, Cmd.none)
+    KeyUp key -> 
+      if key == 17 || key == 91 then
+        ({ model | ctrlDown = False }, Cmd.none)
+      else
+        (model, Cmd.none)
       
     FocusNewPostEditor ->
       ({ model | editingNewPost = True }, Cmd.none)

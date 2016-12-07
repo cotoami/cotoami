@@ -9180,47 +9180,23 @@ var _user$project$App$update = F2(
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'KeyDown':
-				switch (_p0._0) {
-					case 17:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{ctrlDown: true}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 91:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{ctrlDown: true}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+				var _p1 = _p0._0;
+				return (_elm_lang$core$Native_Utils.eq(_p1, 17) || _elm_lang$core$Native_Utils.eq(_p1, 91)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
-				switch (_p0._0) {
-					case 17:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{ctrlDown: false}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 91:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{ctrlDown: false}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+				var _p2 = _p0._0;
+				return (_elm_lang$core$Native_Utils.eq(_p2, 17) || _elm_lang$core$Native_Utils.eq(_p2, 91)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'FocusNewPostEditor':
 				return {
 					ctor: '_Tuple2',
