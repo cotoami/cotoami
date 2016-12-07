@@ -131,6 +131,7 @@ view model =
         div [id "new-post"] [
           div [class "toolbar", hidden (not model.editingNewPost)] [
             span [class "user"] [
+              i [class "material-icons"] [text "perm_identity"],
               text "Anonymous"
             ],
             div [class "tool-buttons"] [

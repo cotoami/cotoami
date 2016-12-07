@@ -81,6 +81,13 @@ html, body, #elm-container, #app, #app-body {
       margin-left: 5px;
       line-height: 40px;
       vertical-align: middle;
+      font-weight: bold;
+      color: gray;
+      
+      .material-icons {
+        margin-right: 3px;
+        vertical-align: -6px;
+      }
     }
     
     div.tool-buttons {
