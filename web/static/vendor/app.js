@@ -9192,6 +9192,78 @@ var _evancz$elm_markdown$Markdown$Options = F4(
 		return {githubFlavored: a, defaultHighlighting: b, sanitize: c, smartypants: d};
 	});
 
+var _user$project$Keys$zero = {keyCode: 58, name: '0'};
+var _user$project$Keys$nine = {keyCode: 57, name: '9'};
+var _user$project$Keys$eight = {keyCode: 56, name: '8'};
+var _user$project$Keys$seven = {keyCode: 55, name: '7'};
+var _user$project$Keys$six = {keyCode: 54, name: '6'};
+var _user$project$Keys$five = {keyCode: 53, name: '5'};
+var _user$project$Keys$four = {keyCode: 52, name: '4'};
+var _user$project$Keys$three = {keyCode: 51, name: '3'};
+var _user$project$Keys$two = {keyCode: 50, name: '2'};
+var _user$project$Keys$one = {keyCode: 49, name: '1'};
+var _user$project$Keys$f10 = {keyCode: 121, name: 'F10'};
+var _user$project$Keys$f9 = {keyCode: 120, name: 'F9'};
+var _user$project$Keys$f8 = {keyCode: 119, name: 'F8'};
+var _user$project$Keys$f4 = {keyCode: 115, name: 'F4'};
+var _user$project$Keys$f2 = {keyCode: 113, name: 'F2'};
+var _user$project$Keys$escape = {keyCode: 27, name: 'Escape'};
+var _user$project$Keys$pageUp = {keyCode: 33, name: 'Page up'};
+var _user$project$Keys$pageDown = {keyCode: 34, name: 'Page down'};
+var _user$project$Keys$home = {keyCode: 36, name: 'Home'};
+var _user$project$Keys$end = {keyCode: 35, name: 'End'};
+var _user$project$Keys$insert = {keyCode: 45, name: 'Insert'};
+var _user$project$Keys$delete = {keyCode: 46, name: 'Delete'};
+var _user$project$Keys$backspace = {keyCode: 8, name: 'Backspace'};
+var _user$project$Keys$arrowDown = {keyCode: 40, name: 'Down arrow'};
+var _user$project$Keys$arrowUp = {keyCode: 38, name: 'Up arrow'};
+var _user$project$Keys$arrowLeft = {keyCode: 39, name: 'Left arrow'};
+var _user$project$Keys$arrowRight = {keyCode: 37, name: 'Right arrow'};
+var _user$project$Keys$enter = {keyCode: 13, name: 'Enter'};
+var _user$project$Keys$space = {keyCode: 32, name: 'Space'};
+var _user$project$Keys$commandRight = {keyCode: 93, name: 'Command right'};
+var _user$project$Keys$commandLeft = {keyCode: 91, name: 'Command left'};
+var _user$project$Keys$windows = {keyCode: 91, name: 'Windows'};
+var _user$project$Keys$meta = {keyCode: 91, name: 'Meta'};
+var _user$project$Keys$super = {keyCode: 91, name: 'Super'};
+var _user$project$Keys$tab = {keyCode: 9, name: 'Tab'};
+var _user$project$Keys$shift = {keyCode: 16, name: 'Shift'};
+var _user$project$Keys$ctrl = {keyCode: 17, name: 'Ctrl'};
+var _user$project$Keys$z = {keyCode: 90, name: 'z'};
+var _user$project$Keys$y = {keyCode: 89, name: 'y'};
+var _user$project$Keys$x = {keyCode: 88, name: 'x'};
+var _user$project$Keys$w = {keyCode: 87, name: 'w'};
+var _user$project$Keys$v = {keyCode: 86, name: 'v'};
+var _user$project$Keys$u = {keyCode: 85, name: 'u'};
+var _user$project$Keys$t = {keyCode: 84, name: 't'};
+var _user$project$Keys$s = {keyCode: 83, name: 's'};
+var _user$project$Keys$r = {keyCode: 82, name: 'r'};
+var _user$project$Keys$q = {keyCode: 81, name: 'q'};
+var _user$project$Keys$p = {keyCode: 80, name: 'p'};
+var _user$project$Keys$o = {keyCode: 79, name: 'o'};
+var _user$project$Keys$n = {keyCode: 78, name: 'n'};
+var _user$project$Keys$m = {keyCode: 77, name: 'm'};
+var _user$project$Keys$l = {keyCode: 76, name: 'l'};
+var _user$project$Keys$k = {keyCode: 75, name: 'k'};
+var _user$project$Keys$j = {keyCode: 74, name: 'j'};
+var _user$project$Keys$i = {keyCode: 73, name: 'i'};
+var _user$project$Keys$h = {keyCode: 72, name: 'h'};
+var _user$project$Keys$g = {keyCode: 71, name: 'g'};
+var _user$project$Keys$f = {keyCode: 70, name: 'f'};
+var _user$project$Keys$e = {keyCode: 69, name: 'e'};
+var _user$project$Keys$d = {keyCode: 68, name: 'd'};
+var _user$project$Keys$c = {keyCode: 67, name: 'b'};
+var _user$project$Keys$b = {keyCode: 66, name: 'b'};
+var _user$project$Keys$a = {keyCode: 65, name: 'a'};
+var _user$project$Keys$equals = F2(
+	function (k0, k1) {
+		return _elm_lang$core$Native_Utils.eq(k0.keyCode, k1.keyCode);
+	});
+var _user$project$Keys$Key = F2(
+	function (a, b) {
+		return {keyCode: a, name: b};
+	});
+
 var _user$project$App$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -9530,7 +9602,7 @@ var _user$project$App$update = F2(
 					{ctor: '[]'});
 			case 'KeyDown':
 				var _p2 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p2, 17) || _elm_lang$core$Native_Utils.eq(_p2, 91)) ? {
+				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -9539,7 +9611,7 @@ var _user$project$App$update = F2(
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
 				var _p3 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p3, 17) || _elm_lang$core$Native_Utils.eq(_p3, 91)) ? {
+				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -9573,7 +9645,7 @@ var _user$project$App$update = F2(
 			case 'Post':
 				return _user$project$App$post(model);
 			default:
-				return (_elm_lang$core$Native_Utils.eq(_p1._0, 13) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$App$main = _elm_lang$html$Html$program(

@@ -10,7 +10,7 @@ import Task
 import Json.Decode as Json
 import String
 import Markdown
-
+import Keys exposing (ctrl, meta, enter)
 
 main : Program Never Model Msg
 main = 
@@ -64,12 +64,13 @@ update msg model =
       model ! []
 
     KeyDown key -> 
-      if key == 17 || key == 91 then
+      if key == ctrl.keyCode || key == meta.keyCode then
         ({ model | ctrlDown = True }, Cmd.none)
       else
         (model, Cmd.none)
+        
     KeyUp key -> 
-      if key == 17 || key == 91 then
+      if key == ctrl.keyCode || key == meta.keyCode then
         ({ model | ctrlDown = False }, Cmd.none)
       else
         (model, Cmd.none)
@@ -87,7 +88,7 @@ update msg model =
       post model
       
     KeyDownInNewPostEditor key ->
-      if key == 13 && model.ctrlDown then
+      if key == enter.keyCode && model.ctrlDown then
         post model
       else
         (model, Cmd.none)
