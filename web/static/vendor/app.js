@@ -9302,7 +9302,7 @@ var _user$project$App$view = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('https'),
+									_0: _elm_lang$html$Html$text('home'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}

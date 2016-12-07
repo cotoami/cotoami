@@ -103,7 +103,7 @@ view model =
   div [id "app"] [
     div [id "app-header"] [
       div [class "title"] [
-        i [class "material-icons"] [text "https"]
+        i [class "material-icons"] [text "home"]
       ]
     ],
     div [id "app-body", class "container"] [
