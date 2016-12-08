@@ -7,10 +7,12 @@ defmodule Cotoami.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Cotoami.Auth
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Cotoami.Auth
   end
 
   scope "/", Cotoami do
