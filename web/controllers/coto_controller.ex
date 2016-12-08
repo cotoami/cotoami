@@ -1,4 +1,4 @@
-defmodule Cotoami.PostController do
+defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
   
@@ -7,11 +7,11 @@ defmodule Cotoami.PostController do
   end
   
   def index(conn, _params, anonymous_id) do
-    json conn, %{posts: []}
+    json conn, %{cotos: []}
   end
 
-  def create(conn, %{"post" => post_params}, anonymous_id) do
-    Logger.info "post: #{inspect post_params}"
-    json conn, %{post: post_params}
+  def create(conn, %{"coto" => coto_params}, anonymous_id) do
+    Logger.info "coto: #{inspect coto_params}"
+    json conn, %{coto: coto_params}
   end
 end

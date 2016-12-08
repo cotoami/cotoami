@@ -25,6 +25,6 @@ defmodule Cotoami.Router do
   scope "/api", Cotoami do
     pipe_through :api
     
-    resources "/posts", PostController, only: [:index, :create]
+    resources "/cotos", CotoController, only: [:index, :create]
   end
 end

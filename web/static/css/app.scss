@@ -51,7 +51,7 @@ html, body, #elm-container, #app, #app-body {
   left: 0;
   right: 0;
   
-  div.post {
+  div.coto {
     border: 2px solid transparent;
     border-radius: 4px;
     padding: 8px;
@@ -66,7 +66,7 @@ html, body, #elm-container, #app, #app-body {
   bottom: 140px !important;
 }
 
-#new-post {
+#new-coto {
   position: absolute;
   left: 0;
   right: 0;
@@ -103,15 +103,15 @@ html, body, #elm-container, #app, #app-body {
     }
   }
   
-  textarea.post {
+  textarea.coto {
     margin: 0;
     width: 100%;
     height: 38px;
   }
 }
-.editing #new-post {
+.editing #new-coto {
   height: 130px !important;
 }
-.editing #new-post textarea.post {
+.editing #new-coto textarea.coto {
   height: 80px !important;
 }

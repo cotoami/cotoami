@@ -29,18 +29,18 @@ main =
 
 type alias Model =
     { ctrlDown : Bool
-    , editingNewPost : Bool
-    , newPost : String
-    , posts : List String
+    , editingNewCoto : Bool
+    , newCoto : String
+    , cotos : List String
     }
 
 
 initModel : Model
 initModel =
     { ctrlDown = False
-    , editingNewPost = False
-    , newPost = ""
-    , posts = []
+    , editingNewCoto = False
+    , newCoto = ""
+    , cotos = []
     }
 
 
@@ -57,11 +57,11 @@ type Msg
     = NoOp
     | KeyDown KeyCode
     | KeyUp KeyCode
-    | FocusNewPostEditor
-    | BlurNewPostEditor
-    | InputNewPost String
+    | FocusInput
+    | BlurInput
+    | InputText String
     | Post
-    | KeyDownInNewPostEditor KeyCode
+    | KeyDownInInput KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -82,19 +82,19 @@ update msg model =
             else
                 ( model, Cmd.none )
 
-        FocusNewPostEditor ->
-            ( { model | editingNewPost = True }, Cmd.none )
+        FocusInput ->
+            ( { model | editingNewCoto = True }, Cmd.none )
 
-        BlurNewPostEditor ->
-            ( { model | editingNewPost = False }, Cmd.none )
+        BlurInput ->
+            ( { model | editingNewCoto = False }, Cmd.none )
 
-        InputNewPost content ->
-            ( { model | newPost = content }, Cmd.none )
+        InputText content ->
+            ( { model | newCoto = content }, Cmd.none )
 
         Post ->
             post model
 
-        KeyDownInNewPostEditor key ->
+        KeyDownInInput key ->
             if key == enter.keyCode && model.ctrlDown then
                 post model
             else
@@ -103,7 +103,7 @@ update msg model =
 
 post : Model -> ( Model, Cmd Msg )
 post model =
-    { model | posts = model.newPost :: model.posts, newPost = "" }
+    { model | cotos = model.newCoto :: model.cotos, newCoto = "" }
         ! [ Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") ]
 
 
@@ -144,28 +144,28 @@ view model =
         , div [ id "app-body", class "container" ]
             [ div [ id "timeline-column", class (timelineClass model) ]
                 [ div [ id "timeline" ]
-                    (List.map (\post -> div [ class "post" ] [ Markdown.toHtml [ class "content" ] post ]) (List.reverse model.posts))
-                , div [ id "new-post" ]
-                    [ div [ class "toolbar", hidden (not model.editingNewPost) ]
+                    (List.map (\coto -> div [ class "coto" ] [ Markdown.toHtml [ class "content" ] coto ]) (List.reverse model.cotos))
+                , div [ id "new-coto" ]
+                    [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
                         [ span [ class "user" ]
                             [ i [ class "material-icons" ] [ text "perm_identity" ]
                             , text "Anonymous"
                             ]
                         , div [ class "tool-buttons" ]
-                            [ button [ class "button-primary", disabled (String.isEmpty model.newPost), onMouseDown Post ]
+                            [ button [ class "button-primary", disabled (String.isEmpty model.newCoto), onMouseDown Post ]
                                 [ text "Post"
                                 , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
                                 ]
                             ]
                         ]
                     , textarea
-                        [ class "post"
+                        [ class "coto"
                         , placeholder "Write your idea in Markdown"
-                        , value model.newPost
-                        , onFocus FocusNewPostEditor
-                        , onBlur BlurNewPostEditor
-                        , onInput InputNewPost
-                        , onKeyDown KeyDownInNewPostEditor
+                        , value model.newCoto
+                        , onFocus FocusInput
+                        , onBlur BlurInput
+                        , onInput InputText
+                        , onKeyDown KeyDownInInput
                         ]
                         []
                     ]
@@ -176,7 +176,7 @@ view model =
 
 timelineClass : Model -> String
 timelineClass model =
-    if model.editingNewPost then
+    if model.editingNewCoto then
         "editing"
     else
         ""

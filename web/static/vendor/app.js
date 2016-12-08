@@ -9271,28 +9271,28 @@ var _user$project$App$onKeyDown = function (tagger) {
 		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
 var _user$project$App$timelineClass = function (model) {
-	return model.editingNewPost ? 'editing' : '';
+	return model.editingNewCoto ? 'editing' : '';
 };
 var _user$project$App$initModel = {
 	ctrlDown: false,
-	editingNewPost: false,
-	newPost: '',
-	posts: {ctor: '[]'}
+	editingNewCoto: false,
+	newCoto: '',
+	cotos: {ctor: '[]'}
 };
 var _user$project$App$init = {ctor: '_Tuple2', _0: _user$project$App$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$App$Model = F4(
 	function (a, b, c, d) {
-		return {ctrlDown: a, editingNewPost: b, newPost: c, posts: d};
+		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d};
 	});
-var _user$project$App$KeyDownInNewPostEditor = function (a) {
-	return {ctor: 'KeyDownInNewPostEditor', _0: a};
+var _user$project$App$KeyDownInInput = function (a) {
+	return {ctor: 'KeyDownInInput', _0: a};
 };
 var _user$project$App$Post = {ctor: 'Post'};
-var _user$project$App$InputNewPost = function (a) {
-	return {ctor: 'InputNewPost', _0: a};
+var _user$project$App$InputText = function (a) {
+	return {ctor: 'InputText', _0: a};
 };
-var _user$project$App$BlurNewPostEditor = {ctor: 'BlurNewPostEditor'};
-var _user$project$App$FocusNewPostEditor = {ctor: 'FocusNewPostEditor'};
+var _user$project$App$BlurInput = {ctor: 'BlurInput'};
+var _user$project$App$FocusInput = {ctor: 'FocusInput'};
 var _user$project$App$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9375,12 +9375,12 @@ var _user$project$App$view = function (model) {
 									},
 									A2(
 										_elm_lang$core$List$map,
-										function (post) {
+										function (coto) {
 											return A2(
 												_elm_lang$html$Html$div,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('post'),
+													_0: _elm_lang$html$Html_Attributes$class('coto'),
 													_1: {ctor: '[]'}
 												},
 												{
@@ -9392,18 +9392,18 @@ var _user$project$App$view = function (model) {
 															_0: _elm_lang$html$Html_Attributes$class('content'),
 															_1: {ctor: '[]'}
 														},
-														post),
+														coto),
 													_1: {ctor: '[]'}
 												});
 										},
-										_elm_lang$core$List$reverse(model.posts))),
+										_elm_lang$core$List$reverse(model.cotos))),
 								_1: {
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$div,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('new-post'),
+											_0: _elm_lang$html$Html_Attributes$id('new-coto'),
 											_1: {ctor: '[]'}
 										},
 										{
@@ -9415,7 +9415,7 @@ var _user$project$App$view = function (model) {
 													_0: _elm_lang$html$Html_Attributes$class('toolbar'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewPost),
+														_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewCoto),
 														_1: {ctor: '[]'}
 													}
 												},
@@ -9467,7 +9467,7 @@ var _user$project$App$view = function (model) {
 																		_1: {
 																			ctor: '::',
 																			_0: _elm_lang$html$Html_Attributes$disabled(
-																				_elm_lang$core$String$isEmpty(model.newPost)),
+																				_elm_lang$core$String$isEmpty(model.newCoto)),
 																			_1: {
 																				ctor: '::',
 																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
@@ -9506,25 +9506,25 @@ var _user$project$App$view = function (model) {
 													_elm_lang$html$Html$textarea,
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('post'),
+														_0: _elm_lang$html$Html_Attributes$class('coto'),
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$value(model.newPost),
+																_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusNewPostEditor),
+																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusInput),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurNewPostEditor),
+																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurInput),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputNewPost),
+																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputText),
 																			_1: {
 																				ctor: '::',
-																				_0: _user$project$App$onKeyDown(_user$project$App$KeyDownInNewPostEditor),
+																				_0: _user$project$App$onKeyDown(_user$project$App$KeyDownInInput),
 																				_1: {ctor: '[]'}
 																			}
 																		}
@@ -9579,8 +9579,8 @@ var _user$project$App$post = function (model) {
 		_elm_lang$core$Native_Utils.update(
 			model,
 			{
-				posts: {ctor: '::', _0: model.newPost, _1: model.posts},
-				newPost: ''
+				cotos: {ctor: '::', _0: model.newCoto, _1: model.cotos},
+				newCoto: ''
 			}),
 		{
 			ctor: '::',
@@ -9618,28 +9618,28 @@ var _user$project$App$update = F2(
 						{ctrlDown: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'FocusNewPostEditor':
+			case 'FocusInput':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{editingNewPost: true}),
+						{editingNewCoto: true}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'BlurNewPostEditor':
+			case 'BlurInput':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{editingNewPost: false}),
+						{editingNewCoto: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'InputNewPost':
+			case 'InputText':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newPost: _p1._0}),
+						{newCoto: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Post':
