@@ -26,12 +26,16 @@ main =
 
 -- MODEL
 
+type alias Coto =
+    { content : String
+    }
+
 
 type alias Model =
     { ctrlDown : Bool
     , editingNewCoto : Bool
     , newCoto : String
-    , cotos : List String
+    , cotos : List Coto
     }
 
 
@@ -103,7 +107,7 @@ update msg model =
 
 post : Model -> ( Model, Cmd Msg )
 post model =
-    { model | cotos = model.newCoto :: model.cotos, newCoto = "" }
+    { model | cotos = (Coto model.newCoto) :: model.cotos, newCoto = "" }
         ! [ Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") ]
 
 
@@ -144,7 +148,7 @@ view model =
         , div [ id "app-body", class "container" ]
             [ div [ id "timeline-column", class (timelineClass model) ]
                 [ div [ id "timeline" ]
-                    (List.map (\coto -> div [ class "coto" ] [ Markdown.toHtml [ class "content" ] coto ]) (List.reverse model.cotos))
+                    (List.map (\coto -> div [ class "coto" ] [ Markdown.toHtml [ class "content" ] coto.content ]) (List.reverse model.cotos))
                 , div [ id "new-coto" ]
                     [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
                         [ span [ class "user" ]

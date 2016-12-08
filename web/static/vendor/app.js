@@ -9280,6 +9280,9 @@ var _user$project$App$initModel = {
 	cotos: {ctor: '[]'}
 };
 var _user$project$App$init = {ctor: '_Tuple2', _0: _user$project$App$initModel, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$App$Coto = function (a) {
+	return {content: a};
+};
 var _user$project$App$Model = F4(
 	function (a, b, c, d) {
 		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d};
@@ -9392,7 +9395,7 @@ var _user$project$App$view = function (model) {
 															_0: _elm_lang$html$Html_Attributes$class('content'),
 															_1: {ctor: '[]'}
 														},
-														coto),
+														coto.content),
 													_1: {ctor: '[]'}
 												});
 										},
@@ -9579,7 +9582,11 @@ var _user$project$App$post = function (model) {
 		_elm_lang$core$Native_Utils.update(
 			model,
 			{
-				cotos: {ctor: '::', _0: model.newCoto, _1: model.cotos},
+				cotos: {
+					ctor: '::',
+					_0: _user$project$App$Coto(model.newCoto),
+					_1: model.cotos
+				},
 				newCoto: ''
 			}),
 		{
