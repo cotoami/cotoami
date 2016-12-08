@@ -11,6 +11,7 @@ import Json.Decode as Json
 import String
 import Markdown
 import Keys exposing (ctrl, meta, enter)
+import Http
 
 
 main : Program Never Model Msg
@@ -50,7 +51,7 @@ initModel =
 
 init : ( Model, Cmd Msg )
 init =
-    ( initModel, Cmd.none )
+    ( initModel, fetchCotos )
 
 
 
@@ -59,6 +60,7 @@ init =
 
 type Msg
     = NoOp
+    | Cotos (Result Http.Error (List Coto))
     | KeyDown KeyCode
     | KeyUp KeyCode
     | FocusInput
@@ -73,6 +75,12 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
+            
+        Cotos (Ok cotos) ->
+            ( { model | cotos = cotos }, Cmd.none )
+            
+        Cotos (Err _) ->
+            ( model, Cmd.none )
 
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
@@ -120,6 +128,16 @@ handleScrollResult result =
         Err _ ->
             NoOp
 
+
+fetchCotos : Cmd Msg
+fetchCotos =
+  Http.send Cotos (Http.get "/api/cotos" (Json.list decodeCoto))
+
+
+decodeCoto : Json.Decoder Coto
+decodeCoto =
+    Json.map Coto
+        (Json.field "content" Json.string)
 
 
 -- SUBSCRIPTIONS

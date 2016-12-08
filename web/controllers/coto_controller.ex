@@ -7,11 +7,12 @@ defmodule Cotoami.CotoController do
   end
   
   def index(conn, _params, anonymous_id) do
-    json conn, %{cotos: []}
+    Logger.info "fetching cotos by #{anonymous_id} ..."
+    json conn, [%{content: "Hello"}]
   end
 
   def create(conn, %{"coto" => coto_params}, anonymous_id) do
-    Logger.info "coto: #{inspect coto_params}"
+    Logger.info "creating coto #{inspect coto_params} by #{anonymous_id} ..."
     json conn, %{coto: coto_params}
   end
 end
