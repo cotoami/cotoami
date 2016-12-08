@@ -9634,6 +9634,27 @@ var _user$project$App$onKeyDown = function (tagger) {
 var _user$project$App$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
 };
+var _user$project$App$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'content',
+							_1: _elm_lang$core$Json_Encode$string(coto.content)
+						},
+						_1: {ctor: '[]'}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$App$initModel = {
 	ctrlDown: false,
 	editingNewCoto: false,
@@ -9651,6 +9672,20 @@ var _user$project$App$Model = F4(
 	function (a, b, c, d) {
 		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d};
 	});
+var _user$project$App$CotoPosted = function (a) {
+	return {ctor: 'CotoPosted', _0: a};
+};
+var _user$project$App$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$App$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$App$encodeCoto(coto)),
+			_user$project$App$decodeCoto));
+};
 var _user$project$App$KeyDownInInput = function (a) {
 	return {ctor: 'KeyDownInInput', _0: a};
 };
@@ -9970,7 +10005,12 @@ var _user$project$App$post = function (model) {
 				_elm_lang$core$Task$attempt,
 				_user$project$App$handleScrollResult,
 				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _user$project$App$postCoto(
+					_user$project$App$Coto(model.newCoto)),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$App$update = F2(
@@ -10038,8 +10078,14 @@ var _user$project$App$update = F2(
 				};
 			case 'Post':
 				return _user$project$App$post(model);
-			default:
+			case 'KeyDownInInput':
 				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
 var _user$project$App$main = _elm_lang$html$Html$program(

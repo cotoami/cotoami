@@ -7,7 +7,8 @@ import Keyboard exposing (..)
 import Dom
 import Dom.Scroll
 import Task
-import Json.Decode as Json
+import Json.Decode as Decode
+import Json.Encode as Encode
 import String
 import Markdown
 import Keys exposing (ctrl, meta, enter)
@@ -68,6 +69,7 @@ type Msg
     | InputText String
     | Post
     | KeyDownInInput KeyCode
+    | CotoPosted (Result Http.Error Coto)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -111,12 +113,20 @@ update msg model =
                 post model
             else
                 ( model, Cmd.none )
+                
+        CotoPosted (Ok coto) ->
+            ( model, Cmd.none )
+          
+        CotoPosted (Err _) ->
+            ( model, Cmd.none )
 
 
 post : Model -> ( Model, Cmd Msg )
 post model =
     { model | cotos = (Coto model.newCoto) :: model.cotos, newCoto = "" }
-        ! [ Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") ]
+        ! [ Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") 
+          , postCoto (Coto model.newCoto)
+          ]
 
 
 handleScrollResult : Result Dom.Error () -> Msg
@@ -131,13 +141,26 @@ handleScrollResult result =
 
 fetchCotos : Cmd Msg
 fetchCotos =
-  Http.send Cotos (Http.get "/api/cotos" (Json.list decodeCoto))
+    Http.send Cotos (Http.get "/api/cotos" (Decode.list decodeCoto))
+  
+
+postCoto : Coto -> Cmd Msg
+postCoto coto =
+    Http.send CotoPosted (Http.post "/api/cotos" (Http.jsonBody (encodeCoto coto)) decodeCoto)
 
 
-decodeCoto : Json.Decoder Coto
+decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Json.map Coto
-        (Json.field "content" Json.string)
+    Decode.map Coto
+        (Decode.field "content" Decode.string)
+
+
+encodeCoto : Coto -> Encode.Value
+encodeCoto coto =
+    Encode.object [("coto", 
+      (Encode.object [("content", Encode.string coto.content)])
+    )]
+    
 
 
 -- SUBSCRIPTIONS
@@ -206,4 +229,4 @@ timelineClass model =
 
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
-    on "keydown" (Json.map tagger keyCode)
+    on "keydown" (Decode.map tagger keyCode)

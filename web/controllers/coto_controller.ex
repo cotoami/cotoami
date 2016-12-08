@@ -13,6 +13,6 @@ defmodule Cotoami.CotoController do
 
   def create(conn, %{"coto" => coto_params}, anonymous_id) do
     Logger.info "creating coto #{inspect coto_params} by #{anonymous_id} ..."
-    json conn, %{coto: coto_params}
+    json conn, coto_params
   end
 end
