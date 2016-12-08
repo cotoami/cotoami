@@ -12,6 +12,7 @@ defmodule Cotoami.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
     plug Cotoami.Auth
   end
 
@@ -21,8 +22,9 @@ defmodule Cotoami.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Cotoami do
-  #   pipe_through :api
-  # end
+  scope "/api", Cotoami do
+    pipe_through :api
+    
+    resources "/posts", PostController, only: [:index, :create]
+  end
 end
