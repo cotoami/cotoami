@@ -189,7 +189,7 @@ view model =
         , div [ id "app-body", class "container" ]
             [ div [ id "timeline-column", class (timelineClass model) ]
                 [ div [ id "timeline" ]
-                    (List.map (\coto -> div [ class "coto" ] [ Markdown.toHtml [ class "content" ] coto.content ]) (List.reverse model.cotos))
+                    (List.map (\coto -> div [ class "coto" ] [ markdown coto.content ]) (List.reverse model.cotos))
                 , div [ id "new-coto" ]
                     [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
                         [ span [ class "user" ]
@@ -217,6 +217,21 @@ view model =
                 ]
             ]
         ]
+
+
+markdown : String -> Html msg
+markdown content =
+    let
+        defaultOptions = Markdown.defaultOptions
+    in
+        Markdown.toHtmlWith 
+            { defaultOptions 
+            | githubFlavored = Just { tables = True, breaks = True }
+            , sanitize = True
+            , smartypants = True
+            } 
+            [ class "content" ] 
+            content
 
 
 timelineClass : Model -> String

@@ -9634,6 +9634,25 @@ var _user$project$App$onKeyDown = function (tagger) {
 var _user$project$App$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
 };
+var _user$project$App$markdown = function (content) {
+	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
+	return A3(
+		_evancz$elm_markdown$Markdown$toHtmlWith,
+		_elm_lang$core$Native_Utils.update(
+			defaultOptions,
+			{
+				githubFlavored: _elm_lang$core$Maybe$Just(
+					{tables: true, breaks: true}),
+				sanitize: true,
+				smartypants: true
+			}),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {ctor: '[]'}
+		},
+		content);
+};
 var _user$project$App$encodeCoto = function (coto) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -9787,14 +9806,7 @@ var _user$project$App$view = function (model) {
 												},
 												{
 													ctor: '::',
-													_0: A2(
-														_evancz$elm_markdown$Markdown$toHtml,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('content'),
-															_1: {ctor: '[]'}
-														},
-														coto.content),
+													_0: _user$project$App$markdown(coto.content),
 													_1: {ctor: '[]'}
 												});
 										},
