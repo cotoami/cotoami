@@ -23,12 +23,25 @@ html, body, #elm-container, #app, #app-body {
     margin: 0 auto;
     text-align: center;
     line-height: 35px;
-    
-    .material-icons {
-      line-height: 35px;
-      font-size: 30px;
-      opacity: 0.26;
-    }
+  }
+  
+  div.user {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 5px;
+    line-height: 35px;
+  }
+  
+  .material-icons {
+    line-height: 35px;
+    font-size: 30px;
+    opacity: 0.26;
+    padding-top: 1px;
+  }
+  
+  a {
+    color: black;
   }
 }
 
