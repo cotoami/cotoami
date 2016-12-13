@@ -23,7 +23,8 @@ deployment:
   release:
     branch: master
     commands:
-      - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .
+      - docker build --rm=false -t cotoami/cotoami:$CIRCLE_SHA1 .:
+          timeout: 1800
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cotoami/cotoami:$CIRCLE_SHA1
       - ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
