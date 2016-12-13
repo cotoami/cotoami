@@ -9790,7 +9790,7 @@ var _user$project$Modal$modalContent = function (config) {
 									_elm_lang$html$Html$button,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button close-modal'),
+										_0: _elm_lang$html$Html_Attributes$class('button'),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
@@ -9808,10 +9808,10 @@ var _user$project$Modal$modalContent = function (config) {
 										_elm_lang$html$Html$button,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('button button-primary close-modal'),
+											_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(config.okMessage),
+												_0: _elm_lang$html$Html_Attributes$disabled(true),
 												_1: {ctor: '[]'}
 											}
 										},
@@ -9939,7 +9939,8 @@ var _user$project$App$initModel = {
 	ctrlDown: false,
 	editingNewCoto: false,
 	newCoto: '',
-	cotos: {ctor: '[]'}
+	cotos: {ctor: '[]'},
+	showSigninModal: false
 };
 var _user$project$App$Coto = function (a) {
 	return {content: a};
@@ -9948,10 +9949,61 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F4(
-	function (a, b, c, d) {
-		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d};
+var _user$project$App$Model = F5(
+	function (a, b, c, d, e) {
+		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e};
 	});
+var _user$project$App$SigninModalOk = {ctor: 'SigninModalOk'};
+var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
+var _user$project$App$signinModalConfig = function (model) {
+	return {
+		closeMessage: _user$project$App$SigninModalClose,
+		okMessage: _user$project$App$SigninModalOk,
+		title: 'Sign in with your email',
+		content: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$p,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Cotoami doesn\'t use passwords. Just enter your email address and we\'ll send you a sign-in (or sign-up) link.'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$type_('email'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			})
+	};
+};
+var _user$project$App$SigninClick = {ctor: 'SigninClick'};
 var _user$project$App$CotoPosted = function (a) {
 	return {ctor: 'CotoPosted', _0: a};
 };
@@ -10036,7 +10088,11 @@ var _user$project$App$view = function (model) {
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninClick),
+												_1: {ctor: '[]'}
+											}
 										}
 									},
 									{
@@ -10260,7 +10316,9 @@ var _user$project$App$view = function (model) {
 					}),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Modal$view(_elm_lang$core$Maybe$Nothing),
+					_0: _user$project$Modal$view(
+						model.showSigninModal ? _elm_lang$core$Maybe$Just(
+							_user$project$App$signinModalConfig(model)) : _elm_lang$core$Maybe$Nothing),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -10398,12 +10456,36 @@ var _user$project$App$update = F2(
 				return _user$project$App$post(model);
 			case 'KeyDownInInput':
 				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			default:
+			case 'CotoPosted':
 				if (_p1._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'SigninClick':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showSigninModal: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninModalClose':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showSigninModal: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showSigninModal: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$App$main = _elm_lang$html$Html$program(

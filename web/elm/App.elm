@@ -2,7 +2,7 @@ module App exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, keyCode, onFocus, onBlur, onInput, onMouseDown)
+import Html.Events exposing (on, onClick, keyCode, onFocus, onBlur, onInput, onMouseDown)
 import Keyboard exposing (..)
 import Dom
 import Dom.Scroll
@@ -38,6 +38,7 @@ type alias Model =
     , editingNewCoto : Bool
     , newCoto : String
     , cotos : List Coto
+    , showSigninModal : Bool
     }
 
 
@@ -47,6 +48,7 @@ initModel =
     , editingNewCoto = False
     , newCoto = ""
     , cotos = []
+    , showSigninModal = False
     }
 
 
@@ -70,6 +72,10 @@ type Msg
     | Post
     | KeyDownInInput KeyCode
     | CotoPosted (Result Http.Error Coto)
+    | SigninClick
+    | SigninModalClose
+    | SigninModalOk
+    
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -119,6 +125,15 @@ update msg model =
           
         CotoPosted (Err _) ->
             ( model, Cmd.none )
+            
+        SigninClick ->
+            ( { model | showSigninModal = True }, Cmd.none )
+            
+        SigninModalClose ->
+            ( { model | showSigninModal = False }, Cmd.none )
+            
+        SigninModalOk ->
+            ( { model | showSigninModal = False }, Cmd.none )
 
 
 post : Model -> ( Model, Cmd Msg )
@@ -186,7 +201,7 @@ view model =
                 [ i [ class "material-icons" ] [ text "home" ]
                 ]
             , div [ class "user" ]
-                [ a [ href "#", title "Sign in" ] 
+                [ a [ href "#", title "Sign in", onClick SigninClick ] 
                     [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
                 ]
             ]
@@ -220,7 +235,12 @@ view model =
                     ]
                 ]
             ]
-        , Modal.view Nothing
+        , Modal.view
+            (if model.showSigninModal then
+                Just (signinModalConfig model)
+             else
+                Nothing
+            )
         ]
 
 
@@ -250,3 +270,16 @@ timelineClass model =
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Decode.map tagger keyCode)
+
+
+signinModalConfig : Model -> Modal.Config Msg
+signinModalConfig model =
+    { closeMessage = SigninModalClose
+    , okMessage = SigninModalOk
+    , title = "Sign in with your email"
+    , content = div [] 
+        [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+        , div []
+            [ input [ type_ "email", class "u-full-width", placeholder "test@example.com" ] [] ]
+        ]
+    }

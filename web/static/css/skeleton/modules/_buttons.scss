@@ -148,9 +148,9 @@ input {
 
 button[disabled],
 button[disabled]:hover {
-  background: #ccc;
-  border-color: #ccc;
-  text-shadow:none;
+  background: #ccc !important;
+  border-color: #ccc !important;
+  text-shadow:none !important;
 }
 
 button span.shortcut-help {

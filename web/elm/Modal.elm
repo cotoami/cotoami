@@ -1,4 +1,4 @@
-module Modal exposing (view)
+module Modal exposing (Config, view)
 
 import Html
 import Html exposing (..)
@@ -37,7 +37,7 @@ modalContent config =
             ]
         , hr [ class "modal-buttons-seperator" ] []
         , div [ class "modal-buttons" ]
-            [ button [ class "button close-modal", onClick config.closeMessage ] [ text "Cancel" ]
-            , button [ class "button button-primary close-modal", onClick config.okMessage ] [ text "OK" ]
+            [ button [ class "button", onClick config.closeMessage ] [ text "Cancel" ]
+            , button [ class "button button-primary", disabled True ] [ text "OK" ]
             ]
         ]
