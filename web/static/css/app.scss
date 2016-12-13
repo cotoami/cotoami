@@ -29,7 +29,7 @@ html, body, #elm-container, #app, #app-body {
     display: inline-block;
     position: absolute;
     top: 0;
-    right: 5px;
+    right: 10px;
     line-height: 35px;
   }
   
@@ -100,6 +100,11 @@ html, body, #elm-container, #app, #app-body {
       .material-icons {
         margin-right: 3px;
         vertical-align: -6px;
+      }
+      
+      &.anonymous {
+        color: black;
+        opacity: 0.26;
       }
     }
     

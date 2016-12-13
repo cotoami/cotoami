@@ -10208,7 +10208,7 @@ var _user$project$App$view = function (model) {
 														_elm_lang$html$Html$span,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('user'),
+															_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
 															_1: {ctor: '[]'}
 														},
 														{

@@ -211,7 +211,7 @@ view model =
                     (List.map (\coto -> div [ class "coto" ] [ markdown coto.content ]) (List.reverse model.cotos))
                 , div [ id "new-coto" ]
                     [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
-                        [ span [ class "user" ]
+                        [ span [ class "user anonymous" ]
                             [ i [ class "material-icons" ] [ text "perm_identity" ]
                             , text "Anonymous"
                             ]
