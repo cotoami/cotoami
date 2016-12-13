@@ -9625,6 +9625,15 @@ var _user$project$Keys$Key = F2(
 		return {keyCode: a, name: b};
 	});
 
+var _user$project$Modal$view = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('modal modal-open'),
+		_1: {ctor: '[]'}
+	},
+	{ctor: '[]'});
+
 var _user$project$App$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -9997,7 +10006,11 @@ var _user$project$App$view = function (model) {
 							}),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _user$project$Modal$view,
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

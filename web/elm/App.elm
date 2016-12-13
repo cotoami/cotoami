@@ -13,7 +13,7 @@ import String
 import Markdown
 import Keys exposing (ctrl, meta, enter)
 import Http
-
+import Modal
 
 main : Program Never Model Msg
 main =
@@ -220,6 +220,7 @@ view model =
                     ]
                 ]
             ]
+        , Modal.view
         ]
 
 
