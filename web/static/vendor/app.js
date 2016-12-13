@@ -9735,7 +9735,18 @@ var _user$project$Modal$modalContent = function (config) {
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('x'),
+							_0: A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{ctor: '[]'}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

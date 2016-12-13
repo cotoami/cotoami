@@ -30,7 +30,9 @@ modalContent : Config msg -> Html msg
 modalContent config =
     div [ class "modal-content" ]
         [ div [ class "modal-close-icon" ]
-            [ a [ href "#", class "close-modal", onClick config.closeMessage ] [ text "x" ] ]
+            [ a [ href "#", class "close-modal", onClick config.closeMessage ] 
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+            ]
         , div [ class "modal-content-inner" ]
             [ h4 [] [ text config.title ]
             , config.content 
