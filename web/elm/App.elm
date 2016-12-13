@@ -115,7 +115,7 @@ update msg model =
             post model
 
         KeyDownInInput key ->
-            if key == enter.keyCode && model.ctrlDown then
+            if key == enter.keyCode && model.ctrlDown && (not (isBlank model.newCoto)) then
                 post model
             else
                 ( model, Cmd.none )
@@ -134,6 +134,11 @@ update msg model =
             
         SigninModalOk ->
             ( { model | showSigninModal = False }, Cmd.none )
+
+
+isBlank : String -> Bool
+isBlank string =
+    String.trim string |> String.isEmpty
 
 
 post : Model -> ( Model, Cmd Msg )
@@ -216,7 +221,7 @@ view model =
                             , text "Anonymous"
                             ]
                         , div [ class "tool-buttons" ]
-                            [ button [ class "button-primary", disabled (String.isEmpty model.newCoto), onMouseDown Post ]
+                            [ button [ class "button-primary", disabled (isBlank model.newCoto), onMouseDown Post ]
                                 [ text "Post"
                                 , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
                                 ]

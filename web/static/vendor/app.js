@@ -9946,6 +9946,10 @@ var _user$project$App$encodeCoto = function (coto) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$App$isBlank = function (string) {
+	return _elm_lang$core$String$isEmpty(
+		_elm_lang$core$String$trim(string));
+};
 var _user$project$App$initModel = {
 	ctrlDown: false,
 	editingNewCoto: false,
@@ -10250,7 +10254,7 @@ var _user$project$App$view = function (model) {
 																		_1: {
 																			ctor: '::',
 																			_0: _elm_lang$html$Html_Attributes$disabled(
-																				_elm_lang$core$String$isEmpty(model.newCoto)),
+																				_user$project$App$isBlank(model.newCoto)),
 																			_1: {
 																				ctor: '::',
 																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
@@ -10466,7 +10470,7 @@ var _user$project$App$update = F2(
 			case 'Post':
 				return _user$project$App$post(model);
 			case 'KeyDownInInput':
-				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && model.ctrlDown) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$App$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'CotoPosted':
 				if (_p1._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
