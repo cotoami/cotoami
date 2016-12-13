@@ -9553,6 +9553,80 @@ var _evancz$elm_markdown$Markdown$Options = F4(
 		return {githubFlavored: a, defaultHighlighting: b, sanitize: c, smartypants: d};
 	});
 
+var _krisajenkins$elm_exts$Exts_Maybe$oneOf = A2(
+	_elm_lang$core$List$foldl,
+	F2(
+		function (x, acc) {
+			return (!_elm_lang$core$Native_Utils.eq(acc, _elm_lang$core$Maybe$Nothing)) ? acc : x;
+		}),
+	_elm_lang$core$Maybe$Nothing);
+var _krisajenkins$elm_exts$Exts_Maybe$when = F2(
+	function (test, value) {
+		return test ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$validate = F2(
+	function (predicate, value) {
+		return predicate(value) ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$matches = function (predicate) {
+	return _elm_lang$core$Maybe$andThen(
+		_krisajenkins$elm_exts$Exts_Maybe$validate(predicate));
+};
+var _krisajenkins$elm_exts$Exts_Maybe$maybeDefault = F2(
+	function ($default, x) {
+		var _p0 = x;
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p0._0);
+		} else {
+			return _elm_lang$core$Maybe$Just($default);
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$join = F3(
+	function (f, left, right) {
+		var _p1 = {ctor: '_Tuple2', _0: left, _1: right};
+		if (((_p1.ctor === '_Tuple2') && (_p1._0.ctor === 'Just')) && (_p1._1.ctor === 'Just')) {
+			return _elm_lang$core$Maybe$Just(
+				A2(f, _p1._0._0, _p1._1._0));
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$catMaybes = _elm_lang$core$List$filterMap(_elm_lang$core$Basics$identity);
+var _krisajenkins$elm_exts$Exts_Maybe$mappend = F2(
+	function (a, b) {
+		var _p2 = {ctor: '_Tuple2', _0: a, _1: b};
+		if (_p2._0.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			if (_p2._1.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._1._0});
+			}
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$maybe = F2(
+	function ($default, f) {
+		return function (_p3) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				$default,
+				A2(_elm_lang$core$Maybe$map, f, _p3));
+		};
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$isJust = function (x) {
+	var _p4 = x;
+	if (_p4.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
+	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
+};
+
 var _user$project$Keys$zero = {keyCode: 58, name: '0'};
 var _user$project$Keys$nine = {keyCode: 57, name: '9'};
 var _user$project$Keys$eight = {keyCode: 56, name: '8'};
@@ -9625,176 +9699,191 @@ var _user$project$Keys$Key = F2(
 		return {keyCode: a, name: b};
 	});
 
-var _user$project$Modal$view = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('modal modal-open'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('modal-inner'),
-				_1: {ctor: '[]'}
-			},
-			{
+var _user$project$Modal$modalContent = function (config) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('modal-close-icon'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('#'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('close-modal'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('x'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+						_0: _elm_lang$html$Html_Attributes$class('modal-content-inner'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: A2(
+							_elm_lang$html$Html$h4,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(config.title),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: config.content,
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$hr,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('modal-buttons-seperator'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('modal-close-icon'),
+								_0: _elm_lang$html$Html_Attributes$class('modal-buttons'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$a,
+									_elm_lang$html$Html$button,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href('#'),
+										_0: _elm_lang$html$Html_Attributes$class('button close-modal'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('close-modal'),
+											_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('x'),
+										_0: _elm_lang$html$Html$text('Cancel'),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('modal-content-inner'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$h4,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Sign in with your email'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$p,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Cotoami doesn\'t use passwords. Just enter your email address and we\'ll send you a sign-in (or sign-up) link.'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$div,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$input,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$type_('email'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
-																	_1: {ctor: '[]'}
-																}
-															}
-														},
-														{ctor: '[]'}),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$hr,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('modal-buttons-seperator'),
-										_1: {ctor: '[]'}
-									},
-									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$div,
+										_elm_lang$html$Html$button,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('modal-buttons'),
-											_1: {ctor: '[]'}
+											_0: _elm_lang$html$Html_Attributes$class('button button-primary close-modal'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(config.okMessage),
+												_1: {ctor: '[]'}
+											}
 										},
 										{
 											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$button,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('button close-modal'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Cancel'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$button,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('button button-primary close-modal'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('OK'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$html$Html$text('OK'),
+											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
 								}
-							}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Modal$view = function (maybeConfig) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'modal', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'modal-open',
+							_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeConfig)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('modal-inner'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: function () {
+						var _p0 = maybeConfig;
+						if (_p0.ctor === 'Nothing') {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+									_1: {ctor: '[]'}
+								},
+								{ctor: '[]'});
+						} else {
+							return _user$project$Modal$modalContent(_p0._0);
 						}
-					}),
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
+					}(),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Modal$Config = F4(
+	function (a, b, c, d) {
+		return {closeMessage: a, okMessage: b, title: c, content: d};
 	});
 
 var _user$project$App$onKeyDown = function (tagger) {
@@ -10171,7 +10260,7 @@ var _user$project$App$view = function (model) {
 					}),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Modal$view,
+					_0: _user$project$Modal$view(_elm_lang$core$Maybe$Nothing),
 					_1: {ctor: '[]'}
 				}
 			}

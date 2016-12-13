@@ -220,7 +220,7 @@ view model =
                     ]
                 ]
             ]
-        , Modal.view
+        , Modal.view Nothing
         ]
 
 
