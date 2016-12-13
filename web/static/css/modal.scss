@@ -36,6 +36,10 @@
       .modal-close-icon {
         position: absolute;
         right: 1.5em;
+        
+        a {
+          text-decoration: none;
+        }
       }      
       
       .modal-content-inner {

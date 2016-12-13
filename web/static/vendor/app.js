@@ -9695,7 +9695,7 @@ var _user$project$Modal$view = A2(
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('This is the heading'),
+											_0: _elm_lang$html$Html$text('Sign in with your email'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -9705,10 +9705,36 @@ var _user$project$Modal$view = A2(
 											{ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Donec volutpat nisi nisl, sit amet facilisis enim lobortis sed.'),
+												_0: _elm_lang$html$Html$text('Cotoami doesn\'t use passwords. Just enter your email address and we\'ll send you a sign-in (or sign-up) link.'),
 												_1: {ctor: '[]'}
 											}),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$input,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$type_('email'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
+																	_1: {ctor: '[]'}
+																}
+															}
+														},
+														{ctor: '[]'}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}),
 							_1: {
