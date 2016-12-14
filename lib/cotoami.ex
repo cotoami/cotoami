@@ -1,5 +1,6 @@
 defmodule Cotoami do
   use Application
+  require Prometheus.Registry
 
   def start(_type, _args) do
     import Supervisor.Spec

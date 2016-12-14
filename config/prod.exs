@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :cotoami, Cotoami.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
+  url: [host: "cotoa.me", port: 80],
   cache_static_manifest: "priv/static/manifest.json"
 
 # Do not print debug messages in production
@@ -23,8 +23,8 @@ config :logger, level: :info
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
   loggers: [Cotoami.Repo.Instrumenter],
-  username: "postgres",
-  password: "postgres",
-  database: "cotoami_dev",
-  hostname: "localhost",
-  pool_size: 10
+  username: System.get_env("COTOAMI_REPO_USER"),
+  password: System.get_env("COTOAMI_REPO_PASSWORD"),
+  database: System.get_env("COTOAMI_REPO_DATABASE"),
+  hostname: System.get_env("COTOAMI_REPO_HOST"),
+  pool_size: 5
