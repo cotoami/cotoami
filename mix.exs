@@ -57,7 +57,12 @@ defmodule Cotoami.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:redix, "~> 0.4"}
+      {:redix, "~> 0.4"},
+      {:prometheus_ex, "~> 1.0"},
+      {:prometheus_ecto, "~> 1.0"},
+      {:prometheus_phoenix, "~> 1.0"},
+      {:prometheus_plugs, "~> 1.0"},
+      {:prometheus_process_collector, "~> 1.0"}
     ]
   end
 

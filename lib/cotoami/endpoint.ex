@@ -38,5 +38,9 @@ defmodule Cotoami.Endpoint do
     key: "_cotoami_key",
     signing_salt: "oY7grqxI"
 
+  # Prometheus
+  plug Cotoami.PrometheusExporter   # makes the /metrics URL happen
+  plug Cotoami.Endpoint.PipelineInstrumenter   # measures pipeline exec times  
+
   plug Cotoami.Router
 end

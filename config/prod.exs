@@ -22,6 +22,7 @@ config :logger, level: :info
 # Configure your database
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
+  loggers: [Cotoami.Repo.Instrumenter],
   username: "postgres",
   password: "postgres",
   database: "cotoami_dev",

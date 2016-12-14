@@ -36,6 +36,7 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
+  loggers: [Cotoami.Repo.Instrumenter, Ecto.LogEntry],
   username: "postgres",
   password: "postgres",
   database: "cotoami_dev",
