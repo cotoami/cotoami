@@ -3,7 +3,7 @@ FROM ubuntu:trusty
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -q
-RUN apt-get -y install language-pack-ja openssl libssl-dev ncurses-dev curl git
+RUN apt-get -y install build-essential language-pack-ja openssl libssl-dev ncurses-dev curl git
 
 # Locale
 RUN update-locale LANG=ja_JP.UTF-8
