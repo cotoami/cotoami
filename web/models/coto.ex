@@ -8,6 +8,7 @@ defmodule Cotoami.Coto do
   schema "cotos" do
     field :content, :string
     belongs_to :amishi, Cotoami.Amishi
+    has_one :cotonoma, Cotoami.Cotonoma
 
     timestamps()
   end
