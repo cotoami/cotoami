@@ -1,3 +1,3 @@
 ExUnit.start
 
-# Ecto.Adapters.SQL.Sandbox.mode(Cotoami.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Cotoami.Repo, :manual)
