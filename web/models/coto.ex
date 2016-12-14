@@ -1,6 +1,6 @@
 defmodule Cotoami.Coto do
   @moduledoc """
-  コト (Coto) is a post by an Amishi
+  コト (Coto) is a post by an Amishi.
   """
   
   use Cotoami.Web, :model

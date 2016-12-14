@@ -1,6 +1,6 @@
 defmodule Cotoami.Amishi do
   @moduledoc """
-  編み師 (Amishi) is a person who weaves cotos into networks.
+  編み師 (Amishi) is a person who weaves Cotos into networks.
   """
 
   use Cotoami.Web, :model
