@@ -10,6 +10,7 @@ defmodule Cotoami.Cotonoma do
     field :name, :string
     belongs_to :coto, Cotoami.Coto
     belongs_to :owner, Cotoami.Owner
+    has_many :cotos, Cotoami.Coto
 
     timestamps()
   end
