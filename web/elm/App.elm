@@ -39,6 +39,7 @@ type alias Model =
     , newCoto : String
     , cotos : List Coto
     , showSigninModal : Bool
+    , signinEmail : String
     }
 
 
@@ -49,6 +50,7 @@ initModel =
     , newCoto = ""
     , cotos = []
     , showSigninModal = False
+    , signinEmail = ""
     }
 
 
@@ -66,11 +68,11 @@ type Msg
     | Cotos (Result Http.Error (List Coto))
     | KeyDown KeyCode
     | KeyUp KeyCode
-    | FocusInput
-    | BlurInput
-    | InputText String
+    | EditorFocus
+    | EditorBlur
+    | EditorInput String
     | Post
-    | KeyDownInInput KeyCode
+    | EditorKeyDown KeyCode
     | CotoPosted (Result Http.Error Coto)
     | SigninClick
     | SigninModalClose
@@ -102,19 +104,19 @@ update msg model =
             else
                 ( model, Cmd.none )
 
-        FocusInput ->
+        EditorFocus ->
             ( { model | editingNewCoto = True }, Cmd.none )
 
-        BlurInput ->
+        EditorBlur ->
             ( { model | editingNewCoto = False }, Cmd.none )
 
-        InputText content ->
+        EditorInput content ->
             ( { model | newCoto = content }, Cmd.none )
 
         Post ->
             post model
 
-        KeyDownInInput key ->
+        EditorKeyDown key ->
             if key == enter.keyCode && model.ctrlDown && (not (isBlank model.newCoto)) then
                 post model
             else
@@ -231,10 +233,10 @@ view model =
                         [ class "coto"
                         , placeholder "Write your idea in Markdown"
                         , value model.newCoto
-                        , onFocus FocusInput
-                        , onBlur BlurInput
-                        , onInput InputText
-                        , onKeyDown KeyDownInInput
+                        , onFocus EditorFocus
+                        , onBlur EditorBlur
+                        , onInput EditorInput
+                        , onKeyDown EditorKeyDown
                         ]
                         []
                     ]

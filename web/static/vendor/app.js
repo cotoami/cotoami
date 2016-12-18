@@ -9955,7 +9955,8 @@ var _user$project$App$initModel = {
 	editingNewCoto: false,
 	newCoto: '',
 	cotos: {ctor: '[]'},
-	showSigninModal: false
+	showSigninModal: false,
+	signinEmail: ''
 };
 var _user$project$App$Coto = function (a) {
 	return {content: a};
@@ -9964,9 +9965,9 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F5(
-	function (a, b, c, d, e) {
-		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e};
+var _user$project$App$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f};
 	});
 var _user$project$App$SigninModalOk = {ctor: 'SigninModalOk'};
 var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
@@ -10033,15 +10034,15 @@ var _user$project$App$postCoto = function (coto) {
 				_user$project$App$encodeCoto(coto)),
 			_user$project$App$decodeCoto));
 };
-var _user$project$App$KeyDownInInput = function (a) {
-	return {ctor: 'KeyDownInInput', _0: a};
+var _user$project$App$EditorKeyDown = function (a) {
+	return {ctor: 'EditorKeyDown', _0: a};
 };
 var _user$project$App$Post = {ctor: 'Post'};
-var _user$project$App$InputText = function (a) {
-	return {ctor: 'InputText', _0: a};
+var _user$project$App$EditorInput = function (a) {
+	return {ctor: 'EditorInput', _0: a};
 };
-var _user$project$App$BlurInput = {ctor: 'BlurInput'};
-var _user$project$App$FocusInput = {ctor: 'FocusInput'};
+var _user$project$App$EditorBlur = {ctor: 'EditorBlur'};
+var _user$project$App$EditorFocus = {ctor: 'EditorFocus'};
 var _user$project$App$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10302,16 +10303,16 @@ var _user$project$App$view = function (model) {
 																_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$FocusInput),
+																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$EditorFocus),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$BlurInput),
+																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$EditorBlur),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$InputText),
+																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$EditorInput),
 																			_1: {
 																				ctor: '::',
-																				_0: _user$project$App$onKeyDown(_user$project$App$KeyDownInInput),
+																				_0: _user$project$App$onKeyDown(_user$project$App$EditorKeyDown),
 																				_1: {ctor: '[]'}
 																			}
 																		}
@@ -10443,7 +10444,7 @@ var _user$project$App$update = F2(
 						{ctrlDown: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'FocusInput':
+			case 'EditorFocus':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10451,7 +10452,7 @@ var _user$project$App$update = F2(
 						{editingNewCoto: true}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'BlurInput':
+			case 'EditorBlur':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10459,7 +10460,7 @@ var _user$project$App$update = F2(
 						{editingNewCoto: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'InputText':
+			case 'EditorInput':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10469,7 +10470,7 @@ var _user$project$App$update = F2(
 				};
 			case 'Post':
 				return _user$project$App$post(model);
-			case 'KeyDownInInput':
+			case 'EditorKeyDown':
 				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$App$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'CotoPosted':
 				if (_p1._0.ctor === 'Ok') {

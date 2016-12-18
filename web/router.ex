@@ -20,11 +20,13 @@ defmodule Cotoami.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/signin/:token/:anonymous_id", SigninController, :signin
   end
 
   scope "/api", Cotoami do
     pipe_through :api
     
     resources "/cotos", CotoController, only: [:index, :create]
+    post "/signin/request", SigninController, :request
   end
 end
