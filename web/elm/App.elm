@@ -71,8 +71,8 @@ type Msg
     | EditorFocus
     | EditorBlur
     | EditorInput String
-    | Post
     | EditorKeyDown KeyCode
+    | Post
     | CotoPosted (Result Http.Error Coto)
     | SigninClick
     | SigninModalClose
@@ -113,14 +113,14 @@ update msg model =
         EditorInput content ->
             ( { model | newCoto = content }, Cmd.none )
 
-        Post ->
-            post model
-
         EditorKeyDown key ->
             if key == enter.keyCode && model.ctrlDown && (not (isBlank model.newCoto)) then
                 post model
             else
                 ( model, Cmd.none )
+                
+        Post ->
+            post model
                 
         CotoPosted (Ok coto) ->
             ( model, Cmd.none )

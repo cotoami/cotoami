@@ -10034,10 +10034,10 @@ var _user$project$App$postCoto = function (coto) {
 				_user$project$App$encodeCoto(coto)),
 			_user$project$App$decodeCoto));
 };
+var _user$project$App$Post = {ctor: 'Post'};
 var _user$project$App$EditorKeyDown = function (a) {
 	return {ctor: 'EditorKeyDown', _0: a};
 };
-var _user$project$App$Post = {ctor: 'Post'};
 var _user$project$App$EditorInput = function (a) {
 	return {ctor: 'EditorInput', _0: a};
 };
@@ -10468,10 +10468,10 @@ var _user$project$App$update = F2(
 						{newCoto: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'Post':
-				return _user$project$App$post(model);
 			case 'EditorKeyDown':
 				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$App$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Post':
+				return _user$project$App$post(model);
 			case 'CotoPosted':
 				if (_p1._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
