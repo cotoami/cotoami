@@ -9987,8 +9987,12 @@ var _user$project$App$signinModalConfig = function (model) {
 											_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$value(model.signinEmail),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
+													_1: {ctor: '[]'}
+												}
 											}
 										}
 									}
@@ -10037,7 +10041,7 @@ var _user$project$App$signinModalConfig = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('OK'),
+						_0: model.signinRequestProcessing ? _elm_lang$html$Html$text('Sending...') : _elm_lang$html$Html$text('OK'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -10553,7 +10557,7 @@ var _user$project$App$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{signinRequestProcessing: false}),
+							{signinEmail: '', signinRequestProcessing: false}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {

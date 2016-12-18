@@ -149,7 +149,7 @@ update msg model =
                 ! [ requestSignin model.signinEmail ]
            
         SigninRequestDone (Ok message) ->
-            ( { model | signinRequestProcessing = False }, Cmd.none )
+            ( { model | signinEmail = "", signinRequestProcessing = False }, Cmd.none )
             
         SigninRequestDone (Err _) ->
             ( { model | signinRequestProcessing = False }, Cmd.none )
@@ -316,6 +316,7 @@ signinModalConfig model =
               [ type_ "email"
               , class "u-full-width"
               , placeholder "test@example.com"
+              , value model.signinEmail
               , onInput SigninEmailInput
               ] 
               [] 
@@ -328,6 +329,6 @@ signinModalConfig model =
           , disabled ((isBlank model.signinEmail) || model.signinRequestProcessing)
           , onClick SigninRequestClick 
           ] 
-          [ text "OK" ]
+          [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
       ]
     }
