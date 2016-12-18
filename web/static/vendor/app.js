@@ -9795,45 +9795,7 @@ var _user$project$Modal$modalContent = function (config) {
 								_0: _elm_lang$html$Html_Attributes$class('modal-buttons'),
 								_1: {ctor: '[]'}
 							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$button,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Cancel'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$button,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$disabled(true),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('OK'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
+							config.buttons),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -9894,7 +9856,7 @@ var _user$project$Modal$view = function (maybeConfig) {
 };
 var _user$project$Modal$Config = F4(
 	function (a, b, c, d) {
-		return {closeMessage: a, okMessage: b, title: c, content: d};
+		return {closeMessage: a, title: b, content: c, buttons: d};
 	});
 
 var _user$project$App$onKeyDown = function (tagger) {
@@ -9977,7 +9939,6 @@ var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
 var _user$project$App$signinModalConfig = function (model) {
 	return {
 		closeMessage: _user$project$App$SigninModalClose,
-		okMessage: _user$project$App$SigninModalOk,
 		title: 'Sign in with your email',
 		content: A2(
 			_elm_lang$html$Html$div,
@@ -10023,7 +9984,46 @@ var _user$project$App$signinModalConfig = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				}
-			})
+			}),
+		buttons: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Cancel'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$disabled(true),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('OK'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		}
 	};
 };
 var _user$project$App$SigninClick = {ctor: 'SigninClick'};

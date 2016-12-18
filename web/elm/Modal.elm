@@ -8,9 +8,9 @@ import Exts.Maybe exposing (maybe, isJust)
 
 type alias Config msg =
     { closeMessage : msg
-    , okMessage : msg
     , title : String
     , content : Html msg
+    , buttons : List (Html msg)
     }
     
     
@@ -38,8 +38,5 @@ modalContent config =
             , config.content 
             ]
         , hr [ class "modal-buttons-seperator" ] []
-        , div [ class "modal-buttons" ]
-            [ button [ class "button", onClick config.closeMessage ] [ text "Cancel" ]
-            , button [ class "button button-primary", disabled True ] [ text "OK" ]
-            ]
+        , div [ class "modal-buttons" ] config.buttons
         ]

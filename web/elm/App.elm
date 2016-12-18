@@ -285,7 +285,6 @@ onKeyDown tagger =
 signinModalConfig : Model -> Modal.Config Msg
 signinModalConfig model =
     { closeMessage = SigninModalClose
-    , okMessage = SigninModalOk
     , title = "Sign in with your email"
     , content = div [] 
         [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
@@ -299,4 +298,8 @@ signinModalConfig model =
               [] 
             ]
         ]
+    , buttons = 
+      [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
+      , button [ class "button button-primary", disabled True ] [ text "OK" ]
+      ]
     }
