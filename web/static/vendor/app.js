@@ -9918,7 +9918,8 @@ var _user$project$App$initModel = {
 	newCoto: '',
 	cotos: {ctor: '[]'},
 	showSigninModal: false,
-	signinEmail: ''
+	signinEmail: '',
+	signinRequestProcessing: false
 };
 var _user$project$App$Coto = function (a) {
 	return {content: a};
@@ -9927,28 +9928,23 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f};
+var _user$project$App$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f, signinRequestProcessing: g};
 	});
-var _user$project$App$SigninEmailPosted = function (a) {
-	return {ctor: 'SigninEmailPosted', _0: a};
+var _user$project$App$SigninRequestDone = function (a) {
+	return {ctor: 'SigninRequestDone', _0: a};
 };
-var _user$project$App$postSigninEmail = function (email) {
+var _user$project$App$requestSignin = function (email) {
 	return A2(
 		_elm_lang$http$Http$send,
-		_user$project$App$SigninEmailPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/signin/request',
-			_elm_lang$http$Http$multipartBody(
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$http$Http$stringPart, 'email', email),
-					_1: {ctor: '[]'}
-				}),
+		_user$project$App$SigninRequestDone,
+		A2(
+			_elm_lang$http$Http$get,
+			A2(_elm_lang$core$Basics_ops['++'], '/api/signin/request/', email),
 			_elm_lang$core$Json_Decode$string));
 };
+var _user$project$App$SigninRequestClick = {ctor: 'SigninRequestClick'};
 var _user$project$App$SigninEmailInput = function (a) {
 	return {ctor: 'SigninEmailInput', _0: a};
 };
@@ -10031,8 +10027,12 @@ var _user$project$App$signinModalConfig = function (model) {
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$disabled(
-								_user$project$App$isBlank(model.signinEmail)),
-							_1: {ctor: '[]'}
+								_user$project$App$isBlank(model.signinEmail) || model.signinRequestProcessing),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninRequestClick),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{
@@ -10536,11 +10536,34 @@ var _user$project$App$update = F2(
 						{signinEmail: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'SigninRequestClick':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{signinRequestProcessing: true}),
+					{
+						ctor: '::',
+						_0: _user$project$App$requestSignin(model.signinEmail),
+						_1: {ctor: '[]'}
+					});
 			default:
 				if (_p1._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{signinRequestProcessing: false}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{signinRequestProcessing: false}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				}
 		}
 	});

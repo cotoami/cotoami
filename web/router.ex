@@ -27,6 +27,6 @@ defmodule Cotoami.Router do
     pipe_through :api
     
     resources "/cotos", CotoController, only: [:index, :create]
-    post "/signin/request", SigninController, :request
+    get "/signin/request/:email", SigninController, :request
   end
 end

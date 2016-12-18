@@ -40,6 +40,7 @@ type alias Model =
     , cotos : List Coto
     , showSigninModal : Bool
     , signinEmail : String
+    , signinRequestProcessing : Bool
     }
 
 
@@ -51,6 +52,7 @@ initModel =
     , cotos = []
     , showSigninModal = False
     , signinEmail = ""
+    , signinRequestProcessing = False
     }
 
 
@@ -78,7 +80,8 @@ type Msg
     | SigninModalClose
     | SigninModalOk
     | SigninEmailInput String
-    | SigninEmailPosted (Result Http.Error String)
+    | SigninRequestClick
+    | SigninRequestDone (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -139,13 +142,17 @@ update msg model =
             ( { model | showSigninModal = False }, Cmd.none )
             
         SigninEmailInput content ->
-           ( { model | signinEmail = content }, Cmd.none )
+            ( { model | signinEmail = content }, Cmd.none )
            
-        SigninEmailPosted (Ok message) ->
-            ( model, Cmd.none )
+        SigninRequestClick ->
+            { model | signinRequestProcessing = True }
+                ! [ requestSignin model.signinEmail ]
+           
+        SigninRequestDone (Ok message) ->
+            ( { model | signinRequestProcessing = False }, Cmd.none )
             
-        SigninEmailPosted (Err _) ->
-            ( model, Cmd.none )
+        SigninRequestDone (Err _) ->
+            ( { model | signinRequestProcessing = False }, Cmd.none )
 
 
 isBlank : String -> Bool
@@ -178,7 +185,9 @@ fetchCotos =
 
 postCoto : Coto -> Cmd Msg
 postCoto coto =
-    Http.send CotoPosted (Http.post "/api/cotos" (Http.jsonBody (encodeCoto coto)) decodeCoto)
+    Http.send 
+        CotoPosted 
+        (Http.post "/api/cotos" (Http.jsonBody (encodeCoto coto)) decodeCoto)
 
 
 decodeCoto : Decode.Decoder Coto
@@ -189,20 +198,17 @@ decodeCoto =
 
 encodeCoto : Coto -> Encode.Value
 encodeCoto coto =
-    Encode.object [("coto", 
-      (Encode.object [("content", Encode.string coto.content)])
-    )]
+    Encode.object 
+        [("coto", 
+            (Encode.object [("content", Encode.string coto.content)])
+         )
+        ]
     
   
-postSigninEmail : String -> Cmd Msg
-postSigninEmail email =
-    Http.send 
-        SigninEmailPosted 
-        (Http.post 
-            "/signin/request"
-             (Http.multipartBody [ Http.stringPart "email" email ]) 
-             Decode.string
-        )
+requestSignin : String -> Cmd Msg
+requestSignin email =
+    Http.send SigninRequestDone (Http.get ("/api/signin/request/" ++ email) Decode.string)
+
 
 
 -- SUBSCRIPTIONS
@@ -317,6 +323,11 @@ signinModalConfig model =
         ]
     , buttons = 
       [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
-      , button [ class "button button-primary", disabled (isBlank model.signinEmail) ] [ text "OK" ]
+      , button 
+          [ class "button button-primary"
+          , disabled ((isBlank model.signinEmail) || model.signinRequestProcessing)
+          , onClick SigninRequestClick 
+          ] 
+          [ text "OK" ]
       ]
     }
