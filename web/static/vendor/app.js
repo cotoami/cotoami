@@ -9919,7 +9919,8 @@ var _user$project$App$initModel = {
 	cotos: {ctor: '[]'},
 	showSigninModal: false,
 	signinEmail: '',
-	signinRequestProcessing: false
+	signinRequestProcessing: false,
+	signinRequestDone: false
 };
 var _user$project$App$Coto = function (a) {
 	return {content: a};
@@ -9928,9 +9929,9 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f, signinRequestProcessing: g};
+var _user$project$App$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f, signinRequestProcessing: g, signinRequestDone: h};
 	});
 var _user$project$App$SigninRequestDone = function (a) {
 	return {ctor: 'SigninRequestDone', _0: a};
@@ -9948,7 +9949,6 @@ var _user$project$App$SigninRequestClick = {ctor: 'SigninRequestClick'};
 var _user$project$App$SigninEmailInput = function (a) {
 	return {ctor: 'SigninEmailInput', _0: a};
 };
-var _user$project$App$SigninModalOk = {ctor: 'SigninModalOk'};
 var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
 var _user$project$App$signinModalConfig = function (model) {
 	return {
@@ -9956,8 +9956,45 @@ var _user$project$App$signinModalConfig = function (model) {
 		title: 'Sign in with your email',
 		content: A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
 			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('signin-modal-content'),
+				_1: {ctor: '[]'}
+			},
+			model.signinRequestDone ? {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('sucess-message'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$strong,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Check your inbox!'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('We just sent you an email with a link to access (or create) your Cotoami account.'),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			} : {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$p,
@@ -10521,15 +10558,7 @@ var _user$project$App$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{showSigninModal: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninModalOk':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{showSigninModal: false}),
+						{showSigninModal: false, signinRequestDone: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninEmailInput':
@@ -10557,7 +10586,7 @@ var _user$project$App$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{signinEmail: '', signinRequestProcessing: false}),
+							{signinEmail: '', signinRequestProcessing: false, signinRequestDone: true}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {

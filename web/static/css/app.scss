@@ -133,3 +133,17 @@ html, body, #elm-container, #app, #app-body {
 .editing #new-coto textarea.coto {
   height: 80px !important;
 }
+
+
+#signin-modal-content {
+  div.sucess-message {
+    margin-bottom: 20px;
+    
+    i {
+      margin-right: 3px;
+    }
+    strong {
+      margin-right: 6px;
+    }
+  }
+}

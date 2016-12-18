@@ -41,6 +41,7 @@ type alias Model =
     , showSigninModal : Bool
     , signinEmail : String
     , signinRequestProcessing : Bool
+    , signinRequestDone : Bool
     }
 
 
@@ -53,6 +54,7 @@ initModel =
     , showSigninModal = False
     , signinEmail = ""
     , signinRequestProcessing = False
+    , signinRequestDone = False
     }
 
 
@@ -78,7 +80,6 @@ type Msg
     | CotoPosted (Result Http.Error Coto)
     | SigninClick
     | SigninModalClose
-    | SigninModalOk
     | SigninEmailInput String
     | SigninRequestClick
     | SigninRequestDone (Result Http.Error String)
@@ -136,10 +137,7 @@ update msg model =
             ( { model | showSigninModal = True }, Cmd.none )
             
         SigninModalClose ->
-            ( { model | showSigninModal = False }, Cmd.none )
-            
-        SigninModalOk ->
-            ( { model | showSigninModal = False }, Cmd.none )
+            ( { model | showSigninModal = False, signinRequestDone = False }, Cmd.none )
             
         SigninEmailInput content ->
             ( { model | signinEmail = content }, Cmd.none )
@@ -149,7 +147,7 @@ update msg model =
                 ! [ requestSignin model.signinEmail ]
            
         SigninRequestDone (Ok message) ->
-            ( { model | signinEmail = "", signinRequestProcessing = False }, Cmd.none )
+            ( { model | signinEmail = "", signinRequestProcessing = False, signinRequestDone = True }, Cmd.none )
             
         SigninRequestDone (Err _) ->
             ( { model | signinRequestProcessing = False }, Cmd.none )
@@ -309,19 +307,29 @@ signinModalConfig : Model -> Modal.Config Msg
 signinModalConfig model =
     { closeMessage = SigninModalClose
     , title = "Sign in with your email"
-    , content = div [] 
-        [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-        , div []
-            [ input 
-              [ type_ "email"
-              , class "u-full-width"
-              , placeholder "test@example.com"
-              , value model.signinEmail
-              , onInput SigninEmailInput
-              ] 
-              [] 
+    , content = div [ id "signin-modal-content" ]
+        (if model.signinRequestDone then
+            [ div [ class "sucess-message" ]
+              [ div [] 
+                [ strong [] [ text "Check your inbox!" ]
+                , text "We just sent you an email with a link to access (or create) your Cotoami account." 
+                ]
+              ]
             ]
-        ]
+        else 
+            [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+            , div []
+              [ input 
+                [ type_ "email"
+                , class "u-full-width"
+                , placeholder "test@example.com"
+                , value model.signinEmail
+                , onInput SigninEmailInput
+                ] 
+                [] 
+              ]
+            ]
+        )
     , buttons = 
       [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
       , button 
