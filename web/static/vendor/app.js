@@ -9969,6 +9969,9 @@ var _user$project$App$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f};
 	});
+var _user$project$App$SigninEmailInput = function (a) {
+	return {ctor: 'SigninEmailInput', _0: a};
+};
 var _user$project$App$SigninModalOk = {ctor: 'SigninModalOk'};
 var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
 var _user$project$App$signinModalConfig = function (model) {
@@ -10007,7 +10010,11 @@ var _user$project$App$signinModalConfig = function (model) {
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
+												_1: {ctor: '[]'}
+											}
 										}
 									}
 								},
@@ -10494,12 +10501,20 @@ var _user$project$App$update = F2(
 						{showSigninModal: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'SigninModalOk':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{showSigninModal: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signinEmail: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}

@@ -77,7 +77,7 @@ type Msg
     | SigninClick
     | SigninModalClose
     | SigninModalOk
-    
+    | SigninEmailInput String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -136,6 +136,9 @@ update msg model =
             
         SigninModalOk ->
             ( { model | showSigninModal = False }, Cmd.none )
+            
+        SigninEmailInput content ->
+           ( { model | signinEmail = content }, Cmd.none )
 
 
 isBlank : String -> Bool
@@ -287,6 +290,13 @@ signinModalConfig model =
     , content = div [] 
         [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
         , div []
-            [ input [ type_ "email", class "u-full-width", placeholder "test@example.com" ] [] ]
+            [ input 
+              [ type_ "email"
+              , class "u-full-width"
+              , placeholder "test@example.com"
+              , onInput SigninEmailInput
+              ] 
+              [] 
+            ]
         ]
     }
