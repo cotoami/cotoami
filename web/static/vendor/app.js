@@ -10012,7 +10012,8 @@ var _user$project$App$signinModalConfig = function (model) {
 						_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$disabled(true),
+							_0: _elm_lang$html$Html_Attributes$disabled(
+								_user$project$App$isBlank(model.signinEmail)),
 							_1: {ctor: '[]'}
 						}
 					},

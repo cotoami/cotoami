@@ -300,6 +300,6 @@ signinModalConfig model =
         ]
     , buttons = 
       [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
-      , button [ class "button button-primary", disabled True ] [ text "OK" ]
+      , button [ class "button button-primary", disabled (isBlank model.signinEmail) ] [ text "OK" ]
       ]
     }
