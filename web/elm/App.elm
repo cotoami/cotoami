@@ -78,6 +78,7 @@ type Msg
     | SigninModalClose
     | SigninModalOk
     | SigninEmailInput String
+    | SigninEmailPosted (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -139,6 +140,12 @@ update msg model =
             
         SigninEmailInput content ->
            ( { model | signinEmail = content }, Cmd.none )
+           
+        SigninEmailPosted (Ok message) ->
+            ( model, Cmd.none )
+            
+        SigninEmailPosted (Err _) ->
+            ( model, Cmd.none )
 
 
 isBlank : String -> Bool
@@ -186,6 +193,16 @@ encodeCoto coto =
       (Encode.object [("content", Encode.string coto.content)])
     )]
     
+  
+postSigninEmail : String -> Cmd Msg
+postSigninEmail email =
+    Http.send 
+        SigninEmailPosted 
+        (Http.post 
+            "/signin/request"
+             (Http.multipartBody [ Http.stringPart "email" email ]) 
+             Decode.string
+        )
 
 
 -- SUBSCRIPTIONS

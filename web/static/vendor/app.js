@@ -9931,6 +9931,24 @@ var _user$project$App$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f};
 	});
+var _user$project$App$SigninEmailPosted = function (a) {
+	return {ctor: 'SigninEmailPosted', _0: a};
+};
+var _user$project$App$postSigninEmail = function (email) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$App$SigninEmailPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/signin/request',
+			_elm_lang$http$Http$multipartBody(
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$stringPart, 'email', email),
+					_1: {ctor: '[]'}
+				}),
+			_elm_lang$core$Json_Decode$string));
+};
 var _user$project$App$SigninEmailInput = function (a) {
 	return {ctor: 'SigninEmailInput', _0: a};
 };
@@ -10510,7 +10528,7 @@ var _user$project$App$update = F2(
 						{showSigninModal: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'SigninEmailInput':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10518,6 +10536,12 @@ var _user$project$App$update = F2(
 						{signinEmail: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
 var _user$project$App$main = _elm_lang$html$Html$program(

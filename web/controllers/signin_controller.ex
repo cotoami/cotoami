@@ -4,7 +4,7 @@ defmodule Cotoami.SigninController do
   
   def request(conn, %{"email" => email}) do
     Logger.info "email: #{email}"
-    json conn, %{}
+    json conn, "ok"
   end
   
   def signin(conn, %{"token" => token, "anonymous_id" => anonymous_id}) do
