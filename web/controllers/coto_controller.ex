@@ -6,8 +6,6 @@ defmodule Cotoami.CotoController do
   def index(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
-        avatar = Cotoami.AmishiService.get_gravatar_profile(amishi.email)
-        Logger.info "avatar: #{inspect avatar}"
         json conn, []
       _ ->
         json conn, RedisService.get_cotos(conn.assigns.anonymous_id)
