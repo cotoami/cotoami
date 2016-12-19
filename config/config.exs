@@ -52,6 +52,9 @@ config :cotoami, Cotoami.Mailer,
   ssl: false, # can be `true`
   retries: 1
     
+config :cotoami, Cotoami.Email,
+  url_prefix: System.get_env("COTOAMI_URL_PREFIX")
+    
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
