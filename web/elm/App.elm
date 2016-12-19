@@ -258,9 +258,14 @@ view model =
                 [ i [ class "material-icons" ] [ text "home" ]
                 ]
             , div [ class "user" ]
-                [ a [ href "#", title "Sign in", onClick SigninClick ] 
-                    [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
-                ]
+                (case model.session of
+                    Nothing -> 
+                        [ a [ href "#", title "Sign in", onClick SigninClick ] 
+                            [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
+                        ]
+                    Just session -> 
+                        [ img [ class "avatar", src session.avatarUrl ] [] ]
+                )
             ]
         , div [ id "app-body", class "container" ]
             [ div [ id "timeline-column", class (timelineClass model) ]
@@ -268,10 +273,18 @@ view model =
                     (List.map (\coto -> div [ class "coto" ] [ markdown coto.content ]) (List.reverse model.cotos))
                 , div [ id "new-coto" ]
                     [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
-                        [ span [ class "user anonymous" ]
-                            [ i [ class "material-icons" ] [ text "perm_identity" ]
-                            , text "Anonymous"
-                            ]
+                        [ (case model.session of
+                              Nothing -> 
+                                  span [ class "user anonymous" ]
+                                      [ i [ class "material-icons" ] [ text "perm_identity" ]
+                                      , text "Anonymous"
+                                      ]
+                              Just session -> 
+                                  span [ class "user" ]
+                                      [ img [ class "avatar", src session.avatarUrl ] []
+                                      , text session.displayName
+                                      ]
+                          )
                         , div [ class "tool-buttons" ]
                             [ button [ class "button-primary", disabled (isBlank model.newCoto), onMouseDown Post ]
                                 [ text "Post"

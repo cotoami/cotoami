@@ -31,6 +31,15 @@ html, body, #elm-container, #app, #app-body {
     top: 0;
     right: 10px;
     line-height: 35px;
+    
+    img.avatar {
+      margin: 0;
+      margin-top: 4px;
+      padding: 0;
+      width: 27px;
+      height: 27px;
+      border-radius: 4px;
+    }
   }
   
   .material-icons {
@@ -105,6 +114,16 @@ html, body, #elm-container, #app, #app-body {
       &.anonymous {
         color: black;
         opacity: 0.26;
+      }
+      
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+        vertical-align: -12px;
+        border-radius: 4px;
       }
     }
     

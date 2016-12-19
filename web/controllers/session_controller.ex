@@ -7,6 +7,7 @@ defmodule Cotoami.SessionController do
     case conn.assigns do
       %{amishi: amishi} ->
         gravatar_profile = AmishiService.get_gravatar_profile(amishi.email)
+        Logger.info "gravatar_profile: #{inspect gravatar_profile}"
         json conn, %{
           id: amishi.id,
           email: amishi.email,

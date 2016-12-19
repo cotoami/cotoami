@@ -10316,41 +10316,63 @@ var _user$project$App$view = function (model) {
 								_0: _elm_lang$html$Html_Attributes$class('user'),
 								_1: {ctor: '[]'}
 							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href('#'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninClick),
-												_1: {ctor: '[]'}
-											}
-										}
-									},
-									{
+							function () {
+								var _p0 = model.session;
+								if (_p0.ctor === 'Nothing') {
+									return {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$i,
+											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$href('#'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$title('Sign in'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninClick),
+														_1: {ctor: '[]'}
+													}
+												}
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('perm_identity'),
+												_0: A2(
+													_elm_lang$html$Html$i,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('perm_identity'),
+														_1: {ctor: '[]'}
+													}),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
+									};
+								} else {
+									return {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('avatar'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
+													_1: {ctor: '[]'}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									};
+								}
+							}()),
 						_1: {ctor: '[]'}
 					}
 				}),
@@ -10431,33 +10453,67 @@ var _user$project$App$view = function (model) {
 												},
 												{
 													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$span,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: A2(
-																_elm_lang$html$Html$i,
+													_0: function () {
+														var _p1 = model.session;
+														if (_p1.ctor === 'Nothing') {
+															return A2(
+																_elm_lang$html$Html$span,
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																	_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
 																	_1: {ctor: '[]'}
 																},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('perm_identity'),
+																	_0: A2(
+																		_elm_lang$html$Html$i,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																			_1: {ctor: '[]'}
+																		},
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text('perm_identity'),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('Anonymous'),
+																		_1: {ctor: '[]'}
+																	}
+																});
+														} else {
+															var _p2 = _p1._0;
+															return A2(
+																_elm_lang$html$Html$span,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('user'),
 																	_1: {ctor: '[]'}
-																}),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Anonymous'),
-																_1: {ctor: '[]'}
-															}
-														}),
+																},
+																{
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$img,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$class('avatar'),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$src(_p2.avatarUrl),
+																				_1: {ctor: '[]'}
+																			}
+																		},
+																		{ctor: '[]'}),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text(_p2.displayName),
+																		_1: {ctor: '[]'}
+																	}
+																});
+														}
+													}(),
 													_1: {
 														ctor: '::',
 														_0: A2(
@@ -10611,8 +10667,8 @@ var _user$project$App$init = A2(
 	});
 var _user$project$App$NoOp = {ctor: 'NoOp'};
 var _user$project$App$handleScrollResult = function (result) {
-	var _p0 = result;
-	if (_p0.ctor === 'Ok') {
+	var _p3 = result;
+	if (_p3.ctor === 'Ok') {
 		return _user$project$App$NoOp;
 	} else {
 		return _user$project$App$NoOp;
@@ -10647,21 +10703,21 @@ var _user$project$App$post = function (model) {
 };
 var _user$project$App$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'SessionFetched':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								session: _elm_lang$core$Maybe$Just(_p1._0._0)
+								session: _elm_lang$core$Maybe$Just(_p4._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10669,20 +10725,20 @@ var _user$project$App$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'CotosFetched':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{cotos: _p1._0._0}),
+							{cotos: _p4._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'KeyDown':
-				var _p2 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
+				var _p5 = _p4._0;
+				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -10690,8 +10746,8 @@ var _user$project$App$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
-				var _p3 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
+				var _p6 = _p4._0;
+				return (_elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -10719,15 +10775,15 @@ var _user$project$App$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newCoto: _p1._0}),
+						{newCoto: _p4._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p4._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
 				return _user$project$App$post(model);
 			case 'CotoPosted':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -10753,7 +10809,7 @@ var _user$project$App$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{signinEmail: _p1._0}),
+						{signinEmail: _p4._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninRequestClick':
@@ -10768,7 +10824,7 @@ var _user$project$App$update = F2(
 						_1: {ctor: '[]'}
 					});
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(

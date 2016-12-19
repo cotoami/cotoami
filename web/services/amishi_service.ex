@@ -20,8 +20,8 @@ defmodule Cotoami.AmishiService do
   end
   
   def get_gravatar_profile(email) do
-    response = HTTPotion.get get_gravatar_url(email) <> ".json", 
-      [headers: ["User-Agent": @gravatar_user_agent]]
+    url = @gravatar_url_prefix <> email_hash(email) <> ".json"
+    response = HTTPotion.get url, [headers: ["User-Agent": @gravatar_user_agent]]
     case response do
       %{status_code: 200, body: body} -> 
         Poison.decode!(body)
@@ -33,7 +33,10 @@ defmodule Cotoami.AmishiService do
   end
   
   def get_gravatar_url(email) do
-    hash = :crypto.hash(:md5, email) |> Base.encode16(case: :lower)
-    @gravatar_url_prefix <> hash
+    @gravatar_url_prefix <> "avatar/" <> email_hash(email)
+  end 
+  
+  defp email_hash(email) do
+    :crypto.hash(:md5, email) |> Base.encode16(case: :lower)
   end
 end
