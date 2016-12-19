@@ -9,11 +9,11 @@ import Dom.Scroll
 import Task
 import Json.Decode as Decode
 import Json.Encode as Encode
-import String
 import Markdown
 import Keys exposing (ctrl, meta, enter)
 import Http
 import Modal
+import Utils exposing (isBlank)
 
 main : Program Never Model Msg
 main =
@@ -151,11 +151,6 @@ update msg model =
             
         SigninRequestDone (Err _) ->
             ( { model | signinRequestProcessing = False }, Cmd.none )
-
-
-isBlank : String -> Bool
-isBlank string =
-    String.trim string |> String.isEmpty
 
 
 post : Model -> ( Model, Cmd Msg )
