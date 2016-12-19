@@ -62,7 +62,9 @@ defmodule Cotoami.Mixfile do
       {:prometheus_ecto, "~> 1.0"},
       {:prometheus_phoenix, "~> 1.0"},
       {:prometheus_plugs, "~> 1.0"},
-      {:prometheus_process_collector, "~> 1.0"}
+      {:prometheus_process_collector, "~> 1.0"},
+      {:bamboo, "~> 0.7"},
+      {:bamboo_smtp, "~> 1.2.1"}
     ]
   end
 

@@ -42,6 +42,16 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
 config :cotoami, Cotoami.RedisService,
   host: System.get_env("COTOAMI_REDIS_HOST")
 
+config :cotoami, Cotoami.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: "email-smtp.us-east-1.amazonaws.com",
+  port: 587,
+  username: System.get_env("COTOAMI_SMTP_USER"),
+  password: System.get_env("COTOAMI_SMTP_PASSWORD"),
+  tls: :if_available, # can be `:always` or `:never`
+  ssl: false, # can be `true`
+  retries: 1
+    
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

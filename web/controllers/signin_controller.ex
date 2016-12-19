@@ -4,7 +4,12 @@ defmodule Cotoami.SigninController do
   
   def request(conn, %{"email" => email}) do
     Logger.info "email: #{email}"
-    :timer.sleep(5000)
+    
+    email
+    |> Cotoami.Email.signin_link
+    |> Cotoami.Mailer.deliver_now
+    
+    :timer.sleep(1000)
     json conn, "ok"
   end
   
