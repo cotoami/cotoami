@@ -26,13 +26,16 @@ defmodule Cotoami.Auth do
   end
   
   defp generate_anonymous_id do
-    "anonymous-" <> 
-      (:crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower))
+    :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
   end
   
   defp assign_anonymous_id(conn, anonymous_id) do
     Logger.info "anonymous_id: #{anonymous_id}"
     Logger.metadata(user_token: anonymous_id)
     assign(conn, :anonymous_id, anonymous_id)
+  end
+  
+  def generate_signin_token do
+    :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
   end
 end
