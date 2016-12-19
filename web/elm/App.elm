@@ -280,9 +280,9 @@ view model =
                                       , text "Anonymous"
                                       ]
                               Just session -> 
-                                  span [ class "user" ]
+                                  span [ class "user session" ]
                                       [ img [ class "avatar", src session.avatarUrl ] []
-                                      , text session.displayName
+                                      , span [ class "name" ] [ text session.displayName ]
                                       ]
                           )
                         , div [ class "tool-buttons" ]

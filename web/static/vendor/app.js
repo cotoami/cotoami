@@ -10489,7 +10489,7 @@ var _user$project$App$view = function (model) {
 																_elm_lang$html$Html$span,
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('user'),
+																	_0: _elm_lang$html$Html_Attributes$class('user session'),
 																	_1: {ctor: '[]'}
 																},
 																{
@@ -10508,7 +10508,18 @@ var _user$project$App$view = function (model) {
 																		{ctor: '[]'}),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html$text(_p2.displayName),
+																		_0: A2(
+																			_elm_lang$html$Html$span,
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$class('name'),
+																				_1: {ctor: '[]'}
+																			},
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html$text(_p2.displayName),
+																				_1: {ctor: '[]'}
+																			}),
 																		_1: {ctor: '[]'}
 																	}
 																});

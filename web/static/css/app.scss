@@ -116,14 +116,16 @@ html, body, #elm-container, #app, #app-body {
         opacity: 0.26;
       }
       
-      img.avatar {
-        margin: 0;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-        margin-right: 8px;
-        vertical-align: -12px;
-        border-radius: 4px;
+      &.session {
+        img.avatar {
+          margin: 0;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          margin-right: 8px;
+          border-radius: 4px;
+          vertical-align: middle;
+        }
       }
     }
     
