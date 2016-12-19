@@ -3,12 +3,9 @@ defmodule Cotoami.SigninController do
   require Logger
   
   def request(conn, %{"email" => email}) do
-    Logger.info "email: #{email}"
-    
     email
     |> Cotoami.Email.signin_link
     |> Cotoami.Mailer.deliver_now
-    
     json conn, "ok"
   end
   
