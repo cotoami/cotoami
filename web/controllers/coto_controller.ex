@@ -13,7 +13,12 @@ defmodule Cotoami.CotoController do
   end
 
   def create(conn, %{"coto" => coto_params}) do
-    RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
-    json conn, coto_params
+    case conn.assigns do
+      %{amishi: amishi} ->
+        json conn, coto_params
+      _ ->
+        RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
+        json conn, coto_params
+    end
   end
 end
