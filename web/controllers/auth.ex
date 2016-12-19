@@ -14,8 +14,9 @@ defmodule Cotoami.Auth do
     cond do
       amishi_id = get_session(conn, @session_key_amishi_id) ->
         conn
-      anonymous_id = get_anonymous_id(conn)
-        conn |> assign_anonymous_id(id) 
+      anonymous_id = get_anonymous_id(conn) ->
+        conn 
+        |> assign_anonymous_id(anonymous_id) 
       true -> 
         new_id = generate_anonymous_id
         conn
