@@ -44,6 +44,7 @@ defmodule Cotoami.RedisService do
   def get_signin_email(token) do
     {:ok, conn} = start()
     email = Redix.command!(conn, ["GET", signin_key(token)])
+    Redix.command!(conn, ["DEL", signin_key(token)])
     stop(conn)
     email
   end
