@@ -9,7 +9,6 @@ defmodule Cotoami.SigninController do
     |> Cotoami.Email.signin_link
     |> Cotoami.Mailer.deliver_now
     
-    :timer.sleep(1000)
     json conn, "ok"
   end
   
