@@ -13,7 +13,7 @@ import Markdown
 import Keys exposing (ctrl, meta, enter)
 import Http
 import Modal
-import Utils exposing (isBlank)
+import Utils exposing (isBlank, validateEmail)
 
 main : Program Never Model Msg
 main =
@@ -329,7 +329,7 @@ signinModalConfig model =
       [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
       , button 
           [ class "button button-primary"
-          , disabled ((isBlank model.signinEmail) || model.signinRequestProcessing)
+          , disabled (not (validateEmail model.signinEmail) || model.signinRequestProcessing)
           , onClick SigninRequestClick 
           ] 
           [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
