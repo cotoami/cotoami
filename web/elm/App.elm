@@ -28,13 +28,22 @@ main =
 
 -- MODEL
 
+type alias Session =
+    { id : Int
+    , email : String
+    , avatarUrl : String
+    , displayName : String
+    }
+
+
 type alias Coto =
     { content : String
     }
 
 
 type alias Model =
-    { ctrlDown : Bool
+    { session : Maybe Session
+    , ctrlDown : Bool
     , editingNewCoto : Bool
     , newCoto : String
     , cotos : List Coto
@@ -47,7 +56,8 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { ctrlDown = False
+    { session = Nothing
+    , ctrlDown = False
     , editingNewCoto = False
     , newCoto = ""
     , cotos = []
@@ -60,7 +70,7 @@ initModel =
 
 init : ( Model, Cmd Msg )
 init =
-    ( initModel, fetchCotos )
+    initModel ! [ fetchSession, fetchCotos ]
 
 
 
@@ -69,7 +79,8 @@ init =
 
 type Msg
     = NoOp
-    | Cotos (Result Http.Error (List Coto))
+    | SessionFetched (Result Http.Error Session)
+    | CotosFetched (Result Http.Error (List Coto))
     | KeyDown KeyCode
     | KeyUp KeyCode
     | EditorFocus
@@ -91,10 +102,16 @@ update msg model =
         NoOp ->
             model ! []
             
-        Cotos (Ok cotos) ->
+        SessionFetched (Ok session) ->
+            ( { model | session = Just session }, Cmd.none )
+            
+        SessionFetched (Err _) ->
+            ( model, Cmd.none )
+            
+        CotosFetched (Ok cotos) ->
             ( { model | cotos = cotos }, Cmd.none )
             
-        Cotos (Err _) ->
+        CotosFetched (Err _) ->
             ( model, Cmd.none )
 
         KeyDown key ->
@@ -171,9 +188,14 @@ handleScrollResult result =
             NoOp
 
 
+fetchSession : Cmd Msg
+fetchSession =
+    Http.send SessionFetched (Http.get "/api/session" decodeSession)
+    
+
 fetchCotos : Cmd Msg
 fetchCotos =
-    Http.send Cotos (Http.get "/api/cotos" (Decode.list decodeCoto))
+    Http.send CotosFetched (Http.get "/api/cotos" (Decode.list decodeCoto))
   
 
 postCoto : Coto -> Cmd Msg
@@ -181,6 +203,15 @@ postCoto coto =
     Http.send 
         CotoPosted 
         (Http.post "/api/cotos" (Http.jsonBody (encodeCoto coto)) decodeCoto)
+
+
+decodeSession : Decode.Decoder Session
+decodeSession =
+    Decode.map4 Session
+        (Decode.field "id" Decode.int)
+        (Decode.field "email" Decode.string)
+        (Decode.field "avatar_url" Decode.string)
+        (Decode.field "display_name" Decode.string)
 
 
 decodeCoto : Decode.Decoder Coto

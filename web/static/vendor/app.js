@@ -10056,6 +10056,7 @@ var _user$project$App$encodeCoto = function (coto) {
 		});
 };
 var _user$project$App$initModel = {
+	session: _elm_lang$core$Maybe$Nothing,
 	ctrlDown: false,
 	editingNewCoto: false,
 	newCoto: '',
@@ -10065,6 +10066,17 @@ var _user$project$App$initModel = {
 	signinRequestProcessing: false,
 	signinRequestDone: false
 };
+var _user$project$App$Session = F4(
+	function (a, b, c, d) {
+		return {id: a, email: b, avatarUrl: c, displayName: d};
+	});
+var _user$project$App$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
 var _user$project$App$Coto = function (a) {
 	return {content: a};
 };
@@ -10072,9 +10084,9 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {ctrlDown: a, editingNewCoto: b, newCoto: c, cotos: d, showSigninModal: e, signinEmail: f, signinRequestProcessing: g, signinRequestDone: h};
+var _user$project$App$Model = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, showSigninModal: f, signinEmail: g, signinRequestProcessing: h, signinRequestDone: i};
 	});
 var _user$project$App$SigninRequestDone = function (a) {
 	return {ctor: 'SigninRequestDone', _0: a};
@@ -10568,17 +10580,35 @@ var _user$project$App$subscriptions = function (model) {
 			}
 		});
 };
-var _user$project$App$Cotos = function (a) {
-	return {ctor: 'Cotos', _0: a};
+var _user$project$App$CotosFetched = function (a) {
+	return {ctor: 'CotosFetched', _0: a};
 };
 var _user$project$App$fetchCotos = A2(
 	_elm_lang$http$Http$send,
-	_user$project$App$Cotos,
+	_user$project$App$CotosFetched,
 	A2(
 		_elm_lang$http$Http$get,
 		'/api/cotos',
 		_elm_lang$core$Json_Decode$list(_user$project$App$decodeCoto)));
-var _user$project$App$init = {ctor: '_Tuple2', _0: _user$project$App$initModel, _1: _user$project$App$fetchCotos};
+var _user$project$App$SessionFetched = function (a) {
+	return {ctor: 'SessionFetched', _0: a};
+};
+var _user$project$App$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App$decodeSession));
+var _user$project$App$init = A2(
+	_elm_lang$core$Platform_Cmd_ops['!'],
+	_user$project$App$initModel,
+	{
+		ctor: '::',
+		_0: _user$project$App$fetchSession,
+		_1: {
+			ctor: '::',
+			_0: _user$project$App$fetchCotos,
+			_1: {ctor: '[]'}
+		}
+	});
 var _user$project$App$NoOp = {ctor: 'NoOp'};
 var _user$project$App$handleScrollResult = function (result) {
 	var _p0 = result;
@@ -10624,7 +10654,21 @@ var _user$project$App$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
-			case 'Cotos':
+			case 'SessionFetched':
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								session: _elm_lang$core$Maybe$Just(_p1._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'CotosFetched':
 				if (_p1._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
