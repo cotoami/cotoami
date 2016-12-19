@@ -1,6 +1,8 @@
 defmodule Cotoami.SigninController do
   use Cotoami.Web, :controller
   require Logger
+  alias Cotoami.RedisService
+  alias Cotoami.AmishiService
   
   def request(conn, %{"email" => email}) do
     token = Cotoami.Auth.generate_signin_token
@@ -12,6 +14,18 @@ defmodule Cotoami.SigninController do
   end
   
   def signin(conn, %{"token" => token, "anonymous_id" => anonymous_id}) do
-    json conn, "ok"
+    case RedisService.get_signin_email(token) do
+      nil ->
+        text conn, "Invalid token"
+      email ->
+        amishi = 
+          case AmishiService.get_amishi_by_email(email) do
+            nil -> AmishiService.create_amishi(email)
+            amishi -> amishi
+          end
+        conn
+        |> Cotoami.Auth.start_session(amishi)
+        |> redirect(to: "/")
+    end
   end
 end

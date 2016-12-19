@@ -41,6 +41,13 @@ defmodule Cotoami.RedisService do
     stop(conn)
   end
   
+  def get_signin_email(token) do
+    {:ok, conn} = start()
+    email = Redix.command!(conn, ["GET", signin_key(token)])
+    stop(conn)
+    email
+  end
+  
   defp host() do
     Application.get_env(:cotoami, __MODULE__, []) 
     |> Keyword.get(:host)
