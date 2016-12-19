@@ -3,11 +3,15 @@ defmodule Cotoami.AmishiService do
   alias Cotoami.Repo
   alias Cotoami.Amishi
   
-  def get_amishi_by_email(email) do
-    Repo.get_by(Amishi, email: email)
+  def get(id) do
+    Amishi |> Repo.get(id)
   end
   
-  def create_amishi(email) do
+  def get_by_email(email) do
+    Amishi |> Repo.get_by(email: email)
+  end
+  
+  def create(email) do
     changeset = Amishi.changeset(%Amishi{}, %{email: email})
     Repo.insert!(changeset)
   end

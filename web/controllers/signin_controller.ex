@@ -9,7 +9,7 @@ defmodule Cotoami.SigninController do
     email
     |> Cotoami.Email.signin_link(token, conn.assigns.anonymous_id)
     |> Cotoami.Mailer.deliver_now
-    Cotoami.RedisService.put_signin_token(token, email)
+    RedisService.put_signin_token(token, email)
     json conn, "ok"
   end
   
@@ -19,8 +19,8 @@ defmodule Cotoami.SigninController do
         text conn, "Invalid token"
       email ->
         amishi = 
-          case AmishiService.get_amishi_by_email(email) do
-            nil -> AmishiService.create_amishi(email)
+          case AmishiService.get_by_email(email) do
+            nil -> AmishiService.create(email)
             amishi -> amishi
           end
         conn
