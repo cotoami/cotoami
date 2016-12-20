@@ -23,6 +23,7 @@ Environment variables:
     * `COTOAMI_REPO_USER` - user name
     * `COTOAMI_REPO_PASSWORD` - password
 * Mail
+    * `COTOAMI_EMAIL_FROM` - email address for "from"
     * `COTOAMI_SMTP_SERVER` - host name of SMTP server
     * `COTOAMI_SMTP_PORT` - port number of SMTP server
     * `COTOAMI_SMTP_USER` - SMTP user name
