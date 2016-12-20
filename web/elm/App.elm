@@ -344,17 +344,18 @@ onKeyDown tagger =
 
 signinModalConfig : Model -> Modal.Config Msg
 signinModalConfig model =
-    { closeMessage = SigninModalClose
-    , title = 
-        (if model.signinRequestDone then
-            "Check your inbox!"
-        else
-            "Sign in with your email"
-        )
-    , content = div [ id "signin-modal-content" ]
-        (if model.signinRequestDone then
+    (if model.signinRequestDone then
+        { closeMessage = SigninModalClose
+        , title = "Check your inbox!"
+        , content = div [ id "signin-modal-content" ]
             [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
-        else 
+        , buttons = 
+            [ button [ class "button", onClick SigninModalClose ] [ text "OK" ] ]
+        }
+    else
+        { closeMessage = SigninModalClose
+        , title = "Sign in with your email"
+        , content = div [ id "signin-modal-content" ]
             [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , div []
               [ input 
@@ -367,11 +368,7 @@ signinModalConfig model =
                 [] 
               ]
             ]
-        )
-    , buttons = 
-        (if model.signinRequestDone then
-            [ button [ class "button", onClick SigninModalClose ] [ text "OK" ] ]
-        else
+        , buttons = 
             [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
             , button 
                 [ class "button button-primary"
@@ -380,5 +377,5 @@ signinModalConfig model =
                 ] 
                 [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
             ]
-        )
-    }
+        }
+    )

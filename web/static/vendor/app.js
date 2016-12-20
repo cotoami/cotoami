@@ -10106,9 +10106,9 @@ var _user$project$App$SigninEmailInput = function (a) {
 };
 var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
 var _user$project$App$signinModalConfig = function (model) {
-	return {
+	return model.signinRequestDone ? {
 		closeMessage: _user$project$App$SigninModalClose,
-		title: model.signinRequestDone ? 'Check your inbox!' : 'Sign in with your email',
+		title: 'Check your inbox!',
 		content: A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10116,7 +10116,7 @@ var _user$project$App$signinModalConfig = function (model) {
 				_0: _elm_lang$html$Html_Attributes$id('signin-modal-content'),
 				_1: {ctor: '[]'}
 			},
-			model.signinRequestDone ? {
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$p,
@@ -10127,7 +10127,38 @@ var _user$project$App$signinModalConfig = function (model) {
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
-			} : {
+			}),
+		buttons: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('OK'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
+	} : {
+		closeMessage: _user$project$App$SigninModalClose,
+		title: 'Sign in with your email',
+		content: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('signin-modal-content'),
+				_1: {ctor: '[]'}
+			},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$p,
@@ -10173,26 +10204,7 @@ var _user$project$App$signinModalConfig = function (model) {
 					_1: {ctor: '[]'}
 				}
 			}),
-		buttons: model.signinRequestDone ? {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('OK'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		} : {
+		buttons: {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$html$Html$button,
