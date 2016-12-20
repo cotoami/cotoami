@@ -15,12 +15,25 @@ Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univ
 
 Environment variables: 
 
-* `COTOAMI_REDIS_HOST` - host name of Redis server
+* Redis
+    * `COTOAMI_REDIS_HOST` - host name of Redis server
+* PostgreSQL
+    * `COTOAMI_REPO_HOST` - host name of PostgreSQL server
+    * `COTOAMI_REPO_DATABASE` - database name
+    * `COTOAMI_REPO_USER` - user name
+    * `COTOAMI_REPO_PASSWORD` - password
+* Mail
+    * `COTOAMI_SMTP_SERVER` - host name of SMTP server
+    * `COTOAMI_SMTP_PORT` - port number of SMTP server
+    * `COTOAMI_SMTP_USER` - SMTP user name
+    * `COTOAMI_SMTP_PASSWORD` - SMTP password
+    * `COTOAMI_URL_PREFIX` - application URL prefix (ex. `http://cotoa.me`)
 
 ## How to run app locally
 
 1. Install dependencies with `mix deps.get`
-2. Install Node.js dependencies with `npm install`
-3. Start Phoenix endpoint with `mix phoenix.server`
+2. Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+3. Install Node.js dependencies with `npm install`
+4. Start Phoenix endpoint with `mix phoenix.server`
 
 Now you can visit `localhost:4000` from your browser.
