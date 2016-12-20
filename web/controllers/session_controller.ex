@@ -17,7 +17,7 @@ defmodule Cotoami.SessionController do
       _ ->
       conn
       |> put_status(:not_found)
-      |> json "No session"
+      |> json("No session")
     end
   end
 end

@@ -44,8 +44,8 @@ config :cotoami, Cotoami.RedisService,
 
 config :cotoami, Cotoami.Mailer,
   adapter: Bamboo.SMTPAdapter,
-  server: "email-smtp.us-east-1.amazonaws.com",
-  port: 587,
+  server: System.get_env("COTOAMI_SMTP_SERVER"),
+  port: System.get_env("COTOAMI_SMTP_PORT") |> String.to_integer,
   username: System.get_env("COTOAMI_SMTP_USER"),
   password: System.get_env("COTOAMI_SMTP_PASSWORD"),
   tls: :if_available, # can be `:always` or `:never`
