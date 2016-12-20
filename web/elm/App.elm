@@ -345,16 +345,15 @@ onKeyDown tagger =
 signinModalConfig : Model -> Modal.Config Msg
 signinModalConfig model =
     { closeMessage = SigninModalClose
-    , title = "Sign in with your email"
+    , title = 
+        (if model.signinRequestDone then
+            "Check your inbox!"
+        else
+            "Sign in with your email"
+        )
     , content = div [ id "signin-modal-content" ]
         (if model.signinRequestDone then
-            [ div [ class "sucess-message" ]
-              [ div [] 
-                [ strong [] [ text "Check your inbox!" ]
-                , text "We just sent you an email with a link to access (or create) your Cotoami account." 
-                ]
-              ]
-            ]
+            [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
         else 
             [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , div []
@@ -370,12 +369,16 @@ signinModalConfig model =
             ]
         )
     , buttons = 
-      [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
-      , button 
-          [ class "button button-primary"
-          , disabled (not (validateEmail model.signinEmail) || model.signinRequestProcessing)
-          , onClick SigninRequestClick 
-          ] 
-          [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
-      ]
+        (if model.signinRequestDone then
+            [ button [ class "button", onClick SigninModalClose ] [ text "OK" ] ]
+        else
+            [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
+            , button 
+                [ class "button button-primary"
+                , disabled (not (validateEmail model.signinEmail) || model.signinRequestProcessing)
+                , onClick SigninRequestClick 
+                ] 
+                [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
+            ]
+        )
     }

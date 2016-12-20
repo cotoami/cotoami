@@ -10108,7 +10108,7 @@ var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
 var _user$project$App$signinModalConfig = function (model) {
 	return {
 		closeMessage: _user$project$App$SigninModalClose,
-		title: 'Sign in with your email',
+		title: model.signinRequestDone ? 'Check your inbox!' : 'Sign in with your email',
 		content: A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10119,33 +10119,11 @@ var _user$project$App$signinModalConfig = function (model) {
 			model.signinRequestDone ? {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
+					_elm_lang$html$Html$p,
+					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('sucess-message'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$strong,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Check your inbox!'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('We just sent you an email with a link to access (or create) your Cotoami account.'),
-									_1: {ctor: '[]'}
-								}
-							}),
+						_0: _elm_lang$html$Html$text('We just sent you an email with a link to access (or create) your Cotoami account.'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -10195,7 +10173,26 @@ var _user$project$App$signinModalConfig = function (model) {
 					_1: {ctor: '[]'}
 				}
 			}),
-		buttons: {
+		buttons: model.signinRequestDone ? {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('OK'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		} : {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$html$Html$button,
