@@ -12,7 +12,7 @@ defmodule Cotoami.SessionController do
           id: amishi.id,
           email: amishi.email,
           avatar_url: AmishiService.get_gravatar_url(amishi.email),
-          display_name: Map.get(gravatar_profile, "displayName")
+          display_name: Map.get(gravatar_profile, "displayName", amishi.email)
         }
       _ ->
       conn

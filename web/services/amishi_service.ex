@@ -28,7 +28,7 @@ defmodule Cotoami.AmishiService do
         |> Map.get("entry")
         |> List.first
       _ -> 
-        nil
+        %{}
     end
   end
   
