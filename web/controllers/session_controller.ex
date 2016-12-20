@@ -15,9 +15,9 @@ defmodule Cotoami.SessionController do
           display_name: Map.get(gravatar_profile, "displayName", amishi.email)
         }
       _ ->
-      conn
-      |> put_status(:not_found)
-      |> json("No session")
+        conn
+        |> put_status(:not_found)
+        |> json("No session")
     end
   end
 end
