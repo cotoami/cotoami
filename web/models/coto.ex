@@ -17,7 +17,7 @@ defmodule Cotoami.Coto do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:content])
-    |> validate_required([:content])
+    |> cast(params, [:posted_in_id, :amishi_id, :content, :as_cotonoma])
+    |> validate_required([:posted_in_id, :amishi_id, :content])
   end
 end
