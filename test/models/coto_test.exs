@@ -3,7 +3,7 @@ defmodule Cotoami.CotoTest do
 
   alias Cotoami.Coto
 
-  @valid_attrs %{content: "some content"}
+  @valid_attrs %{posted_in_id: 1, amishi_id: 1, content: "some content"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
