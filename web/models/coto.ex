@@ -20,4 +20,10 @@ defmodule Cotoami.Coto do
     |> cast(params, [:posted_in_id, :amishi_id, :content, :as_cotonoma])
     |> validate_required([:posted_in_id, :amishi_id, :content])
   end
+  
+  def in_cotonoma(cotonoma_id) do
+    from c in __MODULE__,
+      where: c.posted_in_id == ^cotonoma_id,
+      order_by: [desc: c.inserted_at]
+  end
 end
