@@ -1,6 +1,8 @@
 defmodule Cotoami.SigninController do
   use Cotoami.Web, :controller
   require Logger
+  alias Cotoami.Repo
+  alias Cotoami.Cotonoma
   alias Cotoami.RedisService
   alias Cotoami.AmishiService
   
@@ -18,11 +20,14 @@ defmodule Cotoami.SigninController do
       nil ->
         text conn, "Invalid token"
       email ->
-        amishi = 
+        {amishi, cotonoma} = 
           case AmishiService.get_by_email(email) do
-            nil -> AmishiService.create(email)
-            amishi -> amishi
+            nil -> 
+              AmishiService.create!(email)
+            amishi -> 
+              {amishi, Cotonoma.query_home(amishi.id) |> Repo.one!}
           end
+        Logger.info "Home cotonoma: #{inspect cotonoma}"
         conn
         |> Cotoami.Auth.start_session(amishi)
         |> redirect(to: "/")
