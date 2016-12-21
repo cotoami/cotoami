@@ -21,10 +21,10 @@ defmodule Cotoami.AmishiService do
         amishi =
           Amishi.changeset(%Amishi{}, %{email: email})
           |> Repo.insert!
-        cotonoma =
+        home_cotonoma =
           Cotonoma.changeset_new(%Cotonoma{}, %{owner_id: amishi.id})
           |> Repo.insert!
-        {amishi, cotonoma}
+        {amishi, home_cotonoma}
       end)
     created_records
   end
