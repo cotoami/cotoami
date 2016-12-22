@@ -358,15 +358,22 @@ signinModalConfig model =
         , content = div [ id "signin-modal-content" ]
             [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , div []
-              [ input 
-                [ type_ "email"
-                , class "u-full-width"
-                , placeholder "test@example.com"
-                , value model.signinEmail
-                , onInput SigninEmailInput
-                ] 
-                [] 
-              ]
+                [ input 
+                  [ type_ "email"
+                  , class "u-full-width"
+                  , placeholder "test@example.com"
+                  , value model.signinEmail
+                  , onInput SigninEmailInput
+                  ] 
+                  [] 
+                ]
+            , div []
+                [ label [] 
+                    [ input [ type_ "checkbox" ] []
+                    , span [ class "label-body" ] 
+                        [ text "Save the anonymous cotos (posts) into your account" ]
+                    ]
+                ]
             ]
         , buttons = 
             [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
