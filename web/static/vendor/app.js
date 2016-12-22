@@ -10063,6 +10063,7 @@ var _user$project$App$initModel = {
 	cotos: {ctor: '[]'},
 	showSigninModal: false,
 	signinEmail: '',
+	signinWithAnonymousCotos: false,
 	signinRequestProcessing: false,
 	signinRequestDone: false
 };
@@ -10084,10 +10085,27 @@ var _user$project$App$decodeCoto = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$App$Coto,
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, showSigninModal: f, signinEmail: g, signinRequestProcessing: h, signinRequestDone: i};
-	});
+var _user$project$App$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, showSigninModal: f, signinEmail: g, signinWithAnonymousCotos: h, signinRequestProcessing: i, signinRequestDone: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var _user$project$App$SigninRequestDone = function (a) {
 	return {ctor: 'SigninRequestDone', _0: a};
 };
@@ -10101,6 +10119,9 @@ var _user$project$App$requestSignin = function (email) {
 			_elm_lang$core$Json_Decode$string));
 };
 var _user$project$App$SigninRequestClick = {ctor: 'SigninRequestClick'};
+var _user$project$App$SigninWithAnonymousCotosCheck = function (a) {
+	return {ctor: 'SigninWithAnonymousCotosCheck', _0: a};
+};
 var _user$project$App$SigninEmailInput = function (a) {
 	return {ctor: 'SigninEmailInput', _0: a};
 };
@@ -10221,7 +10242,11 @@ var _user$project$App$signinModalConfig = function (model) {
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onCheck(_user$project$App$SigninWithAnonymousCotosCheck),
+													_1: {ctor: '[]'}
+												}
 											},
 											{ctor: '[]'}),
 										_1: {
@@ -10873,6 +10898,14 @@ var _user$project$App$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{signinEmail: _p4._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninWithAnonymousCotosCheck':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signinWithAnonymousCotos: _p4._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninRequestClick':

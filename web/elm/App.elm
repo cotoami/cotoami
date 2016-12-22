@@ -2,7 +2,7 @@ module App exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, keyCode, onFocus, onBlur, onInput, onMouseDown)
+import Html.Events exposing (on, onClick, keyCode, onFocus, onBlur, onInput, onMouseDown, onCheck)
 import Keyboard exposing (..)
 import Dom
 import Dom.Scroll
@@ -50,6 +50,7 @@ type alias Model =
     , cotos : List Coto
     , showSigninModal : Bool
     , signinEmail : String
+    , signinWithAnonymousCotos : Bool
     , signinRequestProcessing : Bool
     , signinRequestDone : Bool
     }
@@ -64,6 +65,7 @@ initModel =
     , cotos = []
     , showSigninModal = False
     , signinEmail = ""
+    , signinWithAnonymousCotos = False
     , signinRequestProcessing = False
     , signinRequestDone = False
     }
@@ -93,6 +95,7 @@ type Msg
     | SigninClick
     | SigninModalClose
     | SigninEmailInput String
+    | SigninWithAnonymousCotosCheck Bool
     | SigninRequestClick
     | SigninRequestDone (Result Http.Error String)
 
@@ -159,6 +162,9 @@ update msg model =
             
         SigninEmailInput content ->
             ( { model | signinEmail = content }, Cmd.none )
+            
+        SigninWithAnonymousCotosCheck checked ->
+            ( { model | signinWithAnonymousCotos = checked }, Cmd.none )
            
         SigninRequestClick ->
             { model | signinRequestProcessing = True }
@@ -373,7 +379,7 @@ signinModalConfig model =
               else
                 div []
                     [ label [] 
-                        [ input [ type_ "checkbox" ] []
+                        [ input [ type_ "checkbox", onCheck SigninWithAnonymousCotosCheck ] []
                         , span [ class "label-body" ] 
                             [ text "Save the anonymous cotos (posts) into your account" ]
                         ]
