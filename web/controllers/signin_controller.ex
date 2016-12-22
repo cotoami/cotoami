@@ -5,6 +5,7 @@ defmodule Cotoami.SigninController do
   alias Cotoami.Cotonoma
   alias Cotoami.RedisService
   alias Cotoami.AmishiService
+  alias Cotoami.CotoService
   
   def request(conn, %{"email" => email, "save_anonymous" => save_anonymous}) do
     token = Cotoami.Auth.generate_signin_token
@@ -31,10 +32,19 @@ defmodule Cotoami.SigninController do
             amishi -> 
               {amishi, Cotonoma.query_home(amishi.id) |> Repo.one!}
           end
-        Logger.info "Home cotonoma: #{inspect cotonoma}"
+        save_anonymous_cotos(anonymous_id, cotonoma.id, amishi.id)
         conn
         |> Cotoami.Auth.start_session(amishi)
         |> redirect(to: "/")
     end
+  end
+  
+  defp save_anonymous_cotos(anonymous_id, cotonoma_id, amishi_id) do
+    RedisService.get_cotos(anonymous_id)
+    |> Enum.each(fn(coto) ->
+      content = Map.get(coto, "content")
+      CotoService.create!(cotonoma_id, amishi_id, content)
+    end)
+    RedisService.clear_cotos(anonymous_id)
   end
 end

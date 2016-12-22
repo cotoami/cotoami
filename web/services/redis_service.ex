@@ -33,6 +33,12 @@ defmodule Cotoami.RedisService do
     stop(conn)
   end
   
+  def clear_cotos(anonymous_id) do
+    {:ok, conn} = start()
+    Redix.command!(conn, ["DEL", anonymous_key(anonymous_id)])
+    stop(conn)
+  end
+  
   def signin_key(token), do: "signin-" <> token
   
   def put_signin_token(token, email) do
