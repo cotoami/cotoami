@@ -10109,15 +10109,20 @@ var _user$project$App$Model = function (a) {
 var _user$project$App$SigninRequestDone = function (a) {
 	return {ctor: 'SigninRequestDone', _0: a};
 };
-var _user$project$App$requestSignin = function (email) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App$SigninRequestDone,
-		A2(
-			_elm_lang$http$Http$get,
-			A2(_elm_lang$core$Basics_ops['++'], '/api/signin/request/', email),
-			_elm_lang$core$Json_Decode$string));
-};
+var _user$project$App$requestSignin = F2(
+	function (email, saveAnonymous) {
+		var url = A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/api/signin/request/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				email,
+				saveAnonymous ? '/yes' : '/no'));
+		return A2(
+			_elm_lang$http$Http$send,
+			_user$project$App$SigninRequestDone,
+			A2(_elm_lang$http$Http$get, url, _elm_lang$core$Json_Decode$string));
+	});
 var _user$project$App$SigninRequestClick = {ctor: 'SigninRequestClick'};
 var _user$project$App$SigninWithAnonymousCotosCheck = function (a) {
 	return {ctor: 'SigninWithAnonymousCotosCheck', _0: a};
@@ -10916,7 +10921,7 @@ var _user$project$App$update = F2(
 						{signinRequestProcessing: true}),
 					{
 						ctor: '::',
-						_0: _user$project$App$requestSignin(model.signinEmail),
+						_0: A2(_user$project$App$requestSignin, model.signinEmail, model.signinWithAnonymousCotos),
 						_1: {ctor: '[]'}
 					});
 			default:

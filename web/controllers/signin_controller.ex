@@ -6,7 +6,8 @@ defmodule Cotoami.SigninController do
   alias Cotoami.RedisService
   alias Cotoami.AmishiService
   
-  def request(conn, %{"email" => email}) do
+  def request(conn, %{"email" => email, "save_anonymous" => save_anonymous}) do
+    Logger.info "save_anonymous: #{save_anonymous}"
     token = Cotoami.Auth.generate_signin_token
     email
     |> Cotoami.Email.signin_link(token, conn.assigns.anonymous_id)

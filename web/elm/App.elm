@@ -168,7 +168,7 @@ update msg model =
            
         SigninRequestClick ->
             { model | signinRequestProcessing = True }
-                ! [ requestSignin model.signinEmail ]
+                ! [ requestSignin model.signinEmail model.signinWithAnonymousCotos ]
            
         SigninRequestDone (Ok message) ->
             ( { model | signinEmail = "", signinRequestProcessing = False, signinRequestDone = True }, Cmd.none )
@@ -236,9 +236,13 @@ encodeCoto coto =
         ]
     
   
-requestSignin : String -> Cmd Msg
-requestSignin email =
-    Http.send SigninRequestDone (Http.get ("/api/signin/request/" ++ email) Decode.string)
+requestSignin : String -> Bool -> Cmd Msg
+requestSignin email saveAnonymous =
+    let
+        url = "/api/signin/request/" ++ email ++
+            (if saveAnonymous then "/yes" else "/no")
+    in
+      Http.send SigninRequestDone (Http.get url Decode.string)
 
 
 
