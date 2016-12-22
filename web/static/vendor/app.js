@@ -10203,7 +10203,10 @@ var _user$project$App$signinModalConfig = function (model) {
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
+						_0: (_krisajenkins$elm_exts$Exts_Maybe$isJust(model.session) || _elm_lang$core$List$isEmpty(model.cotos)) ? A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{ctor: '[]'}) : A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
 							{

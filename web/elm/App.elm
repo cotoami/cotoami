@@ -14,6 +14,7 @@ import Keys exposing (ctrl, meta, enter)
 import Http
 import Modal
 import Utils exposing (isBlank, validateEmail)
+import Exts.Maybe exposing (isJust)
 
 main : Program Never Model Msg
 main =
@@ -367,13 +368,17 @@ signinModalConfig model =
                   ] 
                   [] 
                 ]
-            , div []
-                [ label [] 
-                    [ input [ type_ "checkbox" ] []
-                    , span [ class "label-body" ] 
-                        [ text "Save the anonymous cotos (posts) into your account" ]
+            , (if (isJust model.session) || List.isEmpty(model.cotos) then
+                div [] []
+              else
+                div []
+                    [ label [] 
+                        [ input [ type_ "checkbox" ] []
+                        , span [ class "label-body" ] 
+                            [ text "Save the anonymous cotos (posts) into your account" ]
+                        ]
                     ]
-                ]
+              )
             ]
         , buttons = 
             [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
