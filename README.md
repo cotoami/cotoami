@@ -28,7 +28,6 @@ Environment variables:
     * `COTOAMI_SMTP_PORT` - port number of SMTP server
     * `COTOAMI_SMTP_USER` - SMTP user name
     * `COTOAMI_SMTP_PASSWORD` - SMTP password
-    * `COTOAMI_URL_PREFIX` - application URL prefix (ex. `http://cotoa.me`)
 
 ## How to run app locally
 

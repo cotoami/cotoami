@@ -2,7 +2,6 @@ defmodule Cotoami.AmishiService do
   require Logger
   alias Cotoami.Repo
   alias Cotoami.Amishi
-  alias Cotoami.Cotonoma
   alias Cotoami.CotonomaService
   
   @gravatar_url_prefix "https://secure.gravatar.com/"

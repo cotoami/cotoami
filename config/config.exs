@@ -53,8 +53,7 @@ config :cotoami, Cotoami.Mailer,
   retries: 1
     
 config :cotoami, Cotoami.Email,
-  from: System.get_env("COTOAMI_EMAIL_FROM"),
-  url_prefix: System.get_env("COTOAMI_URL_PREFIX")
+  from: System.get_env("COTOAMI_EMAIL_FROM")
     
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
