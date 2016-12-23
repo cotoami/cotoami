@@ -12,7 +12,7 @@ defmodule Cotoami.SigninController do
       if save_anonymous == "yes", 
         do: conn.assigns.anonymous_id, 
         else: "none"
-    host_url = get_request_host_url(conn)
+    host_url = Cotoami.Router.Helpers.url(conn)
     email
     |> Cotoami.Email.signin_link(token, anonymous_id, host_url)
     |> Cotoami.Mailer.deliver_now
@@ -47,14 +47,5 @@ defmodule Cotoami.SigninController do
       CotoService.create!(cotonoma_id, amishi_id, content)
     end)
     RedisService.clear_cotos(anonymous_id)
-  end
-  
-  defp get_request_host_url(conn) do
-    Atom.to_string(conn.scheme) <> "://" <> conn.host <>
-      case conn.port do
-        80 -> ""
-        443 -> ""
-        port -> ":" <> Integer.to_string(port)
-      end
   end
 end
