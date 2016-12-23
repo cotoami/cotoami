@@ -38,6 +38,7 @@ defmodule Cotoami.SigninController do
         conn
         |> Cotoami.Auth.start_session(amishi)
         |> redirect(to: "/")
+        |> halt
     end
   end
   

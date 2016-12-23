@@ -57,6 +57,7 @@ defmodule Cotoami.Auth do
   end
   
   def start_session(conn, amishi) do
+    Logger.info "start_session: #{inspect amishi}"
     conn |> put_session(@session_key_amishi_id, amishi.id)
   end
 end
