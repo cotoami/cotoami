@@ -368,27 +368,30 @@ signinModalConfig model =
         , title = "Sign in with your email"
         , content = div [ id "signin-modal-content" ]
             [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-            , div []
-                [ input 
-                  [ type_ "email"
-                  , class "u-full-width"
-                  , placeholder "test@example.com"
-                  , value model.signinEmail
-                  , onInput SigninEmailInput
-                  ] 
-                  [] 
-                ]
-            , (if (isJust model.session) || List.isEmpty(model.cotos) then
-                div [] []
-              else
-                div []
-                    [ label [] 
-                        [ input [ type_ "checkbox", onCheck SigninWithAnonymousCotosCheck ] []
-                        , span [ class "label-body" ] 
-                            [ text "Save the anonymous cotos (posts) into your account" ]
-                        ]
+            , Html.form [ name "signin" ]
+                [ div []
+                    [ input 
+                      [ type_ "email"
+                      , class "u-full-width"
+                      , name "signinEmail"
+                      , placeholder "test@example.com"
+                      , value model.signinEmail
+                      , onInput SigninEmailInput
+                      ] 
+                      [] 
                     ]
-              )
+                , (if (isJust model.session) || List.isEmpty(model.cotos) then
+                    div [] []
+                  else
+                    div []
+                        [ label [] 
+                            [ input [ type_ "checkbox", onCheck SigninWithAnonymousCotosCheck ] []
+                            , span [ class "label-body" ] 
+                                [ text "Save the anonymous cotos (posts) into your account" ]
+                            ]
+                        ]
+                  )
+                ]
             ]
         , buttons = 
             [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]

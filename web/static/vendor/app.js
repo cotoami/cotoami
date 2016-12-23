@@ -10197,84 +10197,99 @@ var _user$project$App$signinModalConfig = function (model) {
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
+						_elm_lang$html$Html$form,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$name('signin'),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$input,
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$type_('email'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
-										_1: {
+									_0: A2(
+										_elm_lang$html$Html$input,
+										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
+											_0: _elm_lang$html$Html_Attributes$type_('email'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.signinEmail),
+												_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
-													_1: {ctor: '[]'}
+													_0: _elm_lang$html$Html_Attributes$name('signinEmail'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$placeholder('test@example.com'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$value(model.signinEmail),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
 												}
 											}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: (_krisajenkins$elm_exts$Exts_Maybe$isJust(model.session) || _elm_lang$core$List$isEmpty(model.cotos)) ? A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{ctor: '[]'}) : A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$label,
+								_0: (_krisajenkins$elm_exts$Exts_Maybe$isJust(model.session) || _elm_lang$core$List$isEmpty(model.cotos)) ? A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{ctor: '[]'}) : A2(
+									_elm_lang$html$Html$div,
 									{ctor: '[]'},
 									{
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$input,
+											_elm_lang$html$Html$label,
+											{ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+												_0: A2(
+													_elm_lang$html$Html$input,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onCheck(_user$project$App$SigninWithAnonymousCotosCheck),
+															_1: {ctor: '[]'}
+														}
+													},
+													{ctor: '[]'}),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onCheck(_user$project$App$SigninWithAnonymousCotosCheck),
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('label-body'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Save the anonymous cotos (posts) into your account'),
+															_1: {ctor: '[]'}
+														}),
 													_1: {ctor: '[]'}
 												}
-											},
-											{ctor: '[]'}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('label-body'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Save the anonymous cotos (posts) into your account'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
+											}),
+										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+							}
+						}),
+					_1: {ctor: '[]'}
 				}
 			}),
 		buttons: {
