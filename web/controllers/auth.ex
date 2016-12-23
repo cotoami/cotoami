@@ -33,7 +33,7 @@ defmodule Cotoami.Auth do
   end
   
   defp assign_amishi(conn, amishi) do
-    Logger.info "Amishi: #{inspect amishi}"
+    Logger.info "assign_amishi: #{inspect amishi}"
     Logger.metadata(user_token: amishi.email)
     assign(conn, :amishi, amishi)
   end
