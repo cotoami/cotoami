@@ -1,5 +1,7 @@
 defmodule Cotoami.Endpoint do
   use Phoenix.Endpoint, otp_app: :cotoami
+  
+  @session_max_age 60 * 60 * 24 * 30
 
   socket "/socket", Cotoami.UserSocket
 
@@ -36,7 +38,8 @@ defmodule Cotoami.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_cotoami_key",
-    signing_salt: "oY7grqxI"
+    signing_salt: "oY7grqxI",
+    max_age: @session_max_age
 
   # Prometheus
   plug Cotoami.PrometheusExporter   # makes the /metrics URL happen
