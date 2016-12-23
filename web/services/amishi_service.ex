@@ -3,6 +3,7 @@ defmodule Cotoami.AmishiService do
   alias Cotoami.Repo
   alias Cotoami.Amishi
   alias Cotoami.Cotonoma
+  alias Cotoami.CotonomaService
   
   @gravatar_url_prefix "https://secure.gravatar.com/"
   @gravatar_user_agent "Cotoami"
@@ -21,10 +22,8 @@ defmodule Cotoami.AmishiService do
         amishi =
           Amishi.changeset(%Amishi{}, %{email: email})
           |> Repo.insert!
-        home_cotonoma =
-          Cotonoma.changeset_new(%Cotonoma{}, %{owner_id: amishi.id})
-          |> Repo.insert!
-        {amishi, home_cotonoma}
+        home = CotonomaService.get_or_create_home!(amishi.id) 
+        {amishi, home}
       end)
     created_records
   end
