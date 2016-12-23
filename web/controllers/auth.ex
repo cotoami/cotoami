@@ -47,7 +47,7 @@ defmodule Cotoami.Auth do
   end
   
   defp assign_anonymous_id(conn, anonymous_id) do
-    Logger.info "anonymous_id: #{anonymous_id}"
+    Logger.info "assign_anonymous_id: #{anonymous_id}"
     Logger.metadata(user_token: anonymous_id)
     assign(conn, :anonymous_id, anonymous_id)
   end
@@ -57,7 +57,6 @@ defmodule Cotoami.Auth do
   end
   
   def start_session(conn, amishi) do
-    Logger.info "start_session: #{inspect amishi}"
     conn |> put_session(@session_key_amishi_id, amishi.id)
   end
 end
