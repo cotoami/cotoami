@@ -15,17 +15,21 @@ Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univ
 
 Environment variables: 
 
+* App URL - configuration for generating URLs throughout the app
+    * `COTOAMI_URL_SCHEME` - URL scheme of the app
+    * `COTOAMI_URL_HOST` - host name of the app
+    * `COTOAMI_URL_PORT` - port number of the app
 * Redis
-    * `COTOAMI_REDIS_HOST` - host name of Redis server
+    * `COTOAMI_REDIS_HOST` - host name of the Redis server
 * PostgreSQL
-    * `COTOAMI_REPO_HOST` - host name of PostgreSQL server
+    * `COTOAMI_REPO_HOST` - host name of the PostgreSQL server
     * `COTOAMI_REPO_DATABASE` - database name
     * `COTOAMI_REPO_USER` - user name
     * `COTOAMI_REPO_PASSWORD` - password
 * Mail
     * `COTOAMI_EMAIL_FROM` - email address for "from"
-    * `COTOAMI_SMTP_SERVER` - host name of SMTP server
-    * `COTOAMI_SMTP_PORT` - port number of SMTP server
+    * `COTOAMI_SMTP_SERVER` - host name of the SMTP server
+    * `COTOAMI_SMTP_PORT` - port number of the SMTP server
     * `COTOAMI_SMTP_USER` - SMTP user name
     * `COTOAMI_SMTP_PASSWORD` - SMTP password
 
