@@ -13,7 +13,11 @@ use Mix.Config
 # which you typically run after static files are built.
 config :cotoami, Cotoami.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [scheme: "https", host: "cotoa.me", port: 443],
+  url: [
+    scheme: System.get_env("COTOAMI_URL_SCHEME"), 
+    host: System.get_env("COTOAMI_URL_HOST"), 
+    port: (System.get_env("COTOAMI_URL_PORT") || "80") |> String.to_integer
+  ],
   cache_static_manifest: "priv/static/manifest.json"
 
 # Do not print debug messages in production
