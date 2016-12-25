@@ -1,5 +1,6 @@
 defmodule Cotoami do
   use Application
+  require Logger
   require Prometheus.Registry
 
   def start(_type, _args) do
@@ -23,7 +24,13 @@ defmodule Cotoami do
     end
 
     opts = [strategy: :one_for_one, name: Cotoami.Supervisor]
-    Supervisor.start_link(children, opts)
+    start_result = Supervisor.start_link(children, opts)
+    
+    # Run migrations on start
+    Logger.info "Running migrations on start..."
+    Ecto.Migrator.run(Cotoami.Repo, "priv/repo/migrations", :up, all: true)
+    
+    start_result
   end
 
   def config_change(changed, _new, removed) do
