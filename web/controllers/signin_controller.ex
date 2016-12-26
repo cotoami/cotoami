@@ -7,7 +7,7 @@ defmodule Cotoami.SigninController do
   alias Cotoami.CotonomaService
   
   def request(conn, %{"email" => email, "save_anonymous" => save_anonymous}) do
-    token = Cotoami.Auth.generate_signin_token
+    token = RedisService.generate_signin_token(email)
     anonymous_id = 
       if save_anonymous == "yes", 
         do: conn.assigns.anonymous_id, 
@@ -16,7 +16,6 @@ defmodule Cotoami.SigninController do
     email
     |> Cotoami.Email.signin_link(token, anonymous_id, host_url)
     |> Cotoami.Mailer.deliver_now
-    RedisService.put_signin_token(token, email)
     json conn, "ok"
   end
   

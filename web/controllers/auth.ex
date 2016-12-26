@@ -52,10 +52,6 @@ defmodule Cotoami.Auth do
     assign(conn, :anonymous_id, anonymous_id)
   end
   
-  def generate_signin_token do
-    :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
-  end
-  
   def start_session(conn, amishi) do
     conn |> put_session(@session_key_amishi_id, amishi.id)
   end

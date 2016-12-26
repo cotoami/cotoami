@@ -41,10 +41,21 @@ defmodule Cotoami.RedisService do
   
   def signin_key(token), do: "signin-" <> token
   
-  def put_signin_token(token, email) do
+  def generate_signin_token(email) do
     {:ok, conn} = start()
-    Redix.command!(conn, ["SETEX", signin_key(token), @signin_key_expire_seconds, email])
+    token = put_signin_token(conn, email)
+    Redix.command!(conn, ["EXPIRE", signin_key(token), @signin_key_expire_seconds]) 
     stop(conn)
+    token
+  end
+  
+  # Ensure the newly generated signin token is unique
+  defp put_signin_token(conn, email) do
+    token = :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
+    case Redix.command!(conn, ["SETNX", signin_key(token), email]) do
+      1 -> token
+      0 -> put_signin_token(conn, email)
+    end
   end
   
   def get_signin_email(token) do
