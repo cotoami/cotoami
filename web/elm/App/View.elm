@@ -7,9 +7,9 @@ import Json.Decode as Decode
 import Markdown
 import Exts.Maybe exposing (isJust)
 import Utils exposing (isBlank, validateEmail)
-import Modal
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import Components.SigninModal
 
 view : Model -> Html Msg
 view model =
@@ -66,11 +66,10 @@ view model =
                     ]
                 ]
             ]
-        , Modal.view
-            (if model.showSigninModal then
-                Just (signinModalConfig model)
-             else
-                Nothing
+        , Html.map SigninModalMsg 
+            (Components.SigninModal.view 
+                model.signinModal
+                ((isJust model.session) || (List.isEmpty model.cotos))
             )
         ]
 
@@ -101,56 +100,3 @@ timelineClass model =
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Decode.map tagger keyCode)
-
-
-signinModalConfig : Model -> Modal.Config Msg
-signinModalConfig model =
-    (if model.signinRequestDone then
-        { closeMessage = SigninModalClose
-        , title = "Check your inbox!"
-        , content = div [ id "signin-modal-content" ]
-            [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
-        , buttons = 
-            [ button [ class "button", onClick SigninModalClose ] [ text "OK" ] ]
-        }
-    else
-        { closeMessage = SigninModalClose
-        , title = "Sign in with your email"
-        , content = div [ id "signin-modal-content" ]
-            [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-            , Html.form [ name "signin" ]
-                [ div []
-                    [ input 
-                      [ type_ "email"
-                      , class "u-full-width"
-                      , name "signinEmail"
-                      , placeholder "test@example.com"
-                      , value model.signinEmail
-                      , onInput SigninEmailInput
-                      ] 
-                      [] 
-                    ]
-                , (if (isJust model.session) || List.isEmpty(model.cotos) then
-                    div [] []
-                  else
-                    div []
-                        [ label [] 
-                            [ input [ type_ "checkbox", onCheck SigninWithAnonymousCotosCheck ] []
-                            , span [ class "label-body" ] 
-                                [ text "Save the anonymous cotos (posts) into your account" ]
-                            ]
-                        ]
-                  )
-                ]
-            ]
-        , buttons = 
-            [ button [ class "button", onClick SigninModalClose ] [ text "Cancel" ]
-            , button 
-                [ class "button button-primary"
-                , disabled (not (validateEmail model.signinEmail) || model.signinRequestProcessing)
-                , onClick SigninRequestClick 
-                ] 
-                [ if model.signinRequestProcessing then text "Sending..." else text "OK" ]
-            ]
-        }
-    )

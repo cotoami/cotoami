@@ -8,6 +8,7 @@ import Utils exposing (isBlank, validateEmail)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Commands exposing (..)
+import Components.SigninModal
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -64,27 +65,18 @@ update msg model =
             ( model, Cmd.none )
             
         SigninClick ->
-            ( { model | showSigninModal = True }, Cmd.none )
+            let
+                signinModal = model.signinModal
+                newSigninModal = { signinModal | show = True }
+            in
+                ( { model | signinModal = newSigninModal }, Cmd.none )
             
-        SigninModalClose ->
-            ( { model | showSigninModal = False, signinRequestDone = False }, Cmd.none )
+        SigninModalMsg subMsg ->
+            let
+                ( signinModal, cmd ) = Components.SigninModal.update subMsg model.signinModal
+            in
+                ( { model | signinModal = signinModal }, Cmd.map SigninModalMsg cmd )
             
-        SigninEmailInput content ->
-            ( { model | signinEmail = content }, Cmd.none )
-            
-        SigninWithAnonymousCotosCheck checked ->
-            ( { model | signinWithAnonymousCotos = checked }, Cmd.none )
-           
-        SigninRequestClick ->
-            { model | signinRequestProcessing = True }
-                ! [ requestSignin model.signinEmail model.signinWithAnonymousCotos ]
-           
-        SigninRequestDone (Ok message) ->
-            ( { model | signinEmail = "", signinRequestProcessing = False, signinRequestDone = True }, Cmd.none )
-            
-        SigninRequestDone (Err _) ->
-            ( { model | signinRequestProcessing = False }, Cmd.none )
-
 
 post : Model -> ( Model, Cmd Msg )
 post model =

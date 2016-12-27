@@ -1,5 +1,7 @@
 module App.Model exposing (..)
 
+import Components.SigninModal
+
 type alias Session =
     { id : Int
     , email : String
@@ -19,11 +21,7 @@ type alias Model =
     , editingNewCoto : Bool
     , newCoto : String
     , cotos : List Coto
-    , showSigninModal : Bool
-    , signinEmail : String
-    , signinWithAnonymousCotos : Bool
-    , signinRequestProcessing : Bool
-    , signinRequestDone : Bool
+    , signinModal : Components.SigninModal.Model
     }
 
 
@@ -34,9 +32,5 @@ initModel =
     , editingNewCoto = False
     , newCoto = ""
     , cotos = []
-    , showSigninModal = False
-    , signinEmail = ""
-    , signinWithAnonymousCotos = False
-    , signinRequestProcessing = False
-    , signinRequestDone = False
+    , signinModal = Components.SigninModal.initModel
     }

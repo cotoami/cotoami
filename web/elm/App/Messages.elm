@@ -3,6 +3,7 @@ module App.Messages exposing (Msg(..))
 import Http
 import Keyboard exposing (..)
 import App.Model exposing (Session, Coto)
+import Components.SigninModal
 
 type Msg
     = NoOp
@@ -17,8 +18,4 @@ type Msg
     | Post
     | CotoPosted (Result Http.Error Coto)
     | SigninClick
-    | SigninModalClose
-    | SigninEmailInput String
-    | SigninWithAnonymousCotosCheck Bool
-    | SigninRequestClick
-    | SigninRequestDone (Result Http.Error String)
+    | SigninModalMsg Components.SigninModal.Msg

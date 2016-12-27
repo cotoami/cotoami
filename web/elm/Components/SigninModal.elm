@@ -17,6 +17,16 @@ type alias Model =
     }
 
 
+initModel : Model
+initModel =
+    { show = False
+    , email = ""
+    , saveAnonymousCotos = False
+    , requestProcessing = False
+    , requestDone = False
+    }
+
+
 type Msg
     = Close
     | EmailInput String
@@ -56,6 +66,15 @@ requestSignin email saveAnonymous =
     in
       Http.send RequestDone (Http.get url Decode.string)
 
+
+view : Model -> Bool -> Html Msg
+view model showAnonymousOption =
+    Modal.view
+        (if model.show then
+            Just (signinModalConfig model showAnonymousOption)
+         else
+            Nothing
+        )
 
 signinModalConfig : Model -> Bool -> Modal.Config Msg
 signinModalConfig model showAnonymousOption =

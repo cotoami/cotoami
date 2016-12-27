@@ -49,14 +49,3 @@ encodeCoto coto =
             (Encode.object [("content", Encode.string coto.content)])
          )
         ]
-
-
--- 
-
-requestSignin : String -> Bool -> Cmd Msg
-requestSignin email saveAnonymous =
-    let
-        url = "/api/signin/request/" ++ email ++
-            (if saveAnonymous then "/yes" else "/no")
-    in
-      Http.send SigninRequestDone (Http.get url Decode.string)
