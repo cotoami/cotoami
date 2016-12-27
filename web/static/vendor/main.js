@@ -10552,14 +10552,15 @@ var _user$project$App_Update$update = F2(
 				}
 			case 'SigninClick':
 				var signinModal = model.signinModal;
-				var newSigninModal = _elm_lang$core$Native_Utils.update(
-					signinModal,
-					{show: true});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{signinModal: newSigninModal}),
+						{
+							signinModal: _elm_lang$core$Native_Utils.update(
+								signinModal,
+								{show: true})
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
