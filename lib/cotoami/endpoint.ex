@@ -42,8 +42,8 @@ defmodule Cotoami.Endpoint do
     max_age: @session_max_age
 
   # Prometheus
-  # plug Cotoami.PrometheusExporter   # makes the /metrics URL happen
-  # plug Cotoami.Endpoint.PipelineInstrumenter   # measures pipeline exec times  
+  plug Cotoami.PrometheusExporter   # makes the /metrics URL happen
+  plug Cotoami.Endpoint.PipelineInstrumenter   # measures pipeline exec times  
 
   plug Cotoami.Router
 end

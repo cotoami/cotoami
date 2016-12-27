@@ -1,3 +1,3 @@
 defmodule Cotoami.Repo.Instrumenter do
-  # use Prometheus.EctoInstrumenter
+  use Prometheus.EctoInstrumenter
 end

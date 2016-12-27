@@ -1,7 +1,7 @@
 defmodule Cotoami do
   use Application
   require Logger
-  # require Prometheus.Registry
+  require Prometheus.Registry
 
   def start(_type, _args) do
     import Supervisor.Spec
@@ -12,16 +12,16 @@ defmodule Cotoami do
     ]
     
     # Prometheus
-    # Cotoami.Endpoint.Instrumenter.setup()
-    # Cotoami.Endpoint.PipelineInstrumenter.setup()
-    # Cotoami.Repo.Instrumenter.setup()
-    # Cotoami.PrometheusExporter.setup()  
-    # # https://github.com/deadtrickster/prometheus_process_collector/issues/2
-    # case :os.type do
-    #   {:unix, :linux} -> 
-    #     Prometheus.Registry.register_collector(:prometheus_process_collector)
-    #   _ -> nil
-    # end
+    Cotoami.Endpoint.Instrumenter.setup()
+    Cotoami.Endpoint.PipelineInstrumenter.setup()
+    Cotoami.Repo.Instrumenter.setup()
+    Cotoami.PrometheusExporter.setup()  
+    # https://github.com/deadtrickster/prometheus_process_collector/issues/2
+    case :os.type do
+      {:unix, :linux} -> 
+        Prometheus.Registry.register_collector(:prometheus_process_collector)
+      _ -> nil
+    end
 
     opts = [strategy: :one_for_one, name: Cotoami.Supervisor]
     start_result = Supervisor.start_link(children, opts)

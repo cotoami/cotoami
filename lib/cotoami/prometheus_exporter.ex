@@ -1,3 +1,3 @@
 defmodule Cotoami.PrometheusExporter do  
-  # use Prometheus.PlugExporter
+  use Prometheus.PlugExporter
 end

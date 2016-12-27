@@ -28,6 +28,12 @@
   "poison": {:hex, :poison, "2.2.0", "4763b69a8a77bd77d26f477d196428b741261a761257ff1cf92753a0d4d24a63", [:mix], []},
   "poolboy": {:hex, :poolboy, "1.5.1", "6b46163901cfd0a1b43d692657ed9d7e599853b3b21b95ae5ae0a777cf9b6ca8", [:rebar], []},
   "postgrex": {:hex, :postgrex, "0.12.1", "2f8b46cb3a44dcd42f42938abedbfffe7e103ba4ce810ccbeee8dcf27ca0fb06", [:mix], [{:connection, "~> 1.0", [hex: :connection, optional: false]}, {:db_connection, "~> 1.0-rc.4", [hex: :db_connection, optional: false]}, {:decimal, "~> 1.0", [hex: :decimal, optional: false]}]},
+  "prometheus": {:hex, :prometheus, "3.1.1", "b35148cc9228511e8c6e9e96721fb967e4be38e7703dbd8a6fb26b10ff85cc05", [:rebar3], []},
+  "prometheus_ecto": {:hex, :prometheus_ecto, "1.0.1", "2f8c505187228932fbb1593c1c02b7719e560030079e1c3057d8e2adc3a56be8", [:mix], [{:ecto, "~> 2.0", [hex: :ecto, optional: false]}, {:prometheus_ex, "~> 1.1", [hex: :prometheus_ex, optional: false]}]},
+  "prometheus_ex": {:hex, :prometheus_ex, "1.1.0", "3b2b26b3a5881b3ef67f9da1ad9b10513d2d80e326acdf6154e19308d7583ea9", [:mix], [{:prometheus, "~> 3.1", [hex: :prometheus, optional: false]}]},
+  "prometheus_phoenix": {:hex, :prometheus_phoenix, "1.0.1", "1259830d201e2833433147b9e86f16ccebffc60bbb444cb7b18680d62634b2a6", [:mix], [{:phoenix, "~> 1.2", [hex: :phoenix, optional: false]}, {:prometheus_ex, "~> 1.1", [hex: :prometheus_ex, optional: false]}]},
+  "prometheus_plugs": {:hex, :prometheus_plugs, "1.1.1", "9f1d089a3c55e91d99f57039164bdc2d62f32dd4034de453279c76cc3ebc447a", [:mix], [{:accept, "~> 0.1", [hex: :accept, optional: false]}, {:cowboy, "~> 1.0.0", [hex: :cowboy, optional: false]}, {:plug, "~> 1.0", [hex: :plug, optional: false]}, {:prometheus_ex, "~> 1.1", [hex: :prometheus_ex, optional: false]}, {:prometheus_process_collector, "~> 1.0.0", [hex: :prometheus_process_collector, optional: true]}]},
+  "prometheus_process_collector": {:hex, :prometheus_process_collector, "1.0.2", "a0bb634641cb8bb79cf1868c4fa26aaf56ca593eea94dd7c2d78ab67993c2e90", [:rebar3], [{:prometheus, "~> 3.1", [hex: :prometheus, optional: false]}]},
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
   "redix": {:hex, :redix, "0.4.0", "c8cfad755252e5441c4119437ba3a8989518af7aa90dbd6f4ff7207b72e4a967", [:mix], [{:connection, "~> 1.0.0", [hex: :connection, optional: false]}]},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:rebar, :make], []}}
