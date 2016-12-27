@@ -9797,15 +9797,11 @@ var _user$project$Modal$modalContent = function (config) {
 						_elm_lang$html$Html$a,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$href('#'),
+							_0: _elm_lang$html$Html_Attributes$class('close-modal'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('close-modal'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Events$onClick(config.closeMessage),
+								_1: {ctor: '[]'}
 							}
 						},
 						{
@@ -10628,15 +10624,11 @@ var _user$project$Components_AppHeader$view = function (model) {
 									_elm_lang$html$Html$a,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href('#'),
+										_0: _elm_lang$html$Html_Attributes$title('Sign in'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
+											_1: {ctor: '[]'}
 										}
 									},
 									{

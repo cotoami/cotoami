@@ -15,7 +15,7 @@ view model =
         , div [ class "user" ]
             (case model.session of
                 Nothing -> 
-                    [ a [ href "#", title "Sign in", onClick OpenSigninModal ] 
+                    [ a [ title "Sign in", onClick OpenSigninModal ] 
                         [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
                     ]
                 Just session -> 

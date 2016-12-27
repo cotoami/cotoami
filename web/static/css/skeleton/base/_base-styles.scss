@@ -21,6 +21,7 @@ body {
 
 a {
   color: $link-color;
+  cursor: pointer;
   &:hover {
     color: darken($link-color, 5%);
   }
