@@ -9934,10 +9934,10 @@ var _user$project$Modal$Config = F4(
 		return {closeMessage: a, title: b, content: c, buttons: d};
 	});
 
-var _user$project$Components_SigninModal$initModel = {show: false, email: '', saveAnonymousCotos: false, requestProcessing: false, requestDone: false};
+var _user$project$Components_SigninModal$initModel = {open: false, email: '', saveAnonymousCotos: false, requestProcessing: false, requestDone: false};
 var _user$project$Components_SigninModal$Model = F5(
 	function (a, b, c, d, e) {
-		return {show: a, email: b, saveAnonymousCotos: c, requestProcessing: d, requestDone: e};
+		return {open: a, email: b, saveAnonymousCotos: c, requestProcessing: d, requestDone: e};
 	});
 var _user$project$Components_SigninModal$RequestDone = function (a) {
 	return {ctor: 'RequestDone', _0: a};
@@ -9965,7 +9965,7 @@ var _user$project$Components_SigninModal$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{show: false, requestDone: false}),
+						{open: false, requestDone: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EmailInput':
@@ -10234,7 +10234,7 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 var _user$project$Components_SigninModal$view = F2(
 	function (model, showAnonymousOption) {
 		return _user$project$Modal$view(
-			model.show ? _elm_lang$core$Maybe$Just(
+			model.open ? _elm_lang$core$Maybe$Just(
 				A2(_user$project$Components_SigninModal$signinModalConfig, model, showAnonymousOption)) : _elm_lang$core$Maybe$Nothing);
 	});
 
@@ -10559,7 +10559,7 @@ var _user$project$App_Update$update = F2(
 						{
 							signinModal: _elm_lang$core$Native_Utils.update(
 								signinModal,
-								{show: true})
+								{open: true})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};

@@ -9,7 +9,7 @@ import Utils exposing (validateEmail)
 import Modal
 
 type alias Model =
-    { show : Bool
+    { open : Bool
     , email : String
     , saveAnonymousCotos : Bool
     , requestProcessing : Bool
@@ -19,7 +19,7 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { show = False
+    { open = False
     , email = ""
     , saveAnonymousCotos = False
     , requestProcessing = False
@@ -39,7 +39,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
-            ( { model | show = False, requestDone = False }, Cmd.none )
+            ( { model | open = False, requestDone = False }, Cmd.none )
             
         EmailInput content ->
             ( { model | email = content }, Cmd.none )
@@ -70,7 +70,7 @@ requestSignin email saveAnonymous =
 view : Model -> Bool -> Html Msg
 view model showAnonymousOption =
     Modal.view
-        (if model.show then
+        (if model.open then
             Just (signinModalConfig model showAnonymousOption)
          else
             Nothing

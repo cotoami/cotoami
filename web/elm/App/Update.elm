@@ -68,7 +68,7 @@ update msg model =
             let
                 signinModal = model.signinModal
             in
-                ( { model | signinModal = { signinModal | show = True } }, Cmd.none )
+                ( { model | signinModal = { signinModal | open = True } }, Cmd.none )
             
         SigninModalMsg subMsg ->
             let
