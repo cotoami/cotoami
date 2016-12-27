@@ -9764,6 +9764,85 @@ var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
 	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
 };
 
+var _user$project$App_Model$initModel = {
+	session: _elm_lang$core$Maybe$Nothing,
+	ctrlDown: false,
+	editingNewCoto: false,
+	newCoto: '',
+	cotos: {ctor: '[]'},
+	showSigninModal: false,
+	signinEmail: '',
+	signinWithAnonymousCotos: false,
+	signinRequestProcessing: false,
+	signinRequestDone: false
+};
+var _user$project$App_Model$Session = F4(
+	function (a, b, c, d) {
+		return {id: a, email: b, avatarUrl: c, displayName: d};
+	});
+var _user$project$App_Model$Coto = function (a) {
+	return {content: a};
+};
+var _user$project$App_Model$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, showSigninModal: f, signinEmail: g, signinWithAnonymousCotos: h, signinRequestProcessing: i, signinRequestDone: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+var _user$project$App_Messages$SigninRequestDone = function (a) {
+	return {ctor: 'SigninRequestDone', _0: a};
+};
+var _user$project$App_Messages$SigninRequestClick = {ctor: 'SigninRequestClick'};
+var _user$project$App_Messages$SigninWithAnonymousCotosCheck = function (a) {
+	return {ctor: 'SigninWithAnonymousCotosCheck', _0: a};
+};
+var _user$project$App_Messages$SigninEmailInput = function (a) {
+	return {ctor: 'SigninEmailInput', _0: a};
+};
+var _user$project$App_Messages$SigninModalClose = {ctor: 'SigninModalClose'};
+var _user$project$App_Messages$SigninClick = {ctor: 'SigninClick'};
+var _user$project$App_Messages$CotoPosted = function (a) {
+	return {ctor: 'CotoPosted', _0: a};
+};
+var _user$project$App_Messages$Post = {ctor: 'Post'};
+var _user$project$App_Messages$EditorKeyDown = function (a) {
+	return {ctor: 'EditorKeyDown', _0: a};
+};
+var _user$project$App_Messages$EditorInput = function (a) {
+	return {ctor: 'EditorInput', _0: a};
+};
+var _user$project$App_Messages$EditorBlur = {ctor: 'EditorBlur'};
+var _user$project$App_Messages$EditorFocus = {ctor: 'EditorFocus'};
+var _user$project$App_Messages$KeyUp = function (a) {
+	return {ctor: 'KeyUp', _0: a};
+};
+var _user$project$App_Messages$KeyDown = function (a) {
+	return {ctor: 'KeyDown', _0: a};
+};
+var _user$project$App_Messages$CotosFetched = function (a) {
+	return {ctor: 'CotosFetched', _0: a};
+};
+var _user$project$App_Messages$SessionFetched = function (a) {
+	return {ctor: 'SessionFetched', _0: a};
+};
+var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
+
 var _user$project$Keys$zero = {keyCode: 58, name: '0'};
 var _user$project$Keys$nine = {keyCode: 57, name: '9'};
 var _user$project$Keys$eight = {keyCode: 56, name: '8'};
@@ -9834,6 +9913,270 @@ var _user$project$Keys$equals = F2(
 var _user$project$Keys$Key = F2(
 	function (a, b) {
 		return {keyCode: a, name: b};
+	});
+
+var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
+	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
+var _user$project$Utils$isBlank = function (string) {
+	return _elm_lang$core$String$isEmpty(
+		_elm_lang$core$String$trim(string));
+};
+var _user$project$Utils$validateEmail = function (string) {
+	return (!_user$project$Utils$isBlank(string)) && A2(_elm_lang$core$Regex$contains, _user$project$Utils$emailRegex, string);
+};
+
+var _user$project$App_Update$requestSignin = F2(
+	function (email, saveAnonymous) {
+		var url = A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/api/signin/request/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				email,
+				saveAnonymous ? '/yes' : '/no'));
+		return A2(
+			_elm_lang$http$Http$send,
+			_user$project$App_Messages$SigninRequestDone,
+			A2(_elm_lang$http$Http$get, url, _elm_lang$core$Json_Decode$string));
+	});
+var _user$project$App_Update$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'content',
+							_1: _elm_lang$core$Json_Encode$string(coto.content)
+						},
+						_1: {ctor: '[]'}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$App_Update$decodeCoto = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$App_Model$Coto,
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Update$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Model$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Update$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$App_Messages$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$App_Update$encodeCoto(coto)),
+			_user$project$App_Update$decodeCoto));
+};
+var _user$project$App_Update$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$App_Update$decodeCoto)));
+var _user$project$App_Update$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Update$decodeSession));
+var _user$project$App_Update$handleScrollResult = function (result) {
+	var _p0 = result;
+	if (_p0.ctor === 'Ok') {
+		return _user$project$App_Messages$NoOp;
+	} else {
+		return _user$project$App_Messages$NoOp;
+	}
+};
+var _user$project$App_Update$post = function (model) {
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotos: {
+					ctor: '::',
+					_0: _user$project$App_Model$Coto(model.newCoto),
+					_1: model.cotos
+				},
+				newCoto: ''
+			}),
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$Task$attempt,
+				_user$project$App_Update$handleScrollResult,
+				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
+			_1: {
+				ctor: '::',
+				_0: _user$project$App_Update$postCoto(
+					_user$project$App_Model$Coto(model.newCoto)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$App_Update$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'SessionFetched':
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								session: _elm_lang$core$Maybe$Just(_p1._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'CotosFetched':
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{cotos: _p1._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'KeyDown':
+				var _p2 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'KeyUp':
+				var _p3 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'EditorFocus':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorBlur':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{newCoto: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorKeyDown':
+				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$App_Update$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Post':
+				return _user$project$App_Update$post(model);
+			case 'CotoPosted':
+				if (_p1._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'SigninClick':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showSigninModal: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninModalClose':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showSigninModal: false, signinRequestDone: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninEmailInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signinEmail: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninWithAnonymousCotosCheck':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signinWithAnonymousCotos: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninRequestClick':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{signinRequestProcessing: true}),
+					{
+						ctor: '::',
+						_0: A2(_user$project$App_Update$requestSignin, model.signinEmail, model.signinWithAnonymousCotos),
+						_1: {ctor: '[]'}
+					});
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{signinEmail: '', signinRequestProcessing: false, signinRequestDone: true}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{signinRequestProcessing: false}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+		}
 	});
 
 var _user$project$Modal$modalContent = function (config) {
@@ -9996,144 +10339,9 @@ var _user$project$Modal$Config = F4(
 		return {closeMessage: a, title: b, content: c, buttons: d};
 	});
 
-var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
-	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
-var _user$project$Utils$isBlank = function (string) {
-	return _elm_lang$core$String$isEmpty(
-		_elm_lang$core$String$trim(string));
-};
-var _user$project$Utils$validateEmail = function (string) {
-	return (!_user$project$Utils$isBlank(string)) && A2(_elm_lang$core$Regex$contains, _user$project$Utils$emailRegex, string);
-};
-
-var _user$project$App$onKeyDown = function (tagger) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'keydown',
-		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
-};
-var _user$project$App$timelineClass = function (model) {
-	return model.editingNewCoto ? 'editing' : '';
-};
-var _user$project$App$markdown = function (content) {
-	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
-	return A3(
-		_evancz$elm_markdown$Markdown$toHtmlWith,
-		_elm_lang$core$Native_Utils.update(
-			defaultOptions,
-			{
-				githubFlavored: _elm_lang$core$Maybe$Just(
-					{tables: true, breaks: true}),
-				sanitize: true,
-				smartypants: true
-			}),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('content'),
-			_1: {ctor: '[]'}
-		},
-		content);
-};
-var _user$project$App$encodeCoto = function (coto) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'coto',
-				_1: _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'content',
-							_1: _elm_lang$core$Json_Encode$string(coto.content)
-						},
-						_1: {ctor: '[]'}
-					})
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$App$initModel = {
-	session: _elm_lang$core$Maybe$Nothing,
-	ctrlDown: false,
-	editingNewCoto: false,
-	newCoto: '',
-	cotos: {ctor: '[]'},
-	showSigninModal: false,
-	signinEmail: '',
-	signinWithAnonymousCotos: false,
-	signinRequestProcessing: false,
-	signinRequestDone: false
-};
-var _user$project$App$Session = F4(
-	function (a, b, c, d) {
-		return {id: a, email: b, avatarUrl: c, displayName: d};
-	});
-var _user$project$App$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Coto = function (a) {
-	return {content: a};
-};
-var _user$project$App$decodeCoto = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$App$Coto,
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App$Model = function (a) {
-	return function (b) {
-		return function (c) {
-			return function (d) {
-				return function (e) {
-					return function (f) {
-						return function (g) {
-							return function (h) {
-								return function (i) {
-									return function (j) {
-										return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, showSigninModal: f, signinEmail: g, signinWithAnonymousCotos: h, signinRequestProcessing: i, signinRequestDone: j};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-var _user$project$App$SigninRequestDone = function (a) {
-	return {ctor: 'SigninRequestDone', _0: a};
-};
-var _user$project$App$requestSignin = F2(
-	function (email, saveAnonymous) {
-		var url = A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/api/signin/request/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				email,
-				saveAnonymous ? '/yes' : '/no'));
-		return A2(
-			_elm_lang$http$Http$send,
-			_user$project$App$SigninRequestDone,
-			A2(_elm_lang$http$Http$get, url, _elm_lang$core$Json_Decode$string));
-	});
-var _user$project$App$SigninRequestClick = {ctor: 'SigninRequestClick'};
-var _user$project$App$SigninWithAnonymousCotosCheck = function (a) {
-	return {ctor: 'SigninWithAnonymousCotosCheck', _0: a};
-};
-var _user$project$App$SigninEmailInput = function (a) {
-	return {ctor: 'SigninEmailInput', _0: a};
-};
-var _user$project$App$SigninModalClose = {ctor: 'SigninModalClose'};
-var _user$project$App$signinModalConfig = function (model) {
+var _user$project$App_View$signinModalConfig = function (model) {
 	return model.signinRequestDone ? {
-		closeMessage: _user$project$App$SigninModalClose,
+		closeMessage: _user$project$App_Messages$SigninModalClose,
 		title: 'Check your inbox!',
 		content: A2(
 			_elm_lang$html$Html$div,
@@ -10163,7 +10371,7 @@ var _user$project$App$signinModalConfig = function (model) {
 					_0: _elm_lang$html$Html_Attributes$class('button'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$SigninModalClose),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -10175,7 +10383,7 @@ var _user$project$App$signinModalConfig = function (model) {
 			_1: {ctor: '[]'}
 		}
 	} : {
-		closeMessage: _user$project$App$SigninModalClose,
+		closeMessage: _user$project$App_Messages$SigninModalClose,
 		title: 'Sign in with your email',
 		content: A2(
 			_elm_lang$html$Html$div,
@@ -10229,7 +10437,7 @@ var _user$project$App$signinModalConfig = function (model) {
 															_0: _elm_lang$html$Html_Attributes$value(model.signinEmail),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onInput(_user$project$App$SigninEmailInput),
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$App_Messages$SigninEmailInput),
 																_1: {ctor: '[]'}
 															}
 														}
@@ -10262,7 +10470,7 @@ var _user$project$App$signinModalConfig = function (model) {
 														_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onCheck(_user$project$App$SigninWithAnonymousCotosCheck),
+															_0: _elm_lang$html$Html_Events$onCheck(_user$project$App_Messages$SigninWithAnonymousCotosCheck),
 															_1: {ctor: '[]'}
 														}
 													},
@@ -10301,7 +10509,7 @@ var _user$project$App$signinModalConfig = function (model) {
 					_0: _elm_lang$html$Html_Attributes$class('button'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninModalClose),
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$SigninModalClose),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -10323,7 +10531,7 @@ var _user$project$App$signinModalConfig = function (model) {
 								(!_user$project$Utils$validateEmail(model.signinEmail)) || model.signinRequestProcessing),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninRequestClick),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$SigninRequestClick),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -10338,31 +10546,35 @@ var _user$project$App$signinModalConfig = function (model) {
 		}
 	};
 };
-var _user$project$App$SigninClick = {ctor: 'SigninClick'};
-var _user$project$App$CotoPosted = function (a) {
-	return {ctor: 'CotoPosted', _0: a};
-};
-var _user$project$App$postCoto = function (coto) {
+var _user$project$App_View$onKeyDown = function (tagger) {
 	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App$CotoPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/api/cotos',
-			_elm_lang$http$Http$jsonBody(
-				_user$project$App$encodeCoto(coto)),
-			_user$project$App$decodeCoto));
+		_elm_lang$html$Html_Events$on,
+		'keydown',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
-var _user$project$App$Post = {ctor: 'Post'};
-var _user$project$App$EditorKeyDown = function (a) {
-	return {ctor: 'EditorKeyDown', _0: a};
+var _user$project$App_View$timelineClass = function (model) {
+	return model.editingNewCoto ? 'editing' : '';
 };
-var _user$project$App$EditorInput = function (a) {
-	return {ctor: 'EditorInput', _0: a};
+var _user$project$App_View$markdown = function (content) {
+	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
+	return A3(
+		_evancz$elm_markdown$Markdown$toHtmlWith,
+		_elm_lang$core$Native_Utils.update(
+			defaultOptions,
+			{
+				githubFlavored: _elm_lang$core$Maybe$Just(
+					{tables: true, breaks: true}),
+				sanitize: true,
+				smartypants: true
+			}),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {ctor: '[]'}
+		},
+		content);
 };
-var _user$project$App$EditorBlur = {ctor: 'EditorBlur'};
-var _user$project$App$EditorFocus = {ctor: 'EditorFocus'};
-var _user$project$App$view = function (model) {
+var _user$project$App_View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10428,7 +10640,7 @@ var _user$project$App$view = function (model) {
 													_0: _elm_lang$html$Html_Attributes$title('Sign in'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(_user$project$App$SigninClick),
+														_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$SigninClick),
 														_1: {ctor: '[]'}
 													}
 												}
@@ -10496,7 +10708,7 @@ var _user$project$App$view = function (model) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$class(
-										_user$project$App$timelineClass(model)),
+										_user$project$App_View$timelineClass(model)),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -10521,7 +10733,7 @@ var _user$project$App$view = function (model) {
 												},
 												{
 													ctor: '::',
-													_0: _user$project$App$markdown(coto.content),
+													_0: _user$project$App_View$markdown(coto.content),
 													_1: {ctor: '[]'}
 												});
 										},
@@ -10644,7 +10856,7 @@ var _user$project$App$view = function (model) {
 																				_user$project$Utils$isBlank(model.newCoto)),
 																			_1: {
 																				ctor: '::',
-																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App$Post),
+																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App_Messages$Post),
 																				_1: {ctor: '[]'}
 																			}
 																		}
@@ -10689,16 +10901,16 @@ var _user$project$App$view = function (model) {
 																_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App$EditorFocus),
+																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App_Messages$EditorFocus),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App$EditorBlur),
+																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App_Messages$EditorBlur),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App$EditorInput),
+																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App_Messages$EditorInput),
 																			_1: {
 																				ctor: '::',
-																				_0: _user$project$App$onKeyDown(_user$project$App$EditorKeyDown),
+																				_0: _user$project$App_View$onKeyDown(_user$project$App_Messages$EditorKeyDown),
 																				_1: {ctor: '[]'}
 																			}
 																		}
@@ -10720,247 +10932,40 @@ var _user$project$App$view = function (model) {
 					ctor: '::',
 					_0: _user$project$Modal$view(
 						model.showSigninModal ? _elm_lang$core$Maybe$Just(
-							_user$project$App$signinModalConfig(model)) : _elm_lang$core$Maybe$Nothing),
+							_user$project$App_View$signinModalConfig(model)) : _elm_lang$core$Maybe$Nothing),
 					_1: {ctor: '[]'}
 				}
 			}
 		});
 };
-var _user$project$App$KeyUp = function (a) {
-	return {ctor: 'KeyUp', _0: a};
-};
-var _user$project$App$KeyDown = function (a) {
-	return {ctor: 'KeyDown', _0: a};
-};
-var _user$project$App$subscriptions = function (model) {
+
+var _user$project$App_Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App$KeyDown),
+			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App$KeyUp),
+				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$App$CotosFetched = function (a) {
-	return {ctor: 'CotosFetched', _0: a};
-};
-var _user$project$App$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$App$decodeCoto)));
-var _user$project$App$SessionFetched = function (a) {
-	return {ctor: 'SessionFetched', _0: a};
-};
-var _user$project$App$fetchSession = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App$SessionFetched,
-	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App$decodeSession));
+
 var _user$project$App$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],
-	_user$project$App$initModel,
+	_user$project$App_Model$initModel,
 	{
 		ctor: '::',
-		_0: _user$project$App$fetchSession,
+		_0: _user$project$App_Update$fetchSession,
 		_1: {
 			ctor: '::',
-			_0: _user$project$App$fetchCotos,
+			_0: _user$project$App_Update$fetchCotos,
 			_1: {ctor: '[]'}
 		}
 	});
-var _user$project$App$NoOp = {ctor: 'NoOp'};
-var _user$project$App$handleScrollResult = function (result) {
-	var _p3 = result;
-	if (_p3.ctor === 'Ok') {
-		return _user$project$App$NoOp;
-	} else {
-		return _user$project$App$NoOp;
-	}
-};
-var _user$project$App$post = function (model) {
-	return A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		_elm_lang$core$Native_Utils.update(
-			model,
-			{
-				cotos: {
-					ctor: '::',
-					_0: _user$project$App$Coto(model.newCoto),
-					_1: model.cotos
-				},
-				newCoto: ''
-			}),
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$core$Task$attempt,
-				_user$project$App$handleScrollResult,
-				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
-			_1: {
-				ctor: '::',
-				_0: _user$project$App$postCoto(
-					_user$project$App$Coto(model.newCoto)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$App$update = F2(
-	function (msg, model) {
-		var _p4 = msg;
-		switch (_p4.ctor) {
-			case 'NoOp':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
-			case 'SessionFetched':
-				if (_p4._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								session: _elm_lang$core$Maybe$Just(_p4._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'CotosFetched':
-				if (_p4._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{cotos: _p4._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'KeyDown':
-				var _p5 = _p4._0;
-				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'KeyUp':
-				var _p6 = _p4._0;
-				return (_elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'EditorFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorBlur':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newCoto: _p4._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p4._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$App$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Post':
-				return _user$project$App$post(model);
-			case 'CotoPosted':
-				if (_p4._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'SigninClick':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{showSigninModal: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninModalClose':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{showSigninModal: false, signinRequestDone: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninEmailInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{signinEmail: _p4._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninWithAnonymousCotosCheck':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{signinWithAnonymousCotos: _p4._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninRequestClick':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{signinRequestProcessing: true}),
-					{
-						ctor: '::',
-						_0: A2(_user$project$App$requestSignin, model.signinEmail, model.signinWithAnonymousCotos),
-						_1: {ctor: '[]'}
-					});
-			default:
-				if (_p4._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{signinEmail: '', signinRequestProcessing: false, signinRequestDone: true}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{signinRequestProcessing: false}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-		}
-	});
 var _user$project$App$main = _elm_lang$html$Html$program(
-	{init: _user$project$App$init, view: _user$project$App$view, update: _user$project$App$update, subscriptions: _user$project$App$subscriptions})();
+	{init: _user$project$App$init, view: _user$project$App_View$view, update: _user$project$App_Update$update, subscriptions: _user$project$App_Subscriptions$subscriptions})();
 
 var Elm = {};
 Elm['App'] = Elm['App'] || {};
