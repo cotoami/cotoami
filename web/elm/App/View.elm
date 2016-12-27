@@ -9,25 +9,13 @@ import Exts.Maybe exposing (isJust)
 import Utils exposing (isBlank, validateEmail)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import Components.AppHeader
 import Components.SigninModal
 
 view : Model -> Html Msg
 view model =
     div [ id "app" ]
-        [ div [ id "app-header" ]
-            [ div [ class "title" ]
-                [ i [ class "material-icons" ] [ text "home" ]
-                ]
-            , div [ class "user" ]
-                (case model.session of
-                    Nothing -> 
-                        [ a [ href "#", title "Sign in", onClick SigninClick ] 
-                            [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
-                        ]
-                    Just session -> 
-                        [ img [ class "avatar", src session.avatarUrl ] [] ]
-                )
-            ]
+        [ Components.AppHeader.view model
         , div [ id "app-body", class "container" ]
             [ div [ id "timeline-column", class (timelineClass model) ]
                 [ div [ id "timeline" ]
