@@ -54,8 +54,9 @@ exports.config = {
   plugins: {
     elmBrunch: {
       elmFolder: "web/elm",
-      mainModules: ["App.elm"],
-      outputFolder: "../static/vendor"
+      mainModules: ["Main.elm"],
+      outputFolder: "../static/vendor",
+      outputFile: "elm.js"
     },
     babel: {
       // Do not use ES6 compiler in vendor code

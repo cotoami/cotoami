@@ -10288,6 +10288,74 @@ var _user$project$App_Messages$SessionFetched = function (a) {
 };
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Commands$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'content',
+							_1: _elm_lang$core$Json_Encode$string(coto.content)
+						},
+						_1: {ctor: '[]'}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$App_Commands$decodeCoto = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$App_Model$Coto,
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$App_Messages$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$App_Commands$encodeCoto(coto)),
+			_user$project$App_Commands$decodeCoto));
+};
+var _user$project$App_Commands$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$App_Commands$decodeCoto)));
+var _user$project$App_Commands$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Model$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
+
+var _user$project$App_Subscriptions$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
 var _user$project$Keys$zero = {keyCode: 58, name: '0'};
 var _user$project$Keys$nine = {keyCode: 57, name: '9'};
 var _user$project$Keys$eight = {keyCode: 56, name: '8'};
@@ -10359,61 +10427,6 @@ var _user$project$Keys$Key = F2(
 	function (a, b) {
 		return {keyCode: a, name: b};
 	});
-
-var _user$project$App_Commands$encodeCoto = function (coto) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'coto',
-				_1: _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'content',
-							_1: _elm_lang$core$Json_Encode$string(coto.content)
-						},
-						_1: {ctor: '[]'}
-					})
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$App_Commands$decodeCoto = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$App_Model$Coto,
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Commands$postCoto = function (coto) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App_Messages$CotoPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/api/cotos',
-			_elm_lang$http$Http$jsonBody(
-				_user$project$App_Commands$encodeCoto(coto)),
-			_user$project$App_Commands$decodeCoto));
-};
-var _user$project$App_Commands$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$App_Commands$decodeCoto)));
-var _user$project$App_Commands$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App_Model$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Commands$fetchSession = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$SessionFetched,
-	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
 
 var _user$project$App_Update$handleScrollResult = function (result) {
 	var _p0 = result;
@@ -10965,20 +10978,7 @@ var _user$project$App_View$view = function (model) {
 		});
 };
 
-var _user$project$App_Subscriptions$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
-var _user$project$App$init = A2(
+var _user$project$Main$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],
 	_user$project$App_Model$initModel,
 	{
@@ -10990,13 +10990,13 @@ var _user$project$App$init = A2(
 			_1: {ctor: '[]'}
 		}
 	});
-var _user$project$App$main = _elm_lang$html$Html$program(
-	{init: _user$project$App$init, view: _user$project$App_View$view, update: _user$project$App_Update$update, subscriptions: _user$project$App_Subscriptions$subscriptions})();
+var _user$project$Main$main = _elm_lang$html$Html$program(
+	{init: _user$project$Main$init, view: _user$project$App_View$view, update: _user$project$App_Update$update, subscriptions: _user$project$App_Subscriptions$subscriptions})();
 
 var Elm = {};
-Elm['App'] = Elm['App'] || {};
-if (typeof _user$project$App$main !== 'undefined') {
-    _user$project$App$main(Elm['App'], 'App', undefined);
+Elm['Main'] = Elm['Main'] || {};
+if (typeof _user$project$Main$main !== 'undefined') {
+    _user$project$Main$main(Elm['Main'], 'Main', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
