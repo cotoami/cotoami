@@ -17,5 +17,5 @@ type Msg
     | EditorKeyDown KeyCode
     | Post
     | CotoPosted (Result Http.Error Coto)
-    | SigninClick
+    | OpenSigninModal
     | SigninModalMsg Components.SigninModal.Msg

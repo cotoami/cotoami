@@ -10261,7 +10261,7 @@ var _user$project$App_Model$Model = F6(
 var _user$project$App_Messages$SigninModalMsg = function (a) {
 	return {ctor: 'SigninModalMsg', _0: a};
 };
-var _user$project$App_Messages$SigninClick = {ctor: 'SigninClick'};
+var _user$project$App_Messages$OpenSigninModal = {ctor: 'OpenSigninModal'};
 var _user$project$App_Messages$CotoPosted = function (a) {
 	return {ctor: 'CotoPosted', _0: a};
 };
@@ -10550,7 +10550,7 @@ var _user$project$App_Update$update = F2(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'SigninClick':
+			case 'OpenSigninModal':
 				var signinModal = model.signinModal;
 				return {
 					ctor: '_Tuple2',
@@ -10634,7 +10634,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$SigninClick),
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
 												_1: {ctor: '[]'}
 											}
 										}

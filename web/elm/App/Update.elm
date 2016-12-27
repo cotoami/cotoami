@@ -64,7 +64,7 @@ update msg model =
         CotoPosted (Err _) ->
             ( model, Cmd.none )
             
-        SigninClick ->
+        OpenSigninModal ->
             let
                 signinModal = model.signinModal
             in

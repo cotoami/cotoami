@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg(SigninClick))
+import App.Messages exposing (Msg(OpenSigninModal))
 
 view : Model -> Html Msg
 view model =
@@ -15,7 +15,7 @@ view model =
         , div [ class "user" ]
             (case model.session of
                 Nothing -> 
-                    [ a [ href "#", title "Sign in", onClick SigninClick ] 
+                    [ a [ href "#", title "Sign in", onClick OpenSigninModal ] 
                         [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
                     ]
                 Just session -> 
