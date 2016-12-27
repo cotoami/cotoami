@@ -9843,6 +9843,75 @@ var _user$project$App_Messages$SessionFetched = function (a) {
 };
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Commands$requestSignin = F2(
+	function (email, saveAnonymous) {
+		var url = A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/api/signin/request/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				email,
+				saveAnonymous ? '/yes' : '/no'));
+		return A2(
+			_elm_lang$http$Http$send,
+			_user$project$App_Messages$SigninRequestDone,
+			A2(_elm_lang$http$Http$get, url, _elm_lang$core$Json_Decode$string));
+	});
+var _user$project$App_Commands$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'content',
+							_1: _elm_lang$core$Json_Encode$string(coto.content)
+						},
+						_1: {ctor: '[]'}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$App_Commands$decodeCoto = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$App_Model$Coto,
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$App_Messages$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$App_Commands$encodeCoto(coto)),
+			_user$project$App_Commands$decodeCoto));
+};
+var _user$project$App_Commands$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$App_Commands$decodeCoto)));
+var _user$project$App_Commands$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Model$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
+
 var _user$project$App_Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
@@ -9938,74 +10007,6 @@ var _user$project$Utils$validateEmail = function (string) {
 	return (!_user$project$Utils$isBlank(string)) && A2(_elm_lang$core$Regex$contains, _user$project$Utils$emailRegex, string);
 };
 
-var _user$project$App_Update$requestSignin = F2(
-	function (email, saveAnonymous) {
-		var url = A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/api/signin/request/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				email,
-				saveAnonymous ? '/yes' : '/no'));
-		return A2(
-			_elm_lang$http$Http$send,
-			_user$project$App_Messages$SigninRequestDone,
-			A2(_elm_lang$http$Http$get, url, _elm_lang$core$Json_Decode$string));
-	});
-var _user$project$App_Update$encodeCoto = function (coto) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'coto',
-				_1: _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'content',
-							_1: _elm_lang$core$Json_Encode$string(coto.content)
-						},
-						_1: {ctor: '[]'}
-					})
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$App_Update$decodeCoto = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$App_Model$Coto,
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Update$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App_Model$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Update$postCoto = function (coto) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App_Messages$CotoPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/api/cotos',
-			_elm_lang$http$Http$jsonBody(
-				_user$project$App_Update$encodeCoto(coto)),
-			_user$project$App_Update$decodeCoto));
-};
-var _user$project$App_Update$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$App_Update$decodeCoto)));
-var _user$project$App_Update$fetchSession = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$SessionFetched,
-	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Update$decodeSession));
 var _user$project$App_Update$handleScrollResult = function (result) {
 	var _p0 = result;
 	if (_p0.ctor === 'Ok') {
@@ -10035,7 +10036,7 @@ var _user$project$App_Update$post = function (model) {
 				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
 			_1: {
 				ctor: '::',
-				_0: _user$project$App_Update$postCoto(
+				_0: _user$project$App_Commands$postCoto(
 					_user$project$App_Model$Coto(model.newCoto)),
 				_1: {ctor: '[]'}
 			}
@@ -10168,7 +10169,7 @@ var _user$project$App_Update$update = F2(
 						{signinRequestProcessing: true}),
 					{
 						ctor: '::',
-						_0: A2(_user$project$App_Update$requestSignin, model.signinEmail, model.signinWithAnonymousCotos),
+						_0: A2(_user$project$App_Commands$requestSignin, model.signinEmail, model.signinWithAnonymousCotos),
 						_1: {ctor: '[]'}
 					});
 			default:
@@ -10957,10 +10958,10 @@ var _user$project$Main$init = A2(
 	_user$project$App_Model$initModel,
 	{
 		ctor: '::',
-		_0: _user$project$App_Update$fetchSession,
+		_0: _user$project$App_Commands$fetchSession,
 		_1: {
 			ctor: '::',
-			_0: _user$project$App_Update$fetchCotos,
+			_0: _user$project$App_Commands$fetchCotos,
 			_1: {ctor: '[]'}
 		}
 	});
