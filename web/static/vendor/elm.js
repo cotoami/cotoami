@@ -10961,7 +10961,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 };
 
 var _user$project$App_View$view = function (model) {
-	var showAnonymousOption = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.cotos));
+	var anyAnonymousCotos = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.cotos));
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10998,7 +10998,7 @@ var _user$project$App_View$view = function (model) {
 					_0: A2(
 						_elm_lang$html$Html$map,
 						_user$project$App_Messages$SigninModalMsg,
-						A2(_user$project$Components_SigninModal$view, model.signinModal, showAnonymousOption)),
+						A2(_user$project$Components_SigninModal$view, model.signinModal, anyAnonymousCotos)),
 					_1: {ctor: '[]'}
 				}
 			}

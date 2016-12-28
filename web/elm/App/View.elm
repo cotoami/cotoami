@@ -13,7 +13,7 @@ import Components.SigninModal
 view : Model -> Html Msg
 view model =
     let
-        showAnonymousOption = (isNothing model.session) && not (List.isEmpty model.timeline.cotos)
+        anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.cotos)
     in
       div [ id "app" ]
           [ Components.AppHeader.view model
@@ -21,5 +21,5 @@ view model =
               [  Html.map TimelineMsg (Components.Timeline.view model.timeline model.session)
               ]
           , Html.map SigninModalMsg 
-              (Components.SigninModal.view model.signinModal showAnonymousOption)
+              (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           ]
