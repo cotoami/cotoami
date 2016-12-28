@@ -10673,16 +10673,16 @@ var _user$project$Components_AppHeader$view = function (model) {
 		});
 };
 
-var _user$project$App_View$onKeyDown = function (tagger) {
+var _user$project$Components_Timeline$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
 		'keydown',
 		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
-var _user$project$App_View$timelineClass = function (model) {
+var _user$project$Components_Timeline$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
 };
-var _user$project$App_View$markdown = function (content) {
+var _user$project$Components_Timeline$markdown = function (content) {
 	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
 	return A3(
 		_evancz$elm_markdown$Markdown$toHtmlWith,
@@ -10701,6 +10701,235 @@ var _user$project$App_View$markdown = function (content) {
 		},
 		content);
 };
+var _user$project$Components_Timeline$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(
+					_user$project$Components_Timeline$timelineClass(model)),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('timeline'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					function (coto) {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('coto'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _user$project$Components_Timeline$markdown(coto.content),
+								_1: {ctor: '[]'}
+							});
+					},
+					_elm_lang$core$List$reverse(model.cotos))),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('new-coto'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('toolbar'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewCoto),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: function () {
+									var _p0 = model.session;
+									if (_p0.ctor === 'Nothing') {
+										return A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$i,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('perm_identity'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Anonymous'),
+													_1: {ctor: '[]'}
+												}
+											});
+									} else {
+										var _p1 = _p0._0;
+										return A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('user session'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$img,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('avatar'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$src(_p1.avatarUrl),
+															_1: {ctor: '[]'}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('name'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(_p1.displayName),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											});
+									}
+								}(),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$button,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('button-primary'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$disabled(
+															_user$project$Utils$isBlank(model.newCoto)),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App_Messages$Post),
+															_1: {ctor: '[]'}
+														}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Post'),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$span,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$textarea,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('coto'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onFocus(_user$project$App_Messages$EditorFocus),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onBlur(_user$project$App_Messages$EditorBlur),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onInput(_user$project$App_Messages$EditorInput),
+														_1: {
+															ctor: '::',
+															_0: _user$project$Components_Timeline$onKeyDown(_user$project$App_Messages$EditorKeyDown),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
 var _user$project$App_View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10727,232 +10956,7 @@ var _user$project$App_View$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class(
-										_user$project$App_View$timelineClass(model)),
-									_1: {ctor: '[]'}
-								}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('timeline'),
-										_1: {ctor: '[]'}
-									},
-									A2(
-										_elm_lang$core$List$map,
-										function (coto) {
-											return A2(
-												_elm_lang$html$Html$div,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('coto'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _user$project$App_View$markdown(coto.content),
-													_1: {ctor: '[]'}
-												});
-										},
-										_elm_lang$core$List$reverse(model.cotos))),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('new-coto'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$div,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('toolbar'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewCoto),
-														_1: {ctor: '[]'}
-													}
-												},
-												{
-													ctor: '::',
-													_0: function () {
-														var _p0 = model.session;
-														if (_p0.ctor === 'Nothing') {
-															return A2(
-																_elm_lang$html$Html$span,
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
-																	_1: {ctor: '[]'}
-																},
-																{
-																	ctor: '::',
-																	_0: A2(
-																		_elm_lang$html$Html$i,
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-																			_1: {ctor: '[]'}
-																		},
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$html$Html$text('perm_identity'),
-																			_1: {ctor: '[]'}
-																		}),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html$text('Anonymous'),
-																		_1: {ctor: '[]'}
-																	}
-																});
-														} else {
-															var _p1 = _p0._0;
-															return A2(
-																_elm_lang$html$Html$span,
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('user session'),
-																	_1: {ctor: '[]'}
-																},
-																{
-																	ctor: '::',
-																	_0: A2(
-																		_elm_lang$html$Html$img,
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$class('avatar'),
-																			_1: {
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Attributes$src(_p1.avatarUrl),
-																				_1: {ctor: '[]'}
-																			}
-																		},
-																		{ctor: '[]'}),
-																	_1: {
-																		ctor: '::',
-																		_0: A2(
-																			_elm_lang$html$Html$span,
-																			{
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Attributes$class('name'),
-																				_1: {ctor: '[]'}
-																			},
-																			{
-																				ctor: '::',
-																				_0: _elm_lang$html$Html$text(_p1.displayName),
-																				_1: {ctor: '[]'}
-																			}),
-																		_1: {ctor: '[]'}
-																	}
-																});
-														}
-													}(),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$div,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$html$Html$button,
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('button-primary'),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$disabled(
-																				_user$project$Utils$isBlank(model.newCoto)),
-																			_1: {
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App_Messages$Post),
-																				_1: {ctor: '[]'}
-																			}
-																		}
-																	},
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html$text('Post'),
-																		_1: {
-																			ctor: '::',
-																			_0: A2(
-																				_elm_lang$html$Html$span,
-																				{
-																					ctor: '::',
-																					_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
-																					_1: {ctor: '[]'}
-																				},
-																				{
-																					ctor: '::',
-																					_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
-																					_1: {ctor: '[]'}
-																				}),
-																			_1: {ctor: '[]'}
-																		}
-																	}),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$textarea,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('coto'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$App_Messages$EditorFocus),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onBlur(_user$project$App_Messages$EditorBlur),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$App_Messages$EditorInput),
-																			_1: {
-																				ctor: '::',
-																				_0: _user$project$App_View$onKeyDown(_user$project$App_Messages$EditorKeyDown),
-																				_1: {ctor: '[]'}
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													},
-													{ctor: '[]'}),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
+						_0: _user$project$Components_Timeline$view(model),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
