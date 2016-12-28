@@ -8,6 +8,7 @@ import Json.Decode as Decode
 import Utils exposing (validateEmail)
 import Modal
 
+
 type alias Model =
     { open : Bool
     , email : String

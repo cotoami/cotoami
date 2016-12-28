@@ -1,36 +1,22 @@
 module App.Model exposing (..)
 
+import App.Types
 import Components.SigninModal
-
-type alias Session =
-    { id : Int
-    , email : String
-    , avatarUrl : String
-    , displayName : String
-    }
-
-
-type alias Coto =
-    { content : String
-    }
+import Components.Timeline
 
 
 type alias Model =
-    { session : Maybe Session
-    , ctrlDown : Bool
-    , editingNewCoto : Bool
-    , newCoto : String
-    , cotos : List Coto
+    { ctrlDown : Bool
+    , session : Maybe App.Types.Session
     , signinModal : Components.SigninModal.Model
+    , timeline : Components.Timeline.Model
     }
 
 
 initModel : Model
 initModel =
-    { session = Nothing
-    , ctrlDown = False
-    , editingNewCoto = False
-    , newCoto = ""
-    , cotos = []
+    { ctrlDown = False
+    , session = Nothing
     , signinModal = Components.SigninModal.initModel
+    , timeline = Components.Timeline.initModel
     }

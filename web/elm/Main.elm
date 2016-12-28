@@ -4,9 +4,10 @@ import Html exposing (program)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Update exposing (update)
-import App.Commands exposing (fetchSession, fetchCotos)
+import App.Commands exposing (fetchSession)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
+import Components.Timeline exposing (fetchCotos)
 
 main : Program Never Model Msg
 main =
@@ -20,4 +21,7 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    initModel ! [ fetchSession, fetchCotos ]
+    initModel ! 
+        [ fetchSession
+        , Cmd.map TimelineMsg fetchCotos 
+        ]

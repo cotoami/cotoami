@@ -9764,6 +9764,11 @@ var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
 	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
 };
 
+var _user$project$App_Types$Session = F4(
+	function (a, b, c, d) {
+		return {id: a, email: b, avatarUrl: c, displayName: d};
+	});
+
 var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
 	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
 var _user$project$Utils$isBlank = function (string) {
@@ -10234,124 +10239,6 @@ var _user$project$Components_SigninModal$view = F2(
 				A2(_user$project$Components_SigninModal$signinModalConfig, model, showAnonymousOption)) : _elm_lang$core$Maybe$Nothing);
 	});
 
-var _user$project$App_Model$initModel = {
-	session: _elm_lang$core$Maybe$Nothing,
-	ctrlDown: false,
-	editingNewCoto: false,
-	newCoto: '',
-	cotos: {ctor: '[]'},
-	signinModal: _user$project$Components_SigninModal$initModel
-};
-var _user$project$App_Model$Session = F4(
-	function (a, b, c, d) {
-		return {id: a, email: b, avatarUrl: c, displayName: d};
-	});
-var _user$project$App_Model$Coto = function (a) {
-	return {content: a};
-};
-var _user$project$App_Model$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {session: a, ctrlDown: b, editingNewCoto: c, newCoto: d, cotos: e, signinModal: f};
-	});
-
-var _user$project$App_Messages$SigninModalMsg = function (a) {
-	return {ctor: 'SigninModalMsg', _0: a};
-};
-var _user$project$App_Messages$OpenSigninModal = {ctor: 'OpenSigninModal'};
-var _user$project$App_Messages$CotoPosted = function (a) {
-	return {ctor: 'CotoPosted', _0: a};
-};
-var _user$project$App_Messages$Post = {ctor: 'Post'};
-var _user$project$App_Messages$EditorKeyDown = function (a) {
-	return {ctor: 'EditorKeyDown', _0: a};
-};
-var _user$project$App_Messages$EditorInput = function (a) {
-	return {ctor: 'EditorInput', _0: a};
-};
-var _user$project$App_Messages$EditorBlur = {ctor: 'EditorBlur'};
-var _user$project$App_Messages$EditorFocus = {ctor: 'EditorFocus'};
-var _user$project$App_Messages$KeyUp = function (a) {
-	return {ctor: 'KeyUp', _0: a};
-};
-var _user$project$App_Messages$KeyDown = function (a) {
-	return {ctor: 'KeyDown', _0: a};
-};
-var _user$project$App_Messages$CotosFetched = function (a) {
-	return {ctor: 'CotosFetched', _0: a};
-};
-var _user$project$App_Messages$SessionFetched = function (a) {
-	return {ctor: 'SessionFetched', _0: a};
-};
-var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
-
-var _user$project$App_Commands$encodeCoto = function (coto) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'coto',
-				_1: _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'content',
-							_1: _elm_lang$core$Json_Encode$string(coto.content)
-						},
-						_1: {ctor: '[]'}
-					})
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$App_Commands$decodeCoto = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$App_Model$Coto,
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Commands$postCoto = function (coto) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App_Messages$CotoPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/api/cotos',
-			_elm_lang$http$Http$jsonBody(
-				_user$project$App_Commands$encodeCoto(coto)),
-			_user$project$App_Commands$decodeCoto));
-};
-var _user$project$App_Commands$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$App_Commands$decodeCoto)));
-var _user$project$App_Commands$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App_Model$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Commands$fetchSession = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$SessionFetched,
-	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
-
-var _user$project$App_Subscriptions$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
 var _user$project$Keys$zero = {keyCode: 58, name: '0'};
 var _user$project$Keys$nine = {keyCode: 57, name: '9'};
 var _user$project$Keys$eight = {keyCode: 56, name: '8'};
@@ -10424,15 +10311,343 @@ var _user$project$Keys$Key = F2(
 		return {keyCode: a, name: b};
 	});
 
-var _user$project$App_Update$handleScrollResult = function (result) {
-	var _p0 = result;
-	if (_p0.ctor === 'Ok') {
-		return _user$project$App_Messages$NoOp;
+var _user$project$Components_Timeline$onKeyDown = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'keydown',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
+};
+var _user$project$Components_Timeline$timelineClass = function (model) {
+	return model.editingNewCoto ? 'editing' : '';
+};
+var _user$project$Components_Timeline$markdown = function (content) {
+	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
+	return A3(
+		_evancz$elm_markdown$Markdown$toHtmlWith,
+		_elm_lang$core$Native_Utils.update(
+			defaultOptions,
+			{
+				githubFlavored: _elm_lang$core$Maybe$Just(
+					{tables: true, breaks: true}),
+				sanitize: true,
+				smartypants: true
+			}),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {ctor: '[]'}
+		},
+		content);
+};
+var _user$project$Components_Timeline$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'content',
+							_1: _elm_lang$core$Json_Encode$string(coto.content)
+						},
+						_1: {ctor: '[]'}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Components_Timeline$initModel = {
+	editingNewCoto: false,
+	newCoto: '',
+	cotos: {ctor: '[]'}
+};
+var _user$project$Components_Timeline$Coto = function (a) {
+	return {content: a};
+};
+var _user$project$Components_Timeline$decodeCoto = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Components_Timeline$Coto,
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+var _user$project$Components_Timeline$Model = F3(
+	function (a, b, c) {
+		return {editingNewCoto: a, newCoto: b, cotos: c};
+	});
+var _user$project$Components_Timeline$CotoPosted = function (a) {
+	return {ctor: 'CotoPosted', _0: a};
+};
+var _user$project$Components_Timeline$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Components_Timeline$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$Components_Timeline$encodeCoto(coto)),
+			_user$project$Components_Timeline$decodeCoto));
+};
+var _user$project$Components_Timeline$Post = {ctor: 'Post'};
+var _user$project$Components_Timeline$EditorKeyDown = function (a) {
+	return {ctor: 'EditorKeyDown', _0: a};
+};
+var _user$project$Components_Timeline$EditorInput = function (a) {
+	return {ctor: 'EditorInput', _0: a};
+};
+var _user$project$Components_Timeline$EditorBlur = {ctor: 'EditorBlur'};
+var _user$project$Components_Timeline$EditorFocus = {ctor: 'EditorFocus'};
+var _user$project$Components_Timeline$view = F2(
+	function (model, session) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class(
+						_user$project$Components_Timeline$timelineClass(model)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('timeline'),
+						_1: {ctor: '[]'}
+					},
+					A2(
+						_elm_lang$core$List$map,
+						function (coto) {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('coto'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _user$project$Components_Timeline$markdown(coto.content),
+									_1: {ctor: '[]'}
+								});
+						},
+						_elm_lang$core$List$reverse(model.cotos))),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('new-coto'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('toolbar'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewCoto),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: function () {
+										var _p0 = session;
+										if (_p0.ctor === 'Nothing') {
+											return A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$i,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('perm_identity'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Anonymous'),
+														_1: {ctor: '[]'}
+													}
+												});
+										} else {
+											var _p1 = _p0._0;
+											return A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('user session'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$img,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('avatar'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$src(_p1.avatarUrl),
+																_1: {ctor: '[]'}
+															}
+														},
+														{ctor: '[]'}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$span,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('name'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text(_p1.displayName),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												});
+										}
+									}(),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$button,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('button-primary'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$disabled(
+																_user$project$Utils$isBlank(model.newCoto)),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$Components_Timeline$Post),
+																_1: {ctor: '[]'}
+															}
+														}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Post'),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$span,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
+																	_1: {ctor: '[]'}
+																},
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$textarea,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('coto'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onFocus(_user$project$Components_Timeline$EditorFocus),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onBlur(_user$project$Components_Timeline$EditorBlur),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_Timeline$EditorInput),
+															_1: {
+																ctor: '::',
+																_0: _user$project$Components_Timeline$onKeyDown(_user$project$Components_Timeline$EditorKeyDown),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Components_Timeline$CotosFetched = function (a) {
+	return {ctor: 'CotosFetched', _0: a};
+};
+var _user$project$Components_Timeline$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Components_Timeline$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline$decodeCoto)));
+var _user$project$Components_Timeline$NoOp = {ctor: 'NoOp'};
+var _user$project$Components_Timeline$handleScrollResult = function (result) {
+	var _p2 = result;
+	if (_p2.ctor === 'Ok') {
+		return _user$project$Components_Timeline$NoOp;
 	} else {
-		return _user$project$App_Messages$NoOp;
+		return _user$project$Components_Timeline$NoOp;
 	}
 };
-var _user$project$App_Update$post = function (model) {
+var _user$project$Components_Timeline$post = function (model) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		_elm_lang$core$Native_Utils.update(
@@ -10440,7 +10655,7 @@ var _user$project$App_Update$post = function (model) {
 			{
 				cotos: {
 					ctor: '::',
-					_0: _user$project$App_Model$Coto(model.newCoto),
+					_0: _user$project$Components_Timeline$Coto(model.newCoto),
 					_1: model.cotos
 				},
 				newCoto: ''
@@ -10449,69 +10664,37 @@ var _user$project$App_Update$post = function (model) {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$core$Task$attempt,
-				_user$project$App_Update$handleScrollResult,
+				_user$project$Components_Timeline$handleScrollResult,
 				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
 			_1: {
 				ctor: '::',
-				_0: _user$project$App_Commands$postCoto(
-					_user$project$App_Model$Coto(model.newCoto)),
+				_0: _user$project$Components_Timeline$postCoto(
+					_user$project$Components_Timeline$Coto(model.newCoto)),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$App_Update$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+var _user$project$Components_Timeline$update = F3(
+	function (msg, model, ctrlDown) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
-			case 'SessionFetched':
-				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								session: _elm_lang$core$Maybe$Just(_p1._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
 			case 'CotosFetched':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{cotos: _p1._0._0}),
+							{cotos: _p3._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'KeyDown':
-				var _p2 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'KeyUp':
-				var _p3 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'EditorFocus':
 				return {
 					ctor: '_Tuple2',
@@ -10533,19 +10716,112 @@ var _user$project$App_Update$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newCoto: _p1._0}),
+						{newCoto: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (model.ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$App_Update$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p3._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
-				return _user$project$App_Update$post(model);
-			case 'CotoPosted':
-				if (_p1._0.ctor === 'Ok') {
+				return _user$project$Components_Timeline$post(model);
+			default:
+				if (_p3._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+		}
+	});
+
+var _user$project$App_Messages$TimelineMsg = function (a) {
+	return {ctor: 'TimelineMsg', _0: a};
+};
+var _user$project$App_Messages$SigninModalMsg = function (a) {
+	return {ctor: 'SigninModalMsg', _0: a};
+};
+var _user$project$App_Messages$OpenSigninModal = {ctor: 'OpenSigninModal'};
+var _user$project$App_Messages$KeyUp = function (a) {
+	return {ctor: 'KeyUp', _0: a};
+};
+var _user$project$App_Messages$KeyDown = function (a) {
+	return {ctor: 'KeyDown', _0: a};
+};
+var _user$project$App_Messages$SessionFetched = function (a) {
+	return {ctor: 'SessionFetched', _0: a};
+};
+var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
+
+var _user$project$App_Commands$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Types$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
+
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, timeline: _user$project$Components_Timeline$initModel};
+var _user$project$App_Model$Model = F4(
+	function (a, b, c, d) {
+		return {ctrlDown: a, session: b, signinModal: c, timeline: d};
+	});
+
+var _user$project$App_Subscriptions$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
+var _user$project$App_Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'SessionFetched':
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								session: _elm_lang$core$Maybe$Just(_p0._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'KeyDown':
+				var _p1 = _p0._0;
+				return (_elm_lang$core$Native_Utils.eq(_p1, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p1, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'KeyUp':
+				var _p2 = _p0._0;
+				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'OpenSigninModal':
 				var signinModal = model.signinModal;
 				return {
@@ -10559,16 +10835,27 @@ var _user$project$App_Update$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
-				var _p4 = A2(_user$project$Components_SigninModal$update, _p1._0, model.signinModal);
-				var signinModal = _p4._0;
-				var cmd = _p4._1;
+			case 'SigninModalMsg':
+				var _p3 = A2(_user$project$Components_SigninModal$update, _p0._0, model.signinModal);
+				var signinModal = _p3._0;
+				var cmd = _p3._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{signinModal: signinModal}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd)
+				};
+			default:
+				var _p4 = A3(_user$project$Components_Timeline$update, _p0._0, model.timeline, model.ctrlDown);
+				var timeline = _p4._0;
+				var cmd = _p4._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{timeline: timeline}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 				};
 		}
 	});
@@ -10673,264 +10960,8 @@ var _user$project$Components_AppHeader$view = function (model) {
 		});
 };
 
-var _user$project$Components_Timeline$onKeyDown = function (tagger) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'keydown',
-		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
-};
-var _user$project$Components_Timeline$timelineClass = function (model) {
-	return model.editingNewCoto ? 'editing' : '';
-};
-var _user$project$Components_Timeline$markdown = function (content) {
-	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
-	return A3(
-		_evancz$elm_markdown$Markdown$toHtmlWith,
-		_elm_lang$core$Native_Utils.update(
-			defaultOptions,
-			{
-				githubFlavored: _elm_lang$core$Maybe$Just(
-					{tables: true, breaks: true}),
-				sanitize: true,
-				smartypants: true
-			}),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('content'),
-			_1: {ctor: '[]'}
-		},
-		content);
-};
-var _user$project$Components_Timeline$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class(
-					_user$project$Components_Timeline$timelineClass(model)),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('timeline'),
-					_1: {ctor: '[]'}
-				},
-				A2(
-					_elm_lang$core$List$map,
-					function (coto) {
-						return A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('coto'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _user$project$Components_Timeline$markdown(coto.content),
-								_1: {ctor: '[]'}
-							});
-					},
-					_elm_lang$core$List$reverse(model.cotos))),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$id('new-coto'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('toolbar'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$hidden(!model.editingNewCoto),
-									_1: {ctor: '[]'}
-								}
-							},
-							{
-								ctor: '::',
-								_0: function () {
-									var _p0 = model.session;
-									if (_p0.ctor === 'Nothing') {
-										return A2(
-											_elm_lang$html$Html$span,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('user anonymous'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$i,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('perm_identity'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Anonymous'),
-													_1: {ctor: '[]'}
-												}
-											});
-									} else {
-										var _p1 = _p0._0;
-										return A2(
-											_elm_lang$html$Html$span,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('user session'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$img,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('avatar'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$src(_p1.avatarUrl),
-															_1: {ctor: '[]'}
-														}
-													},
-													{ctor: '[]'}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$span,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('name'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text(_p1.displayName),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												}
-											});
-									}
-								}(),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('tool-buttons'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$button,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('button-primary'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$disabled(
-															_user$project$Utils$isBlank(model.newCoto)),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$App_Messages$Post),
-															_1: {ctor: '[]'}
-														}
-													}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Post'),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$span,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('shortcut-help'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('(Ctrl + Enter)'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$textarea,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onFocus(_user$project$App_Messages$EditorFocus),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onBlur(_user$project$App_Messages$EditorBlur),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(_user$project$App_Messages$EditorInput),
-														_1: {
-															ctor: '::',
-															_0: _user$project$Components_Timeline$onKeyDown(_user$project$App_Messages$EditorKeyDown),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
 var _user$project$App_View$view = function (model) {
+	var showAnonymousOption = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.cotos));
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10956,7 +10987,10 @@ var _user$project$App_View$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _user$project$Components_Timeline$view(model),
+						_0: A2(
+							_elm_lang$html$Html$map,
+							_user$project$App_Messages$TimelineMsg,
+							A2(_user$project$Components_Timeline$view, model.timeline, model.session)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -10964,10 +10998,7 @@ var _user$project$App_View$view = function (model) {
 					_0: A2(
 						_elm_lang$html$Html$map,
 						_user$project$App_Messages$SigninModalMsg,
-						A2(
-							_user$project$Components_SigninModal$view,
-							model.signinModal,
-							_krisajenkins$elm_exts$Exts_Maybe$isJust(model.session) || _elm_lang$core$List$isEmpty(model.cotos))),
+						A2(_user$project$Components_SigninModal$view, model.signinModal, showAnonymousOption)),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -10982,7 +11013,7 @@ var _user$project$Main$init = A2(
 		_0: _user$project$App_Commands$fetchSession,
 		_1: {
 			ctor: '::',
-			_0: _user$project$App_Commands$fetchCotos,
+			_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline$fetchCotos),
 			_1: {ctor: '[]'}
 		}
 	});

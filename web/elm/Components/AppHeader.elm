@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(OpenSigninModal))
 
+
 view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
