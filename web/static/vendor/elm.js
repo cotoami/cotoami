@@ -10273,7 +10273,7 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('profile'),
+							_0: _elm_lang$html$Html_Attributes$class('profile container'),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -10282,85 +10282,66 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('avatar-box'),
+									_0: _elm_lang$html$Html_Attributes$class('row'),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$a,
+										_elm_lang$html$Html$div,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$href('https://gravatar.com/'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$target('_blank'),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$html$Html_Attributes$class('avatar-box three columns'),
+											_1: {ctor: '[]'}
 										},
 										{
 											ctor: '::',
 											_0: A2(
-												_elm_lang$html$Html$img,
+												_elm_lang$html$Html$a,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('avatar'),
+													_0: _elm_lang$html$Html_Attributes$href('https://gravatar.com/'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$src(session.avatarUrl),
+														_0: _elm_lang$html$Html_Attributes$target('_blank'),
 														_1: {ctor: '[]'}
 													}
 												},
-												{ctor: '[]'}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('profile-info'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$label,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Name'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$input,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$type_('text'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$value(session.displayName),
-														_1: {
+													_0: A2(
+														_elm_lang$html$Html$img,
+														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$disabled(true),
-															_1: {ctor: '[]'}
-														}
-													}
-												},
-												{ctor: '[]'}),
-											_1: {
+															_0: _elm_lang$html$Html_Attributes$class('avatar'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$src(session.avatarUrl),
+																_1: {ctor: '[]'}
+															}
+														},
+														{ctor: '[]'}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('profile-info nine columns'),
+												_1: {ctor: '[]'}
+											},
+											{
 												ctor: '::',
 												_0: A2(
 													_elm_lang$html$Html$label,
 													{ctor: '[]'},
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text('Email Address'),
+														_0: _elm_lang$html$Html$text('Name'),
 														_1: {ctor: '[]'}
 													}),
 												_1: {
@@ -10372,22 +10353,60 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 															_0: _elm_lang$html$Html_Attributes$type_('text'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$value(session.email),
+																_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$disabled(true),
-																	_1: {ctor: '[]'}
+																	_0: _elm_lang$html$Html_Attributes$value(session.displayName),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$disabled(true),
+																		_1: {ctor: '[]'}
+																	}
 																}
 															}
 														},
 														{ctor: '[]'}),
-													_1: {ctor: '[]'}
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$label,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('Email Address'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$input,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$type_('text'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$value(session.email),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$disabled(true),
+																				_1: {ctor: '[]'}
+																			}
+																		}
+																	}
+																},
+																{ctor: '[]'}),
+															_1: {ctor: '[]'}
+														}
+													}
 												}
-											}
-										}
-									}),
-								_1: {ctor: '[]'}
-							}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				}),

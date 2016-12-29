@@ -47,24 +47,28 @@ modalConfig model session =
     { closeMessage = Close
     , title = "Amishi Profile"
     , content = div [ id "profile-modal-content" ]
-        [ div [ class "profile" ]
-            [ div [ class "avatar-box" ]
-                [ a [ href "https://gravatar.com/", target "_blank" ]
-                    [ img [ class "avatar", src session.avatarUrl ] [] ]
-                ]
-            , div [ class "profile-info" ]
-                [ label [] [ text "Name" ]
-                , input 
-                    [ type_ "text"
-                    , value session.displayName
-                    , disabled True
-                    ] [] 
-                , label [] [ text "Email Address" ]
-                , input 
-                    [ type_ "text"
-                    , value session.email
-                    , disabled True
-                    ] [] 
+        [ div [ class "profile container" ]
+            [ div [ class "row" ]
+                [ div [ class "avatar-box three columns" ]
+                    [ a [ href "https://gravatar.com/", target "_blank" ]
+                        [ img [ class "avatar", src session.avatarUrl ] [] ]
+                    ]
+                , div [ class "profile-info nine columns" ]
+                    [ label [] [ text "Name" ]
+                    , input 
+                        [ type_ "text"
+                        , class "u-full-width"
+                        , value session.displayName
+                        , disabled True
+                        ] [] 
+                    , label [] [ text "Email Address" ]
+                    , input 
+                        [ type_ "text"
+                        , class "u-full-width"
+                        , value session.email
+                        , disabled True
+                        ] [] 
+                    ]
                 ]
             ]
         ]
