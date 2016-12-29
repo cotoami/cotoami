@@ -47,7 +47,24 @@ modalConfig model session =
     { closeMessage = Close
     , title = "Amishi Profile"
     , content = div [ id "profile-modal-content" ]
-        [ img [ class "avatar", src session.avatarUrl ] []
+        [ div [ class "profile" ]
+            [ div [ class "avatar-box" ]
+                [ img [ class "avatar", src session.avatarUrl ] [] ]
+            , div [ class "profile-info" ]
+                [ label [] [ text "Name" ]
+                , input 
+                    [ type_ "text"
+                    , value session.displayName
+                    , disabled True
+                    ] [] 
+                , label [] [ text "Email Address" ]
+                , input 
+                    [ type_ "text"
+                    , value session.email
+                    , disabled True
+                    ] [] 
+                ]
+            ]
         ]
     , buttons = 
         [ a [ class "button", href "/signout" ] [ text "Sign out" ]
