@@ -10286,11 +10286,15 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 			buttons: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$button,
+					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$class('button'),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('/signout'),
+							_1: {ctor: '[]'}
+						}
 					},
 					{
 						ctor: '::',
@@ -10312,7 +10316,7 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('OK'),
+							_0: _elm_lang$html$Html$text('Close'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

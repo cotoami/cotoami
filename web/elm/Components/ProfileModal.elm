@@ -50,7 +50,7 @@ modalConfig model session =
         [ img [ class "avatar", src session.avatarUrl ] []
         ]
     , buttons = 
-        [ button [ class "button" ] [ text "Sign out" ]
-        , button [ class "button button-primary", onClick Close ] [ text "OK" ] 
+        [ a [ class "button", href "/signout" ] [ text "Sign out" ]
+        , button [ class "button button-primary", onClick Close ] [ text "Close" ] 
         ]
     }

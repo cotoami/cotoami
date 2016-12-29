@@ -21,6 +21,7 @@ defmodule Cotoami.Router do
 
     get "/", PageController, :index
     get "/signin/:token/:anonymous_id", SigninController, :signin
+    get "/signout", SessionController, :signout
   end
 
   scope "/api", Cotoami do
