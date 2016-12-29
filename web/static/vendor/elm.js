@@ -10262,8 +10262,27 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 			title: 'Amishi Profile',
 			content: A2(
 				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{ctor: '[]'}),
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('profile-modal-content'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('avatar'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$src(session.avatarUrl),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
 			buttons: {
 				ctor: '::',
 				_0: A2(

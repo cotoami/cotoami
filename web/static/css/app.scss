@@ -160,3 +160,13 @@ html, body, #elm-container, #app, #app-body {
     margin: 0;
   }
 }
+
+#profile-modal-content {
+  img.avatar {
+    margin: 0;
+    padding: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+  }
+}

@@ -46,8 +46,9 @@ modalConfig : Model -> Session -> Modal.Config Msg
 modalConfig model session =
     { closeMessage = Close
     , title = "Amishi Profile"
-    , content = div []
-        []
+    , content = div [ id "profile-modal-content" ]
+        [ img [ class "avatar", src session.avatarUrl ] []
+        ]
     , buttons = 
         [ button [ class "button" ] [ text "Sign out" ]
         , button [ class "button button-primary", onClick Close ] [ text "OK" ] 
