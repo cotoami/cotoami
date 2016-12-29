@@ -10288,17 +10288,32 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 								{
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$img,
+										_elm_lang$html$Html$a,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('avatar'),
+											_0: _elm_lang$html$Html_Attributes$href('https://gravatar.com/'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$src(session.avatarUrl),
+												_0: _elm_lang$html$Html_Attributes$target('_blank'),
 												_1: {ctor: '[]'}
 											}
 										},
-										{ctor: '[]'}),
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$img,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('avatar'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$src(session.avatarUrl),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}),
 									_1: {ctor: '[]'}
 								}),
 							_1: {

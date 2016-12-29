@@ -49,7 +49,9 @@ modalConfig model session =
     , content = div [ id "profile-modal-content" ]
         [ div [ class "profile" ]
             [ div [ class "avatar-box" ]
-                [ img [ class "avatar", src session.avatarUrl ] [] ]
+                [ a [ href "https://gravatar.com/", target "_blank" ]
+                    [ img [ class "avatar", src session.avatarUrl ] [] ]
+                ]
             , div [ class "profile-info" ]
                 [ label [] [ text "Name" ]
                 , input 
