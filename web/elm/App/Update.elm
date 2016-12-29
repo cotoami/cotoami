@@ -4,6 +4,7 @@ import Keys exposing (ctrl, meta, enter)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.SigninModal
+import Components.ProfileModal
 import Components.Timeline
 
 
@@ -42,6 +43,18 @@ update msg model =
                 ( signinModal, cmd ) = Components.SigninModal.update subMsg model.signinModal
             in
                 ( { model | signinModal = signinModal }, Cmd.map SigninModalMsg cmd )
+                
+        OpenProfileModal ->
+            let
+                profileModal = model.profileModal
+            in
+                ( { model | profileModal = { profileModal | open = True } }, Cmd.none )
+                
+        ProfileModalMsg subMsg ->
+            let
+                ( profileModal, cmd ) = Components.ProfileModal.update subMsg model.profileModal
+            in
+                ( { model | profileModal = profileModal }, Cmd.map ProfileModalMsg cmd )
         
         TimelineMsg subMsg ->
             let

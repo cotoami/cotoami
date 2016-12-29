@@ -10239,6 +10239,82 @@ var _user$project$Components_SigninModal$view = F2(
 				A2(_user$project$Components_SigninModal$signinModalConfig, model, showAnonymousOption)) : _elm_lang$core$Maybe$Nothing);
 	});
 
+var _user$project$Components_ProfileModal$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{open: false}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Components_ProfileModal$initModel = {open: false};
+var _user$project$Components_ProfileModal$Model = function (a) {
+	return {open: a};
+};
+var _user$project$Components_ProfileModal$Close = {ctor: 'Close'};
+var _user$project$Components_ProfileModal$modalConfig = F2(
+	function (model, session) {
+		return {
+			closeMessage: _user$project$Components_ProfileModal$Close,
+			title: 'Amishi Profile',
+			content: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'}),
+			buttons: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Sign out'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_ProfileModal$Close),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('OK'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		};
+	});
+var _user$project$Components_ProfileModal$view = F2(
+	function (model, maybeSession) {
+		return _user$project$Modal$view(
+			function () {
+				var _p1 = maybeSession;
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return model.open ? _elm_lang$core$Maybe$Just(
+						A2(_user$project$Components_ProfileModal$modalConfig, model, _p1._0)) : _elm_lang$core$Maybe$Nothing;
+				}
+			}());
+	});
+
 var _user$project$Keys$zero = {keyCode: 58, name: '0'};
 var _user$project$Keys$nine = {keyCode: 57, name: '9'};
 var _user$project$Keys$eight = {keyCode: 56, name: '8'};
@@ -10735,6 +10811,10 @@ var _user$project$Components_Timeline$update = F3(
 var _user$project$App_Messages$TimelineMsg = function (a) {
 	return {ctor: 'TimelineMsg', _0: a};
 };
+var _user$project$App_Messages$ProfileModalMsg = function (a) {
+	return {ctor: 'ProfileModalMsg', _0: a};
+};
+var _user$project$App_Messages$OpenProfileModal = {ctor: 'OpenProfileModal'};
 var _user$project$App_Messages$SigninModalMsg = function (a) {
 	return {ctor: 'SigninModalMsg', _0: a};
 };
@@ -10762,10 +10842,10 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
 
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, timeline: _user$project$Components_Timeline$initModel};
-var _user$project$App_Model$Model = F4(
-	function (a, b, c, d) {
-		return {ctrlDown: a, session: b, signinModal: c, timeline: d};
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, timeline: _user$project$Components_Timeline$initModel};
+var _user$project$App_Model$Model = F5(
+	function (a, b, c, d, e) {
+		return {ctrlDown: a, session: b, signinModal: c, profileModal: d, timeline: e};
 	});
 
 var _user$project$App_Subscriptions$subscriptions = function (model) {
@@ -10846,10 +10926,34 @@ var _user$project$App_Update$update = F2(
 						{signinModal: signinModal}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd)
 				};
-			default:
-				var _p4 = A3(_user$project$Components_Timeline$update, _p0._0, model.timeline, model.ctrlDown);
-				var timeline = _p4._0;
+			case 'OpenProfileModal':
+				var profileModal = model.profileModal;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							profileModal: _elm_lang$core$Native_Utils.update(
+								profileModal,
+								{open: true})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ProfileModalMsg':
+				var _p4 = A2(_user$project$Components_ProfileModal$update, _p0._0, model.profileModal);
+				var profileModal = _p4._0;
 				var cmd = _p4._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{profileModal: profileModal}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
+				};
+			default:
+				var _p5 = A3(_user$project$Components_Timeline$update, _p0._0, model.timeline, model.ctrlDown);
+				var timeline = _p5._0;
+				var cmd = _p5._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10940,17 +11044,32 @@ var _user$project$Components_AppHeader$view = function (model) {
 							return {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$img,
+									_elm_lang$html$Html$a,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('avatar'),
+										_0: _elm_lang$html$Html_Attributes$title('Profile'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenProfileModal),
 											_1: {ctor: '[]'}
 										}
 									},
-									{ctor: '[]'}),
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('avatar'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
+													_1: {ctor: '[]'}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}),
 								_1: {ctor: '[]'}
 							};
 						}
@@ -10999,7 +11118,14 @@ var _user$project$App_View$view = function (model) {
 						_elm_lang$html$Html$map,
 						_user$project$App_Messages$SigninModalMsg,
 						A2(_user$project$Components_SigninModal$view, model.signinModal, anyAnonymousCotos)),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$map,
+							_user$project$App_Messages$ProfileModalMsg,
+							A2(_user$project$Components_ProfileModal$view, model.profileModal, model.session)),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});

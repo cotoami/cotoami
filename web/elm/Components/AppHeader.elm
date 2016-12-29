@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg(OpenSigninModal))
+import App.Messages exposing (Msg(OpenSigninModal, OpenProfileModal))
 
 
 view : Model -> Html Msg
@@ -20,6 +20,8 @@ view model =
                         [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
                     ]
                 Just session -> 
-                    [ img [ class "avatar", src session.avatarUrl ] [] ]
+                    [ a [ title "Profile", onClick OpenProfileModal ] 
+                        [ img [ class "avatar", src session.avatarUrl ] [] ] 
+                    ]
             )
         ]

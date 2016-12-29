@@ -6,8 +6,9 @@ import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
-import Components.Timeline
 import Components.SigninModal
+import Components.ProfileModal
+import Components.Timeline
 
 
 view : Model -> Html Msg
@@ -22,4 +23,6 @@ view model =
               ]
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+          , Html.map ProfileModalMsg 
+              (Components.ProfileModal.view model.profileModal model.session)
           ]
