@@ -11274,7 +11274,41 @@ var _user$project$App_View$view = function (model) {
 							_elm_lang$html$Html$map,
 							_user$project$App_Messages$ProfileModalMsg,
 							A2(_user$project$Components_ProfileModal$view, model.profileModal, model.session)),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('feedback-button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$title('News and Feedback'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$hidden(model.timeline.editingNewCoto),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$i,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('info'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}

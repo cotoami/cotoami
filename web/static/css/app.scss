@@ -6,6 +6,20 @@ html, body, #elm-container, #app, #app-body {
 
 #app {
   position: relative;
+  
+  a.feedback-button {
+    z-index: 10;
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+    
+    
+    i.material-icons {
+      font-size: 32px;
+      color: black;
+      opacity: 0.26;
+    }
+  }
 }
 
 #app-header {

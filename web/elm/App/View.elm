@@ -19,10 +19,16 @@ view model =
       div [ id "app" ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
-              [  Html.map TimelineMsg (Components.Timeline.view model.timeline model.session)
+              [ Html.map TimelineMsg (Components.Timeline.view model.timeline model.session)
               ]
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
               (Components.ProfileModal.view model.profileModal model.session)
+          , a 
+              [ class "feedback-button"
+              , title "News and Feedback"
+              , hidden (model.timeline.editingNewCoto)  
+              ] 
+              [ i [ class "material-icons" ] [ text "info" ] ] 
           ]
