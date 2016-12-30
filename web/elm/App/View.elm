@@ -26,8 +26,10 @@ view model =
           , Html.map ProfileModalMsg 
               (Components.ProfileModal.view model.profileModal model.session)
           , a 
-              [ class "feedback-button"
+              [ class "info-button"
               , title "News and Feedback"
+              , href "https://twitter.com/cotoami"
+              , target "_blank"
               , hidden (model.timeline.editingNewCoto)  
               ] 
               [ i [ class "material-icons" ] [ text "info" ] ] 

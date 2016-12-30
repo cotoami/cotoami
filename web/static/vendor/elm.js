@@ -11280,14 +11280,22 @@ var _user$project$App_View$view = function (model) {
 								_elm_lang$html$Html$a,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('feedback-button'),
+									_0: _elm_lang$html$Html_Attributes$class('info-button'),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$title('News and Feedback'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$hidden(model.timeline.editingNewCoto),
-											_1: {ctor: '[]'}
+											_0: _elm_lang$html$Html_Attributes$href('https://twitter.com/cotoami'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$target('_blank'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$hidden(model.timeline.editingNewCoto),
+													_1: {ctor: '[]'}
+												}
+											}
 										}
 									}
 								},
