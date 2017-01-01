@@ -87,9 +87,14 @@ update msg model ctrlDown =
 post : Model -> ( Model, Cmd Msg )
 post model =
     { model | cotos = (Coto model.newCoto) :: model.cotos, newCoto = "" }
-        ! [ Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") 
+        ! [ scrollToBottom
           , postCoto (Coto model.newCoto)
           ]
+
+
+scrollToBottom : Cmd Msg
+scrollToBottom =
+    Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") 
 
 
 handleScrollResult : Result Dom.Error () -> Msg

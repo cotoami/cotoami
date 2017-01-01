@@ -10873,6 +10873,10 @@ var _user$project$Components_Timeline$handleScrollResult = function (result) {
 		return _user$project$Components_Timeline$NoOp;
 	}
 };
+var _user$project$Components_Timeline$scrollToBottom = A2(
+	_elm_lang$core$Task$attempt,
+	_user$project$Components_Timeline$handleScrollResult,
+	_elm_lang$dom$Dom_Scroll$toBottom('timeline'));
 var _user$project$Components_Timeline$post = function (model) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10888,10 +10892,7 @@ var _user$project$Components_Timeline$post = function (model) {
 			}),
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$core$Task$attempt,
-				_user$project$Components_Timeline$handleScrollResult,
-				_elm_lang$dom$Dom_Scroll$toBottom('timeline')),
+			_0: _user$project$Components_Timeline$scrollToBottom,
 			_1: {
 				ctor: '::',
 				_0: _user$project$Components_Timeline$postCoto(
