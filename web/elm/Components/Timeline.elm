@@ -97,7 +97,7 @@ post model =
 scrollToBottom : Cmd Msg
 scrollToBottom =
     Process.sleep (1 * Time.millisecond)
-    |> Task.andThen (\n -> (Dom.Scroll.toBottom "timeline"))
+    |> Task.andThen (\x -> (Dom.Scroll.toBottom "timeline"))
     |> Task.attempt handleScrollResult 
 
 

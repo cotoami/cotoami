@@ -10878,7 +10878,7 @@ var _user$project$Components_Timeline$scrollToBottom = A2(
 	_user$project$Components_Timeline$handleScrollResult,
 	A2(
 		_elm_lang$core$Task$andThen,
-		function (n) {
+		function (x) {
 			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
 		},
 		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
