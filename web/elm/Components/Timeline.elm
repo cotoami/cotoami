@@ -7,6 +7,8 @@ import Dom
 import Dom.Scroll
 import Http
 import Task
+import Process
+import Time
 import Markdown
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -54,7 +56,7 @@ update msg model ctrlDown =
             model ! []
             
         CotosFetched (Ok cotos) ->
-            ( { model | cotos = cotos }, Cmd.none )
+            ( { model | cotos = cotos }, scrollToBottom )
             
         CotosFetched (Err _) ->
             ( model, Cmd.none )
@@ -94,7 +96,9 @@ post model =
 
 scrollToBottom : Cmd Msg
 scrollToBottom =
-    Task.attempt handleScrollResult (Dom.Scroll.toBottom "timeline") 
+    Process.sleep (1 * Time.millisecond)
+    |> Task.andThen (\n -> (Dom.Scroll.toBottom "timeline"))
+    |> Task.attempt handleScrollResult 
 
 
 handleScrollResult : Result Dom.Error () -> Msg

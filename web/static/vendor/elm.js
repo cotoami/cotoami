@@ -10876,7 +10876,12 @@ var _user$project$Components_Timeline$handleScrollResult = function (result) {
 var _user$project$Components_Timeline$scrollToBottom = A2(
 	_elm_lang$core$Task$attempt,
 	_user$project$Components_Timeline$handleScrollResult,
-	_elm_lang$dom$Dom_Scroll$toBottom('timeline'));
+	A2(
+		_elm_lang$core$Task$andThen,
+		function (n) {
+			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
+		},
+		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
 var _user$project$Components_Timeline$post = function (model) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10917,7 +10922,7 @@ var _user$project$Components_Timeline$update = F3(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{cotos: _p3._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
+						_1: _user$project$Components_Timeline$scrollToBottom
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
