@@ -10591,12 +10591,15 @@ var _user$project$Components_Timeline$initModel = {
 	newCoto: '',
 	cotos: {ctor: '[]'}
 };
-var _user$project$Components_Timeline$Coto = function (a) {
-	return {content: a};
-};
-var _user$project$Components_Timeline$decodeCoto = A2(
-	_elm_lang$core$Json_Decode$map,
+var _user$project$Components_Timeline$Coto = F2(
+	function (a, b) {
+		return {id: a, content: b};
+	});
+var _user$project$Components_Timeline$decodeCoto = A3(
+	_elm_lang$core$Json_Decode$map2,
 	_user$project$Components_Timeline$Coto,
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
 var _user$project$Components_Timeline$Model = F3(
 	function (a, b, c) {
@@ -10625,6 +10628,120 @@ var _user$project$Components_Timeline$EditorInput = function (a) {
 };
 var _user$project$Components_Timeline$EditorBlur = {ctor: 'EditorBlur'};
 var _user$project$Components_Timeline$EditorFocus = {ctor: 'EditorFocus'};
+var _user$project$Components_Timeline$CotoFocus = function (a) {
+	return {ctor: 'CotoFocus', _0: a};
+};
+var _user$project$Components_Timeline$CotosFetched = function (a) {
+	return {ctor: 'CotosFetched', _0: a};
+};
+var _user$project$Components_Timeline$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Components_Timeline$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline$decodeCoto)));
+var _user$project$Components_Timeline$NoOp = {ctor: 'NoOp'};
+var _user$project$Components_Timeline$handleScrollResult = function (result) {
+	var _p0 = result;
+	if (_p0.ctor === 'Ok') {
+		return _user$project$Components_Timeline$NoOp;
+	} else {
+		return _user$project$Components_Timeline$NoOp;
+	}
+};
+var _user$project$Components_Timeline$scrollToBottom = A2(
+	_elm_lang$core$Task$attempt,
+	_user$project$Components_Timeline$handleScrollResult,
+	A2(
+		_elm_lang$core$Task$andThen,
+		function (x) {
+			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
+		},
+		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
+var _user$project$Components_Timeline$post = function (model) {
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotos: {
+					ctor: '::',
+					_0: A2(_user$project$Components_Timeline$Coto, _elm_lang$core$Maybe$Nothing, model.newCoto),
+					_1: model.cotos
+				},
+				newCoto: ''
+			}),
+		{
+			ctor: '::',
+			_0: _user$project$Components_Timeline$scrollToBottom,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Components_Timeline$postCoto(
+					A2(_user$project$Components_Timeline$Coto, _elm_lang$core$Maybe$Nothing, model.newCoto)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Timeline$update = F3(
+	function (msg, model, ctrlDown) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'CotosFetched':
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{cotos: _p1._0._0}),
+						_1: _user$project$Components_Timeline$scrollToBottom
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'CotoFocus':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'EditorFocus':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorBlur':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{newCoto: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorKeyDown':
+				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Post':
+				return _user$project$Components_Timeline$post(model);
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
 var _user$project$Components_Timeline$view = F2(
 	function (model, session) {
 		return A2(
@@ -10656,7 +10773,19 @@ var _user$project$Components_Timeline$view = F2(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$class('coto'),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: function () {
+											var _p2 = coto.id;
+											if (_p2.ctor === 'Nothing') {
+												return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
+											} else {
+												return _elm_lang$html$Html_Events$onClick(
+													_user$project$Components_Timeline$CotoFocus(_p2._0));
+											}
+										}(),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
@@ -10690,8 +10819,8 @@ var _user$project$Components_Timeline$view = F2(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p0 = session;
-										if (_p0.ctor === 'Nothing') {
+										var _p3 = session;
+										if (_p3.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10720,7 +10849,7 @@ var _user$project$Components_Timeline$view = F2(
 													}
 												});
 										} else {
-											var _p1 = _p0._0;
+											var _p4 = _p3._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10737,7 +10866,7 @@ var _user$project$Components_Timeline$view = F2(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p1.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p4.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -10753,7 +10882,7 @@ var _user$project$Components_Timeline$view = F2(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p1.displayName),
+																_0: _elm_lang$html$Html$text(_p4.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
@@ -10853,115 +10982,6 @@ var _user$project$Components_Timeline$view = F2(
 					_1: {ctor: '[]'}
 				}
 			});
-	});
-var _user$project$Components_Timeline$CotosFetched = function (a) {
-	return {ctor: 'CotosFetched', _0: a};
-};
-var _user$project$Components_Timeline$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$Components_Timeline$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline$decodeCoto)));
-var _user$project$Components_Timeline$NoOp = {ctor: 'NoOp'};
-var _user$project$Components_Timeline$handleScrollResult = function (result) {
-	var _p2 = result;
-	if (_p2.ctor === 'Ok') {
-		return _user$project$Components_Timeline$NoOp;
-	} else {
-		return _user$project$Components_Timeline$NoOp;
-	}
-};
-var _user$project$Components_Timeline$scrollToBottom = A2(
-	_elm_lang$core$Task$attempt,
-	_user$project$Components_Timeline$handleScrollResult,
-	A2(
-		_elm_lang$core$Task$andThen,
-		function (x) {
-			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
-		},
-		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
-var _user$project$Components_Timeline$post = function (model) {
-	return A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		_elm_lang$core$Native_Utils.update(
-			model,
-			{
-				cotos: {
-					ctor: '::',
-					_0: _user$project$Components_Timeline$Coto(model.newCoto),
-					_1: model.cotos
-				},
-				newCoto: ''
-			}),
-		{
-			ctor: '::',
-			_0: _user$project$Components_Timeline$scrollToBottom,
-			_1: {
-				ctor: '::',
-				_0: _user$project$Components_Timeline$postCoto(
-					_user$project$Components_Timeline$Coto(model.newCoto)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Components_Timeline$update = F3(
-	function (msg, model, ctrlDown) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
-			case 'NoOp':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
-			case 'CotosFetched':
-				if (_p3._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{cotos: _p3._0._0}),
-						_1: _user$project$Components_Timeline$scrollToBottom
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'EditorFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorBlur':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newCoto: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p3._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Post':
-				return _user$project$Components_Timeline$post(model);
-			default:
-				if (_p3._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-		}
 	});
 
 var _user$project$App_Messages$TimelineMsg = function (a) {

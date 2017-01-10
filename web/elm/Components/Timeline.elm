@@ -19,7 +19,8 @@ import App.Types exposing (Session)
 
 
 type alias Coto =
-    { content : String
+    { id : Maybe Int
+    , content : String
     }
 
 
@@ -41,6 +42,7 @@ initModel =
 type Msg
     = NoOp
     | CotosFetched (Result Http.Error (List Coto))
+    | CotoFocus Int
     | EditorFocus
     | EditorBlur
     | EditorInput String
@@ -59,6 +61,9 @@ update msg model ctrlDown =
             ( { model | cotos = cotos }, scrollToBottom )
             
         CotosFetched (Err _) ->
+            ( model, Cmd.none )
+            
+        CotoFocus cotoId ->
             ( model, Cmd.none )
 
         EditorFocus ->
@@ -88,9 +93,9 @@ update msg model ctrlDown =
 
 post : Model -> ( Model, Cmd Msg )
 post model =
-    { model | cotos = (Coto model.newCoto) :: model.cotos, newCoto = "" }
+    { model | cotos = (Coto Nothing model.newCoto) :: model.cotos, newCoto = "" }
         ! [ scrollToBottom
-          , postCoto (Coto model.newCoto)
+          , postCoto (Coto Nothing model.newCoto)
           ]
 
 
@@ -125,7 +130,8 @@ postCoto coto =
         
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map Coto
+    Decode.map2 Coto
+        (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.field "content" Decode.string)
 
 
@@ -142,7 +148,19 @@ view : Model -> Maybe Session -> Html Msg
 view model session =
     div [ id "timeline-column", class (timelineClass model) ]
         [ div [ id "timeline" ]
-            (List.map (\coto -> div [ class "coto" ] [ markdown coto.content ]) (List.reverse model.cotos))
+            (List.map 
+                (\coto -> 
+                    div 
+                        [ class "coto"
+                        , (case coto.id of
+                            Nothing -> onClick NoOp
+                            Just cotoId -> onClick (CotoFocus cotoId)
+                          )
+                        ] 
+                        [ markdown coto.content ]
+                ) 
+                (List.reverse model.cotos)
+            )
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
                 [ (case session of
@@ -158,7 +176,11 @@ view model session =
                               ]
                   )
                 , div [ class "tool-buttons" ]
-                    [ button [ class "button-primary", disabled (isBlank model.newCoto), onMouseDown Post ]
+                    [ button 
+                        [ class "button-primary"
+                        , disabled (isBlank model.newCoto)
+                        , onMouseDown Post 
+                        ]
                         [ text "Post"
                         , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
                         ]
