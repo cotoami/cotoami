@@ -32,5 +32,5 @@ view model =
               , target "_blank"
               , hidden (model.timeline.editingNewCoto)  
               ] 
-              [ i [ class "material-icons" ] [ text "info" ] ] 
+              [ i [ class "material-icons" ] [ text "info" ] ]
           ]

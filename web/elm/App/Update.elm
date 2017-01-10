@@ -58,6 +58,13 @@ update msg model =
         
         TimelineMsg subMsg ->
             let
+                clickedCotoId = 
+                    (case subMsg of
+                      Components.Timeline.CotoClick cotoId -> Just cotoId
+                      _ -> Nothing
+                    )
                 ( timeline, cmd ) = Components.Timeline.update subMsg model.timeline model.ctrlDown
             in
-                ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )
+                ( { model | timeline = timeline, activeCotoId = clickedCotoId }
+                , Cmd.map TimelineMsg cmd 
+                )

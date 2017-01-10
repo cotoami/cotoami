@@ -42,7 +42,7 @@ initModel =
 type Msg
     = NoOp
     | CotosFetched (Result Http.Error (List Coto))
-    | CotoFocus Int
+    | CotoClick Int
     | EditorFocus
     | EditorBlur
     | EditorInput String
@@ -63,7 +63,7 @@ update msg model ctrlDown =
         CotosFetched (Err _) ->
             ( model, Cmd.none )
             
-        CotoFocus cotoId ->
+        CotoClick cotoId ->
             ( model, Cmd.none )
 
         EditorFocus ->
@@ -154,7 +154,7 @@ view model session =
                         [ class "coto"
                         , (case coto.id of
                             Nothing -> onClick NoOp
-                            Just cotoId -> onClick (CotoFocus cotoId)
+                            Just cotoId -> onClick (CotoClick cotoId)
                           )
                         ] 
                         [ markdown coto.content ]

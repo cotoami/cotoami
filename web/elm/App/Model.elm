@@ -12,6 +12,7 @@ type alias Model =
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
     , timeline : Components.Timeline.Model
+    , activeCotoId : Maybe Int
     }
 
 
@@ -22,4 +23,5 @@ initModel =
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
     , timeline = Components.Timeline.initModel
+    , activeCotoId = Nothing
     }

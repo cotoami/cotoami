@@ -10628,8 +10628,8 @@ var _user$project$Components_Timeline$EditorInput = function (a) {
 };
 var _user$project$Components_Timeline$EditorBlur = {ctor: 'EditorBlur'};
 var _user$project$Components_Timeline$EditorFocus = {ctor: 'EditorFocus'};
-var _user$project$Components_Timeline$CotoFocus = function (a) {
-	return {ctor: 'CotoFocus', _0: a};
+var _user$project$Components_Timeline$CotoClick = function (a) {
+	return {ctor: 'CotoClick', _0: a};
 };
 var _user$project$Components_Timeline$CotosFetched = function (a) {
 	return {ctor: 'CotosFetched', _0: a};
@@ -10704,7 +10704,7 @@ var _user$project$Components_Timeline$update = F3(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'CotoFocus':
+			case 'CotoClick':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'EditorFocus':
 				return {
@@ -10781,7 +10781,7 @@ var _user$project$Components_Timeline$view = F2(
 												return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
 											} else {
 												return _elm_lang$html$Html_Events$onClick(
-													_user$project$Components_Timeline$CotoFocus(_p2._0));
+													_user$project$Components_Timeline$CotoClick(_p2._0));
 											}
 										}(),
 										_1: {ctor: '[]'}
@@ -11018,10 +11018,10 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
 
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, timeline: _user$project$Components_Timeline$initModel};
-var _user$project$App_Model$Model = F5(
-	function (a, b, c, d, e) {
-		return {ctrlDown: a, session: b, signinModal: c, profileModal: d, timeline: e};
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, timeline: _user$project$Components_Timeline$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing};
+var _user$project$App_Model$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {ctrlDown: a, session: b, signinModal: c, profileModal: d, timeline: e, activeCotoId: f};
 	});
 
 var _user$project$App_Subscriptions$subscriptions = function (model) {
@@ -11127,14 +11127,23 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
 			default:
-				var _p5 = A3(_user$project$Components_Timeline$update, _p0._0, model.timeline, model.ctrlDown);
+				var _p7 = _p0._0;
+				var _p5 = A3(_user$project$Components_Timeline$update, _p7, model.timeline, model.ctrlDown);
 				var timeline = _p5._0;
 				var cmd = _p5._1;
+				var clickedCotoId = function () {
+					var _p6 = _p7;
+					if (_p6.ctor === 'CotoClick') {
+						return _elm_lang$core$Maybe$Just(_p6._0);
+					} else {
+						return _elm_lang$core$Maybe$Nothing;
+					}
+				}();
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{timeline: timeline}),
+						{timeline: timeline, activeCotoId: clickedCotoId}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 				};
 		}
