@@ -20,13 +20,14 @@ import App.Types exposing (Session)
 
 type alias Coto =
     { id : Maybe Int
+    , postId : Maybe Int
     , content : String
     }
 
 
 type alias Model =
     { editingNewCoto : Bool
-    , newCoto : String
+    , newCotoContent : String
     , cotos : List Coto
     }
 
@@ -34,7 +35,7 @@ type alias Model =
 initModel : Model
 initModel =
     { editingNewCoto = False
-    , newCoto = ""
+    , newCotoContent = ""
     , cotos = []
     }
 
@@ -73,10 +74,10 @@ update msg model ctrlDown =
             ( { model | editingNewCoto = False }, Cmd.none )
 
         EditorInput content ->
-            ( { model | newCoto = content }, Cmd.none )
+            ( { model | newCotoContent = content }, Cmd.none )
 
         EditorKeyDown key ->
-            if key == enter.keyCode && ctrlDown && (not (isBlank model.newCoto)) then
+            if key == enter.keyCode && ctrlDown && (not (isBlank model.newCotoContent)) then
                 post model
             else
                 ( model, Cmd.none )
@@ -93,10 +94,13 @@ update msg model ctrlDown =
 
 post : Model -> ( Model, Cmd Msg )
 post model =
-    { model | cotos = (Coto Nothing model.newCoto) :: model.cotos, newCoto = "" }
-        ! [ scrollToBottom
-          , postCoto (Coto Nothing model.newCoto)
-          ]
+    let
+        newCoto = Coto Nothing Nothing model.newCotoContent
+    in
+        { model | cotos = newCoto :: model.cotos, newCotoContent = "" }
+            ! [ scrollToBottom
+              , postCoto newCoto
+              ]
 
 
 scrollToBottom : Cmd Msg
@@ -130,8 +134,9 @@ postCoto coto =
         
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map2 Coto
+    Decode.map3 Coto
         (Decode.maybe (Decode.field "id" Decode.int))
+        (Decode.maybe (Decode.field "postId" Decode.int))
         (Decode.field "content" Decode.string)
 
 
@@ -181,7 +186,7 @@ view model session activeCotoId =
                 , div [ class "tool-buttons" ]
                     [ button 
                         [ class "button-primary"
-                        , disabled (isBlank model.newCoto)
+                        , disabled (isBlank model.newCotoContent)
                         , onMouseDown Post 
                         ]
                         [ text "Post"
@@ -192,7 +197,7 @@ view model session activeCotoId =
             , textarea
                 [ class "coto"
                 , placeholder "Write your idea in Markdown"
-                , value model.newCoto
+                , value model.newCotoContent
                 , onFocus EditorFocus
                 , onBlur EditorBlur
                 , onInput EditorInput

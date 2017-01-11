@@ -10580,22 +10580,24 @@ var _user$project$Components_Timeline$encodeCoto = function (coto) {
 };
 var _user$project$Components_Timeline$initModel = {
 	editingNewCoto: false,
-	newCoto: '',
+	newCotoContent: '',
 	cotos: {ctor: '[]'}
 };
-var _user$project$Components_Timeline$Coto = F2(
-	function (a, b) {
-		return {id: a, content: b};
+var _user$project$Components_Timeline$Coto = F3(
+	function (a, b, c) {
+		return {id: a, postId: b, content: c};
 	});
-var _user$project$Components_Timeline$decodeCoto = A3(
-	_elm_lang$core$Json_Decode$map2,
+var _user$project$Components_Timeline$decodeCoto = A4(
+	_elm_lang$core$Json_Decode$map3,
 	_user$project$Components_Timeline$Coto,
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'postId', _elm_lang$core$Json_Decode$int)),
 	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
 var _user$project$Components_Timeline$Model = F3(
 	function (a, b, c) {
-		return {editingNewCoto: a, newCoto: b, cotos: c};
+		return {editingNewCoto: a, newCotoContent: b, cotos: c};
 	});
 var _user$project$Components_Timeline$CotoPosted = function (a) {
 	return {ctor: 'CotoPosted', _0: a};
@@ -10652,25 +10654,21 @@ var _user$project$Components_Timeline$scrollToBottom = A2(
 		},
 		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
 var _user$project$Components_Timeline$post = function (model) {
+	var newCoto = A3(_user$project$Components_Timeline$Coto, _elm_lang$core$Maybe$Nothing, _elm_lang$core$Maybe$Nothing, model.newCotoContent);
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		_elm_lang$core$Native_Utils.update(
 			model,
 			{
-				cotos: {
-					ctor: '::',
-					_0: A2(_user$project$Components_Timeline$Coto, _elm_lang$core$Maybe$Nothing, model.newCoto),
-					_1: model.cotos
-				},
-				newCoto: ''
+				cotos: {ctor: '::', _0: newCoto, _1: model.cotos},
+				newCotoContent: ''
 			}),
 		{
 			ctor: '::',
 			_0: _user$project$Components_Timeline$scrollToBottom,
 			_1: {
 				ctor: '::',
-				_0: _user$project$Components_Timeline$postCoto(
-					A2(_user$project$Components_Timeline$Coto, _elm_lang$core$Maybe$Nothing, model.newCoto)),
+				_0: _user$project$Components_Timeline$postCoto(newCoto),
 				_1: {ctor: '[]'}
 			}
 		});
@@ -10719,11 +10717,11 @@ var _user$project$Components_Timeline$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newCoto: _p2._0}),
+						{newCotoContent: _p2._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p2._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p2._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
 				return _user$project$Components_Timeline$post(model);
 			default:
@@ -10914,7 +10912,7 @@ var _user$project$Components_Timeline$view = F3(
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$html$Html_Attributes$disabled(
-																_user$project$Utils$isBlank(model.newCoto)),
+																_user$project$Utils$isBlank(model.newCotoContent)),
 															_1: {
 																ctor: '::',
 																_0: _elm_lang$html$Html_Events$onMouseDown(_user$project$Components_Timeline$Post),
@@ -10959,7 +10957,7 @@ var _user$project$Components_Timeline$view = F3(
 											_0: _elm_lang$html$Html_Attributes$placeholder('Write your idea in Markdown'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.newCoto),
+												_0: _elm_lang$html$Html_Attributes$value(model.newCotoContent),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Events$onFocus(_user$project$Components_Timeline$EditorFocus),
