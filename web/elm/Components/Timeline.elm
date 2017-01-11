@@ -14,6 +14,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Keyboard exposing (..)
 import Keys exposing (ctrl, meta, enter)
+import Exts.Maybe exposing (isNothing)
 import Utils exposing (isBlank)
 import App.Types exposing (Session)
 
@@ -87,8 +88,13 @@ update msg model ctrlDown =
         Post ->
             post model
                 
-        CotoPosted (Ok coto) ->
-            ( model, Cmd.none )
+        CotoPosted (Ok savedCoto) ->
+            { model 
+            | cotos = 
+                List.map 
+                    (\c -> if c.postId == savedCoto.postId then savedCoto else c) 
+                    model.cotos 
+            } ! []
           
         CotoPosted (Err _) ->
             ( model, Cmd.none )
@@ -174,6 +180,7 @@ view model session activeCotoId =
                         [ classList 
                             [ ( "coto", True )
                             , ( "active", isActive coto activeCotoId )
+                            , ( "posting", isNothing coto.id )
                             ]
                         , (case coto.id of
                             Nothing -> onClick NoOp

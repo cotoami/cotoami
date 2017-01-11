@@ -10748,7 +10748,20 @@ var _user$project$Components_Timeline$update = F3(
 				return _user$project$Components_Timeline$post(model);
 			default:
 				if (_p3._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p4 = _p3._0._0;
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								cotos: A2(
+									_elm_lang$core$List$map,
+									function (c) {
+										return _elm_lang$core$Native_Utils.eq(c.postId, _p4.postId) ? _p4 : c;
+									},
+									model.cotos)
+							}),
+						{ctor: '[]'});
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
@@ -10795,18 +10808,26 @@ var _user$project$Components_Timeline$view = F3(
 													_0: 'active',
 													_1: A2(_user$project$Components_Timeline$isActive, coto, activeCotoId)
 												},
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'posting',
+														_1: _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
+													},
+													_1: {ctor: '[]'}
+												}
 											}
 										}),
 									_1: {
 										ctor: '::',
 										_0: function () {
-											var _p4 = coto.id;
-											if (_p4.ctor === 'Nothing') {
+											var _p5 = coto.id;
+											if (_p5.ctor === 'Nothing') {
 												return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
 											} else {
 												return _elm_lang$html$Html_Events$onClick(
-													_user$project$Components_Timeline$CotoClick(_p4._0));
+													_user$project$Components_Timeline$CotoClick(_p5._0));
 											}
 										}(),
 										_1: {ctor: '[]'}
@@ -10844,8 +10865,8 @@ var _user$project$Components_Timeline$view = F3(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p5 = session;
-										if (_p5.ctor === 'Nothing') {
+										var _p6 = session;
+										if (_p6.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10874,7 +10895,7 @@ var _user$project$Components_Timeline$view = F3(
 													}
 												});
 										} else {
-											var _p6 = _p5._0;
+											var _p7 = _p6._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10891,7 +10912,7 @@ var _user$project$Components_Timeline$view = F3(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p6.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p7.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -10907,7 +10928,7 @@ var _user$project$Components_Timeline$view = F3(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p6.displayName),
+																_0: _elm_lang$html$Html$text(_p7.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}

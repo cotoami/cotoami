@@ -100,6 +100,11 @@ html, body, #elm-container, #app, #app-body {
     &.active {
       border: 2px solid #ffa500;
     }
+    
+    &.posting {
+      opacity: 0.3;
+      background: url(../images/loading.gif) center no-repeat #fff;
+    }
   }
 }
 .editing #timeline {
