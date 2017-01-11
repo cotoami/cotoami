@@ -94,11 +94,11 @@ html, body, #elm-container, #app, #app-body {
     margin-bottom: 10px;
     
     &:hover {
-      border: 2px solid #eee;
+      border: 2px solid #ffdd33;
     }
     
     &.active {
-      border: 2px solid #aaa;
+      border: 2px solid #ffa500;
     }
   }
 }
