@@ -60,11 +60,31 @@ update msg model =
             let
                 clickedCotoId = 
                     (case subMsg of
-                      Components.Timeline.CotoClick cotoId -> Just cotoId
-                      _ -> Nothing
+                        Components.Timeline.CotoClick cotoId -> Just cotoId
+                        _ -> Nothing
                     )
                 ( timeline, cmd ) = Components.Timeline.update subMsg model.timeline model.ctrlDown
             in
-                ( { model | timeline = timeline, activeCotoId = clickedCotoId }
+                ( { model 
+                  | timeline = timeline
+                  , activeCotoId = (newActiveCotoId model.activeCotoId clickedCotoId)
+                  }
                 , Cmd.map TimelineMsg cmd 
                 )
+
+
+newActiveCotoId : Maybe Int -> Maybe Int -> Maybe Int
+newActiveCotoId currentActiveId maybeClickedId =
+    case maybeClickedId of
+        Nothing -> currentActiveId
+        Just clickedId ->
+            case currentActiveId of
+                Nothing -> Just clickedId
+                Just activeId -> 
+                    if clickedId == activeId then
+                        Nothing
+                    else
+                        Just clickedId
+                
+    
+    

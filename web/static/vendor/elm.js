@@ -11061,23 +11061,38 @@ var _user$project$App_Subscriptions$subscriptions = function (model) {
 		});
 };
 
+var _user$project$App_Update$newActiveCotoId = F2(
+	function (currentActiveId, maybeClickedId) {
+		var _p0 = maybeClickedId;
+		if (_p0.ctor === 'Nothing') {
+			return currentActiveId;
+		} else {
+			var _p2 = _p0._0;
+			var _p1 = currentActiveId;
+			if (_p1.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Just(_p2);
+			} else {
+				return _elm_lang$core$Native_Utils.eq(_p2, _p1._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(_p2);
+			}
+		}
+	});
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'SessionFetched':
-				if (_p0._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								session: _elm_lang$core$Maybe$Just(_p0._0._0)
+								session: _elm_lang$core$Maybe$Just(_p3._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -11085,8 +11100,8 @@ var _user$project$App_Update$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'KeyDown':
-				var _p1 = _p0._0;
-				return (_elm_lang$core$Native_Utils.eq(_p1, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p1, _user$project$Keys$meta.keyCode)) ? {
+				var _p4 = _p3._0;
+				return (_elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -11094,8 +11109,8 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
-				var _p2 = _p0._0;
-				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
+				var _p5 = _p3._0;
+				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -11116,9 +11131,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninModalMsg':
-				var _p3 = A2(_user$project$Components_SigninModal$update, _p0._0, model.signinModal);
-				var signinModal = _p3._0;
-				var cmd = _p3._1;
+				var _p6 = A2(_user$project$Components_SigninModal$update, _p3._0, model.signinModal);
+				var signinModal = _p6._0;
+				var cmd = _p6._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11140,9 +11155,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ProfileModalMsg':
-				var _p4 = A2(_user$project$Components_ProfileModal$update, _p0._0, model.profileModal);
-				var profileModal = _p4._0;
-				var cmd = _p4._1;
+				var _p7 = A2(_user$project$Components_ProfileModal$update, _p3._0, model.profileModal);
+				var profileModal = _p7._0;
+				var cmd = _p7._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11151,14 +11166,14 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
 			default:
-				var _p7 = _p0._0;
-				var _p5 = A3(_user$project$Components_Timeline$update, _p7, model.timeline, model.ctrlDown);
-				var timeline = _p5._0;
-				var cmd = _p5._1;
+				var _p10 = _p3._0;
+				var _p8 = A3(_user$project$Components_Timeline$update, _p10, model.timeline, model.ctrlDown);
+				var timeline = _p8._0;
+				var cmd = _p8._1;
 				var clickedCotoId = function () {
-					var _p6 = _p7;
-					if (_p6.ctor === 'CotoClick') {
-						return _elm_lang$core$Maybe$Just(_p6._0);
+					var _p9 = _p10;
+					if (_p9.ctor === 'CotoClick') {
+						return _elm_lang$core$Maybe$Just(_p9._0);
 					} else {
 						return _elm_lang$core$Maybe$Nothing;
 					}
@@ -11167,7 +11182,10 @@ var _user$project$App_Update$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{timeline: timeline, activeCotoId: clickedCotoId}),
+						{
+							timeline: timeline,
+							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId)
+						}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 				};
 		}
