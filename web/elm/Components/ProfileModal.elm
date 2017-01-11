@@ -2,7 +2,6 @@ module Components.ProfileModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Modal
 import App.Types exposing (Session)
 
@@ -74,6 +73,5 @@ modalConfig model session =
         ]
     , buttons = 
         [ a [ class "button", href "/signout" ] [ text "Sign out" ]
-        , button [ class "button button-primary", onClick Close ] [ text "Close" ] 
         ]
     }
