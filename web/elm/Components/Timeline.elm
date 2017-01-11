@@ -14,7 +14,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Keyboard exposing (..)
 import Keys exposing (ctrl, meta, enter)
-import Exts.Maybe exposing (isNothing)
+import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
 import App.Types exposing (Session)
 
@@ -180,7 +180,7 @@ view model session activeCotoId =
                         [ classList 
                             [ ( "coto", True )
                             , ( "active", isActive coto activeCotoId )
-                            , ( "posting", isNothing coto.id )
+                            , ( "posting", (isJust session) && (isNothing coto.id) )
                             ]
                         , (case coto.id of
                             Nothing -> onClick NoOp

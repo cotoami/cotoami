@@ -16,10 +16,12 @@ defmodule Cotoami.SigninController do
     email
     |> Cotoami.Email.signin_link(token, anonymous_id, host_url)
     |> Cotoami.Mailer.deliver_now
+    Logger.info "Signin request accepted: #{email} -> #{token}"
     json conn, "ok"
   end
   
   def signin(conn, %{"token" => token, "anonymous_id" => anonymous_id}) do
+    Logger.info "Signin with: #{token}"
     case RedisService.get_signin_email(token) do
       nil ->
         text conn, "Invalid token"

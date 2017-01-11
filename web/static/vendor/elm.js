@@ -10813,7 +10813,7 @@ var _user$project$Components_Timeline$view = F3(
 													_0: {
 														ctor: '_Tuple2',
 														_0: 'posting',
-														_1: _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
+														_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(session) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
 													},
 													_1: {ctor: '[]'}
 												}
