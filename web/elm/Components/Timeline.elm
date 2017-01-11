@@ -28,6 +28,7 @@ type alias Coto =
 type alias Model =
     { editingNewCoto : Bool
     , newCotoContent : String
+    , postIdCounter : Int
     , cotos : List Coto
     }
 
@@ -36,6 +37,7 @@ initModel : Model
 initModel =
     { editingNewCoto = False
     , newCotoContent = ""
+    , postIdCounter = 0
     , cotos = []
     }
 
@@ -95,12 +97,17 @@ update msg model ctrlDown =
 post : Model -> ( Model, Cmd Msg )
 post model =
     let
-        newCoto = Coto Nothing Nothing model.newCotoContent
+        postId = model.postIdCounter + 1
+        newCoto = Coto Nothing (Just postId) model.newCotoContent
     in
-        { model | cotos = newCoto :: model.cotos, newCotoContent = "" }
-            ! [ scrollToBottom
-              , postCoto newCoto
-              ]
+        { model 
+        | cotos = newCoto :: model.cotos
+        , postIdCounter = postId
+        , newCotoContent = ""
+        } ! 
+        [ scrollToBottom
+        , postCoto newCoto
+        ]
 
 
 scrollToBottom : Cmd Msg
@@ -143,9 +150,17 @@ decodeCoto =
 encodeCoto : Coto -> Encode.Value
 encodeCoto coto =
     Encode.object 
-        [("coto", 
-            (Encode.object [("content", Encode.string coto.content)])
-         )
+        [ ("coto", 
+            (Encode.object 
+                [ ("postId", 
+                    case coto.postId of
+                        Nothing -> Encode.null 
+                        Just postId -> Encode.int postId
+                  )
+                , ("content", Encode.string coto.content)
+                ]
+            )
+          )
         ]
       
       
