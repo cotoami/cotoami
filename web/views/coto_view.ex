@@ -5,6 +5,11 @@ defmodule Cotoami.CotoView do
     render_many(rows, __MODULE__, "coto.json")
   end
   
+  def render("created.json", %{coto: coto, postId: postId}) do
+    render_one(coto, __MODULE__, "coto.json")
+    |> Map.put("postId", postId)
+  end
+  
   def render("coto.json", %{coto: coto}) do
     %{
       id: coto.id,
