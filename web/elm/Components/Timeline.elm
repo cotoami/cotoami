@@ -142,16 +142,19 @@ encodeCoto coto =
             (Encode.object [("content", Encode.string coto.content)])
          )
         ]
-
       
-view : Model -> Maybe Session -> Html Msg
-view model session =
+      
+view : Model -> Maybe Session -> Maybe Int -> Html Msg
+view model session activeCotoId =
     div [ id "timeline-column", class (timelineClass model) ]
         [ div [ id "timeline" ]
             (List.map 
                 (\coto -> 
                     div 
-                        [ class "coto"
+                        [ classList 
+                            [ ( "coto", True )
+                            , ( "active", isActive coto activeCotoId )
+                            ]
                         , (case coto.id of
                             Nothing -> onClick NoOp
                             Just cotoId -> onClick (CotoClick cotoId)
@@ -198,7 +201,14 @@ view model session =
                 []
             ]
         ]
-        
+
+
+isActive : Coto -> Maybe Int -> Bool
+isActive coto activeCotoId =
+    case coto.id of
+        Nothing -> False
+        Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
+    
         
 markdown : String -> Html msg
 markdown content =

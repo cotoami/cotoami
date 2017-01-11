@@ -19,7 +19,7 @@ view model =
       div [ id "app" ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
-              [ Html.map TimelineMsg (Components.Timeline.view model.timeline model.session)
+              [ Html.map TimelineMsg (Components.Timeline.view model.timeline model.session model.activeCotoId)
               ]
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)

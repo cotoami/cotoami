@@ -96,6 +96,10 @@ html, body, #elm-container, #app, #app-body {
     &:hover {
       border: 2px solid #eee;
     }
+    
+    &.active {
+      border: 2px solid #aaa;
+    }
   }
 }
 .editing #timeline {

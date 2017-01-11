@@ -10565,6 +10565,17 @@ var _user$project$Components_Timeline$markdown = function (content) {
 		},
 		content);
 };
+var _user$project$Components_Timeline$isActive = F2(
+	function (coto, activeCotoId) {
+		var _p0 = coto.id;
+		if (_p0.ctor === 'Nothing') {
+			return false;
+		} else {
+			return _elm_lang$core$Native_Utils.eq(
+				A2(_elm_lang$core$Maybe$withDefault, -1, activeCotoId),
+				_p0._0);
+		}
+	});
 var _user$project$Components_Timeline$encodeCoto = function (coto) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -10643,8 +10654,8 @@ var _user$project$Components_Timeline$fetchCotos = A2(
 		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline$decodeCoto)));
 var _user$project$Components_Timeline$NoOp = {ctor: 'NoOp'};
 var _user$project$Components_Timeline$handleScrollResult = function (result) {
-	var _p0 = result;
-	if (_p0.ctor === 'Ok') {
+	var _p1 = result;
+	if (_p1.ctor === 'Ok') {
 		return _user$project$Components_Timeline$NoOp;
 	} else {
 		return _user$project$Components_Timeline$NoOp;
@@ -10685,20 +10696,20 @@ var _user$project$Components_Timeline$post = function (model) {
 };
 var _user$project$Components_Timeline$update = F3(
 	function (msg, model, ctrlDown) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'CotosFetched':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{cotos: _p1._0._0}),
+							{cotos: _p2._0._0}),
 						_1: _user$project$Components_Timeline$scrollToBottom
 					};
 				} else {
@@ -10727,23 +10738,23 @@ var _user$project$Components_Timeline$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newCoto: _p1._0}),
+						{newCoto: _p2._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p2._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCoto)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
 				return _user$project$Components_Timeline$post(model);
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$Components_Timeline$view = F2(
-	function (model, session) {
+var _user$project$Components_Timeline$view = F3(
+	function (model, session, activeCotoId) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10772,16 +10783,29 @@ var _user$project$Components_Timeline$view = F2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto'),
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'active',
+													_1: A2(_user$project$Components_Timeline$isActive, coto, activeCotoId)
+												},
+												_1: {ctor: '[]'}
+											}
+										}),
 									_1: {
 										ctor: '::',
 										_0: function () {
-											var _p2 = coto.id;
-											if (_p2.ctor === 'Nothing') {
+											var _p3 = coto.id;
+											if (_p3.ctor === 'Nothing') {
 												return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
 											} else {
 												return _elm_lang$html$Html_Events$onClick(
-													_user$project$Components_Timeline$CotoClick(_p2._0));
+													_user$project$Components_Timeline$CotoClick(_p3._0));
 											}
 										}(),
 										_1: {ctor: '[]'}
@@ -10819,8 +10843,8 @@ var _user$project$Components_Timeline$view = F2(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p3 = session;
-										if (_p3.ctor === 'Nothing') {
+										var _p4 = session;
+										if (_p4.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10849,7 +10873,7 @@ var _user$project$Components_Timeline$view = F2(
 													}
 												});
 										} else {
-											var _p4 = _p3._0;
+											var _p5 = _p4._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -10866,7 +10890,7 @@ var _user$project$Components_Timeline$view = F2(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p4.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p5.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -10882,7 +10906,7 @@ var _user$project$Components_Timeline$view = F2(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p4.displayName),
+																_0: _elm_lang$html$Html$text(_p5.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
@@ -11294,7 +11318,7 @@ var _user$project$App_View$view = function (model) {
 						_0: A2(
 							_elm_lang$html$Html$map,
 							_user$project$App_Messages$TimelineMsg,
-							A2(_user$project$Components_Timeline$view, model.timeline, model.session)),
+							A3(_user$project$Components_Timeline$view, model.timeline, model.session, model.activeCotoId)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
