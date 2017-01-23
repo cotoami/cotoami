@@ -11,7 +11,7 @@ import Task
 import Process
 import Time
 import Markdown
-import Markdown.Config
+import Markdown.Config exposing (defaultElements, defaultOptions)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Keyboard exposing (..)
@@ -260,16 +260,26 @@ isActive coto activeCotoId =
         
 markdown : String -> Html Msg
 markdown content =
-    let
-        defaultOptions = Markdown.Config.defaultOptions
-    in  
-        Html.map (always NoOp)
-            <| div [ class "content" ]
-            <| Markdown.withOptions 
-                { defaultOptions
-                | softAsHardLineBreak = True
-                }
-                content
+    Html.map (always NoOp)
+        <| div [ class "content" ]
+        <| Markdown.customHtml 
+            { defaultOptions
+            | softAsHardLineBreak = True
+            }
+            { defaultElements
+            | link = customLinkElement
+            }
+            content
+
+
+customLinkElement : Markdown.Config.Link -> List (Html Never) -> Html Never
+customLinkElement link =
+    a <|
+        [ href link.url
+        , title (Maybe.withDefault "" link.title)
+        , target "_blank"
+        , rel "noopener noreferrer"
+        ]
 
 
 timelineClass : Model -> String

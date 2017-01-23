@@ -13510,6 +13510,27 @@ var _user$project$Components_Timeline$onKeyDown = function (tagger) {
 var _user$project$Components_Timeline$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
 };
+var _user$project$Components_Timeline$customLinkElement = function (link) {
+	return _elm_lang$html$Html$a(
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$href(link.url),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$title(
+					A2(_elm_lang$core$Maybe$withDefault, '', link.title)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$target('_blank'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$rel('noopener noreferrer'),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
 var _user$project$Components_Timeline$isActive = F2(
 	function (coto, activeCotoId) {
 		var _p0 = coto.id;
@@ -13745,7 +13766,6 @@ var _user$project$Components_Timeline$update = F3(
 		}
 	});
 var _user$project$Components_Timeline$markdown = function (content) {
-	var defaultOptions = _pablohirafuji$elm_markdown$Markdown_Config$defaultOptions;
 	return A2(
 		_elm_lang$html$Html$map,
 		_elm_lang$core$Basics$always(_user$project$Components_Timeline$NoOp),
@@ -13756,11 +13776,14 @@ var _user$project$Components_Timeline$markdown = function (content) {
 				_0: _elm_lang$html$Html_Attributes$class('content'),
 				_1: {ctor: '[]'}
 			},
-			A2(
-				_pablohirafuji$elm_markdown$Markdown$withOptions,
+			A3(
+				_pablohirafuji$elm_markdown$Markdown$customHtml,
 				_elm_lang$core$Native_Utils.update(
-					defaultOptions,
+					_pablohirafuji$elm_markdown$Markdown_Config$defaultOptions,
 					{softAsHardLineBreak: true}),
+				_elm_lang$core$Native_Utils.update(
+					_pablohirafuji$elm_markdown$Markdown_Config$defaultElements,
+					{link: _user$project$Components_Timeline$customLinkElement}),
 				content)));
 };
 var _user$project$Components_Timeline$timelineDiv = F3(
