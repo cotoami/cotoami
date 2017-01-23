@@ -1,6 +1,7 @@
 module Components.Timeline exposing (..)
 
 import Html exposing (..)
+import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
 import Dom
@@ -174,24 +175,7 @@ encodeCoto coto =
 view : Model -> Maybe Session -> Maybe Int -> Html Msg
 view model session activeCotoId =
     div [ id "timeline-column", class (timelineClass model) ]
-        [ div [ id "timeline" ]
-            (List.map 
-                (\coto -> 
-                    div 
-                        [ classList 
-                            [ ( "coto", True )
-                            , ( "active", isActive coto activeCotoId )
-                            , ( "posting", (isJust session) && (isNothing coto.id) )
-                            ]
-                        , (case coto.id of
-                            Nothing -> onClick NoOp
-                            Just cotoId -> onClick (CotoClick cotoId)
-                          )
-                        ] 
-                        [ markdown coto.content ]
-                ) 
-                (List.reverse model.cotos)
-            )
+        [ timelineDiv model session activeCotoId
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
                 [ (case session of
@@ -230,6 +214,42 @@ view model session activeCotoId =
             ]
         ]
 
+
+timelineDiv : Model -> Maybe Session -> Maybe Int  -> Html Msg
+timelineDiv model session activeCotoId =
+    Html.Keyed.node
+        "div"
+        [ id "timeline" ]
+        (List.map 
+            (\coto -> 
+                ( getKey coto
+                , div
+                    [ classList 
+                        [ ( "coto", True )
+                        , ( "active", isActive coto activeCotoId )
+                        , ( "posting", (isJust session) && (isNothing coto.id) )
+                        ]
+                    , (case coto.id of
+                        Nothing -> onClick NoOp
+                        Just cotoId -> onClick (CotoClick cotoId)
+                      )
+                    ] 
+                    [ markdown coto.content ]
+                )
+            ) 
+            (List.reverse model.cotos)
+        )
+
+
+getKey : Coto -> String
+getKey coto =
+    case coto.id of
+        Just cotoId -> toString cotoId
+        Nothing -> 
+            case coto.postId of
+                Just postId -> toString postId
+                Nothing -> ""
+        
 
 isActive : Coto -> Maybe Int -> Bool
 isActive coto activeCotoId =

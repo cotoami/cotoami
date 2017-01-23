@@ -9021,6 +9021,10 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _elm_lang$html$Html_Keyed$node = _elm_lang$virtual_dom$VirtualDom$keyedNode;
+var _elm_lang$html$Html_Keyed$ol = _elm_lang$html$Html_Keyed$node('ol');
+var _elm_lang$html$Html_Keyed$ul = _elm_lang$html$Html_Keyed$node('ul');
+
 var _elm_lang$http$Native_Http = function() {
 
 
@@ -13517,6 +13521,19 @@ var _user$project$Components_Timeline$isActive = F2(
 				_p0._0);
 		}
 	});
+var _user$project$Components_Timeline$getKey = function (coto) {
+	var _p1 = coto.id;
+	if (_p1.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p1._0);
+	} else {
+		var _p2 = coto.postId;
+		if (_p2.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p2._0);
+		} else {
+			return '';
+		}
+	}
+};
 var _user$project$Components_Timeline$encodeCoto = function (coto) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -13531,11 +13548,11 @@ var _user$project$Components_Timeline$encodeCoto = function (coto) {
 							ctor: '_Tuple2',
 							_0: 'postId',
 							_1: function () {
-								var _p1 = coto.postId;
-								if (_p1.ctor === 'Nothing') {
+								var _p3 = coto.postId;
+								if (_p3.ctor === 'Nothing') {
 									return _elm_lang$core$Json_Encode$null;
 								} else {
-									return _elm_lang$core$Json_Encode$int(_p1._0);
+									return _elm_lang$core$Json_Encode$int(_p3._0);
 								}
 							}()
 						},
@@ -13613,8 +13630,8 @@ var _user$project$Components_Timeline$fetchCotos = A2(
 		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline$decodeCoto)));
 var _user$project$Components_Timeline$NoOp = {ctor: 'NoOp'};
 var _user$project$Components_Timeline$handleScrollResult = function (result) {
-	var _p2 = result;
-	if (_p2.ctor === 'Ok') {
+	var _p4 = result;
+	if (_p4.ctor === 'Ok') {
 		return _user$project$Components_Timeline$NoOp;
 	} else {
 		return _user$project$Components_Timeline$NoOp;
@@ -13657,20 +13674,20 @@ var _user$project$Components_Timeline$post = function (model) {
 };
 var _user$project$Components_Timeline$update = F3(
 	function (msg, model, ctrlDown) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'CotosFetched':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p5._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{cotos: _p3._0._0}),
+							{cotos: _p5._0._0}),
 						_1: _user$project$Components_Timeline$scrollToBottom
 					};
 				} else {
@@ -13699,16 +13716,16 @@ var _user$project$Components_Timeline$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{newCotoContent: _p3._0}),
+						{newCotoContent: _p5._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p3._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p5._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
 				return _user$project$Components_Timeline$post(model);
 			default:
-				if (_p3._0.ctor === 'Ok') {
-					var _p4 = _p3._0._0;
+				if (_p5._0.ctor === 'Ok') {
+					var _p6 = _p5._0._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -13717,7 +13734,7 @@ var _user$project$Components_Timeline$update = F3(
 								cotos: A2(
 									_elm_lang$core$List$map,
 									function (c) {
-										return _elm_lang$core$Native_Utils.eq(c.postId, _p4.postId) ? _p4 : c;
+										return _elm_lang$core$Native_Utils.eq(c.postId, _p6.postId) ? _p6 : c;
 									},
 									model.cotos)
 							}),
@@ -13746,6 +13763,71 @@ var _user$project$Components_Timeline$markdown = function (content) {
 					{softAsHardLineBreak: true}),
 				content)));
 };
+var _user$project$Components_Timeline$timelineDiv = F3(
+	function (model, session, activeCotoId) {
+		return A3(
+			_elm_lang$html$Html_Keyed$node,
+			'div',
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('timeline'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$List$map,
+				function (coto) {
+					return {
+						ctor: '_Tuple2',
+						_0: _user$project$Components_Timeline$getKey(coto),
+						_1: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'active',
+												_1: A2(_user$project$Components_Timeline$isActive, coto, activeCotoId)
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'posting',
+													_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(session) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
+												},
+												_1: {ctor: '[]'}
+											}
+										}
+									}),
+								_1: {
+									ctor: '::',
+									_0: function () {
+										var _p7 = coto.id;
+										if (_p7.ctor === 'Nothing') {
+											return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
+										} else {
+											return _elm_lang$html$Html_Events$onClick(
+												_user$project$Components_Timeline$CotoClick(_p7._0));
+										}
+									}(),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _user$project$Components_Timeline$markdown(coto.content),
+								_1: {ctor: '[]'}
+							})
+					};
+				},
+				_elm_lang$core$List$reverse(model.cotos)));
+	});
 var _user$project$Components_Timeline$view = F3(
 	function (model, session, activeCotoId) {
 		return A2(
@@ -13762,63 +13844,7 @@ var _user$project$Components_Timeline$view = F3(
 			},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$id('timeline'),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$List$map,
-						function (coto) {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$classList(
-										{
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
-											_1: {
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'active',
-													_1: A2(_user$project$Components_Timeline$isActive, coto, activeCotoId)
-												},
-												_1: {
-													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'posting',
-														_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(session) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
-													},
-													_1: {ctor: '[]'}
-												}
-											}
-										}),
-									_1: {
-										ctor: '::',
-										_0: function () {
-											var _p5 = coto.id;
-											if (_p5.ctor === 'Nothing') {
-												return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline$NoOp);
-											} else {
-												return _elm_lang$html$Html_Events$onClick(
-													_user$project$Components_Timeline$CotoClick(_p5._0));
-											}
-										}(),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _user$project$Components_Timeline$markdown(coto.content),
-									_1: {ctor: '[]'}
-								});
-						},
-						_elm_lang$core$List$reverse(model.cotos))),
+				_0: A3(_user$project$Components_Timeline$timelineDiv, model, session, activeCotoId),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -13844,8 +13870,8 @@ var _user$project$Components_Timeline$view = F3(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p6 = session;
-										if (_p6.ctor === 'Nothing') {
+										var _p8 = session;
+										if (_p8.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -13874,7 +13900,7 @@ var _user$project$Components_Timeline$view = F3(
 													}
 												});
 										} else {
-											var _p7 = _p6._0;
+											var _p9 = _p8._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -13891,7 +13917,7 @@ var _user$project$Components_Timeline$view = F3(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p7.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p9.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -13907,7 +13933,7 @@ var _user$project$Components_Timeline$view = F3(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p7.displayName),
+																_0: _elm_lang$html$Html$text(_p9.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
