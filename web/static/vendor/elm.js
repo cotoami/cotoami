@@ -9551,145 +9551,6 @@ var _elm_lang$keyboard$Keyboard$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Keyboard'] = {pkg: 'elm-lang/keyboard', init: _elm_lang$keyboard$Keyboard$init, onEffects: _elm_lang$keyboard$Keyboard$onEffects, onSelfMsg: _elm_lang$keyboard$Keyboard$onSelfMsg, tag: 'sub', subMap: _elm_lang$keyboard$Keyboard$subMap};
 
-var _evancz$elm_markdown$Native_Markdown = function() {
-
-
-// VIRTUAL-DOM WIDGETS
-
-function toHtml(options, factList, rawMarkdown)
-{
-	var model = {
-		options: options,
-		markdown: rawMarkdown
-	};
-	return _elm_lang$virtual_dom$Native_VirtualDom.custom(factList, model, implementation);
-}
-
-
-// WIDGET IMPLEMENTATION
-
-var implementation = {
-	render: render,
-	diff: diff
-};
-
-function render(model)
-{
-	var html = marked(model.markdown, formatOptions(model.options));
-	var div = document.createElement('div');
-	div.innerHTML = html;
-	return div;
-}
-
-function diff(a, b)
-{
-	
-	if (a.model.markdown === b.model.markdown && a.model.options === b.model.options)
-	{
-		return null;
-	}
-
-	return {
-		applyPatch: applyPatch,
-		data: marked(b.model.markdown, formatOptions(b.model.options))
-	};
-}
-
-function applyPatch(domNode, data)
-{
-	domNode.innerHTML = data;
-	return domNode;
-}
-
-
-// ACTUAL MARKDOWN PARSER
-
-var marked = function() {
-	// catch the `marked` object regardless of the outer environment.
-	// (ex. a CommonJS module compatible environment.)
-	// note that this depends on marked's implementation of environment detection.
-	var module = {};
-	var exports = module.exports = {};
-
-	/**
-	 * marked - a markdown parser
-	 * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
-	 * https://github.com/chjj/marked
-	 */
-	(function(){var block={newline:/^\n+/,code:/^( {4}[^\n]+\n*)+/,fences:noop,hr:/^( *[-*_]){3,} *(?:\n+|$)/,heading:/^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,nptable:noop,lheading:/^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,blockquote:/^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,list:/^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,html:/^ *(?:comment|closed|closing) *(?:\n{2,}|\s*$)/,def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,table:noop,paragraph:/^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,text:/^[^\n]+/};block.bullet=/(?:[*+-]|\d+\.)/;block.item=/^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;block.item=replace(block.item,"gm")(/bull/g,block.bullet)();block.list=replace(block.list)(/bull/g,block.bullet)("hr","\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))")("def","\\n+(?="+block.def.source+")")();block.blockquote=replace(block.blockquote)("def",block.def)();block._tag="(?!(?:"+"a|em|strong|small|s|cite|q|dfn|abbr|data|time|code"+"|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo"+"|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b";block.html=replace(block.html)("comment",/<!--[\s\S]*?-->/)("closed",/<(tag)[\s\S]+?<\/\1>/)("closing",/<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)(/tag/g,block._tag)();block.paragraph=replace(block.paragraph)("hr",block.hr)("heading",block.heading)("lheading",block.lheading)("blockquote",block.blockquote)("tag","<"+block._tag)("def",block.def)();block.normal=merge({},block);block.gfm=merge({},block.normal,{fences:/^ *(`{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,paragraph:/^/});block.gfm.paragraph=replace(block.paragraph)("(?!","(?!"+block.gfm.fences.source.replace("\\1","\\2")+"|"+block.list.source.replace("\\1","\\3")+"|")();block.tables=merge({},block.gfm,{nptable:/^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,table:/^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/});function Lexer(options){this.tokens=[];this.tokens.links={};this.options=options||marked.defaults;this.rules=block.normal;if(this.options.gfm){if(this.options.tables){this.rules=block.tables}else{this.rules=block.gfm}}}Lexer.rules=block;Lexer.lex=function(src,options){var lexer=new Lexer(options);return lexer.lex(src)};Lexer.prototype.lex=function(src){src=src.replace(/\r\n|\r/g,"\n").replace(/\t/g,"    ").replace(/\u00a0/g," ").replace(/\u2424/g,"\n");return this.token(src,true)};Lexer.prototype.token=function(src,top,bq){var src=src.replace(/^ +$/gm,""),next,loose,cap,bull,b,item,space,i,l;while(src){if(cap=this.rules.newline.exec(src)){src=src.substring(cap[0].length);if(cap[0].length>1){this.tokens.push({type:"space"})}}if(cap=this.rules.code.exec(src)){src=src.substring(cap[0].length);cap=cap[0].replace(/^ {4}/gm,"");this.tokens.push({type:"code",text:!this.options.pedantic?cap.replace(/\n+$/,""):cap});continue}if(cap=this.rules.fences.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"code",lang:cap[2],text:cap[3]});continue}if(cap=this.rules.heading.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"heading",depth:cap[1].length,text:cap[2]});continue}if(top&&(cap=this.rules.nptable.exec(src))){src=src.substring(cap[0].length);item={type:"table",header:cap[1].replace(/^ *| *\| *$/g,"").split(/ *\| */),align:cap[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:cap[3].replace(/\n$/,"").split("\n")};for(i=0;i<item.align.length;i++){if(/^ *-+: *$/.test(item.align[i])){item.align[i]="right"}else if(/^ *:-+: *$/.test(item.align[i])){item.align[i]="center"}else if(/^ *:-+ *$/.test(item.align[i])){item.align[i]="left"}else{item.align[i]=null}}for(i=0;i<item.cells.length;i++){item.cells[i]=item.cells[i].split(/ *\| */)}this.tokens.push(item);continue}if(cap=this.rules.lheading.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"heading",depth:cap[2]==="="?1:2,text:cap[1]});continue}if(cap=this.rules.hr.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"hr"});continue}if(cap=this.rules.blockquote.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"blockquote_start"});cap=cap[0].replace(/^ *> ?/gm,"");this.token(cap,top,true);this.tokens.push({type:"blockquote_end"});continue}if(cap=this.rules.list.exec(src)){src=src.substring(cap[0].length);bull=cap[2];this.tokens.push({type:"list_start",ordered:bull.length>1});cap=cap[0].match(this.rules.item);next=false;l=cap.length;i=0;for(;i<l;i++){item=cap[i];space=item.length;item=item.replace(/^ *([*+-]|\d+\.) +/,"");if(~item.indexOf("\n ")){space-=item.length;item=!this.options.pedantic?item.replace(new RegExp("^ {1,"+space+"}","gm"),""):item.replace(/^ {1,4}/gm,"")}if(this.options.smartLists&&i!==l-1){b=block.bullet.exec(cap[i+1])[0];if(bull!==b&&!(bull.length>1&&b.length>1)){src=cap.slice(i+1).join("\n")+src;i=l-1}}loose=next||/\n\n(?!\s*$)/.test(item);if(i!==l-1){next=item.charAt(item.length-1)==="\n";if(!loose)loose=next}this.tokens.push({type:loose?"loose_item_start":"list_item_start"});this.token(item,false,bq);this.tokens.push({type:"list_item_end"})}this.tokens.push({type:"list_end"});continue}if(cap=this.rules.html.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:this.options.sanitize?"paragraph":"html",pre:cap[1]==="pre"||cap[1]==="script"||cap[1]==="style",text:cap[0]});continue}if(!bq&&top&&(cap=this.rules.def.exec(src))){src=src.substring(cap[0].length);this.tokens.links[cap[1].toLowerCase()]={href:cap[2],title:cap[3]};continue}if(top&&(cap=this.rules.table.exec(src))){src=src.substring(cap[0].length);item={type:"table",header:cap[1].replace(/^ *| *\| *$/g,"").split(/ *\| */),align:cap[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:cap[3].replace(/(?: *\| *)?\n$/,"").split("\n")};for(i=0;i<item.align.length;i++){if(/^ *-+: *$/.test(item.align[i])){item.align[i]="right"}else if(/^ *:-+: *$/.test(item.align[i])){item.align[i]="center"}else if(/^ *:-+ *$/.test(item.align[i])){item.align[i]="left"}else{item.align[i]=null}}for(i=0;i<item.cells.length;i++){item.cells[i]=item.cells[i].replace(/^ *\| *| *\| *$/g,"").split(/ *\| */)}this.tokens.push(item);continue}if(top&&(cap=this.rules.paragraph.exec(src))){src=src.substring(cap[0].length);this.tokens.push({type:"paragraph",text:cap[1].charAt(cap[1].length-1)==="\n"?cap[1].slice(0,-1):cap[1]});continue}if(cap=this.rules.text.exec(src)){src=src.substring(cap[0].length);this.tokens.push({type:"text",text:cap[0]});continue}if(src){throw new Error("Infinite loop on byte: "+src.charCodeAt(0))}}return this.tokens};var inline={escape:/^\\([\\`*{}\[\]()#+\-.!_>])/,autolink:/^<([^ >]+(@|:\/)[^ >]+)>/,url:noop,tag:/^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,link:/^!?\[(inside)\]\(href\)/,reflink:/^!?\[(inside)\]\s*\[([^\]]*)\]/,nolink:/^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,strong:/^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,em:/^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,code:/^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,br:/^ {2,}\n(?!\s*$)/,del:noop,text:/^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/};inline._inside=/(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;inline._href=/\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;inline.link=replace(inline.link)("inside",inline._inside)("href",inline._href)();inline.reflink=replace(inline.reflink)("inside",inline._inside)();inline.normal=merge({},inline);inline.pedantic=merge({},inline.normal,{strong:/^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,em:/^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/});inline.gfm=merge({},inline.normal,{escape:replace(inline.escape)("])","~|])")(),url:/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,del:/^~~(?=\S)([\s\S]*?\S)~~/,text:replace(inline.text)("]|","~]|")("|","|https?://|")()});inline.breaks=merge({},inline.gfm,{br:replace(inline.br)("{2,}","*")(),text:replace(inline.gfm.text)("{2,}","*")()});function InlineLexer(links,options){this.options=options||marked.defaults;this.links=links;this.rules=inline.normal;this.renderer=this.options.renderer||new Renderer;this.renderer.options=this.options;if(!this.links){throw new Error("Tokens array requires a `links` property.")}if(this.options.gfm){if(this.options.breaks){this.rules=inline.breaks}else{this.rules=inline.gfm}}else if(this.options.pedantic){this.rules=inline.pedantic}}InlineLexer.rules=inline;InlineLexer.output=function(src,links,options){var inline=new InlineLexer(links,options);return inline.output(src)};InlineLexer.prototype.output=function(src){var out="",link,text,href,cap;while(src){if(cap=this.rules.escape.exec(src)){src=src.substring(cap[0].length);out+=cap[1];continue}if(cap=this.rules.autolink.exec(src)){src=src.substring(cap[0].length);if(cap[2]==="@"){text=cap[1].charAt(6)===":"?this.mangle(cap[1].substring(7)):this.mangle(cap[1]);href=this.mangle("mailto:")+text}else{text=escape(cap[1]);href=text}out+=this.renderer.link(href,null,text);continue}if(!this.inLink&&(cap=this.rules.url.exec(src))){src=src.substring(cap[0].length);text=escape(cap[1]);href=text;out+=this.renderer.link(href,null,text);continue}if(cap=this.rules.tag.exec(src)){if(!this.inLink&&/^<a /i.test(cap[0])){this.inLink=true}else if(this.inLink&&/^<\/a>/i.test(cap[0])){this.inLink=false}src=src.substring(cap[0].length);out+=this.options.sanitize?escape(cap[0]):cap[0];continue}if(cap=this.rules.link.exec(src)){src=src.substring(cap[0].length);this.inLink=true;out+=this.outputLink(cap,{href:cap[2],title:cap[3]});this.inLink=false;continue}if((cap=this.rules.reflink.exec(src))||(cap=this.rules.nolink.exec(src))){src=src.substring(cap[0].length);link=(cap[2]||cap[1]).replace(/\s+/g," ");link=this.links[link.toLowerCase()];if(!link||!link.href){out+=cap[0].charAt(0);src=cap[0].substring(1)+src;continue}this.inLink=true;out+=this.outputLink(cap,link);this.inLink=false;continue}if(cap=this.rules.strong.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.strong(this.output(cap[2]||cap[1]));continue}if(cap=this.rules.em.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.em(this.output(cap[2]||cap[1]));continue}if(cap=this.rules.code.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.codespan(escape(cap[2],true));continue}if(cap=this.rules.br.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.br();continue}if(cap=this.rules.del.exec(src)){src=src.substring(cap[0].length);out+=this.renderer.del(this.output(cap[1]));continue}if(cap=this.rules.text.exec(src)){src=src.substring(cap[0].length);out+=escape(this.smartypants(cap[0]));continue}if(src){throw new Error("Infinite loop on byte: "+src.charCodeAt(0))}}return out};InlineLexer.prototype.outputLink=function(cap,link){var href=escape(link.href),title=link.title?escape(link.title):null;return cap[0].charAt(0)!=="!"?this.renderer.link(href,title,this.output(cap[1])):this.renderer.image(href,title,escape(cap[1]))};InlineLexer.prototype.smartypants=function(text){if(!this.options.smartypants)return text;return text.replace(/--/g,"—").replace(/(^|[-\u2014/(\[{"\s])'/g,"$1‘").replace(/'/g,"’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g,"$1“").replace(/"/g,"”").replace(/\.{3}/g,"…")};InlineLexer.prototype.mangle=function(text){var out="",l=text.length,i=0,ch;for(;i<l;i++){ch=text.charCodeAt(i);if(Math.random()>.5){ch="x"+ch.toString(16)}out+="&#"+ch+";"}return out};function Renderer(options){this.options=options||{}}Renderer.prototype.code=function(code,lang,escaped){if(this.options.highlight){var out=this.options.highlight(code,lang);if(out!=null&&out!==code){escaped=true;code=out}}if(!lang){return"<pre><code>"+(escaped?code:escape(code,true))+"\n</code></pre>"}return'<pre><code class="'+this.options.langPrefix+escape(lang,true)+'">'+(escaped?code:escape(code,true))+"\n</code></pre>\n"};Renderer.prototype.blockquote=function(quote){return"<blockquote>\n"+quote+"</blockquote>\n"};Renderer.prototype.html=function(html){return html};Renderer.prototype.heading=function(text,level,raw){return"<h"+level+' id="'+this.options.headerPrefix+raw.toLowerCase().replace(/[^\w]+/g,"-")+'">'+text+"</h"+level+">\n"};Renderer.prototype.hr=function(){return this.options.xhtml?"<hr/>\n":"<hr>\n"};Renderer.prototype.list=function(body,ordered){var type=ordered?"ol":"ul";return"<"+type+">\n"+body+"</"+type+">\n"};Renderer.prototype.listitem=function(text){return"<li>"+text+"</li>\n"};Renderer.prototype.paragraph=function(text){return"<p>"+text+"</p>\n"};Renderer.prototype.table=function(header,body){return"<table>\n"+"<thead>\n"+header+"</thead>\n"+"<tbody>\n"+body+"</tbody>\n"+"</table>\n"};Renderer.prototype.tablerow=function(content){return"<tr>\n"+content+"</tr>\n"};Renderer.prototype.tablecell=function(content,flags){var type=flags.header?"th":"td";var tag=flags.align?"<"+type+' style="text-align:'+flags.align+'">':"<"+type+">";return tag+content+"</"+type+">\n"};Renderer.prototype.strong=function(text){return"<strong>"+text+"</strong>"};Renderer.prototype.em=function(text){return"<em>"+text+"</em>"};Renderer.prototype.codespan=function(text){return"<code>"+text+"</code>"};Renderer.prototype.br=function(){return this.options.xhtml?"<br/>":"<br>"};Renderer.prototype.del=function(text){return"<del>"+text+"</del>"};Renderer.prototype.link=function(href,title,text){if(this.options.sanitize){try{var prot=decodeURIComponent(unescape(href)).replace(/[^\w:]/g,"").toLowerCase()}catch(e){return""}if(prot.indexOf("javascript:")===0){return""}}var out='<a href="'+href+'"';if(title){out+=' title="'+title+'"'}out+=">"+text+"</a>";return out};Renderer.prototype.image=function(href,title,text){var out='<img src="'+href+'" alt="'+text+'"';if(title){out+=' title="'+title+'"'}out+=this.options.xhtml?"/>":">";return out};function Parser(options){this.tokens=[];this.token=null;this.options=options||marked.defaults;this.options.renderer=this.options.renderer||new Renderer;this.renderer=this.options.renderer;this.renderer.options=this.options}Parser.parse=function(src,options,renderer){var parser=new Parser(options,renderer);return parser.parse(src)};Parser.prototype.parse=function(src){this.inline=new InlineLexer(src.links,this.options,this.renderer);this.tokens=src.reverse();var out="";while(this.next()){out+=this.tok()}return out};Parser.prototype.next=function(){return this.token=this.tokens.pop()};Parser.prototype.peek=function(){return this.tokens[this.tokens.length-1]||0};Parser.prototype.parseText=function(){var body=this.token.text;while(this.peek().type==="text"){body+="\n"+this.next().text}return this.inline.output(body)};Parser.prototype.tok=function(){switch(this.token.type){case"space":{return""}case"hr":{return this.renderer.hr()}case"heading":{return this.renderer.heading(this.inline.output(this.token.text),this.token.depth,this.token.text)}case"code":{return this.renderer.code(this.token.text,this.token.lang,this.token.escaped)}case"table":{var header="",body="",i,row,cell,flags,j;cell="";for(i=0;i<this.token.header.length;i++){flags={header:true,align:this.token.align[i]};cell+=this.renderer.tablecell(this.inline.output(this.token.header[i]),{header:true,align:this.token.align[i]})}header+=this.renderer.tablerow(cell);for(i=0;i<this.token.cells.length;i++){row=this.token.cells[i];cell="";for(j=0;j<row.length;j++){cell+=this.renderer.tablecell(this.inline.output(row[j]),{header:false,align:this.token.align[j]})}body+=this.renderer.tablerow(cell)}return this.renderer.table(header,body)}case"blockquote_start":{var body="";while(this.next().type!=="blockquote_end"){body+=this.tok()}return this.renderer.blockquote(body)}case"list_start":{var body="",ordered=this.token.ordered;while(this.next().type!=="list_end"){body+=this.tok()}return this.renderer.list(body,ordered)}case"list_item_start":{var body="";while(this.next().type!=="list_item_end"){body+=this.token.type==="text"?this.parseText():this.tok()}return this.renderer.listitem(body)}case"loose_item_start":{var body="";while(this.next().type!=="list_item_end"){body+=this.tok()}return this.renderer.listitem(body)}case"html":{var html=!this.token.pre&&!this.options.pedantic?this.inline.output(this.token.text):this.token.text;return this.renderer.html(html)}case"paragraph":{return this.renderer.paragraph(this.inline.output(this.token.text))}case"text":{return this.renderer.paragraph(this.parseText())}}};function escape(html,encode){return html.replace(!encode?/&(?!#?\w+;)/g:/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}function unescape(html){return html.replace(/&([#\w]+);/g,function(_,n){n=n.toLowerCase();if(n==="colon")return":";if(n.charAt(0)==="#"){return n.charAt(1)==="x"?String.fromCharCode(parseInt(n.substring(2),16)):String.fromCharCode(+n.substring(1))}return""})}function replace(regex,opt){regex=regex.source;opt=opt||"";return function self(name,val){if(!name)return new RegExp(regex,opt);val=val.source||val;val=val.replace(/(^|[^\[])\^/g,"$1");regex=regex.replace(name,val);return self}}function noop(){}noop.exec=noop;function merge(obj){var i=1,target,key;for(;i<arguments.length;i++){target=arguments[i];for(key in target){if(Object.prototype.hasOwnProperty.call(target,key)){obj[key]=target[key]}}}return obj}function marked(src,opt,callback){if(callback||typeof opt==="function"){if(!callback){callback=opt;opt=null}opt=merge({},marked.defaults,opt||{});var highlight=opt.highlight,tokens,pending,i=0;try{tokens=Lexer.lex(src,opt)}catch(e){return callback(e)}pending=tokens.length;var done=function(err){if(err){opt.highlight=highlight;return callback(err)}var out;try{out=Parser.parse(tokens,opt)}catch(e){err=e}opt.highlight=highlight;return err?callback(err):callback(null,out)};if(!highlight||highlight.length<3){return done()}delete opt.highlight;if(!pending)return done();for(;i<tokens.length;i++){(function(token){if(token.type!=="code"){return--pending||done()}return highlight(token.text,token.lang,function(err,code){if(err)return done(err);if(code==null||code===token.text){return--pending||done()}token.text=code;token.escaped=true;--pending||done()})})(tokens[i])}return}try{if(opt)opt=merge({},marked.defaults,opt);return Parser.parse(Lexer.lex(src,opt),opt)}catch(e){e.message+="\nPlease report this to https://github.com/chjj/marked.";if((opt||marked.defaults).silent){return"<p>An error occured:</p><pre>"+escape(e.message+"",true)+"</pre>"}throw e}}marked.options=marked.setOptions=function(opt){merge(marked.defaults,opt);return marked};marked.defaults={gfm:true,tables:true,breaks:false,pedantic:false,sanitize:false,smartLists:false,silent:false,highlight:null,langPrefix:"lang-",smartypants:false,headerPrefix:"",renderer:new Renderer,xhtml:false};marked.Parser=Parser;marked.parser=Parser.parse;marked.Renderer=Renderer;marked.Lexer=Lexer;marked.lexer=Lexer.lex;marked.InlineLexer=InlineLexer;marked.inlineLexer=InlineLexer.output;marked.parse=marked;if(typeof module!=="undefined"&&typeof exports==="object"){module.exports=marked}else if(typeof define==="function"&&define.amd){define(function(){return marked})}else{this.marked=marked}}).call(function(){return this||(typeof window!=="undefined"?window:global)}());
-
-	return module.exports;
-}();
-
-
-// FORMAT OPTIONS FOR MARKED IMPLEMENTATION
-
-function formatOptions(options)
-{
-	function toHighlight(code, lang)
-	{
-		if (!lang && options.defaultHighlighting.ctor === 'Just')
-		{
-			lang = options.defaultHighlighting._0;
-		}
-
-		if (typeof hljs !== 'undefined' && lang && hljs.listLanguages().indexOf(lang) >= 0)
-		{
-			return hljs.highlight(lang, code, true).value;
-		}
-
-		return code;
-	}
-
-	var gfm = options.githubFlavored;
-	if (gfm.ctor === 'Just')
-	{
-		return {
-			highlight: toHighlight,
-			gfm: true,
-			tables: gfm._0.tables,
-			breaks: gfm._0.breaks,
-			sanitize: options.sanitize,
-			smartypants: options.smartypants
-		};
-	}
-
-	return {
-		highlight: toHighlight,
-		gfm: false,
-		tables: false,
-		breaks: false,
-		sanitize: options.sanitize,
-		smartypants: options.smartypants
-	};
-}
-
-
-// EXPORTS
-
-return {
-	toHtml: F3(toHtml)
-};
-
-}();
-
-var _evancz$elm_markdown$Markdown$toHtmlWith = _evancz$elm_markdown$Native_Markdown.toHtml;
-var _evancz$elm_markdown$Markdown$defaultOptions = {
-	githubFlavored: _elm_lang$core$Maybe$Just(
-		{tables: false, breaks: false}),
-	defaultHighlighting: _elm_lang$core$Maybe$Nothing,
-	sanitize: false,
-	smartypants: false
-};
-var _evancz$elm_markdown$Markdown$toHtml = F2(
-	function (attrs, string) {
-		return A3(_evancz$elm_markdown$Native_Markdown.toHtml, _evancz$elm_markdown$Markdown$defaultOptions, attrs, string);
-	});
-var _evancz$elm_markdown$Markdown$Options = F4(
-	function (a, b, c, d) {
-		return {githubFlavored: a, defaultHighlighting: b, sanitize: c, smartypants: d};
-	});
-
 var _krisajenkins$elm_exts$Exts_Maybe$oneOf = A2(
 	_elm_lang$core$List$foldl,
 	F2(
@@ -9763,6 +9624,3124 @@ var _krisajenkins$elm_exts$Exts_Maybe$isJust = function (x) {
 var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
 	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
 };
+
+var _pablohirafuji$elm_markdown$Markdown_Code$asToBlock = function (model) {
+	var _p0 = model;
+	if (_p0.ctor === 'Indented') {
+		return {language: _elm_lang$core$Maybe$Nothing, code: _p0._0._1};
+	} else {
+		var _p2 = _p0._0._1.language;
+		var _p1 = _p0._0._2;
+		return (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$String$length(_p2),
+			0) > 0) ? {
+			language: _elm_lang$core$Maybe$Just(_p2),
+			code: _p1
+		} : {language: _elm_lang$core$Maybe$Nothing, code: _p1};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$indentLine = function (indentLength) {
+	return function (_p3) {
+		return A4(
+			_elm_lang$core$Regex$replace,
+			_elm_lang$core$Regex$AtMost(1),
+			_elm_lang$core$Regex$regex(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'^ {0,',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(indentLength),
+						'}'))),
+			function (_p4) {
+				return '';
+			},
+			A4(
+				_elm_lang$core$Regex$replace,
+				_elm_lang$core$Regex$All,
+				_elm_lang$core$Regex$regex('\\t'),
+				function (_p5) {
+					return '    ';
+				},
+				_p3));
+	};
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$fromIndentedMatch = function (_p6) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		{
+			ctor: '_Tuple2',
+			_0: {ctor: '[]'},
+			_1: ''
+		},
+		A2(
+			_elm_lang$core$Maybe$map,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				})(
+				{ctor: '[]'}),
+			A2(
+				_elm_lang$core$Maybe$withDefault,
+				_elm_lang$core$Maybe$Nothing,
+				_elm_lang$core$List$head(
+					function (_) {
+						return _.submatches;
+					}(_p6)))));
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$closingFenceRegex = _elm_lang$core$Regex$regex('^ {0,3}(`{3,}|~{3,})\\s*$');
+var _pablohirafuji$elm_markdown$Markdown_Code$isClosingFenceLine = function (fence) {
+	return function (_p7) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			false,
+			A2(
+				_elm_lang$core$Maybe$map,
+				function (match) {
+					var _p8 = match.submatches;
+					if ((_p8.ctor === '::') && (_p8._0.ctor === 'Just')) {
+						var _p9 = _p8._0._0;
+						return (_elm_lang$core$Native_Utils.cmp(
+							_elm_lang$core$String$length(_p9),
+							fence.fenceLength) > -1) && _elm_lang$core$Native_Utils.eq(
+							A2(_elm_lang$core$String$left, 1, _p9),
+							fence.fenceChar);
+					} else {
+						return false;
+					}
+				},
+				_elm_lang$core$List$head(
+					A3(
+						_elm_lang$core$Regex$find,
+						_elm_lang$core$Regex$AtMost(1),
+						_pablohirafuji$elm_markdown$Markdown_Code$closingFenceRegex,
+						_p7))));
+	};
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$openingFenceRegex = _elm_lang$core$Regex$regex('^( {0,3})(`{3,}(?!.*`)|~{3,}(?!.*~))(.*)$');
+var _pablohirafuji$elm_markdown$Markdown_Code$indentedRegex = _elm_lang$core$Regex$regex('^(?: {4,4}| {0,3}\\t)(.*)$');
+var _pablohirafuji$elm_markdown$Markdown_Code$FenceModel = F4(
+	function (a, b, c, d) {
+		return {indentLength: a, fenceLength: b, fenceChar: c, language: d};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Code$fromOpeningFenceMatch = function (match) {
+	var _p10 = match.submatches;
+	if ((((((_p10.ctor === '::') && (_p10._0.ctor === 'Just')) && (_p10._1.ctor === '::')) && (_p10._1._0.ctor === 'Just')) && (_p10._1._1.ctor === '::')) && (_p10._1._1._0.ctor === 'Just')) {
+		var _p11 = _p10._1._0._0;
+		return {
+			ctor: '_Tuple3',
+			_0: true,
+			_1: {
+				indentLength: _elm_lang$core$String$length(_p10._0._0),
+				fenceLength: _elm_lang$core$String$length(_p11),
+				fenceChar: A2(_elm_lang$core$String$left, 1, _p11),
+				language: A2(
+					_elm_lang$core$Maybe$withDefault,
+					'',
+					_elm_lang$core$List$head(
+						_elm_lang$core$String$words(_p10._1._1._0._0)))
+			},
+			_2: ''
+		};
+	} else {
+		return {
+			ctor: '_Tuple3',
+			_0: true,
+			_1: A4(_pablohirafuji$elm_markdown$Markdown_Code$FenceModel, 0, 0, '`', ''),
+			_2: ''
+		};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$Fenced = function (a) {
+	return {ctor: 'Fenced', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$continueOrCloseFence = F3(
+	function (fence, previousCode, rawLine) {
+		return A2(_pablohirafuji$elm_markdown$Markdown_Code$isClosingFenceLine, fence, rawLine) ? _pablohirafuji$elm_markdown$Markdown_Code$Fenced(
+			{ctor: '_Tuple3', _0: false, _1: fence, _2: previousCode}) : _pablohirafuji$elm_markdown$Markdown_Code$Fenced(
+			{
+				ctor: '_Tuple3',
+				_0: true,
+				_1: fence,
+				_2: A2(
+					_elm_lang$core$Basics_ops['++'],
+					previousCode,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						A2(_pablohirafuji$elm_markdown$Markdown_Code$indentLine, fence.indentLength, rawLine),
+						'\n'))
+			});
+	});
+var _pablohirafuji$elm_markdown$Markdown_Code$addBlankLineToFenced = F2(
+	function (blankLine, _p12) {
+		var _p13 = _p12;
+		return _pablohirafuji$elm_markdown$Markdown_Code$Fenced(
+			{
+				ctor: '_Tuple3',
+				_0: _p13._0,
+				_1: _p13._1,
+				_2: A2(_elm_lang$core$Basics_ops['++'], _p13._2, '\n')
+			});
+	});
+var _pablohirafuji$elm_markdown$Markdown_Code$Indented = function (a) {
+	return {ctor: 'Indented', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Code$addIndented = F2(
+	function (_p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		var indentBL = function (blankLine) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(_pablohirafuji$elm_markdown$Markdown_Code$indentLine, 4, blankLine),
+				'\n');
+		};
+		return _pablohirafuji$elm_markdown$Markdown_Code$Indented(
+			{
+				ctor: '_Tuple2',
+				_0: {ctor: '[]'},
+				_1: A2(
+					_elm_lang$core$Basics_ops['++'],
+					_p17._1,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$String$concat(
+							A2(_elm_lang$core$List$map, indentBL, _p17._0)),
+						A2(_elm_lang$core$Basics_ops['++'], _p16._1, '\n')))
+			});
+	});
+var _pablohirafuji$elm_markdown$Markdown_Code$addBlankLineToIndented = F2(
+	function (blankLine, _p18) {
+		var _p19 = _p18;
+		return _pablohirafuji$elm_markdown$Markdown_Code$Indented(
+			{
+				ctor: '_Tuple2',
+				_0: A2(
+					_elm_lang$core$Basics_ops['++'],
+					_p19._0,
+					{
+						ctor: '::',
+						_0: blankLine,
+						_1: {ctor: '[]'}
+					}),
+				_1: _p19._1
+			});
+	});
+
+var _pablohirafuji$elm_markdown$Markdown_Config$imageElement = function (model) {
+	var _p0 = model.title;
+	if (_p0.ctor === 'Just') {
+		return A2(
+			_elm_lang$html$Html$img,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$alt(model.alt),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src(model.src),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$title(_p0._0),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{ctor: '[]'});
+	} else {
+		return A2(
+			_elm_lang$html$Html$img,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$alt(model.alt),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src(model.src),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'});
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$linkElement = function (model) {
+	var _p1 = model.title;
+	if (_p1.ctor === 'Just') {
+		return _elm_lang$html$Html$a(
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$href(model.url),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$title(_p1._0),
+					_1: {ctor: '[]'}
+				}
+			});
+	} else {
+		return _elm_lang$html$Html$a(
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$href(model.url),
+				_1: {ctor: '[]'}
+			});
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$codeSpanElement = function (codeStr) {
+	return A2(
+		_elm_lang$html$Html$code,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(codeStr),
+			_1: {ctor: '[]'}
+		});
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$strongEmphasisElement = _elm_lang$html$Html$strong(
+	{ctor: '[]'});
+var _pablohirafuji$elm_markdown$Markdown_Config$emphasisElement = _elm_lang$html$Html$em(
+	{ctor: '[]'});
+var _pablohirafuji$elm_markdown$Markdown_Config$listElement = function (type_) {
+	var _p2 = type_;
+	if (_p2.ctor === 'Ordered') {
+		var _p3 = _p2._0;
+		return _elm_lang$core$Native_Utils.eq(_p3, 1) ? _elm_lang$html$Html$ol(
+			{ctor: '[]'}) : _elm_lang$html$Html$ol(
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$start(_p3),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		return _elm_lang$html$Html$ul(
+			{ctor: '[]'});
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$codeElement = function (codeBlock) {
+	var basicView = function (attrs) {
+		return A2(
+			_elm_lang$html$Html$pre,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$code,
+					attrs,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(codeBlock.code),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	};
+	var _p4 = codeBlock.language;
+	if (_p4.ctor === 'Just') {
+		return basicView(
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(
+					A2(_elm_lang$core$Basics_ops['++'], 'language-', _p4._0)),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		return basicView(
+			{ctor: '[]'});
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$paragraphElement = F2(
+	function (textAsParagraph, innerHtml) {
+		return textAsParagraph ? {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$p,
+				{ctor: '[]'},
+				innerHtml),
+			_1: {ctor: '[]'}
+		} : innerHtml;
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$headingElement = function (level) {
+	var _p5 = level;
+	switch (_p5) {
+		case 1:
+			return _elm_lang$html$Html$h1(
+				{ctor: '[]'});
+		case 2:
+			return _elm_lang$html$Html$h2(
+				{ctor: '[]'});
+		case 3:
+			return _elm_lang$html$Html$h3(
+				{ctor: '[]'});
+		case 4:
+			return _elm_lang$html$Html$h4(
+				{ctor: '[]'});
+		case 5:
+			return _elm_lang$html$Html$h5(
+				{ctor: '[]'});
+		default:
+			return _elm_lang$html$Html$h6(
+				{ctor: '[]'});
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$defaultElements = {
+	heading: _pablohirafuji$elm_markdown$Markdown_Config$headingElement,
+	thematicBreak: A2(
+		_elm_lang$html$Html$hr,
+		{ctor: '[]'},
+		{ctor: '[]'}),
+	paragraph: _pablohirafuji$elm_markdown$Markdown_Config$paragraphElement,
+	blockQuote: _elm_lang$html$Html$blockquote(
+		{ctor: '[]'}),
+	code: _pablohirafuji$elm_markdown$Markdown_Config$codeElement,
+	list: _pablohirafuji$elm_markdown$Markdown_Config$listElement,
+	emphasis: _pablohirafuji$elm_markdown$Markdown_Config$emphasisElement,
+	strongEmphasis: _pablohirafuji$elm_markdown$Markdown_Config$strongEmphasisElement,
+	codeSpan: _pablohirafuji$elm_markdown$Markdown_Config$codeSpanElement,
+	link: _pablohirafuji$elm_markdown$Markdown_Config$linkElement,
+	image: _pablohirafuji$elm_markdown$Markdown_Config$imageElement,
+	hardLineBreak: A2(
+		_elm_lang$html$Html$br,
+		{ctor: '[]'},
+		{ctor: '[]'})
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$defaultAllowedHtmlAttributes = {
+	ctor: '::',
+	_0: 'name',
+	_1: {
+		ctor: '::',
+		_0: 'class',
+		_1: {ctor: '[]'}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$defaultAllowedHtmlElements = {
+	ctor: '::',
+	_0: 'address',
+	_1: {
+		ctor: '::',
+		_0: 'article',
+		_1: {
+			ctor: '::',
+			_0: 'aside',
+			_1: {
+				ctor: '::',
+				_0: 'b',
+				_1: {
+					ctor: '::',
+					_0: 'blockquote',
+					_1: {
+						ctor: '::',
+						_0: 'body',
+						_1: {
+							ctor: '::',
+							_0: 'br',
+							_1: {
+								ctor: '::',
+								_0: 'caption',
+								_1: {
+									ctor: '::',
+									_0: 'center',
+									_1: {
+										ctor: '::',
+										_0: 'cite',
+										_1: {
+											ctor: '::',
+											_0: 'code',
+											_1: {
+												ctor: '::',
+												_0: 'col',
+												_1: {
+													ctor: '::',
+													_0: 'colgroup',
+													_1: {
+														ctor: '::',
+														_0: 'dd',
+														_1: {
+															ctor: '::',
+															_0: 'details',
+															_1: {
+																ctor: '::',
+																_0: 'div',
+																_1: {
+																	ctor: '::',
+																	_0: 'dl',
+																	_1: {
+																		ctor: '::',
+																		_0: 'dt',
+																		_1: {
+																			ctor: '::',
+																			_0: 'figcaption',
+																			_1: {
+																				ctor: '::',
+																				_0: 'figure',
+																				_1: {
+																					ctor: '::',
+																					_0: 'footer',
+																					_1: {
+																						ctor: '::',
+																						_0: 'h1',
+																						_1: {
+																							ctor: '::',
+																							_0: 'h2',
+																							_1: {
+																								ctor: '::',
+																								_0: 'h3',
+																								_1: {
+																									ctor: '::',
+																									_0: 'h4',
+																									_1: {
+																										ctor: '::',
+																										_0: 'h5',
+																										_1: {
+																											ctor: '::',
+																											_0: 'h6',
+																											_1: {
+																												ctor: '::',
+																												_0: 'hr',
+																												_1: {
+																													ctor: '::',
+																													_0: 'i',
+																													_1: {
+																														ctor: '::',
+																														_0: 'legend',
+																														_1: {
+																															ctor: '::',
+																															_0: 'li',
+																															_1: {
+																																ctor: '::',
+																																_0: 'link',
+																																_1: {
+																																	ctor: '::',
+																																	_0: 'main',
+																																	_1: {
+																																		ctor: '::',
+																																		_0: 'menu',
+																																		_1: {
+																																			ctor: '::',
+																																			_0: 'menuitem',
+																																			_1: {
+																																				ctor: '::',
+																																				_0: 'nav',
+																																				_1: {
+																																					ctor: '::',
+																																					_0: 'ol',
+																																					_1: {
+																																						ctor: '::',
+																																						_0: 'optgroup',
+																																						_1: {
+																																							ctor: '::',
+																																							_0: 'option',
+																																							_1: {
+																																								ctor: '::',
+																																								_0: 'p',
+																																								_1: {
+																																									ctor: '::',
+																																									_0: 'pre',
+																																									_1: {
+																																										ctor: '::',
+																																										_0: 'section',
+																																										_1: {
+																																											ctor: '::',
+																																											_0: 'strike',
+																																											_1: {
+																																												ctor: '::',
+																																												_0: 'summary',
+																																												_1: {
+																																													ctor: '::',
+																																													_0: 'small',
+																																													_1: {
+																																														ctor: '::',
+																																														_0: 'table',
+																																														_1: {
+																																															ctor: '::',
+																																															_0: 'tbody',
+																																															_1: {
+																																																ctor: '::',
+																																																_0: 'td',
+																																																_1: {
+																																																	ctor: '::',
+																																																	_0: 'tfoot',
+																																																	_1: {
+																																																		ctor: '::',
+																																																		_0: 'th',
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: 'thead',
+																																																			_1: {
+																																																				ctor: '::',
+																																																				_0: 'title',
+																																																				_1: {
+																																																					ctor: '::',
+																																																					_0: 'tr',
+																																																					_1: {
+																																																						ctor: '::',
+																																																						_0: 'ul',
+																																																						_1: {ctor: '[]'}
+																																																					}
+																																																				}
+																																																			}
+																																																		}
+																																																	}
+																																																}
+																																															}
+																																														}
+																																													}
+																																												}
+																																											}
+																																										}
+																																									}
+																																								}
+																																							}
+																																						}
+																																					}
+																																				}
+																																			}
+																																		}
+																																	}
+																																}
+																															}
+																														}
+																													}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$defaultSanitizeOptions = {allowedHtmlElements: _pablohirafuji$elm_markdown$Markdown_Config$defaultAllowedHtmlElements, allowedHtmlAttributes: _pablohirafuji$elm_markdown$Markdown_Config$defaultAllowedHtmlAttributes};
+var _pablohirafuji$elm_markdown$Markdown_Config$Options = F2(
+	function (a, b) {
+		return {softAsHardLineBreak: a, rawHtml: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$SanitizeOptions = F2(
+	function (a, b) {
+		return {allowedHtmlElements: a, allowedHtmlAttributes: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$Elements = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return {heading: a, thematicBreak: b, paragraph: c, blockQuote: d, code: e, list: f, emphasis: g, strongEmphasis: h, codeSpan: i, link: j, image: k, hardLineBreak: l};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$CodeBlock = F2(
+	function (a, b) {
+		return {language: a, code: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$Link = F2(
+	function (a, b) {
+		return {url: a, title: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$Image = F3(
+	function (a, b, c) {
+		return {alt: a, src: b, title: c};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Config$DontParse = {ctor: 'DontParse'};
+var _pablohirafuji$elm_markdown$Markdown_Config$Sanitize = function (a) {
+	return {ctor: 'Sanitize', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$defaultOptions = {
+	softAsHardLineBreak: false,
+	rawHtml: _pablohirafuji$elm_markdown$Markdown_Config$Sanitize(_pablohirafuji$elm_markdown$Markdown_Config$defaultSanitizeOptions)
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$ParseUnsafe = {ctor: 'ParseUnsafe'};
+var _pablohirafuji$elm_markdown$Markdown_Config$Ordered = function (a) {
+	return {ctor: 'Ordered', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Config$Unordered = {ctor: 'Unordered'};
+
+var _pablohirafuji$elm_markdown$Markdown_List$initSpacesRegex = _elm_lang$core$Regex$regex('^ +');
+var _pablohirafuji$elm_markdown$Markdown_List$indentLength = function (_p0) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		0,
+		A2(
+			_elm_lang$core$Maybe$map,
+			function (_p1) {
+				return _elm_lang$core$String$length(
+					function (_) {
+						return _.match;
+					}(_p1));
+			},
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_List$initSpacesRegex,
+					A4(
+						_elm_lang$core$Regex$replace,
+						_elm_lang$core$Regex$All,
+						_elm_lang$core$Regex$regex('\\t'),
+						function (_p2) {
+							return '    ';
+						},
+						_p0)))));
+};
+var _pablohirafuji$elm_markdown$Markdown_List$unorderedRegex = _elm_lang$core$Regex$regex('^( *([\\*\\-\\+])( {0,4}))(?:[ \\t](.*))?$');
+var _pablohirafuji$elm_markdown$Markdown_List$orderedRegex = _elm_lang$core$Regex$regex('^( *(\\d{1,9})([.)])( {0,4}))(?:[ \\t](.*))?$');
+var _pablohirafuji$elm_markdown$Markdown_List$initModel = {type_: _pablohirafuji$elm_markdown$Markdown_Config$Unordered, indentLength: 2, delimiter: '-', isLoose: false};
+var _pablohirafuji$elm_markdown$Markdown_List$newLine = F5(
+	function (type_, indentString, delimiter, indentSpace, rawLine) {
+		var indentSpaceLenth = _elm_lang$core$String$length(indentSpace);
+		var isIndentedCode = _elm_lang$core$Native_Utils.cmp(indentSpaceLenth, 4) > -1;
+		var indentLength = isIndentedCode ? ((1 + _elm_lang$core$String$length(indentString)) - _elm_lang$core$String$length(indentSpace)) : (1 + _elm_lang$core$String$length(indentString));
+		var rawLine_ = isIndentedCode ? A2(_elm_lang$core$Basics_ops['++'], indentSpace, rawLine) : rawLine;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				_pablohirafuji$elm_markdown$Markdown_List$initModel,
+				{type_: type_, delimiter: delimiter, indentLength: indentLength}),
+			_1: rawLine_
+		};
+	});
+var _pablohirafuji$elm_markdown$Markdown_List$fromOrderedMatch = function (match) {
+	var _p3 = match.submatches;
+	if (((((((((_p3.ctor === '::') && (_p3._0.ctor === 'Just')) && (_p3._1.ctor === '::')) && (_p3._1._0.ctor === 'Just')) && (_p3._1._1.ctor === '::')) && (_p3._1._1._0.ctor === 'Just')) && (_p3._1._1._1.ctor === '::')) && (_p3._1._1._1._0.ctor === 'Just')) && (_p3._1._1._1._1.ctor === '::')) {
+		var type_ = A2(
+			_elm_lang$core$Result$withDefault,
+			_pablohirafuji$elm_markdown$Markdown_Config$Unordered,
+			A2(
+				_elm_lang$core$Result$map,
+				_pablohirafuji$elm_markdown$Markdown_Config$Ordered,
+				_elm_lang$core$String$toInt(_p3._1._0._0)));
+		return A5(
+			_pablohirafuji$elm_markdown$Markdown_List$newLine,
+			type_,
+			_p3._0._0,
+			_p3._1._1._0._0,
+			_p3._1._1._1._0._0,
+			A2(_elm_lang$core$Maybe$withDefault, '', _p3._1._1._1._1._0));
+	} else {
+		return {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown_List$initModel, _1: ''};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_List$fromUnorderedMatch = function (match) {
+	var _p4 = match.submatches;
+	if ((((((((_p4.ctor === '::') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === '::')) && (_p4._1._0.ctor === 'Just')) && (_p4._1._1.ctor === '::')) && (_p4._1._1._0.ctor === 'Just')) && (_p4._1._1._1.ctor === '::')) && (_p4._1._1._1._1.ctor === '[]')) {
+		return A5(
+			_pablohirafuji$elm_markdown$Markdown_List$newLine,
+			_pablohirafuji$elm_markdown$Markdown_Config$Unordered,
+			_p4._0._0,
+			_p4._1._0._0,
+			_p4._1._1._0._0,
+			A2(_elm_lang$core$Maybe$withDefault, '', _p4._1._1._1._0));
+	} else {
+		return {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown_List$initModel, _1: ''};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_List$fromMatch = F2(
+	function (type_, match) {
+		var _p5 = type_;
+		if (_p5.ctor === 'Unordered') {
+			return _pablohirafuji$elm_markdown$Markdown_List$fromUnorderedMatch(match);
+		} else {
+			return _pablohirafuji$elm_markdown$Markdown_List$fromOrderedMatch(match);
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_List$Model = F4(
+	function (a, b, c, d) {
+		return {type_: a, indentLength: b, delimiter: c, isLoose: d};
+	});
+
+var _pablohirafuji$elm_markdown$Markdown_Inline$attributeToAttribute = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._0;
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		_p2,
+		A2(_elm_lang$core$Maybe$withDefault, _p2, _p1._1));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$attributesToHtmlAttributes = _elm_lang$core$List$map(_pablohirafuji$elm_markdown$Markdown_Inline$attributeToAttribute);
+var _pablohirafuji$elm_markdown$Markdown_Inline$attributesRegex = _elm_lang$core$Regex$regex('([a-zA-Z:_][a-zA-Z0-9\\-_.:]*)(?: ?= ?(?:\"([^\"]*)\"|\'([^\']*)\'|([^\\s\"\'=<>`]*)))?');
+var _pablohirafuji$elm_markdown$Markdown_Inline$htmlRegex = _elm_lang$core$Regex$regex('^\\<([a-zA-Z][a-zA-Z0-9\\-]*)(?:\\s+([^<>]*))?\\>(?:([\\s\\S]*?)(?:\\<\\/\\1\\s*\\>))?');
+var _pablohirafuji$elm_markdown$Markdown_Inline$retrieveToken = F2(
+	function (token, tokens) {
+		retrieveToken:
+		while (true) {
+			var _p3 = tokens;
+			if (_p3.ctor === '[]') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p7 = _p3._1;
+				var _p6 = _p3._0;
+				if (_elm_lang$core$Native_Utils.eq(_p6.meaning, token.meaning)) {
+					var isMultipleOf3 = _elm_lang$core$Native_Utils.eq(
+						A2(_elm_lang$core$Basics_ops['%'], _p6.length + token.length, 3),
+						0);
+					var toReturn = function (_p4) {
+						var _p5 = _p4;
+						return {openToken: _p5._0, closeToken: _p5._1, tokens: _p5._2, isMultipleOf3: isMultipleOf3};
+					};
+					var remainLenght = _p6.length - token.length;
+					return _elm_lang$core$Native_Utils.eq(remainLenght, 0) ? _elm_lang$core$Maybe$Just(
+						toReturn(
+							{ctor: '_Tuple3', _0: _p6, _1: token, _2: _p7})) : ((_elm_lang$core$Native_Utils.cmp(remainLenght, 0) > 0) ? _elm_lang$core$Maybe$Just(
+						toReturn(
+							{
+								ctor: '_Tuple3',
+								_0: _elm_lang$core$Native_Utils.update(
+									_p6,
+									{index: _p6.index + remainLenght, length: _p6.length - remainLenght}),
+								_1: token,
+								_2: {
+									ctor: '::',
+									_0: _elm_lang$core$Native_Utils.update(
+										_p6,
+										{length: remainLenght}),
+									_1: _p7
+								}
+							})) : _elm_lang$core$Maybe$Just(
+						toReturn(
+							{
+								ctor: '_Tuple3',
+								_0: _p6,
+								_1: _elm_lang$core$Native_Utils.update(
+									token,
+									{length: token.length + remainLenght}),
+								_2: _p7
+							})));
+				} else {
+					var _v3 = token,
+						_v4 = _p7;
+					token = _v3;
+					tokens = _v4;
+					continue retrieveToken;
+				}
+			}
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$containPuntuaction = function (str) {
+	return A2(
+		_elm_lang$core$Regex$contains,
+		_elm_lang$core$Regex$regex('[!-#%-\\*,-/:;\\?@\\[-\\]_\\{\\}]'),
+		str);
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$containSpace = function (str) {
+	return A2(
+		_elm_lang$core$Regex$contains,
+		_elm_lang$core$Regex$regex('\\s'),
+		str);
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$autoLinkRegex = _elm_lang$core$Regex$regex('^<([A-Za-z][A-Za-z0-9.+\\-]{1,31}:[^<>\\x00-\\x20]*)>');
+var _pablohirafuji$elm_markdown$Markdown_Inline$emailAutoLinkRegex = _elm_lang$core$Regex$regex('^<([a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~\\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?)*)>');
+var _pablohirafuji$elm_markdown$Markdown_Inline$decodeUrlRegex = _elm_lang$core$Regex$regex('%(?:3B|2C|2F|3F|3A|40|26|3D|2B|24|23|25)');
+var _pablohirafuji$elm_markdown$Markdown_Inline$encodeUrl = function (_p8) {
+	return A4(
+		_elm_lang$core$Regex$replace,
+		_elm_lang$core$Regex$All,
+		_pablohirafuji$elm_markdown$Markdown_Inline$decodeUrlRegex,
+		function (match) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				match.match,
+				_elm_lang$http$Http$decodeUri(match.match));
+		},
+		_elm_lang$http$Http$encodeUri(_p8));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$insideRegex = '[^\\[\\]\\\\]*(?:\\\\.[^\\[\\]\\\\]*)*';
+var _pablohirafuji$elm_markdown$Markdown_Inline$refRegex = A2(
+	_elm_lang$core$Basics_ops['++'],
+	'\\[(',
+	A2(
+		_elm_lang$core$Basics_ops['++'],
+		_pablohirafuji$elm_markdown$Markdown_Inline$insideRegex,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			')\\](?:\\[\\s*(',
+			A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$insideRegex, ')\\s*\\])?'))));
+var _pablohirafuji$elm_markdown$Markdown_Inline$refLinkRegex = _elm_lang$core$Regex$regex(
+	A2(_elm_lang$core$Basics_ops['++'], '^', _pablohirafuji$elm_markdown$Markdown_Inline$refRegex));
+var _pablohirafuji$elm_markdown$Markdown_Inline$refImageRegex = _elm_lang$core$Regex$regex(
+	A2(_elm_lang$core$Basics_ops['++'], '^!', _pablohirafuji$elm_markdown$Markdown_Inline$refRegex));
+var _pablohirafuji$elm_markdown$Markdown_Inline$initLexerModel = F3(
+	function (options, refs, rawText) {
+		return {
+			rawText: rawText,
+			remainText: rawText,
+			lastChar: _elm_lang$core$Maybe$Nothing,
+			isEscaped: false,
+			tokens: {ctor: '[]'},
+			index: 0,
+			matches: {ctor: '[]'},
+			options: options,
+			refs: refs
+		};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$ifNothing = F2(
+	function (maybe, maybe_) {
+		return _elm_lang$core$Native_Utils.eq(maybe_, _elm_lang$core$Maybe$Nothing) ? maybe : maybe_;
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$returnFirstJust = function (maybes) {
+	var process = F2(
+		function (a, maybeFound) {
+			var _p9 = maybeFound;
+			if (_p9.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(_p9._0);
+			} else {
+				return a;
+			}
+		});
+	return A3(_elm_lang$core$List$foldl, process, _elm_lang$core$Maybe$Nothing, maybes);
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$extractUrlTitleRegex = function (regexMatch) {
+	var _p10 = regexMatch.submatches;
+	if (((((((_p10.ctor === '::') && (_p10._0.ctor === 'Just')) && (_p10._1.ctor === '::')) && (_p10._1._1.ctor === '::')) && (_p10._1._1._1.ctor === '::')) && (_p10._1._1._1._1.ctor === '::')) && (_p10._1._1._1._1._1.ctor === '::')) {
+		var toReturn = function (rawUrl) {
+			return {
+				matchLength: _elm_lang$core$String$length(regexMatch.match),
+				inside: _p10._0._0,
+				url: rawUrl,
+				maybeTitle: _pablohirafuji$elm_markdown$Markdown_Inline$returnFirstJust(
+					{
+						ctor: '::',
+						_0: _p10._1._1._1._0,
+						_1: {
+							ctor: '::',
+							_0: _p10._1._1._1._1._0,
+							_1: {
+								ctor: '::',
+								_0: _p10._1._1._1._1._1._0,
+								_1: {ctor: '[]'}
+							}
+						}
+					})
+			};
+		};
+		var maybeRawUrl = _pablohirafuji$elm_markdown$Markdown_Inline$returnFirstJust(
+			{
+				ctor: '::',
+				_0: _p10._1._0,
+				_1: {
+					ctor: '::',
+					_0: _p10._1._1._0,
+					_1: {ctor: '[]'}
+				}
+			});
+		return A2(_elm_lang$core$Maybe$map, toReturn, maybeRawUrl);
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$attributesFromRegex = function (regexMatch) {
+	var _p11 = regexMatch.submatches;
+	_v7_2:
+	do {
+		if ((_p11.ctor === '::') && (_p11._0.ctor === 'Just')) {
+			if (_p11._0._0 === '') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				if (((_p11._1.ctor === '::') && (_p11._1._1.ctor === '::')) && (_p11._1._1._1.ctor === '::')) {
+					var maybeValue = _pablohirafuji$elm_markdown$Markdown_Inline$returnFirstJust(
+						{
+							ctor: '::',
+							_0: _p11._1._0,
+							_1: {
+								ctor: '::',
+								_0: _p11._1._1._0,
+								_1: {
+									ctor: '::',
+									_0: _p11._1._1._1._0,
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+					return _elm_lang$core$Maybe$Just(
+						{ctor: '_Tuple2', _0: _p11._0._0, _1: maybeValue});
+				} else {
+					break _v7_2;
+				}
+			}
+		} else {
+			break _v7_2;
+		}
+	} while(false);
+	return _elm_lang$core$Maybe$Nothing;
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$applyAttributesRegex = function (_p12) {
+	return A2(
+		_elm_lang$core$List$filterMap,
+		_pablohirafuji$elm_markdown$Markdown_Inline$attributesFromRegex,
+		A3(_elm_lang$core$Regex$find, _elm_lang$core$Regex$All, _pablohirafuji$elm_markdown$Markdown_Inline$attributesRegex, _p12));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$escapableRegex = _elm_lang$core$Regex$regex('(\\\\+)([!\"#$%&\\\'()*+,./:;<=>?@[\\\\\\]^_`{|}~-])');
+var _pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable = A3(
+	_elm_lang$core$Regex$replace,
+	_elm_lang$core$Regex$All,
+	_pablohirafuji$elm_markdown$Markdown_Inline$escapableRegex,
+	function (regexMatch) {
+		var _p13 = regexMatch.submatches;
+		if ((((_p13.ctor === '::') && (_p13._0.ctor === 'Just')) && (_p13._1.ctor === '::')) && (_p13._1._0.ctor === 'Just')) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_elm_lang$core$String$repeat,
+					(_elm_lang$core$String$length(_p13._0._0) / 2) | 0,
+					'\\'),
+				_p13._1._0._0);
+		} else {
+			return regexMatch.match;
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$whiteSpaceChars = ' \\t\\f\\v\\r\\n';
+var _pablohirafuji$elm_markdown$Markdown_Inline$cleanWhitespaces = function (_p14) {
+	return A4(
+		_elm_lang$core$Regex$replace,
+		_elm_lang$core$Regex$All,
+		_elm_lang$core$Regex$regex(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'[',
+				A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$whiteSpaceChars, ']+'))),
+		function (_p15) {
+			return ' ';
+		},
+		_elm_lang$core$String$trim(_p14));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$prepareRefLabel = function (_p16) {
+	return _elm_lang$core$String$toLower(
+		_pablohirafuji$elm_markdown$Markdown_Inline$cleanWhitespaces(_p16));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$extractRefRegex = F2(
+	function (refs, regexMatch) {
+		var _p17 = regexMatch.submatches;
+		if (((_p17.ctor === '::') && (_p17._0.ctor === 'Just')) && (_p17._1.ctor === '::')) {
+			var _p21 = _p17._0._0;
+			var toReturn = function (_p18) {
+				var _p19 = _p18;
+				return {
+					matchLength: _elm_lang$core$String$length(regexMatch.match),
+					inside: _p21,
+					url: _p19._0,
+					maybeTitle: _p19._1
+				};
+			};
+			var refLabel = function () {
+				var _p20 = _p17._1._0;
+				if (_p20.ctor === 'Nothing') {
+					return _p21;
+				} else {
+					if (_p20._0 === '') {
+						return _p21;
+					} else {
+						return _p20._0;
+					}
+				}
+			}();
+			var maybeRefItem = A2(
+				_elm_lang$core$Dict$get,
+				_pablohirafuji$elm_markdown$Markdown_Inline$prepareRefLabel(refLabel),
+				refs);
+			return A2(_elm_lang$core$Maybe$map, toReturn, maybeRefItem);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$titleRegex = A2(
+	_elm_lang$core$Basics_ops['++'],
+	'(?:[',
+	A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$whiteSpaceChars, ']+(?:\'([^\'\\\\]*(?:\\\\.[^\'\\\\]*)*)\'|\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|\\(([^\\)\\\\]*(?:\\\\.[^\\)\\\\]*)*)\\)))?'));
+var _pablohirafuji$elm_markdown$Markdown_Inline$hrefRegex = A2(
+	_elm_lang$core$Basics_ops['++'],
+	'\\s*(?:<([^<>',
+	A2(
+		_elm_lang$core$Basics_ops['++'],
+		_pablohirafuji$elm_markdown$Markdown_Inline$whiteSpaceChars,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			']*)>|([^',
+			A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$whiteSpaceChars, '\\(\\)\\\\]*(?:\\\\.[^\\(\\)\\\\]*)*))'))));
+var _pablohirafuji$elm_markdown$Markdown_Inline$urlTitleRegex = A2(
+	_elm_lang$core$Basics_ops['++'],
+	'\\[(',
+	A2(
+		_elm_lang$core$Basics_ops['++'],
+		_pablohirafuji$elm_markdown$Markdown_Inline$insideRegex,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			')\\]\\(',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_pablohirafuji$elm_markdown$Markdown_Inline$hrefRegex,
+				A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$titleRegex, '\\s*\\)')))));
+var _pablohirafuji$elm_markdown$Markdown_Inline$linkRegex = _elm_lang$core$Regex$regex(
+	A2(_elm_lang$core$Basics_ops['++'], '^', _pablohirafuji$elm_markdown$Markdown_Inline$urlTitleRegex));
+var _pablohirafuji$elm_markdown$Markdown_Inline$imageRegex = _elm_lang$core$Regex$regex(
+	A2(_elm_lang$core$Basics_ops['++'], '^!', _pablohirafuji$elm_markdown$Markdown_Inline$urlTitleRegex));
+var _pablohirafuji$elm_markdown$Markdown_Inline$lineBreakRegex = function (options) {
+	return options.softAsHardLineBreak ? _elm_lang$core$Regex$regex(' *\\\\?\\n *') : _elm_lang$core$Regex$regex(' {2,}\\n|\\\\\\n');
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$MatchModel = F6(
+	function (a, b, c, d, e, f) {
+		return {type_: a, start: b, end: c, rawText: d, text: e, matches: f};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$LexerModel = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {rawText: a, remainText: b, lastChar: c, isEscaped: d, tokens: e, index: f, matches: g, options: h, refs: i};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$Token = F3(
+	function (a, b, c) {
+		return {index: a, length: b, meaning: c};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$LinkMatch = F4(
+	function (a, b, c, d) {
+		return {matchLength: a, inside: b, url: c, maybeTitle: d};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$EmphasisMatchToken = F4(
+	function (a, b, c, d) {
+		return {openToken: a, closeToken: b, tokens: c, isMultipleOf3: d};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$HtmlModel = F2(
+	function (a, b) {
+		return {tag: a, attributes: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$Match = function (a) {
+	return {ctor: 'Match', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$addChild = F2(
+	function (parentMatch, childMatch) {
+		var reduction = function () {
+			var _p22 = parentMatch.type_;
+			if (_p22.ctor === 'Emphasis') {
+				return parentMatch.start + _p22._0;
+			} else {
+				return parentMatch.start;
+			}
+		}();
+		var updtChildMatch = _elm_lang$core$Native_Utils.update(
+			childMatch,
+			{start: childMatch.start - reduction, end: childMatch.end - reduction});
+		return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+			_elm_lang$core$Native_Utils.update(
+				parentMatch,
+				{
+					matches: {
+						ctor: '::',
+						_0: _pablohirafuji$elm_markdown$Markdown_Inline$Match(updtChildMatch),
+						_1: parentMatch.matches
+					}
+				}));
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$organizeMatch = F2(
+	function (_p23, matches) {
+		var _p24 = _p23;
+		var _p27 = _p24._0;
+		var _p25 = matches;
+		if (_p25.ctor === '[]') {
+			return {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown_Inline$Match(_p27),
+				_1: {ctor: '[]'}
+			};
+		} else {
+			var _p26 = _p25._0._0;
+			return (_elm_lang$core$Native_Utils.cmp(_p26.end, _p27.start) < 1) ? {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown_Inline$Match(_p27),
+				_1: matches
+			} : (((_elm_lang$core$Native_Utils.cmp(_p26.start, _p27.start) < 0) && (_elm_lang$core$Native_Utils.cmp(_p26.end, _p27.end) > 0)) ? {
+				ctor: '::',
+				_0: A2(_pablohirafuji$elm_markdown$Markdown_Inline$addChild, _p26, _p27),
+				_1: _p25._1
+			} : matches);
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$organizeMatches = function (_p28) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (_p29) {
+			var _p30 = _p29;
+			var _p31 = _p30._0;
+			return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+				_elm_lang$core$Native_Utils.update(
+					_p31,
+					{
+						matches: _pablohirafuji$elm_markdown$Markdown_Inline$organizeMatches(_p31.matches)
+					}));
+		},
+		A3(
+			_elm_lang$core$List$foldl,
+			_pablohirafuji$elm_markdown$Markdown_Inline$organizeMatch,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$sortBy,
+				function (_p32) {
+					var _p33 = _p32;
+					return _p33._0.start;
+				},
+				_p28)));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel = F2(
+	function (model, _p34) {
+		var _p35 = _p34;
+		var _p36 = _p35._0;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				remainText: A2(_elm_lang$core$String$dropLeft, _p36.end - _p36.start, model.remainText),
+				index: _p36.end,
+				matches: {
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown_Inline$Match(_p36),
+					_1: model.matches
+				},
+				lastChar: A2(
+					_elm_lang$core$Maybe$map,
+					_elm_lang$core$Tuple$first,
+					_elm_lang$core$String$uncons(
+						_elm_lang$core$String$reverse(model.rawText)))
+			});
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$Html = function (a) {
+	return {ctor: 'Html', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$Image = function (a) {
+	return {ctor: 'Image', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$imageTagFound = function (model) {
+	var applyRefImageRegex = function (_p37) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_pablohirafuji$elm_markdown$Markdown_Inline$extractRefRegex(model.refs),
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$refImageRegex,
+					_p37)));
+	};
+	var applyImageRegex = function (_p38) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_pablohirafuji$elm_markdown$Markdown_Inline$extractUrlTitleRegex,
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$imageRegex,
+					_p38)));
+	};
+	var linkMatchToMatch = function (_p39) {
+		var _p40 = _p39;
+		var _p41 = _p40.inside;
+		return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+			{
+				type_: _pablohirafuji$elm_markdown$Markdown_Inline$Image(
+					{
+						ctor: '_Tuple2',
+						_0: _pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable(_p40.url),
+						_1: A2(_elm_lang$core$Maybe$map, _pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable, _p40.maybeTitle)
+					}),
+				start: model.index,
+				end: model.index + _p40.matchLength,
+				rawText: _p41,
+				text: _p41,
+				matches: {ctor: '[]'}
+			});
+	};
+	return A2(
+		_elm_lang$core$Maybe$map,
+		_pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel(model),
+		A2(
+			_elm_lang$core$Maybe$map,
+			linkMatchToMatch,
+			A2(
+				_pablohirafuji$elm_markdown$Markdown_Inline$ifNothing,
+				applyRefImageRegex(model.remainText),
+				applyImageRegex(model.remainText))));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$Link = function (a) {
+	return {ctor: 'Link', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$autoLinkTagFound = function (model) {
+	var extractRegex = function (regexMatch) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (url) {
+				return {
+					matchLength: _elm_lang$core$String$length(regexMatch.match),
+					inside: url,
+					url: _pablohirafuji$elm_markdown$Markdown_Inline$encodeUrl(url),
+					maybeTitle: _elm_lang$core$Maybe$Nothing
+				};
+			},
+			A2(
+				_elm_lang$core$Maybe$withDefault,
+				_elm_lang$core$Maybe$Nothing,
+				_elm_lang$core$List$head(regexMatch.submatches)));
+	};
+	var applyEmailAutoLinkRegex = function (_p42) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (linkMatch) {
+				return _elm_lang$core$Native_Utils.update(
+					linkMatch,
+					{
+						url: A2(_elm_lang$core$Basics_ops['++'], 'mailto:', linkMatch.url)
+					});
+			},
+			A2(
+				_elm_lang$core$Maybe$andThen,
+				extractRegex,
+				_elm_lang$core$List$head(
+					A3(
+						_elm_lang$core$Regex$find,
+						_elm_lang$core$Regex$AtMost(1),
+						_pablohirafuji$elm_markdown$Markdown_Inline$emailAutoLinkRegex,
+						_p42))));
+	};
+	var applyAutoLinkRegex = function (_p43) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			extractRegex,
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$autoLinkRegex,
+					_p43)));
+	};
+	var linkMatchToMatch = F2(
+		function (model, _p44) {
+			var _p45 = _p44;
+			var _p46 = _p45.inside;
+			return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+				{
+					type_: _pablohirafuji$elm_markdown$Markdown_Inline$Link(
+						{ctor: '_Tuple2', _0: _p45.url, _1: _p45.maybeTitle}),
+					start: model.index,
+					end: model.index + _p45.matchLength,
+					rawText: _p46,
+					text: _p46,
+					matches: {ctor: '[]'}
+				});
+		});
+	return A2(
+		_elm_lang$core$Maybe$map,
+		_pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel(model),
+		A2(
+			_elm_lang$core$Maybe$map,
+			linkMatchToMatch(model),
+			A2(
+				_pablohirafuji$elm_markdown$Markdown_Inline$ifNothing,
+				applyAutoLinkRegex(model.remainText),
+				applyEmailAutoLinkRegex(model.remainText))));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$Emphasis = function (a) {
+	return {ctor: 'Emphasis', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$tokenToMatch = F3(
+	function (rawText, openToken, closeToken) {
+		var textEnd = closeToken.index;
+		var textStart = openToken.index + openToken.length;
+		var end = closeToken.index + closeToken.length;
+		var start = openToken.index;
+		return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+			{
+				type_: _pablohirafuji$elm_markdown$Markdown_Inline$Emphasis(openToken.length),
+				start: start,
+				end: end,
+				rawText: A3(_elm_lang$core$String$slice, start, end, rawText),
+				text: A3(_elm_lang$core$String$slice, textStart, textEnd, rawText),
+				matches: {ctor: '[]'}
+			});
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$matchToHtml = F2(
+	function (elements, _p47) {
+		var _p48 = _p47;
+		var _p52 = _p48._0;
+		var _p49 = _p52.type_;
+		switch (_p49.ctor) {
+			case 'Normal':
+				return _elm_lang$html$Html$text(_p52.text);
+			case 'HardBreak':
+				return elements.hardLineBreak;
+			case 'Code':
+				return elements.codeSpan(_p52.text);
+			case 'Emphasis':
+				var _p51 = _p49._0;
+				var _p50 = _p51;
+				switch (_p50) {
+					case 1:
+						return elements.emphasis(
+							A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p52.matches));
+					case 2:
+						return elements.strongEmphasis(
+							A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p52.matches));
+					default:
+						return (_elm_lang$core$Native_Utils.cmp(_p51 - 2, 0) > 0) ? elements.strongEmphasis(
+							A3(
+								_elm_lang$core$Basics$flip,
+								F2(
+									function (x, y) {
+										return {ctor: '::', _0: x, _1: y};
+									}),
+								{ctor: '[]'},
+								A2(
+									_pablohirafuji$elm_markdown$Markdown_Inline$matchToHtml,
+									elements,
+									_pablohirafuji$elm_markdown$Markdown_Inline$Match(
+										_elm_lang$core$Native_Utils.update(
+											_p52,
+											{
+												type_: _pablohirafuji$elm_markdown$Markdown_Inline$Emphasis(_p51 - 2)
+											}))))) : elements.emphasis(
+							A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p52.matches));
+				}
+			case 'Link':
+				return A2(
+					elements.link,
+					A2(_pablohirafuji$elm_markdown$Markdown_Config$Link, _p49._0._0, _p49._0._1),
+					A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p52.matches));
+			case 'Image':
+				return elements.image(
+					A3(_pablohirafuji$elm_markdown$Markdown_Config$Image, _p52.text, _p49._0._0, _p49._0._1));
+			default:
+				return A3(
+					_elm_lang$html$Html$node,
+					_p49._0.tag,
+					_pablohirafuji$elm_markdown$Markdown_Inline$attributesToHtmlAttributes(_p49._0.attributes),
+					A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p52.matches));
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$toHtml = function (elements) {
+	return _elm_lang$core$List$map(
+		_pablohirafuji$elm_markdown$Markdown_Inline$matchToHtml(elements));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$Code = {ctor: 'Code'};
+var _pablohirafuji$elm_markdown$Markdown_Inline$codeTagFound = function (model) {
+	var toMatch = function (_p53) {
+		var _p54 = _p53;
+		var _p56 = _p54._1;
+		var _p55 = _p54._0;
+		var rawText = A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p56,
+			A2(_elm_lang$core$Basics_ops['++'], _p55, _p56));
+		return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+			{
+				type_: _pablohirafuji$elm_markdown$Markdown_Inline$Code,
+				start: model.index,
+				end: model.index + _elm_lang$core$String$length(rawText),
+				rawText: rawText,
+				text: _pablohirafuji$elm_markdown$Markdown_Inline$cleanWhitespaces(_p55),
+				matches: {ctor: '[]'}
+			});
+	};
+	var closeRegex = function (length) {
+		return _elm_lang$core$Regex$regex(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'^([\\s\\S]*?[^`])(`{',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(length),
+					'})([^`]|$)')));
+	};
+	var verifyCloseTag = F2(
+		function (remainText, tagLength) {
+			var maybeCloseRegexMatch = function (_p57) {
+				return _elm_lang$core$List$head(
+					A3(
+						_elm_lang$core$Regex$find,
+						_elm_lang$core$Regex$AtMost(1),
+						closeRegex(tagLength),
+						_p57));
+			};
+			var remainTextWithoutOpenTag = A2(_elm_lang$core$String$dropLeft, tagLength, remainText);
+			var noMatchLexerModel = _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					remainText: remainTextWithoutOpenTag,
+					index: model.index + tagLength,
+					lastChar: _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Native_Utils.chr('`'))
+				});
+			var extractCodeAndCloseTag = function (regexMatch) {
+				var _p58 = regexMatch.submatches;
+				if ((((_p58.ctor === '::') && (_p58._0.ctor === 'Just')) && (_p58._1.ctor === '::')) && (_p58._1._0.ctor === 'Just')) {
+					return A2(
+						_pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel,
+						model,
+						toMatch(
+							{ctor: '_Tuple2', _0: _p58._0._0, _1: _p58._1._0._0}));
+				} else {
+					return noMatchLexerModel;
+				}
+			};
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				noMatchLexerModel,
+				A2(
+					_elm_lang$core$Maybe$map,
+					extractCodeAndCloseTag,
+					maybeCloseRegexMatch(remainTextWithoutOpenTag)));
+		});
+	var openRegex = _elm_lang$core$Regex$regex('^(`+)');
+	var extractOpenTagLength = function (_p59) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (_p60) {
+				return _elm_lang$core$String$length(
+					function (_) {
+						return _.match;
+					}(_p60));
+			},
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					openRegex,
+					_p59)));
+	};
+	return A2(
+		_elm_lang$core$Maybe$map,
+		verifyCloseTag(model.remainText),
+		extractOpenTagLength(model.remainText));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$HardBreak = {ctor: 'HardBreak'};
+var _pablohirafuji$elm_markdown$Markdown_Inline$regexes = function (options) {
+	return {
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: _pablohirafuji$elm_markdown$Markdown_Inline$HardBreak,
+			_1: _pablohirafuji$elm_markdown$Markdown_Inline$lineBreakRegex(options)
+		},
+		_1: {ctor: '[]'}
+	};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$hardBreakFromRegex = function (regexMatch) {
+	return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+		{
+			type_: _pablohirafuji$elm_markdown$Markdown_Inline$HardBreak,
+			start: regexMatch.index,
+			end: regexMatch.index + _elm_lang$core$String$length(regexMatch.match),
+			rawText: regexMatch.match,
+			text: regexMatch.match,
+			matches: {ctor: '[]'}
+		});
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$regexMatchesToMatch = F2(
+	function (type_, regexMatches) {
+		var _p61 = type_;
+		if (_p61.ctor === 'HardBreak') {
+			return A2(_elm_lang$core$List$map, _pablohirafuji$elm_markdown$Markdown_Inline$hardBreakFromRegex, regexMatches);
+		} else {
+			return {ctor: '[]'};
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$findRegexMatches = F2(
+	function (rawText, _p62) {
+		var _p63 = _p62;
+		return A2(
+			_pablohirafuji$elm_markdown$Markdown_Inline$regexMatchesToMatch,
+			_p63._0,
+			A3(_elm_lang$core$Regex$find, _elm_lang$core$Regex$All, _p63._1, rawText));
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$findRegexesMatches = F2(
+	function (regexes, rawText) {
+		return _elm_lang$core$List$concat(
+			A2(
+				_elm_lang$core$List$map,
+				_pablohirafuji$elm_markdown$Markdown_Inline$findRegexMatches(rawText),
+				regexes));
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$Normal = {ctor: 'Normal'};
+var _pablohirafuji$elm_markdown$Markdown_Inline$normalMatch = function (text) {
+	return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+		{
+			type_: _pablohirafuji$elm_markdown$Markdown_Inline$Normal,
+			start: 0,
+			end: 0,
+			rawText: text,
+			text: _pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable(text),
+			matches: {ctor: '[]'}
+		});
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$parseNormalMatch = F3(
+	function (rawText, _p64, parsedMatches) {
+		var _p65 = _p64;
+		var _p68 = _p65._0;
+		var updtMatch = _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+			_elm_lang$core$Native_Utils.update(
+				_p68,
+				{
+					matches: A3(
+						_pablohirafuji$elm_markdown$Markdown_Inline$parseNormalMatches,
+						_p68.text,
+						{ctor: '[]'},
+						_p68.matches)
+				}));
+		var _p66 = parsedMatches;
+		if (_p66.ctor === '[]') {
+			var finalStr = A2(_elm_lang$core$String$dropLeft, _p68.end, rawText);
+			return _elm_lang$core$String$isEmpty(finalStr) ? {
+				ctor: '::',
+				_0: updtMatch,
+				_1: {ctor: '[]'}
+			} : {
+				ctor: '::',
+				_0: updtMatch,
+				_1: {
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown_Inline$normalMatch(finalStr),
+					_1: {ctor: '[]'}
+				}
+			};
+		} else {
+			var _p67 = _p66._0._0;
+			return _elm_lang$core$Native_Utils.eq(_p67.type_, _pablohirafuji$elm_markdown$Markdown_Inline$Normal) ? {ctor: '::', _0: updtMatch, _1: parsedMatches} : (_elm_lang$core$Native_Utils.eq(_p68.end, _p67.start) ? {ctor: '::', _0: updtMatch, _1: parsedMatches} : ((_elm_lang$core$Native_Utils.cmp(_p68.end, _p67.start) < 0) ? {
+				ctor: '::',
+				_0: updtMatch,
+				_1: {
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown_Inline$normalMatch(
+						A3(_elm_lang$core$String$slice, _p68.end, _p67.start, rawText)),
+					_1: parsedMatches
+				}
+			} : parsedMatches));
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$parseNormalMatches = F3(
+	function (rawText, parsedMatches, matches) {
+		parseNormalMatches:
+		while (true) {
+			var _p69 = matches;
+			if (_p69.ctor === '[]') {
+				var _p70 = parsedMatches;
+				if (_p70.ctor === '[]') {
+					return _elm_lang$core$String$isEmpty(rawText) ? {ctor: '[]'} : {
+						ctor: '::',
+						_0: _pablohirafuji$elm_markdown$Markdown_Inline$normalMatch(rawText),
+						_1: {ctor: '[]'}
+					};
+				} else {
+					var _p71 = _p70._0._0;
+					return (_elm_lang$core$Native_Utils.cmp(_p71.start, 0) > 0) ? {
+						ctor: '::',
+						_0: _pablohirafuji$elm_markdown$Markdown_Inline$normalMatch(
+							A2(_elm_lang$core$String$left, _p71.start, rawText)),
+						_1: parsedMatches
+					} : parsedMatches;
+				}
+			} else {
+				var _v31 = rawText,
+					_v32 = A3(_pablohirafuji$elm_markdown$Markdown_Inline$parseNormalMatch, rawText, _p69._0, parsedMatches),
+					_v33 = _p69._1;
+				rawText = _v31;
+				parsedMatches = _v32;
+				matches = _v33;
+				continue parseNormalMatches;
+			}
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$EmphasisTag = function (a) {
+	return {ctor: 'EmphasisTag', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$emphasisTagFound = F2(
+	function ($char, model) {
+		var fringeRank = function (string) {
+			return _pablohirafuji$elm_markdown$Markdown_Inline$containSpace(string) ? 0 : (_pablohirafuji$elm_markdown$Markdown_Inline$containPuntuaction(string) ? 1 : 2);
+		};
+		var leftFringeRank = A2(
+			_elm_lang$core$Maybe$withDefault,
+			0,
+			A2(
+				_elm_lang$core$Maybe$map,
+				function (_p72) {
+					return fringeRank(
+						_elm_lang$core$String$fromChar(_p72));
+				},
+				model.lastChar));
+		var emSequenceRegex = _elm_lang$core$Regex$regex('^(\\*+|_+)(.)?');
+		var regexMatchToTuple = function (matches) {
+			var _p73 = matches;
+			if (_p73.ctor === '::') {
+				var _p74 = _p73._0.submatches;
+				if ((_p74.ctor === '::') && (_p74._1.ctor === '::')) {
+					return {ctor: '_Tuple2', _0: _p74._0, _1: _p74._1._0};
+				} else {
+					return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Maybe$Nothing};
+				}
+			} else {
+				return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Maybe$Nothing};
+			}
+		};
+		var _p75 = regexMatchToTuple(
+			A3(
+				_elm_lang$core$Regex$find,
+				_elm_lang$core$Regex$AtMost(1),
+				emSequenceRegex,
+				model.remainText));
+		var maybeEmSequence = _p75._0;
+		var maybeNextString = _p75._1;
+		var rightFringeRank = A2(
+			_elm_lang$core$Maybe$withDefault,
+			0,
+			A2(_elm_lang$core$Maybe$map, fringeRank, maybeNextString));
+		var processEmSequence = function (emSequence) {
+			var addMatch = F3(
+				function (model, rawCloseToken, _p76) {
+					addMatch:
+					while (true) {
+						var _p77 = _p76;
+						var _p80 = _p77.tokens;
+						var _p79 = _p77.closeToken;
+						var remainLength = rawCloseToken.length - _p79.length;
+						var updtCloseToken = _elm_lang$core$Native_Utils.update(
+							rawCloseToken,
+							{index: _p79.index + _p79.length, length: remainLength});
+						var updtModel = _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								tokens: _p80,
+								matches: {
+									ctor: '::',
+									_0: A3(_pablohirafuji$elm_markdown$Markdown_Inline$tokenToMatch, model.rawText, _p77.openToken, _p79),
+									_1: model.matches
+								}
+							});
+						if (_elm_lang$core$Native_Utils.cmp(remainLength, 0) > 0) {
+							var _p78 = A2(_pablohirafuji$elm_markdown$Markdown_Inline$retrieveToken, updtCloseToken, _p80);
+							if (_p78.ctor === 'Just') {
+								var _v38 = updtModel,
+									_v39 = updtCloseToken,
+									_v40 = _p78._0;
+								model = _v38;
+								rawCloseToken = _v39;
+								_p76 = _v40;
+								continue addMatch;
+							} else {
+								return updtModel;
+							}
+						} else {
+							return updtModel;
+						}
+					}
+				});
+			var lastChar = _elm_lang$core$Maybe$Just($char);
+			var emSequenceLength = _elm_lang$core$String$length(emSequence);
+			var remainText = A2(_elm_lang$core$String$dropLeft, emSequenceLength, model.remainText);
+			var index = model.index + emSequenceLength;
+			var updtModel = _elm_lang$core$Native_Utils.update(
+				model,
+				{remainText: remainText, lastChar: lastChar, index: index});
+			var emToken = {
+				index: model.index,
+				length: emSequenceLength,
+				meaning: _pablohirafuji$elm_markdown$Markdown_Inline$EmphasisTag($char)
+			};
+			if (_elm_lang$core$Native_Utils.eq(leftFringeRank, rightFringeRank)) {
+				if ((!_elm_lang$core$Native_Utils.eq(rightFringeRank, 0)) && ((!_elm_lang$core$Native_Utils.eq(
+					$char,
+					_elm_lang$core$Native_Utils.chr('_'))) || _elm_lang$core$Native_Utils.eq(rightFringeRank, 1))) {
+					var _p81 = A2(_pablohirafuji$elm_markdown$Markdown_Inline$retrieveToken, emToken, model.tokens);
+					if (_p81.ctor === 'Just') {
+						var _p82 = _p81._0;
+						return _p82.isMultipleOf3 ? _elm_lang$core$Native_Utils.update(
+							updtModel,
+							{
+								tokens: {ctor: '::', _0: emToken, _1: model.tokens}
+							}) : A3(addMatch, updtModel, emToken, _p82);
+					} else {
+						return _elm_lang$core$Native_Utils.update(
+							updtModel,
+							{
+								tokens: {ctor: '::', _0: emToken, _1: model.tokens}
+							});
+					}
+				} else {
+					return updtModel;
+				}
+			} else {
+				if (_elm_lang$core$Native_Utils.cmp(leftFringeRank, rightFringeRank) < 0) {
+					return _elm_lang$core$Native_Utils.update(
+						updtModel,
+						{
+							tokens: {ctor: '::', _0: emToken, _1: model.tokens}
+						});
+				} else {
+					var _p83 = A2(_pablohirafuji$elm_markdown$Markdown_Inline$retrieveToken, emToken, model.tokens);
+					if (_p83.ctor === 'Just') {
+						return A3(addMatch, updtModel, emToken, _p83._0);
+					} else {
+						return updtModel;
+					}
+				}
+			}
+		};
+		return A2(_elm_lang$core$Maybe$map, processEmSequence, maybeEmSequence);
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$lexer = function (model) {
+	lexer:
+	while (true) {
+		var _p84 = _elm_lang$core$String$uncons(model.remainText);
+		if (_p84.ctor === 'Nothing') {
+			return model;
+		} else {
+			var _p85 = _p84._0._0;
+			var noOpModel = _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					remainText: _p84._0._1,
+					lastChar: _elm_lang$core$Maybe$Just(_p85),
+					index: model.index + 1,
+					isEscaped: false
+				});
+			if (model.isEscaped) {
+				var _v44 = noOpModel;
+				model = _v44;
+				continue lexer;
+			} else {
+				if (_elm_lang$core$Native_Utils.eq(
+					_p85,
+					_elm_lang$core$Native_Utils.chr('*')) || _elm_lang$core$Native_Utils.eq(
+					_p85,
+					_elm_lang$core$Native_Utils.chr('_'))) {
+					var _v45 = A2(
+						_elm_lang$core$Maybe$withDefault,
+						noOpModel,
+						A2(_pablohirafuji$elm_markdown$Markdown_Inline$emphasisTagFound, _p85, model));
+					model = _v45;
+					continue lexer;
+				} else {
+					if (_elm_lang$core$Native_Utils.eq(
+						_p85,
+						_elm_lang$core$Native_Utils.chr('`'))) {
+						var _v46 = A2(
+							_elm_lang$core$Maybe$withDefault,
+							noOpModel,
+							_pablohirafuji$elm_markdown$Markdown_Inline$codeTagFound(model));
+						model = _v46;
+						continue lexer;
+					} else {
+						if (_elm_lang$core$Native_Utils.eq(
+							_p85,
+							_elm_lang$core$Native_Utils.chr('['))) {
+							var _v47 = A2(
+								_elm_lang$core$Maybe$withDefault,
+								noOpModel,
+								_pablohirafuji$elm_markdown$Markdown_Inline$linkTagFound(model));
+							model = _v47;
+							continue lexer;
+						} else {
+							if (_elm_lang$core$Native_Utils.eq(
+								_p85,
+								_elm_lang$core$Native_Utils.chr('!'))) {
+								var _v48 = A2(
+									_elm_lang$core$Maybe$withDefault,
+									noOpModel,
+									_pablohirafuji$elm_markdown$Markdown_Inline$imageTagFound(model));
+								model = _v48;
+								continue lexer;
+							} else {
+								if (_elm_lang$core$Native_Utils.eq(
+									_p85,
+									_elm_lang$core$Native_Utils.chr('<'))) {
+									var _v49 = A2(
+										_elm_lang$core$Maybe$withDefault,
+										noOpModel,
+										A2(
+											_pablohirafuji$elm_markdown$Markdown_Inline$ifNothing,
+											_pablohirafuji$elm_markdown$Markdown_Inline$htmlTagFound(model),
+											_pablohirafuji$elm_markdown$Markdown_Inline$autoLinkTagFound(model)));
+									model = _v49;
+									continue lexer;
+								} else {
+									if (_elm_lang$core$Native_Utils.eq(
+										_p85,
+										_elm_lang$core$Native_Utils.chr('\\'))) {
+										var _v50 = _elm_lang$core$Native_Utils.update(
+											noOpModel,
+											{isEscaped: true});
+										model = _v50;
+										continue lexer;
+									} else {
+										var _v51 = noOpModel;
+										model = _v51;
+										continue lexer;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$htmlTagFound = function (model) {
+	var applyHtmlRegex = function (_p86) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_pablohirafuji$elm_markdown$Markdown_Inline$htmlFromRegex(model),
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$htmlRegex,
+					_p86)));
+	};
+	var _p87 = model.options.rawHtml;
+	if (_p87.ctor === 'DontParse') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			_pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel(model),
+			applyHtmlRegex(model.remainText));
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$htmlFromRegex = F2(
+	function (model, regexMatch) {
+		var _p88 = regexMatch.submatches;
+		_v53_2:
+		do {
+			if ((_p88.ctor === '::') && (_p88._0.ctor === 'Just')) {
+				if (_p88._0._0 === '') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if ((_p88._1.ctor === '::') && (_p88._1._1.ctor === '::')) {
+						var _p90 = _p88._0._0;
+						var filterAttributes = F2(
+							function (attrs, allowed) {
+								return A2(
+									_elm_lang$core$List$filter,
+									function (attr) {
+										return A2(
+											_elm_lang$core$List$member,
+											_elm_lang$core$Tuple$first(attr),
+											allowed);
+									},
+									attrs);
+							});
+						var inner = A2(_elm_lang$core$Maybe$withDefault, '', _p88._1._1._0);
+						var match = function (attrs) {
+							return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+								{
+									type_: _pablohirafuji$elm_markdown$Markdown_Inline$Html(
+										{tag: _p90, attributes: attrs}),
+									start: model.index,
+									end: model.index + _elm_lang$core$String$length(regexMatch.match),
+									rawText: regexMatch.match,
+									text: inner,
+									matches: A3(_pablohirafuji$elm_markdown$Markdown_Inline$findMatches, model.options, model.refs, inner)
+								});
+						};
+						var attributes = A2(
+							_elm_lang$core$Maybe$withDefault,
+							{ctor: '[]'},
+							A2(_elm_lang$core$Maybe$map, _pablohirafuji$elm_markdown$Markdown_Inline$applyAttributesRegex, _p88._1._0));
+						var _p89 = model.options.rawHtml;
+						switch (_p89.ctor) {
+							case 'ParseUnsafe':
+								return _elm_lang$core$Maybe$Just(
+									match(attributes));
+							case 'Sanitize':
+								return A2(_elm_lang$core$List$member, _p90, _p89._0.allowedHtmlElements) ? _elm_lang$core$Maybe$Just(
+									match(
+										A2(filterAttributes, attributes, _p89._0.allowedHtmlAttributes))) : _elm_lang$core$Maybe$Nothing;
+							default:
+								return _elm_lang$core$Maybe$Nothing;
+						}
+					} else {
+						break _v53_2;
+					}
+				}
+			} else {
+				break _v53_2;
+			}
+		} while(false);
+		return _elm_lang$core$Maybe$Nothing;
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$findMatches = F3(
+	function (options, refs, rawText) {
+		return A2(
+			F2(
+				function (x, y) {
+					return A2(_elm_lang$core$Basics_ops['++'], x, y);
+				}),
+			function (_) {
+				return _.matches;
+			}(
+				_pablohirafuji$elm_markdown$Markdown_Inline$lexer(
+					A3(_pablohirafuji$elm_markdown$Markdown_Inline$initLexerModel, options, refs, rawText))),
+			A2(
+				_pablohirafuji$elm_markdown$Markdown_Inline$findRegexesMatches,
+				_pablohirafuji$elm_markdown$Markdown_Inline$regexes(options),
+				rawText));
+	});
+var _pablohirafuji$elm_markdown$Markdown_Inline$linkTagFound = function (model) {
+	var applyRefLinkRegex = function (_p91) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_pablohirafuji$elm_markdown$Markdown_Inline$extractRefRegex(model.refs),
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$refLinkRegex,
+					_p91)));
+	};
+	var applyLinkRegex = function (_p92) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_pablohirafuji$elm_markdown$Markdown_Inline$extractUrlTitleRegex,
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_pablohirafuji$elm_markdown$Markdown_Inline$linkRegex,
+					_p92)));
+	};
+	var linkMatchToMatch = F2(
+		function (model, _p93) {
+			var _p94 = _p93;
+			var _p95 = _p94.inside;
+			return _pablohirafuji$elm_markdown$Markdown_Inline$Match(
+				{
+					type_: _pablohirafuji$elm_markdown$Markdown_Inline$Link(
+						{
+							ctor: '_Tuple2',
+							_0: _pablohirafuji$elm_markdown$Markdown_Inline$encodeUrl(
+								_pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable(_p94.url)),
+							_1: A2(_elm_lang$core$Maybe$map, _pablohirafuji$elm_markdown$Markdown_Inline$replaceEscapable, _p94.maybeTitle)
+						}),
+					start: model.index,
+					end: model.index + _p94.matchLength,
+					rawText: _p95,
+					text: _p95,
+					matches: A3(_pablohirafuji$elm_markdown$Markdown_Inline$findMatches, model.options, _elm_lang$core$Dict$empty, _p95)
+				});
+		});
+	return A2(
+		_elm_lang$core$Maybe$map,
+		_pablohirafuji$elm_markdown$Markdown_Inline$updateLexerModel(model),
+		A2(
+			_elm_lang$core$Maybe$map,
+			linkMatchToMatch(model),
+			A2(
+				_pablohirafuji$elm_markdown$Markdown_Inline$ifNothing,
+				applyRefLinkRegex(model.remainText),
+				applyLinkRegex(model.remainText))));
+};
+var _pablohirafuji$elm_markdown$Markdown_Inline$parse = F3(
+	function (options, refs, rawText) {
+		var trimmedText = _elm_lang$core$String$trim(rawText);
+		return A3(
+			_pablohirafuji$elm_markdown$Markdown_Inline$parseNormalMatches,
+			trimmedText,
+			{ctor: '[]'},
+			_pablohirafuji$elm_markdown$Markdown_Inline$organizeMatches(
+				A3(_pablohirafuji$elm_markdown$Markdown_Inline$findMatches, options, refs, trimmedText)));
+	});
+
+var _pablohirafuji$elm_markdown$Markdown$blockToHtml = F4(
+	function (options, elements, textAsParagraph, block) {
+		var _p0 = block;
+		switch (_p0.ctor) {
+			case 'Heading':
+				return {
+					ctor: '::',
+					_0: A2(
+						elements.heading,
+						_p0._0.level,
+						A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p0._0.inlines)),
+					_1: {ctor: '[]'}
+				};
+			case 'ThematicBreak':
+				return {
+					ctor: '::',
+					_0: elements.thematicBreak,
+					_1: {ctor: '[]'}
+				};
+			case 'Paragraph':
+				return A2(
+					elements.paragraph,
+					textAsParagraph,
+					A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p0._0.inlines));
+			case 'Code':
+				return {
+					ctor: '::',
+					_0: elements.code(_p0._0),
+					_1: {ctor: '[]'}
+				};
+			case 'BlockQuote':
+				return A3(
+					_elm_lang$core$Basics$flip,
+					F2(
+						function (x, y) {
+							return {ctor: '::', _0: x, _1: y};
+						}),
+					{ctor: '[]'},
+					elements.blockQuote(
+						A4(_pablohirafuji$elm_markdown$Markdown$blocksToHtml, options, elements, true, _p0._0.blocks)));
+			case 'List':
+				return function (list) {
+					return {
+						ctor: '::',
+						_0: list,
+						_1: {ctor: '[]'}
+					};
+				}(
+					A2(
+						elements.list,
+						_p0._0.type_,
+						A2(
+							_elm_lang$core$List$map,
+							function (_p1) {
+								return A2(
+									_elm_lang$html$Html$li,
+									{ctor: '[]'},
+									A4(_pablohirafuji$elm_markdown$Markdown$blocksToHtml, options, elements, _p0._0.isLoose, _p1));
+							},
+							_p0._0.items)));
+			default:
+				return A2(_pablohirafuji$elm_markdown$Markdown_Inline$toHtml, elements, _p0._0.inlines);
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$blocksToHtml = F3(
+	function (options, elements, textAsParagraph) {
+		return function (_p2) {
+			return _elm_lang$core$List$concat(
+				A2(
+					_elm_lang$core$List$map,
+					A3(_pablohirafuji$elm_markdown$Markdown$blockToHtml, options, elements, textAsParagraph),
+					_p2));
+		};
+	});
+var _pablohirafuji$elm_markdown$Markdown$insertLinkMatch = F2(
+	function (refs, linkMatch) {
+		return A2(_elm_lang$core$Dict$member, linkMatch.inside, refs) ? refs : A3(
+			_elm_lang$core$Dict$insert,
+			linkMatch.inside,
+			{ctor: '_Tuple2', _0: linkMatch.url, _1: linkMatch.maybeTitle},
+			refs);
+	});
+var _pablohirafuji$elm_markdown$Markdown$hrefRegex = '\\s*(?:<([^<>\\s]*)>|([^\\s]*))';
+var _pablohirafuji$elm_markdown$Markdown$refRegex = _elm_lang$core$Regex$regex(
+	A2(
+		_elm_lang$core$Basics_ops['++'],
+		'^\\s*\\[(',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_pablohirafuji$elm_markdown$Markdown_Inline$insideRegex,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				')\\]:',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_pablohirafuji$elm_markdown$Markdown$hrefRegex,
+					A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown_Inline$titleRegex, '\\s*(?![^\\n])'))))));
+var _pablohirafuji$elm_markdown$Markdown$maybeLinkMatch = function (rawText) {
+	return A2(
+		_elm_lang$core$Maybe$andThen,
+		function (linkMatch) {
+			return (_elm_lang$core$Native_Utils.eq(linkMatch.url, '') || _elm_lang$core$Native_Utils.eq(linkMatch.inside, '')) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(linkMatch);
+		},
+		A2(
+			_elm_lang$core$Maybe$map,
+			function (linkMatch) {
+				return _elm_lang$core$Native_Utils.update(
+					linkMatch,
+					{
+						inside: _pablohirafuji$elm_markdown$Markdown_Inline$prepareRefLabel(linkMatch.inside)
+					});
+			},
+			A2(
+				_elm_lang$core$Maybe$andThen,
+				_pablohirafuji$elm_markdown$Markdown_Inline$extractUrlTitleRegex,
+				_elm_lang$core$List$head(
+					A3(
+						_elm_lang$core$Regex$find,
+						_elm_lang$core$Regex$AtMost(1),
+						_pablohirafuji$elm_markdown$Markdown$refRegex,
+						rawText)))));
+};
+var _pablohirafuji$elm_markdown$Markdown$isBlankASLast = function (absSynsList) {
+	isBlankASLast:
+	while (true) {
+		var _p3 = absSynsList;
+		if (_p3.ctor === '::') {
+			var _p4 = _p3._0;
+			_v2_3:
+			do {
+				if (_p4.ctor === '::') {
+					switch (_p4._0.ctor) {
+						case 'BlankAS':
+							if (_p4._1.ctor === '[]') {
+								return false;
+							} else {
+								return true;
+							}
+						case 'ListAS':
+							var _v3 = _p4._0._1;
+							absSynsList = _v3;
+							continue isBlankASLast;
+						default:
+							break _v2_3;
+					}
+				} else {
+					break _v2_3;
+				}
+			} while(false);
+			return false;
+		} else {
+			return false;
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$blockQuoteFromMatch = function (match) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$List$head(match.submatches)));
+};
+var _pablohirafuji$elm_markdown$Markdown$headingSetextMatch = function (match) {
+	var _p5 = match.submatches;
+	if ((_p5.ctor === '::') && (_p5._0.ctor === 'Just')) {
+		var _p6 = _p5._0._0;
+		return A2(_elm_lang$core$String$startsWith, '=', _p6) ? {ctor: '_Tuple2', _0: 1, _1: _p6} : {ctor: '_Tuple2', _0: 2, _1: _p6};
+	} else {
+		return {ctor: '_Tuple2', _0: 1, _1: ''};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$headingAtxMatch = function (match) {
+	var _p7 = match.submatches;
+	if ((((_p7.ctor === '::') && (_p7._0.ctor === 'Just')) && (_p7._1.ctor === '::')) && (_p7._1._0.ctor === 'Just')) {
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$String$length(_p7._0._0),
+			_1: _p7._1._0._0
+		};
+	} else {
+		return {ctor: '_Tuple2', _0: 1, _1: match.match};
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$blockQuoteLineRegex = _elm_lang$core$Regex$regex('^ {0,3}(?:>[ ]?)(.*)$');
+var _pablohirafuji$elm_markdown$Markdown$thematicBreakLineRegex = _elm_lang$core$Regex$regex('^ {0,3}(?:(?:\\*[ \\t]*){3,}|(?:_[ \\t]*){3,}|(?:-[ \\t]*){3,})[ \\t]*$');
+var _pablohirafuji$elm_markdown$Markdown$headingSetextRegex = _elm_lang$core$Regex$regex('^ {0,3}(=+|-+)[ \\t]*$');
+var _pablohirafuji$elm_markdown$Markdown$headingAtxRegex = _elm_lang$core$Regex$regex('^ {0,3}(#{1,6})(?:[ \\t]+[ \\t#]+$|[ \\t]+|$)(.*?)(?:\\s+[ \\t#]*)?$');
+var _pablohirafuji$elm_markdown$Markdown$blankLineRegex = _elm_lang$core$Regex$regex('^\\s*$');
+var _pablohirafuji$elm_markdown$Markdown$dropRefString = F2(
+	function (rawText, inlineMatch) {
+		var strippedText = A2(_elm_lang$core$String$dropLeft, inlineMatch.matchLength, rawText);
+		return A2(_elm_lang$core$Regex$contains, _pablohirafuji$elm_markdown$Markdown$blankLineRegex, strippedText) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(strippedText);
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseReference = F2(
+	function (refs, rawText) {
+		parseReference:
+		while (true) {
+			var _p8 = _pablohirafuji$elm_markdown$Markdown$maybeLinkMatch(rawText);
+			if (_p8.ctor === 'Just') {
+				var _p10 = _p8._0;
+				var updtRefs = A2(_pablohirafuji$elm_markdown$Markdown$insertLinkMatch, refs, _p10);
+				var maybeStrippedText = A2(_pablohirafuji$elm_markdown$Markdown$dropRefString, rawText, _p10);
+				var _p9 = maybeStrippedText;
+				if (_p9.ctor === 'Just') {
+					var _v8 = updtRefs,
+						_v9 = _p9._0;
+					refs = _v8;
+					rawText = _v9;
+					continue parseReference;
+				} else {
+					return {ctor: '_Tuple2', _0: updtRefs, _1: _elm_lang$core$Maybe$Nothing};
+				}
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: refs,
+					_1: _elm_lang$core$Maybe$Just(rawText)
+				};
+			}
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$toRawLines = _elm_lang$core$String$lines;
+var _pablohirafuji$elm_markdown$Markdown$HeadingBlock = F2(
+	function (a, b) {
+		return {level: a, inlines: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown$ParagraphBlock = function (a) {
+	return {inlines: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$BlockQuoteBlock = function (a) {
+	return {blocks: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$ListBlock = F3(
+	function (a, b, c) {
+		return {type_: a, isLoose: b, items: c};
+	});
+var _pablohirafuji$elm_markdown$Markdown$HtmlBlock = function (a) {
+	return {inlines: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$UnorderedListLine = {ctor: 'UnorderedListLine'};
+var _pablohirafuji$elm_markdown$Markdown$OrderedListLine = {ctor: 'OrderedListLine'};
+var _pablohirafuji$elm_markdown$Markdown$BlockQuoteLine = {ctor: 'BlockQuoteLine'};
+var _pablohirafuji$elm_markdown$Markdown$OpeningFenceCodeLine = {ctor: 'OpeningFenceCodeLine'};
+var _pablohirafuji$elm_markdown$Markdown$IndentedCodeLine = {ctor: 'IndentedCodeLine'};
+var _pablohirafuji$elm_markdown$Markdown$ThematicBreakLine = {ctor: 'ThematicBreakLine'};
+var _pablohirafuji$elm_markdown$Markdown$listLineRegexes = {
+	ctor: '::',
+	_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$ThematicBreakLine, _1: _pablohirafuji$elm_markdown$Markdown$thematicBreakLineRegex},
+	_1: {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$OrderedListLine, _1: _pablohirafuji$elm_markdown$Markdown_List$orderedRegex},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$UnorderedListLine, _1: _pablohirafuji$elm_markdown$Markdown_List$unorderedRegex},
+			_1: {ctor: '[]'}
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$SetextHeadingLine = {ctor: 'SetextHeadingLine'};
+var _pablohirafuji$elm_markdown$Markdown$ATXHeadingLine = {ctor: 'ATXHeadingLine'};
+var _pablohirafuji$elm_markdown$Markdown$BlankLine = {ctor: 'BlankLine'};
+var _pablohirafuji$elm_markdown$Markdown$lineMinusListRegexes = {
+	ctor: '::',
+	_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$BlankLine, _1: _pablohirafuji$elm_markdown$Markdown$blankLineRegex},
+	_1: {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$IndentedCodeLine, _1: _pablohirafuji$elm_markdown$Markdown_Code$indentedRegex},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$OpeningFenceCodeLine, _1: _pablohirafuji$elm_markdown$Markdown_Code$openingFenceRegex},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$SetextHeadingLine, _1: _pablohirafuji$elm_markdown$Markdown$headingSetextRegex},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$ATXHeadingLine, _1: _pablohirafuji$elm_markdown$Markdown$headingAtxRegex},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: _pablohirafuji$elm_markdown$Markdown$BlockQuoteLine, _1: _pablohirafuji$elm_markdown$Markdown$blockQuoteLineRegex},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$lineRegexes = A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown$lineMinusListRegexes, _pablohirafuji$elm_markdown$Markdown$listLineRegexes);
+var _pablohirafuji$elm_markdown$Markdown$listLineFirstRegexes = A2(_elm_lang$core$Basics_ops['++'], _pablohirafuji$elm_markdown$Markdown$listLineRegexes, _pablohirafuji$elm_markdown$Markdown$lineMinusListRegexes);
+var _pablohirafuji$elm_markdown$Markdown$ParagraphAS = function (a) {
+	return {ctor: 'ParagraphAS', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$addToParagraph = F2(
+	function (paragraph, rawLine) {
+		return _pablohirafuji$elm_markdown$Markdown$ParagraphAS(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				paragraph,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'\n',
+					_elm_lang$core$String$trimLeft(rawLine))));
+	});
+var _pablohirafuji$elm_markdown$Markdown$ListAS = F2(
+	function (a, b) {
+		return {ctor: 'ListAS', _0: a, _1: b};
+	});
+var _pablohirafuji$elm_markdown$Markdown$BlockQuoteAS = function (a) {
+	return {ctor: 'BlockQuoteAS', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$maybeContinueParagraph = F2(
+	function (rawLine, absSyns) {
+		var _p11 = absSyns;
+		_v10_3:
+		do {
+			if (_p11.ctor === '::') {
+				switch (_p11._0.ctor) {
+					case 'ParagraphAS':
+						return _elm_lang$core$Maybe$Just(
+							{
+								ctor: '::',
+								_0: A2(_pablohirafuji$elm_markdown$Markdown$addToParagraph, _p11._0._0, rawLine),
+								_1: _p11._1
+							});
+					case 'BlockQuoteAS':
+						return A2(
+							_elm_lang$core$Maybe$map,
+							function (updtASs_) {
+								return {
+									ctor: '::',
+									_0: _pablohirafuji$elm_markdown$Markdown$BlockQuoteAS(updtASs_),
+									_1: _p11._1
+								};
+							},
+							A2(_pablohirafuji$elm_markdown$Markdown$maybeContinueParagraph, rawLine, _p11._0._0));
+					case 'ListAS':
+						var _p12 = _p11._0._1;
+						if (_p12.ctor === '::') {
+							return A2(
+								_elm_lang$core$Maybe$map,
+								function (updtASs_) {
+									return {
+										ctor: '::',
+										_0: A2(
+											_pablohirafuji$elm_markdown$Markdown$ListAS,
+											_p11._0._0,
+											{ctor: '::', _0: updtASs_, _1: _p12._1}),
+										_1: _p11._1
+									};
+								},
+								A2(_pablohirafuji$elm_markdown$Markdown$maybeContinueParagraph, rawLine, _p12._0));
+						} else {
+							return _elm_lang$core$Maybe$Nothing;
+						}
+					default:
+						break _v10_3;
+				}
+			} else {
+				break _v10_3;
+			}
+		} while(false);
+		return _elm_lang$core$Maybe$Nothing;
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseTextLine = F2(
+	function (rawLine, absSyns) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			{
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown$ParagraphAS(
+					_elm_lang$core$String$trimLeft(rawLine)),
+				_1: absSyns
+			},
+			A2(_pablohirafuji$elm_markdown$Markdown$maybeContinueParagraph, rawLine, absSyns));
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseReferences = function (refs) {
+	var applyParser = F2(
+		function (absSyn, _p13) {
+			var _p14 = _p13;
+			var _p22 = _p14._0;
+			var _p21 = _p14._1;
+			var _p15 = absSyn;
+			switch (_p15.ctor) {
+				case 'ParagraphAS':
+					var _p16 = A2(_pablohirafuji$elm_markdown$Markdown$parseReference, _elm_lang$core$Dict$empty, _p15._0);
+					var paragraphRefs = _p16._0;
+					var maybeUpdtText = _p16._1;
+					var updtRefs = A2(_elm_lang$core$Dict$union, paragraphRefs, _p22);
+					var _p17 = maybeUpdtText;
+					if (_p17.ctor === 'Just') {
+						return {
+							ctor: '_Tuple2',
+							_0: updtRefs,
+							_1: {
+								ctor: '::',
+								_0: _pablohirafuji$elm_markdown$Markdown$ParagraphAS(_p17._0),
+								_1: _p21
+							}
+						};
+					} else {
+						return {ctor: '_Tuple2', _0: updtRefs, _1: _p21};
+					}
+				case 'ListAS':
+					var _p18 = A3(
+						_elm_lang$core$List$foldl,
+						F2(
+							function (absSyns, _p19) {
+								var _p20 = _p19;
+								return A2(
+									_elm_lang$core$Tuple$mapSecond,
+									A2(
+										_elm_lang$core$Basics$flip,
+										F2(
+											function (x, y) {
+												return {ctor: '::', _0: x, _1: y};
+											}),
+										_p20._1),
+									A2(_pablohirafuji$elm_markdown$Markdown$parseReferences, _p20._0, absSyns));
+							}),
+						{
+							ctor: '_Tuple2',
+							_0: _p22,
+							_1: {ctor: '[]'}
+						},
+						_p15._1);
+					var updtRefs = _p18._0;
+					var updtAbsSynsList = _p18._1;
+					return {
+						ctor: '_Tuple2',
+						_0: updtRefs,
+						_1: {
+							ctor: '::',
+							_0: A2(_pablohirafuji$elm_markdown$Markdown$ListAS, _p15._0, updtAbsSynsList),
+							_1: _p21
+						}
+					};
+				case 'BlockQuoteAS':
+					return A2(
+						_elm_lang$core$Tuple$mapSecond,
+						A2(
+							_elm_lang$core$Basics$flip,
+							F2(
+								function (x, y) {
+									return {ctor: '::', _0: x, _1: y};
+								}),
+							_p21),
+						A2(
+							_elm_lang$core$Tuple$mapSecond,
+							_pablohirafuji$elm_markdown$Markdown$BlockQuoteAS,
+							A2(_pablohirafuji$elm_markdown$Markdown$parseReferences, _p22, _p15._0)));
+				default:
+					return {
+						ctor: '_Tuple2',
+						_0: _p22,
+						_1: {ctor: '::', _0: absSyn, _1: _p21}
+					};
+			}
+		});
+	return A2(
+		_elm_lang$core$List$foldl,
+		applyParser,
+		{
+			ctor: '_Tuple2',
+			_0: refs,
+			_1: {ctor: '[]'}
+		});
+};
+var _pablohirafuji$elm_markdown$Markdown$CodeAS = function (a) {
+	return {ctor: 'CodeAS', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$parseIndentedCodeLine = F2(
+	function (match, absSyns) {
+		var _p23 = _pablohirafuji$elm_markdown$Markdown_Code$fromIndentedMatch(match);
+		var blankLines = _p23._0;
+		var codeLine = _p23._1;
+		var _p24 = absSyns;
+		if (((_p24.ctor === '::') && (_p24._0.ctor === 'CodeAS')) && (_p24._0._0.ctor === 'Indented')) {
+			return {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown$CodeAS(
+					A2(
+						_pablohirafuji$elm_markdown$Markdown_Code$addIndented,
+						{ctor: '_Tuple2', _0: blankLines, _1: codeLine},
+						_p24._0._0._0)),
+				_1: _p24._1
+			};
+		} else {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				{
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown$CodeAS(
+						_pablohirafuji$elm_markdown$Markdown_Code$Indented(
+							{
+								ctor: '_Tuple2',
+								_0: {ctor: '[]'},
+								_1: A2(_elm_lang$core$Basics_ops['++'], codeLine, '\n')
+							})),
+					_1: absSyns
+				},
+				A2(_pablohirafuji$elm_markdown$Markdown$maybeContinueParagraph, codeLine, absSyns));
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseFencedCodeLine = F2(
+	function (match, absSyns) {
+		return {
+			ctor: '::',
+			_0: _pablohirafuji$elm_markdown$Markdown$CodeAS(
+				_pablohirafuji$elm_markdown$Markdown_Code$Fenced(
+					_pablohirafuji$elm_markdown$Markdown_Code$fromOpeningFenceMatch(match))),
+			_1: absSyns
+		};
+	});
+var _pablohirafuji$elm_markdown$Markdown$ThematicBreakAS = {ctor: 'ThematicBreakAS'};
+var _pablohirafuji$elm_markdown$Markdown$HeadingAS = function (a) {
+	return {ctor: 'HeadingAS', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$BlankAS = {ctor: 'BlankAS'};
+var _pablohirafuji$elm_markdown$Markdown$addBlankLineToASsList = F2(
+	function (match, absSynsList) {
+		var _p25 = absSynsList;
+		if (_p25.ctor === '::') {
+			return {
+				ctor: '::',
+				_0: A2(_pablohirafuji$elm_markdown$Markdown$parseBlankLine, match, _p25._0),
+				_1: _p25._1
+			};
+		} else {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown$BlankAS,
+					_1: {ctor: '[]'}
+				},
+				_1: {ctor: '[]'}
+			};
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseBlankLine = F2(
+	function (match, absSyns) {
+		var _p26 = absSyns;
+		_v18_3:
+		do {
+			if (_p26.ctor === '::') {
+				switch (_p26._0.ctor) {
+					case 'CodeAS':
+						if (_p26._0._0.ctor === 'Indented') {
+							return function (b) {
+								return {ctor: '::', _0: b, _1: _p26._1};
+							}(
+								_pablohirafuji$elm_markdown$Markdown$CodeAS(
+									A2(_pablohirafuji$elm_markdown$Markdown_Code$addBlankLineToIndented, match.match, _p26._0._0._0)));
+						} else {
+							if ((_p26._0._0._0.ctor === '_Tuple3') && (_p26._0._0._0._0 === true)) {
+								return function (b) {
+									return {ctor: '::', _0: b, _1: _p26._1};
+								}(
+									_pablohirafuji$elm_markdown$Markdown$CodeAS(
+										A2(
+											_pablohirafuji$elm_markdown$Markdown_Code$addBlankLineToFenced,
+											match.match,
+											{ctor: '_Tuple3', _0: true, _1: _p26._0._0._0._1, _2: _p26._0._0._0._2})));
+							} else {
+								break _v18_3;
+							}
+						}
+					case 'ListAS':
+						return {
+							ctor: '::',
+							_0: A2(
+								_pablohirafuji$elm_markdown$Markdown$ListAS,
+								_p26._0._0,
+								A2(_pablohirafuji$elm_markdown$Markdown$addBlankLineToASsList, match, _p26._0._1)),
+							_1: _p26._1
+						};
+					default:
+						break _v18_3;
+				}
+			} else {
+				break _v18_3;
+			}
+		} while(false);
+		return {ctor: '::', _0: _pablohirafuji$elm_markdown$Markdown$BlankAS, _1: absSyns};
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseListLine = F3(
+	function (type_, match, absSyns) {
+		var _p27 = A2(_pablohirafuji$elm_markdown$Markdown_List$fromMatch, type_, match);
+		var lineModel = _p27._0;
+		var rawLine = _p27._1;
+		var parsedRawLine = _pablohirafuji$elm_markdown$Markdown$parseRawLines(
+			{
+				ctor: '_Tuple2',
+				_0: {
+					ctor: '::',
+					_0: rawLine,
+					_1: {ctor: '[]'}
+				},
+				_1: {ctor: '[]'}
+			});
+		var newListAS = {
+			ctor: '::',
+			_0: A2(
+				_pablohirafuji$elm_markdown$Markdown$ListAS,
+				lineModel,
+				{
+					ctor: '::',
+					_0: parsedRawLine,
+					_1: {ctor: '[]'}
+				}),
+			_1: absSyns
+		};
+		var _p28 = absSyns;
+		_v19_2:
+		do {
+			if (_p28.ctor === '::') {
+				switch (_p28._0.ctor) {
+					case 'ListAS':
+						var _p30 = _p28._0._1;
+						var _p29 = _p28._0._0;
+						return _elm_lang$core$Native_Utils.eq(lineModel.delimiter, _p29.delimiter) ? {
+							ctor: '::',
+							_0: A2(
+								_pablohirafuji$elm_markdown$Markdown$ListAS,
+								_elm_lang$core$Native_Utils.update(
+									_p29,
+									{
+										indentLength: lineModel.indentLength,
+										isLoose: _p29.isLoose || _pablohirafuji$elm_markdown$Markdown$isBlankASLast(_p30)
+									}),
+								{ctor: '::', _0: parsedRawLine, _1: _p30}),
+							_1: _p28._1
+						} : newListAS;
+					case 'ParagraphAS':
+						var _p33 = _p28._0._0;
+						var _p32 = _p28._1;
+						if (_elm_lang$core$Native_Utils.eq(
+							parsedRawLine,
+							{
+								ctor: '::',
+								_0: _pablohirafuji$elm_markdown$Markdown$BlankAS,
+								_1: {ctor: '[]'}
+							})) {
+							return {
+								ctor: '::',
+								_0: A2(_pablohirafuji$elm_markdown$Markdown$addToParagraph, _p33, match.match),
+								_1: _p32
+							};
+						} else {
+							var _p31 = lineModel.type_;
+							if (_p31.ctor === 'Ordered') {
+								if (_p31._0 === 1) {
+									return newListAS;
+								} else {
+									return {
+										ctor: '::',
+										_0: A2(_pablohirafuji$elm_markdown$Markdown$addToParagraph, _p33, match.match),
+										_1: _p32
+									};
+								}
+							} else {
+								return newListAS;
+							}
+						}
+					default:
+						break _v19_2;
+				}
+			} else {
+				break _v19_2;
+			}
+		} while(false);
+		return newListAS;
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseRawLines = function (_p34) {
+	parseRawLines:
+	while (true) {
+		var _p35 = _p34;
+		var _p37 = _p35._1;
+		var _p36 = _p35._0;
+		if (_p36.ctor === '[]') {
+			return _p37;
+		} else {
+			var _v23 = A2(
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				_p36._1,
+				_pablohirafuji$elm_markdown$Markdown$preParseRawLine(
+					{ctor: '_Tuple2', _0: _p36._0, _1: _p37}));
+			_p34 = _v23;
+			continue parseRawLines;
+		}
+	}
+};
+var _pablohirafuji$elm_markdown$Markdown$preParseRawLine = function (_p38) {
+	var _p39 = _p38;
+	var _p47 = _p39._0;
+	var _p46 = _p39._1;
+	var _p40 = _p46;
+	_v25_2:
+	do {
+		if (_p40.ctor === '::') {
+			switch (_p40._0.ctor) {
+				case 'ListAS':
+					var _p45 = _p40._0._0;
+					var _p44 = _p40._1;
+					if (_elm_lang$core$Native_Utils.cmp(
+						_pablohirafuji$elm_markdown$Markdown_List$indentLength(_p47),
+						_p45.indentLength) > -1) {
+						var _p41 = _p40._0._1;
+						if (_p41.ctor === '::') {
+							var _p43 = _p41._0;
+							var unindentedRawLine = A2(_pablohirafuji$elm_markdown$Markdown_Code$indentLine, _p45.indentLength, _p47);
+							var updtListAS = function (model_) {
+								return {
+									ctor: '::',
+									_0: A2(
+										_pablohirafuji$elm_markdown$Markdown$ListAS,
+										model_,
+										{
+											ctor: '::',
+											_0: _pablohirafuji$elm_markdown$Markdown$parseRawLines(
+												{
+													ctor: '_Tuple2',
+													_0: {
+														ctor: '::',
+														_0: unindentedRawLine,
+														_1: {ctor: '[]'}
+													},
+													_1: _p43
+												}),
+											_1: _p41._1
+										}),
+									_1: _p44
+								};
+							};
+							var _p42 = _p43;
+							_v27_3:
+							do {
+								if (_p42.ctor === '::') {
+									switch (_p42._0.ctor) {
+										case 'BlankAS':
+											if (_p42._1.ctor === '[]') {
+												return updtListAS(_p45);
+											} else {
+												return A2(
+													_elm_lang$core$List$all,
+													F2(
+														function (x, y) {
+															return _elm_lang$core$Native_Utils.eq(x, y);
+														})(_pablohirafuji$elm_markdown$Markdown$BlankAS),
+													_p42._1) ? A2(_pablohirafuji$elm_markdown$Markdown$parseRawLine, _p47, _p46) : updtListAS(
+													_elm_lang$core$Native_Utils.update(
+														_p45,
+														{isLoose: true}));
+											}
+										case 'ListAS':
+											return (_elm_lang$core$Native_Utils.cmp(
+												_pablohirafuji$elm_markdown$Markdown_List$indentLength(unindentedRawLine),
+												_p42._0._0.indentLength) > -1) ? updtListAS(_p45) : (_pablohirafuji$elm_markdown$Markdown$isBlankASLast(_p42._0._1) ? updtListAS(
+												_elm_lang$core$Native_Utils.update(
+													_p45,
+													{isLoose: true})) : updtListAS(_p45));
+										default:
+											break _v27_3;
+									}
+								} else {
+									break _v27_3;
+								}
+							} while(false);
+							return updtListAS(_p45);
+						} else {
+							return {
+								ctor: '::',
+								_0: A2(
+									_pablohirafuji$elm_markdown$Markdown$ListAS,
+									_p45,
+									{
+										ctor: '::',
+										_0: _pablohirafuji$elm_markdown$Markdown$parseRawLines(
+											{
+												ctor: '_Tuple2',
+												_0: {
+													ctor: '::',
+													_0: A2(_pablohirafuji$elm_markdown$Markdown_Code$indentLine, _p45.indentLength, _p47),
+													_1: {ctor: '[]'}
+												},
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: _p44
+							};
+						}
+					} else {
+						return A2(_pablohirafuji$elm_markdown$Markdown$parseRawLineConfigFirst, _p47, _p46);
+					}
+				case 'CodeAS':
+					if (((_p40._0._0.ctor === 'Fenced') && (_p40._0._0._0.ctor === '_Tuple3')) && (_p40._0._0._0._0 === true)) {
+						return function (codeAS) {
+							return {ctor: '::', _0: codeAS, _1: _p40._1};
+						}(
+							_pablohirafuji$elm_markdown$Markdown$CodeAS(
+								A3(_pablohirafuji$elm_markdown$Markdown_Code$continueOrCloseFence, _p40._0._0._0._1, _p40._0._0._0._2, _p47)));
+					} else {
+						break _v25_2;
+					}
+				default:
+					break _v25_2;
+			}
+		} else {
+			break _v25_2;
+		}
+	} while(false);
+	return A2(_pablohirafuji$elm_markdown$Markdown$parseRawLine, _p47, _p46);
+};
+var _pablohirafuji$elm_markdown$Markdown$parseRawLine = F2(
+	function (rawLine, absSyns) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			A2(_pablohirafuji$elm_markdown$Markdown$parseTextLine, rawLine, absSyns),
+			A3(
+				_elm_lang$core$List$foldl,
+				A2(_pablohirafuji$elm_markdown$Markdown$applyRegex, rawLine, absSyns),
+				_elm_lang$core$Maybe$Nothing,
+				_pablohirafuji$elm_markdown$Markdown$lineRegexes));
+	});
+var _pablohirafuji$elm_markdown$Markdown$applyRegex = F4(
+	function (rawLine, absSyns, _p48, maybeASs) {
+		var _p49 = _p48;
+		return _elm_lang$core$Native_Utils.eq(maybeASs, _elm_lang$core$Maybe$Nothing) ? A2(
+			_elm_lang$core$Maybe$map,
+			A2(_pablohirafuji$elm_markdown$Markdown$parseLine, _p49._0, absSyns),
+			_elm_lang$core$List$head(
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_p49._1,
+					rawLine))) : maybeASs;
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseLine = F3(
+	function (line, absSyns, match) {
+		var _p50 = line;
+		switch (_p50.ctor) {
+			case 'BlankLine':
+				return A2(_pablohirafuji$elm_markdown$Markdown$parseBlankLine, match, absSyns);
+			case 'ATXHeadingLine':
+				return {
+					ctor: '::',
+					_0: _pablohirafuji$elm_markdown$Markdown$HeadingAS(
+						_pablohirafuji$elm_markdown$Markdown$headingAtxMatch(match)),
+					_1: absSyns
+				};
+			case 'SetextHeadingLine':
+				return A2(_pablohirafuji$elm_markdown$Markdown$parseSetextHeadingLine, match, absSyns);
+			case 'ThematicBreakLine':
+				return {ctor: '::', _0: _pablohirafuji$elm_markdown$Markdown$ThematicBreakAS, _1: absSyns};
+			case 'IndentedCodeLine':
+				return A2(_pablohirafuji$elm_markdown$Markdown$parseIndentedCodeLine, match, absSyns);
+			case 'OpeningFenceCodeLine':
+				return A2(_pablohirafuji$elm_markdown$Markdown$parseFencedCodeLine, match, absSyns);
+			case 'BlockQuoteLine':
+				return A2(_pablohirafuji$elm_markdown$Markdown$parseBlockQuoteLine, match, absSyns);
+			case 'OrderedListLine':
+				return A3(
+					_pablohirafuji$elm_markdown$Markdown$parseListLine,
+					_pablohirafuji$elm_markdown$Markdown_Config$Ordered(0),
+					match,
+					absSyns);
+			default:
+				return A3(_pablohirafuji$elm_markdown$Markdown$parseListLine, _pablohirafuji$elm_markdown$Markdown_Config$Unordered, match, absSyns);
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseBlockQuoteLine = F2(
+	function (match, absSyns) {
+		var rawLine = _pablohirafuji$elm_markdown$Markdown$blockQuoteFromMatch(match);
+		var _p51 = absSyns;
+		if ((_p51.ctor === '::') && (_p51._0.ctor === 'BlockQuoteAS')) {
+			return {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown$BlockQuoteAS(
+					_pablohirafuji$elm_markdown$Markdown$parseRawLines(
+						{
+							ctor: '_Tuple2',
+							_0: {
+								ctor: '::',
+								_0: rawLine,
+								_1: {ctor: '[]'}
+							},
+							_1: _p51._0._0
+						})),
+				_1: _p51._1
+			};
+		} else {
+			return {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown$BlockQuoteAS(
+					_pablohirafuji$elm_markdown$Markdown$parseRawLines(
+						{
+							ctor: '_Tuple2',
+							_0: {
+								ctor: '::',
+								_0: rawLine,
+								_1: {ctor: '[]'}
+							},
+							_1: {ctor: '[]'}
+						})),
+				_1: absSyns
+			};
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseSetextHeadingLine = F2(
+	function (match, absSyns) {
+		var _p52 = _pablohirafuji$elm_markdown$Markdown$headingSetextMatch(match);
+		var lvl = _p52._0;
+		var str = _p52._1;
+		var _p53 = absSyns;
+		if ((_p53.ctor === '::') && (_p53._0.ctor === 'ParagraphAS')) {
+			return {
+				ctor: '::',
+				_0: _pablohirafuji$elm_markdown$Markdown$HeadingAS(
+					{ctor: '_Tuple2', _0: lvl, _1: _p53._0._0}),
+				_1: _p53._1
+			};
+		} else {
+			return _elm_lang$core$Native_Utils.eq(lvl, 1) ? A2(_pablohirafuji$elm_markdown$Markdown$parseTextLine, match.match, absSyns) : (_elm_lang$core$Native_Utils.eq(str, '-') ? A3(_pablohirafuji$elm_markdown$Markdown$parseListLine, _pablohirafuji$elm_markdown$Markdown_Config$Unordered, match, absSyns) : (A2(_elm_lang$core$Regex$contains, _pablohirafuji$elm_markdown$Markdown$thematicBreakLineRegex, match.match) ? {ctor: '::', _0: _pablohirafuji$elm_markdown$Markdown$ThematicBreakAS, _1: absSyns} : A2(_pablohirafuji$elm_markdown$Markdown$parseTextLine, match.match, absSyns)));
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$parseRawLineConfigFirst = F2(
+	function (rawLine, absSyns) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			A2(_pablohirafuji$elm_markdown$Markdown$parseTextLine, rawLine, absSyns),
+			A3(
+				_elm_lang$core$List$foldl,
+				A2(_pablohirafuji$elm_markdown$Markdown$applyRegex, rawLine, absSyns),
+				_elm_lang$core$Maybe$Nothing,
+				_pablohirafuji$elm_markdown$Markdown$listLineFirstRegexes));
+	});
+var _pablohirafuji$elm_markdown$Markdown$Html = function (a) {
+	return {ctor: 'Html', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$List = function (a) {
+	return {ctor: 'List', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$BlockQuote = function (a) {
+	return {ctor: 'BlockQuote', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$Paragraph = function (a) {
+	return {ctor: 'Paragraph', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$Code = function (a) {
+	return {ctor: 'Code', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$Heading = function (a) {
+	return {ctor: 'Heading', _0: a};
+};
+var _pablohirafuji$elm_markdown$Markdown$ThematicBreak = {ctor: 'ThematicBreak'};
+var _pablohirafuji$elm_markdown$Markdown$absSynToBlock = F3(
+	function (options, refs, absSyn) {
+		var _p54 = absSyn;
+		switch (_p54.ctor) {
+			case 'HeadingAS':
+				return _elm_lang$core$Maybe$Just(
+					_pablohirafuji$elm_markdown$Markdown$Heading(
+						{
+							level: _p54._0._0,
+							inlines: A3(_pablohirafuji$elm_markdown$Markdown_Inline$parse, options, refs, _p54._0._1)
+						}));
+			case 'ThematicBreakAS':
+				return _elm_lang$core$Maybe$Just(_pablohirafuji$elm_markdown$Markdown$ThematicBreak);
+			case 'ParagraphAS':
+				var parsedInline = A3(_pablohirafuji$elm_markdown$Markdown_Inline$parse, options, refs, _p54._0);
+				var returnParagraph = _elm_lang$core$Maybe$Just(
+					_pablohirafuji$elm_markdown$Markdown$Paragraph(
+						{inlines: parsedInline}));
+				var _p55 = parsedInline;
+				if ((_p55.ctor === '::') && (_p55._1.ctor === '[]')) {
+					var _p56 = _p55._0._0.type_;
+					if (_p56.ctor === 'Html') {
+						return _elm_lang$core$Maybe$Just(
+							_pablohirafuji$elm_markdown$Markdown$Html(
+								{inlines: parsedInline}));
+					} else {
+						return returnParagraph;
+					}
+				} else {
+					return returnParagraph;
+				}
+			case 'CodeAS':
+				return _elm_lang$core$Maybe$Just(
+					_pablohirafuji$elm_markdown$Markdown$Code(
+						_pablohirafuji$elm_markdown$Markdown_Code$asToBlock(_p54._0)));
+			case 'BlockQuoteAS':
+				return _elm_lang$core$Maybe$Just(
+					_pablohirafuji$elm_markdown$Markdown$BlockQuote(
+						{
+							blocks: A2(
+								_pablohirafuji$elm_markdown$Markdown$absSynsToBlocks,
+								options,
+								{ctor: '_Tuple2', _0: refs, _1: _p54._0})
+						}));
+			case 'ListAS':
+				var _p58 = _p54._0;
+				return _elm_lang$core$Maybe$Just(
+					_pablohirafuji$elm_markdown$Markdown$List(
+						{
+							type_: _p58.type_,
+							isLoose: _p58.isLoose,
+							items: A2(
+								_elm_lang$core$List$map,
+								function (_p57) {
+									return A2(
+										_pablohirafuji$elm_markdown$Markdown$absSynsToBlocks,
+										options,
+										A2(
+											F2(
+												function (v0, v1) {
+													return {ctor: '_Tuple2', _0: v0, _1: v1};
+												}),
+											refs,
+											_p57));
+								},
+								_p54._1)
+						}));
+			default:
+				return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _pablohirafuji$elm_markdown$Markdown$absSynsToBlocks = F2(
+	function (options, _p59) {
+		var _p60 = _p59;
+		return A2(
+			_elm_lang$core$List$filterMap,
+			A2(_pablohirafuji$elm_markdown$Markdown$absSynToBlock, options, _p60._0),
+			_p60._1);
+	});
+var _pablohirafuji$elm_markdown$Markdown$toBlocks = F2(
+	function (options, rawText) {
+		return A2(
+			_pablohirafuji$elm_markdown$Markdown$absSynsToBlocks,
+			options,
+			A2(
+				_pablohirafuji$elm_markdown$Markdown$parseReferences,
+				_elm_lang$core$Dict$empty,
+				_pablohirafuji$elm_markdown$Markdown$parseRawLines(
+					{
+						ctor: '_Tuple2',
+						_0: _pablohirafuji$elm_markdown$Markdown$toRawLines(rawText),
+						_1: {ctor: '[]'}
+					})));
+	});
+var _pablohirafuji$elm_markdown$Markdown$customHtml = F2(
+	function (options, elements) {
+		return function (_p61) {
+			return A4(
+				_pablohirafuji$elm_markdown$Markdown$blocksToHtml,
+				options,
+				elements,
+				true,
+				A2(_pablohirafuji$elm_markdown$Markdown$toBlocks, options, _p61));
+		};
+	});
+var _pablohirafuji$elm_markdown$Markdown$withOptions = function (options) {
+	return A2(_pablohirafuji$elm_markdown$Markdown$customHtml, options, _pablohirafuji$elm_markdown$Markdown_Config$defaultElements);
+};
+var _pablohirafuji$elm_markdown$Markdown$toHtml = A2(_pablohirafuji$elm_markdown$Markdown$customHtml, _pablohirafuji$elm_markdown$Markdown_Config$defaultOptions, _pablohirafuji$elm_markdown$Markdown_Config$defaultElements);
 
 var _user$project$App_Types$Session = F4(
 	function (a, b, c, d) {
@@ -10527,25 +13506,6 @@ var _user$project$Components_Timeline$onKeyDown = function (tagger) {
 var _user$project$Components_Timeline$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
 };
-var _user$project$Components_Timeline$markdown = function (content) {
-	var defaultOptions = _evancz$elm_markdown$Markdown$defaultOptions;
-	return A3(
-		_evancz$elm_markdown$Markdown$toHtmlWith,
-		_elm_lang$core$Native_Utils.update(
-			defaultOptions,
-			{
-				githubFlavored: _elm_lang$core$Maybe$Just(
-					{tables: true, breaks: true}),
-				sanitize: true,
-				smartypants: true
-			}),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('content'),
-			_1: {ctor: '[]'}
-		},
-		content);
-};
 var _user$project$Components_Timeline$isActive = F2(
 	function (coto, activeCotoId) {
 		var _p0 = coto.id;
@@ -10767,6 +13727,25 @@ var _user$project$Components_Timeline$update = F3(
 				}
 		}
 	});
+var _user$project$Components_Timeline$markdown = function (content) {
+	var defaultOptions = _pablohirafuji$elm_markdown$Markdown_Config$defaultOptions;
+	return A2(
+		_elm_lang$html$Html$map,
+		_elm_lang$core$Basics$always(_user$project$Components_Timeline$NoOp),
+		A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('content'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_pablohirafuji$elm_markdown$Markdown$withOptions,
+				_elm_lang$core$Native_Utils.update(
+					defaultOptions,
+					{softAsHardLineBreak: true}),
+				content)));
+};
 var _user$project$Components_Timeline$view = F3(
 	function (model, session, activeCotoId) {
 		return A2(

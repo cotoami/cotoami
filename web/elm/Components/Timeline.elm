@@ -10,6 +10,7 @@ import Task
 import Process
 import Time
 import Markdown
+import Markdown.Config
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Keyboard exposing (..)
@@ -237,19 +238,18 @@ isActive coto activeCotoId =
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
     
         
-markdown : String -> Html msg
+markdown : String -> Html Msg
 markdown content =
     let
-        defaultOptions = Markdown.defaultOptions
-    in
-        Markdown.toHtmlWith 
-            { defaultOptions 
-            | githubFlavored = Just { tables = True, breaks = True }
-            , sanitize = True
-            , smartypants = True
-            } 
-            [ class "content" ] 
-            content
+        defaultOptions = Markdown.Config.defaultOptions
+    in  
+        Html.map (always NoOp)
+            <| div [ class "content" ]
+            <| Markdown.withOptions 
+                { defaultOptions
+                | softAsHardLineBreak = True
+                }
+                content
 
 
 timelineClass : Model -> String
