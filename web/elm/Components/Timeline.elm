@@ -48,6 +48,7 @@ initModel =
 type Msg
     = NoOp
     | CotosFetched (Result Http.Error (List Coto))
+    | ImageLoaded
     | CotoClick Int
     | EditorFocus
     | EditorBlur
@@ -65,6 +66,9 @@ update msg model ctrlDown =
             
         CotosFetched (Ok cotos) ->
             ( { model | cotos = cotos }, scrollToBottom )
+            
+        ImageLoaded ->
+            model ! []
             
         CotosFetched (Err _) ->
             ( model, Cmd.none )
@@ -268,6 +272,7 @@ markdown content =
             }
             { defaultElements
             | link = customLinkElement
+            , image = customImageElement
             }
             content
 
@@ -282,6 +287,17 @@ customLinkElement link =
         ]
 
 
+customImageElement : Markdown.Config.Image -> Html Never
+customImageElement image =
+    img
+        [ src image.src
+        , alt image.alt
+        , title (Maybe.withDefault "" image.title)
+        -- , onLoad ImageLoaded
+        ]
+        []
+  
+
 timelineClass : Model -> String
 timelineClass model =
     if model.editingNewCoto then
@@ -293,3 +309,10 @@ timelineClass model =
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Decode.map tagger keyCode)
+
+
+onLoad : msg -> Attribute msg
+onLoad message =
+  on "load" (Decode.succeed message)
+  
+  

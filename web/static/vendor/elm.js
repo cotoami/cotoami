@@ -13501,6 +13501,12 @@ var _user$project$Keys$Key = F2(
 		return {keyCode: a, name: b};
 	});
 
+var _user$project$Components_Timeline$onLoad = function (message) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'load',
+		_elm_lang$core$Json_Decode$succeed(message));
+};
 var _user$project$Components_Timeline$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -13509,6 +13515,25 @@ var _user$project$Components_Timeline$onKeyDown = function (tagger) {
 };
 var _user$project$Components_Timeline$timelineClass = function (model) {
 	return model.editingNewCoto ? 'editing' : '';
+};
+var _user$project$Components_Timeline$customImageElement = function (image) {
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src(image.src),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$alt(image.alt),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$title(
+						A2(_elm_lang$core$Maybe$withDefault, '', image.title)),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'});
 };
 var _user$project$Components_Timeline$customLinkElement = function (link) {
 	return _elm_lang$html$Html$a(
@@ -13639,6 +13664,7 @@ var _user$project$Components_Timeline$EditorFocus = {ctor: 'EditorFocus'};
 var _user$project$Components_Timeline$CotoClick = function (a) {
 	return {ctor: 'CotoClick', _0: a};
 };
+var _user$project$Components_Timeline$ImageLoaded = {ctor: 'ImageLoaded'};
 var _user$project$Components_Timeline$CotosFetched = function (a) {
 	return {ctor: 'CotosFetched', _0: a};
 };
@@ -13698,6 +13724,11 @@ var _user$project$Components_Timeline$update = F3(
 		var _p5 = msg;
 		switch (_p5.ctor) {
 			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'ImageLoaded':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -13783,7 +13814,7 @@ var _user$project$Components_Timeline$markdown = function (content) {
 					{softAsHardLineBreak: true}),
 				_elm_lang$core$Native_Utils.update(
 					_pablohirafuji$elm_markdown$Markdown_Config$defaultElements,
-					{link: _user$project$Components_Timeline$customLinkElement}),
+					{link: _user$project$Components_Timeline$customLinkElement, image: _user$project$Components_Timeline$customImageElement}),
 				content)));
 };
 var _user$project$Components_Timeline$timelineDiv = F3(
