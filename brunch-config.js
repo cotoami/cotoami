@@ -56,7 +56,8 @@ exports.config = {
       elmFolder: "web/elm",
       mainModules: ["Main.elm"],
       outputFolder: "../static/vendor",
-      outputFile: "elm.js"
+      outputFile: "elm.js",
+      makeParameters: ['--debug']
     },
     babel: {
       // Do not use ES6 compiler in vendor code
@@ -74,5 +75,15 @@ exports.config = {
 
   npm: {
     enabled: true
+  },
+  
+  overrides: {
+    production: {
+      plugins: {
+        elmBrunch: {
+          makeParameters: []
+        }
+      }
+    }
   }
 };
