@@ -3,7 +3,7 @@ module App.Model exposing (..)
 import App.Types
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline
+import Components.Timeline.Model
 import Components.CotoModal
 
 
@@ -13,7 +13,7 @@ type alias Model =
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
-    , timeline : Components.Timeline.Model
+    , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
     }
 
@@ -25,6 +25,6 @@ initModel =
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
     , cotoModal = Components.CotoModal.initModel
-    , timeline = Components.Timeline.initModel
+    , timeline = Components.Timeline.Model.initModel
     , activeCotoId = Nothing
     }

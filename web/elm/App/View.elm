@@ -9,7 +9,7 @@ import Components.AppHeader
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
-import Components.Timeline
+import Components.Timeline.View
 
 
 view : Model -> Html Msg
@@ -20,7 +20,7 @@ view model =
       div [ id "app" ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
-              [ Html.map TimelineMsg (Components.Timeline.view model.timeline model.session model.activeCotoId)
+              [ Html.map TimelineMsg (Components.Timeline.View.view model.timeline model.session model.activeCotoId)
               ]
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)

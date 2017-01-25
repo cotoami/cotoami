@@ -5,7 +5,8 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline
+import Components.Timeline.Messages
+import Components.Timeline.Update
 import Components.CotoModal
 
 
@@ -73,10 +74,10 @@ update msg model =
             let
                 clickedCotoId = 
                     (case subMsg of
-                        Components.Timeline.CotoClick cotoId -> Just cotoId
+                        Components.Timeline.Messages.CotoClick cotoId -> Just cotoId
                         _ -> Nothing
                     )
-                ( timeline, cmd ) = Components.Timeline.update subMsg model.timeline model.ctrlDown
+                ( timeline, cmd ) = Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
             in
                 ( { model 
                   | timeline = timeline

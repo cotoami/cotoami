@@ -5,7 +5,7 @@ import Keyboard exposing (..)
 import App.Types exposing (Session)
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline
+import Components.Timeline.Messages
 import Components.CotoModal
 
 
@@ -18,6 +18,6 @@ type Msg
     | SigninModalMsg Components.SigninModal.Msg
     | OpenProfileModal
     | ProfileModalMsg Components.ProfileModal.Msg
-    | TimelineMsg Components.Timeline.Msg
+    | TimelineMsg Components.Timeline.Messages.Msg
     | OpenCotoModalMsg
     | CotoModalMsg Components.CotoModal.Msg
