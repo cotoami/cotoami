@@ -6,6 +6,7 @@ import App.Types exposing (Session)
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline
+import Components.CotoModal
 
 
 type Msg
@@ -18,3 +19,5 @@ type Msg
     | OpenProfileModal
     | ProfileModalMsg Components.ProfileModal.Msg
     | TimelineMsg Components.Timeline.Msg
+    | OpenCotoModalMsg
+    | CotoModalMsg Components.CotoModal.Msg

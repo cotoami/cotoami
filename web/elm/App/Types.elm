@@ -7,3 +7,9 @@ type alias Session =
     , avatarUrl : String
     , displayName : String
     }
+
+
+type alias Coto =
+    { id : Int
+    , content : String
+    }

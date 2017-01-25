@@ -6,6 +6,7 @@ import App.Messages exposing (..)
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline
+import Components.CotoModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -55,6 +56,18 @@ update msg model =
                 ( profileModal, cmd ) = Components.ProfileModal.update subMsg model.profileModal
             in
                 ( { model | profileModal = profileModal }, Cmd.map ProfileModalMsg cmd )
+                
+        OpenCotoModalMsg ->
+            let
+                cotoModal = model.cotoModal
+            in
+                ( { model | cotoModal = { cotoModal | open = True } }, Cmd.none )
+                
+        CotoModalMsg subMsg ->
+            let
+                ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
+            in
+                ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
         
         TimelineMsg subMsg ->
             let

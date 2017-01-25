@@ -4,6 +4,7 @@ import App.Types
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline
+import Components.CotoModal
 
 
 type alias Model =
@@ -11,6 +12,7 @@ type alias Model =
     , session : Maybe App.Types.Session
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
+    , cotoModal : Components.CotoModal.Model
     , timeline : Components.Timeline.Model
     , activeCotoId : Maybe Int
     }
@@ -22,6 +24,7 @@ initModel =
     , session = Nothing
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
+    , cotoModal = Components.CotoModal.initModel
     , timeline = Components.Timeline.initModel
     , activeCotoId = Nothing
     }

@@ -8,6 +8,7 @@ import App.Messages exposing (..)
 import Components.AppHeader
 import Components.SigninModal
 import Components.ProfileModal
+import Components.CotoModal
 import Components.Timeline
 
 
@@ -25,6 +26,8 @@ view model =
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
               (Components.ProfileModal.view model.profileModal model.session)
+          , Html.map CotoModalMsg 
+              (Components.CotoModal.view model.cotoModal)
           , a 
               [ class "info-button"
               , title "News and Feedback"
