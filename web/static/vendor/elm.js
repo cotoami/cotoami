@@ -18523,8 +18523,38 @@ var _user$project$Components_Timeline$timelineDiv = F3(
 							},
 							{
 								ctor: '::',
-								_0: _user$project$Components_Timeline$markdown(coto.content),
-								_1: {ctor: '[]'}
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('open-coto'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$i,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('open_in_new'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Components_Timeline$markdown(coto.content),
+									_1: {ctor: '[]'}
+								}
 							})
 					};
 				},

@@ -88,6 +88,7 @@ html, body, #elm-container, #app, #app-body {
   right: 0;
   
   div.coto {
+    position: relative;
     border: 2px solid transparent;
     border-radius: 4px;
     padding: 8px;
@@ -95,15 +96,34 @@ html, body, #elm-container, #app, #app-body {
     
     &:hover {
       border: 2px solid #ffdd33;
+      
+      a.open-coto {
+        display: inline;;
+      }
     }
     
     &.active {
       border: 2px solid #ffa500;
+      
+      a.open-coto {
+        display: inline;;
+      }
     }
     
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
+    }
+    
+    a.open-coto {
+      display: none;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      
+      i {
+        font-size: 30px;
+      }
     }
   }
 }

@@ -238,7 +238,13 @@ timelineDiv model session activeCotoId =
                         Just cotoId -> onClick (CotoClick cotoId)
                       )
                     ] 
-                    [ markdown coto.content ]
+                    [ a 
+                        [ class "open-coto"
+                        , title "Open coto view"
+                        ] 
+                        [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                    , markdown coto.content 
+                    ]
                 )
             ) 
             (List.reverse model.cotos)
