@@ -68,7 +68,7 @@ update msg model ctrlDown =
             ( { model | cotos = cotos }, scrollToBottom )
             
         ImageLoaded ->
-            model ! []
+            model ! [ scrollToBottom ]
             
         CotosFetched (Err _) ->
             ( model, Cmd.none )
@@ -264,8 +264,7 @@ isActive coto activeCotoId =
         
 markdown : String -> Html Msg
 markdown content =
-    Html.map (always NoOp)
-        <| div [ class "content" ]
+    div [ class "content" ]
         <| Markdown.customHtml 
             { defaultOptions
             | softAsHardLineBreak = True
@@ -277,7 +276,7 @@ markdown content =
             content
 
 
-customLinkElement : Markdown.Config.Link -> List (Html Never) -> Html Never
+customLinkElement : Markdown.Config.Link -> List (Html Msg) -> Html Msg
 customLinkElement link =
     a <|
         [ href link.url
@@ -287,13 +286,13 @@ customLinkElement link =
         ]
 
 
-customImageElement : Markdown.Config.Image -> Html Never
+customImageElement : Markdown.Config.Image -> Html Msg
 customImageElement image =
     img
         [ src image.src
         , alt image.alt
         , title (Maybe.withDefault "" image.title)
-        -- , onLoad ImageLoaded
+        , onLoad ImageLoaded
         ]
         []
   
