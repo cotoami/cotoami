@@ -7,6 +7,7 @@ import App.Messages exposing (..)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
+import Components.Timeline.Model exposing (updateCoto)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.CotoModal
@@ -96,7 +97,8 @@ update msg model =
                           | cotoModal = cotoModal
                           , timeline =
                               { timeline
-                              | cotos = cotos |> (List.filter (\c -> c.id /= (Just cotoId)))
+                              | cotos = cotos |> 
+                                  updateCoto (\c -> { c | beingDeleted = True }) cotoId
                               }
                           }
                         , Cmd.map CotoModalMsg cmd 

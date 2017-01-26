@@ -32,3 +32,15 @@ initModel =
     , postIdCounter = 0
     , cotos = []
     }
+
+
+updateCoto : (Coto -> Coto) -> Int -> List Coto -> List Coto
+updateCoto update id cotos =
+     List.map 
+         (\coto -> 
+             if coto.id == Just id then
+                 update coto
+             else
+                 coto
+         )
+         cotos        

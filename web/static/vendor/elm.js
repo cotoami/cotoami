@@ -14290,6 +14290,17 @@ var _user$project$Components_ProfileModal$view = F2(
 			}());
 	});
 
+var _user$project$Components_Timeline_Model$updateCoto = F3(
+	function (update, id, cotos) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (coto) {
+				return _elm_lang$core$Native_Utils.eq(
+					coto.id,
+					_elm_lang$core$Maybe$Just(id)) ? update(coto) : coto;
+			},
+			cotos);
+	});
 var _user$project$Components_Timeline_Model$initModel = {
 	editingNewCoto: false,
 	newCotoContent: '',
@@ -18782,13 +18793,14 @@ var _user$project$App_Update$update = F2(
 									timeline: _elm_lang$core$Native_Utils.update(
 										timeline,
 										{
-											cotos: A2(
-												_elm_lang$core$List$filter,
+											cotos: A3(
+												_user$project$Components_Timeline_Model$updateCoto,
 												function (c) {
-													return !_elm_lang$core$Native_Utils.eq(
-														c.id,
-														_elm_lang$core$Maybe$Just(_p8._0));
+													return _elm_lang$core$Native_Utils.update(
+														c,
+														{beingDeleted: true});
 												},
+												_p8._0,
 												cotos)
 										})
 								}),
@@ -19165,7 +19177,11 @@ var _user$project$Components_Timeline_View$timelineDiv = F3(
 													_0: 'posting',
 													_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(session) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.id)
 												},
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: coto.beingDeleted},
+													_1: {ctor: '[]'}
+												}
 											}
 										}
 									}),

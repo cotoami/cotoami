@@ -73,6 +73,7 @@ timelineDiv model session activeCotoId =
                         [ ( "coto", True )
                         , ( "active", isActive coto activeCotoId )
                         , ( "posting", (isJust session) && (isNothing coto.id) )
+                        , ( "being-hidden", coto.beingDeleted )
                         ]
                     , (case coto.id of
                         Nothing -> onClick NoOp
