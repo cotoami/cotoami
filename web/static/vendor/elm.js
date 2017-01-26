@@ -18625,52 +18625,31 @@ var _user$project$Components_Timeline_Update$update = F3(
 	});
 
 var _user$project$App_Update$newActiveCotoId = F2(
-	function (currentActiveId, maybeClickedId) {
-		var _p0 = maybeClickedId;
+	function (currentActiveId, clickedId) {
+		var _p0 = currentActiveId;
 		if (_p0.ctor === 'Nothing') {
-			return currentActiveId;
+			return _elm_lang$core$Maybe$Just(clickedId);
 		} else {
-			var _p2 = _p0._0;
-			var _p1 = currentActiveId;
-			if (_p1.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Just(_p2);
-			} else {
-				return _elm_lang$core$Native_Utils.eq(_p2, _p1._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(_p2);
-			}
+			return _elm_lang$core$Native_Utils.eq(clickedId, _p0._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(clickedId);
 		}
 	});
-var _user$project$App_Update$toCoto = function (timelineCoto) {
-	var _p3 = timelineCoto;
-	if (_p3.ctor === 'Nothing') {
-		return _elm_lang$core$Maybe$Nothing;
-	} else {
-		var _p5 = _p3._0;
-		var _p4 = _p5.id;
-		if (_p4.ctor === 'Nothing') {
-			return _elm_lang$core$Maybe$Nothing;
-		} else {
-			return _elm_lang$core$Maybe$Just(
-				A2(_user$project$App_Types$Coto, _p4._0, _p5.content));
-		}
-	}
-};
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'SessionFetched':
-				if (_p6._0.ctor === 'Ok') {
+				if (_p1._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								session: _elm_lang$core$Maybe$Just(_p6._0._0)
+								session: _elm_lang$core$Maybe$Just(_p1._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -18678,8 +18657,8 @@ var _user$project$App_Update$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'KeyDown':
-				var _p7 = _p6._0;
-				return (_elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$meta.keyCode)) ? {
+				var _p2 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p2, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -18687,8 +18666,8 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
-				var _p8 = _p6._0;
-				return (_elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$meta.keyCode)) ? {
+				var _p3 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -18696,9 +18675,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'ConfirmModalMsg':
-				var _p9 = A2(_user$project$Components_ConfirmModal_Update$update, _p6._0, model.confirmModal);
-				var confirmModal = _p9._0;
-				var cmd = _p9._1;
+				var _p4 = A2(_user$project$Components_ConfirmModal_Update$update, _p1._0, model.confirmModal);
+				var confirmModal = _p4._0;
+				var cmd = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -18720,9 +18699,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninModalMsg':
-				var _p10 = A2(_user$project$Components_SigninModal$update, _p6._0, model.signinModal);
-				var signinModal = _p10._0;
-				var cmd = _p10._1;
+				var _p5 = A2(_user$project$Components_SigninModal$update, _p1._0, model.signinModal);
+				var signinModal = _p5._0;
+				var cmd = _p5._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -18744,9 +18723,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ProfileModalMsg':
-				var _p11 = A2(_user$project$Components_ProfileModal$update, _p6._0, model.profileModal);
-				var profileModal = _p11._0;
-				var cmd = _p11._1;
+				var _p6 = A2(_user$project$Components_ProfileModal$update, _p1._0, model.profileModal);
+				var profileModal = _p6._0;
+				var cmd = _p6._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -18755,15 +18734,15 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
 			case 'CotoModalMsg':
-				var _p15 = _p6._0;
+				var _p10 = _p1._0;
 				var timeline = model.timeline;
 				var cotos = timeline.cotos;
 				var confirmModal = model.confirmModal;
-				var _p12 = A2(_user$project$Components_CotoModal$update, _p15, model.cotoModal);
-				var cotoModal = _p12._0;
-				var cmd = _p12._1;
-				var _p13 = _p15;
-				switch (_p13.ctor) {
+				var _p7 = A2(_user$project$Components_CotoModal$update, _p10, model.cotoModal);
+				var cotoModal = _p7._0;
+				var cmd = _p7._1;
+				var _p8 = _p10;
+				switch (_p8.ctor) {
 					case 'ConfirmDelete':
 						return {
 							ctor: '_Tuple2',
@@ -18775,14 +18754,14 @@ var _user$project$App_Update$update = F2(
 										confirmModal,
 										{
 											open: true,
-											message: _p13._0,
+											message: _p8._0,
 											msgOnConfirm: function () {
-												var _p14 = cotoModal.coto;
-												if (_p14.ctor === 'Nothing') {
+												var _p9 = cotoModal.coto;
+												if (_p9.ctor === 'Nothing') {
 													return _user$project$App_Messages$NoOp;
 												} else {
 													return _user$project$App_Messages$CotoModalMsg(
-														_user$project$Components_CotoModal$Delete(_p14._0.id));
+														_user$project$Components_CotoModal$Delete(_p9._0.id));
 												}
 											}()
 										})
@@ -18804,7 +18783,7 @@ var _user$project$App_Update$update = F2(
 												function (c) {
 													return !_elm_lang$core$Native_Utils.eq(
 														c.id,
-														_elm_lang$core$Maybe$Just(_p13._0));
+														_elm_lang$core$Maybe$Just(_p8._0));
 												},
 												cotos)
 										})
@@ -18821,43 +18800,58 @@ var _user$project$App_Update$update = F2(
 						};
 				}
 			default:
-				var _p19 = _p6._0;
+				var _p15 = _p1._0;
 				var cotoModal = model.cotoModal;
-				var openCoto = function () {
-					var _p16 = _p19;
-					if (_p16.ctor === 'CotoOpen') {
-						return _elm_lang$core$Maybe$Just(_p16._0);
-					} else {
-						return _elm_lang$core$Maybe$Nothing;
-					}
-				}();
-				var clickedCotoId = function () {
-					var _p17 = _p19;
-					if (_p17.ctor === 'CotoClick') {
-						return _elm_lang$core$Maybe$Just(_p17._0);
-					} else {
-						return _elm_lang$core$Maybe$Nothing;
-					}
-				}();
-				var _p18 = A3(_user$project$Components_Timeline_Update$update, _p19, model.timeline, model.ctrlDown);
-				var timeline = _p18._0;
-				var cmd = _p18._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							timeline: timeline,
-							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId),
-							cotoModal: _elm_lang$core$Native_Utils.update(
-								cotoModal,
+				var _p11 = A3(_user$project$Components_Timeline_Update$update, _p15, model.timeline, model.ctrlDown);
+				var timeline = _p11._0;
+				var cmd = _p11._1;
+				var _p12 = _p15;
+				switch (_p12.ctor) {
+					case 'CotoClick':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
 								{
-									open: _krisajenkins$elm_exts$Exts_Maybe$isJust(openCoto),
-									coto: _user$project$App_Update$toCoto(openCoto)
-								})
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-				};
+									timeline: timeline,
+									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p12._0)
+								}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
+						};
+					case 'CotoOpen':
+						var _p14 = _p12._0;
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									timeline: timeline,
+									cotoModal: _elm_lang$core$Native_Utils.update(
+										cotoModal,
+										{
+											open: true,
+											coto: function () {
+												var _p13 = _p14.id;
+												if (_p13.ctor === 'Nothing') {
+													return _elm_lang$core$Maybe$Nothing;
+												} else {
+													return _elm_lang$core$Maybe$Just(
+														A2(_user$project$App_Types$Coto, _p13._0, _p14.content));
+												}
+											}()
+										})
+								}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
+						};
+					default:
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{timeline: timeline}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
+						};
+				}
 		}
 	});
 

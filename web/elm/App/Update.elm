@@ -1,14 +1,12 @@
 module App.Update exposing (..)
 
 import Keys exposing (ctrl, meta, enter)
-import Exts.Maybe exposing (isJust, isNothing)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.CotoModal
@@ -92,6 +90,7 @@ update msg model =
                           }
                         , Cmd.map CotoModalMsg cmd 
                         )
+                        
                     Components.CotoModal.Delete cotoId  -> 
                         ( { model 
                           | cotoModal = cotoModal
@@ -102,6 +101,7 @@ update msg model =
                           }
                         , Cmd.map CotoModalMsg cmd 
                         )
+                        
                     _ ->
                         ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
             
@@ -109,55 +109,44 @@ update msg model =
             let
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
-                clickedCotoId = 
-                    (case subMsg of
-                        Components.Timeline.Messages.CotoClick cotoId -> Just cotoId
-                        _ -> Nothing
-                    )
-                openCoto =
-                    (case subMsg of
-                        Components.Timeline.Messages.CotoOpen coto -> Just coto
-                        _ -> Nothing
-                    )
                 cotoModal = model.cotoModal
             in
-                ( { model 
-                  | timeline = timeline
-                  , activeCotoId = (newActiveCotoId model.activeCotoId clickedCotoId)
-                  , cotoModal = 
-                      { cotoModal 
-                      | open = isJust openCoto
-                      , coto = toCoto openCoto
-                      }
-                  }
-                , Cmd.map TimelineMsg cmd 
-                )
+                case subMsg of
+                    Components.Timeline.Messages.CotoClick cotoId ->
+                        ( { model 
+                          | timeline = timeline
+                          , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
+                          }
+                        , Cmd.map TimelineMsg cmd 
+                        )
+                        
+                    Components.Timeline.Messages.CotoOpen coto ->
+                        ( { model 
+                          | timeline = timeline
+                          , cotoModal = 
+                              { cotoModal 
+                              | open = True
+                              , coto = 
+                                  (case coto.id of
+                                      Nothing -> Nothing
+                                      Just cotoId -> Just (Coto cotoId coto.content)
+                                  )
+                              }
+                          }
+                        , Cmd.map TimelineMsg cmd 
+                        )
 
-
-toCoto : Maybe Components.Timeline.Model.Coto -> Maybe Coto
-toCoto timelineCoto =
-    case timelineCoto of
-        Nothing -> Nothing
-        Just coto ->
-            (case coto.id of
-                Nothing -> Nothing
-                Just cotoId -> Just (Coto cotoId coto.content)
-            )
-
-
-
-newActiveCotoId : Maybe Int -> Maybe Int -> Maybe Int
-newActiveCotoId currentActiveId maybeClickedId =
-    case maybeClickedId of
-        Nothing -> currentActiveId
-        Just clickedId ->
-            case currentActiveId of
-                Nothing -> Just clickedId
-                Just activeId -> 
-                    if clickedId == activeId then
-                        Nothing
-                    else
-                        Just clickedId
+                    _ -> 
+                        ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )
                 
-    
-    
+
+newActiveCotoId : Maybe Int -> Int -> Maybe Int
+newActiveCotoId currentActiveId clickedId =
+    case currentActiveId of
+        Nothing -> Just clickedId
+        Just activeId -> 
+            if clickedId == activeId then
+                Nothing
+            else
+                Just clickedId
+            
