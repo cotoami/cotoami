@@ -45,7 +45,7 @@ modalConfig model =
     { closeMessage = Close
     , title = "Coto"
     , content = div [ id "coto-modal-content" ]
-        [ div [ class "coto container" ]
+        [ div [ class "coto" ]
             [ (case model.coto of
                 Nothing -> div [] []
                 Just coto -> App.Markdown.markdown coto.content

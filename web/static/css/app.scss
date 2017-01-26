@@ -80,7 +80,7 @@ html, body, #elm-container, #app, #app-body {
 #timeline {
   padding-top: 40px;
   overflow-x: hidden;
-  overflow-y: auto;;
+  overflow-y: auto;
   position: absolute;
   top: 0;
   bottom: 58px;
@@ -224,5 +224,13 @@ html, body, #elm-container, #app, #app-body {
 @media (min-width: 600px) {
   #profile-modal-content {
     width: 455px;
+  }
+}
+
+#coto-modal-content {
+  div.content {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 8px;
   }
 }
