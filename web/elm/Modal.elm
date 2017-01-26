@@ -14,9 +14,14 @@ type alias Config msg =
     }
     
     
-view : Maybe (Config msg) -> Html msg
-view maybeConfig = 
-    div [ classList [ ( "modal", True ), ( "modal-open", (isJust maybeConfig)) ] ]
+view : String -> Maybe (Config msg) -> Html msg
+view modalId maybeConfig = 
+    div [ id modalId
+        , classList 
+            [ ( "modal", True )
+            , ( "modal-open", isJust maybeConfig ) 
+            ] 
+        ]
         [ div [ class "modal-inner" ]
             [ (case maybeConfig of
                 Nothing -> div [ class "modal-content" ] []

@@ -13710,58 +13710,63 @@ var _user$project$Modal$modalContent = function (config) {
 			}
 		});
 };
-var _user$project$Modal$view = function (maybeConfig) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
+var _user$project$Modal$view = F2(
+	function (modalId, maybeConfig) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id(modalId),
+				_1: {
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'modal', _1: true},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'modal-open',
-							_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeConfig)
-						},
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('modal-inner'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: function () {
-						var _p0 = maybeConfig;
-						if (_p0.ctor === 'Nothing') {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('modal-content'),
-									_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'modal', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'modal-open',
+									_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeConfig)
 								},
-								{ctor: '[]'});
-						} else {
-							return _user$project$Modal$modalContent(_p0._0);
-						}
-					}(),
+								_1: {ctor: '[]'}
+							}
+						}),
 					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('modal-inner'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: function () {
+							var _p0 = maybeConfig;
+							if (_p0.ctor === 'Nothing') {
+								return A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+										_1: {ctor: '[]'}
+									},
+									{ctor: '[]'});
+							} else {
+								return _user$project$Modal$modalContent(_p0._0);
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Modal$Config = F4(
 	function (a, b, c, d) {
 		return {closeMessage: a, title: b, content: c, buttons: d};
@@ -14066,7 +14071,9 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 	});
 var _user$project$Components_SigninModal$view = F2(
 	function (model, showAnonymousOption) {
-		return _user$project$Modal$view(
+		return A2(
+			_user$project$Modal$view,
+			'signin-modal',
 			model.open ? _elm_lang$core$Maybe$Just(
 				A2(_user$project$Components_SigninModal$signinModalConfig, model, showAnonymousOption)) : _elm_lang$core$Maybe$Nothing);
 	});
@@ -14266,7 +14273,9 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 	});
 var _user$project$Components_ProfileModal$view = F2(
 	function (model, maybeSession) {
-		return _user$project$Modal$view(
+		return A2(
+			_user$project$Modal$view,
+			'profile-modal',
 			function () {
 				var _p1 = maybeSession;
 				if (_p1.ctor === 'Nothing') {
@@ -18226,7 +18235,9 @@ var _user$project$Components_CotoModal$modalConfig = function (model) {
 	};
 };
 var _user$project$Components_CotoModal$view = function (model) {
-	return _user$project$Modal$view(
+	return A2(
+		_user$project$Modal$view,
+		'coto-modal',
 		model.open ? _elm_lang$core$Maybe$Just(
 			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };

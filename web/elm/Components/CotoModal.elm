@@ -33,6 +33,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     Modal.view
+        "coto-modal"
         (if model.open then
             Just (modalConfig model)
          else

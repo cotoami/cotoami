@@ -71,6 +71,7 @@ requestSignin email saveAnonymous =
 view : Model -> Bool -> Html Msg
 view model showAnonymousOption =
     Modal.view
+        "signin-modal"
         (if model.open then
             Just (signinModalConfig model showAnonymousOption)
          else

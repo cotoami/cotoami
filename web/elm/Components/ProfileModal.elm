@@ -30,6 +30,7 @@ update msg model =
 view : Model -> Maybe Session -> Html Msg
 view model maybeSession =
     Modal.view
+        "profile-modal"
         (case maybeSession of
             Nothing -> Nothing
             Just session -> 
