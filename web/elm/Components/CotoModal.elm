@@ -23,7 +23,7 @@ initModel =
 
 type Msg
     = Close
-    | ConfirmDelete
+    | ConfirmDelete String
     
     
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -32,7 +32,7 @@ update msg model =
         Close ->
             ( { model | open = False }, Cmd.none )
             
-        ConfirmDelete ->
+        ConfirmDelete message ->
             ( model, Cmd.none )
 
 
@@ -60,6 +60,10 @@ modalConfig model =
             ]
         ]
     , buttons = 
-        [ a [ class "button", onClick ConfirmDelete ] [ text "Delete" ]
+        [ a 
+            [ class "button"
+            , onClick (ConfirmDelete "Are you sure you want to delete this coto?") 
+            ] 
+            [ text "Delete" ]
         ]
     }

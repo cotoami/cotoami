@@ -70,10 +70,12 @@ update msg model =
                 
         CotoModalMsg subMsg ->
             let
-                confirmDelete = 
+                ( confirmDelete, message ) = 
                     (case subMsg of
-                        Components.CotoModal.ConfirmDelete -> True
-                        _ -> False
+                        Components.CotoModal.ConfirmDelete message -> 
+                            ( True, message )
+                        _ -> 
+                            ( False, "" )
                     )
                 confirmModal = model.confirmModal
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
@@ -83,6 +85,7 @@ update msg model =
                   , confirmModal =
                       { confirmModal
                       | open = confirmDelete
+                      , message = message
                       }
                   }
                 , Cmd.map CotoModalMsg cmd 

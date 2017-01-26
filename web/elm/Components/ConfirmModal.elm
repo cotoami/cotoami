@@ -8,12 +8,14 @@ import Modal
 
 type alias Model =
     { open : Bool
+    , message : String
     }
 
 
 initModel : Model
 initModel =
     { open = False
+    , message = ""
     }
     
 
@@ -43,7 +45,7 @@ modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
     , title = "Confirm"
-    , content = div [ id "confirm-modal-content" ] [ text "Are you sure?" ]
+    , content = div [ id "confirm-modal-content" ] [ text model.message ]
     , buttons = 
         [ button [ class "button", onClick Close ] [ text "Cancel" ] 
         , button [ class "button button-primary", onClick Close ] [ text "OK" ] 
