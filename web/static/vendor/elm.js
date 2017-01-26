@@ -18755,87 +18755,93 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
 			case 'CotoModalMsg':
-				var _p17 = _p6._0;
+				var _p15 = _p6._0;
 				var timeline = model.timeline;
 				var cotos = timeline.cotos;
 				var confirmModal = model.confirmModal;
-				var idToDelete = function () {
-					var _p12 = _p17;
-					if (_p12.ctor === 'Delete') {
-						return _elm_lang$core$Maybe$Just(_p12._0);
-					} else {
-						return _elm_lang$core$Maybe$Nothing;
-					}
-				}();
-				var _p13 = function () {
-					var _p14 = _p17;
-					if (_p14.ctor === 'ConfirmDelete') {
-						return {ctor: '_Tuple2', _0: true, _1: _p14._0};
-					} else {
-						return {ctor: '_Tuple2', _0: false, _1: ''};
-					}
-				}();
-				var confirmDelete = _p13._0;
-				var message = _p13._1;
-				var _p15 = A2(_user$project$Components_CotoModal$update, _p17, model.cotoModal);
-				var cotoModal = _p15._0;
-				var cmd = _p15._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cotoModal: cotoModal,
-							confirmModal: _elm_lang$core$Native_Utils.update(
-								confirmModal,
+				var _p12 = A2(_user$project$Components_CotoModal$update, _p15, model.cotoModal);
+				var cotoModal = _p12._0;
+				var cmd = _p12._1;
+				var _p13 = _p15;
+				switch (_p13.ctor) {
+					case 'ConfirmDelete':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
 								{
-									open: confirmDelete,
-									message: message,
-									msgOnConfirm: function () {
-										var _p16 = cotoModal.coto;
-										if (_p16.ctor === 'Nothing') {
-											return _user$project$App_Messages$NoOp;
-										} else {
-											return _user$project$App_Messages$CotoModalMsg(
-												_user$project$Components_CotoModal$Delete(_p16._0.id));
-										}
-									}()
+									cotoModal: cotoModal,
+									confirmModal: _elm_lang$core$Native_Utils.update(
+										confirmModal,
+										{
+											open: true,
+											message: _p13._0,
+											msgOnConfirm: function () {
+												var _p14 = cotoModal.coto;
+												if (_p14.ctor === 'Nothing') {
+													return _user$project$App_Messages$NoOp;
+												} else {
+													return _user$project$App_Messages$CotoModalMsg(
+														_user$project$Components_CotoModal$Delete(_p14._0.id));
+												}
+											}()
+										})
 								}),
-							timeline: _elm_lang$core$Native_Utils.update(
-								timeline,
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
+						};
+					case 'Delete':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
 								{
-									cotos: A2(
-										_elm_lang$core$List$filter,
-										function (c) {
-											return !_elm_lang$core$Native_Utils.eq(c.id, idToDelete);
-										},
-										cotos)
-								})
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
-				};
+									cotoModal: cotoModal,
+									timeline: _elm_lang$core$Native_Utils.update(
+										timeline,
+										{
+											cotos: A2(
+												_elm_lang$core$List$filter,
+												function (c) {
+													return !_elm_lang$core$Native_Utils.eq(
+														c.id,
+														_elm_lang$core$Maybe$Just(_p13._0));
+												},
+												cotos)
+										})
+								}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
+						};
+					default:
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{cotoModal: cotoModal}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
+						};
+				}
 			default:
-				var _p21 = _p6._0;
+				var _p19 = _p6._0;
 				var cotoModal = model.cotoModal;
 				var openCoto = function () {
-					var _p18 = _p21;
-					if (_p18.ctor === 'CotoOpen') {
-						return _elm_lang$core$Maybe$Just(_p18._0);
+					var _p16 = _p19;
+					if (_p16.ctor === 'CotoOpen') {
+						return _elm_lang$core$Maybe$Just(_p16._0);
 					} else {
 						return _elm_lang$core$Maybe$Nothing;
 					}
 				}();
 				var clickedCotoId = function () {
-					var _p19 = _p21;
-					if (_p19.ctor === 'CotoClick') {
-						return _elm_lang$core$Maybe$Just(_p19._0);
+					var _p17 = _p19;
+					if (_p17.ctor === 'CotoClick') {
+						return _elm_lang$core$Maybe$Just(_p17._0);
 					} else {
 						return _elm_lang$core$Maybe$Nothing;
 					}
 				}();
-				var _p20 = A3(_user$project$Components_Timeline_Update$update, _p21, model.timeline, model.ctrlDown);
-				var timeline = _p20._0;
-				var cmd = _p20._1;
+				var _p18 = A3(_user$project$Components_Timeline_Update$update, _p19, model.timeline, model.ctrlDown);
+				var timeline = _p18._0;
+				var cmd = _p18._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(

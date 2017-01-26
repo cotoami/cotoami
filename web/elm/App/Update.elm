@@ -71,42 +71,40 @@ update msg model =
         CotoModalMsg subMsg ->
             let
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
-                ( confirmDelete, message ) = 
-                    (case subMsg of
-                        Components.CotoModal.ConfirmDelete message -> 
-                            ( True, message )
-                        _ -> 
-                            ( False, "" )
-                    )
-                idToDelete = 
-                    (case subMsg of
-                        Components.CotoModal.Delete cotoId -> Just cotoId
-                        _ -> Nothing
-                    )
                 confirmModal = model.confirmModal
                 timeline = model.timeline
                 cotos = timeline.cotos
             in
-                ( { model 
-                  | cotoModal = cotoModal
-                  , confirmModal =
-                      { confirmModal
-                      | open = confirmDelete
-                      , message = message
-                      , msgOnConfirm = 
-                          (case cotoModal.coto of
-                              Nothing -> App.Messages.NoOp
-                              Just coto -> CotoModalMsg (Components.CotoModal.Delete coto.id)
-                          )
-                      }
-                  , timeline =
-                      { timeline
-                      | cotos = cotos |> (List.filter (\c -> c.id /= idToDelete))
-                      }
-                  }
-                , Cmd.map CotoModalMsg cmd 
-                )
-        
+                case subMsg of
+                    Components.CotoModal.ConfirmDelete message ->
+                        ( { model 
+                          | cotoModal = cotoModal
+                          , confirmModal =
+                              { confirmModal
+                              | open = True
+                              , message = message
+                              , msgOnConfirm = 
+                                  (case cotoModal.coto of
+                                      Nothing -> App.Messages.NoOp
+                                      Just coto -> CotoModalMsg (Components.CotoModal.Delete coto.id)
+                                  )
+                              }
+                          }
+                        , Cmd.map CotoModalMsg cmd 
+                        )
+                    Components.CotoModal.Delete cotoId  -> 
+                        ( { model 
+                          | cotoModal = cotoModal
+                          , timeline =
+                              { timeline
+                              | cotos = cotos |> (List.filter (\c -> c.id /= (Just cotoId)))
+                              }
+                          }
+                        , Cmd.map CotoModalMsg cmd 
+                        )
+                    _ ->
+                        ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
+            
         TimelineMsg subMsg ->
             let
                 ( timeline, cmd ) = 
