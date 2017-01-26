@@ -70,6 +70,7 @@ update msg model =
                 
         CotoModalMsg subMsg ->
             let
+                ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
                 ( confirmDelete, message ) = 
                     (case subMsg of
                         Components.CotoModal.ConfirmDelete message -> 
@@ -77,8 +78,14 @@ update msg model =
                         _ -> 
                             ( False, "" )
                     )
+                idToDelete = 
+                    (case subMsg of
+                        Components.CotoModal.Delete cotoId -> Just cotoId
+                        _ -> Nothing
+                    )
                 confirmModal = model.confirmModal
-                ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
+                timeline = model.timeline
+                cotos = timeline.cotos
             in
                 ( { model 
                   | cotoModal = cotoModal
@@ -86,7 +93,15 @@ update msg model =
                       { confirmModal
                       | open = confirmDelete
                       , message = message
-                      , msgOnConfirm = (CotoModalMsg Components.CotoModal.Delete)
+                      , msgOnConfirm = 
+                          (case cotoModal.coto of
+                              Nothing -> App.Messages.NoOp
+                              Just coto -> CotoModalMsg (Components.CotoModal.Delete coto.id)
+                          )
+                      }
+                  , timeline =
+                      { timeline
+                      | cotos = cotos |> (List.filter (\c -> c.id /= idToDelete))
                       }
                   }
                 , Cmd.map CotoModalMsg cmd 
@@ -94,6 +109,8 @@ update msg model =
         
         TimelineMsg subMsg ->
             let
+                ( timeline, cmd ) = 
+                    Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
                 clickedCotoId = 
                     (case subMsg of
                         Components.Timeline.Messages.CotoClick cotoId -> Just cotoId
@@ -105,7 +122,6 @@ update msg model =
                         _ -> Nothing
                     )
                 cotoModal = model.cotoModal
-                ( timeline, cmd ) = Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
             in
                 ( { model 
                   | timeline = timeline

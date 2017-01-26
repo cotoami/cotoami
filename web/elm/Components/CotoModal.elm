@@ -24,7 +24,7 @@ initModel =
 type Msg
     = Close
     | ConfirmDelete String
-    | Delete
+    | Delete Int
     
     
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -36,7 +36,7 @@ update msg model =
         ConfirmDelete message ->
             ( model, Cmd.none )
             
-        Delete ->
+        Delete cotoId ->
             ( { model | open = False }, Cmd.none )
 
 
