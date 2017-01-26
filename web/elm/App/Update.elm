@@ -5,7 +5,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import Components.ConfirmModal
+import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
@@ -40,7 +40,7 @@ update msg model =
                 
         ConfirmModalMsg subMsg ->
             let
-                ( confirmModal, cmd ) = Components.ConfirmModal.update subMsg model.confirmModal
+                ( confirmModal, cmd ) = Components.ConfirmModal.Update.update subMsg model.confirmModal
             in
                 ( { model | confirmModal = confirmModal }, Cmd.map ConfirmModalMsg cmd )
             

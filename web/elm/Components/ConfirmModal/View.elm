@@ -1,33 +1,11 @@
-module Components.ConfirmModal exposing (..)
+module Components.ConfirmModal.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Modal
-
-
-type alias Model =
-    { open : Bool
-    , message : String
-    }
-
-
-initModel : Model
-initModel =
-    { open = False
-    , message = ""
-    }
-    
-
-type Msg
-    = Close
-    
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Close ->
-            ( { model | open = False }, Cmd.none )
+import Components.ConfirmModal.Model exposing (..)
+import Components.ConfirmModal.Messages exposing (..)
 
 
 view : Model -> Html Msg

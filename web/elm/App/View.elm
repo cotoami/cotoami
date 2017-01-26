@@ -6,7 +6,7 @@ import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
-import Components.ConfirmModal
+import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
@@ -24,7 +24,7 @@ view model =
               [ Html.map TimelineMsg (Components.Timeline.View.view model.timeline model.session model.activeCotoId)
               ]
           , Html.map ConfirmModalMsg 
-              (Components.ConfirmModal.view model.confirmModal)
+              (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 

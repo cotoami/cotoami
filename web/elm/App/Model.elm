@@ -1,7 +1,7 @@
 module App.Model exposing (..)
 
 import App.Types
-import Components.ConfirmModal
+import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
@@ -11,7 +11,7 @@ import Components.CotoModal
 type alias Model =
     { ctrlDown : Bool
     , session : Maybe App.Types.Session
-    , confirmModal : Components.ConfirmModal.Model
+    , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
@@ -24,7 +24,7 @@ initModel : Model
 initModel =
     { ctrlDown = False
     , session = Nothing
-    , confirmModal = Components.ConfirmModal.initModel
+    , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
     , cotoModal = Components.CotoModal.initModel

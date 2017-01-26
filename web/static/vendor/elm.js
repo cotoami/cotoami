@@ -13601,6 +13601,18 @@ var _user$project$App_Types$Coto = F2(
 		return {id: a, content: b};
 	});
 
+var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
+
+var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
+	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
+var _user$project$Utils$isBlank = function (string) {
+	return _elm_lang$core$String$isEmpty(
+		_elm_lang$core$String$trim(string));
+};
+var _user$project$Utils$validateEmail = function (string) {
+	return (!_user$project$Utils$isBlank(string)) && A2(_elm_lang$core$Regex$contains, _user$project$Utils$emailRegex, string);
+};
+
 var _user$project$Modal$modalContent = function (config) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -13761,98 +13773,6 @@ var _user$project$Modal$Config = F4(
 	function (a, b, c, d) {
 		return {closeMessage: a, title: b, content: c, buttons: d};
 	});
-
-var _user$project$Components_ConfirmModal$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{open: false}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
-var _user$project$Components_ConfirmModal$initModel = {open: false, message: ''};
-var _user$project$Components_ConfirmModal$Model = F2(
-	function (a, b) {
-		return {open: a, message: b};
-	});
-var _user$project$Components_ConfirmModal$Close = {ctor: 'Close'};
-var _user$project$Components_ConfirmModal$modalConfig = function (model) {
-	return {
-		closeMessage: _user$project$Components_ConfirmModal$Close,
-		title: 'Confirm',
-		content: A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('confirm-modal-content'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(model.message),
-				_1: {ctor: '[]'}
-			}),
-		buttons: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_ConfirmModal$Close),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Cancel'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$button,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_ConfirmModal$Close),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('OK'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		}
-	};
-};
-var _user$project$Components_ConfirmModal$view = function (model) {
-	return A2(
-		_user$project$Modal$view,
-		'confirm-modal',
-		model.open ? _elm_lang$core$Maybe$Just(
-			_user$project$Components_ConfirmModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
-};
-
-var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
-	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
-var _user$project$Utils$isBlank = function (string) {
-	return _elm_lang$core$String$isEmpty(
-		_elm_lang$core$String$trim(string));
-};
-var _user$project$Utils$validateEmail = function (string) {
-	return (!_user$project$Utils$isBlank(string)) && A2(_elm_lang$core$Regex$contains, _user$project$Utils$emailRegex, string);
-};
 
 var _user$project$Components_SigninModal$initModel = {open: false, email: '', saveAnonymousCotos: false, requestProcessing: false, requestDone: false};
 var _user$project$Components_SigninModal$Model = F5(
@@ -18376,7 +18296,13 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
 
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing};
+var _user$project$Components_ConfirmModal_Model$initModel = {open: false, message: ''};
+var _user$project$Components_ConfirmModal_Model$Model = F2(
+	function (a, b) {
+		return {open: a, message: b};
+	});
+
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal_Model$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing};
 var _user$project$App_Model$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {ctrlDown: a, session: b, confirmModal: c, signinModal: d, profileModal: e, cotoModal: f, timeline: g, activeCotoId: h};
@@ -18465,6 +18391,18 @@ var _user$project$Keys$equals = F2(
 var _user$project$Keys$Key = F2(
 	function (a, b) {
 		return {keyCode: a, name: b};
+	});
+
+var _user$project$Components_ConfirmModal_Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{open: false}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
 	});
 
 var _user$project$Components_Timeline_Commands$encodeCoto = function (coto) {
@@ -18729,7 +18667,7 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'ConfirmModalMsg':
-				var _p9 = A2(_user$project$Components_ConfirmModal$update, _p6._0, model.confirmModal);
+				var _p9 = A2(_user$project$Components_ConfirmModal_Update$update, _p6._0, model.confirmModal);
 				var confirmModal = _p9._0;
 				var cmd = _p9._1;
 				return {
@@ -18969,6 +18907,71 @@ var _user$project$Components_AppHeader$view = function (model) {
 				_1: {ctor: '[]'}
 			}
 		});
+};
+
+var _user$project$Components_ConfirmModal_View$modalConfig = function (model) {
+	return {
+		closeMessage: _user$project$Components_ConfirmModal_Messages$Close,
+		title: 'Confirm',
+		content: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('confirm-modal-content'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(model.message),
+				_1: {ctor: '[]'}
+			}),
+		buttons: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_ConfirmModal_Messages$Close),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Cancel'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_ConfirmModal_Messages$Close),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('OK'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _user$project$Components_ConfirmModal_View$view = function (model) {
+	return A2(
+		_user$project$Modal$view,
+		'confirm-modal',
+		model.open ? _elm_lang$core$Maybe$Just(
+			_user$project$Components_ConfirmModal_View$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
 var _user$project$Components_Timeline_View$onOpenCotoClick = function (message) {
@@ -19414,7 +19417,7 @@ var _user$project$App_View$view = function (model) {
 					_0: A2(
 						_elm_lang$html$Html$map,
 						_user$project$App_Messages$ConfirmModalMsg,
-						_user$project$Components_ConfirmModal$view(model.confirmModal)),
+						_user$project$Components_ConfirmModal_View$view(model.confirmModal)),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -19502,7 +19505,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Components.ConfirmModal.Msg":{"args":[],"tags":{"Close":[]}},"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int, postId : Maybe.Maybe Int, content : String }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int, postId : Maybe.Maybe Int, content : String }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
