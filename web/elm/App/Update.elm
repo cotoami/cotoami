@@ -1,10 +1,13 @@
 module App.Update exposing (..)
 
 import Keys exposing (ctrl, meta, enter)
+import Exts.Maybe exposing (isJust, isNothing)
+import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.SigninModal
 import Components.ProfileModal
+import Components.Timeline.Model
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.CotoModal
@@ -58,12 +61,6 @@ update msg model =
             in
                 ( { model | profileModal = profileModal }, Cmd.map ProfileModalMsg cmd )
                 
-        OpenCotoModalMsg ->
-            let
-                cotoModal = model.cotoModal
-            in
-                ( { model | cotoModal = { cotoModal | open = True } }, Cmd.none )
-                
         CotoModalMsg subMsg ->
             let
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
@@ -77,14 +74,37 @@ update msg model =
                         Components.Timeline.Messages.CotoClick cotoId -> Just cotoId
                         _ -> Nothing
                     )
+                openCoto =
+                    (case subMsg of
+                        Components.Timeline.Messages.CotoOpen coto -> Just coto
+                        _ -> Nothing
+                    )
+                cotoModal = model.cotoModal
                 ( timeline, cmd ) = Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
             in
                 ( { model 
                   | timeline = timeline
                   , activeCotoId = (newActiveCotoId model.activeCotoId clickedCotoId)
+                  , cotoModal = 
+                      { cotoModal 
+                      | open = isJust openCoto
+                      , coto = toCoto openCoto
+                      }
                   }
                 , Cmd.map TimelineMsg cmd 
                 )
+
+
+toCoto : Maybe Components.Timeline.Model.Coto -> Maybe Coto
+toCoto timelineCoto =
+    case timelineCoto of
+        Nothing -> Nothing
+        Just coto ->
+            (case coto.id of
+                Nothing -> Nothing
+                Just cotoId -> Just (Coto cotoId coto.content)
+            )
+
 
 
 newActiveCotoId : Maybe Int -> Maybe Int -> Maybe Int

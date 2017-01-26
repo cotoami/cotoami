@@ -14293,6 +14293,9 @@ var _user$project$Components_Timeline_Model$Model = F4(
 		return {editingNewCoto: a, newCotoContent: b, postIdCounter: c, cotos: d};
 	});
 
+var _user$project$Components_Timeline_Messages$CotoOpen = function (a) {
+	return {ctor: 'CotoOpen', _0: a};
+};
 var _user$project$Components_Timeline_Messages$CotoPosted = function (a) {
 	return {ctor: 'CotoPosted', _0: a};
 };
@@ -14381,7 +14384,6 @@ var _user$project$Components_CotoModal$view = function (model) {
 var _user$project$App_Messages$CotoModalMsg = function (a) {
 	return {ctor: 'CotoModalMsg', _0: a};
 };
-var _user$project$App_Messages$OpenCotoModalMsg = {ctor: 'OpenCotoModalMsg'};
 var _user$project$App_Messages$TimelineMsg = function (a) {
 	return {ctor: 'TimelineMsg', _0: a};
 };
@@ -14673,7 +14675,7 @@ var _user$project$Components_Timeline_Update$update = F3(
 				return (_elm_lang$core$Native_Utils.eq(_p0._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline_Update$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Post':
 				return _user$project$Components_Timeline_Update$post(model);
-			default:
+			case 'CotoPosted':
 				if (_p0._0.ctor === 'Ok') {
 					var _p1 = _p0._0._0;
 					return A2(
@@ -14692,6 +14694,8 @@ var _user$project$Components_Timeline_Update$update = F3(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
@@ -14710,23 +14714,38 @@ var _user$project$App_Update$newActiveCotoId = F2(
 			}
 		}
 	});
+var _user$project$App_Update$toCoto = function (timelineCoto) {
+	var _p3 = timelineCoto;
+	if (_p3.ctor === 'Nothing') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		var _p5 = _p3._0;
+		var _p4 = _p5.id;
+		if (_p4.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				A2(_user$project$App_Types$Coto, _p4._0, _p5.content));
+		}
+	}
+};
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'SessionFetched':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p6._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								session: _elm_lang$core$Maybe$Just(_p3._0._0)
+								session: _elm_lang$core$Maybe$Just(_p6._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -14734,8 +14753,8 @@ var _user$project$App_Update$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'KeyDown':
-				var _p4 = _p3._0;
-				return (_elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$meta.keyCode)) ? {
+				var _p7 = _p6._0;
+				return (_elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -14743,8 +14762,8 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'KeyUp':
-				var _p5 = _p3._0;
-				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? {
+				var _p8 = _p6._0;
+				return (_elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$meta.keyCode)) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -14765,9 +14784,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SigninModalMsg':
-				var _p6 = A2(_user$project$Components_SigninModal$update, _p3._0, model.signinModal);
-				var signinModal = _p6._0;
-				var cmd = _p6._1;
+				var _p9 = A2(_user$project$Components_SigninModal$update, _p6._0, model.signinModal);
+				var signinModal = _p9._0;
+				var cmd = _p9._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14789,9 +14808,9 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ProfileModalMsg':
-				var _p7 = A2(_user$project$Components_ProfileModal$update, _p3._0, model.profileModal);
-				var profileModal = _p7._0;
-				var cmd = _p7._1;
+				var _p10 = A2(_user$project$Components_ProfileModal$update, _p6._0, model.profileModal);
+				var profileModal = _p10._0;
+				var cmd = _p10._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14799,23 +14818,10 @@ var _user$project$App_Update$update = F2(
 						{profileModal: profileModal}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
-			case 'OpenCotoModalMsg':
-				var cotoModal = model.cotoModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cotoModal: _elm_lang$core$Native_Utils.update(
-								cotoModal,
-								{open: true})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 			case 'CotoModalMsg':
-				var _p8 = A2(_user$project$Components_CotoModal$update, _p3._0, model.cotoModal);
-				var cotoModal = _p8._0;
-				var cmd = _p8._1;
+				var _p11 = A2(_user$project$Components_CotoModal$update, _p6._0, model.cotoModal);
+				var cotoModal = _p11._0;
+				var cmd = _p11._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14824,14 +14830,23 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
 				};
 			default:
-				var _p11 = _p3._0;
-				var _p9 = A3(_user$project$Components_Timeline_Update$update, _p11, model.timeline, model.ctrlDown);
-				var timeline = _p9._0;
-				var cmd = _p9._1;
+				var _p15 = _p6._0;
+				var _p12 = A3(_user$project$Components_Timeline_Update$update, _p15, model.timeline, model.ctrlDown);
+				var timeline = _p12._0;
+				var cmd = _p12._1;
+				var cotoModal = model.cotoModal;
+				var openCoto = function () {
+					var _p13 = _p15;
+					if (_p13.ctor === 'CotoOpen') {
+						return _elm_lang$core$Maybe$Just(_p13._0);
+					} else {
+						return _elm_lang$core$Maybe$Nothing;
+					}
+				}();
 				var clickedCotoId = function () {
-					var _p10 = _p11;
-					if (_p10.ctor === 'CotoClick') {
-						return _elm_lang$core$Maybe$Just(_p10._0);
+					var _p14 = _p15;
+					if (_p14.ctor === 'CotoClick') {
+						return _elm_lang$core$Maybe$Just(_p14._0);
 					} else {
 						return _elm_lang$core$Maybe$Nothing;
 					}
@@ -14842,7 +14857,13 @@ var _user$project$App_Update$update = F2(
 						model,
 						{
 							timeline: timeline,
-							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId)
+							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId),
+							cotoModal: _elm_lang$core$Native_Utils.update(
+								cotoModal,
+								{
+									open: _krisajenkins$elm_exts$Exts_Maybe$isJust(openCoto),
+									coto: _user$project$App_Update$toCoto(openCoto)
+								})
 						}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 				};
@@ -18762,6 +18783,16 @@ var _user$project$Markdown$withOptions = function (options) {
 };
 var _user$project$Markdown$toHtml = A2(_user$project$Markdown$customHtml, _user$project$Markdown_Config$defaultOptions, _user$project$Markdown_Config$defaultElements);
 
+var _user$project$Components_Timeline_View$onOpenCotoClick = function (message) {
+	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		_elm_lang$core$Native_Utils.update(
+			defaultOptions,
+			{stopPropagation: true}),
+		_elm_lang$core$Json_Decode$succeed(message));
+};
 var _user$project$Components_Timeline_View$onLoad = function (message) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -18921,33 +18952,48 @@ var _user$project$Components_Timeline_View$timelineDiv = F3(
 							},
 							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('open-coto'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
+								_0: function () {
+									var _p4 = coto.id;
+									if (_p4.ctor === 'Nothing') {
+										return A2(
+											_elm_lang$html$Html$span,
+											{ctor: '[]'},
+											{ctor: '[]'});
+									} else {
+										return A2(
+											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$class('open-coto'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
+													_1: {
+														ctor: '::',
+														_0: _user$project$Components_Timeline_View$onOpenCotoClick(
+															_user$project$Components_Timeline_Messages$CotoOpen(coto)),
+														_1: {ctor: '[]'}
+													}
+												}
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('open_in_new'),
+												_0: A2(
+													_elm_lang$html$Html$i,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('open_in_new'),
+														_1: {ctor: '[]'}
+													}),
 												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
+											});
+									}
+								}(),
 								_1: {
 									ctor: '::',
 									_0: _user$project$Components_Timeline_View$markdown(coto.content),
@@ -19000,8 +19046,8 @@ var _user$project$Components_Timeline_View$view = F3(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p4 = session;
-										if (_p4.ctor === 'Nothing') {
+										var _p5 = session;
+										if (_p5.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -19030,7 +19076,7 @@ var _user$project$Components_Timeline_View$view = F3(
 													}
 												});
 										} else {
-											var _p5 = _p4._0;
+											var _p6 = _p5._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -19047,7 +19093,7 @@ var _user$project$Components_Timeline_View$view = F3(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p5.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p6.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -19063,7 +19109,7 @@ var _user$project$Components_Timeline_View$view = F3(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p5.displayName),
+																_0: _elm_lang$html$Html$text(_p6.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
@@ -19284,7 +19330,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"OpenCotoModalMsg":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int, postId : Maybe.Maybe Int, content : String }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int, postId : Maybe.Maybe Int, content : String }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

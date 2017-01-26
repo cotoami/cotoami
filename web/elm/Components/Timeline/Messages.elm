@@ -16,3 +16,4 @@ type Msg
     | EditorKeyDown KeyCode
     | Post
     | CotoPosted (Result Http.Error Coto)
+    | CotoOpen Coto

@@ -3,7 +3,9 @@ module Components.Timeline.View exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
+import Html.Events
+import Html.Events exposing 
+    (on, onWithOptions, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
 import Json.Decode as Decode
 import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
@@ -76,11 +78,16 @@ timelineDiv model session activeCotoId =
                         Just cotoId -> onClick (CotoClick cotoId)
                       )
                     ] 
-                    [ a 
-                        [ class "open-coto"
-                        , title "Open coto view"
-                        ] 
-                        [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                    [ (case coto.id of
+                        Nothing -> span [] []
+                        Just cotoId ->
+                            a 
+                                [ class "open-coto"
+                                , title "Open coto view"
+                                , onOpenCotoClick (CotoOpen coto)
+                                ] 
+                                [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                      )
                     , markdown coto.content 
                     ]
                 )
@@ -156,6 +163,17 @@ onKeyDown tagger =
 
 onLoad : msg -> Attribute msg
 onLoad message =
-  on "load" (Decode.succeed message)
+    on "load" (Decode.succeed message)
+  
+
+onOpenCotoClick : msg -> Attribute msg
+onOpenCotoClick message =
+    let
+        defaultOptions = Html.Events.defaultOptions
+    in
+        onWithOptions 
+            "click"
+            { defaultOptions | stopPropagation = True }
+            (Decode.succeed message)
   
   

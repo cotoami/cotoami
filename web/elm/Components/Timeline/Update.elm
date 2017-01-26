@@ -53,6 +53,9 @@ update msg model ctrlDown =
           
         CotoPosted (Err _) ->
             ( model, Cmd.none )
+            
+        CotoOpen coto ->
+            ( model, Cmd.none )
 
 
 post : Model -> ( Model, Cmd Msg )

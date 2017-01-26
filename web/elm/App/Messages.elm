@@ -19,5 +19,4 @@ type Msg
     | OpenProfileModal
     | ProfileModalMsg Components.ProfileModal.Msg
     | TimelineMsg Components.Timeline.Messages.Msg
-    | OpenCotoModalMsg
     | CotoModalMsg Components.CotoModal.Msg
