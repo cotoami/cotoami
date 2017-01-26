@@ -3,6 +3,7 @@ module App.Messages exposing (Msg(..))
 import Http
 import Keyboard exposing (..)
 import App.Types exposing (Session)
+import Components.ConfirmModal
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Messages
@@ -14,6 +15,7 @@ type Msg
     | SessionFetched (Result Http.Error Session)
     | KeyDown KeyCode
     | KeyUp KeyCode
+    | ConfirmModalMsg Components.ConfirmModal.Msg
     | OpenSigninModal
     | SigninModalMsg Components.SigninModal.Msg
     | OpenProfileModal

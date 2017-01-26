@@ -72,6 +72,16 @@ html, body, #elm-container, #app, #app-body {
   z-index: 1;
 }
 
+#confirm-modal {
+  &.modal-open {
+    z-index: 30;
+  }
+}
+
+#confirm-modal-content {
+  padding: 0 10px 10px 10px;
+}
+
 #timeline-column {
   height: 100%;
   position: relative;

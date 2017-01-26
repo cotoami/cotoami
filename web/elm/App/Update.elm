@@ -5,6 +5,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import Components.ConfirmModal
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
@@ -36,6 +37,12 @@ update msg model =
                 ( { model | ctrlDown = False }, Cmd.none )
             else
                 ( model, Cmd.none )
+                
+        ConfirmModalMsg subMsg ->
+            let
+                ( confirmModal, cmd ) = Components.ConfirmModal.update subMsg model.confirmModal
+            in
+                ( { model | confirmModal = confirmModal }, Cmd.map ConfirmModalMsg cmd )
             
         OpenSigninModal ->
             let
@@ -63,9 +70,23 @@ update msg model =
                 
         CotoModalMsg subMsg ->
             let
+                confirmDelete = 
+                    (case subMsg of
+                        Components.CotoModal.ConfirmDelete -> True
+                        _ -> False
+                    )
+                confirmModal = model.confirmModal
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
             in
-                ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
+                ( { model 
+                  | cotoModal = cotoModal
+                  , confirmModal =
+                      { confirmModal
+                      | open = confirmDelete
+                      }
+                  }
+                , Cmd.map CotoModalMsg cmd 
+                )
         
         TimelineMsg subMsg ->
             let

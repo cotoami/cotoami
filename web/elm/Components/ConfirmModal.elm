@@ -1,45 +1,37 @@
-module Components.CotoModal exposing (..)
+module Components.ConfirmModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Modal
-import App.Types exposing (Coto)
-import App.Markdown
 
 
 type alias Model =
     { open : Bool
-    , coto : Maybe Coto
     }
 
 
 initModel : Model
 initModel =
     { open = False
-    , coto = Nothing
     }
     
 
 type Msg
     = Close
-    | ConfirmDelete
     
-    
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
             ( { model | open = False }, Cmd.none )
-            
-        ConfirmDelete ->
-            ( model, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     Modal.view
-        "coto-modal"
+        "confirm-modal"
         (if model.open then
             Just (modalConfig model)
          else
@@ -50,16 +42,10 @@ view model =
 modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
-    , title = "Coto"
-    , content = div [ id "coto-modal-content" ]
-        [ div [ class "coto" ]
-            [ (case model.coto of
-                Nothing -> div [] []
-                Just coto -> App.Markdown.markdown coto.content
-              )
-            ]
-        ]
+    , title = "Confirm"
+    , content = div [ id "confirm-modal-content" ] [ text "Are you sure?" ]
     , buttons = 
-        [ a [ class "button", onClick ConfirmDelete ] [ text "Delete" ]
+        [ button [ class "button", onClick Close ] [ text "Cancel" ] 
+        , button [ class "button button-primary", onClick Close ] [ text "OK" ] 
         ]
     }
