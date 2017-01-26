@@ -1,5 +1,8 @@
 module App.Update exposing (..)
 
+import Task
+import Process
+import Time
 import Keys exposing (ctrl, meta, enter)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
@@ -89,20 +92,23 @@ update msg model =
                                   )
                               }
                           }
-                        , Cmd.map CotoModalMsg cmd 
+                        , Cmd.map CotoModalMsg cmd
                         )
                         
                     Components.CotoModal.Delete cotoId  -> 
-                        ( { model 
-                          | cotoModal = cotoModal
-                          , timeline =
-                              { timeline
-                              | cotos = cotos |> 
-                                  updateCoto (\c -> { c | beingDeleted = True }) cotoId
-                              }
-                          }
-                        , Cmd.map CotoModalMsg cmd 
-                        )
+                        { model 
+                        | cotoModal = cotoModal
+                        , timeline =
+                            { timeline
+                            | cotos = cotos |> 
+                                updateCoto (\c -> { c | beingDeleted = True }) cotoId
+                            }
+                        } !
+                        [ Cmd.map CotoModalMsg cmd
+                        , Process.sleep (1 * Time.second)
+                            |> Task.andThen (\_ -> Task.succeed ())
+                            |> Task.perform (\_ -> DeleteCoto cotoId)
+                        ]
                         
                     _ ->
                         ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
@@ -140,7 +146,21 @@ update msg model =
 
                     _ -> 
                         ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )
-                
+  
+        DeleteCoto cotoId ->
+            let
+                timeline = model.timeline
+                cotos = timeline.cotos
+            in
+                ( { model 
+                  | timeline =
+                      { timeline
+                      | cotos = cotos |> (List.filter (\c -> c.id /= (Just cotoId)))
+                      }
+                  }
+                , Cmd.none
+                )
+
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int
 newActiveCotoId currentActiveId clickedId =

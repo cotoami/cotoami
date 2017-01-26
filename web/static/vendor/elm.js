@@ -18281,6 +18281,9 @@ var _user$project$Components_CotoModal$view = function (model) {
 			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
+var _user$project$App_Messages$DeleteCoto = function (a) {
+	return {ctor: 'DeleteCoto', _0: a};
+};
 var _user$project$App_Messages$CotoModalMsg = function (a) {
 	return {ctor: 'CotoModalMsg', _0: a};
 };
@@ -18749,14 +18752,14 @@ var _user$project$App_Update$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
 				};
 			case 'CotoModalMsg':
-				var _p10 = _p1._0;
+				var _p13 = _p1._0;
 				var timeline = model.timeline;
 				var cotos = timeline.cotos;
 				var confirmModal = model.confirmModal;
-				var _p7 = A2(_user$project$Components_CotoModal$update, _p10, model.cotoModal);
+				var _p7 = A2(_user$project$Components_CotoModal$update, _p13, model.cotoModal);
 				var cotoModal = _p7._0;
 				var cmd = _p7._1;
-				var _p8 = _p10;
+				var _p8 = _p13;
 				switch (_p8.ctor) {
 					case 'ConfirmDelete':
 						return {
@@ -18784,9 +18787,10 @@ var _user$project$App_Update$update = F2(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
 						};
 					case 'Delete':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						var _p12 = _p8._0;
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{
 									cotoModal: cotoModal,
@@ -18800,12 +18804,30 @@ var _user$project$App_Update$update = F2(
 														c,
 														{beingDeleted: true});
 												},
-												_p8._0,
+												_p12,
 												cotos)
 										})
 								}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$core$Task$perform,
+										function (_p10) {
+											return _user$project$App_Messages$DeleteCoto(_p12);
+										},
+										A2(
+											_elm_lang$core$Task$andThen,
+											function (_p11) {
+												return _elm_lang$core$Task$succeed(
+													{ctor: '_Tuple0'});
+											},
+											_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$second))),
+									_1: {ctor: '[]'}
+								}
+							});
 					default:
 						return {
 							ctor: '_Tuple2',
@@ -18815,14 +18837,14 @@ var _user$project$App_Update$update = F2(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
 						};
 				}
-			default:
-				var _p15 = _p1._0;
+			case 'TimelineMsg':
+				var _p18 = _p1._0;
 				var cotoModal = model.cotoModal;
-				var _p11 = A3(_user$project$Components_Timeline_Update$update, _p15, model.timeline, model.ctrlDown);
-				var timeline = _p11._0;
-				var cmd = _p11._1;
-				var _p12 = _p15;
-				switch (_p12.ctor) {
+				var _p14 = A3(_user$project$Components_Timeline_Update$update, _p18, model.timeline, model.ctrlDown);
+				var timeline = _p14._0;
+				var cmd = _p14._1;
+				var _p15 = _p18;
+				switch (_p15.ctor) {
 					case 'CotoClick':
 						return {
 							ctor: '_Tuple2',
@@ -18830,12 +18852,12 @@ var _user$project$App_Update$update = F2(
 								model,
 								{
 									timeline: timeline,
-									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p12._0)
+									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p15._0)
 								}),
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 						};
 					case 'CotoOpen':
-						var _p14 = _p12._0;
+						var _p17 = _p15._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -18847,12 +18869,12 @@ var _user$project$App_Update$update = F2(
 										{
 											open: true,
 											coto: function () {
-												var _p13 = _p14.id;
-												if (_p13.ctor === 'Nothing') {
+												var _p16 = _p17.id;
+												if (_p16.ctor === 'Nothing') {
 													return _elm_lang$core$Maybe$Nothing;
 												} else {
 													return _elm_lang$core$Maybe$Just(
-														A2(_user$project$App_Types$Coto, _p13._0, _p14.content));
+														A2(_user$project$App_Types$Coto, _p16._0, _p17.content));
 												}
 											}()
 										})
@@ -18868,6 +18890,29 @@ var _user$project$App_Update$update = F2(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 						};
 				}
+			default:
+				var timeline = model.timeline;
+				var cotos = timeline.cotos;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							timeline: _elm_lang$core$Native_Utils.update(
+								timeline,
+								{
+									cotos: A2(
+										_elm_lang$core$List$filter,
+										function (c) {
+											return !_elm_lang$core$Native_Utils.eq(
+												c.id,
+												_elm_lang$core$Maybe$Just(_p1._0));
+										},
+										cotos)
+								})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 
@@ -19586,7 +19631,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["Int"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int , postId : Maybe.Maybe Int , content : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["Int"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["Int"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int , postId : Maybe.Maybe Int , content : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

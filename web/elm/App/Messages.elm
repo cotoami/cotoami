@@ -22,3 +22,4 @@ type Msg
     | ProfileModalMsg Components.ProfileModal.Msg
     | TimelineMsg Components.Timeline.Messages.Msg
     | CotoModalMsg Components.CotoModal.Msg
+    | DeleteCoto Int
