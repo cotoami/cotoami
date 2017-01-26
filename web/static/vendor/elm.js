@@ -14317,674 +14317,6 @@ var _user$project$Components_Timeline_Messages$CotosFetched = function (a) {
 };
 var _user$project$Components_Timeline_Messages$NoOp = {ctor: 'NoOp'};
 
-var _user$project$Components_CotoModal$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{open: false}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
-var _user$project$Components_CotoModal$initModel = {open: false, coto: _elm_lang$core$Maybe$Nothing};
-var _user$project$Components_CotoModal$Model = F2(
-	function (a, b) {
-		return {open: a, coto: b};
-	});
-var _user$project$Components_CotoModal$Close = {ctor: 'Close'};
-var _user$project$Components_CotoModal$modalConfig = function (model) {
-	return {
-		closeMessage: _user$project$Components_CotoModal$Close,
-		title: 'Coto',
-		content: A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('coto-modal-content'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('coto container'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
-				_1: {ctor: '[]'}
-			}),
-		buttons: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$a,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Delete'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		}
-	};
-};
-var _user$project$Components_CotoModal$view = function (model) {
-	return _user$project$Modal$view(
-		model.open ? _elm_lang$core$Maybe$Just(
-			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
-};
-
-var _user$project$App_Messages$CotoModalMsg = function (a) {
-	return {ctor: 'CotoModalMsg', _0: a};
-};
-var _user$project$App_Messages$TimelineMsg = function (a) {
-	return {ctor: 'TimelineMsg', _0: a};
-};
-var _user$project$App_Messages$ProfileModalMsg = function (a) {
-	return {ctor: 'ProfileModalMsg', _0: a};
-};
-var _user$project$App_Messages$OpenProfileModal = {ctor: 'OpenProfileModal'};
-var _user$project$App_Messages$SigninModalMsg = function (a) {
-	return {ctor: 'SigninModalMsg', _0: a};
-};
-var _user$project$App_Messages$OpenSigninModal = {ctor: 'OpenSigninModal'};
-var _user$project$App_Messages$KeyUp = function (a) {
-	return {ctor: 'KeyUp', _0: a};
-};
-var _user$project$App_Messages$KeyDown = function (a) {
-	return {ctor: 'KeyDown', _0: a};
-};
-var _user$project$App_Messages$SessionFetched = function (a) {
-	return {ctor: 'SessionFetched', _0: a};
-};
-var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
-
-var _user$project$App_Commands$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App_Types$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Commands$fetchSession = A2(
-	_elm_lang$http$Http$send,
-	_user$project$App_Messages$SessionFetched,
-	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
-
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing};
-var _user$project$App_Model$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {ctrlDown: a, session: b, signinModal: c, profileModal: d, cotoModal: e, timeline: f, activeCotoId: g};
-	});
-
-var _user$project$App_Subscriptions$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
-var _user$project$Keys$zero = {keyCode: 58, name: '0'};
-var _user$project$Keys$nine = {keyCode: 57, name: '9'};
-var _user$project$Keys$eight = {keyCode: 56, name: '8'};
-var _user$project$Keys$seven = {keyCode: 55, name: '7'};
-var _user$project$Keys$six = {keyCode: 54, name: '6'};
-var _user$project$Keys$five = {keyCode: 53, name: '5'};
-var _user$project$Keys$four = {keyCode: 52, name: '4'};
-var _user$project$Keys$three = {keyCode: 51, name: '3'};
-var _user$project$Keys$two = {keyCode: 50, name: '2'};
-var _user$project$Keys$one = {keyCode: 49, name: '1'};
-var _user$project$Keys$f10 = {keyCode: 121, name: 'F10'};
-var _user$project$Keys$f9 = {keyCode: 120, name: 'F9'};
-var _user$project$Keys$f8 = {keyCode: 119, name: 'F8'};
-var _user$project$Keys$f4 = {keyCode: 115, name: 'F4'};
-var _user$project$Keys$f2 = {keyCode: 113, name: 'F2'};
-var _user$project$Keys$escape = {keyCode: 27, name: 'Escape'};
-var _user$project$Keys$pageUp = {keyCode: 33, name: 'Page up'};
-var _user$project$Keys$pageDown = {keyCode: 34, name: 'Page down'};
-var _user$project$Keys$home = {keyCode: 36, name: 'Home'};
-var _user$project$Keys$end = {keyCode: 35, name: 'End'};
-var _user$project$Keys$insert = {keyCode: 45, name: 'Insert'};
-var _user$project$Keys$delete = {keyCode: 46, name: 'Delete'};
-var _user$project$Keys$backspace = {keyCode: 8, name: 'Backspace'};
-var _user$project$Keys$arrowDown = {keyCode: 40, name: 'Down arrow'};
-var _user$project$Keys$arrowUp = {keyCode: 38, name: 'Up arrow'};
-var _user$project$Keys$arrowLeft = {keyCode: 39, name: 'Left arrow'};
-var _user$project$Keys$arrowRight = {keyCode: 37, name: 'Right arrow'};
-var _user$project$Keys$enter = {keyCode: 13, name: 'Enter'};
-var _user$project$Keys$space = {keyCode: 32, name: 'Space'};
-var _user$project$Keys$commandRight = {keyCode: 93, name: 'Command right'};
-var _user$project$Keys$commandLeft = {keyCode: 91, name: 'Command left'};
-var _user$project$Keys$windows = {keyCode: 91, name: 'Windows'};
-var _user$project$Keys$meta = {keyCode: 91, name: 'Meta'};
-var _user$project$Keys$super = {keyCode: 91, name: 'Super'};
-var _user$project$Keys$tab = {keyCode: 9, name: 'Tab'};
-var _user$project$Keys$shift = {keyCode: 16, name: 'Shift'};
-var _user$project$Keys$ctrl = {keyCode: 17, name: 'Ctrl'};
-var _user$project$Keys$z = {keyCode: 90, name: 'z'};
-var _user$project$Keys$y = {keyCode: 89, name: 'y'};
-var _user$project$Keys$x = {keyCode: 88, name: 'x'};
-var _user$project$Keys$w = {keyCode: 87, name: 'w'};
-var _user$project$Keys$v = {keyCode: 86, name: 'v'};
-var _user$project$Keys$u = {keyCode: 85, name: 'u'};
-var _user$project$Keys$t = {keyCode: 84, name: 't'};
-var _user$project$Keys$s = {keyCode: 83, name: 's'};
-var _user$project$Keys$r = {keyCode: 82, name: 'r'};
-var _user$project$Keys$q = {keyCode: 81, name: 'q'};
-var _user$project$Keys$p = {keyCode: 80, name: 'p'};
-var _user$project$Keys$o = {keyCode: 79, name: 'o'};
-var _user$project$Keys$n = {keyCode: 78, name: 'n'};
-var _user$project$Keys$m = {keyCode: 77, name: 'm'};
-var _user$project$Keys$l = {keyCode: 76, name: 'l'};
-var _user$project$Keys$k = {keyCode: 75, name: 'k'};
-var _user$project$Keys$j = {keyCode: 74, name: 'j'};
-var _user$project$Keys$i = {keyCode: 73, name: 'i'};
-var _user$project$Keys$h = {keyCode: 72, name: 'h'};
-var _user$project$Keys$g = {keyCode: 71, name: 'g'};
-var _user$project$Keys$f = {keyCode: 70, name: 'f'};
-var _user$project$Keys$e = {keyCode: 69, name: 'e'};
-var _user$project$Keys$d = {keyCode: 68, name: 'd'};
-var _user$project$Keys$c = {keyCode: 67, name: 'b'};
-var _user$project$Keys$b = {keyCode: 66, name: 'b'};
-var _user$project$Keys$a = {keyCode: 65, name: 'a'};
-var _user$project$Keys$equals = F2(
-	function (k0, k1) {
-		return _elm_lang$core$Native_Utils.eq(k0.keyCode, k1.keyCode);
-	});
-var _user$project$Keys$Key = F2(
-	function (a, b) {
-		return {keyCode: a, name: b};
-	});
-
-var _user$project$Components_Timeline_Commands$encodeCoto = function (coto) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'coto',
-				_1: _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'postId',
-							_1: function () {
-								var _p0 = coto.postId;
-								if (_p0.ctor === 'Nothing') {
-									return _elm_lang$core$Json_Encode$null;
-								} else {
-									return _elm_lang$core$Json_Encode$int(_p0._0);
-								}
-							}()
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'content',
-								_1: _elm_lang$core$Json_Encode$string(coto.content)
-							},
-							_1: {ctor: '[]'}
-						}
-					})
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_Timeline_Commands$decodeCoto = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$Components_Timeline_Model$Coto,
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'postId', _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-var _user$project$Components_Timeline_Commands$postCoto = function (coto) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$Components_Timeline_Messages$CotoPosted,
-		A3(
-			_elm_lang$http$Http$post,
-			'/api/cotos',
-			_elm_lang$http$Http$jsonBody(
-				_user$project$Components_Timeline_Commands$encodeCoto(coto)),
-			_user$project$Components_Timeline_Commands$decodeCoto));
-};
-var _user$project$Components_Timeline_Commands$fetchCotos = A2(
-	_elm_lang$http$Http$send,
-	_user$project$Components_Timeline_Messages$CotosFetched,
-	A2(
-		_elm_lang$http$Http$get,
-		'/api/cotos',
-		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline_Commands$decodeCoto)));
-var _user$project$Components_Timeline_Commands$handleScrollResult = function (result) {
-	var _p1 = result;
-	if (_p1.ctor === 'Ok') {
-		return _user$project$Components_Timeline_Messages$NoOp;
-	} else {
-		return _user$project$Components_Timeline_Messages$NoOp;
-	}
-};
-var _user$project$Components_Timeline_Commands$scrollToBottom = A2(
-	_elm_lang$core$Task$attempt,
-	_user$project$Components_Timeline_Commands$handleScrollResult,
-	A2(
-		_elm_lang$core$Task$andThen,
-		function (x) {
-			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
-		},
-		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
-
-var _user$project$Components_Timeline_Update$post = function (model) {
-	var postId = model.postIdCounter + 1;
-	var newCoto = A3(
-		_user$project$Components_Timeline_Model$Coto,
-		_elm_lang$core$Maybe$Nothing,
-		_elm_lang$core$Maybe$Just(postId),
-		model.newCotoContent);
-	return A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		_elm_lang$core$Native_Utils.update(
-			model,
-			{
-				cotos: {ctor: '::', _0: newCoto, _1: model.cotos},
-				postIdCounter: postId,
-				newCotoContent: ''
-			}),
-		{
-			ctor: '::',
-			_0: _user$project$Components_Timeline_Commands$scrollToBottom,
-			_1: {
-				ctor: '::',
-				_0: _user$project$Components_Timeline_Commands$postCoto(newCoto),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Components_Timeline_Update$update = F3(
-	function (msg, model, ctrlDown) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'NoOp':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
-			case 'ImageLoaded':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{
-						ctor: '::',
-						_0: _user$project$Components_Timeline_Commands$scrollToBottom,
-						_1: {ctor: '[]'}
-					});
-			case 'CotosFetched':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{cotos: _p0._0._0}),
-						_1: _user$project$Components_Timeline_Commands$scrollToBottom
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'CotoClick':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'EditorFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorBlur':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editingNewCoto: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newCotoContent: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p0._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline_Update$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Post':
-				return _user$project$Components_Timeline_Update$post(model);
-			case 'CotoPosted':
-				if (_p0._0.ctor === 'Ok') {
-					var _p1 = _p0._0._0;
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{
-								cotos: A2(
-									_elm_lang$core$List$map,
-									function (c) {
-										return _elm_lang$core$Native_Utils.eq(c.postId, _p1.postId) ? _p1 : c;
-									},
-									model.cotos)
-							}),
-						{ctor: '[]'});
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
-
-var _user$project$App_Update$newActiveCotoId = F2(
-	function (currentActiveId, maybeClickedId) {
-		var _p0 = maybeClickedId;
-		if (_p0.ctor === 'Nothing') {
-			return currentActiveId;
-		} else {
-			var _p2 = _p0._0;
-			var _p1 = currentActiveId;
-			if (_p1.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Just(_p2);
-			} else {
-				return _elm_lang$core$Native_Utils.eq(_p2, _p1._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(_p2);
-			}
-		}
-	});
-var _user$project$App_Update$toCoto = function (timelineCoto) {
-	var _p3 = timelineCoto;
-	if (_p3.ctor === 'Nothing') {
-		return _elm_lang$core$Maybe$Nothing;
-	} else {
-		var _p5 = _p3._0;
-		var _p4 = _p5.id;
-		if (_p4.ctor === 'Nothing') {
-			return _elm_lang$core$Maybe$Nothing;
-		} else {
-			return _elm_lang$core$Maybe$Just(
-				A2(_user$project$App_Types$Coto, _p4._0, _p5.content));
-		}
-	}
-};
-var _user$project$App_Update$update = F2(
-	function (msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
-			case 'NoOp':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
-			case 'SessionFetched':
-				if (_p6._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								session: _elm_lang$core$Maybe$Just(_p6._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'KeyDown':
-				var _p7 = _p6._0;
-				return (_elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'KeyUp':
-				var _p8 = _p6._0;
-				return (_elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ctrlDown: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'OpenSigninModal':
-				var signinModal = model.signinModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							signinModal: _elm_lang$core$Native_Utils.update(
-								signinModal,
-								{open: true})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SigninModalMsg':
-				var _p9 = A2(_user$project$Components_SigninModal$update, _p6._0, model.signinModal);
-				var signinModal = _p9._0;
-				var cmd = _p9._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{signinModal: signinModal}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd)
-				};
-			case 'OpenProfileModal':
-				var profileModal = model.profileModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							profileModal: _elm_lang$core$Native_Utils.update(
-								profileModal,
-								{open: true})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ProfileModalMsg':
-				var _p10 = A2(_user$project$Components_ProfileModal$update, _p6._0, model.profileModal);
-				var profileModal = _p10._0;
-				var cmd = _p10._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{profileModal: profileModal}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
-				};
-			case 'CotoModalMsg':
-				var _p11 = A2(_user$project$Components_CotoModal$update, _p6._0, model.cotoModal);
-				var cotoModal = _p11._0;
-				var cmd = _p11._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{cotoModal: cotoModal}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
-				};
-			default:
-				var _p15 = _p6._0;
-				var _p12 = A3(_user$project$Components_Timeline_Update$update, _p15, model.timeline, model.ctrlDown);
-				var timeline = _p12._0;
-				var cmd = _p12._1;
-				var cotoModal = model.cotoModal;
-				var openCoto = function () {
-					var _p13 = _p15;
-					if (_p13.ctor === 'CotoOpen') {
-						return _elm_lang$core$Maybe$Just(_p13._0);
-					} else {
-						return _elm_lang$core$Maybe$Nothing;
-					}
-				}();
-				var clickedCotoId = function () {
-					var _p14 = _p15;
-					if (_p14.ctor === 'CotoClick') {
-						return _elm_lang$core$Maybe$Just(_p14._0);
-					} else {
-						return _elm_lang$core$Maybe$Nothing;
-					}
-				}();
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							timeline: timeline,
-							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId),
-							cotoModal: _elm_lang$core$Native_Utils.update(
-								cotoModal,
-								{
-									open: _krisajenkins$elm_exts$Exts_Maybe$isJust(openCoto),
-									coto: _user$project$App_Update$toCoto(openCoto)
-								})
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-				};
-		}
-	});
-
-var _user$project$Components_AppHeader$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('app-header'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$i,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('home'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('user'),
-						_1: {ctor: '[]'}
-					},
-					function () {
-						var _p0 = model.session;
-						if (_p0.ctor === 'Nothing') {
-							return {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$title('Sign in'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('perm_identity'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							};
-						} else {
-							return {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$title('Profile'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenProfileModal),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$img,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('avatar'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
-													_1: {ctor: '[]'}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							};
-						}
-					}()),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
 var _user$project$Markdown_Config$imageElement = function (model) {
 	var _p0 = model.title;
 	if (_p0.ctor === 'Just') {
@@ -18783,6 +18115,726 @@ var _user$project$Markdown$withOptions = function (options) {
 };
 var _user$project$Markdown$toHtml = A2(_user$project$Markdown$customHtml, _user$project$Markdown_Config$defaultOptions, _user$project$Markdown_Config$defaultElements);
 
+var _user$project$App_Markdown$customLinkElement = function (link) {
+	return _elm_lang$html$Html$a(
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$href(link.url),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$title(
+					A2(_elm_lang$core$Maybe$withDefault, '', link.title)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$target('_blank'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$rel('noopener noreferrer'),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$App_Markdown$markdownElements = _elm_lang$core$Native_Utils.update(
+	_user$project$Markdown_Config$defaultElements,
+	{link: _user$project$App_Markdown$customLinkElement});
+var _user$project$App_Markdown$markdownOptions = _elm_lang$core$Native_Utils.update(
+	_user$project$Markdown_Config$defaultOptions,
+	{softAsHardLineBreak: true});
+var _user$project$App_Markdown$markdown = function (content) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {ctor: '[]'}
+		},
+		A3(_user$project$Markdown$customHtml, _user$project$App_Markdown$markdownOptions, _user$project$App_Markdown$markdownElements, content));
+};
+
+var _user$project$Components_CotoModal$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{open: false}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Components_CotoModal$initModel = {open: false, coto: _elm_lang$core$Maybe$Nothing};
+var _user$project$Components_CotoModal$Model = F2(
+	function (a, b) {
+		return {open: a, coto: b};
+	});
+var _user$project$Components_CotoModal$Close = {ctor: 'Close'};
+var _user$project$Components_CotoModal$modalConfig = function (model) {
+	return {
+		closeMessage: _user$project$Components_CotoModal$Close,
+		title: 'Coto',
+		content: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('coto-modal-content'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('coto container'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: function () {
+							var _p1 = model.coto;
+							if (_p1.ctor === 'Nothing') {
+								return A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{ctor: '[]'});
+							} else {
+								return _user$project$App_Markdown$markdown(_p1._0.content);
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}),
+		buttons: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Delete'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
+	};
+};
+var _user$project$Components_CotoModal$view = function (model) {
+	return _user$project$Modal$view(
+		model.open ? _elm_lang$core$Maybe$Just(
+			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
+};
+
+var _user$project$App_Messages$CotoModalMsg = function (a) {
+	return {ctor: 'CotoModalMsg', _0: a};
+};
+var _user$project$App_Messages$TimelineMsg = function (a) {
+	return {ctor: 'TimelineMsg', _0: a};
+};
+var _user$project$App_Messages$ProfileModalMsg = function (a) {
+	return {ctor: 'ProfileModalMsg', _0: a};
+};
+var _user$project$App_Messages$OpenProfileModal = {ctor: 'OpenProfileModal'};
+var _user$project$App_Messages$SigninModalMsg = function (a) {
+	return {ctor: 'SigninModalMsg', _0: a};
+};
+var _user$project$App_Messages$OpenSigninModal = {ctor: 'OpenSigninModal'};
+var _user$project$App_Messages$KeyUp = function (a) {
+	return {ctor: 'KeyUp', _0: a};
+};
+var _user$project$App_Messages$KeyDown = function (a) {
+	return {ctor: 'KeyDown', _0: a};
+};
+var _user$project$App_Messages$SessionFetched = function (a) {
+	return {ctor: 'SessionFetched', _0: a};
+};
+var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
+
+var _user$project$App_Commands$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Types$Session,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Commands$fetchSession = A2(
+	_elm_lang$http$Http$send,
+	_user$project$App_Messages$SessionFetched,
+	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Commands$decodeSession));
+
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing};
+var _user$project$App_Model$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {ctrlDown: a, session: b, signinModal: c, profileModal: d, cotoModal: e, timeline: f, activeCotoId: g};
+	});
+
+var _user$project$App_Subscriptions$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$App_Messages$KeyDown),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$App_Messages$KeyUp),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
+var _user$project$Keys$zero = {keyCode: 58, name: '0'};
+var _user$project$Keys$nine = {keyCode: 57, name: '9'};
+var _user$project$Keys$eight = {keyCode: 56, name: '8'};
+var _user$project$Keys$seven = {keyCode: 55, name: '7'};
+var _user$project$Keys$six = {keyCode: 54, name: '6'};
+var _user$project$Keys$five = {keyCode: 53, name: '5'};
+var _user$project$Keys$four = {keyCode: 52, name: '4'};
+var _user$project$Keys$three = {keyCode: 51, name: '3'};
+var _user$project$Keys$two = {keyCode: 50, name: '2'};
+var _user$project$Keys$one = {keyCode: 49, name: '1'};
+var _user$project$Keys$f10 = {keyCode: 121, name: 'F10'};
+var _user$project$Keys$f9 = {keyCode: 120, name: 'F9'};
+var _user$project$Keys$f8 = {keyCode: 119, name: 'F8'};
+var _user$project$Keys$f4 = {keyCode: 115, name: 'F4'};
+var _user$project$Keys$f2 = {keyCode: 113, name: 'F2'};
+var _user$project$Keys$escape = {keyCode: 27, name: 'Escape'};
+var _user$project$Keys$pageUp = {keyCode: 33, name: 'Page up'};
+var _user$project$Keys$pageDown = {keyCode: 34, name: 'Page down'};
+var _user$project$Keys$home = {keyCode: 36, name: 'Home'};
+var _user$project$Keys$end = {keyCode: 35, name: 'End'};
+var _user$project$Keys$insert = {keyCode: 45, name: 'Insert'};
+var _user$project$Keys$delete = {keyCode: 46, name: 'Delete'};
+var _user$project$Keys$backspace = {keyCode: 8, name: 'Backspace'};
+var _user$project$Keys$arrowDown = {keyCode: 40, name: 'Down arrow'};
+var _user$project$Keys$arrowUp = {keyCode: 38, name: 'Up arrow'};
+var _user$project$Keys$arrowLeft = {keyCode: 39, name: 'Left arrow'};
+var _user$project$Keys$arrowRight = {keyCode: 37, name: 'Right arrow'};
+var _user$project$Keys$enter = {keyCode: 13, name: 'Enter'};
+var _user$project$Keys$space = {keyCode: 32, name: 'Space'};
+var _user$project$Keys$commandRight = {keyCode: 93, name: 'Command right'};
+var _user$project$Keys$commandLeft = {keyCode: 91, name: 'Command left'};
+var _user$project$Keys$windows = {keyCode: 91, name: 'Windows'};
+var _user$project$Keys$meta = {keyCode: 91, name: 'Meta'};
+var _user$project$Keys$super = {keyCode: 91, name: 'Super'};
+var _user$project$Keys$tab = {keyCode: 9, name: 'Tab'};
+var _user$project$Keys$shift = {keyCode: 16, name: 'Shift'};
+var _user$project$Keys$ctrl = {keyCode: 17, name: 'Ctrl'};
+var _user$project$Keys$z = {keyCode: 90, name: 'z'};
+var _user$project$Keys$y = {keyCode: 89, name: 'y'};
+var _user$project$Keys$x = {keyCode: 88, name: 'x'};
+var _user$project$Keys$w = {keyCode: 87, name: 'w'};
+var _user$project$Keys$v = {keyCode: 86, name: 'v'};
+var _user$project$Keys$u = {keyCode: 85, name: 'u'};
+var _user$project$Keys$t = {keyCode: 84, name: 't'};
+var _user$project$Keys$s = {keyCode: 83, name: 's'};
+var _user$project$Keys$r = {keyCode: 82, name: 'r'};
+var _user$project$Keys$q = {keyCode: 81, name: 'q'};
+var _user$project$Keys$p = {keyCode: 80, name: 'p'};
+var _user$project$Keys$o = {keyCode: 79, name: 'o'};
+var _user$project$Keys$n = {keyCode: 78, name: 'n'};
+var _user$project$Keys$m = {keyCode: 77, name: 'm'};
+var _user$project$Keys$l = {keyCode: 76, name: 'l'};
+var _user$project$Keys$k = {keyCode: 75, name: 'k'};
+var _user$project$Keys$j = {keyCode: 74, name: 'j'};
+var _user$project$Keys$i = {keyCode: 73, name: 'i'};
+var _user$project$Keys$h = {keyCode: 72, name: 'h'};
+var _user$project$Keys$g = {keyCode: 71, name: 'g'};
+var _user$project$Keys$f = {keyCode: 70, name: 'f'};
+var _user$project$Keys$e = {keyCode: 69, name: 'e'};
+var _user$project$Keys$d = {keyCode: 68, name: 'd'};
+var _user$project$Keys$c = {keyCode: 67, name: 'b'};
+var _user$project$Keys$b = {keyCode: 66, name: 'b'};
+var _user$project$Keys$a = {keyCode: 65, name: 'a'};
+var _user$project$Keys$equals = F2(
+	function (k0, k1) {
+		return _elm_lang$core$Native_Utils.eq(k0.keyCode, k1.keyCode);
+	});
+var _user$project$Keys$Key = F2(
+	function (a, b) {
+		return {keyCode: a, name: b};
+	});
+
+var _user$project$Components_Timeline_Commands$encodeCoto = function (coto) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'coto',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'postId',
+							_1: function () {
+								var _p0 = coto.postId;
+								if (_p0.ctor === 'Nothing') {
+									return _elm_lang$core$Json_Encode$null;
+								} else {
+									return _elm_lang$core$Json_Encode$int(_p0._0);
+								}
+							}()
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'content',
+								_1: _elm_lang$core$Json_Encode$string(coto.content)
+							},
+							_1: {ctor: '[]'}
+						}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Components_Timeline_Commands$decodeCoto = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Components_Timeline_Model$Coto,
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'postId', _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+var _user$project$Components_Timeline_Commands$postCoto = function (coto) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Components_Timeline_Messages$CotoPosted,
+		A3(
+			_elm_lang$http$Http$post,
+			'/api/cotos',
+			_elm_lang$http$Http$jsonBody(
+				_user$project$Components_Timeline_Commands$encodeCoto(coto)),
+			_user$project$Components_Timeline_Commands$decodeCoto));
+};
+var _user$project$Components_Timeline_Commands$fetchCotos = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Components_Timeline_Messages$CotosFetched,
+	A2(
+		_elm_lang$http$Http$get,
+		'/api/cotos',
+		_elm_lang$core$Json_Decode$list(_user$project$Components_Timeline_Commands$decodeCoto)));
+var _user$project$Components_Timeline_Commands$handleScrollResult = function (result) {
+	var _p1 = result;
+	if (_p1.ctor === 'Ok') {
+		return _user$project$Components_Timeline_Messages$NoOp;
+	} else {
+		return _user$project$Components_Timeline_Messages$NoOp;
+	}
+};
+var _user$project$Components_Timeline_Commands$scrollToBottom = A2(
+	_elm_lang$core$Task$attempt,
+	_user$project$Components_Timeline_Commands$handleScrollResult,
+	A2(
+		_elm_lang$core$Task$andThen,
+		function (x) {
+			return _elm_lang$dom$Dom_Scroll$toBottom('timeline');
+		},
+		_elm_lang$core$Process$sleep(1 * _elm_lang$core$Time$millisecond)));
+
+var _user$project$Components_Timeline_Update$post = function (model) {
+	var postId = model.postIdCounter + 1;
+	var newCoto = A3(
+		_user$project$Components_Timeline_Model$Coto,
+		_elm_lang$core$Maybe$Nothing,
+		_elm_lang$core$Maybe$Just(postId),
+		model.newCotoContent);
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotos: {ctor: '::', _0: newCoto, _1: model.cotos},
+				postIdCounter: postId,
+				newCotoContent: ''
+			}),
+		{
+			ctor: '::',
+			_0: _user$project$Components_Timeline_Commands$scrollToBottom,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Components_Timeline_Commands$postCoto(newCoto),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Timeline_Update$update = F3(
+	function (msg, model, ctrlDown) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'ImageLoaded':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: _user$project$Components_Timeline_Commands$scrollToBottom,
+						_1: {ctor: '[]'}
+					});
+			case 'CotosFetched':
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{cotos: _p0._0._0}),
+						_1: _user$project$Components_Timeline_Commands$scrollToBottom
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'CotoClick':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'EditorFocus':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorBlur':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editingNewCoto: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{newCotoContent: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorKeyDown':
+				return (_elm_lang$core$Native_Utils.eq(_p0._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newCotoContent)))) ? _user$project$Components_Timeline_Update$post(model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Post':
+				return _user$project$Components_Timeline_Update$post(model);
+			case 'CotoPosted':
+				if (_p0._0.ctor === 'Ok') {
+					var _p1 = _p0._0._0;
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								cotos: A2(
+									_elm_lang$core$List$map,
+									function (c) {
+										return _elm_lang$core$Native_Utils.eq(c.postId, _p1.postId) ? _p1 : c;
+									},
+									model.cotos)
+							}),
+						{ctor: '[]'});
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+
+var _user$project$App_Update$newActiveCotoId = F2(
+	function (currentActiveId, maybeClickedId) {
+		var _p0 = maybeClickedId;
+		if (_p0.ctor === 'Nothing') {
+			return currentActiveId;
+		} else {
+			var _p2 = _p0._0;
+			var _p1 = currentActiveId;
+			if (_p1.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Just(_p2);
+			} else {
+				return _elm_lang$core$Native_Utils.eq(_p2, _p1._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(_p2);
+			}
+		}
+	});
+var _user$project$App_Update$toCoto = function (timelineCoto) {
+	var _p3 = timelineCoto;
+	if (_p3.ctor === 'Nothing') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		var _p5 = _p3._0;
+		var _p4 = _p5.id;
+		if (_p4.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				A2(_user$project$App_Types$Coto, _p4._0, _p5.content));
+		}
+	}
+};
+var _user$project$App_Update$update = F2(
+	function (msg, model) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'SessionFetched':
+				if (_p6._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								session: _elm_lang$core$Maybe$Just(_p6._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'KeyDown':
+				var _p7 = _p6._0;
+				return (_elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p7, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'KeyUp':
+				var _p8 = _p6._0;
+				return (_elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$meta.keyCode)) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ctrlDown: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'OpenSigninModal':
+				var signinModal = model.signinModal;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							signinModal: _elm_lang$core$Native_Utils.update(
+								signinModal,
+								{open: true})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SigninModalMsg':
+				var _p9 = A2(_user$project$Components_SigninModal$update, _p6._0, model.signinModal);
+				var signinModal = _p9._0;
+				var cmd = _p9._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signinModal: signinModal}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd)
+				};
+			case 'OpenProfileModal':
+				var profileModal = model.profileModal;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							profileModal: _elm_lang$core$Native_Utils.update(
+								profileModal,
+								{open: true})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ProfileModalMsg':
+				var _p10 = A2(_user$project$Components_ProfileModal$update, _p6._0, model.profileModal);
+				var profileModal = _p10._0;
+				var cmd = _p10._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{profileModal: profileModal}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
+				};
+			case 'CotoModalMsg':
+				var _p11 = A2(_user$project$Components_CotoModal$update, _p6._0, model.cotoModal);
+				var cotoModal = _p11._0;
+				var cmd = _p11._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{cotoModal: cotoModal}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
+				};
+			default:
+				var _p15 = _p6._0;
+				var _p12 = A3(_user$project$Components_Timeline_Update$update, _p15, model.timeline, model.ctrlDown);
+				var timeline = _p12._0;
+				var cmd = _p12._1;
+				var cotoModal = model.cotoModal;
+				var openCoto = function () {
+					var _p13 = _p15;
+					if (_p13.ctor === 'CotoOpen') {
+						return _elm_lang$core$Maybe$Just(_p13._0);
+					} else {
+						return _elm_lang$core$Maybe$Nothing;
+					}
+				}();
+				var clickedCotoId = function () {
+					var _p14 = _p15;
+					if (_p14.ctor === 'CotoClick') {
+						return _elm_lang$core$Maybe$Just(_p14._0);
+					} else {
+						return _elm_lang$core$Maybe$Nothing;
+					}
+				}();
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							timeline: timeline,
+							activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, clickedCotoId),
+							cotoModal: _elm_lang$core$Native_Utils.update(
+								cotoModal,
+								{
+									open: _krisajenkins$elm_exts$Exts_Maybe$isJust(openCoto),
+									coto: _user$project$App_Update$toCoto(openCoto)
+								})
+						}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
+				};
+		}
+	});
+
+var _user$project$Components_AppHeader$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('app-header'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('home'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('user'),
+						_1: {ctor: '[]'}
+					},
+					function () {
+						var _p0 = model.session;
+						if (_p0.ctor === 'Nothing') {
+							return {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$title('Sign in'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$i,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('perm_identity'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							};
+						} else {
+							return {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$title('Profile'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenProfileModal),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('avatar'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
+													_1: {ctor: '[]'}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							};
+						}
+					}()),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
 var _user$project$Components_Timeline_View$onOpenCotoClick = function (message) {
 	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
 	return A3(
@@ -18831,27 +18883,6 @@ var _user$project$Components_Timeline_View$customImageElement = function (image)
 		},
 		{ctor: '[]'});
 };
-var _user$project$Components_Timeline_View$customLinkElement = function (link) {
-	return _elm_lang$html$Html$a(
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$href(link.url),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$title(
-					A2(_elm_lang$core$Maybe$withDefault, '', link.title)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$target('_blank'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$rel('noopener noreferrer'),
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
 var _user$project$Components_Timeline_View$markdown = function (content) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -18862,12 +18893,10 @@ var _user$project$Components_Timeline_View$markdown = function (content) {
 		},
 		A3(
 			_user$project$Markdown$customHtml,
+			_user$project$App_Markdown$markdownOptions,
 			_elm_lang$core$Native_Utils.update(
-				_user$project$Markdown_Config$defaultOptions,
-				{softAsHardLineBreak: true}),
-			_elm_lang$core$Native_Utils.update(
-				_user$project$Markdown_Config$defaultElements,
-				{link: _user$project$Components_Timeline_View$customLinkElement, image: _user$project$Components_Timeline_View$customImageElement}),
+				_user$project$App_Markdown$markdownElements,
+				{image: _user$project$Components_Timeline_View$customImageElement}),
 			content));
 };
 var _user$project$Components_Timeline_View$isActive = F2(

@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Modal
 import App.Types exposing (Coto)
-
+import App.Markdown
 
 type alias Model =
     { open : Bool
@@ -46,7 +46,10 @@ modalConfig model =
     , title = "Coto"
     , content = div [ id "coto-modal-content" ]
         [ div [ class "coto container" ]
-            [
+            [ (case model.coto of
+                Nothing -> div [] []
+                Just coto -> App.Markdown.markdown coto.content
+              )
             ]
         ]
     , buttons = 

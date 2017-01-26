@@ -12,6 +12,7 @@ import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
 import App.Types exposing (Session)
+import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Coto, Model)
 import Components.Timeline.Messages exposing (..)
 
@@ -117,24 +118,11 @@ markdown : String -> Html Msg
 markdown content =
     div [ class "content" ]
         <| Markdown.customHtml 
-            { defaultOptions
-            | softAsHardLineBreak = True
-            }
-            { defaultElements
-            | link = customLinkElement
-            , image = customImageElement
+            markdownOptions
+            { markdownElements
+            | image = customImageElement
             }
             content
-
-
-customLinkElement : Markdown.Config.Link -> List (Html Msg) -> Html Msg
-customLinkElement link =
-    a <|
-        [ href link.url
-        , title (Maybe.withDefault "" link.title)
-        , target "_blank"
-        , rel "noopener noreferrer"
-        ]
 
 
 customImageElement : Markdown.Config.Image -> Html Msg
