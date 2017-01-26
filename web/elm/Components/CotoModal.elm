@@ -24,6 +24,7 @@ initModel =
 type Msg
     = Close
     | ConfirmDelete String
+    | Delete
     
     
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -34,6 +35,9 @@ update msg model =
             
         ConfirmDelete message ->
             ( model, Cmd.none )
+            
+        Delete ->
+            ( { model | open = False }, Cmd.none )
 
 
 view : Model -> Html Msg

@@ -42,7 +42,7 @@ update msg model =
             let
                 ( confirmModal, cmd ) = Components.ConfirmModal.Update.update subMsg model.confirmModal
             in
-                ( { model | confirmModal = confirmModal }, Cmd.map ConfirmModalMsg cmd )
+                ( { model | confirmModal = confirmModal }, cmd )
             
         OpenSigninModal ->
             let
@@ -86,6 +86,7 @@ update msg model =
                       { confirmModal
                       | open = confirmDelete
                       , message = message
+                      , msgOnConfirm = (CotoModalMsg Components.CotoModal.Delete)
                       }
                   }
                 , Cmd.map CotoModalMsg cmd 
