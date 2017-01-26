@@ -9,3 +9,6 @@ update msg model =
     case msg of
         Close ->
             ( { model | open = False }, Cmd.none )
+            
+        Confirm ->
+            ( { model | open = False }, Cmd.none )

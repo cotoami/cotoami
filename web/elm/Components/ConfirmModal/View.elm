@@ -26,6 +26,6 @@ modalConfig model =
     , content = div [ id "confirm-modal-content" ] [ text model.message ]
     , buttons = 
         [ button [ class "button", onClick Close ] [ text "Cancel" ] 
-        , button [ class "button button-primary", onClick Close ] [ text "OK" ] 
+        , button [ class "button button-primary", onClick Confirm ] [ text "OK" ] 
         ]
     }
