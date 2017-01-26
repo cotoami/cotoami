@@ -2,7 +2,7 @@ module Components.Timeline.Update exposing (..)
 
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
-import Components.Timeline.Model exposing (Coto, Model)
+import Components.Timeline.Model exposing (Coto, defaultCoto, Model)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
@@ -62,7 +62,12 @@ post : Model -> ( Model, Cmd Msg )
 post model =
     let
         postId = model.postIdCounter + 1
-        newCoto = Coto Nothing (Just postId) model.newCotoContent
+        newCoto = 
+            { defaultCoto 
+            | id = Nothing
+            , postId = Just postId
+            , content = model.newCotoContent
+            }
     in
         { model 
         | cotos = newCoto :: model.cotos

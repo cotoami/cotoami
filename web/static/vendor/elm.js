@@ -14296,9 +14296,10 @@ var _user$project$Components_Timeline_Model$initModel = {
 	postIdCounter: 0,
 	cotos: {ctor: '[]'}
 };
-var _user$project$Components_Timeline_Model$Coto = F3(
-	function (a, b, c) {
-		return {id: a, postId: b, content: c};
+var _user$project$Components_Timeline_Model$defaultCoto = {id: _elm_lang$core$Maybe$Nothing, postId: _elm_lang$core$Maybe$Nothing, content: '', beingDeleted: false};
+var _user$project$Components_Timeline_Model$Coto = F4(
+	function (a, b, c, d) {
+		return {id: a, postId: b, content: c, beingDeleted: d};
 	});
 var _user$project$Components_Timeline_Model$Model = F4(
 	function (a, b, c, d) {
@@ -18470,14 +18471,15 @@ var _user$project$Components_Timeline_Commands$encodeCoto = function (coto) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Components_Timeline_Commands$decodeCoto = A4(
-	_elm_lang$core$Json_Decode$map3,
+var _user$project$Components_Timeline_Commands$decodeCoto = A5(
+	_elm_lang$core$Json_Decode$map4,
 	_user$project$Components_Timeline_Model$Coto,
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'postId', _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
+	A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string),
+	_elm_lang$core$Json_Decode$succeed(false));
 var _user$project$Components_Timeline_Commands$postCoto = function (coto) {
 	return A2(
 		_elm_lang$http$Http$send,
@@ -18516,11 +18518,13 @@ var _user$project$Components_Timeline_Commands$scrollToBottom = A2(
 
 var _user$project$Components_Timeline_Update$post = function (model) {
 	var postId = model.postIdCounter + 1;
-	var newCoto = A3(
-		_user$project$Components_Timeline_Model$Coto,
-		_elm_lang$core$Maybe$Nothing,
-		_elm_lang$core$Maybe$Just(postId),
-		model.newCotoContent);
+	var newCoto = _elm_lang$core$Native_Utils.update(
+		_user$project$Components_Timeline_Model$defaultCoto,
+		{
+			id: _elm_lang$core$Maybe$Nothing,
+			postId: _elm_lang$core$Maybe$Just(postId),
+			content: model.newCotoContent
+		});
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		_elm_lang$core$Native_Utils.update(
@@ -19566,7 +19570,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["Int"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int, postId : Maybe.Maybe Int, content : String }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"EditorFocus":[],"ImageLoaded":[],"Post":[],"CotoOpen":["Components.Timeline.Model.Coto"],"CotoClick":["Int"],"CotosFetched":["Result.Result Http.Error (List Components.Timeline.Model.Coto)"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"NoOp":[],"CotoPosted":["Result.Result Http.Error Components.Timeline.Model.Coto"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"KeyUp":["Keyboard.KeyCode"],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["Int"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Components.Timeline.Model.Coto":{"args":[],"type":"{ id : Maybe.Maybe Int , postId : Maybe.Maybe Int , content : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

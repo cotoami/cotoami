@@ -43,10 +43,11 @@ postCoto coto =
         
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map3 Coto
+    Decode.map4 Coto
         (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.maybe (Decode.field "postId" Decode.int))
         (Decode.field "content" Decode.string)
+        (Decode.succeed False)
 
 
 encodeCoto : Coto -> Encode.Value
