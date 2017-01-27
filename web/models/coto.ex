@@ -21,6 +21,10 @@ defmodule Cotoami.Coto do
     |> validate_required([:posted_in_id, :amishi_id, :content])
   end
   
+  def for_amishi(query, amishi_id) do
+    from c in query, where: c.amishi_id == ^amishi_id
+  end
+  
   def in_cotonoma(cotonoma_id) do
     from c in __MODULE__,
       where: c.posted_in_id == ^cotonoma_id,

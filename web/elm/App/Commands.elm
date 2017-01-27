@@ -18,3 +18,20 @@ decodeSession =
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
+
+
+deleteCoto : Int -> Cmd Msg
+deleteCoto cotoId =
+    Http.send 
+        CotoDeleted
+        (Http.request
+          { method = "DELETE"
+          , headers = []
+          , url = "/api/cotos/" ++ toString(cotoId)
+          , body = Http.emptyBody
+          , expect = Http.expectString 
+          , timeout = Nothing
+          , withCredentials = False
+          }
+        )
+          

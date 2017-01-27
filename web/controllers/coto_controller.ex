@@ -31,4 +31,17 @@ defmodule Cotoami.CotoController do
   end
   
   defp home!(amishi_id), do: Cotonoma.query_home(amishi_id) |> Repo.one!
+  
+  def delete(conn, %{"id" => id}) do
+    case conn.assigns do
+      %{amishi: amishi} ->
+        Coto
+        |> Coto.for_amishi(amishi.id)
+        |> Repo.get!(id)
+        |> Repo.delete!()
+        send_resp(conn, :no_content, "")
+      _ ->
+        send_resp(conn, :no_content, "")
+    end
+  end
 end

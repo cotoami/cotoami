@@ -7,6 +7,7 @@ import Keys exposing (ctrl, meta, enter)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Commands exposing (deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -105,6 +106,7 @@ update msg model =
                             }
                         } !
                         [ Cmd.map CotoModalMsg cmd
+                        , deleteCoto cotoId
                         , Process.sleep (1 * Time.second)
                             |> Task.andThen (\_ -> Task.succeed ())
                             |> Task.perform (\_ -> DeleteCoto cotoId)
@@ -160,6 +162,9 @@ update msg model =
                   }
                 , Cmd.none
                 )
+                
+        CotoDeleted _ ->
+            ( model, Cmd.none )
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

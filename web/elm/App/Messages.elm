@@ -23,3 +23,4 @@ type Msg
     | TimelineMsg Components.Timeline.Messages.Msg
     | CotoModalMsg Components.CotoModal.Msg
     | DeleteCoto Int
+    | CotoDeleted (Result Http.Error String)

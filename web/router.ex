@@ -28,7 +28,7 @@ defmodule Cotoami.Router do
     pipe_through :api
     
     get "/session", SessionController, :index
-    resources "/cotos", CotoController, only: [:index, :create]
+    resources "/cotos", CotoController, only: [:index, :create, :delete]
     get "/signin/request/:email/:save_anonymous", SigninController, :request
   end
 end
