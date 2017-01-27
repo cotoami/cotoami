@@ -247,7 +247,19 @@ html, body, #elm-container, #app, #app-body {
   }
 }
 
-@media (min-width: 600px) {
+@media (max-width: 550px) {
+  #profile-modal-content {
+    div.avatar-box {
+      text-align: center;
+      
+      img.avatar {
+        width: 60% !important;
+      }
+    }
+  }
+}
+
+@media (min-width: 550px) {
   #profile-modal-content {
     width: 455px;
   }
