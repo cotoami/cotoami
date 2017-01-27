@@ -97,6 +97,7 @@ html, body, #elm-container, #app, #app-body {
   padding-top: 40px;
   overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: absolute;
   top: 0;
   bottom: 58px;
