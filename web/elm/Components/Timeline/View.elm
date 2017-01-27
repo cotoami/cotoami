@@ -80,7 +80,8 @@ timelineDiv model session activeCotoId =
                         Just cotoId -> onClick (CotoClick cotoId)
                       )
                     ] 
-                    [ (case coto.id of
+                    [ div [ class "border" ] []
+                    ,  (case coto.id of
                         Nothing -> span [] []
                         Just cotoId ->
                             a 

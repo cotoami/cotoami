@@ -109,7 +109,7 @@ html, body, #elm-container, #app, #app-body {
     border: 2px solid transparent;
     border-radius: 4px;
     padding: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     
     &:hover {
       border: 2px solid #ffdd33;
@@ -130,6 +130,14 @@ html, body, #elm-container, #app, #app-body {
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
+    }
+    
+    div.border {
+      position: absolute;
+      top: -8px;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed #ccc;
     }
     
     a.open-coto {

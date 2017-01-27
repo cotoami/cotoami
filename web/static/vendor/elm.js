@@ -19273,52 +19273,63 @@ var _user$project$Components_Timeline_View$timelineDiv = F3(
 							},
 							{
 								ctor: '::',
-								_0: function () {
-									var _p4 = coto.id;
-									if (_p4.ctor === 'Nothing') {
-										return A2(
-											_elm_lang$html$Html$span,
-											{ctor: '[]'},
-											{ctor: '[]'});
-									} else {
-										return A2(
-											_elm_lang$html$Html$a,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('open-coto'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
-													_1: {
-														ctor: '::',
-														_0: _user$project$Components_Timeline_View$onOpenCotoClick(
-															_user$project$Components_Timeline_Messages$CotoOpen(coto)),
-														_1: {ctor: '[]'}
-													}
-												}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$i,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('open_in_new'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											});
-									}
-								}(),
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('border'),
+										_1: {ctor: '[]'}
+									},
+									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Components_Timeline_View$markdown(coto.content),
-									_1: {ctor: '[]'}
+									_0: function () {
+										var _p4 = coto.id;
+										if (_p4.ctor === 'Nothing') {
+											return A2(
+												_elm_lang$html$Html$span,
+												{ctor: '[]'},
+												{ctor: '[]'});
+										} else {
+											return A2(
+												_elm_lang$html$Html$a,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('open-coto'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
+														_1: {
+															ctor: '::',
+															_0: _user$project$Components_Timeline_View$onOpenCotoClick(
+																_user$project$Components_Timeline_Messages$CotoOpen(coto)),
+															_1: {ctor: '[]'}
+														}
+													}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$i,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('open_in_new'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												});
+										}
+									}(),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Components_Timeline_View$markdown(coto.content),
+										_1: {ctor: '[]'}
+									}
 								}
 							})
 					};
