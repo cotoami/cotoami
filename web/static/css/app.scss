@@ -248,6 +248,7 @@ html, body, #elm-container, #app, #app-body {
   div.content {
     max-height: 55vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 8px;
   }
 }
