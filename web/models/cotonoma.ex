@@ -19,9 +19,9 @@ defmodule Cotoami.Cotonoma do
 
   def changeset_new(struct, params \\ %{}) do
     struct
-    |> cast(params, [:owner_id, :name])
+    |> cast(params, [:name, :coto_id, :owner_id])
     |> generate_key
-    |> validate_required([:owner_id, :key])
+    |> validate_required([:key, :name, :coto_id, :owner_id])
   end
   
   defp generate_key(changeset) do
