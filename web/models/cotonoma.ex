@@ -10,7 +10,7 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
-    belongs_to :coto, Cotoami.Coto    # nil means home (root)
+    belongs_to :coto, Cotoami.Coto
     belongs_to :owner, Cotoami.Owner
     has_many :cotos, Cotoami.Coto
 
@@ -27,10 +27,5 @@ defmodule Cotoami.Cotonoma do
   defp generate_key(changeset) do
     key = :crypto.strong_rand_bytes(@key_length) |> Base.hex_encode32(case: :lower)
     changeset |> put_change(:key, key)
-  end
-  
-  def query_home(amishi_id) do
-    from c in __MODULE__,
-      where: c.owner_id == ^amishi_id and is_nil(c.coto_id)
   end
 end

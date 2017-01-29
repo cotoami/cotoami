@@ -2,7 +2,6 @@ defmodule Cotoami.AmishiService do
   require Logger
   alias Cotoami.Repo
   alias Cotoami.Amishi
-  alias Cotoami.CotonomaService
   
   @gravatar_url_prefix "https://secure.gravatar.com/"
   @gravatar_user_agent "Cotoami"
@@ -16,15 +15,8 @@ defmodule Cotoami.AmishiService do
   end
   
   def create!(email) do
-    {:ok, created_records} =
-      Repo.transaction(fn ->
-        amishi =
-          Amishi.changeset(%Amishi{}, %{email: email})
-          |> Repo.insert!
-        home = CotonomaService.get_or_create_home!(amishi.id) 
-        {amishi, home}
-      end)
-    created_records
+    Amishi.changeset(%Amishi{}, %{email: email})
+    |> Repo.insert!
   end
   
   def get_gravatar_profile(email) do
