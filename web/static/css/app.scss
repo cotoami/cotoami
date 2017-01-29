@@ -111,11 +111,13 @@ html, body, #elm-container, #app, #app-body {
     padding: 8px;
     margin-bottom: 12px;
     
-    &:hover {
-      border: 2px solid #ffdd33;
-      
-      a.open-coto {
-        display: inline;;
+    @media (min-device-width: 1200px) {
+      &:hover {
+        border: 2px solid #ffdd33;
+        
+        a.open-coto {
+          display: inline;
+        }
       }
     }
     
@@ -123,7 +125,7 @@ html, body, #elm-container, #app, #app-body {
       border: 2px solid #ffa500;
       
       a.open-coto {
-        display: inline;;
+        display: inline;
       }
     }
     
@@ -234,6 +236,10 @@ html, body, #elm-container, #app, #app-body {
   div.profile {
     width: 100%;
     
+    @media (min-width: 550px) {
+      width: 455px;
+    }
+    
     div.avatar-box {
       padding-top: 5px;
          
@@ -243,25 +249,15 @@ html, body, #elm-container, #app, #app-body {
         width: 100%;
         border-radius: 4px;
       }
-    }
-  }
-}
-
-@media (max-width: 550px) {
-  #profile-modal-content {
-    div.avatar-box {
-      text-align: center;
       
-      img.avatar {
-        width: 60% !important;
+      @media (max-width: 550px) {
+        text-align: center;
+        
+        img.avatar {
+          width: 60% !important;
+        }
       }
     }
-  }
-}
-
-@media (min-width: 550px) {
-  #profile-modal-content {
-    width: 455px;
   }
 }
 
