@@ -15,6 +15,7 @@ import Components.Timeline.Model exposing (updateCoto)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.CotoModal
+import Components.CotonomaModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -165,6 +166,18 @@ update msg model =
                 
         CotoDeleted _ ->
             ( model, Cmd.none )
+            
+        OpenCotonomaModal ->
+            let
+                cotonomaModal = model.cotonomaModal
+            in
+                ( { model | cotonomaModal = { cotonomaModal | open = True } }, Cmd.none )
+                
+        CotonomaModalMsg subMsg ->
+            let
+                ( cotonomaModal, cmd ) = Components.CotonomaModal.update subMsg model.cotonomaModal
+            in
+                ( { model | cotonomaModal = cotonomaModal }, Cmd.map CotonomaModalMsg cmd )
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

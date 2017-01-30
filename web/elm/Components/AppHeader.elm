@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg(OpenSigninModal, OpenProfileModal))
+import App.Messages exposing (Msg(OpenSigninModal, OpenProfileModal, OpenCotonomaModal))
 
 
 view : Model -> Html Msg
@@ -17,7 +17,7 @@ view model =
             Nothing -> 
                 span [] []
             Just session -> 
-                a [ class "add-cotonoma", title "Add Cotonoma" ] 
+                a [ class "add-cotonoma", title "Add Cotonoma", onClick OpenCotonomaModal ] 
                     [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
           )
         , div [ class "user" ]

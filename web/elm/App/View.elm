@@ -11,6 +11,7 @@ import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
+import Components.CotonomaModal
 
 
 view : Model -> Html Msg
@@ -31,6 +32,8 @@ view model =
               (Components.ProfileModal.view model.profileModal model.session)
           , Html.map CotoModalMsg 
               (Components.CotoModal.view model.cotoModal)
+          , Html.map CotonomaModalMsg 
+              (Components.CotonomaModal.view model.cotonomaModal)
           , a 
               [ class "info-button"
               , title "News and Feedback"

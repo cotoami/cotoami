@@ -8,6 +8,7 @@ import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Messages
 import Components.CotoModal
+import Components.CotonomaModal
 
 
 type Msg
@@ -24,3 +25,5 @@ type Msg
     | CotoModalMsg Components.CotoModal.Msg
     | DeleteCoto Int
     | CotoDeleted (Result Http.Error String)
+    | OpenCotonomaModal
+    | CotonomaModalMsg Components.CotonomaModal.Msg
