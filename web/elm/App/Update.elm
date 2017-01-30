@@ -14,6 +14,7 @@ import Components.ProfileModal
 import Components.Timeline.Model exposing (updateCoto)
 import Components.Timeline.Messages
 import Components.Timeline.Update
+import Components.Timeline.Commands exposing (fetchCotos)
 import Components.CotoModal
 import Components.CotonomaModal
 
@@ -29,6 +30,11 @@ update msg model =
             
         SessionFetched (Err _) ->
             ( model, Cmd.none )
+            
+        HomeClick ->
+            ( { model | cotonoma = Nothing }
+            , Cmd.map TimelineMsg fetchCotos 
+            )
             
         CotonomaFetched (Ok (cotonoma, cotos)) ->
             let

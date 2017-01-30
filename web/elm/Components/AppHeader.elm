@@ -4,7 +4,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg(OpenSigninModal, OpenProfileModal, OpenCotonomaModal))
+import App.Messages exposing 
+    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal))
 
 
 view : Model -> Html Msg
@@ -16,7 +17,8 @@ view model =
                   [ i [ class "material-icons" ] [ text "home" ]
                   ]
                 Just cotonoma ->
-                  [ a [ class "to-home" ] [ i [ class "material-icons" ] [ text "home" ] ]
+                  [ a [ class "to-home", onClick HomeClick ] 
+                      [ i [ class "material-icons" ] [ text "home" ] ]
                   , i [ class "material-icons" ] [ text "navigate_next" ]
                   , span [ class "cotonoma-name" ] [ text cotonoma.name ]
                   ]

@@ -15,6 +15,7 @@ import Components.CotonomaModal
 type Msg
     = NoOp
     | SessionFetched (Result Http.Error Session)
+    | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Timeline.Coto))
     | KeyDown KeyCode
     | KeyUp KeyCode
