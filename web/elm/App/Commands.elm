@@ -2,23 +2,14 @@ module App.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types exposing (Session, Cotonoma)
+import App.Types exposing (decodeSession, decodeCotonoma)
 import App.Messages exposing (..)
-import Components.Timeline.Commands exposing (decodeCoto)
+import Components.Timeline.Model exposing (decodeCoto)
 
 
 fetchSession : Cmd Msg
 fetchSession =
     Http.send SessionFetched (Http.get "/api/session" decodeSession)
-    
-
-decodeSession : Decode.Decoder Session
-decodeSession =
-    Decode.map4 Session
-        (Decode.field "id" Decode.int)
-        (Decode.field "email" Decode.string)
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "display_name" Decode.string)
         
   
 fetchCotonoma : String -> Cmd Msg
@@ -31,13 +22,6 @@ fetchCotonoma key =
             <| Decode.map2 (,)
                 (Decode.field "cotonoma" decodeCotonoma)
                 (Decode.field "cotos" (Decode.list decodeCoto))
-
-
-decodeCotonoma : Decode.Decoder Cotonoma
-decodeCotonoma =
-    Decode.map2 Cotonoma
-        (Decode.field "id" Decode.int)
-        (Decode.field "name" Decode.string)
 
 
 deleteCoto : Int -> Cmd Msg

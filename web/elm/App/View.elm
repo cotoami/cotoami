@@ -22,7 +22,13 @@ view model =
       div [ id "app" ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
-              [ Html.map TimelineMsg (Components.Timeline.View.view model.timeline model.session model.activeCotoId)
+              [ Html.map TimelineMsg 
+                  (Components.Timeline.View.view 
+                      model.timeline 
+                      model.session 
+                      model.cotonoma 
+                      model.activeCotoId
+                  )
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)

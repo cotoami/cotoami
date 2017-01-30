@@ -8,7 +8,7 @@ import Process
 import Time
 import Http
 import App.Types exposing (Cotonoma)
-import Components.Timeline.Model exposing (Coto)
+import Components.Timeline.Model exposing (Coto, decodeCoto)
 import Components.Timeline.Messages exposing (..)
 
 
@@ -32,17 +32,6 @@ postCoto maybeCotonoma coto =
             (Http.jsonBody (encodeCoto maybeCotonoma coto)) 
             decodeCoto
         
-        
-decodeCoto : Decode.Decoder Coto
-decodeCoto =
-    Decode.map6 Coto
-        (Decode.maybe (Decode.field "id" Decode.int))
-        (Decode.maybe (Decode.field "postId" Decode.int))
-        (Decode.field "content" Decode.string)
-        (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.field "cotonoma_key" Decode.string)
-        (Decode.succeed False)
-
 
 encodeCoto : Maybe Cotonoma -> Coto -> Encode.Value
 encodeCoto maybeCotonoma coto =

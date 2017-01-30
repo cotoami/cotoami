@@ -11,19 +11,19 @@ import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
-import App.Types exposing (Session)
+import App.Types exposing (Session, Cotonoma)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Coto, Model)
 import Components.Timeline.Messages exposing (..)
 
 
-view : Model -> Maybe Session -> Maybe Int -> Html Msg
-view model session activeCotoId =
+view : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
+view model maybeSession maybeCotonoma activeCotoId =
     div [ id "timeline-column", class (timelineClass model) ]
-        [ timelineDiv model session activeCotoId
+        [ timelineDiv model maybeSession maybeCotonoma activeCotoId
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
-                [ (case session of
+                [ (case maybeSession of
                       Nothing -> 
                           span [ class "user anonymous" ]
                               [ i [ class "material-icons" ] [ text "perm_identity" ]
@@ -60,8 +60,8 @@ view model session activeCotoId =
         ]
 
 
-timelineDiv : Model -> Maybe Session -> Maybe Int  -> Html Msg
-timelineDiv model session activeCotoId =
+timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int  -> Html Msg
+timelineDiv model maybeSession maybeCotonoma activeCotoId =
     Html.Keyed.node
         "div"
         [ id "timeline" ]
@@ -72,8 +72,9 @@ timelineDiv model session activeCotoId =
                     [ classList 
                         [ ( "coto", True )
                         , ( "active", isActive coto activeCotoId )
-                        , ( "posting", (isJust session) && (isNothing coto.id) )
+                        , ( "posting", (isJust maybeSession) && (isNothing coto.id) )
                         , ( "being-hidden", coto.beingDeleted )
+                        , ( "posted-in-another-cotonoma", maybeCotonoma /= coto.postedIn )
                         ]
                     , (case coto.id of
                         Nothing -> onClick NoOp
@@ -90,6 +91,15 @@ timelineDiv model session activeCotoId =
                                 , onClickWithoutPropagation (CotoOpen coto)
                                 ] 
                                 [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                      )
+                    , (case coto.postedIn of
+                        Nothing -> span [] []
+                        Just postedIn ->
+                            a 
+                                [ class "posted-in"
+                                , onClickWithoutPropagation (CotonomaClick postedIn.key) 
+                                ] 
+                                [ text postedIn.name ]
                       )
                     , renderCoto coto
                     ]

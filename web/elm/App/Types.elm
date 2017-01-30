@@ -1,5 +1,7 @@
 module App.Types exposing (..)
 
+import Json.Decode as Decode
+
 
 type alias Session =
     { id : Int
@@ -7,6 +9,15 @@ type alias Session =
     , avatarUrl : String
     , displayName : String
     }
+
+
+decodeSession : Decode.Decoder Session
+decodeSession =
+    Decode.map4 Session
+        (Decode.field "id" Decode.int)
+        (Decode.field "email" Decode.string)
+        (Decode.field "avatar_url" Decode.string)
+        (Decode.field "display_name" Decode.string)
 
 
 type alias Coto =
@@ -17,5 +28,14 @@ type alias Coto =
 
 type alias Cotonoma =
     { id : Int
+    , key : String
     , name : String
     }
+
+
+decodeCotonoma : Decode.Decoder Cotonoma
+decodeCotonoma =
+    Decode.map3 Cotonoma
+        (Decode.field "id" Decode.int)
+        (Decode.field "key" Decode.string)
+        (Decode.field "name" Decode.string)

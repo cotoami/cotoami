@@ -9,7 +9,8 @@ import Utils exposing (isBlank)
 import Modal
 import App.Types exposing (Cotonoma)
 import Components.Timeline.Model as Timeline
-import Components.Timeline.Commands exposing (decodeCoto, scrollToBottom)
+import Components.Timeline.Model exposing (decodeCoto)
+import Components.Timeline.Commands exposing (scrollToBottom)
 import Components.Timeline.Update
 import Components.Timeline.Messages exposing (Msg(CotoPosted))
 
