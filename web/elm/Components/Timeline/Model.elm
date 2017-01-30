@@ -4,6 +4,7 @@ type alias Coto =
     { id : Maybe Int
     , postId : Maybe Int
     , content : String
+    , asCotonoma : Bool
     , beingDeleted : Bool
     }
 
@@ -13,6 +14,7 @@ defaultCoto =
     { id = Nothing
     , postId = Nothing 
     , content = ""
+    , asCotonoma = False
     , beingDeleted = False
     }
 

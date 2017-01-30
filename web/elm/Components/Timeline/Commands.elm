@@ -2,7 +2,6 @@ module Components.Timeline.Commands exposing (..)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Dom
 import Dom.Scroll
 import Task
 import Process
@@ -12,21 +11,11 @@ import Components.Timeline.Model exposing (Coto)
 import Components.Timeline.Messages exposing (..)
 
 
-scrollToBottom : Cmd Msg
-scrollToBottom =
+scrollToBottom : msg -> Cmd msg
+scrollToBottom msg =
     Process.sleep (1 * Time.millisecond)
-    |> Task.andThen (\x -> (Dom.Scroll.toBottom "timeline"))
-    |> Task.attempt handleScrollResult 
-
-
-handleScrollResult : Result Dom.Error () -> Msg
-handleScrollResult result =
-    case result of
-        Ok _ ->
-            NoOp
-
-        Err _ ->
-            NoOp
+    |> Task.andThen (\_ -> (Dom.Scroll.toBottom "timeline"))
+    |> Task.attempt (\_ -> msg) 
 
 
 fetchCotos : Cmd Msg
@@ -43,10 +32,11 @@ postCoto coto =
         
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map4 Coto
+    Decode.map5 Coto
         (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.maybe (Decode.field "postId" Decode.int))
         (Decode.field "content" Decode.string)
+        (Decode.field "as_cotonoma" Decode.bool)
         (Decode.succeed False)
 
 

@@ -18,7 +18,7 @@ defmodule Cotoami.CotonomaService do
           |> Repo.insert!
           
         cotonoma =
-          Cotonoma.changeset(%Cotonoma{}, %{
+          Cotonoma.changeset_new(%Cotonoma{}, %{
             name: name,
             coto_id: coto.id,
             owner_id: amishi_id

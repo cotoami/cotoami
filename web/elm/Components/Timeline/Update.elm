@@ -14,10 +14,10 @@ update msg model ctrlDown =
             model ! []
             
         CotosFetched (Ok cotos) ->
-            ( { model | cotos = cotos }, scrollToBottom )
+            ( { model | cotos = cotos }, scrollToBottom NoOp )
             
         ImageLoaded ->
-            model ! [ scrollToBottom ]
+            model ! [ scrollToBottom NoOp ]
             
         CotosFetched (Err _) ->
             ( model, Cmd.none )
@@ -74,6 +74,6 @@ post model =
         , postIdCounter = postId
         , newCotoContent = ""
         } ! 
-        [ scrollToBottom
+        [ scrollToBottom NoOp
         , postCoto newCoto
         ]

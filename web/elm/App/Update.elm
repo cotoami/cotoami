@@ -175,9 +175,15 @@ update msg model =
                 
         CotonomaModalMsg subMsg ->
             let
-                ( cotonomaModal, cmd ) = Components.CotonomaModal.update subMsg model.cotonomaModal
+                ( cotonomaModal, timeline, cmd ) = 
+                    Components.CotonomaModal.update 
+                        subMsg
+                        model.timeline
+                        model.cotonomaModal
             in
-                ( { model | cotonomaModal = cotonomaModal }, Cmd.map CotonomaModalMsg cmd )
+                ( { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                , Cmd.map CotonomaModalMsg cmd 
+                )
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

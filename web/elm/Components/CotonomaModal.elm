@@ -2,9 +2,15 @@ module Components.CotonomaModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
+import Json.Encode as Encode
+import Http
 import Utils exposing (isBlank)
 import Modal
+import Components.Timeline.Model as Timeline
+import Components.Timeline.Commands exposing (decodeCoto, scrollToBottom)
+import Components.Timeline.Update
+import Components.Timeline.Messages exposing (Msg(CotoPosted))
 
 
 type alias Model =
@@ -21,18 +27,61 @@ initModel =
     
 
 type Msg
-    = Close
+    = NoOp
+    | Close
     | NameInput String
+    | Post
+    | Posted (Result Http.Error Timeline.Coto)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
+update msg timeline model =
     case msg of
+        NoOp ->
+            ( model, timeline, Cmd.none )
+            
         Close ->
-            ( { model | open = False }, Cmd.none )
+            ( { model | open = False }, timeline, Cmd.none )
             
         NameInput content ->
-            ( { model | name = content }, Cmd.none )
+            ( { model | name = content }, timeline, Cmd.none )
+            
+        Post ->
+            let
+                postId = timeline.postIdCounter + 1
+                defaultCoto = Timeline.defaultCoto
+                newCoto = 
+                    { defaultCoto
+                    | id = Nothing
+                    , postId = Just postId
+                    , content = model.name
+                    , asCotonoma = True
+                    }
+            in
+                ( { model 
+                  | open = False
+                  , name = "" 
+                  }
+                , { timeline 
+                  | cotos = newCoto :: timeline.cotos
+                  , postIdCounter = postId
+                  }
+                , Cmd.batch
+                    [ scrollToBottom NoOp
+                    , postCotonoma postId model.name 
+                    ]
+                )
+                
+        Posted (Ok savedCoto) ->
+            let
+                ( newTimeline, _ ) =
+                    Components.Timeline.Update.update 
+                        (CotoPosted (Ok savedCoto)) timeline False
+            in
+                ( model, newTimeline, Cmd.none )
+          
+        Posted (Err _) ->
+            ( model, timeline, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -67,6 +116,7 @@ modalConfig model =
         [ button
             [ class "button button-primary"
             , disabled (not (validateName model.name))
+            , onClick Post 
             ] 
             [ text "Create" ]
         ]
@@ -80,3 +130,23 @@ nameMaxlength = 30
 validateName : String -> Bool
 validateName string =
     not (isBlank string) && (String.length string) <= nameMaxlength
+    
+
+postCotonoma : Int -> String -> Cmd Msg
+postCotonoma postId name =
+    Http.send 
+        Posted 
+        (Http.post "/api/cotonomas" (Http.jsonBody (encodeCotonoma postId name)) decodeCoto)
+
+    
+encodeCotonoma : Int -> String -> Encode.Value
+encodeCotonoma postId name =
+    Encode.object 
+        [ ("cotonoma", 
+            (Encode.object 
+                [ ("postId", Encode.int postId)
+                , ("name", Encode.string name)
+                ]
+            )
+          )
+        ]
