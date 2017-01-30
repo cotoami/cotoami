@@ -7,6 +7,7 @@ import Json.Encode as Encode
 import Http
 import Utils exposing (isBlank)
 import Modal
+import App.Types exposing (Cotonoma)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Commands exposing (decodeCoto, scrollToBottom)
 import Components.Timeline.Update
@@ -34,8 +35,8 @@ type Msg
     | Posted (Result Http.Error Timeline.Coto)
 
 
-update : Msg -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
-update msg timeline model =
+update : Msg -> Maybe Cotonoma -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
+update msg maybeCotonoma timeline model =
     case msg of
         NoOp ->
             ( model, timeline, Cmd.none )
@@ -68,7 +69,7 @@ update msg timeline model =
                   }
                 , Cmd.batch
                     [ scrollToBottom NoOp
-                    , postCotonoma postId model.name 
+                    , postCotonoma maybeCotonoma postId model.name 
                     ]
                 )
                 
@@ -76,7 +77,7 @@ update msg timeline model =
             let
                 ( newTimeline, _ ) =
                     Components.Timeline.Update.update 
-                        (CotoPosted (Ok savedCoto)) timeline False
+                        (CotoPosted (Ok savedCoto)) timeline maybeCotonoma False
             in
                 ( model, newTimeline, Cmd.none )
           
@@ -132,19 +133,26 @@ validateName string =
     not (isBlank string) && (String.length string) <= nameMaxlength
     
 
-postCotonoma : Int -> String -> Cmd Msg
-postCotonoma postId name =
-    Http.send 
-        Posted 
-        (Http.post "/api/cotonomas" (Http.jsonBody (encodeCotonoma postId name)) decodeCoto)
+postCotonoma : Maybe Cotonoma -> Int -> String -> Cmd Msg
+postCotonoma maybeCotonoma postId name =
+    Http.send Posted 
+        <| Http.post 
+            "/api/cotonomas" 
+            (Http.jsonBody (encodeCotonoma maybeCotonoma postId name)) 
+            decodeCoto
 
     
-encodeCotonoma : Int -> String -> Encode.Value
-encodeCotonoma postId name =
+encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value
+encodeCotonoma maybeCotonoma postId name =
     Encode.object 
         [ ("cotonoma", 
             (Encode.object 
-                [ ("postId", Encode.int postId)
+                [ ("cotonoma_id"
+                  , case maybeCotonoma of
+                        Nothing -> Encode.null 
+                        Just cotonoma -> Encode.int cotonoma.id
+                  )
+                , ("postId", Encode.int postId)
                 , ("name", Encode.string name)
                 ]
             )

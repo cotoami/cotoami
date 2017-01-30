@@ -5,6 +5,7 @@ defmodule Cotoami.CotoService do
   alias Cotoami.Coto
   
   def create!(cotonoma_id, amishi_id, content) do
+    # TODO: check the permission for cotonoma
     Coto.changeset(%Coto{}, %{
       posted_in_id: cotonoma_id,
       amishi_id: amishi_id,

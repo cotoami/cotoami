@@ -7,6 +7,7 @@ import Task
 import Process
 import Time
 import Http
+import App.Types exposing (Cotonoma)
 import Components.Timeline.Model exposing (Coto)
 import Components.Timeline.Messages exposing (..)
 
@@ -23,11 +24,13 @@ fetchCotos =
     Http.send CotosFetched (Http.get "/api/cotos" (Decode.list decodeCoto))
 
 
-postCoto : Coto -> Cmd Msg
-postCoto coto =
-    Http.send 
-        CotoPosted 
-        (Http.post "/api/cotos" (Http.jsonBody (encodeCoto coto)) decodeCoto)
+postCoto : Maybe Cotonoma -> Coto -> Cmd Msg
+postCoto maybeCotonoma coto =
+    Http.send CotoPosted 
+        <| Http.post 
+            "/api/cotos" 
+            (Http.jsonBody (encodeCoto maybeCotonoma coto)) 
+            decodeCoto
         
         
 decodeCoto : Decode.Decoder Coto
@@ -41,13 +44,18 @@ decodeCoto =
         (Decode.succeed False)
 
 
-encodeCoto : Coto -> Encode.Value
-encodeCoto coto =
+encodeCoto : Maybe Cotonoma -> Coto -> Encode.Value
+encodeCoto maybeCotonoma coto =
     Encode.object 
         [ ("coto", 
             (Encode.object 
-                [ ("postId", 
-                    case coto.postId of
+                [ ("cotonoma_id"
+                  , case maybeCotonoma of
+                        Nothing -> Encode.null 
+                        Just cotonoma -> Encode.int cotonoma.id
+                  )
+                , ("postId"
+                  , case coto.postId of
                         Nothing -> Encode.null 
                         Just postId -> Encode.int postId
                   )

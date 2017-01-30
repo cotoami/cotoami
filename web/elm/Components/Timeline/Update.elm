@@ -2,13 +2,14 @@ module Components.Timeline.Update exposing (..)
 
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
+import App.Types exposing (Cotonoma)
 import Components.Timeline.Model exposing (Coto, defaultCoto, Model)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
 
-update : Msg -> Model -> Bool -> ( Model, Cmd Msg )
-update msg model ctrlDown =
+update : Msg -> Model -> Maybe Cotonoma -> Bool -> ( Model, Cmd Msg )
+update msg model maybeCotonoma ctrlDown =
     case msg of
         NoOp ->
             model ! []
@@ -16,11 +17,11 @@ update msg model ctrlDown =
         CotosFetched (Ok cotos) ->
             ( { model | cotos = cotos }, scrollToBottom NoOp )
             
-        ImageLoaded ->
-            model ! [ scrollToBottom NoOp ]
-            
         CotosFetched (Err _) ->
             ( model, Cmd.none )
+  
+        ImageLoaded ->
+            model ! [ scrollToBottom NoOp ]
             
         CotoClick cotoId ->
             ( model, Cmd.none )
@@ -36,12 +37,12 @@ update msg model ctrlDown =
 
         EditorKeyDown key ->
             if key == enter.keyCode && ctrlDown && (not (isBlank model.newCotoContent)) then
-                post model
+                post maybeCotonoma model
             else
                 ( model, Cmd.none )
                 
         Post ->
-            post model
+            post maybeCotonoma model
                 
         CotoPosted (Ok savedCoto) ->
             { model 
@@ -61,8 +62,8 @@ update msg model ctrlDown =
             ( model, Cmd.none )
 
 
-post : Model -> ( Model, Cmd Msg )
-post model =
+post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
+post maybeCotonoma model =
     let
         postId = model.postIdCounter + 1
         newCoto = 
@@ -78,5 +79,5 @@ post model =
         , newCotoContent = ""
         } ! 
         [ scrollToBottom NoOp
-        , postCoto newCoto
+        , postCoto maybeCotonoma newCoto
         ]

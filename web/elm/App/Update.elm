@@ -35,7 +35,8 @@ update msg model =
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
                       (Components.Timeline.Messages.CotosFetched (Ok cotos))
-                      model.timeline 
+                      model.timeline
+                      model.cotonoma
                       model.ctrlDown
             in
                 ( { model 
@@ -137,7 +138,11 @@ update msg model =
         TimelineMsg subMsg ->
             let
                 ( timeline, cmd ) = 
-                    Components.Timeline.Update.update subMsg model.timeline model.ctrlDown
+                    Components.Timeline.Update.update 
+                        subMsg 
+                        model.timeline 
+                        model.cotonoma
+                        model.ctrlDown
                 cotoModal = model.cotoModal
             in
                 case subMsg of
@@ -199,6 +204,7 @@ update msg model =
                 ( cotonomaModal, timeline, cmd ) = 
                     Components.CotonomaModal.update 
                         subMsg
+                        model.cotonoma
                         model.timeline
                         model.cotonomaModal
             in
