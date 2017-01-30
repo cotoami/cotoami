@@ -2,10 +2,11 @@ module App.Messages exposing (Msg(..))
 
 import Http
 import Keyboard exposing (..)
-import App.Types exposing (Session)
+import App.Types exposing (Session, Cotonoma)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
+import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal
@@ -14,6 +15,7 @@ import Components.CotonomaModal
 type Msg
     = NoOp
     | SessionFetched (Result Http.Error Session)
+    | CotonomaFetched (Result Http.Error (Cotonoma, List Timeline.Coto))
     | KeyDown KeyCode
     | KeyUp KeyCode
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg

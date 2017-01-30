@@ -7,7 +7,7 @@ import Keys exposing (ctrl, meta, enter)
 import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Commands exposing (deleteCoto)
+import App.Commands exposing (fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -28,6 +28,24 @@ update msg model =
             ( { model | session = Just session }, Cmd.none )
             
         SessionFetched (Err _) ->
+            ( model, Cmd.none )
+            
+        CotonomaFetched (Ok (cotonoma, cotos)) ->
+            let
+                ( timeline, cmd ) = 
+                    Components.Timeline.Update.update 
+                      (Components.Timeline.Messages.CotosFetched (Ok cotos))
+                      model.timeline 
+                      model.ctrlDown
+            in
+                ( { model 
+                  | cotonoma = Just cotonoma
+                  , timeline = timeline
+                  }
+                , Cmd.map TimelineMsg cmd 
+                )
+            
+        CotonomaFetched (Err _) ->
             ( model, Cmd.none )
         
         KeyDown key ->
@@ -146,6 +164,9 @@ update msg model =
                           }
                         , Cmd.map TimelineMsg cmd 
                         )
+                        
+                    Components.Timeline.Messages.CotonomaClick key ->
+                        ( { model | timeline = timeline }, fetchCotonoma key )
 
                     _ -> 
                         ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )

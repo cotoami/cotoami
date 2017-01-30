@@ -2,8 +2,9 @@ module App.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types exposing (Session)
+import App.Types exposing (Session, Cotonoma)
 import App.Messages exposing (..)
+import Components.Timeline.Commands exposing (decodeCoto)
 
 
 fetchSession : Cmd Msg
@@ -18,6 +19,25 @@ decodeSession =
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
+        
+  
+fetchCotonoma : String -> Cmd Msg
+fetchCotonoma key =
+    let
+        url = "/api/cotonomas/" ++ key ++ "/cotos"
+    in
+        Http.send CotonomaFetched
+            <| Http.get url
+            <| Decode.map2 (,)
+                (Decode.field "cotonoma" decodeCotonoma)
+                (Decode.field "cotos" (Decode.list decodeCoto))
+
+
+decodeCotonoma : Decode.Decoder Cotonoma
+decodeCotonoma =
+    Decode.map2 Cotonoma
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
 
 
 deleteCoto : Int -> Cmd Msg
