@@ -55,7 +55,7 @@ modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
     , title = "Coto"
-    , content = div [ id "coto-modal-content" ]
+    , content = div []
         [ div [ class "coto" ]
             [ (case model.coto of
                 Nothing -> div [] []
