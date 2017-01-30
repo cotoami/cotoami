@@ -10,9 +10,17 @@ import App.Messages exposing (Msg(OpenSigninModal, OpenProfileModal, OpenCotonom
 view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
-        [ div [ class "title" ]
-            [ i [ class "material-icons" ] [ text "home" ]
-            ]
+        [ div [ class "location" ]
+            (case model.cotonoma of
+                Nothing -> 
+                  [ i [ class "material-icons" ] [ text "home" ]
+                  ]
+                Just cotonoma ->
+                  [ a [ class "to-home" ] [ i [ class "material-icons" ] [ text "home" ] ]
+                  , i [ class "material-icons" ] [ text "navigate_next" ]
+                  , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+                  ]
+            )
         , (case model.session of
             Nothing -> 
                 span [] []

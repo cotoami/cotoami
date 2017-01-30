@@ -38,11 +38,32 @@ html, body, #elm-container, #app, #app-body {
   border-bottom: 1px solid #eee;
   background-color: rgba(255,255,255,0.9);
   
-  div.title {
-    width: 300px;
+  div.location {
+    max-width: 70vw;
+    overflow-x: hidden;
     margin: 0 auto;
     text-align: center;
     line-height: 35px;
+    white-space: nowrap;
+    
+    a.to-home {
+      color: #1eaedb;
+      cursor: pointer;
+      
+      i {
+        opacity: 1;
+      }
+    }
+    
+    span.cotonoma-name {
+      display: inline-block;
+      line-height: 30px;
+      font-size: 18px;
+      white-space: nowrap;
+      font-weight: bold;
+      opacity: 0.6;
+      vertical-align: 9px;
+    }
   }
   
   a.add-cotonoma {

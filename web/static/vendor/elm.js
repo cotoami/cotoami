@@ -13600,6 +13600,10 @@ var _user$project$App_Types$Coto = F2(
 	function (a, b) {
 		return {id: a, content: b};
 	});
+var _user$project$App_Types$Cotonoma = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
 
 var _user$project$Components_ConfirmModal_Messages$Confirm = {ctor: 'Confirm'};
 var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
@@ -18831,11 +18835,28 @@ var _user$project$Components_ConfirmModal_Model$Model = F3(
 		return {open: a, message: b, msgOnConfirm: c};
 	});
 
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal_Model$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing, cotonomaModal: _user$project$Components_CotonomaModal$initModel};
-var _user$project$App_Model$Model = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {ctrlDown: a, session: b, confirmModal: c, signinModal: d, profileModal: e, cotoModal: f, timeline: g, activeCotoId: h, cotonomaModal: i};
-	});
+var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, cotonoma: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal_Model$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing, cotonomaModal: _user$project$Components_CotonomaModal$initModel};
+var _user$project$App_Model$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, timeline: h, activeCotoId: i, cotonomaModal: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 
 var _user$project$App_Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
@@ -19197,30 +19218,93 @@ var _user$project$Components_AppHeader$view = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('title'),
+					_0: _elm_lang$html$Html_Attributes$class('location'),
 					_1: {ctor: '[]'}
 				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$i,
-						{
+				function () {
+					var _p0 = model.cotonoma;
+					if (_p0.ctor === 'Nothing') {
+						return {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+							_0: A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('home'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
-						},
-						{
+						};
+					} else {
+						return {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('home'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}),
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('to-home'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$i,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('home'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$i,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('navigate_next'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(_p0._0.name),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						};
+					}
+				}()),
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p0 = model.session;
-					if (_p0.ctor === 'Nothing') {
+					var _p1 = model.session;
+					if (_p1.ctor === 'Nothing') {
 						return A2(
 							_elm_lang$html$Html$span,
 							{ctor: '[]'},
@@ -19269,8 +19353,8 @@ var _user$project$Components_AppHeader$view = function (model) {
 							_1: {ctor: '[]'}
 						},
 						function () {
-							var _p1 = model.session;
-							if (_p1.ctor === 'Nothing') {
+							var _p2 = model.session;
+							if (_p2.ctor === 'Nothing') {
 								return {
 									ctor: '::',
 									_0: A2(
@@ -19325,7 +19409,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 													_0: _elm_lang$html$Html_Attributes$class('avatar'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$src(_p1._0.avatarUrl),
+														_0: _elm_lang$html$Html_Attributes$src(_p2._0.avatarUrl),
 														_1: {ctor: '[]'}
 													}
 												},

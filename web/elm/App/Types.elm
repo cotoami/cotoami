@@ -13,3 +13,9 @@ type alias Coto =
     { id : Int
     , content : String
     }
+
+
+type alias Cotonoma =
+    { id : Int
+    , name : String
+    }

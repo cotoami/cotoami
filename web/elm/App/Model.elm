@@ -12,6 +12,7 @@ import Components.CotonomaModal
 type alias Model =
     { ctrlDown : Bool
     , session : Maybe App.Types.Session
+    , cotonoma : Maybe App.Types.Cotonoma
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -26,6 +27,7 @@ initModel : Model
 initModel =
     { ctrlDown = False
     , session = Nothing
+    , cotonoma = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
