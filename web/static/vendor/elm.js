@@ -18978,82 +18978,122 @@ var _user$project$Components_AppHeader$view = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('user'),
-						_1: {ctor: '[]'}
-					},
-					function () {
-						var _p0 = model.session;
-						if (_p0.ctor === 'Nothing') {
-							return {
+				_0: function () {
+					var _p0 = model.session;
+					if (_p0.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					} else {
+						return A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('add-cotonoma'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$title('Add Cotonoma'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$a,
+									_elm_lang$html$Html$i,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$title('Sign in'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('perm_identity'),
-												_1: {ctor: '[]'}
-											}),
+										_0: _elm_lang$html$Html$text('add_circle_outline'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
-							};
-						} else {
-							return {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$title('Profile'),
-										_1: {
+							});
+					}
+				}(),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('user'),
+							_1: {ctor: '[]'}
+						},
+						function () {
+							var _p1 = model.session;
+							if (_p1.ctor === 'Nothing') {
+								return {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenProfileModal),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$img,
-											{
+											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
+											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('avatar'),
-												_1: {
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$i,
+												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$src(_p0._0.avatarUrl),
+													_0: _elm_lang$html$Html_Attributes$class('material-icons'),
 													_1: {ctor: '[]'}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							};
-						}
-					}()),
-				_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('perm_identity'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								};
+							} else {
+								return {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$title('Profile'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenProfileModal),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$img,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('avatar'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$src(_p1._0.avatarUrl),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								};
+							}
+						}()),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

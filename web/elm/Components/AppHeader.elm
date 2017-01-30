@@ -13,6 +13,13 @@ view model =
         [ div [ class "title" ]
             [ i [ class "material-icons" ] [ text "home" ]
             ]
+        , (case model.session of
+            Nothing -> 
+                span [] []
+            Just session -> 
+                a [ class "add-cotonoma", title "Add Cotonoma" ] 
+                    [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
+          )
         , div [ class "user" ]
             (case model.session of
                 Nothing -> 
