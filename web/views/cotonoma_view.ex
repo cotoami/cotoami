@@ -12,6 +12,7 @@ defmodule Cotoami.CotonomaView do
   def render("cotonoma.json", %{cotonoma: cotonoma}) do
     %{
       id: cotonoma.id,
+      key: cotonoma.key,
       name: cotonoma.name,
       inserted_at: cotonoma.inserted_at |> Ecto.DateTime.to_string(),
       updated_at: cotonoma.updated_at |> Ecto.DateTime.to_string()

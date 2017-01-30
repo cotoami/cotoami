@@ -44,7 +44,7 @@ defmodule Cotoami.CotonomaService do
         cotos =
           Coto 
           |> Coto.in_cotonoma(cotonoma.id)
-          |> preload(:cotonoma)
+          |> preload([:posted_in, :cotonoma])
           |> Repo.all
         {cotonoma, cotos}
     end

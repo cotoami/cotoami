@@ -18,7 +18,7 @@ defmodule Cotoami.CotoService do
   def get_cotos_by_amishi(amishi_id) do
     Coto 
     |> Coto.for_amishi(amishi_id)
-    |> preload(:cotonoma)
+    |> preload([:posted_in, :cotonoma])
     |> Repo.all
   end
 end
