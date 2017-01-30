@@ -11,7 +11,7 @@ defmodule Cotoami.Cotonoma do
     field :key, :string
     field :name, :string
     belongs_to :coto, Cotoami.Coto
-    belongs_to :owner, Cotoami.Owner
+    belongs_to :owner, Cotoami.Amishi
     has_many :cotos, Cotoami.Coto
 
     timestamps()
@@ -27,5 +27,11 @@ defmodule Cotoami.Cotonoma do
   defp generate_key(changeset) do
     key = :crypto.strong_rand_bytes(@key_length) |> Base.hex_encode32(case: :lower)
     changeset |> put_change(:key, key)
+  end
+  
+  def for_amishi(query, amishi_id) do
+    from c in query, 
+      where: c.owner_id == ^amishi_id,
+      order_by: [desc: c.updated_at]
   end
 end

@@ -29,4 +29,22 @@ defmodule Cotoami.CotonomaService do
       end)
     {coto, cotonoma}
   end
+  
+  def get_by_amishi(key, amishi_id) do
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> Repo.get_by(key: key)
+  end
+  
+  def get_cotos(key, amishi_id) do
+    case get_by_amishi(key, amishi_id) do
+      nil -> nil
+      cotonoma ->
+        cotos =
+          Coto 
+          |> Coto.in_cotonoma(cotonoma.id)
+          |> Repo.all
+        {cotonoma, cotos}
+    end
+  end
 end

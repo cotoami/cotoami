@@ -18,4 +18,13 @@ defmodule Cotoami.CotonomaController do
     {coto, _cotonoma} = CotonomaService.create!(cotonoma_id, amishi.id, name)
     render(conn, CotoView, "created.json", coto: coto, postId: cotonoma_params["postId"])
   end
+  
+  def cotos(conn, %{"key" => key}, amishi) do
+    case CotonomaService.get_cotos(key, amishi.id) do
+      nil ->
+        send_resp(conn, :not_found, "")
+      {cotonoma, cotos} ->
+        render(conn, "cotos.json", %{cotonoma: cotonoma, cotos: cotos})
+    end
+  end
 end
