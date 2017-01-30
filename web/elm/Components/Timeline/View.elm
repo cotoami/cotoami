@@ -87,7 +87,7 @@ timelineDiv model session activeCotoId =
                             a 
                                 [ class "open-coto"
                                 , title "Open coto view"
-                                , onOpenCotoClick (CotoOpen coto)
+                                , onClickWithoutPropagation (CotoOpen coto)
                                 ] 
                                 [ i [ class "material-icons" ] [ text "open_in_new" ] ]
                       )
@@ -120,7 +120,7 @@ renderCoto : Coto -> Html Msg
 renderCoto coto =
     if coto.asCotonoma then
         div [ class "coto-as-cotonoma" ]
-            [ a []
+            [ a [ onClickWithoutPropagation (CotonomaClick coto.cotonomaKey) ]
                 [ i [ class "material-icons" ] [ text "exit_to_app" ]
                 , span [ class "cotonoma-name" ] [ text coto.content ]
                 ]
@@ -169,8 +169,8 @@ onLoad message =
     on "load" (Decode.succeed message)
   
 
-onOpenCotoClick : msg -> Attribute msg
-onOpenCotoClick message =
+onClickWithoutPropagation : msg -> Attribute msg
+onClickWithoutPropagation message =
     let
         defaultOptions = Html.Events.defaultOptions
     in

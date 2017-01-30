@@ -56,6 +56,9 @@ update msg model ctrlDown =
             
         CotoOpen coto ->
             ( model, Cmd.none )
+            
+        CotonomaClick key ->
+            ( model, Cmd.none )
 
 
 post : Model -> ( Model, Cmd Msg )

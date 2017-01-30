@@ -17,3 +17,4 @@ type Msg
     | Post
     | CotoPosted (Result Http.Error Coto)
     | CotoOpen Coto
+    | CotonomaClick String
