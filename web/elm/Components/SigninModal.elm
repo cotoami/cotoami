@@ -91,7 +91,7 @@ signinModalConfig model showAnonymousOption =
     else
         { closeMessage = Close
         , title = "Sign in with your email"
-        , content = div [ id "signin-modal-content" ]
+        , content = div []
             [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , Html.form [ name "signin" ]
                 [ div []

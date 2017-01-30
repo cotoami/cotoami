@@ -13913,11 +13913,7 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 			title: 'Sign in with your email',
 			content: A2(
 				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('signin-modal-content'),
-					_1: {ctor: '[]'}
-				},
+				{ctor: '[]'},
 				{
 					ctor: '::',
 					_0: A2(
