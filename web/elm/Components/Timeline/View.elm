@@ -91,7 +91,7 @@ timelineDiv model session activeCotoId =
                                 ] 
                                 [ i [ class "material-icons" ] [ text "open_in_new" ] ]
                       )
-                    , markdown coto.content 
+                    , renderCoto coto
                     ]
                 )
             ) 
@@ -115,6 +115,19 @@ isActive coto activeCotoId =
         Nothing -> False
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
     
+    
+renderCoto : Coto -> Html Msg
+renderCoto coto =
+    if coto.asCotonoma then
+        div [ class "coto-as-cotonoma" ]
+            [ a []
+                [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                , span [ class "cotonoma-name" ] [ text coto.content ]
+                ]
+            ]
+    else 
+        markdown coto.content 
+        
         
 markdown : String -> Html Msg
 markdown content =
