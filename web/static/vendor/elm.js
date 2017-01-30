@@ -18269,6 +18269,12 @@ var _user$project$Components_CotoModal$view = function (model) {
 			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
+var _user$project$Components_CotonomaModal$nameMaxlength = 30;
+var _user$project$Components_CotonomaModal$validateName = function (string) {
+	return (!_user$project$Utils$isBlank(string)) && (_elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$String$length(string),
+		_user$project$Components_CotonomaModal$nameMaxlength) < 1);
+};
 var _user$project$Components_CotonomaModal$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -18336,11 +18342,15 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 											_0: _elm_lang$html$Html_Attributes$name('name'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.name),
+												_0: _elm_lang$html$Html_Attributes$maxlength(_user$project$Components_CotonomaModal$nameMaxlength),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
-													_1: {ctor: '[]'}
+													_0: _elm_lang$html$Html_Attributes$value(model.name),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
+														_1: {ctor: '[]'}
+													}
 												}
 											}
 										}
@@ -18355,11 +18365,16 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 		buttons: {
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$a,
+				_elm_lang$html$Html$button,
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$disabled(
+							!_user$project$Components_CotonomaModal$validateName(model.name)),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',

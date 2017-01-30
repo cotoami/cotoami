@@ -3,6 +3,7 @@ module Components.CotonomaModal exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Utils exposing (isBlank)
 import Modal
 
 
@@ -56,15 +57,26 @@ modalConfig model =
                 [ type_ "text"
                 , class "u-full-width"
                 , name "name"
+                , maxlength nameMaxlength
                 , value model.name
                 , onInput NameInput
                 ] []
             ]
         ]
     , buttons = 
-        [ a 
+        [ button
             [ class "button button-primary"
+            , disabled (not (validateName model.name))
             ] 
             [ text "Create" ]
         ]
     }
+    
+
+nameMaxlength : Int
+nameMaxlength = 30
+
+
+validateName : String -> Bool
+validateName string =
+    not (isBlank string) && (String.length string) <= nameMaxlength
