@@ -46,7 +46,7 @@ modalConfig : Model -> Session -> Modal.Config Msg
 modalConfig model session =
     { closeMessage = Close
     , title = "Amishi Profile"
-    , content = div [ id "profile-modal-content" ]
+    , content = div []
         [ div [ class "profile container" ]
             [ div [ class "row" ]
                 [ div [ class "avatar-box three columns" ]
