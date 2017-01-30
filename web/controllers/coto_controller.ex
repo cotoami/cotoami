@@ -5,6 +5,8 @@ defmodule Cotoami.CotoController do
   alias Cotoami.Coto
   alias Cotoami.RedisService
   alias Cotoami.CotoService
+  
+  plug :scrub_params, "coto" when action in [:create]
     
   def index(conn, _params) do
     case conn.assigns do

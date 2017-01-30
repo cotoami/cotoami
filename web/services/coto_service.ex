@@ -7,7 +7,8 @@ defmodule Cotoami.CotoService do
     Coto.changeset(%Coto{}, %{
       posted_in_id: cotonoma_id,
       amishi_id: amishi_id,
-      content: content
+      content: content,
+      as_cotonoma: false
     }) 
     |> Repo.insert!
   end

@@ -29,6 +29,7 @@ defmodule Cotoami.Router do
     
     get "/session", SessionController, :index
     resources "/cotos", CotoController, only: [:index, :create, :delete]
+    resources "/cotonomas", CotonomaController, only: [:create]
     get "/signin/request/:email/:save_anonymous", SigninController, :request
   end
 end
