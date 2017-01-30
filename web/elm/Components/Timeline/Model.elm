@@ -5,6 +5,7 @@ type alias Coto =
     , postId : Maybe Int
     , content : String
     , asCotonoma : Bool
+    , cotonomaKey : String
     , beingDeleted : Bool
     }
 
@@ -15,6 +16,7 @@ defaultCoto =
     , postId = Nothing 
     , content = ""
     , asCotonoma = False
+    , cotonomaKey = ""
     , beingDeleted = False
     }
 

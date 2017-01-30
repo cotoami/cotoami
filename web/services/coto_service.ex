@@ -1,5 +1,6 @@
 defmodule Cotoami.CotoService do
   require Logger
+  import Ecto.Query, only: [preload: 2]
   alias Cotoami.Repo
   alias Cotoami.Coto
   
@@ -11,5 +12,12 @@ defmodule Cotoami.CotoService do
       as_cotonoma: false
     }) 
     |> Repo.insert!
+  end
+  
+  def get_cotos_by_amishi(amishi_id) do
+    Coto 
+    |> Coto.for_amishi(amishi_id)
+    |> preload(:cotonoma)
+    |> Repo.all
   end
 end

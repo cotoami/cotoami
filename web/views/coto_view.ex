@@ -15,6 +15,7 @@ defmodule Cotoami.CotoView do
       id: coto.id,
       content: coto.content,
       as_cotonoma: coto.as_cotonoma,
+      cotonoma_key: (if coto.cotonoma, do: coto.cotonoma.key, else: ""),
       inserted_at: coto.inserted_at |> Ecto.DateTime.to_string(),
       updated_at: coto.updated_at |> Ecto.DateTime.to_string()
     }

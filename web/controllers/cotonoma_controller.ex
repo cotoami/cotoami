@@ -15,8 +15,9 @@ defmodule Cotoami.CotonomaController do
   def create(conn, %{"cotonoma" => cotonoma_params}, amishi) do
     cotonoma_id = cotonoma_params["cotonoma_id"]
     name = cotonoma_params["name"]
+    postId = cotonoma_params["postId"]
     {coto, _cotonoma} = CotonomaService.create!(cotonoma_id, amishi.id, name)
-    render(conn, CotoView, "created.json", coto: coto, postId: cotonoma_params["postId"])
+    render(conn, CotoView, "created.json", coto: coto, postId: postId)
   end
   
   def cotos(conn, %{"key" => key}, amishi) do

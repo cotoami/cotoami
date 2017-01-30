@@ -32,11 +32,12 @@ postCoto coto =
         
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map5 Coto
+    Decode.map6 Coto
         (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.maybe (Decode.field "postId" Decode.int))
         (Decode.field "content" Decode.string)
         (Decode.field "as_cotonoma" Decode.bool)
+        (Decode.field "cotonoma_key" Decode.string)
         (Decode.succeed False)
 
 

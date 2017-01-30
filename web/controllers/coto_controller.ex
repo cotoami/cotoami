@@ -11,7 +11,7 @@ defmodule Cotoami.CotoController do
   def index(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
-        cotos = Coto |> Coto.for_amishi(amishi.id) |> Repo.all
+        cotos = CotoService.get_cotos_by_amishi(amishi.id)
         render(conn, "index.json", %{rows: cotos})
       _ ->
         json conn, RedisService.get_cotos(conn.assigns.anonymous_id)
@@ -21,8 +21,10 @@ defmodule Cotoami.CotoController do
   def create(conn, %{"coto" => coto_params}) do
     case conn.assigns do
       %{amishi: amishi} ->
-        coto = CotoService.create!(nil, amishi.id, coto_params["content"])
-        render(conn, "created.json", coto: coto, postId: coto_params["postId"])
+        content = coto_params["content"]
+        postId = coto_params["postId"]
+        coto = CotoService.create!(nil, amishi.id, content)
+        render(conn, "created.json", coto: coto, postId: postId)
       _ ->
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
