@@ -15,11 +15,16 @@ defmodule Cotoami.Router do
     plug :fetch_session
     plug Cotoami.Auth
   end
+  
+  @clientside_paths [
+    "/", 
+    "/cotonomas/:key"
+  ]
 
   scope "/", Cotoami do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
+    Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token/:anonymous_id", SigninController, :signin
     get "/signout", SessionController, :signout
   end
@@ -29,8 +34,8 @@ defmodule Cotoami.Router do
     
     get "/session", SessionController, :index
     resources "/cotos", CotoController, only: [:index, :create, :delete]
-    get "/cotos/:key", CotonomaController, :cotos
     resources "/cotonomas", CotonomaController, only: [:create]
+    get "/cotonomas/:key/cotos", CotonomaController, :cotos
     get "/signin/request/:email/:save_anonymous", SigninController, :request
   end
 end
