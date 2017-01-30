@@ -279,6 +279,8 @@ html, body, #elm-container, #app, #app-body {
 
 #cotonoma-modal {
   div.modal-content {
+    width: 60%;
+    
     @media (min-width: 550px) {
       width: 455px;
     }
