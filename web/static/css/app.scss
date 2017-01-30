@@ -276,3 +276,11 @@ html, body, #elm-container, #app, #app-body {
     margin-bottom: 8px;
   }
 }
+
+#cotonoma-modal {
+  div.modal-content {
+    @media (min-width: 550px) {
+      width: 455px;
+    }
+  }
+}
