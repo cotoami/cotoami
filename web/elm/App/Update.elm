@@ -115,27 +115,27 @@ update msg model =
                               , msgOnConfirm = 
                                   (case cotoModal.coto of
                                       Nothing -> App.Messages.NoOp
-                                      Just coto -> CotoModalMsg (Components.CotoModal.Delete coto.id)
+                                      Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
                                   )
                               }
                           }
                         , Cmd.map CotoModalMsg cmd
                         )
                         
-                    Components.CotoModal.Delete cotoId  -> 
+                    Components.CotoModal.Delete coto  -> 
                         { model 
                         | cotoModal = cotoModal
                         , timeline =
                             { timeline
                             | cotos = cotos |> 
-                                updateCoto (\c -> { c | beingDeleted = True }) cotoId
+                                updateCoto (\c -> { c | beingDeleted = True }) coto.id
                             }
                         } !
                         [ Cmd.map CotoModalMsg cmd
-                        , deleteCoto cotoId
+                        , deleteCoto coto.id
                         , Process.sleep (1 * Time.second)
                             |> Task.andThen (\_ -> Task.succeed ())
-                            |> Task.perform (\_ -> DeleteCoto cotoId)
+                            |> Task.perform (\_ -> DeleteCoto coto.id)
                         ]
                         
                     _ ->
