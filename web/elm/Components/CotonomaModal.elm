@@ -57,6 +57,7 @@ update msg maybeCotonoma timeline model =
                     | id = Nothing
                     , postId = Just postId
                     , content = model.name
+                    , postedIn = maybeCotonoma
                     , asCotonoma = True
                     }
             in

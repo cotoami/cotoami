@@ -18781,6 +18781,7 @@ var _user$project$Components_CotonomaModal$update = F4(
 						id: _elm_lang$core$Maybe$Nothing,
 						postId: _elm_lang$core$Maybe$Just(postId),
 						content: model.name,
+						postedIn: maybeCotonoma,
 						asCotonoma: true
 					});
 				return {
