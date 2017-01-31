@@ -60,7 +60,7 @@ view model maybeSession maybeCotonoma activeCotoId =
         ]
 
 
-timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int  -> Html Msg
+timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
 timelineDiv model maybeSession maybeCotonoma activeCotoId =
     Html.Keyed.node
         "div"
@@ -68,41 +68,7 @@ timelineDiv model maybeSession maybeCotonoma activeCotoId =
         (List.map 
             (\coto -> 
                 ( getKey coto
-                , div
-                    [ classList 
-                        [ ( "coto", True )
-                        , ( "active", isActive coto activeCotoId )
-                        , ( "posting", (isJust maybeSession) && (isNothing coto.id) )
-                        , ( "being-hidden", coto.beingDeleted )
-                        , ( "posted-in-another-cotonoma", maybeCotonoma /= coto.postedIn )
-                        ]
-                    , (case coto.id of
-                        Nothing -> onClick NoOp
-                        Just cotoId -> onClick (CotoClick cotoId)
-                      )
-                    ] 
-                    [ div [ class "border" ] []
-                    ,  (case coto.id of
-                        Nothing -> span [] []
-                        Just cotoId ->
-                            a 
-                                [ class "open-coto"
-                                , title "Open coto view"
-                                , onClickWithoutPropagation (CotoOpen coto)
-                                ] 
-                                [ i [ class "material-icons" ] [ text "open_in_new" ] ]
-                      )
-                    , (case coto.postedIn of
-                        Nothing -> span [] []
-                        Just postedIn ->
-                            a 
-                                [ class "posted-in"
-                                , onClickWithoutPropagation (CotonomaClick postedIn.key) 
-                                ] 
-                                [ text postedIn.name ]
-                      )
-                    , renderCoto coto
-                    ]
+                , cotoDiv maybeSession maybeCotonoma activeCotoId coto
                 )
             ) 
             (List.reverse model.cotos)
@@ -117,7 +83,62 @@ getKey coto =
             case coto.postId of
                 Just postId -> toString postId
                 Nothing -> ""
+    
+    
+cotoDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Coto -> Html Msg
+cotoDiv maybeSession maybeCotonoma activeCotoId coto =
+    let
+        postedInAnother = not (isCotoFrom maybeCotonoma coto)
+    in
+        div
+            [ classList 
+                [ ( "coto", True )
+                , ( "active", isActive coto activeCotoId )
+                , ( "posting", (isJust maybeSession) && (isNothing coto.id) )
+                , ( "being-hidden", coto.beingDeleted )
+                , ( "posted-in-another-cotonoma", postedInAnother )
+                ]
+            , (case coto.id of
+                Nothing -> onClick NoOp
+                Just cotoId -> onClick (CotoClick cotoId)
+              )
+            ] 
+            [ div [ class "border" ] []
+            ,  (case coto.id of
+                Nothing -> span [] []
+                Just cotoId ->
+                    a 
+                        [ class "open-coto"
+                        , title "Open coto view"
+                        , onClickWithoutPropagation (CotoOpen coto)
+                        ] 
+                        [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+              )
+            , (case coto.postedIn of
+                Nothing -> span [] []
+                Just postedIn ->
+                    if postedInAnother then
+                        a 
+                            [ class "posted-in"
+                            , onClickWithoutPropagation (CotonomaClick postedIn.key) 
+                            ] 
+                            [ text postedIn.name ]
+                    else
+                        span [] []
+              )
+            , cotoContent coto
+            ]
         
+
+isCotoFrom : Maybe Cotonoma -> Coto -> Bool
+isCotoFrom maybeCotonoma coto =
+    case maybeCotonoma of
+        Nothing -> isNothing coto.postedIn
+        Just cotonoma -> 
+            case coto.postedIn of
+                Nothing -> False
+                Just postedIn -> postedIn.id == cotonoma.id
+
 
 isActive : Coto -> Maybe Int -> Bool
 isActive coto activeCotoId =
@@ -126,8 +147,8 @@ isActive coto activeCotoId =
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
     
     
-renderCoto : Coto -> Html Msg
-renderCoto coto =
+cotoContent : Coto -> Html Msg
+cotoContent coto =
     if coto.asCotonoma then
         div [ class "coto-as-cotonoma" ]
             [ a [ onClickWithoutPropagation (CotonomaClick coto.cotonomaKey) ]

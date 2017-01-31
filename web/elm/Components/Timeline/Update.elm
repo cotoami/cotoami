@@ -46,10 +46,7 @@ update msg model maybeCotonoma ctrlDown =
                 
         CotoPosted (Ok savedCoto) ->
             { model 
-            | cotos = 
-                List.map 
-                    (\c -> if c.postId == savedCoto.postId then savedCoto else c) 
-                    model.cotos 
+            | cotos = List.map (\coto -> setCotoSaved savedCoto coto) model.cotos 
             } ! []
           
         CotoPosted (Err _) ->
@@ -60,7 +57,7 @@ update msg model maybeCotonoma ctrlDown =
             
         CotonomaClick key ->
             ( model, Cmd.none )
-
+    
 
 post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post maybeCotonoma model =
@@ -71,6 +68,7 @@ post maybeCotonoma model =
             | id = Nothing
             , postId = Just postId
             , content = model.newCotoContent
+            , postedIn = maybeCotonoma
             }
     in
         { model 
@@ -81,3 +79,14 @@ post maybeCotonoma model =
         [ scrollToBottom NoOp
         , postCoto maybeCotonoma newCoto
         ]
+
+
+setCotoSaved : Coto -> Coto -> Coto
+setCotoSaved savedCoto coto =
+    if coto.postId == savedCoto.postId then
+        { coto
+        | id = savedCoto.id
+        , cotonomaKey = savedCoto.cotonomaKey
+        }
+    else 
+        coto
