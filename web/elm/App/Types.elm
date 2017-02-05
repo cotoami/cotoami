@@ -23,6 +23,9 @@ decodeSession =
 type alias Coto =
     { id : Int
     , content : String
+    , postedIn : Maybe Cotonoma
+    , asCotonoma : Bool
+    , cotonomaKey : String
     }
 
 

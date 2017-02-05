@@ -1,7 +1,7 @@
 module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
-import App.Types exposing (Cotonoma, decodeCotonoma)
+import App.Types exposing (Coto, Cotonoma, decodeCotonoma)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
@@ -26,6 +26,22 @@ defaultPost =
     , cotonomaKey = ""
     , beingDeleted = False
     }
+
+
+toCoto : Post -> Maybe Coto
+toCoto post =
+    case post.cotoId of
+        Nothing -> 
+            Nothing
+        Just cotoId -> 
+            Just 
+                (Coto 
+                    cotoId 
+                    post.content 
+                    post.postedIn 
+                    post.asCotonoma 
+                    post.cotonomaKey
+                )
 
 
 decodePost : Decode.Decoder Post

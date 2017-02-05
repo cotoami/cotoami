@@ -9644,9 +9644,9 @@ var _user$project$App_Types$decodeSession = A5(
 	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
-var _user$project$App_Types$Coto = F2(
-	function (a, b) {
-		return {id: a, content: b};
+var _user$project$App_Types$Coto = F5(
+	function (a, b, c, d, e) {
+		return {id: a, content: b, postedIn: c, asCotonoma: d, cotonomaKey: e};
 	});
 var _user$project$App_Types$Cotonoma = F3(
 	function (a, b, c) {
@@ -10356,6 +10356,15 @@ var _user$project$Components_Timeline_Model$initModel = {
 	newContent: '',
 	postIdCounter: 0,
 	posts: {ctor: '[]'}
+};
+var _user$project$Components_Timeline_Model$toCoto = function (post) {
+	var _p0 = post.cotoId;
+	if (_p0.ctor === 'Nothing') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(
+			A5(_user$project$App_Types$Coto, _p0._0, post.content, post.postedIn, post.asCotonoma, post.cotonomaKey));
+	}
 };
 var _user$project$Components_Timeline_Model$defaultPost = {postId: _elm_lang$core$Maybe$Nothing, cotoId: _elm_lang$core$Maybe$Nothing, content: '', postedIn: _elm_lang$core$Maybe$Nothing, asCotonoma: false, cotonomaKey: '', beingDeleted: false};
 var _user$project$Components_Timeline_Model$Post = F7(
@@ -14282,7 +14291,14 @@ var _user$project$Components_CotoModal$Close = {ctor: 'Close'};
 var _user$project$Components_CotoModal$modalConfig = function (model) {
 	return {
 		closeMessage: _user$project$Components_CotoModal$Close,
-		title: 'Coto',
+		title: function () {
+			var _p1 = model.coto;
+			if (_p1.ctor === 'Nothing') {
+				return '';
+			} else {
+				return _p1._0.asCotonoma ? 'Cotonoma' : 'Coto';
+			}
+		}(),
 		content: A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -14298,14 +14314,14 @@ var _user$project$Components_CotoModal$modalConfig = function (model) {
 					{
 						ctor: '::',
 						_0: function () {
-							var _p1 = model.coto;
-							if (_p1.ctor === 'Nothing') {
+							var _p2 = model.coto;
+							if (_p2.ctor === 'Nothing') {
 								return A2(
 									_elm_lang$html$Html$div,
 									{ctor: '[]'},
 									{ctor: '[]'});
 							} else {
-								return _user$project$App_Markdown$markdown(_p1._0.content);
+								return _user$project$App_Markdown$markdown(_p2._0.content);
 							}
 						}(),
 						_1: {ctor: '[]'}
@@ -15252,12 +15268,12 @@ var _user$project$App_Update$update = F2(
 						};
 				}
 			case 'TimelineMsg':
-				var _p19 = _p1._0;
+				var _p17 = _p1._0;
 				var cotoModal = model.cotoModal;
-				var _p15 = A4(_user$project$Components_Timeline_Update$update, _p19, model.timeline, model.cotonoma, model.ctrlDown);
+				var _p15 = A4(_user$project$Components_Timeline_Update$update, _p17, model.timeline, model.cotonoma, model.ctrlDown);
 				var timeline = _p15._0;
 				var cmd = _p15._1;
-				var _p16 = _p19;
+				var _p16 = _p17;
 				switch (_p16.ctor) {
 					case 'PostClick':
 						return {
@@ -15271,7 +15287,6 @@ var _user$project$App_Update$update = F2(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
 						};
 					case 'PostOpen':
-						var _p18 = _p16._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -15282,15 +15297,7 @@ var _user$project$App_Update$update = F2(
 										cotoModal,
 										{
 											open: true,
-											coto: function () {
-												var _p17 = _p18.cotoId;
-												if (_p17.ctor === 'Nothing') {
-													return _elm_lang$core$Maybe$Nothing;
-												} else {
-													return _elm_lang$core$Maybe$Just(
-														A2(_user$project$App_Types$Coto, _p17._0, _p18.content));
-												}
-											}()
+											coto: _user$project$Components_Timeline_Model$toCoto(_p16._0)
 										})
 								}),
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
@@ -15351,10 +15358,10 @@ var _user$project$App_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				var _p20 = A4(_user$project$Components_CotonomaModal$update, _p1._0, model.cotonoma, model.timeline, model.cotonomaModal);
-				var cotonomaModal = _p20._0;
-				var timeline = _p20._1;
-				var cmd = _p20._2;
+				var _p18 = A4(_user$project$Components_CotonomaModal$update, _p1._0, model.cotonoma, model.timeline, model.cotonomaModal);
+				var cotonomaModal = _p18._0;
+				var timeline = _p18._1;
+				var cmd = _p18._2;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(

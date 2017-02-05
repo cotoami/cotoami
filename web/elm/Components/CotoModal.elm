@@ -54,7 +54,11 @@ view model =
 modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
-    , title = "Coto"
+    , title =
+        (case model.coto of
+            Nothing -> ""
+            Just coto -> if coto.asCotonoma then "Cotonoma" else "Coto"
+        )
     , content = div []
         [ div [ class "coto" ]
             [ (case model.coto of

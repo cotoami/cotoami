@@ -4,14 +4,13 @@ import Task
 import Process
 import Time
 import Keys exposing (ctrl, meta, enter)
-import App.Types exposing (Coto)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Commands exposing (fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (updatePost)
+import Components.Timeline.Model exposing (updatePost, toCoto)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
@@ -166,11 +165,7 @@ update msg model =
                           , cotoModal = 
                               { cotoModal 
                               | open = True
-                              , coto = 
-                                  (case post.cotoId of
-                                      Nothing -> Nothing
-                                      Just cotoId -> Just (Coto cotoId post.content)
-                                  )
+                              , coto = toCoto post
                               }
                           }
                         , Cmd.map TimelineMsg cmd 
