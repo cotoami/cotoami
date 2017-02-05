@@ -4,7 +4,7 @@ import Http
 import Json.Decode as Decode
 import App.Types exposing (decodeSession, decodeCotonoma)
 import App.Messages exposing (..)
-import Components.Timeline.Model exposing (decodeCoto)
+import Components.Timeline.Model exposing (decodePost)
 
 
 fetchSession : Cmd Msg
@@ -21,7 +21,7 @@ fetchCotonoma key =
             <| Http.get url
             <| Decode.map2 (,)
                 (Decode.field "cotonoma" decodeCotonoma)
-                (Decode.field "cotos" (Decode.list decodeCoto))
+                (Decode.field "cotos" (Decode.list decodePost))
 
 
 deleteCoto : Int -> Cmd Msg

@@ -13,7 +13,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
 import App.Types exposing (Session, Cotonoma)
 import App.Markdown exposing (markdownOptions, markdownElements)
-import Components.Timeline.Model exposing (Coto, Model)
+import Components.Timeline.Model exposing (Post, Model)
 import Components.Timeline.Messages exposing (..)
 
 
@@ -22,7 +22,7 @@ view model maybeSession maybeCotonoma activeCotoId =
     div [ id "timeline-column", class (timelineClass model) ]
         [ timelineDiv model maybeSession maybeCotonoma activeCotoId
         , div [ id "new-coto" ]
-            [ div [ class "toolbar", hidden (not model.editingNewCoto) ]
+            [ div [ class "toolbar", hidden (not model.editingNew) ]
                 [ (case maybeSession of
                       Nothing -> 
                           span [ class "user anonymous" ]
@@ -38,8 +38,8 @@ view model maybeSession maybeCotonoma activeCotoId =
                 , div [ class "tool-buttons" ]
                     [ button 
                         [ class "button-primary"
-                        , disabled (isBlank model.newCotoContent)
-                        , onMouseDown Post 
+                        , disabled (isBlank model.newContent)
+                        , onMouseDown Components.Timeline.Messages.Post 
                         ]
                         [ text "Post"
                         , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -49,7 +49,7 @@ view model maybeSession maybeCotonoma activeCotoId =
             , textarea
                 [ class "coto"
                 , placeholder "Write your idea in Markdown"
-                , value model.newCotoContent
+                , value model.newContent
                 , onFocus EditorFocus
                 , onBlur EditorBlur
                 , onInput EditorInput
@@ -66,55 +66,55 @@ timelineDiv model maybeSession maybeCotonoma activeCotoId =
         "div"
         [ id "timeline" ]
         (List.map 
-            (\coto -> 
-                ( getKey coto
-                , cotoDiv maybeSession maybeCotonoma activeCotoId coto
+            (\post -> 
+                ( getKey post
+                , postDiv maybeSession maybeCotonoma activeCotoId post
                 )
             ) 
-            (List.reverse model.cotos)
+            (List.reverse model.posts)
         )
 
 
-getKey : Coto -> String
-getKey coto =
-    case coto.id of
+getKey : Post -> String
+getKey post =
+    case post.cotoId of
         Just cotoId -> toString cotoId
         Nothing -> 
-            case coto.postId of
+            case post.postId of
                 Just postId -> toString postId
                 Nothing -> ""
     
     
-cotoDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Coto -> Html Msg
-cotoDiv maybeSession maybeCotonoma activeCotoId coto =
+postDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Post -> Html Msg
+postDiv maybeSession maybeCotonoma activeCotoId post =
     let
-        postedInAnother = not (isCotoFrom maybeCotonoma coto)
+        postedInAnother = not (isPostFrom maybeCotonoma post)
     in
         div
             [ classList 
                 [ ( "coto", True )
-                , ( "active", isActive coto activeCotoId )
-                , ( "posting", (isJust maybeSession) && (isNothing coto.id) )
-                , ( "being-hidden", coto.beingDeleted )
+                , ( "active", isActive post activeCotoId )
+                , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
+                , ( "being-hidden", post.beingDeleted )
                 , ( "posted-in-another-cotonoma", postedInAnother )
                 ]
-            , (case coto.id of
+            , (case post.cotoId of
                 Nothing -> onClick NoOp
-                Just cotoId -> onClick (CotoClick cotoId)
+                Just cotoId -> onClick (PostClick cotoId)
               )
             ] 
             [ div [ class "border" ] []
-            ,  (case coto.id of
+            ,  (case post.cotoId of
                 Nothing -> span [] []
                 Just cotoId ->
                     a 
                         [ class "open-coto"
                         , title "Open coto view"
-                        , onClickWithoutPropagation (CotoOpen coto)
+                        , onClickWithoutPropagation (PostOpen post)
                         ] 
                         [ i [ class "material-icons" ] [ text "open_in_new" ] ]
               )
-            , (case coto.postedIn of
+            , (case post.postedIn of
                 Nothing -> span [] []
                 Just postedIn ->
                     if postedInAnother then
@@ -126,38 +126,38 @@ cotoDiv maybeSession maybeCotonoma activeCotoId coto =
                     else
                         span [] []
               )
-            , cotoContent coto
+            , contentDiv post
             ]
         
 
-isCotoFrom : Maybe Cotonoma -> Coto -> Bool
-isCotoFrom maybeCotonoma coto =
+isPostFrom : Maybe Cotonoma -> Post -> Bool
+isPostFrom maybeCotonoma post =
     case maybeCotonoma of
-        Nothing -> isNothing coto.postedIn
+        Nothing -> isNothing post.postedIn
         Just cotonoma -> 
-            case coto.postedIn of
+            case post.postedIn of
                 Nothing -> False
                 Just postedIn -> postedIn.id == cotonoma.id
 
 
-isActive : Coto -> Maybe Int -> Bool
-isActive coto activeCotoId =
-    case coto.id of
+isActive : Post -> Maybe Int -> Bool
+isActive post activeCotoId =
+    case post.cotoId of
         Nothing -> False
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
     
     
-cotoContent : Coto -> Html Msg
-cotoContent coto =
-    if coto.asCotonoma then
+contentDiv : Post -> Html Msg
+contentDiv post =
+    if post.asCotonoma then
         div [ class "coto-as-cotonoma" ]
-            [ a [ onClickWithoutPropagation (CotonomaClick coto.cotonomaKey) ]
+            [ a [ onClickWithoutPropagation (CotonomaClick post.cotonomaKey) ]
                 [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                , span [ class "cotonoma-name" ] [ text coto.content ]
+                , span [ class "cotonoma-name" ] [ text post.content ]
                 ]
             ]
     else 
-        markdown coto.content 
+        markdown post.content 
         
         
 markdown : String -> Html Msg
@@ -184,7 +184,7 @@ customImageElement image =
 
 timelineClass : Model -> String
 timelineClass model =
-    if model.editingNewCoto then
+    if model.editingNew then
         "editing"
     else
         ""

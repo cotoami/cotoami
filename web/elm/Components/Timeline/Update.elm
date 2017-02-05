@@ -3,7 +3,7 @@ module Components.Timeline.Update exposing (..)
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
 import App.Types exposing (Cotonoma)
-import Components.Timeline.Model exposing (Coto, defaultCoto, Model)
+import Components.Timeline.Model exposing (Post, defaultPost, Model)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
@@ -14,29 +14,29 @@ update msg model maybeCotonoma ctrlDown =
         NoOp ->
             model ! []
             
-        CotosFetched (Ok cotos) ->
-            ( { model | cotos = cotos }, scrollToBottom NoOp )
+        PostsFetched (Ok posts) ->
+            ( { model | posts = posts }, scrollToBottom NoOp )
             
-        CotosFetched (Err _) ->
+        PostsFetched (Err _) ->
             ( model, Cmd.none )
   
         ImageLoaded ->
             model ! [ scrollToBottom NoOp ]
             
-        CotoClick cotoId ->
+        PostClick cotoId ->
             ( model, Cmd.none )
 
         EditorFocus ->
-            ( { model | editingNewCoto = True }, Cmd.none )
+            ( { model | editingNew = True }, Cmd.none )
 
         EditorBlur ->
-            ( { model | editingNewCoto = False }, Cmd.none )
+            ( { model | editingNew = False }, Cmd.none )
 
         EditorInput content ->
-            ( { model | newCotoContent = content }, Cmd.none )
+            ( { model | newContent = content }, Cmd.none )
 
         EditorKeyDown key ->
-            if key == enter.keyCode && ctrlDown && (not (isBlank model.newCotoContent)) then
+            if key == enter.keyCode && ctrlDown && (not (isBlank model.newContent)) then
                 post maybeCotonoma model
             else
                 ( model, Cmd.none )
@@ -44,15 +44,15 @@ update msg model maybeCotonoma ctrlDown =
         Post ->
             post maybeCotonoma model
                 
-        CotoPosted (Ok savedCoto) ->
+        Posted (Ok response) ->
             { model 
-            | cotos = List.map (\coto -> setCotoSaved savedCoto coto) model.cotos 
+            | posts = List.map (\post -> setCotoSaved response post) model.posts 
             } ! []
           
-        CotoPosted (Err _) ->
+        Posted (Err _) ->
             ( model, Cmd.none )
             
-        CotoOpen coto ->
+        PostOpen post ->
             ( model, Cmd.none )
             
         CotonomaClick key ->
@@ -63,30 +63,29 @@ post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post maybeCotonoma model =
     let
         postId = model.postIdCounter + 1
-        newCoto = 
-            { defaultCoto 
-            | id = Nothing
-            , postId = Just postId
-            , content = model.newCotoContent
+        newPost = 
+            { defaultPost
+            | postId = Just postId
+            , content = model.newContent
             , postedIn = maybeCotonoma
             }
     in
         { model 
-        | cotos = newCoto :: model.cotos
+        | posts = newPost :: model.posts
         , postIdCounter = postId
-        , newCotoContent = ""
+        , newContent = ""
         } ! 
         [ scrollToBottom NoOp
-        , postCoto maybeCotonoma newCoto
+        , Components.Timeline.Commands.post maybeCotonoma newPost
         ]
 
 
-setCotoSaved : Coto -> Coto -> Coto
-setCotoSaved savedCoto coto =
-    if coto.postId == savedCoto.postId then
-        { coto
-        | id = savedCoto.id
-        , cotonomaKey = savedCoto.cotonomaKey
+setCotoSaved : Post -> Post -> Post
+setCotoSaved response post =
+    if post.postId == response.postId then
+        { post
+        | cotoId = response.cotoId
+        , cotonomaKey = response.cotonomaKey
         }
     else 
-        coto
+        post

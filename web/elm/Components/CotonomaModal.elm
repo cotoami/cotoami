@@ -9,10 +9,10 @@ import Utils exposing (isBlank)
 import Modal
 import App.Types exposing (Cotonoma)
 import Components.Timeline.Model as Timeline
-import Components.Timeline.Model exposing (decodeCoto)
+import Components.Timeline.Model exposing (Post, decodePost)
 import Components.Timeline.Commands exposing (scrollToBottom)
 import Components.Timeline.Update
-import Components.Timeline.Messages exposing (Msg(CotoPosted))
+import Components.Timeline.Messages
 
 
 type alias Model =
@@ -33,7 +33,7 @@ type Msg
     | Close
     | NameInput String
     | Post
-    | Posted (Result Http.Error Timeline.Coto)
+    | Posted (Result Http.Error Post)
 
 
 update : Msg -> Maybe Cotonoma -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
@@ -51,11 +51,10 @@ update msg maybeCotonoma timeline model =
         Post ->
             let
                 postId = timeline.postIdCounter + 1
-                defaultCoto = Timeline.defaultCoto
-                newCoto = 
-                    { defaultCoto
-                    | id = Nothing
-                    , postId = Just postId
+                defaultPost = Timeline.defaultPost
+                newPost = 
+                    { defaultPost
+                    | postId = Just postId
                     , content = model.name
                     , postedIn = maybeCotonoma
                     , asCotonoma = True
@@ -66,7 +65,7 @@ update msg maybeCotonoma timeline model =
                   , name = "" 
                   }
                 , { timeline 
-                  | cotos = newCoto :: timeline.cotos
+                  | posts = newPost :: timeline.posts
                   , postIdCounter = postId
                   }
                 , Cmd.batch
@@ -75,11 +74,14 @@ update msg maybeCotonoma timeline model =
                     ]
                 )
                 
-        Posted (Ok savedCoto) ->
+        Posted (Ok response) ->
             let
                 ( newTimeline, _ ) =
                     Components.Timeline.Update.update 
-                        (CotoPosted (Ok savedCoto)) timeline maybeCotonoma False
+                        (Components.Timeline.Messages.Posted (Ok response)) 
+                        timeline 
+                        maybeCotonoma 
+                        False
             in
                 ( model, newTimeline, Cmd.none )
           
@@ -141,7 +143,7 @@ postCotonoma maybeCotonoma postId name =
         <| Http.post 
             "/api/cotonomas" 
             (Http.jsonBody (encodeCotonoma maybeCotonoma postId name)) 
-            decodeCoto
+            decodePost
 
     
 encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value

@@ -4,9 +4,10 @@ import Json.Decode as Decode
 import App.Types exposing (Cotonoma, decodeCotonoma)
 
 
-type alias Coto =
-    { id : Maybe Int
-    , postId : Maybe Int
+-- https://twitter.com/marubinotto/status/827743441090072577
+type alias Post =
+    { postId : Maybe Int
+    , cotoId : Maybe Int
     , content : String
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
@@ -15,10 +16,10 @@ type alias Coto =
     }
 
 
-defaultCoto : Coto
-defaultCoto =
-    { id = Nothing
-    , postId = Nothing 
+defaultPost : Post
+defaultPost =
+    { postId = Nothing 
+    , cotoId = Nothing
     , content = ""
     , postedIn = Nothing
     , asCotonoma = False
@@ -27,11 +28,11 @@ defaultCoto =
     }
 
 
-decodeCoto : Decode.Decoder Coto
-decodeCoto =
-    Decode.map7 Coto
-        (Decode.maybe (Decode.field "id" Decode.int))
+decodePost : Decode.Decoder Post
+decodePost =
+    Decode.map7 Post
         (Decode.maybe (Decode.field "postId" Decode.int))
+        (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "as_cotonoma" Decode.bool)
@@ -40,29 +41,29 @@ decodeCoto =
 
 
 type alias Model =
-    { editingNewCoto : Bool
-    , newCotoContent : String
+    { editingNew : Bool
+    , newContent : String
     , postIdCounter : Int
-    , cotos : List Coto
+    , posts : List Post
     }
 
 
 initModel : Model
 initModel =
-    { editingNewCoto = False
-    , newCotoContent = ""
+    { editingNew = False
+    , newContent = ""
     , postIdCounter = 0
-    , cotos = []
+    , posts = []
     }
 
 
-updateCoto : (Coto -> Coto) -> Int -> List Coto -> List Coto
-updateCoto update id cotos =
+updatePost : (Post -> Post) -> Int -> List Post -> List Post
+updatePost update cotoId posts =
      List.map 
-         (\coto -> 
-             if coto.id == Just id then
-                 update coto
+         (\post -> 
+             if post.cotoId == Just cotoId then
+                 update post
              else
-                 coto
+                 post
          )
-         cotos        
+         posts        

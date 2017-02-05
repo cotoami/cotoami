@@ -11,10 +11,10 @@ import App.Commands exposing (fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (updateCoto)
+import Components.Timeline.Model exposing (updatePost)
 import Components.Timeline.Messages
 import Components.Timeline.Update
-import Components.Timeline.Commands exposing (fetchCotos)
+import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
 import Components.CotonomaModal
 
@@ -33,14 +33,14 @@ update msg model =
             
         HomeClick ->
             ( { model | cotonoma = Nothing }
-            , Cmd.map TimelineMsg fetchCotos 
+            , Cmd.map TimelineMsg fetchPosts 
             )
             
-        CotonomaFetched (Ok (cotonoma, cotos)) ->
+        CotonomaFetched (Ok (cotonoma, posts)) ->
             let
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
-                      (Components.Timeline.Messages.CotosFetched (Ok cotos))
+                      (Components.Timeline.Messages.PostsFetched (Ok posts))
                       model.timeline
                       model.cotonoma
                       model.ctrlDown
@@ -102,7 +102,7 @@ update msg model =
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
                 confirmModal = model.confirmModal
                 timeline = model.timeline
-                cotos = timeline.cotos
+                posts = timeline.posts
             in
                 case subMsg of
                     Components.CotoModal.ConfirmDelete message ->
@@ -127,8 +127,8 @@ update msg model =
                         | cotoModal = cotoModal
                         , timeline =
                             { timeline
-                            | cotos = cotos |> 
-                                updateCoto (\c -> { c | beingDeleted = True }) coto.id
+                            | posts = posts |> 
+                                updatePost (\p -> { p | beingDeleted = True }) coto.id
                             }
                         } !
                         [ Cmd.map CotoModalMsg cmd
@@ -152,7 +152,7 @@ update msg model =
                 cotoModal = model.cotoModal
             in
                 case subMsg of
-                    Components.Timeline.Messages.CotoClick cotoId ->
+                    Components.Timeline.Messages.PostClick cotoId ->
                         ( { model 
                           | timeline = timeline
                           , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
@@ -160,16 +160,16 @@ update msg model =
                         , Cmd.map TimelineMsg cmd 
                         )
                         
-                    Components.Timeline.Messages.CotoOpen coto ->
+                    Components.Timeline.Messages.PostOpen post ->
                         ( { model 
                           | timeline = timeline
                           , cotoModal = 
                               { cotoModal 
                               | open = True
                               , coto = 
-                                  (case coto.id of
+                                  (case post.cotoId of
                                       Nothing -> Nothing
-                                      Just cotoId -> Just (Coto cotoId coto.content)
+                                      Just cotoId -> Just (Coto cotoId post.content)
                                   )
                               }
                           }
@@ -185,12 +185,12 @@ update msg model =
         DeleteCoto cotoId ->
             let
                 timeline = model.timeline
-                cotos = timeline.cotos
+                posts = timeline.posts
             in
                 ( { model 
                   | timeline =
                       { timeline
-                      | cotos = cotos |> (List.filter (\c -> c.id /= (Just cotoId)))
+                      | posts = posts |> (List.filter (\p -> p.cotoId /= (Just cotoId)))
                       }
                   }
                 , Cmd.none

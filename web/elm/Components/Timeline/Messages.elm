@@ -2,19 +2,19 @@ module Components.Timeline.Messages exposing (..)
 
 import Http
 import Keyboard exposing (..)
-import Components.Timeline.Model exposing (Coto)
+import Components.Timeline.Model exposing (Post)
 
 
 type Msg
     = NoOp
-    | CotosFetched (Result Http.Error (List Coto))
+    | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
-    | CotoClick Int
+    | PostClick Int
     | EditorFocus
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
     | Post
-    | CotoPosted (Result Http.Error Coto)
-    | CotoOpen Coto
+    | Posted (Result Http.Error Post)
+    | PostOpen Post
     | CotonomaClick String

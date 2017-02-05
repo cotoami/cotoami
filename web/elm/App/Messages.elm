@@ -6,7 +6,7 @@ import App.Types exposing (Session, Cotonoma)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model as Timeline
+import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal
@@ -16,7 +16,7 @@ type Msg
     = NoOp
     | SessionFetched (Result Http.Error Session)
     | HomeClick
-    | CotonomaFetched (Result Http.Error (Cotonoma, List Timeline.Coto))
+    | CotonomaFetched (Result Http.Error (Cotonoma, List Post))
     | KeyDown KeyCode
     | KeyUp KeyCode
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg

@@ -7,7 +7,7 @@ import App.Update exposing (update)
 import App.Commands exposing (fetchSession)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
-import Components.Timeline.Commands exposing (fetchCotos)
+import Components.Timeline.Commands exposing (fetchPosts)
 
 main : Program Never Model Msg
 main =
@@ -23,5 +23,5 @@ init : ( Model, Cmd Msg )
 init =
     initModel ! 
         [ fetchSession
-        , Cmd.map TimelineMsg fetchCotos 
+        , Cmd.map TimelineMsg fetchPosts 
         ]

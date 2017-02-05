@@ -8,7 +8,7 @@ import Process
 import Time
 import Http
 import App.Types exposing (Cotonoma)
-import Components.Timeline.Model exposing (Coto, decodeCoto)
+import Components.Timeline.Model exposing (Post, decodePost)
 import Components.Timeline.Messages exposing (..)
 
 
@@ -19,22 +19,22 @@ scrollToBottom msg =
     |> Task.attempt (\_ -> msg) 
 
 
-fetchCotos : Cmd Msg
-fetchCotos =
-    Http.send CotosFetched (Http.get "/api/cotos" (Decode.list decodeCoto))
+fetchPosts : Cmd Msg
+fetchPosts =
+    Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
 
 
-postCoto : Maybe Cotonoma -> Coto -> Cmd Msg
-postCoto maybeCotonoma coto =
-    Http.send CotoPosted 
+post : Maybe Cotonoma -> Post -> Cmd Msg
+post maybeCotonoma post =
+    Http.send Posted 
         <| Http.post 
             "/api/cotos" 
-            (Http.jsonBody (encodeCoto maybeCotonoma coto)) 
-            decodeCoto
+            (Http.jsonBody (encodePost maybeCotonoma post)) 
+            decodePost
         
 
-encodeCoto : Maybe Cotonoma -> Coto -> Encode.Value
-encodeCoto maybeCotonoma coto =
+encodePost : Maybe Cotonoma -> Post -> Encode.Value
+encodePost maybeCotonoma post =
     Encode.object 
         [ ("coto", 
             (Encode.object 
@@ -44,11 +44,11 @@ encodeCoto maybeCotonoma coto =
                         Just cotonoma -> Encode.int cotonoma.id
                   )
                 , ("postId"
-                  , case coto.postId of
+                  , case post.postId of
                         Nothing -> Encode.null 
                         Just postId -> Encode.int postId
                   )
-                , ("content", Encode.string coto.content)
+                , ("content", Encode.string post.content)
                 ]
             )
           )

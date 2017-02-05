@@ -17,7 +17,7 @@ import Components.CotonomaModal
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.cotos)
+        anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
     in
       div [ id "app" ]
           [ Components.AppHeader.view model
@@ -45,7 +45,7 @@ view model =
               , title "News and Feedback"
               , href "https://twitter.com/cotoami"
               , target "_blank"
-              , hidden (model.timeline.editingNewCoto)  
+              , hidden (model.timeline.editingNew)  
               ] 
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
