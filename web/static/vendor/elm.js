@@ -19361,6 +19361,7 @@ var _user$project$App_Update$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
+									cotonoma: _elm_lang$core$Maybe$Nothing,
 									timeline: _user$project$Components_Timeline_Model$setLoading(timeline)
 								}),
 							{

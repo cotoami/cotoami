@@ -174,7 +174,8 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        { model | timeline = setLoading timeline } ! [ fetchCotonoma key ]
+                        { model | cotonoma = Nothing, timeline = setLoading timeline } 
+                            ! [ fetchCotonoma key ]
 
                     _ -> 
                         { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
