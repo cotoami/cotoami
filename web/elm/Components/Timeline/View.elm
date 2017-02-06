@@ -13,7 +13,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
 import App.Types exposing (Session, Cotonoma)
 import App.Markdown exposing (markdownOptions, markdownElements)
-import Components.Timeline.Model exposing (Post, Model)
+import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
 import Components.Timeline.Messages exposing (..)
 
 
@@ -88,7 +88,7 @@ getKey post =
 postDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Post -> Html Msg
 postDiv maybeSession maybeCotonoma activeCotoId post =
     let
-        postedInAnother = not (isPostFrom maybeCotonoma post)
+        postedInAnother = not (isPostedInCotonoma maybeCotonoma post)
     in
         div
             [ classList 
@@ -129,16 +129,6 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
             , contentDiv post
             ]
         
-
-isPostFrom : Maybe Cotonoma -> Post -> Bool
-isPostFrom maybeCotonoma post =
-    case maybeCotonoma of
-        Nothing -> isNothing post.postedIn
-        Just cotonoma -> 
-            case post.postedIn of
-                Nothing -> False
-                Just postedIn -> postedIn.id == cotonoma.id
-
 
 isActive : Post -> Maybe Int -> Bool
 isActive post activeCotoId =

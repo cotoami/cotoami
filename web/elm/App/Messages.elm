@@ -2,7 +2,7 @@ module App.Messages exposing (Msg(..))
 
 import Http
 import Keyboard exposing (..)
-import App.Types exposing (Session, Cotonoma)
+import App.Types exposing (Session, Coto, Cotonoma)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -26,7 +26,7 @@ type Msg
     | ProfileModalMsg Components.ProfileModal.Msg
     | TimelineMsg Components.Timeline.Messages.Msg
     | CotoModalMsg Components.CotoModal.Msg
-    | DeleteCoto Int
+    | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Msg

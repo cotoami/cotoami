@@ -10,7 +10,8 @@ import App.Commands exposing (fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (updatePost, toCoto)
+import Components.Timeline.Model 
+    exposing (updatePost, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
@@ -126,15 +127,20 @@ update msg model =
                         | cotoModal = cotoModal
                         , timeline =
                             { timeline
-                            | posts = posts |> 
-                                updatePost (\p -> { p | beingDeleted = True }) coto.id
+                            | posts = posts |> List.map 
+                                (\post -> 
+                                    if isSelfOrPostedIn coto post then
+                                        { post | beingDeleted = True }
+                                    else
+                                        post
+                                )
                             }
                         } !
                         [ Cmd.map CotoModalMsg cmd
                         , deleteCoto coto.id
                         , Process.sleep (1 * Time.second)
                             |> Task.andThen (\_ -> Task.succeed ())
-                            |> Task.perform (\_ -> DeleteCoto coto.id)
+                            |> Task.perform (\_ -> DeleteCoto coto)
                         ]
                         
                     _ ->
@@ -177,7 +183,7 @@ update msg model =
                     _ -> 
                         ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )
   
-        DeleteCoto cotoId ->
+        DeleteCoto coto ->
             let
                 timeline = model.timeline
                 posts = timeline.posts
@@ -185,7 +191,8 @@ update msg model =
                 ( { model 
                   | timeline =
                       { timeline
-                      | posts = posts |> (List.filter (\p -> p.cotoId /= (Just cotoId)))
+                      | posts = posts |> 
+                          List.filter (\post -> not (isSelfOrPostedIn coto post))
                       }
                   }
                 , Cmd.none

@@ -1,6 +1,7 @@
 module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
+import Exts.Maybe exposing (isNothing)
 import App.Types exposing (Coto, Cotonoma, decodeCotonoma)
 
 
@@ -28,6 +29,18 @@ defaultPost =
     }
 
 
+decodePost : Decode.Decoder Post
+decodePost =
+    Decode.map7 Post
+        (Decode.maybe (Decode.field "postId" Decode.int))
+        (Decode.maybe (Decode.field "id" Decode.int))
+        (Decode.field "content" Decode.string)
+        (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
+        (Decode.field "as_cotonoma" Decode.bool)
+        (Decode.field "cotonoma_key" Decode.string)
+        (Decode.succeed False)
+
+
 toCoto : Post -> Maybe Coto
 toCoto post =
     case post.cotoId of
@@ -44,17 +57,30 @@ toCoto post =
                 )
 
 
-decodePost : Decode.Decoder Post
-decodePost =
-    Decode.map7 Post
-        (Decode.maybe (Decode.field "postId" Decode.int))
-        (Decode.maybe (Decode.field "id" Decode.int))
-        (Decode.field "content" Decode.string)
-        (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
-        (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.field "cotonoma_key" Decode.string)
-        (Decode.succeed False)
+isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
+isPostedInCotonoma maybeCotonoma post =
+    case maybeCotonoma of
+        Nothing -> isNothing post.postedIn
+        Just cotonoma -> 
+            case post.postedIn of
+                Nothing -> False
+                Just postedIn -> postedIn.id == cotonoma.id
 
+
+isPostedInCoto : Coto -> Post -> Bool
+isPostedInCoto coto post =
+    if coto.asCotonoma then
+        case post.postedIn of
+            Nothing -> False
+            Just postedIn -> postedIn.key == coto.cotonomaKey
+    else
+        False
+        
+
+isSelfOrPostedIn : Coto -> Post -> Bool
+isSelfOrPostedIn coto post =
+    post.cotoId == Just coto.id || (isPostedInCoto coto post) 
+    
 
 type alias Model =
     { editingNew : Bool
