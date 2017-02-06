@@ -14310,11 +14310,20 @@ var _user$project$Components_Timeline_Model$updatePost = F3(
 			},
 			posts);
 	});
+var _user$project$Components_Timeline_Model$setLoading = function (model) {
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			posts: {ctor: '[]'},
+			loading: true
+		});
+};
 var _user$project$Components_Timeline_Model$initModel = {
 	editingNew: false,
 	newContent: '',
 	postIdCounter: 0,
-	posts: {ctor: '[]'}
+	posts: {ctor: '[]'},
+	loading: true
 };
 var _user$project$Components_Timeline_Model$isPostedInCoto = F2(
 	function (coto, post) {
@@ -14376,9 +14385,9 @@ var _user$project$Components_Timeline_Model$decodePost = A8(
 	A2(_elm_lang$core$Json_Decode$field, 'as_cotonoma', _elm_lang$core$Json_Decode$bool),
 	A2(_elm_lang$core$Json_Decode$field, 'cotonoma_key', _elm_lang$core$Json_Decode$string),
 	_elm_lang$core$Json_Decode$succeed(false));
-var _user$project$Components_Timeline_Model$Model = F4(
-	function (a, b, c, d) {
-		return {editingNew: a, newContent: b, postIdCounter: c, posts: d};
+var _user$project$Components_Timeline_Model$Model = F5(
+	function (a, b, c, d, e) {
+		return {editingNew: a, newContent: b, postIdCounter: c, posts: d, loading: e};
 	});
 
 var _user$project$Components_Timeline_Messages$CotonomaClick = function (a) {
@@ -18558,11 +18567,14 @@ var _user$project$Components_Timeline_Update$update = F4(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{posts: _p0._0._0}),
+							{posts: _p0._0._0, loading: false}),
 						_1: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_Timeline_Messages$NoOp)
 					};
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				}
 			case 'ImageLoaded':
 				return A2(
@@ -18574,33 +18586,36 @@ var _user$project$Components_Timeline_Update$update = F4(
 						_1: {ctor: '[]'}
 					});
 			case 'PostClick':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			case 'EditorFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{editingNew: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'EditorBlur':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{editingNew: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'EditorInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{newContent: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'EditorKeyDown':
-				return (_elm_lang$core$Native_Utils.eq(_p0._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newContent)))) ? A2(_user$project$Components_Timeline_Update$post, maybeCotonoma, model) : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return (_elm_lang$core$Native_Utils.eq(_p0._0, _user$project$Keys$enter.keyCode) && (ctrlDown && (!_user$project$Utils$isBlank(model.newContent)))) ? A2(_user$project$Components_Timeline_Update$post, maybeCotonoma, model) : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			case 'Post':
 				return A2(_user$project$Components_Timeline_Update$post, maybeCotonoma, model);
 			case 'Posted':
@@ -18619,12 +18634,21 @@ var _user$project$Components_Timeline_Update$update = F4(
 							}),
 						{ctor: '[]'});
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				}
 			case 'PostOpen':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 		}
 	});
 
@@ -19048,26 +19072,35 @@ var _user$project$App_Update$update = F2(
 					{ctor: '[]'});
 			case 'SessionFetched':
 				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
 							model,
 							{
 								session: _elm_lang$core$Maybe$Just(_p1._0._0)
 							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
+						{ctor: '[]'});
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				}
 			case 'HomeClick':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				var timeline = model.timeline;
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
-						{cotonoma: _elm_lang$core$Maybe$Nothing}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts)
-				};
+						{
+							cotonoma: _elm_lang$core$Maybe$Nothing,
+							timeline: _user$project$Components_Timeline_Model$setLoading(timeline)
+						}),
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
+						_1: {ctor: '[]'}
+					});
 			case 'CotonomaFetched':
 				if (_p1._0.ctor === 'Ok') {
 					var _p2 = A4(
@@ -19079,96 +19112,113 @@ var _user$project$App_Update$update = F2(
 						model.ctrlDown);
 					var timeline = _p2._0;
 					var cmd = _p2._1;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
 							model,
 							{
 								cotonoma: _elm_lang$core$Maybe$Just(_p1._0._0._0),
 								timeline: timeline
 							}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-					};
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
+							_1: {ctor: '[]'}
+						});
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				}
 			case 'KeyDown':
 				var _p3 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return (_elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p3, _user$project$Keys$meta.keyCode)) ? A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{ctrlDown: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					{ctor: '[]'}) : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			case 'KeyUp':
 				var _p4 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$meta.keyCode)) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return (_elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$meta.keyCode)) ? A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{ctrlDown: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					{ctor: '[]'}) : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			case 'ConfirmModalMsg':
 				var _p5 = A2(_user$project$Components_ConfirmModal_Update$update, _p1._0, model.confirmModal);
 				var confirmModal = _p5._0;
 				var cmd = _p5._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{confirmModal: confirmModal}),
-					_1: cmd
-				};
+					{
+						ctor: '::',
+						_0: cmd,
+						_1: {ctor: '[]'}
+					});
 			case 'OpenSigninModal':
 				var signinModal = model.signinModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
 							signinModal: _elm_lang$core$Native_Utils.update(
 								signinModal,
 								{open: true})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'SigninModalMsg':
 				var _p6 = A2(_user$project$Components_SigninModal$update, _p1._0, model.signinModal);
 				var signinModal = _p6._0;
 				var cmd = _p6._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{signinModal: signinModal}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd)
-				};
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$SigninModalMsg, cmd),
+						_1: {ctor: '[]'}
+					});
 			case 'OpenProfileModal':
 				var profileModal = model.profileModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
 							profileModal: _elm_lang$core$Native_Utils.update(
 								profileModal,
 								{open: true})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'ProfileModalMsg':
 				var _p7 = A2(_user$project$Components_ProfileModal$update, _p1._0, model.profileModal);
 				var profileModal = _p7._0;
 				var cmd = _p7._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{profileModal: profileModal}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd)
-				};
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$ProfileModalMsg, cmd),
+						_1: {ctor: '[]'}
+					});
 			case 'CotoModalMsg':
 				var _p14 = _p1._0;
 				var timeline = model.timeline;
@@ -19180,9 +19230,9 @@ var _user$project$App_Update$update = F2(
 				var _p9 = _p14;
 				switch (_p9.ctor) {
 					case 'ConfirmDelete':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{
 									cotoModal: cotoModal,
@@ -19202,8 +19252,11 @@ var _user$project$App_Update$update = F2(
 											}()
 										})
 								}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
+								_1: {ctor: '[]'}
+							});
 					case 'Delete':
 						var _p13 = _p9._0;
 						return A2(
@@ -19250,13 +19303,16 @@ var _user$project$App_Update$update = F2(
 								}
 							});
 					default:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{cotoModal: cotoModal}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
+								_1: {ctor: '[]'}
+							});
 				}
 			case 'TimelineMsg':
 				var _p17 = _p1._0;
@@ -19267,20 +19323,23 @@ var _user$project$App_Update$update = F2(
 				var _p16 = _p17;
 				switch (_p16.ctor) {
 					case 'PostClick':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{
 									timeline: timeline,
 									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p16._0)
 								}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
+								_1: {ctor: '[]'}
+							});
 					case 'PostOpen':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{
 									timeline: timeline,
@@ -19291,31 +19350,42 @@ var _user$project$App_Update$update = F2(
 											coto: _user$project$Components_Timeline_Model$toCoto(_p16._0)
 										})
 								}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
+								_1: {ctor: '[]'}
+							});
 					case 'CotonomaClick':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
-								{timeline: timeline}),
-							_1: _user$project$App_Commands$fetchCotonoma(_p16._0)
-						};
+								{
+									timeline: _user$project$Components_Timeline_Model$setLoading(timeline)
+								}),
+							{
+								ctor: '::',
+								_0: _user$project$App_Commands$fetchCotonoma(_p16._0),
+								_1: {ctor: '[]'}
+							});
 					default:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
 								model,
 								{timeline: timeline}),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd)
-						};
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
+								_1: {ctor: '[]'}
+							});
 				}
 			case 'DeleteCoto':
 				var timeline = model.timeline;
 				var posts = timeline.posts;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
 							timeline: _elm_lang$core$Native_Utils.update(
@@ -19329,35 +19399,39 @@ var _user$project$App_Update$update = F2(
 										posts)
 								})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			case 'CotoDeleted':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 			case 'OpenCotonomaModal':
 				var cotonomaModal = model.cotonomaModal;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
 							cotonomaModal: _elm_lang$core$Native_Utils.update(
 								cotonomaModal,
 								{open: true})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
 			default:
 				var _p18 = A4(_user$project$Components_CotonomaModal$update, _p1._0, model.cotonoma, model.timeline, model.cotonomaModal);
 				var cotonomaModal = _p18._0;
 				var timeline = _p18._1;
 				var cmd = _p18._2;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{cotonomaModal: cotonomaModal, timeline: timeline}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd)
-				};
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
+						_1: {ctor: '[]'}
+					});
 		}
 	});
 
@@ -19947,7 +20021,16 @@ var _user$project$Components_Timeline_View$timelineDiv = F4(
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Attributes$id('timeline'),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'loading', _1: model.loading},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			},
 			A2(
 				_elm_lang$core$List$map,

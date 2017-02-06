@@ -87,6 +87,7 @@ type alias Model =
     , newContent : String
     , postIdCounter : Int
     , posts : List Post
+    , loading : Bool
     }
 
 
@@ -96,8 +97,14 @@ initModel =
     , newContent = ""
     , postIdCounter = 0
     , posts = []
+    , loading = True
     }
 
+
+setLoading : Model -> Model
+setLoading model =
+    { model | posts = [], loading = True } 
+    
 
 updatePost : (Post -> Post) -> Int -> List Post -> List Post
 updatePost update cotoId posts =

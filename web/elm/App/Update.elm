@@ -11,7 +11,7 @@ import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model 
-    exposing (updatePost, toCoto, isPostedInCoto, isSelfOrPostedIn)
+    exposing (updatePost, toCoto, isPostedInCoto, isSelfOrPostedIn, setLoading)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
@@ -26,15 +26,17 @@ update msg model =
             model ! []
             
         SessionFetched (Ok session) ->
-            ( { model | session = Just session }, Cmd.none )
+            { model | session = Just session } ! []
             
         SessionFetched (Err _) ->
-            ( model, Cmd.none )
+            model ! []
             
         HomeClick ->
-            ( { model | cotonoma = Nothing }
-            , Cmd.map TimelineMsg fetchPosts 
-            )
+            let
+                timeline = model.timeline
+            in
+                { model | cotonoma = Nothing, timeline = setLoading timeline }
+                    ! [ Cmd.map TimelineMsg fetchPosts ]
             
         CotonomaFetched (Ok (cotonoma, posts)) ->
             let
@@ -45,57 +47,56 @@ update msg model =
                       model.cotonoma
                       model.ctrlDown
             in
-                ( { model 
-                  | cotonoma = Just cotonoma
-                  , timeline = timeline
-                  }
-                , Cmd.map TimelineMsg cmd 
-                )
+                { model 
+                | cotonoma = Just cotonoma
+                , timeline = timeline
+                } 
+                ! [ Cmd.map TimelineMsg cmd ]
             
         CotonomaFetched (Err _) ->
-            ( model, Cmd.none )
+            model ! []
         
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                ( { model | ctrlDown = True }, Cmd.none )
+                { model | ctrlDown = True } ! []
             else
-                ( model, Cmd.none )
+                model ! []
 
         KeyUp key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                ( { model | ctrlDown = False }, Cmd.none )
+                { model | ctrlDown = False } ! []
             else
-                ( model, Cmd.none )
+                model ! []
                 
         ConfirmModalMsg subMsg ->
             let
                 ( confirmModal, cmd ) = Components.ConfirmModal.Update.update subMsg model.confirmModal
             in
-                ( { model | confirmModal = confirmModal }, cmd )
+                { model | confirmModal = confirmModal } ! [ cmd ]
             
         OpenSigninModal ->
             let
                 signinModal = model.signinModal
             in
-                ( { model | signinModal = { signinModal | open = True } }, Cmd.none )
+                { model | signinModal = { signinModal | open = True } } ! []
             
         SigninModalMsg subMsg ->
             let
                 ( signinModal, cmd ) = Components.SigninModal.update subMsg model.signinModal
             in
-                ( { model | signinModal = signinModal }, Cmd.map SigninModalMsg cmd )
+                { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg cmd ]
                 
         OpenProfileModal ->
             let
                 profileModal = model.profileModal
             in
-                ( { model | profileModal = { profileModal | open = True } }, Cmd.none )
+                { model | profileModal = { profileModal | open = True } } ! []
                 
         ProfileModalMsg subMsg ->
             let
                 ( profileModal, cmd ) = Components.ProfileModal.update subMsg model.profileModal
             in
-                ( { model | profileModal = profileModal }, Cmd.map ProfileModalMsg cmd )
+                { model | profileModal = profileModal } ! [ Cmd.map ProfileModalMsg cmd ]
                 
         CotoModalMsg subMsg ->
             let
@@ -106,21 +107,20 @@ update msg model =
             in
                 case subMsg of
                     Components.CotoModal.ConfirmDelete message ->
-                        ( { model 
-                          | cotoModal = cotoModal
-                          , confirmModal =
-                              { confirmModal
-                              | open = True
-                              , message = message
-                              , msgOnConfirm = 
-                                  (case cotoModal.coto of
-                                      Nothing -> App.Messages.NoOp
-                                      Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
-                                  )
-                              }
-                          }
-                        , Cmd.map CotoModalMsg cmd
-                        )
+                        { model 
+                        | cotoModal = cotoModal
+                        , confirmModal =
+                            { confirmModal
+                            | open = True
+                            , message = message
+                            , msgOnConfirm = 
+                                (case cotoModal.coto of
+                                    Nothing -> App.Messages.NoOp
+                                    Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
+                                )
+                            }
+                        } !
+                        [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
                         { model 
@@ -144,7 +144,7 @@ update msg model =
                         ]
                         
                     _ ->
-                        ( { model | cotoModal = cotoModal }, Cmd.map CotoModalMsg cmd )
+                        { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]
             
         TimelineMsg subMsg ->
             let
@@ -158,54 +158,48 @@ update msg model =
             in
                 case subMsg of
                     Components.Timeline.Messages.PostClick cotoId ->
-                        ( { model 
-                          | timeline = timeline
-                          , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
-                          }
-                        , Cmd.map TimelineMsg cmd 
-                        )
+                        { model 
+                        | timeline = timeline
+                        , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
+                        } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
-                        ( { model 
-                          | timeline = timeline
-                          , cotoModal = 
-                              { cotoModal 
-                              | open = True
-                              , coto = toCoto post
-                              }
-                          }
-                        , Cmd.map TimelineMsg cmd 
-                        )
+                        { model 
+                        | timeline = timeline
+                        , cotoModal = 
+                            { cotoModal 
+                            | open = True
+                            , coto = toCoto post
+                            }
+                        } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        ( { model | timeline = timeline }, fetchCotonoma key )
+                        { model | timeline = setLoading timeline } ! [ fetchCotonoma key ]
 
                     _ -> 
-                        ( { model | timeline = timeline }, Cmd.map TimelineMsg cmd )
+                        { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
   
         DeleteCoto coto ->
             let
                 timeline = model.timeline
                 posts = timeline.posts
             in
-                ( { model 
-                  | timeline =
-                      { timeline
-                      | posts = posts |> 
-                          List.filter (\post -> not (isSelfOrPostedIn coto post))
-                      }
-                  }
-                , Cmd.none
-                )
+                { model 
+                | timeline =
+                    { timeline
+                    | posts = posts |> 
+                        List.filter (\post -> not (isSelfOrPostedIn coto post))
+                    }
+                } ! []
                 
         CotoDeleted _ ->
-            ( model, Cmd.none )
+            model ! []
             
         OpenCotonomaModal ->
             let
                 cotonomaModal = model.cotonomaModal
             in
-                ( { model | cotonomaModal = { cotonomaModal | open = True } }, Cmd.none )
+                { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
         CotonomaModalMsg subMsg ->
             let
@@ -216,9 +210,8 @@ update msg model =
                         model.timeline
                         model.cotonomaModal
             in
-                ( { model | cotonomaModal = cotonomaModal, timeline = timeline }
-                , Cmd.map CotonomaModalMsg cmd 
-                )
+                { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                    ! [ Cmd.map CotonomaModalMsg cmd ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

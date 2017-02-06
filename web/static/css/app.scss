@@ -132,6 +132,10 @@ html, body, #elm-container, #app, #app-body {
   left: 0;
   right: 0;
   
+  &.loading {
+    background: url(../images/loading.gif) center no-repeat #fff;
+  }
+  
   div.coto {
     position: relative;
     border: 2px solid transparent;

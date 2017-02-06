@@ -15,31 +15,31 @@ update msg model maybeCotonoma ctrlDown =
             model ! []
             
         PostsFetched (Ok posts) ->
-            ( { model | posts = posts }, scrollToBottom NoOp )
+            ( { model | posts = posts, loading = False }, scrollToBottom NoOp )
             
         PostsFetched (Err _) ->
-            ( model, Cmd.none )
+            model ! []
   
         ImageLoaded ->
             model ! [ scrollToBottom NoOp ]
             
         PostClick cotoId ->
-            ( model, Cmd.none )
+            model ! []
 
         EditorFocus ->
-            ( { model | editingNew = True }, Cmd.none )
+            { model | editingNew = True } ! []
 
         EditorBlur ->
-            ( { model | editingNew = False }, Cmd.none )
+            { model | editingNew = False } ! []
 
         EditorInput content ->
-            ( { model | newContent = content }, Cmd.none )
+            { model | newContent = content } ! []
 
         EditorKeyDown key ->
             if key == enter.keyCode && ctrlDown && (not (isBlank model.newContent)) then
                 post maybeCotonoma model
             else
-                ( model, Cmd.none )
+                model ! []
                 
         Post ->
             post maybeCotonoma model
@@ -50,13 +50,13 @@ update msg model maybeCotonoma ctrlDown =
             } ! []
           
         Posted (Err _) ->
-            ( model, Cmd.none )
+            model ! []
             
         PostOpen post ->
-            ( model, Cmd.none )
+            model ! []
             
         CotonomaClick key ->
-            ( model, Cmd.none )
+            model ! []
     
 
 post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )

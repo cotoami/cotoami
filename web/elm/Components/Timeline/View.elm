@@ -64,7 +64,7 @@ timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
 timelineDiv model maybeSession maybeCotonoma activeCotoId =
     Html.Keyed.node
         "div"
-        [ id "timeline" ]
+        [ id "timeline", classList [ ( "loading", model.loading ) ] ]
         (List.map 
             (\post -> 
                 ( getKey post
