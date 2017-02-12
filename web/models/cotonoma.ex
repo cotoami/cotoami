@@ -10,9 +10,12 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
+    
     belongs_to :coto, Cotoami.Coto
     belongs_to :owner, Cotoami.Amishi
+    
     has_many :cotos, Cotoami.Coto
+    has_many :members, Cotoami.Member
 
     timestamps()
   end
