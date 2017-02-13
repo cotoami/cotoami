@@ -347,47 +347,60 @@ html, body, #elm-container, #app, #app-body {
       width: 455px;
     }
     
-    ul.members {
-      list-style-type: none;
+    div.members {
+      margin-bottom: 10px;
+      max-height: 30vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       
-      li {
-        margin-left: 12px;
-        margin-top: 6px;
-        margin-bottom: 6px;
+      ul.members {
+        list-style-type: none;
         
-        a.remove-member {
-          i {
-            color: #bbb;
-            vertical-align: baseline;
-            margin-left: 12px;
-          }
-        }
-        
-        &.not-amishi {
-          color: #aaa;
+        li {
+          margin-left: 12px;
+          margin-top: 6px;
+          margin-bottom: 6px;
           
-          i {
-            vertical-align: middle;
+          a.remove-member {
+            i {
+              color: #bbb;
+              vertical-align: baseline;
+              margin-left: 12px;
+            }
+          }
+          
+          &.not-amishi {
+            color: #aaa;
+            
+            i {
+              vertical-align: middle;
+              margin-right: 8px;
+            }
+            
+            span.email {
+              word-wrap: break-word;
+              white-space: normal;
+            }
+            
+            span.help-message {
+              margin-left: 5px;
+              color: #ccc;
+              font-size: 0.8em;
+            }
+          }
+          
+          img.avatar {
+            margin: 0;
+            padding: 0;
+            width: 24px;
+            height: 24px;
             margin-right: 8px;
+            border-radius: 4px;
+            vertical-align: middle;
           }
-          
-          span.help-message {
-            margin-left: 5px;
-            color: #ccc;
-            font-size: 0.8em;
-          }
-        }
-        
-        img.avatar {
-          margin: 0;
-          padding: 0;
-          width: 24px;
-          height: 24px;
-          margin-right: 8px;
-          border-radius: 4px;
-          vertical-align: middle;
         }
       }
     }
+    
   }
 }

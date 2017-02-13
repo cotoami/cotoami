@@ -18827,7 +18827,11 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
-							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('members'),
+								_1: {ctor: '[]'}
+							},
 							{
 								ctor: '::',
 								_0: A2(
@@ -18862,7 +18866,18 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 													}),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('member1@example.com'),
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('email'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('member1@exampleexample.com'),
+															_1: {ctor: '[]'}
+														}),
 													_1: {
 														ctor: '::',
 														_0: A2(
@@ -19045,38 +19060,101 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 														_elm_lang$html$Html$li,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('not-amishi'),
+															_0: _elm_lang$html$Html_Attributes$class('amishi'),
 															_1: {ctor: '[]'}
 														},
 														{
 															ctor: '::',
 															_0: A2(
-																_elm_lang$html$Html$i,
+																_elm_lang$html$Html$img,
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-																	_1: {ctor: '[]'}
+																	_0: _elm_lang$html$Html_Attributes$class('avatar'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$src('https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9'),
+																		_1: {ctor: '[]'}
+																	}
 																},
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('perm_identity'),
-																	_1: {ctor: '[]'}
-																}),
+																{ctor: '[]'}),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html$text('member2@example.com'),
+																_0: A2(
+																	_elm_lang$html$Html$span,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('name'),
+																		_1: {ctor: '[]'}
+																	},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('Daisuke Morita'),
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$a,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$class('remove-member'),
+																			_1: {ctor: '[]'}
+																		},
+																		{
+																			ctor: '::',
+																			_0: A2(
+																				_elm_lang$html$Html$i,
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+																					_1: {
+																						ctor: '::',
+																						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+																						_1: {ctor: '[]'}
+																					}
+																				},
+																				{ctor: '[]'}),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$li,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('amishi'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$img,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('avatar'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$src('https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9'),
+																			_1: {ctor: '[]'}
+																		}
+																	},
+																	{ctor: '[]'}),
 																_1: {
 																	ctor: '::',
 																	_0: A2(
 																		_elm_lang$html$Html$span,
 																		{
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$class('help-message'),
+																			_0: _elm_lang$html$Html_Attributes$class('name'),
 																			_1: {ctor: '[]'}
 																		},
 																		{
 																			ctor: '::',
-																			_0: _elm_lang$html$Html$text('(an invitation will be sent)'),
+																			_0: _elm_lang$html$Html$text('Daisuke Morita'),
 																			_1: {ctor: '[]'}
 																		}),
 																	_1: {
@@ -19107,9 +19185,158 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 																		_1: {ctor: '[]'}
 																	}
 																}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$li,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('amishi'),
+																	_1: {ctor: '[]'}
+																},
+																{
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$img,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$class('avatar'),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$src('https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9'),
+																				_1: {ctor: '[]'}
+																			}
+																		},
+																		{ctor: '[]'}),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(
+																			_elm_lang$html$Html$span,
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$class('name'),
+																				_1: {ctor: '[]'}
+																			},
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html$text('Daisuke Morita'),
+																				_1: {ctor: '[]'}
+																			}),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(
+																				_elm_lang$html$Html$a,
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class('remove-member'),
+																					_1: {ctor: '[]'}
+																				},
+																				{
+																					ctor: '::',
+																					_0: A2(
+																						_elm_lang$html$Html$i,
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+																							_1: {
+																								ctor: '::',
+																								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+																								_1: {ctor: '[]'}
+																							}
+																						},
+																						{ctor: '[]'}),
+																					_1: {ctor: '[]'}
+																				}),
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																}),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$li,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('not-amishi'),
+																		_1: {ctor: '[]'}
+																	},
+																	{
+																		ctor: '::',
+																		_0: A2(
+																			_elm_lang$html$Html$i,
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																				_1: {ctor: '[]'}
+																			},
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html$text('perm_identity'),
+																				_1: {ctor: '[]'}
+																			}),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(
+																				_elm_lang$html$Html$span,
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class('email'),
+																					_1: {ctor: '[]'}
+																				},
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html$text('member2@example.com'),
+																					_1: {ctor: '[]'}
+																				}),
+																			_1: {
+																				ctor: '::',
+																				_0: A2(
+																					_elm_lang$html$Html$span,
+																					{
+																						ctor: '::',
+																						_0: _elm_lang$html$Html_Attributes$class('help-message'),
+																						_1: {ctor: '[]'}
+																					},
+																					{
+																						ctor: '::',
+																						_0: _elm_lang$html$Html$text('(an invitation will be sent)'),
+																						_1: {ctor: '[]'}
+																					}),
+																				_1: {
+																					ctor: '::',
+																					_0: A2(
+																						_elm_lang$html$Html$a,
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html_Attributes$class('remove-member'),
+																							_1: {ctor: '[]'}
+																						},
+																						{
+																							ctor: '::',
+																							_0: A2(
+																								_elm_lang$html$Html$i,
+																								{
+																									ctor: '::',
+																									_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+																									_1: {
+																										ctor: '::',
+																										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+																										_1: {ctor: '[]'}
+																									}
+																								},
+																								{ctor: '[]'}),
+																							_1: {ctor: '[]'}
+																						}),
+																					_1: {ctor: '[]'}
+																				}
+																			}
+																		}
+																	}),
+																_1: {ctor: '[]'}
 															}
-														}),
-													_1: {ctor: '[]'}
+														}
+													}
 												}
 											}
 										}
