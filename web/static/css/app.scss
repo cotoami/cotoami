@@ -347,19 +347,35 @@ html, body, #elm-container, #app, #app-body {
       width: 455px;
     }
     
-    @media (max-height: 500px) {
+    @media (max-height: 550px) {
       label {
         display: none;
       }
     }
     
+    div.member-input {
+      position: relative;
+      
+      input {
+        padding-right: 30px;
+      }
+      
+      a.add-member {
+        position: absolute;
+        right: 5px;
+        bottom: 15px;
+        color: black;
+        opacity: 0.1;
+      }
+    }
+    
     div.members {
       margin-bottom: 10px;
-      max-height: 35vh;
+      max-height: 30vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       
-      @media (max-height: 500px) {
+      @media (max-height: 550px) {
         max-height: 25vh;
       }
       
@@ -398,7 +414,7 @@ html, body, #elm-container, #app, #app-body {
             
             span.help-message {
               margin-left: 5px;
-              color: #ccc;
+              color: #ddd;
               font-size: 0.8em;
               word-wrap: break-word;
               white-space: normal;

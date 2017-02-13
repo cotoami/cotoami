@@ -117,7 +117,7 @@ modalConfig model =
                 , onInput NameInput
                 ] []
             ]
-        , div []
+        , div [ class "member-input" ]
             [ label [] [ text "Members" ]
             , input 
                 [ type_ "text"
@@ -125,6 +125,8 @@ modalConfig model =
                 , name "member"
                 , placeholder "member@example.com"
                 ] []
+            , a [ class "add-member", title "Add member" ] 
+                [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
             ]
         , div [ class "members" ]
             [ ul [ class "members" ]
