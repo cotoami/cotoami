@@ -111,6 +111,7 @@ modalConfig model =
                 [ type_ "text"
                 , class "u-full-width"
                 , name "name"
+                , placeholder "Name"
                 , maxlength nameMaxlength
                 , value model.name
                 , onInput NameInput

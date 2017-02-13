@@ -347,11 +347,21 @@ html, body, #elm-container, #app, #app-body {
       width: 455px;
     }
     
+    @media (max-height: 500px) {
+      label {
+        display: none;
+      }
+    }
+    
     div.members {
       margin-bottom: 10px;
-      max-height: 30vh;
+      max-height: 35vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      
+      @media (max-height: 500px) {
+        max-height: 25vh;
+      }
       
       ul.members {
         list-style-type: none;
@@ -407,6 +417,5 @@ html, body, #elm-container, #app, #app-body {
         }
       }
     }
-    
   }
 }

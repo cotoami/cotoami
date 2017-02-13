@@ -18765,14 +18765,18 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 											_0: _elm_lang$html$Html_Attributes$name('name'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$maxlength(_user$project$Components_CotonomaModal$nameMaxlength),
+												_0: _elm_lang$html$Html_Attributes$placeholder('Name'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value(model.name),
+													_0: _elm_lang$html$Html_Attributes$maxlength(_user$project$Components_CotonomaModal$nameMaxlength),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$html$Html_Attributes$value(model.name),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}
