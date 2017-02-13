@@ -357,13 +357,14 @@ html, body, #elm-container, #app, #app-body {
       position: relative;
       
       input {
+        margin-bottom: 6px;
         padding-right: 30px;
       }
       
       a.add-member {
         position: absolute;
         right: 5px;
-        bottom: 15px;
+        bottom: 6px;
         color: black;
         opacity: 0.1;
       }
@@ -411,24 +412,18 @@ html, body, #elm-container, #app, #app-body {
               word-wrap: break-word;
               white-space: normal;
             }
-            
-            span.help-message {
-              margin-left: 5px;
-              color: #ddd;
-              font-size: 0.8em;
-              word-wrap: break-word;
-              white-space: normal;
-            }
           }
           
-          img.avatar {
-            margin: 0;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            border-radius: 4px;
-            vertical-align: middle;
+          &.amishi {
+            img.avatar {
+              margin: 0;
+              padding: 0;
+              width: 24px;
+              height: 24px;
+              margin-right: 8px;
+              border-radius: 4px;
+              vertical-align: middle;
+            }
           }
         }
       }
