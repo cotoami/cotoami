@@ -362,6 +362,9 @@ html, body, #elm-container, #app, #app-body {
           margin-bottom: 6px;
           
           a.remove-member {
+            word-wrap: break-word;
+            white-space: normal;
+            
             i {
               color: #bbb;
               vertical-align: baseline;
@@ -371,6 +374,7 @@ html, body, #elm-container, #app, #app-body {
           
           &.not-amishi {
             color: #aaa;
+            white-space: nowrap;
             
             i {
               vertical-align: middle;
@@ -386,6 +390,8 @@ html, body, #elm-container, #app, #app-body {
               margin-left: 5px;
               color: #ccc;
               font-size: 0.8em;
+              word-wrap: break-word;
+              white-space: normal;
             }
           }
           
