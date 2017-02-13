@@ -116,6 +116,45 @@ modalConfig model =
                 , onInput NameInput
                 ] []
             ]
+        , div []
+            [ label [] [ text "Members" ]
+            , input 
+                [ type_ "text"
+                , class "u-full-width"
+                , name "member"
+                , placeholder "member@example.com"
+                ] []
+            ]
+        , div []
+            [ ul [ class "members" ]
+                [ li [ class "not-amishi" ]
+                    [ i [ class "material-icons" ] [ text "perm_identity" ]
+                    , text "member1@example.com"
+                    , span [ class "help-message" ] [ text "(an invitation will be sent)" ]
+                    , a [ class "remove-member" ] 
+                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+                    ]
+                , li [ class "amishi" ]
+                    [ img [ class "avatar", src "https://secure.gravatar.com/avatar/45c52eaf01a6b70fde670cfa900116cc" ] []
+                    , span [ class "name" ] [ text "テスト太郎" ]
+                    , a [ class "remove-member" ] 
+                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+                    ] 
+                , li [ class "amishi" ]
+                    [ img [ class "avatar", src "https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9" ] []
+                    , span [ class "name" ] [ text "Daisuke Morita" ]
+                    , a [ class "remove-member" ] 
+                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+                    ] 
+                , li [ class "not-amishi" ]
+                    [ i [ class "material-icons" ] [ text "perm_identity" ]
+                    , text "member2@example.com"
+                    , span [ class "help-message" ] [ text "(an invitation will be sent)" ]
+                    , a [ class "remove-member" ] 
+                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+                    ]
+                ]
+            ]
         ]
     , buttons = 
         [ button

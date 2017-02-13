@@ -346,5 +346,48 @@ html, body, #elm-container, #app, #app-body {
     @media (min-width: 550px) {
       width: 455px;
     }
+    
+    ul.members {
+      list-style-type: none;
+      
+      li {
+        margin-left: 12px;
+        margin-top: 6px;
+        margin-bottom: 6px;
+        
+        a.remove-member {
+          i {
+            color: #bbb;
+            vertical-align: baseline;
+            margin-left: 12px;
+          }
+        }
+        
+        &.not-amishi {
+          color: #aaa;
+          
+          i {
+            vertical-align: middle;
+            margin-right: 8px;
+          }
+          
+          span.help-message {
+            margin-left: 5px;
+            color: #ccc;
+            font-size: 0.8em;
+          }
+        }
+        
+        img.avatar {
+          margin: 0;
+          padding: 0;
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+          border-radius: 4px;
+          vertical-align: middle;
+        }
+      }
+    }
   }
 }
