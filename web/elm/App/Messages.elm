@@ -9,7 +9,7 @@ import Components.ProfileModal
 import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
-import Components.CotonomaModal
+import Components.CotonomaModal.Messages
 
 
 type Msg
@@ -29,4 +29,4 @@ type Msg
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
-    | CotonomaModalMsg Components.CotonomaModal.Msg
+    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg

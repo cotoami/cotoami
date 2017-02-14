@@ -16,7 +16,7 @@ import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
-import Components.CotonomaModal
+import Components.CotonomaModal.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -205,7 +205,7 @@ update msg model =
         CotonomaModalMsg subMsg ->
             let
                 ( cotonomaModal, timeline, cmd ) = 
-                    Components.CotonomaModal.update 
+                    Components.CotonomaModal.Update.update 
                         subMsg
                         model.cotonoma
                         model.timeline
