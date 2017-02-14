@@ -72,8 +72,17 @@ modalConfig session model =
                 ]
             ]
             [ ul [ class "members" ]
-                [ memberAsAmishi True session.avatarUrl session.displayName
-                ]
+                ((memberAsAmishi True session.avatarUrl session.displayName) :: 
+                    (List.map 
+                        (\member -> case member of
+                            SignedUp amishi ->
+                                memberAsAmishi False amishi.avatarUrl amishi.displayName
+                            NotYetSignedUp email ->
+                                memberAsNotAmishi email
+                        ) 
+                        (List.reverse model.members)
+                    )
+                )
             ]
         ]
     , buttons = 

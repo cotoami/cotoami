@@ -1,6 +1,7 @@
 module Components.CotonomaModal.Update exposing (..)
 
 import App.Types exposing (Session, Cotonoma)
+import App.Commands exposing (fetchAmishi)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages
 import Components.Timeline.Update
@@ -26,16 +27,30 @@ update msg maybeCotonoma timeline model =
             ( { model | memberEmail = memberEmail }, timeline, Cmd.none )
             
         AddMember ->
-            ( { model | memberEmail = "", membersLoading = True }
+            ( { model | membersLoading = True }
+            , timeline
+            , fetchAmishi AmishiFetched model.memberEmail
+            )
+            
+        AmishiFetched (Ok amishi) ->
+            ( { model 
+              | members = (SignedUp amishi) :: model.members
+              , membersLoading = False
+              , memberEmail = "" 
+              }
             , timeline
             , Cmd.none 
             )
             
-        AmishiFetched (Ok amishi) ->
-            ( model, timeline, Cmd.none )
-            
         AmishiFetched (Err _) ->
-            ( model, timeline, Cmd.none )
+            ( { model 
+              | members = (NotYetSignedUp model.memberEmail) :: model.members
+              , membersLoading = False
+              , memberEmail = "" 
+              }
+            , timeline
+            , Cmd.none 
+            )
             
         Post ->
             let

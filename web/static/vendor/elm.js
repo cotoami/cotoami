@@ -18492,11 +18492,23 @@ var _user$project$Components_ConfirmModal_Model$Model = F3(
 		return {open: a, message: b, msgOnConfirm: c};
 	});
 
-var _user$project$Components_CotonomaModal_Model$initModel = {open: false, name: '', memberEmail: '', membersLoading: false};
-var _user$project$Components_CotonomaModal_Model$Model = F4(
-	function (a, b, c, d) {
-		return {open: a, name: b, memberEmail: c, membersLoading: d};
+var _user$project$Components_CotonomaModal_Model$initModel = {
+	open: false,
+	name: '',
+	memberEmail: '',
+	membersLoading: false,
+	members: {ctor: '[]'}
+};
+var _user$project$Components_CotonomaModal_Model$Model = F5(
+	function (a, b, c, d, e) {
+		return {open: a, name: b, memberEmail: c, membersLoading: d, members: e};
 	});
+var _user$project$Components_CotonomaModal_Model$NotYetSignedUp = function (a) {
+	return {ctor: 'NotYetSignedUp', _0: a};
+};
+var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
+	return {ctor: 'SignedUp', _0: a};
+};
 
 var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, cotonoma: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal_Model$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing, cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel};
 var _user$project$App_Model$Model = function (a) {
@@ -18950,15 +18962,45 @@ var _user$project$Components_CotonomaModal_Update$update = F4(
 					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{memberEmail: '', membersLoading: true}),
+						{membersLoading: true}),
 					_1: timeline,
-					_2: _elm_lang$core$Platform_Cmd$none
+					_2: A2(_user$project$App_Commands$fetchAmishi, _user$project$Components_CotonomaModal_Messages$AmishiFetched, model.memberEmail)
 				};
 			case 'AmishiFetched':
 				if (_p0._0.ctor === 'Ok') {
-					return {ctor: '_Tuple3', _0: model, _1: timeline, _2: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple3',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								members: {
+									ctor: '::',
+									_0: _user$project$Components_CotonomaModal_Model$SignedUp(_p0._0._0),
+									_1: model.members
+								},
+								membersLoading: false,
+								memberEmail: ''
+							}),
+						_1: timeline,
+						_2: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
-					return {ctor: '_Tuple3', _0: model, _1: timeline, _2: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple3',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								members: {
+									ctor: '::',
+									_0: _user$project$Components_CotonomaModal_Model$NotYetSignedUp(model.memberEmail),
+									_1: model.members
+								},
+								membersLoading: false,
+								memberEmail: ''
+							}),
+						_1: timeline,
+						_2: _elm_lang$core$Platform_Cmd$none
+					};
 				}
 			case 'Post':
 				var defaultPost = _user$project$Components_Timeline_Model$defaultPost;
@@ -20557,7 +20599,18 @@ var _user$project$Components_CotonomaModal_View$modalConfig = F2(
 										{
 											ctor: '::',
 											_0: A3(_user$project$Components_CotonomaModal_View$memberAsAmishi, true, session.avatarUrl, session.displayName),
-											_1: {ctor: '[]'}
+											_1: A2(
+												_elm_lang$core$List$map,
+												function (member) {
+													var _p0 = member;
+													if (_p0.ctor === 'SignedUp') {
+														var _p1 = _p0._0;
+														return A3(_user$project$Components_CotonomaModal_View$memberAsAmishi, false, _p1.avatarUrl, _p1.displayName);
+													} else {
+														return _user$project$Components_CotonomaModal_View$memberAsNotAmishi(_p0._0);
+													}
+												},
+												_elm_lang$core$List$reverse(model.members))
 										}),
 									_1: {ctor: '[]'}
 								}),
@@ -20598,12 +20651,12 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 			_user$project$Modal$view,
 			'cotonoma-modal',
 			function () {
-				var _p0 = maybeSession;
-				if (_p0.ctor === 'Nothing') {
+				var _p2 = maybeSession;
+				if (_p2.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return model.open ? _elm_lang$core$Maybe$Just(
-						A2(_user$project$Components_CotonomaModal_View$modalConfig, _p0._0, model)) : _elm_lang$core$Maybe$Nothing;
+						A2(_user$project$Components_CotonomaModal_View$modalConfig, _p2._0, model)) : _elm_lang$core$Maybe$Nothing;
 				}
 			}());
 	});
