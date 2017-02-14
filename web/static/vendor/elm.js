@@ -20610,7 +20610,7 @@ var _user$project$Components_CotonomaModal_View$modalConfig = F2(
 														return _user$project$Components_CotonomaModal_View$memberAsNotAmishi(_p0._0);
 													}
 												},
-												_elm_lang$core$List$reverse(model.members))
+												model.members)
 										}),
 									_1: {ctor: '[]'}
 								}),

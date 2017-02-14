@@ -80,7 +80,7 @@ modalConfig session model =
                             NotYetSignedUp email ->
                                 memberAsNotAmishi email
                         ) 
-                        (List.reverse model.members)
+                        model.members
                     )
                 )
             ]
