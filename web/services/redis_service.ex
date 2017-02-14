@@ -14,7 +14,12 @@ defmodule Cotoami.RedisService do
       case Redix.command(conn, ["LRANGE", anonymous_key(anonymous_id), "0", "1000"]) do
         {:ok, cotos} ->
           if cotos do
-            Enum.map(cotos, &(Poison.decode!(&1)))
+            Enum.map(cotos, fn coto ->
+              Map.merge(Poison.decode!(coto), %{
+                as_cotonoma: false, 
+                cotonoma_key: ""
+              })
+            end)
           else
             []
           end
