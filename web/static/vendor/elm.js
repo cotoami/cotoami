@@ -14111,7 +14111,7 @@ var _user$project$Components_ProfileModal$Model = function (a) {
 };
 var _user$project$Components_ProfileModal$Close = {ctor: 'Close'};
 var _user$project$Components_ProfileModal$modalConfig = F2(
-	function (model, session) {
+	function (session, model) {
 		return {
 			closeMessage: _user$project$Components_ProfileModal$Close,
 			title: 'Amishi Profile',
@@ -14284,7 +14284,7 @@ var _user$project$Components_ProfileModal$modalConfig = F2(
 		};
 	});
 var _user$project$Components_ProfileModal$view = F2(
-	function (model, maybeSession) {
+	function (maybeSession, model) {
 		return A2(
 			_user$project$Modal$view,
 			'profile-modal',
@@ -14294,7 +14294,7 @@ var _user$project$Components_ProfileModal$view = F2(
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return model.open ? _elm_lang$core$Maybe$Just(
-						A2(_user$project$Components_ProfileModal$modalConfig, model, _p1._0)) : _elm_lang$core$Maybe$Nothing;
+						A2(_user$project$Components_ProfileModal$modalConfig, _p1._0, model)) : _elm_lang$core$Maybe$Nothing;
 				}
 			}());
 	});
@@ -18703,6 +18703,159 @@ var _user$project$Components_CotonomaModal$validateName = function (string) {
 		_elm_lang$core$String$length(string),
 		_user$project$Components_CotonomaModal$nameMaxlength) < 1);
 };
+var _user$project$Components_CotonomaModal$memberAsAmishi = F3(
+	function (isOwner, avatarUrl, name) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'amishi', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'owner', _1: isOwner},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('avatar'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src(avatarUrl),
+							_1: {ctor: '[]'}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('name'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(name),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: isOwner ? A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('owner-help'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('(owner)'),
+								_1: {ctor: '[]'}
+							}) : A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('remove-member'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$i,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+											_1: {ctor: '[]'}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Components_CotonomaModal$memberAsNotAmishi = function (email) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('not-amishi'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('perm_identity'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('email'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(email),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('remove-member'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$Components_CotonomaModal$initModel = {open: false, name: '', memberEmail: ''};
 var _user$project$Components_CotonomaModal$Model = F3(
 	function (a, b, c) {
@@ -18731,74 +18884,19 @@ var _user$project$Components_CotonomaModal$NameInput = function (a) {
 	return {ctor: 'NameInput', _0: a};
 };
 var _user$project$Components_CotonomaModal$Close = {ctor: 'Close'};
-var _user$project$Components_CotonomaModal$modalConfig = function (model) {
-	return {
-		closeMessage: _user$project$Components_CotonomaModal$Close,
-		title: 'Cotonoma',
-		content: A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$label,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Name'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$type_('text'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$name('name'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$placeholder('Name'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$maxlength(_user$project$Components_CotonomaModal$nameMaxlength),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$value(model.name),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {
+var _user$project$Components_CotonomaModal$modalConfig = F2(
+	function (session, model) {
+		return {
+			closeMessage: _user$project$Components_CotonomaModal$Close,
+			title: 'Cotonoma',
+			content: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('member-input'),
-							_1: {ctor: '[]'}
-						},
+						{ctor: '[]'},
 						{
 							ctor: '::',
 							_0: A2(
@@ -18806,7 +18904,7 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('Members'),
+									_0: _elm_lang$html$Html$text('Name'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -18821,17 +18919,21 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$name('member'),
+												_0: _elm_lang$html$Html_Attributes$name('name'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$placeholder('member@example.com'),
+													_0: _elm_lang$html$Html_Attributes$placeholder('Name'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$value(model.memberEmail),
+														_0: _elm_lang$html$Html_Attributes$maxlength(_user$project$Components_CotonomaModal$nameMaxlength),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$MemberEmailInput),
-															_1: {ctor: '[]'}
+															_0: _elm_lang$html$Html_Attributes$value(model.name),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$NameInput),
+																_1: {ctor: '[]'}
+															}
 														}
 													}
 												}
@@ -18839,50 +18941,7 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 										}
 									},
 									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'add-member', _1: true},
-													_1: {
-														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'disabled',
-															_1: !_user$project$Utils$validateEmail(model.memberEmail)
-														},
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$title('Add member'),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$i,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('add_circle_outline'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							}
 						}),
 					_1: {
@@ -18891,26 +18950,74 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('members'),
+								_0: _elm_lang$html$Html_Attributes$class('member-input'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$ul,
+									_elm_lang$html$Html$label,
+									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('members'),
+										_0: _elm_lang$html$Html$text('Members'),
 										_1: {ctor: '[]'}
-									},
-									{
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$input,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$type_('text'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$name('member'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$placeholder('member@example.com'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$value(model.memberEmail),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CotonomaModal$MemberEmailInput),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$li,
+											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('not-amishi'),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'add-member', _1: true},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'disabled',
+																_1: !_user$project$Utils$validateEmail(model.memberEmail)
+															},
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$title('Add member'),
+													_1: {ctor: '[]'}
+												}
 											},
 											{
 												ctor: '::',
@@ -18923,233 +19030,91 @@ var _user$project$Components_CotonomaModal$modalConfig = function (model) {
 													},
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text('perm_identity'),
+														_0: _elm_lang$html$Html$text('add_circle_outline'),
 														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$span,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('email'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('member1@example.com'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$a,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('remove-member'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$html$Html$i,
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
-																		_1: {
-																			ctor: '::',
-																			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-																			_1: {ctor: '[]'}
-																		}
-																	},
-																	{ctor: '[]'}),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$li,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('amishi'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$img,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('avatar'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src('https://secure.gravatar.com/avatar/45c52eaf01a6b70fde670cfa900116cc'),
-																_1: {ctor: '[]'}
-															}
-														},
-														{ctor: '[]'}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$span,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('name'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('テスト太郎'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {
-															ctor: '::',
-															_0: A2(
-																_elm_lang$html$Html$a,
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('remove-member'),
-																	_1: {ctor: '[]'}
-																},
-																{
-																	ctor: '::',
-																	_0: A2(
-																		_elm_lang$html$Html$i,
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
-																			_1: {
-																				ctor: '::',
-																				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-																				_1: {ctor: '[]'}
-																			}
-																		},
-																		{ctor: '[]'}),
-																	_1: {ctor: '[]'}
-																}),
-															_1: {ctor: '[]'}
-														}
-													}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$li,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('amishi'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$img,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('avatar'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$src('https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9'),
-																	_1: {ctor: '[]'}
-																}
-															},
-															{ctor: '[]'}),
-														_1: {
-															ctor: '::',
-															_0: A2(
-																_elm_lang$html$Html$span,
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('name'),
-																	_1: {ctor: '[]'}
-																},
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('Daisuke Morita'),
-																	_1: {ctor: '[]'}
-																}),
-															_1: {
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$html$Html$a,
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('remove-member'),
-																		_1: {ctor: '[]'}
-																	},
-																	{
-																		ctor: '::',
-																		_0: A2(
-																			_elm_lang$html$Html$i,
-																			{
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
-																				_1: {
-																					ctor: '::',
-																					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-																					_1: {ctor: '[]'}
-																				}
-																			},
-																			{ctor: '[]'}),
-																		_1: {ctor: '[]'}
-																	}),
-																_1: {ctor: '[]'}
-															}
-														}
 													}),
 												_1: {ctor: '[]'}
-											}
-										}
-									}),
-								_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
 							}),
-						_1: {ctor: '[]'}
-					}
-				}
-			}),
-		buttons: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$disabled(
-							!_user$project$Components_CotonomaModal$validateName(model.name)),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal$Post),
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('members'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$ul,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('members'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A3(_user$project$Components_CotonomaModal$memberAsAmishi, true, session.avatarUrl, session.displayName),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}
 					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Create'),
-					_1: {ctor: '[]'}
 				}),
-			_1: {ctor: '[]'}
-		}
-	};
-};
-var _user$project$Components_CotonomaModal$view = function (model) {
-	return A2(
-		_user$project$Modal$view,
-		'cotonoma-modal',
-		model.open ? _elm_lang$core$Maybe$Just(
-			_user$project$Components_CotonomaModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
-};
+			buttons: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$disabled(
+								!_user$project$Components_CotonomaModal$validateName(model.name)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal$Post),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Create'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		};
+	});
+var _user$project$Components_CotonomaModal$view = F2(
+	function (maybeSession, model) {
+		return A2(
+			_user$project$Modal$view,
+			'cotonoma-modal',
+			function () {
+				var _p1 = maybeSession;
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return model.open ? _elm_lang$core$Maybe$Just(
+						A2(_user$project$Components_CotonomaModal$modalConfig, _p1._0, model)) : _elm_lang$core$Maybe$Nothing;
+				}
+			}());
+	});
 var _user$project$Components_CotonomaModal$NoOp = {ctor: 'NoOp'};
 var _user$project$Components_CotonomaModal$update = F4(
 	function (msg, maybeCotonoma, timeline, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return {ctor: '_Tuple3', _0: model, _1: timeline, _2: _elm_lang$core$Platform_Cmd$none};
 			case 'Close':
@@ -19166,7 +19131,7 @@ var _user$project$Components_CotonomaModal$update = F4(
 					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{name: _p1._0}),
+						{name: _p2._0}),
 					_1: timeline,
 					_2: _elm_lang$core$Platform_Cmd$none
 				};
@@ -19175,7 +19140,7 @@ var _user$project$Components_CotonomaModal$update = F4(
 					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{memberEmail: _p1._0}),
+						{memberEmail: _p2._0}),
 					_1: timeline,
 					_2: _elm_lang$core$Platform_Cmd$none
 				};
@@ -19213,15 +19178,15 @@ var _user$project$Components_CotonomaModal$update = F4(
 						})
 				};
 			default:
-				if (_p1._0.ctor === 'Ok') {
-					var _p2 = A4(
+				if (_p2._0.ctor === 'Ok') {
+					var _p3 = A4(
 						_user$project$Components_Timeline_Update$update,
 						_user$project$Components_Timeline_Messages$Posted(
-							_elm_lang$core$Result$Ok(_p1._0._0)),
+							_elm_lang$core$Result$Ok(_p2._0._0)),
 						timeline,
 						maybeCotonoma,
 						false);
-					var newTimeline = _p2._0;
+					var newTimeline = _p3._0;
 					return {ctor: '_Tuple3', _0: model, _1: newTimeline, _2: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple3', _0: model, _1: timeline, _2: _elm_lang$core$Platform_Cmd$none};
@@ -20636,7 +20601,7 @@ var _user$project$App_View$view = function (model) {
 							_0: A2(
 								_elm_lang$html$Html$map,
 								_user$project$App_Messages$ProfileModalMsg,
-								A2(_user$project$Components_ProfileModal$view, model.profileModal, model.session)),
+								A2(_user$project$Components_ProfileModal$view, model.session, model.profileModal)),
 							_1: {
 								ctor: '::',
 								_0: A2(
@@ -20648,7 +20613,7 @@ var _user$project$App_View$view = function (model) {
 									_0: A2(
 										_elm_lang$html$Html$map,
 										_user$project$App_Messages$CotonomaModalMsg,
-										_user$project$Components_CotonomaModal$view(model.cotonomaModal)),
+										A2(_user$project$Components_CotonomaModal$view, model.session, model.cotonomaModal)),
 									_1: {
 										ctor: '::',
 										_0: A2(

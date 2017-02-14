@@ -429,8 +429,16 @@ html, body, #elm-container, #app, #app-body {
               vertical-align: middle;
             }
           }
-        }
-      }
-    }
-  }
+          
+          &.owner {
+            span.owner-help {
+              margin-left: 6px;
+              color: #ccc;
+            }
+          }
+        }   // li
+      }   // ul.members
+    }   // div.members
+  }   // #cotonoma-modal 
+  
 }

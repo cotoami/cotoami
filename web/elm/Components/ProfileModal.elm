@@ -27,23 +27,23 @@ update msg model =
             ( { model | open = False }, Cmd.none )
 
 
-view : Model -> Maybe Session -> Html Msg
-view model maybeSession =
+view : Maybe Session -> Model -> Html Msg
+view maybeSession model =
     Modal.view
         "profile-modal"
         (case maybeSession of
             Nothing -> Nothing
             Just session -> 
                 (if model.open then
-                    Just (modalConfig model session)
+                    Just (modalConfig session model)
                  else
                     Nothing
                 )
         )
 
 
-modalConfig : Model -> Session -> Modal.Config Msg
-modalConfig model session =
+modalConfig : Session -> Model -> Modal.Config Msg
+modalConfig session model =
     { closeMessage = Close
     , title = "Amishi Profile"
     , content = div []

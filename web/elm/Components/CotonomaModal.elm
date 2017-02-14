@@ -7,7 +7,7 @@ import Json.Encode as Encode
 import Http
 import Utils exposing (isBlank, validateEmail)
 import Modal
-import App.Types exposing (Cotonoma)
+import App.Types exposing (Session, Cotonoma)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Model exposing (Post, decodePost)
 import Components.Timeline.Commands exposing (scrollToBottom)
@@ -95,19 +95,23 @@ update msg maybeCotonoma timeline model =
             ( model, timeline, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
+view : Maybe Session -> Model -> Html Msg
+view maybeSession model =
     Modal.view
         "cotonoma-modal"
-        (if model.open then
-            Just (modalConfig model)
-         else
-            Nothing
+        (case maybeSession of
+            Nothing -> Nothing
+            Just session -> 
+                (if model.open then
+                    Just (modalConfig session model)
+                 else
+                    Nothing
+                )
         )
-      
+        
 
-modalConfig : Model -> Modal.Config Msg
-modalConfig model =
+modalConfig : Session -> Model -> Modal.Config Msg
+modalConfig session model =
     { closeMessage = Close
     , title = "Cotonoma"
     , content = div []
@@ -144,24 +148,7 @@ modalConfig model =
             ]
         , div [ class "members" ]
             [ ul [ class "members" ]
-                [ li [ class "not-amishi" ]
-                    [ i [ class "material-icons" ] [ text "perm_identity" ]
-                    , span [ class "email" ] [ text "member1@example.com" ]
-                    , a [ class "remove-member" ] 
-                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
-                    ]
-                , li [ class "amishi" ]
-                    [ img [ class "avatar", src "https://secure.gravatar.com/avatar/45c52eaf01a6b70fde670cfa900116cc" ] []
-                    , span [ class "name" ] [ text "テスト太郎" ]
-                    , a [ class "remove-member" ] 
-                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
-                    ] 
-                , li [ class "amishi" ]
-                    [ img [ class "avatar", src "https://secure.gravatar.com/avatar/1d413392f15b8659a825fb6bab7396a9" ] []
-                    , span [ class "name" ] [ text "Daisuke Morita" ]
-                    , a [ class "remove-member" ] 
-                        [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
-                    ] 
+                [ memberAsAmishi True session.avatarUrl session.displayName
                 ]
             ]
         ]
@@ -174,7 +161,35 @@ modalConfig model =
             [ text "Create" ]
         ]
     }
+
+
+memberAsNotAmishi : String -> Html Msg
+memberAsNotAmishi email =
+    li [ class "not-amishi" ]
+        [ i [ class "material-icons" ] [ text "perm_identity" ]
+        , span [ class "email" ] [ text email ]
+        , a [ class "remove-member" ] 
+            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+        ]
+        
     
+memberAsAmishi : Bool -> String -> String -> Html Msg
+memberAsAmishi isOwner avatarUrl name =
+    li 
+        [ classList
+            [ ( "amishi", True )
+            , ( "owner", isOwner )
+            ]
+        ]
+        [ img [ class "avatar", src avatarUrl ] []
+        , span [ class "name" ] [ text name ]
+        , if isOwner then
+            span [ class "owner-help" ] [ text "(owner)" ]
+          else
+            a [ class "remove-member" ] 
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+        ] 
+
 
 nameMaxlength : Int
 nameMaxlength = 30

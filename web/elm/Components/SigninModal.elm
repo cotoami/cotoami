@@ -65,7 +65,7 @@ requestSignin email saveAnonymous =
         url = "/api/signin/request/" ++ email ++
             (if saveAnonymous then "/yes" else "/no")
     in
-      Http.send RequestDone (Http.get url Decode.string)
+        Http.send RequestDone (Http.get url Decode.string)
 
 
 view : Model -> Bool -> Html Msg

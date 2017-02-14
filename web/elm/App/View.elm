@@ -35,11 +35,11 @@ view model =
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
-              (Components.ProfileModal.view model.profileModal model.session)
+              (Components.ProfileModal.view model.session model.profileModal)
           , Html.map CotoModalMsg 
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg 
-              (Components.CotonomaModal.view model.cotonomaModal)
+              (Components.CotonomaModal.view model.session model.cotonomaModal)
           , a 
               [ class "info-button"
               , title "News and Feedback"
