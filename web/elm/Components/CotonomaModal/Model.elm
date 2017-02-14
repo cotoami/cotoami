@@ -5,6 +5,7 @@ type alias Model =
     { open : Bool
     , name : String
     , memberEmail : String
+    , membersLoading : Bool
     }
 
 
@@ -13,4 +14,5 @@ initModel =
     { open = False
     , name = ""
     , memberEmail = ""
+    , membersLoading = False
     }

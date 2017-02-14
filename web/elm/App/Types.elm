@@ -18,6 +18,23 @@ decodeSession =
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
+        
+        
+type alias Amishi =
+    { id : Int
+    , email : String
+    , avatarUrl : String
+    , displayName : String
+    }
+
+
+decodeAmishi : Decode.Decoder Amishi
+decodeAmishi =
+    Decode.map4 Amishi
+        (Decode.field "id" Decode.int)
+        (Decode.field "email" Decode.string)
+        (Decode.field "avatar_url" Decode.string)
+        (Decode.field "display_name" Decode.string)
 
 
 type alias Coto =

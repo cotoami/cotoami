@@ -384,6 +384,10 @@ html, body, #elm-container, #app, #app-body {
         max-height: 25vh;
       }
       
+      &.loading {
+        background: url(../images/loading.gif) center no-repeat #fff;
+      }
+      
       ul.members {
         list-style-type: none;
         

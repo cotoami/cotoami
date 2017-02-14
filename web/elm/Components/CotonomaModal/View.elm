@@ -58,10 +58,19 @@ modalConfig session model =
                     , ( "disabled", not (validateEmail model.memberEmail) )
                     ]
                 , title "Add member"
+                , if validateEmail model.memberEmail then 
+                    onClick AddMember 
+                  else
+                    onClick NoOp
                 ] 
                 [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
             ]
-        , div [ class "members" ]
+        , div 
+            [ classList 
+                [ ( "members", True )
+                , ( "loading", model.membersLoading )
+                ]
+            ]
             [ ul [ class "members" ]
                 [ memberAsAmishi True session.avatarUrl session.displayName
                 ]

@@ -25,6 +25,18 @@ update msg maybeCotonoma timeline model =
         MemberEmailInput memberEmail ->
             ( { model | memberEmail = memberEmail }, timeline, Cmd.none )
             
+        AddMember ->
+            ( { model | memberEmail = "", membersLoading = True }
+            , timeline
+            , Cmd.none 
+            )
+            
+        AmishiFetched (Ok amishi) ->
+            ( model, timeline, Cmd.none )
+            
+        AmishiFetched (Err _) ->
+            ( model, timeline, Cmd.none )
+            
         Post ->
             let
                 postId = timeline.postIdCounter + 1
