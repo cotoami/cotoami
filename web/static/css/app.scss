@@ -365,6 +365,10 @@ html, body, #elm-container, #app, #app-body {
         position: absolute;
         right: 5px;
         bottom: 6px;
+        color: #1eaedb;
+      }
+      
+      a.add-member.disabled {
         color: black;
         opacity: 0.1;
       }

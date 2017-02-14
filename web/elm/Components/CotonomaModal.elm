@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as Encode
 import Http
-import Utils exposing (isBlank)
+import Utils exposing (isBlank, validateEmail)
 import Modal
 import App.Types exposing (Cotonoma)
 import Components.Timeline.Model as Timeline
@@ -18,6 +18,7 @@ import Components.Timeline.Messages
 type alias Model =
     { open : Bool
     , name : String
+    , memberEmail : String
     }
 
 
@@ -25,6 +26,7 @@ initModel : Model
 initModel =
     { open = False
     , name = ""
+    , memberEmail = ""
     }
     
 
@@ -32,6 +34,7 @@ type Msg
     = NoOp
     | Close
     | NameInput String
+    | MemberEmailInput String
     | Post
     | Posted (Result Http.Error Post)
 
@@ -47,6 +50,9 @@ update msg maybeCotonoma timeline model =
             
         NameInput content ->
             ( { model | name = content }, timeline, Cmd.none )
+            
+        MemberEmailInput memberEmail ->
+            ( { model | memberEmail = memberEmail }, timeline, Cmd.none )
             
         Post ->
             let
@@ -124,8 +130,16 @@ modalConfig model =
                 , class "u-full-width"
                 , name "member"
                 , placeholder "member@example.com"
+                , value model.memberEmail
+                , onInput MemberEmailInput
                 ] []
-            , a [ class "add-member", title "Add member" ] 
+            , a 
+                [ classList
+                    [ ( "add-member", True )
+                    , ( "disabled", not (validateEmail model.memberEmail) )
+                    ]
+                , title "Add member"
+                ] 
                 [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
             ]
         , div [ class "members" ]
