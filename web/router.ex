@@ -33,6 +33,7 @@ defmodule Cotoami.Router do
     pipe_through :api
     
     get "/session", SessionController, :index
+    get "/amishis/email/:email", AmishiController, :show_by_email
     resources "/cotos", CotoController, only: [:index, :create, :delete]
     resources "/cotonomas", CotonomaController, only: [:create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
