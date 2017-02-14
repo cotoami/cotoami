@@ -20422,7 +20422,7 @@ var _user$project$Components_CotonomaModal_View$modalConfig = F2(
 													_0: _elm_lang$html$Html_Attributes$name('member'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$placeholder('member@example.com'),
+														_0: _elm_lang$html$Html_Attributes$placeholder('Email address to invite'),
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$html$Html_Attributes$value(model.memberEmail),

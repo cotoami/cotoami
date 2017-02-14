@@ -48,7 +48,7 @@ modalConfig session model =
                 [ type_ "text"
                 , class "u-full-width"
                 , name "member"
-                , placeholder "member@example.com"
+                , placeholder "Email address to invite"
                 , value model.memberEmail
                 , onInput MemberEmailInput
                 ] []
