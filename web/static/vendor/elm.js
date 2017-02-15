@@ -18920,8 +18920,31 @@ var _user$project$Components_Timeline_Update$update = F4(
 		}
 	});
 
-var _user$project$Components_CotonomaModal_Commands$encodeCotonoma = F3(
-	function (maybeCotonoma, postId, name) {
+var _user$project$Components_CotonomaModal_Commands$encodeMember = function (member) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: function () {
+				var _p0 = member;
+				if (_p0.ctor === 'SignedUp') {
+					return {
+						ctor: '_Tuple2',
+						_0: 'amishi_id',
+						_1: _elm_lang$core$Json_Encode$int(_p0._0.id)
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: 'email',
+						_1: _elm_lang$core$Json_Encode$string(_p0._0)
+					};
+				}
+			}(),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Components_CotonomaModal_Commands$encodeCotonoma = F4(
+	function (maybeCotonoma, postId, members, name) {
 		return _elm_lang$core$Json_Encode$object(
 			{
 				ctor: '::',
@@ -18935,11 +18958,11 @@ var _user$project$Components_CotonomaModal_Commands$encodeCotonoma = F3(
 								ctor: '_Tuple2',
 								_0: 'cotonoma_id',
 								_1: function () {
-									var _p0 = maybeCotonoma;
-									if (_p0.ctor === 'Nothing') {
+									var _p1 = maybeCotonoma;
+									if (_p1.ctor === 'Nothing') {
 										return _elm_lang$core$Json_Encode$null;
 									} else {
-										return _elm_lang$core$Json_Encode$int(_p0._0.id);
+										return _elm_lang$core$Json_Encode$int(_p1._0.id);
 									}
 								}()
 							},
@@ -18957,7 +18980,21 @@ var _user$project$Components_CotonomaModal_Commands$encodeCotonoma = F3(
 										_0: 'name',
 										_1: _elm_lang$core$Json_Encode$string(name)
 									},
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'members',
+											_1: _elm_lang$core$Json_Encode$list(
+												A2(
+													_elm_lang$core$List$map,
+													function (m) {
+														return _user$project$Components_CotonomaModal_Commands$encodeMember(m);
+													},
+													members))
+										},
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						})
@@ -18965,8 +19002,8 @@ var _user$project$Components_CotonomaModal_Commands$encodeCotonoma = F3(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Components_CotonomaModal_Commands$postCotonoma = F3(
-	function (maybeCotonoma, postId, name) {
+var _user$project$Components_CotonomaModal_Commands$postCotonoma = F4(
+	function (maybeCotonoma, postId, members, name) {
 		return A2(
 			_elm_lang$http$Http$send,
 			_user$project$Components_CotonomaModal_Messages$Posted,
@@ -18974,7 +19011,7 @@ var _user$project$Components_CotonomaModal_Commands$postCotonoma = F3(
 				_elm_lang$http$Http$post,
 				'/api/cotonomas',
 				_elm_lang$http$Http$jsonBody(
-					A3(_user$project$Components_CotonomaModal_Commands$encodeCotonoma, maybeCotonoma, postId, name)),
+					A4(_user$project$Components_CotonomaModal_Commands$encodeCotonoma, maybeCotonoma, postId, members, name)),
 				_user$project$Components_Timeline_Model$decodePost));
 	});
 
@@ -19068,9 +19105,7 @@ var _user$project$Components_CotonomaModal_Update$update = F5(
 					});
 				return {
 					ctor: '_Tuple3',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{open: false, name: ''}),
+					_0: _user$project$Components_CotonomaModal_Model$initModel,
 					_1: _elm_lang$core$Native_Utils.update(
 						timeline,
 						{
@@ -19083,7 +19118,7 @@ var _user$project$Components_CotonomaModal_Update$update = F5(
 							_0: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_CotonomaModal_Messages$NoOp),
 							_1: {
 								ctor: '::',
-								_0: A3(_user$project$Components_CotonomaModal_Commands$postCotonoma, maybeCotonoma, postId, model.name),
+								_0: A4(_user$project$Components_CotonomaModal_Commands$postCotonoma, maybeCotonoma, postId, model.members, model.name),
 								_1: {ctor: '[]'}
 							}
 						})

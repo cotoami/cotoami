@@ -69,17 +69,14 @@ update msg session maybeCotonoma timeline model =
                     , asCotonoma = True
                     }
             in
-                ( { model 
-                  | open = False
-                  , name = "" 
-                  }
+                ( initModel
                 , { timeline 
                   | posts = newPost :: timeline.posts
                   , postIdCounter = postId
                   }
                 , Cmd.batch
                     [ scrollToBottom NoOp
-                    , postCotonoma maybeCotonoma postId model.name 
+                    , postCotonoma maybeCotonoma postId model.members model.name 
                     ]
                 )
                 
