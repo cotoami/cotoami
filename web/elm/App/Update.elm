@@ -203,16 +203,20 @@ update msg model =
                 { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
         CotonomaModalMsg subMsg ->
-            let
-                ( cotonomaModal, timeline, cmd ) = 
-                    Components.CotonomaModal.Update.update 
-                        subMsg
-                        model.cotonoma
-                        model.timeline
-                        model.cotonomaModal
-            in
-                { model | cotonomaModal = cotonomaModal, timeline = timeline }
-                    ! [ Cmd.map CotonomaModalMsg cmd ]
+            case model.session of
+                Nothing -> model ! []
+                Just session -> 
+                    let
+                        ( cotonomaModal, timeline, cmd ) = 
+                            Components.CotonomaModal.Update.update
+                                subMsg
+                                session
+                                model.cotonoma
+                                model.timeline
+                                model.cotonomaModal
+                    in
+                        { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                            ! [ Cmd.map CotonomaModalMsg cmd ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

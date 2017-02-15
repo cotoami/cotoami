@@ -18492,16 +18492,34 @@ var _user$project$Components_ConfirmModal_Model$Model = F3(
 		return {open: a, message: b, msgOnConfirm: c};
 	});
 
-var _user$project$Components_CotonomaModal_Model$addMember = F2(
-	function (model, member) {
+var _user$project$Components_CotonomaModal_Model$containsMember = F3(
+	function (session, model, email) {
+		return _elm_lang$core$Native_Utils.eq(session.email, email) ? true : A2(
+			_elm_lang$core$List$any,
+			function (member) {
+				var _p0 = member;
+				if (_p0.ctor === 'SignedUp') {
+					return _elm_lang$core$Native_Utils.eq(_p0._0.email, email);
+				} else {
+					return _elm_lang$core$Native_Utils.eq(_p0._0, email);
+				}
+			},
+			model.members);
+	});
+var _user$project$Components_CotonomaModal_Model$addMember = F3(
+	function (session, member, model) {
+		var email = function () {
+			var _p1 = member;
+			if (_p1.ctor === 'SignedUp') {
+				return _p1._0.email;
+			} else {
+				return _p1._0;
+			}
+		}();
+		var members = A3(_user$project$Components_CotonomaModal_Model$containsMember, session, model, email) ? model.members : {ctor: '::', _0: member, _1: model.members};
 		return _elm_lang$core$Native_Utils.update(
 			model,
-			{
-				members: {ctor: '::', _0: member, _1: model.members},
-				membersLoading: false,
-				memberEmail: '',
-				memberEmailValid: false
-			});
+			{members: members, membersLoading: false, memberEmail: '', memberEmailValid: false});
 	});
 var _user$project$Components_CotonomaModal_Model$initModel = {
 	open: false,
@@ -18936,8 +18954,8 @@ var _user$project$Components_CotonomaModal_Commands$postCotonoma = F3(
 				_user$project$Components_Timeline_Model$decodePost));
 	});
 
-var _user$project$Components_CotonomaModal_Update$update = F4(
-	function (msg, maybeCotonoma, timeline, model) {
+var _user$project$Components_CotonomaModal_Update$update = F5(
+	function (msg, session, maybeCotonoma, timeline, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'NoOp':
@@ -18986,20 +19004,22 @@ var _user$project$Components_CotonomaModal_Update$update = F4(
 				if (_p0._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple3',
-						_0: A2(
+						_0: A3(
 							_user$project$Components_CotonomaModal_Model$addMember,
-							model,
-							_user$project$Components_CotonomaModal_Model$SignedUp(_p0._0._0)),
+							session,
+							_user$project$Components_CotonomaModal_Model$SignedUp(_p0._0._0),
+							model),
 						_1: timeline,
 						_2: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {
 						ctor: '_Tuple3',
-						_0: A2(
+						_0: A3(
 							_user$project$Components_CotonomaModal_Model$addMember,
-							model,
-							_user$project$Components_CotonomaModal_Model$NotYetSignedUp(model.memberEmail)),
+							session,
+							_user$project$Components_CotonomaModal_Model$NotYetSignedUp(model.memberEmail),
+							model),
 						_1: timeline,
 						_2: _elm_lang$core$Platform_Cmd$none
 					};
@@ -19421,20 +19441,28 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			default:
-				var _p18 = A4(_user$project$Components_CotonomaModal_Update$update, _p1._0, model.cotonoma, model.timeline, model.cotonomaModal);
-				var cotonomaModal = _p18._0;
-				var timeline = _p18._1;
-				var cmd = _p18._2;
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
+				var _p18 = model.session;
+				if (_p18.ctor === 'Nothing') {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
-						{cotonomaModal: cotonomaModal, timeline: timeline}),
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
-						_1: {ctor: '[]'}
-					});
+						{ctor: '[]'});
+				} else {
+					var _p19 = A5(_user$project$Components_CotonomaModal_Update$update, _p1._0, _p18._0, model.cotonoma, model.timeline, model.cotonomaModal);
+					var cotonomaModal = _p19._0;
+					var timeline = _p19._1;
+					var cmd = _p19._2;
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{cotonomaModal: cotonomaModal, timeline: timeline}),
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
+							_1: {ctor: '[]'}
+						});
+				}
 		}
 	});
 
