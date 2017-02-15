@@ -42,29 +42,7 @@ modalConfig session model =
                 , onInput NameInput
                 ] []
             ]
-        , div [ class "member-input" ]
-            [ label [] [ text "Members" ]
-            , input 
-                [ type_ "text"
-                , class "u-full-width"
-                , name "member"
-                , placeholder "Email address to invite"
-                , value model.memberEmail
-                , onInput MemberEmailInput
-                ] []
-            , a 
-                [ classList
-                    [ ( "add-member", True )
-                    , ( "disabled", not (validateEmail model.memberEmail) )
-                    ]
-                , title "Add member"
-                , if validateEmail model.memberEmail then 
-                    onClick AddMember 
-                  else
-                    onClick NoOp
-                ] 
-                [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
-            ]
+        , memberInputDiv model
         , div 
             [ classList 
                 [ ( "members", True )
@@ -95,6 +73,33 @@ modalConfig session model =
         ]
     }
 
+
+memberInputDiv : Model -> Html Msg
+memberInputDiv model =
+    div [ class "member-input" ]
+        [ label [] [ text "Members" ]
+        , input 
+            [ type_ "text"
+            , class "u-full-width"
+            , name "member"
+            , placeholder "Email address to invite"
+            , value model.memberEmail
+            , onInput MemberEmailInput
+            ] []
+        , a 
+            [ classList
+                [ ( "add-member", True )
+                , ( "disabled", not (validateEmail model.memberEmail) )
+                ]
+            , title "Add member"
+            , if validateEmail model.memberEmail then 
+                onClick AddMember 
+              else
+                onClick NoOp
+            ] 
+            [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
+        ]
+        
 
 memberAsNotAmishi : String -> Html Msg
 memberAsNotAmishi email =
