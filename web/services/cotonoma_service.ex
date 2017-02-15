@@ -4,8 +4,10 @@ defmodule Cotoami.CotonomaService do
   alias Cotoami.Repo
   alias Cotoami.Coto
   alias Cotoami.Cotonoma
+  alias Cotoami.Member
+  alias Cotoami.AmishiService
   
-  def create!(cotonoma_id, amishi_id, name) do
+  def create!(cotonoma_id, amishi_id, name, member_params) do
     # TODO: check cotonoma membership
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
@@ -15,20 +17,49 @@ defmodule Cotoami.CotonomaService do
             amishi_id: amishi_id,
             content: name,
             as_cotonoma: true
-          }) 
-          |> Repo.insert!
+          }) |> Repo.insert!
           
         cotonoma =
           Cotonoma.changeset_new(%Cotonoma{}, %{
             name: name,
             coto_id: coto.id,
             owner_id: amishi_id
-          })
-          |> Repo.insert!
+          }) |> Repo.insert!
+          
+        members = 
+          member_params
+          |> Enum.map(&add_member(cotonoma, &1))
+          |> Enum.filter(&(&1 != nil))
+        cotonoma = %{cotonoma | members: members}
           
         {coto, cotonoma}
       end)
     {coto, cotonoma}
+  end
+  
+  def add_member(cotonoma, member_param) do
+    case member_param do
+      %{"amishi_id" => amishi_id} ->
+        case AmishiService.get(amishi_id) do
+          nil -> 
+            nil
+          amishi -> 
+            Member.changeset(%Member{}, %{
+              cotonoma_id: cotonoma.id,
+              amishi_id: amishi.id,
+              email: amishi.email
+            }) |> Repo.insert!
+        end
+        
+      %{"email" => email} ->
+        Member.changeset(%Member{}, %{
+          cotonoma_id: cotonoma.id,
+          email: email
+        }) |> Repo.insert!
+        
+      _ ->
+        nil
+    end
   end
   
   def get_by_key(key, amishi_id) do
