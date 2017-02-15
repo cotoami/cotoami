@@ -51,6 +51,12 @@ update msg session maybeCotonoma timeline model =
             , Cmd.none 
             )
             
+        RemoveMember email ->
+            ( removeMember email model
+            , timeline
+            , Cmd.none 
+            )
+            
         Post ->
             let
                 postId = timeline.postIdCounter + 1

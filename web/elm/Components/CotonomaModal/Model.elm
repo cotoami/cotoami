@@ -47,6 +47,21 @@ addMember session member model =
         , memberEmailValid = False
         }
     
+
+removeMember : String -> Model -> Model
+removeMember email model =
+    { model 
+    | members = 
+        List.filter
+            (\member -> case member of
+                SignedUp amishi ->
+                    amishi.email /= email
+                NotYetSignedUp memberEmail ->
+                    memberEmail /= email
+            ) 
+            model.members
+    }
+    
     
 containsMember : Session -> Model -> String -> Bool
 containsMember session model email =

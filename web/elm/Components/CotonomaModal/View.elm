@@ -106,7 +106,10 @@ memberAsNotAmishi email =
     li [ class "not-amishi" ]
         [ i [ class "material-icons" ] [ text "perm_identity" ]
         , span [ class "email" ] [ text email ]
-        , a [ class "remove-member" ] 
+        , a 
+            [ class "remove-member"
+            , onClick (RemoveMember email)
+            ] 
             [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
         ]
         
@@ -124,7 +127,10 @@ memberAsAmishi isOwner amishi =
         , if isOwner then
             span [ class "owner-help" ] [ text "(owner)" ]
           else
-            a [ class "remove-member" ] 
+            a
+                [ class "remove-member"
+                , onClick (RemoveMember amishi.email)
+                ] 
                 [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
         ] 
 

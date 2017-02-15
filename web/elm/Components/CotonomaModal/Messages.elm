@@ -13,4 +13,5 @@ type Msg
     | Post
     | Posted (Result Http.Error Post)
     | AddMember
+    | RemoveMember String
     | AmishiFetched (Result Http.Error Amishi)
