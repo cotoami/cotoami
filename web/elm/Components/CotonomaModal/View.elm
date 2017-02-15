@@ -3,7 +3,7 @@ module Components.CotonomaModal.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (isBlank, validateEmail)
+import Utils exposing (isBlank)
 import Modal
 import App.Types exposing (Session)
 import Components.CotonomaModal.Model exposing (..)
@@ -89,10 +89,10 @@ memberInputDiv model =
         , a 
             [ classList
                 [ ( "add-member", True )
-                , ( "disabled", not (validateEmail model.memberEmail) )
+                , ( "disabled", not model.memberEmailValid )
                 ]
             , title "Add member"
-            , if validateEmail model.memberEmail then 
+            , if model.memberEmailValid then 
                 onClick AddMember 
               else
                 onClick NoOp

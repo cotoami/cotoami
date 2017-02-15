@@ -18492,16 +18492,28 @@ var _user$project$Components_ConfirmModal_Model$Model = F3(
 		return {open: a, message: b, msgOnConfirm: c};
 	});
 
+var _user$project$Components_CotonomaModal_Model$addMember = F2(
+	function (model, member) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				members: {ctor: '::', _0: member, _1: model.members},
+				membersLoading: false,
+				memberEmail: '',
+				memberEmailValid: false
+			});
+	});
 var _user$project$Components_CotonomaModal_Model$initModel = {
 	open: false,
 	name: '',
 	memberEmail: '',
+	memberEmailValid: false,
 	membersLoading: false,
 	members: {ctor: '[]'}
 };
-var _user$project$Components_CotonomaModal_Model$Model = F5(
-	function (a, b, c, d, e) {
-		return {open: a, name: b, memberEmail: c, membersLoading: d, members: e};
+var _user$project$Components_CotonomaModal_Model$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {open: a, name: b, memberEmail: c, memberEmailValid: d, membersLoading: e, members: f};
 	});
 var _user$project$Components_CotonomaModal_Model$NotYetSignedUp = function (a) {
 	return {ctor: 'NotYetSignedUp', _0: a};
@@ -18949,11 +18961,15 @@ var _user$project$Components_CotonomaModal_Update$update = F4(
 					_2: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'MemberEmailInput':
+				var _p1 = _p0._0;
 				return {
 					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{memberEmail: _p0._0}),
+						{
+							memberEmail: _p1,
+							memberEmailValid: _user$project$Utils$validateEmail(_p1)
+						}),
 					_1: timeline,
 					_2: _elm_lang$core$Platform_Cmd$none
 				};
@@ -18970,34 +18986,20 @@ var _user$project$Components_CotonomaModal_Update$update = F4(
 				if (_p0._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple3',
-						_0: _elm_lang$core$Native_Utils.update(
+						_0: A2(
+							_user$project$Components_CotonomaModal_Model$addMember,
 							model,
-							{
-								members: {
-									ctor: '::',
-									_0: _user$project$Components_CotonomaModal_Model$SignedUp(_p0._0._0),
-									_1: model.members
-								},
-								membersLoading: false,
-								memberEmail: ''
-							}),
+							_user$project$Components_CotonomaModal_Model$SignedUp(_p0._0._0)),
 						_1: timeline,
 						_2: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {
 						ctor: '_Tuple3',
-						_0: _elm_lang$core$Native_Utils.update(
+						_0: A2(
+							_user$project$Components_CotonomaModal_Model$addMember,
 							model,
-							{
-								members: {
-									ctor: '::',
-									_0: _user$project$Components_CotonomaModal_Model$NotYetSignedUp(model.memberEmail),
-									_1: model.members
-								},
-								membersLoading: false,
-								memberEmail: ''
-							}),
+							_user$project$Components_CotonomaModal_Model$NotYetSignedUp(model.memberEmail)),
 						_1: timeline,
 						_2: _elm_lang$core$Platform_Cmd$none
 					};
@@ -19037,14 +19039,14 @@ var _user$project$Components_CotonomaModal_Update$update = F4(
 				};
 			default:
 				if (_p0._0.ctor === 'Ok') {
-					var _p1 = A4(
+					var _p2 = A4(
 						_user$project$Components_Timeline_Update$update,
 						_user$project$Components_Timeline_Messages$Posted(
 							_elm_lang$core$Result$Ok(_p0._0._0)),
 						timeline,
 						maybeCotonoma,
 						false);
-					var newTimeline = _p1._0;
+					var newTimeline = _p2._0;
 					return {ctor: '_Tuple3', _0: model, _1: newTimeline, _2: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple3', _0: model, _1: timeline, _2: _elm_lang$core$Platform_Cmd$none};
@@ -20470,11 +20472,7 @@ var _user$project$Components_CotonomaModal_View$memberInputDiv = function (model
 									_0: {ctor: '_Tuple2', _0: 'add-member', _1: true},
 									_1: {
 										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'disabled',
-											_1: !_user$project$Utils$validateEmail(model.memberEmail)
-										},
+										_0: {ctor: '_Tuple2', _0: 'disabled', _1: !model.memberEmailValid},
 										_1: {ctor: '[]'}
 									}
 								}),
@@ -20483,7 +20481,7 @@ var _user$project$Components_CotonomaModal_View$memberInputDiv = function (model
 								_0: _elm_lang$html$Html_Attributes$title('Add member'),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Utils$validateEmail(model.memberEmail) ? _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal_Messages$AddMember) : _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal_Messages$NoOp),
+									_0: model.memberEmailValid ? _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal_Messages$AddMember) : _elm_lang$html$Html_Events$onClick(_user$project$Components_CotonomaModal_Messages$NoOp),
 									_1: {ctor: '[]'}
 								}
 							}

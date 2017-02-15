@@ -10,6 +10,7 @@ type alias Model =
     { open : Bool
     , name : String
     , memberEmail : String
+    , memberEmailValid : Bool
     , membersLoading : Bool
     , members : List Member
     }
@@ -20,6 +21,17 @@ initModel =
     { open = False
     , name = ""
     , memberEmail = ""
+    , memberEmailValid = False
     , membersLoading = False
     , members = []
+    }
+
+
+addMember : Model -> Member -> Model
+addMember model member =
+    { model 
+    | members = member :: model.members
+    , membersLoading = False
+    , memberEmail = ""
+    , memberEmailValid = False
     }
