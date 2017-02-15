@@ -68,16 +68,24 @@ defmodule Cotoami.CotonomaService do
     |> Repo.get_by(key: key)
   end
   
+  def check_permission(cotonoma, amishi_id) do
+    cotonoma.owner_id == amishi_id
+  end
+  
   def get_cotos(key, amishi_id) do
     case get_by_key(key, amishi_id) do
       nil -> nil
       cotonoma ->
-        cotos =
-          Coto 
-          |> Coto.in_cotonoma(cotonoma.id)
-          |> preload([:posted_in, :cotonoma])
-          |> Repo.all
-        {cotonoma, cotos}
+        if check_permission(cotonoma, amishi_id) do
+          cotos =
+            Coto 
+            |> Coto.in_cotonoma(cotonoma.id)
+            |> preload([:posted_in, :cotonoma])
+            |> Repo.all
+          {cotonoma, cotos}
+        else
+          nil
+        end
     end
   end
 end
