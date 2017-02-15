@@ -13592,17 +13592,6 @@ var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
 	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
 };
 
-var _user$project$App_Types$Session = F4(
-	function (a, b, c, d) {
-		return {id: a, email: b, avatarUrl: c, displayName: d};
-	});
-var _user$project$App_Types$decodeSession = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$App_Types$Session,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
 var _user$project$App_Types$Amishi = F4(
 	function (a, b, c, d) {
 		return {id: a, email: b, avatarUrl: c, displayName: d};
@@ -13610,6 +13599,20 @@ var _user$project$App_Types$Amishi = F4(
 var _user$project$App_Types$decodeAmishi = A5(
 	_elm_lang$core$Json_Decode$map4,
 	_user$project$App_Types$Amishi,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'display_name', _elm_lang$core$Json_Decode$string));
+var _user$project$App_Types$toAmishi = function (session) {
+	return A4(_user$project$App_Types$Amishi, session.id, session.email, session.avatarUrl, session.displayName);
+};
+var _user$project$App_Types$Session = F4(
+	function (a, b, c, d) {
+		return {id: a, email: b, avatarUrl: c, displayName: d};
+	});
+var _user$project$App_Types$decodeSession = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$App_Types$Session,
 	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string),
@@ -20287,8 +20290,8 @@ var _user$project$Components_CotonomaModal_View$validateName = function (string)
 		_elm_lang$core$String$length(string),
 		_user$project$Components_CotonomaModal_View$nameMaxlength) < 1);
 };
-var _user$project$Components_CotonomaModal_View$memberAsAmishi = F3(
-	function (isOwner, avatarUrl, name) {
+var _user$project$Components_CotonomaModal_View$memberAsAmishi = F2(
+	function (isOwner, amishi) {
 		return A2(
 			_elm_lang$html$Html$li,
 			{
@@ -20314,7 +20317,7 @@ var _user$project$Components_CotonomaModal_View$memberAsAmishi = F3(
 						_0: _elm_lang$html$Html_Attributes$class('avatar'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$src(avatarUrl),
+							_0: _elm_lang$html$Html_Attributes$src(amishi.avatarUrl),
 							_1: {ctor: '[]'}
 						}
 					},
@@ -20330,7 +20333,7 @@ var _user$project$Components_CotonomaModal_View$memberAsAmishi = F3(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(name),
+							_0: _elm_lang$html$Html$text(amishi.displayName),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -20627,14 +20630,16 @@ var _user$project$Components_CotonomaModal_View$modalConfig = F2(
 										},
 										{
 											ctor: '::',
-											_0: A3(_user$project$Components_CotonomaModal_View$memberAsAmishi, true, session.avatarUrl, session.displayName),
+											_0: A2(
+												_user$project$Components_CotonomaModal_View$memberAsAmishi,
+												true,
+												_user$project$App_Types$toAmishi(session)),
 											_1: A2(
 												_elm_lang$core$List$map,
 												function (member) {
 													var _p0 = member;
 													if (_p0.ctor === 'SignedUp') {
-														var _p1 = _p0._0;
-														return A3(_user$project$Components_CotonomaModal_View$memberAsAmishi, false, _p1.avatarUrl, _p1.displayName);
+														return A2(_user$project$Components_CotonomaModal_View$memberAsAmishi, false, _p0._0);
 													} else {
 														return _user$project$Components_CotonomaModal_View$memberAsNotAmishi(_p0._0);
 													}
@@ -20680,12 +20685,12 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 			_user$project$Modal$view,
 			'cotonoma-modal',
 			function () {
-				var _p2 = maybeSession;
-				if (_p2.ctor === 'Nothing') {
+				var _p1 = maybeSession;
+				if (_p1.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return model.open ? _elm_lang$core$Maybe$Just(
-						A2(_user$project$Components_CotonomaModal_View$modalConfig, _p2._0, model)) : _elm_lang$core$Maybe$Nothing;
+						A2(_user$project$Components_CotonomaModal_View$modalConfig, _p1._0, model)) : _elm_lang$core$Maybe$Nothing;
 				}
 			}());
 	});

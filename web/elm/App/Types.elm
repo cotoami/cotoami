@@ -1,23 +1,6 @@
 module App.Types exposing (..)
 
 import Json.Decode as Decode
-
-
-type alias Session =
-    { id : Int
-    , email : String
-    , avatarUrl : String
-    , displayName : String
-    }
-
-
-decodeSession : Decode.Decoder Session
-decodeSession =
-    Decode.map4 Session
-        (Decode.field "id" Decode.int)
-        (Decode.field "email" Decode.string)
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "display_name" Decode.string)
         
         
 type alias Amishi =
@@ -35,6 +18,32 @@ decodeAmishi =
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
+
+
+type alias Session =
+    { id : Int
+    , email : String
+    , avatarUrl : String
+    , displayName : String
+    }
+
+
+decodeSession : Decode.Decoder Session
+decodeSession =
+    Decode.map4 Session
+        (Decode.field "id" Decode.int)
+        (Decode.field "email" Decode.string)
+        (Decode.field "avatar_url" Decode.string)
+        (Decode.field "display_name" Decode.string)
+
+
+toAmishi : Session -> Amishi
+toAmishi session =
+    Amishi
+        session.id
+        session.email
+        session.avatarUrl
+        session.displayName
 
 
 type alias Coto =

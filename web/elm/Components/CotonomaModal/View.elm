@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Utils exposing (isBlank)
 import Modal
-import App.Types exposing (Session)
+import App.Types exposing (Session, Amishi, toAmishi)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 
@@ -50,11 +50,11 @@ modalConfig session model =
                 ]
             ]
             [ ul [ class "members" ]
-                ((memberAsAmishi True session.avatarUrl session.displayName) :: 
+                ((memberAsAmishi True (toAmishi session)) :: 
                     (List.map 
                         (\member -> case member of
                             SignedUp amishi ->
-                                memberAsAmishi False amishi.avatarUrl amishi.displayName
+                                memberAsAmishi False amishi
                             NotYetSignedUp email ->
                                 memberAsNotAmishi email
                         ) 
@@ -111,16 +111,16 @@ memberAsNotAmishi email =
         ]
         
     
-memberAsAmishi : Bool -> String -> String -> Html Msg
-memberAsAmishi isOwner avatarUrl name =
+memberAsAmishi : Bool -> Amishi -> Html Msg
+memberAsAmishi isOwner amishi =
     li 
         [ classList
             [ ( "amishi", True )
             , ( "owner", isOwner )
             ]
         ]
-        [ img [ class "avatar", src avatarUrl ] []
-        , span [ class "name" ] [ text name ]
+        [ img [ class "avatar", src amishi.avatarUrl ] []
+        , span [ class "name" ] [ text amishi.displayName ]
         , if isOwner then
             span [ class "owner-help" ] [ text "(owner)" ]
           else
