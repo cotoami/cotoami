@@ -19,7 +19,7 @@ import Components.Timeline.Messages exposing (..)
 
 view : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
 view model maybeSession maybeCotonoma activeCotoId =
-    div [ id "timeline-column", class (timelineClass model) ]
+    div [ id "input-and-timeline", class (timelineClass model) ]
         [ timelineDiv model maybeSession maybeCotonoma activeCotoId
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNew) ]

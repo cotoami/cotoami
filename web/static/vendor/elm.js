@@ -20142,7 +20142,7 @@ var _user$project$Components_Timeline_View$view = F4(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('timeline-column'),
+				_0: _elm_lang$html$Html_Attributes$id('input-and-timeline'),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class(
@@ -20792,10 +20792,139 @@ var _user$project$App_View$view = function (model) {
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$map,
-							_user$project$App_Messages$TimelineMsg,
-							A4(_user$project$Components_Timeline_View$view, model.timeline, model.session, model.cotonoma, model.activeCotoId)),
-						_1: {ctor: '[]'}
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$id('flow'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$map,
+									_user$project$App_Messages$TimelineMsg,
+									A4(_user$project$Components_Timeline_View$view, model.timeline, model.session, model.cotonoma, model.activeCotoId)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$id('stock'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('cotonomas'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$a,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$i,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																	_1: {ctor: '[]'}
+																},
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html$text('exit_to_app'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$span,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
+																		_1: {ctor: '[]'}
+																	},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('Kubernetes'),
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {ctor: '[]'}
+															}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$a,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$i,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																		_1: {ctor: '[]'}
+																	},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('exit_to_app'),
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$span,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
+																			_1: {ctor: '[]'}
+																		},
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text('Elixir'),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {ctor: '[]'}
+																}
+															}),
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {
 					ctor: '::',

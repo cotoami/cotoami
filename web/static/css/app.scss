@@ -29,5 +29,14 @@ html, body, #elm-container, #app, #app-body {
 }
 
 #app-body {
+  display: flex;
   z-index: 1;
+}
+
+#flow {
+  flex: 1;
+}
+
+#stock {
+  width: 200px;
 }

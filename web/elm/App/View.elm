@@ -22,13 +22,31 @@ view model =
       div [ id "app" ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
-              [ Html.map TimelineMsg 
-                  (Components.Timeline.View.view 
-                      model.timeline 
-                      model.session 
-                      model.cotonoma 
-                      model.activeCotoId
-                  )
+              [ div [ id "flow" ]
+                  [ Html.map TimelineMsg 
+                      (Components.Timeline.View.view 
+                          model.timeline 
+                          model.session 
+                          model.cotonoma 
+                          model.activeCotoId
+                      )
+                  ]
+              , div [ id "stock" ]
+                  [ div [ id "cotonomas" ]
+                      [ div [ class "coto-as-cotonoma" ]
+                          [ a []
+                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                              , span [ class "cotonoma-name" ] [ text "Kubernetes" ]
+                              ]
+                          ]
+                      , div [ class "coto-as-cotonoma" ]
+                          [ a []
+                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                              , span [ class "cotonoma-name" ] [ text "Elixir" ]
+                              ]
+                          ]
+                      ]
+                  ]
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)

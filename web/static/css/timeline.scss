@@ -1,6 +1,6 @@
-#timeline-column {
-  height: 100%;
+#input-and-timeline {
   position: relative;
+  height: 100%;
 }
 
 #timeline {
@@ -89,21 +89,6 @@
         display: inline;
       }
     }
-    
-    div.coto-as-cotonoma {
-      a {
-        i {
-          vertical-align: middle;
-        }
-        
-        span.cotonoma-name {
-          margin-left: 6px;
-          vertical-align: middle;
-          font-weight: bold;
-        }
-      }
-    }
-    
   }
 }
 .editing #timeline {
