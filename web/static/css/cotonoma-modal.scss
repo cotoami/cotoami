@@ -1,0 +1,106 @@
+#cotonoma-modal {
+  div.modal-content {
+    width: 60%;
+    
+    @media (min-width: 550px) {
+      width: 455px;
+    }
+    
+    @media (max-height: 550px) {
+      label {
+        display: none;
+      }
+    }
+    
+    div.member-input {
+      position: relative;
+      
+      input {
+        margin-bottom: 6px;
+        padding-right: 30px;
+      }
+      
+      a.add-member {
+        position: absolute;
+        right: 5px;
+        bottom: 6px;
+        color: #1eaedb;
+      }
+      
+      a.add-member.disabled {
+        color: black;
+        opacity: 0.1;
+      }
+    }
+    
+    div.members {
+      margin-bottom: 10px;
+      max-height: 30vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      
+      @media (max-height: 550px) {
+        max-height: 25vh;
+      }
+      
+      &.loading {
+        background: url(../images/loading.gif) center no-repeat #fff;
+      }
+      
+      ul.members {
+        list-style-type: none;
+        
+        li {
+          margin-left: 8px;
+          margin-top: 6px;
+          margin-bottom: 6px;
+          
+          a.remove-member {
+            word-wrap: break-word;
+            white-space: normal;
+            
+            i {
+              color: #bbb;
+              vertical-align: baseline;
+              margin-left: 12px;
+            }
+          }
+          
+          &.not-amishi {
+            color: #aaa;
+            white-space: nowrap;
+            
+            i {
+              vertical-align: middle;
+              margin-right: 8px;
+            }
+            
+            span.email {
+              word-wrap: break-word;
+              white-space: normal;
+            }
+          }
+          
+          &.amishi {
+            img.avatar {
+              margin: 0;
+              padding: 0;
+              width: 24px;
+              height: 24px;
+              margin-right: 8px;
+              border-radius: 4px;
+              vertical-align: middle;
+            }
+          }
+          
+          &.owner {
+            span.owner-help {
+              margin-left: 6px;
+              color: #ccc;
+            }
+          }
+        }   // li
+      }   // ul.members
+    }   // div.members
+  }   // div.modal-content
+}

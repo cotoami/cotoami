@@ -1,0 +1,9 @@
+#confirm-modal {
+  &.modal-open {
+    z-index: 30;
+  }
+  
+  div.modal-content-inner {
+    padding: 0 10px 10px 10px;
+  }
+}

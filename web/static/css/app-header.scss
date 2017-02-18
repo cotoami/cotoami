@@ -1,0 +1,73 @@
+#app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  z-index: 10;
+  border-bottom: 1px solid #eee;
+  background-color: rgba(255,255,255,0.9);
+  
+  div.location {
+    max-width: 70vw;
+    overflow-x: hidden;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 35px;
+    white-space: nowrap;
+    
+    a.to-home {
+      color: #1eaedb;
+      cursor: pointer;
+      
+      i {
+        opacity: 1;
+      }
+    }
+    
+    span.cotonoma-name {
+      display: inline-block;
+      line-height: 30px;
+      font-size: 18px;
+      white-space: nowrap;
+      font-weight: bold;
+      opacity: 0.5;
+      vertical-align: 9px;
+    }
+  }
+  
+  a.add-cotonoma {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    line-height: 35px;
+  }
+  
+  div.user {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    line-height: 35px;
+    
+    img.avatar {
+      margin: 0;
+      margin-top: 4px;
+      padding: 0;
+      width: 27px;
+      height: 27px;
+      border-radius: 4px;
+    }
+  }
+  
+  .material-icons {
+    line-height: 35px;
+    font-size: 30px;
+    opacity: 0.26;
+    padding-top: 1px;
+  }
+  
+  a {
+    color: black;
+  }
+}

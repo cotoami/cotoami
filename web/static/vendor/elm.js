@@ -19764,11 +19764,7 @@ var _user$project$Components_ConfirmModal_View$modalConfig = function (model) {
 		title: 'Confirm',
 		content: A2(
 			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('confirm-modal-content'),
-				_1: {ctor: '[]'}
-			},
+			{ctor: '[]'},
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(model.message),

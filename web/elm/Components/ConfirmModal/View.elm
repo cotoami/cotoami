@@ -23,7 +23,7 @@ modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
     , title = "Confirm"
-    , content = div [ id "confirm-modal-content" ] [ text model.message ]
+    , content = div [] [ text model.message ]
     , buttons = 
         [ button [ class "button", onClick Close ] [ text "Cancel" ] 
         , button [ class "button button-primary", onClick Confirm ] [ text "OK" ] 
