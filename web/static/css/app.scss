@@ -41,7 +41,9 @@ html, body, #elm-container, #app, #app-body {
 
 #flow {
   flex: 1;
-  margin-top: 10px;
+  border-top: solid 2px #eee;
+  margin-top: 6px;
+  padding-top: 6px;
 }
 
 @media (min-width: 750px) {
@@ -50,7 +52,9 @@ html, body, #elm-container, #app, #app-body {
   }
 
   #flow {
+    border-top-style: none;
     margin-top: 0;
+    padding-top: 0;
   }
 
   #stock {
