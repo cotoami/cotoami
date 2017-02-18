@@ -30,13 +30,31 @@ html, body, #elm-container, #app, #app-body {
 
 #app-body {
   display: flex;
+  flex-direction: column-reverse;
   z-index: 1;
+  padding-top: 40px;
+}
+
+#stock {
+  max-height: 20vh;
 }
 
 #flow {
   flex: 1;
+  margin-top: 10px;
 }
 
-#stock {
-  width: 200px;
+@media (min-width: 750px) {
+  #app-body {
+    flex-direction: row;
+  }
+
+  #flow {
+    margin-top: 0;
+  }
+
+  #stock {
+    flex: none;
+    width: 200px;
+  }
 }
