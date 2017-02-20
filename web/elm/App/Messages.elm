@@ -31,3 +31,4 @@ type Msg
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotonomaClick String

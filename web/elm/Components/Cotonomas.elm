@@ -3,8 +3,9 @@ module Components.Cotonomas exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg)
+import App.Messages exposing (Msg(CotonomaClick))
 
 
 view : Model -> Html Msg
@@ -16,7 +17,7 @@ view model =
             (\cotonoma -> 
                 ( toString cotonoma.id
                 , div [ class "coto-as-cotonoma" ]
-                    [ a []
+                    [ a [ onClick (CotonomaClick cotonoma.key) ]
                         [ i [ class "material-icons" ] [ text "exit_to_app" ]
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
                         ]

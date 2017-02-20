@@ -233,6 +233,10 @@ update msg model =
                                     newModel ! commands
                             _ -> 
                                 newModel ! commands
+                                
+        CotonomaClick key ->
+            { model | cotonoma = Nothing, timeline = setLoading model.timeline } 
+                ! [ fetchCotonoma key ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int
