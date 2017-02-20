@@ -4,6 +4,7 @@ defmodule Cotoami.Cotonoma do
   """
   
   use Cotoami.Web, :model
+  alias Cotoami.Member
   
   @key_length 10
 
@@ -33,8 +34,10 @@ defmodule Cotoami.Cotonoma do
   end
   
   def for_amishi(query, amishi_id) do
-    from c in query, 
-      where: c.owner_id == ^amishi_id,
+    from c in query,
+      distinct: c.id,
+      left_join: m in assoc(c, :members),
+      where: c.owner_id == ^amishi_id or m.amishi_id == ^amishi_id,
       order_by: [desc: c.updated_at]
   end
 end
