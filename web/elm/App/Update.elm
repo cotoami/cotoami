@@ -31,6 +31,12 @@ update msg model =
         SessionFetched (Err _) ->
             model ! []
             
+        CotonomasFetched (Ok cotonomas) ->
+            { model | cotonomas = cotonomas } ! []
+            
+        CotonomasFetched (Err _) ->
+            model ! []
+            
         HomeClick ->
             let
                 timeline = model.timeline

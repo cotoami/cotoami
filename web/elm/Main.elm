@@ -4,7 +4,7 @@ import Html exposing (program)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Update exposing (update)
-import App.Commands exposing (fetchSession)
+import App.Commands exposing (fetchSession, fetchCotonomas)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
 import Components.Timeline.Commands exposing (fetchPosts)
@@ -23,5 +23,6 @@ init : ( Model, Cmd Msg )
 init =
     initModel ! 
         [ fetchSession
+        , fetchCotonomas
         , Cmd.map TimelineMsg fetchPosts 
         ]
