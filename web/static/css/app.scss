@@ -51,14 +51,11 @@ html, body, #elm-container, #app, #app-body {
     flex-direction: row;
   }
 
-  #flow {
-    border-top-style: none;
-    margin-top: 0;
-    padding-top: 0;
-  }
-
   #stock {
     flex: none;
     width: 200px;
+    border-bottom-style: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }
