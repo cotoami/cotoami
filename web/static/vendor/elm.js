@@ -19551,6 +19551,7 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			default:
+				var _p22 = _p1._0;
 				var _p19 = model.session;
 				if (_p19.ctor === 'Nothing') {
 					return A2(
@@ -19558,20 +19559,27 @@ var _user$project$App_Update$update = F2(
 						model,
 						{ctor: '[]'});
 				} else {
-					var _p20 = A5(_user$project$Components_CotonomaModal_Update$update, _p1._0, _p19._0, model.cotonoma, model.timeline, model.cotonomaModal);
+					var _p20 = A5(_user$project$Components_CotonomaModal_Update$update, _p22, _p19._0, model.cotonoma, model.timeline, model.cotonomaModal);
 					var cotonomaModal = _p20._0;
 					var timeline = _p20._1;
 					var cmd = _p20._2;
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{cotonomaModal: cotonomaModal, timeline: timeline}),
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
-							_1: {ctor: '[]'}
-						});
+					var newModel = _elm_lang$core$Native_Utils.update(
+						model,
+						{cotonomaModal: cotonomaModal, timeline: timeline});
+					var commands = {
+						ctor: '::',
+						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
+						_1: {ctor: '[]'}
+					};
+					var _p21 = _p22;
+					if ((_p21.ctor === 'Posted') && (_p21._0.ctor === 'Ok')) {
+						return _p21._0._0.asCotonoma ? A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							newModel,
+							{ctor: '::', _0: _user$project$App_Commands$fetchCotonomas, _1: commands}) : A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
+					} else {
+						return A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
+					}
 				}
 		}
 	});

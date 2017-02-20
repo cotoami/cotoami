@@ -16,6 +16,7 @@ import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
+import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 
 
@@ -220,9 +221,18 @@ update msg model =
                                 model.cotonoma
                                 model.timeline
                                 model.cotonomaModal
+                        newModel = 
+                            { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                        commands = [ Cmd.map CotonomaModalMsg cmd ]
                     in
-                        { model | cotonomaModal = cotonomaModal, timeline = timeline }
-                            ! [ Cmd.map CotonomaModalMsg cmd ]
+                        case subMsg of
+                            Components.CotonomaModal.Messages.Posted (Ok { asCotonoma }) ->
+                                if asCotonoma then
+                                    newModel ! (fetchCotonomas :: commands)
+                                else
+                                    newModel ! commands
+                            _ -> 
+                                newModel ! commands
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int
