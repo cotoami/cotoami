@@ -18,6 +18,11 @@ defmodule Cotoami.CotonomaView do
       id: cotonoma.id,
       key: cotonoma.key,
       name: cotonoma.name,
+      coto_id: 
+        case cotonoma.coto do
+          %Ecto.Association.NotLoaded{} -> -1
+          coto -> coto.id
+        end,
       inserted_at: cotonoma.inserted_at |> Ecto.DateTime.to_string(),
       updated_at: cotonoma.updated_at |> Ecto.DateTime.to_string()
     }

@@ -65,6 +65,7 @@ defmodule Cotoami.CotonomaService do
   def get_by_key(key, amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
+    |> preload([:coto])
     |> Repo.get_by(key: key)
   end
   
@@ -75,6 +76,7 @@ defmodule Cotoami.CotonomaService do
   def find_by_amishi(amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
+    |> preload([:coto])
     |> Repo.all()
   end
   
