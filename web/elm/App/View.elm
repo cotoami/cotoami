@@ -6,6 +6,7 @@ import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
+import Components.Cotonomas
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
@@ -32,50 +33,7 @@ view model =
                       )
                   ]
               , div [ id "stock" ]
-                  [ div [ id "cotonomas" ]
-                      [ div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Kubernetes" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Elixir" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Groovy" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Elm" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "CSS" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Scala" ]
-                              ]
-                          ]
-                      , div [ class "coto-as-cotonoma" ]
-                          [ a []
-                              [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                              , span [ class "cotonoma-name" ] [ text "Docker" ]
-                              ]
-                          ]
-                      ]
+                  [ Components.Cotonomas.view model
                   ]
               ]
           , Html.map ConfirmModalMsg 
