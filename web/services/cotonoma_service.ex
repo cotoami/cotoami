@@ -72,6 +72,12 @@ defmodule Cotoami.CotonomaService do
     cotonoma.owner_id == amishi_id
   end
   
+  def find_by_amishi(amishi_id) do
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> Repo.all()
+  end
+  
   def get_cotos(key, amishi_id) do
     case get_by_key(key, amishi_id) do
       nil -> nil

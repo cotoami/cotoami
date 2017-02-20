@@ -35,7 +35,7 @@ defmodule Cotoami.Router do
     get "/session", SessionController, :index
     get "/amishis/email/:email", AmishiController, :show_by_email
     resources "/cotos", CotoController, only: [:index, :create, :delete]
-    resources "/cotonomas", CotonomaController, only: [:create]
+    resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
     get "/signin/request/:email/:save_anonymous", SigninController, :request
   end

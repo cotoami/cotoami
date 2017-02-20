@@ -12,6 +12,11 @@ defmodule Cotoami.CotonomaController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
   
+  def index(conn, _params, amishi) do
+    cotonomas = CotonomaService.find_by_amishi(amishi.id)
+    render(conn, "index.json", %{rows: cotonomas})
+  end
+  
   def create(conn, %{"cotonoma" => cotonoma_params}, amishi) do
     cotonoma_id = cotonoma_params["cotonoma_id"]
     name = cotonoma_params["name"]
