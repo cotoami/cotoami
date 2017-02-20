@@ -32,10 +32,11 @@ view model =
                           model.activeCotoId
                       )
                   ]
-              , if List.isEmpty model.cotonomas then
-                  span [] []
-                else
-                  div [ id "stock" ] [ Components.Cotonomas.view model ]
+              , div 
+                  [ id "stock"
+                  , classList [ ( "hidden", List.isEmpty model.cotonomas  ) ] 
+                  ] 
+                  [ Components.Cotonomas.view model ]
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)

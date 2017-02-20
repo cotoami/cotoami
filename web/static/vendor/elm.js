@@ -20925,15 +20925,25 @@ var _user$project$App_View$view = function (model) {
 							}),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$List$isEmpty(model.cotonomas) ? A2(
-								_elm_lang$html$Html$span,
-								{ctor: '[]'},
-								{ctor: '[]'}) : A2(
+							_0: A2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$id('stock'),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'hidden',
+													_1: _elm_lang$core$List$isEmpty(model.cotonomas)
+												},
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',

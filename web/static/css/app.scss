@@ -4,6 +4,10 @@ html, body, #elm-container, #app, #app-body {
   height: 100%;
 }
 
+.hidden {
+  display: none;
+}
+
 .being-hidden {
   visibility: hidden;
   opacity: 0;
