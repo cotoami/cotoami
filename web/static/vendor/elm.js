@@ -19509,6 +19509,7 @@ var _user$project$App_Update$update = F2(
 							});
 				}
 			case 'DeleteCoto':
+				var _p18 = _p1._0;
 				var timeline = model.timeline;
 				var posts = timeline.posts;
 				return A2(
@@ -19522,12 +19523,16 @@ var _user$project$App_Update$update = F2(
 									posts: A2(
 										_elm_lang$core$List$filter,
 										function (post) {
-											return !A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p1._0, post);
+											return !A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p18, post);
 										},
 										posts)
 								})
 						}),
-					{ctor: '[]'});
+					_p18.asCotonoma ? {
+						ctor: '::',
+						_0: _user$project$App_Commands$fetchCotonomas,
+						_1: {ctor: '[]'}
+					} : {ctor: '[]'});
 			case 'CotoDeleted':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -19546,17 +19551,17 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			default:
-				var _p18 = model.session;
-				if (_p18.ctor === 'Nothing') {
+				var _p19 = model.session;
+				if (_p19.ctor === 'Nothing') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				} else {
-					var _p19 = A5(_user$project$Components_CotonomaModal_Update$update, _p1._0, _p18._0, model.cotonoma, model.timeline, model.cotonomaModal);
-					var cotonomaModal = _p19._0;
-					var timeline = _p19._1;
-					var cmd = _p19._2;
+					var _p20 = A5(_user$project$Components_CotonomaModal_Update$update, _p1._0, _p19._0, model.cotonoma, model.timeline, model.cotonomaModal);
+					var cotonomaModal = _p20._0;
+					var timeline = _p20._1;
+					var cmd = _p20._2;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(

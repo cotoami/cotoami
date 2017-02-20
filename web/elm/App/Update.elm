@@ -6,7 +6,7 @@ import Time
 import Keys exposing (ctrl, meta, enter)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Commands exposing (fetchCotonoma, deleteCoto)
+import App.Commands exposing (fetchCotonomas, fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -197,7 +197,7 @@ update msg model =
                     | posts = posts |> 
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
-                } ! []
+                } ! (if coto.asCotonoma then [ fetchCotonomas ] else []) 
                 
         CotoDeleted _ ->
             model ! []
