@@ -18565,7 +18565,19 @@ var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
 	return {ctor: 'SignedUp', _0: a};
 };
 
-var _user$project$App_Model$initModel = {ctrlDown: false, session: _elm_lang$core$Maybe$Nothing, cotonoma: _elm_lang$core$Maybe$Nothing, confirmModal: _user$project$Components_ConfirmModal_Model$initModel, signinModal: _user$project$Components_SigninModal$initModel, profileModal: _user$project$Components_ProfileModal$initModel, cotoModal: _user$project$Components_CotoModal$initModel, timeline: _user$project$Components_Timeline_Model$initModel, activeCotoId: _elm_lang$core$Maybe$Nothing, cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel};
+var _user$project$App_Model$initModel = {
+	ctrlDown: false,
+	session: _elm_lang$core$Maybe$Nothing,
+	cotonoma: _elm_lang$core$Maybe$Nothing,
+	confirmModal: _user$project$Components_ConfirmModal_Model$initModel,
+	signinModal: _user$project$Components_SigninModal$initModel,
+	profileModal: _user$project$Components_ProfileModal$initModel,
+	cotoModal: _user$project$Components_CotoModal$initModel,
+	cotonomas: {ctor: '[]'},
+	timeline: _user$project$Components_Timeline_Model$initModel,
+	activeCotoId: _elm_lang$core$Maybe$Nothing,
+	cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
+};
 var _user$project$App_Model$Model = function (a) {
 	return function (b) {
 		return function (c) {
@@ -18576,7 +18588,9 @@ var _user$project$App_Model$Model = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, timeline: h, activeCotoId: i, cotonomaModal: j};
+										return function (k) {
+											return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, timeline: i, activeCotoId: j, cotonomaModal: k};
+										};
 									};
 								};
 							};
@@ -19760,110 +19774,21 @@ var _user$project$Components_AppHeader$view = function (model) {
 };
 
 var _user$project$Components_Cotonomas$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
+	return A3(
+		_elm_lang$html$Html_Keyed$node,
+		'div',
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$id('cotonomas'),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$a,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$i,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('exit_to_app'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Kubernetes'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$a,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$i,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('exit_to_app'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Elixir'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
+		A2(
+			_elm_lang$core$List$map,
+			function (cotonoma) {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Basics$toString(cotonoma.id),
+					_1: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
@@ -19900,210 +19825,17 @@ var _user$project$Components_Cotonomas$view = function (model) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Groovy'),
+												_0: _elm_lang$html$Html$text(cotonoma.name),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}
 								}),
 							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('exit_to_app'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Elm'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$i,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('exit_to_app'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$span,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('CSS'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$a,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$i,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('exit_to_app'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$span,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('Scala'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$a,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$i,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('exit_to_app'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$span,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Docker'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			}
-		});
+						})
+				};
+			},
+			_elm_lang$core$List$reverse(model.cotonomas)));
 };
 
 var _user$project$Components_ConfirmModal_View$modalConfig = function (model) {
@@ -21156,7 +20888,10 @@ var _user$project$App_View$view = function (model) {
 							}),
 						_1: {
 							ctor: '::',
-							_0: A2(
+							_0: _elm_lang$core$List$isEmpty(model.cotonomas) ? A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{ctor: '[]'}) : A2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
