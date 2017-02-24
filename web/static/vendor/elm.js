@@ -20938,11 +20938,7 @@ var _user$project$App_View$view = function (model) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$id('app-body'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('container'),
-							_1: {ctor: '[]'}
-						}
+						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',

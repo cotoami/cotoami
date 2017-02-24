@@ -24,7 +24,7 @@ view model =
           , classList [ ( "cotonomas-loading", model.cotonomasLoading ) ] 
           ]
           [ Components.AppHeader.view model
-          , div [ id "app-body", class "container" ]
+          , div [ id "app-body" ]
               [ div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 

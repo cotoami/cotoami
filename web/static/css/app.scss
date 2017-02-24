@@ -36,18 +36,23 @@ html, body, #elm-container, #app, #app-body {
   display: flex;
   flex-direction: column-reverse;
   z-index: 1;
+  width: 100%;
   padding-top: 45px;
+  box-sizing: border-box;
 }
 
 #stock {
   max-height: 20vh;
   border-bottom: solid 1px #eee;
   margin-bottom: 8px;
+  padding-left: 20px;
+  padding-right: 20px;
   padding-bottom: 8px;
 }
 
 #flow {
   flex: 1;
+  padding: 0 20px;
 }
 
 .cotonomas-loading {
@@ -59,11 +64,14 @@ html, body, #elm-container, #app, #app-body {
 @media (min-width: 750px) {
   #app-body {
     flex-direction: row;
+    width: 80%;
+    margin: 0 auto;
   }
   
   #flow {
     // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;
+    padding: 0;
   }
 
   #stock {
@@ -71,6 +79,6 @@ html, body, #elm-container, #app, #app-body {
     width: 200px;
     border-bottom-style: none;
     margin-bottom: 0;
-    padding-bottom: 0;
+    padding: 0;
   }
 }
