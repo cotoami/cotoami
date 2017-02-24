@@ -39,7 +39,7 @@ update msg model =
             } ! []
             
         CotonomasFetched (Err _) ->
-            model ! []
+            { model | cotonomasLoading = False } ! []
             
         HomeClick ->
             let

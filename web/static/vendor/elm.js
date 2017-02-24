@@ -18587,7 +18587,7 @@ var _user$project$App_Model$initModel = {
 	profileModal: _user$project$Components_ProfileModal$initModel,
 	cotoModal: _user$project$Components_CotoModal$initModel,
 	cotonomas: {ctor: '[]'},
-	cotonomasLoading: false,
+	cotonomasLoading: true,
 	timeline: _user$project$Components_Timeline_Model$initModel,
 	activeCotoId: _elm_lang$core$Maybe$Nothing,
 	cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
@@ -19216,7 +19216,9 @@ var _user$project$App_Update$update = F2(
 				} else {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{cotonomasLoading: false}),
 						{ctor: '[]'});
 				}
 			case 'HomeClick':
