@@ -51,12 +51,15 @@ html, body, #elm-container, #app, #app-body {
 }
 
 #flow {
+  display: flex;
+  // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
   padding: 0 20px;
 }
 
 .cotonomas-loading {
   #flow {
+    // workaround for chrome rendering bug
     opacity: 0.99;
   }
 }
