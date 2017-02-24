@@ -1,6 +1,6 @@
 defmodule Cotoami.CotonomaService do
   require Logger
-  import Ecto.Query, only: [preload: 2]
+  import Ecto.Query, only: [preload: 2, where: 3]
   alias Cotoami.Repo
   alias Cotoami.Coto
   alias Cotoami.Cotonoma
@@ -70,7 +70,10 @@ defmodule Cotoami.CotonomaService do
   end
   
   def check_permission(cotonoma, amishi_id) do
-    cotonoma.owner_id == amishi_id
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> where([c], c.id == ^cotonoma.id)
+    |> Repo.one()
   end
   
   def find_by_amishi(amishi_id) do
