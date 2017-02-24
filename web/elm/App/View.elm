@@ -20,7 +20,9 @@ view model =
     let
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
     in
-      div [ id "app" ]
+      div [ id "app" 
+          , classList [ ( "cotonomas-loading", model.cotonomasLoading ) ] 
+          ]
           [ Components.AppHeader.view model
           , div [ id "app-body", class "container" ]
               [ div [ id "flow" ]

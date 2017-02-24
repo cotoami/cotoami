@@ -50,6 +50,12 @@ html, body, #elm-container, #app, #app-body {
   flex: 1;
 }
 
+.cotonomas-loading {
+  #flow {
+    opacity: 0.9;
+  }
+}
+
 @media (min-width: 750px) {
   #app-body {
     flex-direction: row;

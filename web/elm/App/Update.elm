@@ -33,7 +33,10 @@ update msg model =
             model ! []
             
         CotonomasFetched (Ok cotonomas) ->
-            { model | cotonomas = cotonomas } ! []
+            { model 
+            | cotonomas = cotonomas
+            , cotonomasLoading = False 
+            } ! []
             
         CotonomasFetched (Err _) ->
             model ! []
@@ -227,7 +230,8 @@ update msg model =
                     in
                         case subMsg of
                             Components.CotonomaModal.Messages.Posted (Ok _) ->
-                                newModel ! (fetchCotonomas :: commands)
+                                { newModel | cotonomasLoading = True } 
+                                    ! (fetchCotonomas :: commands)
                             _ -> 
                                 newModel ! commands
                                 

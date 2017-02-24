@@ -18587,6 +18587,7 @@ var _user$project$App_Model$initModel = {
 	profileModal: _user$project$Components_ProfileModal$initModel,
 	cotoModal: _user$project$Components_CotoModal$initModel,
 	cotonomas: {ctor: '[]'},
+	cotonomasLoading: false,
 	timeline: _user$project$Components_Timeline_Model$initModel,
 	activeCotoId: _elm_lang$core$Maybe$Nothing,
 	cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
@@ -18602,7 +18603,9 @@ var _user$project$App_Model$Model = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, timeline: i, activeCotoId: j, cotonomaModal: k};
+											return function (l) {
+												return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, cotonomasLoading: i, timeline: j, activeCotoId: k, cotonomaModal: l};
+											};
 										};
 									};
 								};
@@ -19208,7 +19211,7 @@ var _user$project$App_Update$update = F2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{cotonomas: _p1._0._0}),
+							{cotonomas: _p1._0._0, cotonomasLoading: false}),
 						{ctor: '[]'});
 				} else {
 					return A2(
@@ -19578,7 +19581,9 @@ var _user$project$App_Update$update = F2(
 					if ((_p21.ctor === 'Posted') && (_p21._0.ctor === 'Ok')) {
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							newModel,
+							_elm_lang$core$Native_Utils.update(
+								newModel,
+								{cotonomasLoading: true}),
 							{ctor: '::', _0: _user$project$App_Commands$fetchCotonomas, _1: commands});
 					} else {
 						return A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
@@ -20910,7 +20915,16 @@ var _user$project$App_View$view = function (model) {
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$id('app'),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'cotonomas-loading', _1: model.cotonomasLoading},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		},
 		{
 			ctor: '::',
