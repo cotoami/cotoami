@@ -19576,10 +19576,10 @@ var _user$project$App_Update$update = F2(
 					};
 					var _p21 = _p22;
 					if ((_p21.ctor === 'Posted') && (_p21._0.ctor === 'Ok')) {
-						return _p21._0._0.asCotonoma ? A2(
+						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							newModel,
-							{ctor: '::', _0: _user$project$App_Commands$fetchCotonomas, _1: commands}) : A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
+							{ctor: '::', _0: _user$project$App_Commands$fetchCotonomas, _1: commands});
 					} else {
 						return A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
 					}

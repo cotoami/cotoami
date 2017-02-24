@@ -226,11 +226,8 @@ update msg model =
                         commands = [ Cmd.map CotonomaModalMsg cmd ]
                     in
                         case subMsg of
-                            Components.CotonomaModal.Messages.Posted (Ok { asCotonoma }) ->
-                                if asCotonoma then
-                                    newModel ! (fetchCotonomas :: commands)
-                                else
-                                    newModel ! commands
+                            Components.CotonomaModal.Messages.Posted (Ok _) ->
+                                newModel ! (fetchCotonomas :: commands)
                             _ -> 
                                 newModel ! commands
                                 
