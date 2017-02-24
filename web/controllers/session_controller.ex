@@ -2,22 +2,16 @@ defmodule Cotoami.SessionController do
   use Cotoami.Web, :controller
   require Logger
   alias Cotoami.AmishiService
+  alias Cotoami.AmishiView
   
   def index(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
-        gravatar_profile = AmishiService.get_gravatar_profile(amishi.email)
-        Logger.info "gravatar_profile: #{inspect gravatar_profile}"
-        json conn, %{
-          id: amishi.id,
-          email: amishi.email,
-          avatar_url: AmishiService.get_gravatar_url(amishi.email),
-          display_name: Map.get(gravatar_profile, "displayName", amishi.email)
-        }
+        render(conn, AmishiView, "amishi.json", 
+          amishi: AmishiService.append_gravatar_profile(amishi)
+        )
       _ ->
-        conn
-        |> put_status(:not_found)
-        |> json("No session")
+        send_resp(conn, :not_found, "")
     end
   end
   

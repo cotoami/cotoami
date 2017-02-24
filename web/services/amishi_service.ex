@@ -14,6 +14,15 @@ defmodule Cotoami.AmishiService do
     Amishi |> Repo.get_by(email: email)
   end
   
+  def append_gravatar_profile(amishi) do
+    gravatar_profile = get_gravatar_profile(amishi.email)
+    Logger.info "gravatar_profile: #{inspect gravatar_profile}"
+    Map.merge(amishi, %{
+      avatar_url: get_gravatar_url(amishi.email),
+      display_name: Map.get(gravatar_profile, "displayName", amishi.email)
+    })
+  end
+  
   def create!(email) do
     Amishi.changeset(%Amishi{}, %{email: email})
     |> Repo.insert!

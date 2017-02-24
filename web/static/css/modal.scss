@@ -57,6 +57,10 @@
       .modal-buttons-seperator {
         margin: 1.5em 0;
         margin-top: 0;
+        
+        @media (max-height: 550px) {
+          margin: 0.5em 0;
+        }
       }
       
       .modal-buttons {

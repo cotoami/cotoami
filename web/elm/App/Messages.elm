@@ -9,12 +9,13 @@ import Components.ProfileModal
 import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
-import Components.CotonomaModal
+import Components.CotonomaModal.Messages
 
 
 type Msg
     = NoOp
     | SessionFetched (Result Http.Error Session)
+    | CotonomasFetched (Result Http.Error (List Cotonoma))
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Post))
     | KeyDown KeyCode
@@ -29,4 +30,5 @@ type Msg
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
-    | CotonomaModalMsg Components.CotonomaModal.Msg
+    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotonomaClick String

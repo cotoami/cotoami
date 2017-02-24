@@ -6,7 +6,7 @@ import Time
 import Keys exposing (ctrl, meta, enter)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Commands exposing (fetchCotonoma, deleteCoto)
+import App.Commands exposing (fetchCotonomas, fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -16,7 +16,8 @@ import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
-import Components.CotonomaModal
+import Components.CotonomaModal.Messages
+import Components.CotonomaModal.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -30,6 +31,15 @@ update msg model =
             
         SessionFetched (Err _) ->
             model ! []
+            
+        CotonomasFetched (Ok cotonomas) ->
+            { model 
+            | cotonomas = cotonomas
+            , cotonomasLoading = False 
+            } ! []
+            
+        CotonomasFetched (Err _) ->
+            { model | cotonomasLoading = False } ! []
             
         HomeClick ->
             let
@@ -191,7 +201,7 @@ update msg model =
                     | posts = posts |> 
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
-                } ! []
+                } ! (if coto.asCotonoma then [ fetchCotonomas ] else []) 
                 
         CotoDeleted _ ->
             model ! []
@@ -203,16 +213,31 @@ update msg model =
                 { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
         CotonomaModalMsg subMsg ->
-            let
-                ( cotonomaModal, timeline, cmd ) = 
-                    Components.CotonomaModal.update 
-                        subMsg
-                        model.cotonoma
-                        model.timeline
-                        model.cotonomaModal
-            in
-                { model | cotonomaModal = cotonomaModal, timeline = timeline }
-                    ! [ Cmd.map CotonomaModalMsg cmd ]
+            case model.session of
+                Nothing -> model ! []
+                Just session -> 
+                    let
+                        ( cotonomaModal, timeline, cmd ) = 
+                            Components.CotonomaModal.Update.update
+                                subMsg
+                                session
+                                model.cotonoma
+                                model.timeline
+                                model.cotonomaModal
+                        newModel = 
+                            { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                        commands = [ Cmd.map CotonomaModalMsg cmd ]
+                    in
+                        case subMsg of
+                            Components.CotonomaModal.Messages.Posted (Ok _) ->
+                                { newModel | cotonomasLoading = True } 
+                                    ! (fetchCotonomas :: commands)
+                            _ -> 
+                                newModel ! commands
+                                
+        CotonomaClick key ->
+            { model | cotonoma = Nothing, timeline = setLoading model.timeline } 
+                ! [ fetchCotonoma key ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

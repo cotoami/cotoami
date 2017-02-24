@@ -1,0 +1,162 @@
+#input-and-timeline {
+  position: relative;
+  flex: 1;
+}
+
+#timeline {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 0;
+  bottom: 58px;
+  left: 0;
+  right: 0;
+  
+  &.loading {
+    background: url(../images/loading.gif) center no-repeat #fff;
+  }
+  
+  div.coto {
+    position: relative;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 12px;
+    
+    @media (min-device-width: 1200px) {
+      &:hover {
+        border: 2px solid #ffdd33;
+        
+        a.open-coto {
+          display: inline;
+        }
+      }
+    }
+    
+    &.active {
+      border: 2px solid #ffa500;
+      
+      a.open-coto {
+        display: inline;
+      }
+    }
+    
+    &.posting {
+      opacity: 0.3;
+      background: url(../images/loading.gif) center no-repeat #fff;
+    }
+    
+    div.border {
+      position: absolute;
+      top: -8px;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed #ccc;
+    }
+    
+    a.open-coto {
+      display: none;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 10;
+      
+      i {
+        font-size: 30px;
+      }
+    }
+    
+    a.posted-in {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 5px;
+      font-size: 12px;
+      color: black;
+      opacity: 0.3;
+    }
+    
+    &.posted-in-another-cotonoma {
+      padding-top: 20px;
+      
+      a.open-coto {
+        top: 20px;
+      }
+      
+      a.posted-in {
+        display: inline;
+      }
+    }
+  }
+}
+.editing #timeline {
+  bottom: 140px !important;
+}
+
+#new-coto {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  
+  div.toolbar {
+    position: relative;
+    height: 40px;
+    
+    span.user {
+      margin-left: 5px;
+      line-height: 40px;
+      vertical-align: middle;
+      font-weight: bold;
+      color: gray;
+      
+      .material-icons {
+        margin-right: 3px;
+        vertical-align: -6px;
+      }
+      
+      &.anonymous {
+        color: black;
+        opacity: 0.26;
+      }
+      
+      &.session {
+        img.avatar {
+          margin: 0;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          margin-right: 8px;
+          border-radius: 4px;
+          vertical-align: middle;
+        }
+      }
+    }
+    
+    div.tool-buttons {
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      
+      span.shortcut-help {
+        margin-left: 4px;
+        text-transform: none;
+        opacity: 0.7;
+      }
+    }
+  }
+  
+  textarea.coto {
+    margin: 0;
+    width: 100%;
+    height: 38px;
+  }
+}
+.editing #new-coto {
+  height: 130px !important;
+}
+.editing #new-coto textarea.coto {
+  height: 80px !important;
+}

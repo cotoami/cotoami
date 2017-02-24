@@ -6,7 +6,7 @@ import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
-import Components.CotonomaModal
+import Components.CotonomaModal.Model
 
 
 type alias Model =
@@ -17,9 +17,11 @@ type alias Model =
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
+    , cotonomas : List App.Types.Cotonoma
+    , cotonomasLoading : Bool
     , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
-    , cotonomaModal : Components.CotonomaModal.Model
+    , cotonomaModal : Components.CotonomaModal.Model.Model
     }
 
 
@@ -32,7 +34,9 @@ initModel =
     , signinModal = Components.SigninModal.initModel
     , profileModal = Components.ProfileModal.initModel
     , cotoModal = Components.CotoModal.initModel
+    , cotonomas = []
+    , cotonomasLoading = True
     , timeline = Components.Timeline.Model.initModel
     , activeCotoId = Nothing
-    , cotonomaModal = Components.CotonomaModal.initModel
+    , cotonomaModal = Components.CotonomaModal.Model.initModel
     }

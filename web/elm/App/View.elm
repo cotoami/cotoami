@@ -6,12 +6,13 @@ import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
+import Components.Cotonomas
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
-import Components.CotonomaModal
+import Components.CotonomaModal.View
 
 
 view : Model -> Html Msg
@@ -19,27 +20,36 @@ view model =
     let
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
     in
-      div [ id "app" ]
+      div [ id "app" 
+          , classList [ ( "cotonomas-loading", model.cotonomasLoading ) ] 
+          ]
           [ Components.AppHeader.view model
-          , div [ id "app-body", class "container" ]
-              [ Html.map TimelineMsg 
-                  (Components.Timeline.View.view 
-                      model.timeline 
-                      model.session 
-                      model.cotonoma 
-                      model.activeCotoId
-                  )
+          , div [ id "app-body" ]
+              [ div [ id "flow" ]
+                  [ Html.map TimelineMsg 
+                      (Components.Timeline.View.view 
+                          model.timeline 
+                          model.session 
+                          model.cotonoma 
+                          model.activeCotoId
+                      )
+                  ]
+              , div 
+                  [ id "stock"
+                  , classList [ ( "hidden", List.isEmpty model.cotonomas  ) ] 
+                  ] 
+                  [ Components.Cotonomas.view model ]
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
-              (Components.ProfileModal.view model.profileModal model.session)
+              (Components.ProfileModal.view model.session model.profileModal)
           , Html.map CotoModalMsg 
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg 
-              (Components.CotonomaModal.view model.cotonomaModal)
+              (Components.CotonomaModal.View.view model.session model.cotonomaModal)
           , a 
               [ class "info-button"
               , title "News and Feedback"

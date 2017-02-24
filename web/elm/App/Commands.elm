@@ -2,7 +2,7 @@ module App.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types exposing (decodeSession, decodeCotonoma)
+import App.Types exposing (Amishi, decodeSession, decodeAmishi, decodeCotonoma)
 import App.Messages exposing (..)
 import Components.Timeline.Model exposing (decodePost)
 
@@ -10,7 +10,19 @@ import Components.Timeline.Model exposing (decodePost)
 fetchSession : Cmd Msg
 fetchSession =
     Http.send SessionFetched (Http.get "/api/session" decodeSession)
-        
+
+
+fetchCotonomas : Cmd Msg
+fetchCotonomas =
+    Http.send CotonomasFetched (Http.get "/api/cotonomas" (Decode.list decodeCotonoma))
+    
+
+fetchAmishi : (Result Http.Error Amishi -> msg) -> String -> Cmd msg
+fetchAmishi msg email =
+    Http.send msg
+        <| Http.get ("/api/amishis/email/" ++ email)
+        <| decodeAmishi
+    
   
 fetchCotonoma : String -> Cmd Msg
 fetchCotonoma key =
