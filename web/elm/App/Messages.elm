@@ -16,6 +16,7 @@ type Msg
     = NoOp
     | SessionFetched (Result Http.Error Session)
     | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasToggle
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Post))
     | KeyDown KeyCode

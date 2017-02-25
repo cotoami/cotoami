@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
 import App.Messages exposing 
-    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal))
+    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, CotonomasToggle))
 
 
 view : Model -> Html Msg
@@ -48,5 +48,19 @@ view model =
 
 cotonomasToggle : Model -> Html Msg
 cotonomasToggle model =
-    a [ class "toggle-cotonomas" ] 
-        [ i [ class "material-icons" ] [ text "arrow_drop_down" ] ]
+    a 
+        [ classList 
+            [ ( "toggle-cotonomas", True )
+            , ( "hidden", List.isEmpty model.cotonomas ) 
+            ]
+        , onClick CotonomasToggle
+        ] 
+        [ i [ class "material-icons" ] 
+            [ text 
+                (if model.cotonomasOpen then 
+                  "arrow_drop_up" 
+                else 
+                  "arrow_drop_down" 
+                )
+            ] 
+        ]

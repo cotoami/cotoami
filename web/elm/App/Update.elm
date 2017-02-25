@@ -41,6 +41,9 @@ update msg model =
         CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } ! []
             
+        CotonomasToggle ->
+            { model | cotonomasOpen = (not model.cotonomasOpen) } ! []
+            
         HomeClick ->
             let
                 timeline = model.timeline

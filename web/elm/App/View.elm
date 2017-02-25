@@ -27,7 +27,9 @@ view model =
           , div [ id "app-body" ]
               [ div 
                   [ id "cotonomas" 
-                  , classList [ ( "hidden", List.isEmpty model.cotonomas ) ]
+                  , classList 
+                      [ ( "hidden", List.isEmpty model.cotonomas || (not model.cotonomasOpen) ) 
+                      ]
                   ] 
                   [ Components.Cotonomas.view model ]
               , div [ id "flow" ]
