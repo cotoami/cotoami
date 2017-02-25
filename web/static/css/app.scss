@@ -53,13 +53,16 @@ html, body, #elm-container, #app, #app-body {
   padding-bottom: 10px;
   border-bottom: solid 1px #eee;
   background-color: #fff;
-  max-height: 40vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   
-  div.coto-as-cotonoma {
-    margin-bottom: 5px;
+  div.cotonomas {
+    max-height: 40vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    div.coto-as-cotonoma {
+      margin-bottom: 5px;
+    }
   }
 }
 
