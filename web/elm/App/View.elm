@@ -25,7 +25,12 @@ view model =
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
-              [ div [ id "flow" ]
+              [ div 
+                  [ id "cotonomas" 
+                  , classList [ ( "hidden", List.isEmpty model.cotonomas ) ]
+                  ] 
+                  [ Components.Cotonomas.view model ]
+              , div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
                           model.timeline 
@@ -36,9 +41,9 @@ view model =
                   ]
               , div 
                   [ id "stock"
-                  , classList [ ( "hidden", List.isEmpty model.cotonomas  ) ] 
+                  , classList [ ( "hidden", True ) ] 
                   ] 
-                  [ Components.Cotonomas.view model ]
+                  []
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)

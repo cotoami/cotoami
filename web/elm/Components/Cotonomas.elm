@@ -12,7 +12,7 @@ view : Model -> Html Msg
 view model =
     Html.Keyed.node
         "div"
-        [ id "cotonomas" ]
+        [ class "cotonomas" ]
         (List.map 
             (\cotonoma -> 
                 ( toString cotonoma.id

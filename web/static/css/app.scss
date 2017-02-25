@@ -41,6 +41,28 @@ html, body, #elm-container, #app, #app-body {
   box-sizing: border-box;
 }
 
+#cotonomas {
+  position: absolute;
+  z-index: 2;
+  top: 35px;
+  left: 0;
+  right: 0;
+  padding-top: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 10px;
+  border-bottom: solid 1px #eee;
+  background-color: #fff;
+  max-height: 40vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  div.coto-as-cotonoma {
+    margin-bottom: 5px;
+  }
+}
+
 #stock {
   max-height: 20vh;
   border-bottom: solid 1px #eee;

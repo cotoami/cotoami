@@ -19840,7 +19840,7 @@ var _user$project$Components_Cotonomas$view = function (model) {
 		'div',
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('cotonomas'),
+			_0: _elm_lang$html$Html_Attributes$class('cotonomas'),
 			_1: {ctor: '[]'}
 		},
 		A2(
@@ -20946,15 +20946,25 @@ var _user$project$App_View$view = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$id('flow'),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Attributes$id('cotonomas'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'hidden',
+												_1: _elm_lang$core$List$isEmpty(model.cotonomas)
+											},
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							},
 							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$map,
-									_user$project$App_Messages$TimelineMsg,
-									A4(_user$project$Components_Timeline_View$view, model.timeline, model.session, model.cotonoma, model.activeCotoId)),
+								_0: _user$project$Components_Cotonomas$view(model),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -20963,28 +20973,38 @@ var _user$project$App_View$view = function (model) {
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('stock'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'hidden',
-													_1: _elm_lang$core$List$isEmpty(model.cotonomas)
-												},
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Attributes$id('flow'),
+									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: _user$project$Components_Cotonomas$view(model),
+									_0: A2(
+										_elm_lang$html$Html$map,
+										_user$project$App_Messages$TimelineMsg,
+										A4(_user$project$Components_Timeline_View$view, model.timeline, model.session, model.cotonoma, model.activeCotoId)),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$id('stock'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'hidden', _1: true},
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}),
 				_1: {
