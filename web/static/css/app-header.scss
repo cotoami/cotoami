@@ -11,6 +11,7 @@
   div.location {
     margin: 0 auto;
     text-align: center;
+    height: 35px;
     line-height: 35px;
     white-space: nowrap;
     
@@ -35,8 +36,9 @@
     span.cotonoma-name {
       display: inline-block;
       max-width: 50vw;
+      height: 100%;
+      vertical-align: top;
       overflow-x: hidden;
-      line-height: 30px;
       font-size: 18px;
       white-space: nowrap;
       font-weight: bold;
