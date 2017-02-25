@@ -9,14 +9,13 @@
   background-color: rgba(255,255,255,0.9);
   
   div.location {
-    max-width: 70vw;
-    overflow-x: hidden;
     margin: 0 auto;
     text-align: center;
     line-height: 35px;
     white-space: nowrap;
     
-    a.to-home {
+    a.to-home,
+    a.toggle-cotonomas {
       color: #1eaedb;
       cursor: pointer;
       
@@ -25,14 +24,19 @@
       }
     }
     
+    a.toggle-cotonomas {
+      margin-left: 5px;
+    }
+    
     span.cotonoma-name {
       display: inline-block;
+      max-width: 50vw;
+      overflow-x: hidden;
       line-height: 30px;
       font-size: 18px;
       white-space: nowrap;
       font-weight: bold;
       opacity: 0.5;
-      vertical-align: 9px;
     }
   }
   

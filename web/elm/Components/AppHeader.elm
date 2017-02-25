@@ -15,12 +15,14 @@ view model =
             (case model.cotonoma of
                 Nothing -> 
                   [ i [ class "material-icons" ] [ text "home" ]
+                  , cotonomasToggle model
                   ]
                 Just cotonoma ->
                   [ a [ class "to-home", onClick HomeClick ] 
                       [ i [ class "material-icons" ] [ text "home" ] ]
                   , i [ class "material-icons" ] [ text "navigate_next" ]
                   , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+                  , cotonomasToggle model
                   ]
             )
         , (case model.session of
@@ -42,3 +44,9 @@ view model =
                     ]
             )
         ]
+
+
+cotonomasToggle : Model -> Html Msg
+cotonomasToggle model =
+    a [ class "toggle-cotonomas" ] 
+        [ i [ class "material-icons" ] [ text "arrow_drop_down" ] ]

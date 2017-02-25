@@ -19608,6 +19608,31 @@ var _user$project$App_Update$update = F2(
 		}
 	});
 
+var _user$project$Components_AppHeader$cotonomasToggle = function (model) {
+	return A2(
+		_elm_lang$html$Html$a,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('toggle-cotonomas'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('arrow_drop_down'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Components_AppHeader$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -19642,7 +19667,11 @@ var _user$project$Components_AppHeader$view = function (model) {
 									_0: _elm_lang$html$Html$text('home'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: _user$project$Components_AppHeader$cotonomasToggle(model),
+								_1: {ctor: '[]'}
+							}
 						};
 					} else {
 						return {
@@ -19702,7 +19731,11 @@ var _user$project$Components_AppHeader$view = function (model) {
 											_0: _elm_lang$html$Html$text(_p0._0.name),
 											_1: {ctor: '[]'}
 										}),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: _user$project$Components_AppHeader$cotonomasToggle(model),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						};
