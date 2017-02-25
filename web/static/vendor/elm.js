@@ -21020,7 +21020,7 @@ var _user$project$App_View$view = function (model) {
 											_0: {
 												ctor: '_Tuple2',
 												_0: 'hidden',
-												_1: _elm_lang$core$List$isEmpty(model.cotonomas) || ((!model.cotonomasToggled) && (!model.cotonomasOpen))
+												_1: _elm_lang$core$List$isEmpty(model.cotonomas) || (!model.cotonomasToggled)
 											},
 											_1: {
 												ctor: '::',

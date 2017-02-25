@@ -28,10 +28,10 @@ view model =
               [ div 
                   [ id "cotonomas" 
                   , classList 
-                      [ ( "hidden", List.isEmpty model.cotonomas || (not model.cotonomasToggled && not model.cotonomasOpen) )
+                      [ ( "hidden", List.isEmpty model.cotonomas || not model.cotonomasToggled )
                       , ( "animated", model.cotonomasToggled )
                       , ( "slideInDown", model.cotonomasToggled && model.cotonomasOpen )
-                      , ( "slideOutUp", model.cotonomasToggled && (not model.cotonomasOpen) )
+                      , ( "slideOutUp", model.cotonomasToggled && not model.cotonomasOpen )
                       ]
                   ] 
                   [ Components.Cotonomas.view model ]
