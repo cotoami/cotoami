@@ -47,15 +47,13 @@ html, body, #elm-container, #app, #app-body {
   top: 35px;
   left: 0;
   right: 0;
-  padding-top: 10px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 10px;
+  padding: 10px 20px;
   border-bottom: solid 1px #eee;
   background-color: #fff;
   
   div.cotonomas {
     max-height: 40vh;
+    padding: 0 10px;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -94,6 +92,23 @@ html, body, #elm-container, #app, #app-body {
     flex-direction: row;
     width: 80%;
     margin: 0 auto;
+  }
+  
+  #cotonomas {
+    position: relative;
+    top: auto;
+    width: 160px;
+    margin-right: 10px;
+    padding: 0;
+    
+    div.cotonomas {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: none;
+    }
   }
   
   #flow {
