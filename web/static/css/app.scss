@@ -50,6 +50,7 @@ html, body, #elm-container, #app, #app-body {
   padding: 10px 20px;
   border-bottom: solid 1px #eee;
   background-color: #fff;
+  animation-duration: 0.5s;
   
   div.cotonomas {
     max-height: 40vh;
@@ -95,6 +96,7 @@ html, body, #elm-container, #app, #app-body {
   }
   
   #cotonomas {
+    display: block !important;
     position: relative;
     top: auto;
     width: 160px;

@@ -26,6 +26,10 @@
     
     a.toggle-cotonomas {
       margin-left: 5px;
+      
+      @media (min-width: 750px) {
+        display: none;
+      }
     }
     
     span.cotonoma-name {

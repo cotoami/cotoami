@@ -18588,6 +18588,7 @@ var _user$project$App_Model$initModel = {
 	profileModal: _user$project$Components_ProfileModal$initModel,
 	cotoModal: _user$project$Components_CotoModal$initModel,
 	cotonomas: {ctor: '[]'},
+	cotonomasToggled: false,
 	cotonomasOpen: false,
 	cotonomasLoading: true,
 	timeline: _user$project$Components_Timeline_Model$initModel,
@@ -18607,7 +18608,9 @@ var _user$project$App_Model$Model = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, cotonomasOpen: i, cotonomasLoading: j, timeline: k, activeCotoId: l, cotonomaModal: m};
+													return function (n) {
+														return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, cotonomasToggled: i, cotonomasOpen: j, cotonomasLoading: k, timeline: l, activeCotoId: m, cotonomaModal: n};
+													};
 												};
 											};
 										};
@@ -19230,7 +19233,7 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{cotonomasOpen: !model.cotonomasOpen}),
+						{cotonomasToggled: true, cotonomasOpen: !model.cotonomasOpen}),
 					{ctor: '[]'});
 			case 'HomeClick':
 				var timeline = model.timeline;
@@ -21017,9 +21020,21 @@ var _user$project$App_View$view = function (model) {
 											_0: {
 												ctor: '_Tuple2',
 												_0: 'hidden',
-												_1: _elm_lang$core$List$isEmpty(model.cotonomas) || (!model.cotonomasOpen)
+												_1: _elm_lang$core$List$isEmpty(model.cotonomas) || ((!model.cotonomasToggled) && (!model.cotonomasOpen))
 											},
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'animated', _1: model.cotonomasToggled},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'slideInDown', _1: model.cotonomasToggled && model.cotonomasOpen},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'slideOutUp', _1: model.cotonomasToggled && (!model.cotonomasOpen)},
+														_1: {ctor: '[]'}
+													}
+												}
+											}
 										}),
 									_1: {ctor: '[]'}
 								}

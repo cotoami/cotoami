@@ -18,6 +18,7 @@ type alias Model =
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
     , cotonomas : List App.Types.Cotonoma
+    , cotonomasToggled : Bool
     , cotonomasOpen : Bool
     , cotonomasLoading : Bool
     , timeline : Components.Timeline.Model.Model
@@ -36,6 +37,7 @@ initModel =
     , profileModal = Components.ProfileModal.initModel
     , cotoModal = Components.CotoModal.initModel
     , cotonomas = []
+    , cotonomasToggled = False
     , cotonomasOpen = False
     , cotonomasLoading = True
     , timeline = Components.Timeline.Model.initModel

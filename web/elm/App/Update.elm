@@ -42,7 +42,10 @@ update msg model =
             { model | cotonomasLoading = False } ! []
             
         CotonomasToggle ->
-            { model | cotonomasOpen = (not model.cotonomasOpen) } ! []
+            { model 
+            | cotonomasToggled = True
+            , cotonomasOpen = (not model.cotonomasOpen) 
+            } ! []
             
         HomeClick ->
             let
