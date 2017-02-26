@@ -51,8 +51,13 @@ update msg model =
             let
                 timeline = model.timeline
             in
-                { model | cotonoma = Nothing, timeline = setLoading timeline }
-                    ! [ Cmd.map TimelineMsg fetchPosts ]
+                { model 
+                | cotonoma = Nothing
+                , timeline = setLoading timeline 
+                } ! 
+                    [ Cmd.map TimelineMsg fetchPosts
+                    , fetchCotonomas Nothing
+                    ]
             
         CotonomaFetched (Ok (cotonoma, posts)) ->
             let
@@ -66,8 +71,10 @@ update msg model =
                 { model 
                 | cotonoma = Just cotonoma
                 , timeline = timeline
-                } 
-                ! [ Cmd.map TimelineMsg cmd ]
+                } ! 
+                    [ Cmd.map TimelineMsg cmd
+                    , fetchCotonomas (Just cotonoma)
+                    ]
             
         CotonomaFetched (Err _) ->
             model ! []
@@ -135,8 +142,7 @@ update msg model =
                                     Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
                                 )
                             }
-                        } !
-                        [ Cmd.map CotoModalMsg cmd ]
+                        } ! [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
                         { model 
@@ -152,12 +158,12 @@ update msg model =
                                 )
                             }
                         } !
-                        [ Cmd.map CotoModalMsg cmd
-                        , deleteCoto coto.id
-                        , Process.sleep (1 * Time.second)
-                            |> Task.andThen (\_ -> Task.succeed ())
-                            |> Task.perform (\_ -> DeleteCoto coto)
-                        ]
+                            [ Cmd.map CotoModalMsg cmd
+                            , deleteCoto coto.id
+                            , Process.sleep (1 * Time.second)
+                                |> Task.andThen (\_ -> Task.succeed ())
+                                |> Task.perform (\_ -> DeleteCoto coto)
+                            ]
                         
                     _ ->
                         { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]
@@ -207,7 +213,7 @@ update msg model =
                     | posts = posts |> 
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
-                } ! (if coto.asCotonoma then [ fetchCotonomas ] else []) 
+                } ! (if coto.asCotonoma then [ fetchCotonomas model.cotonoma ] else []) 
                 
         CotoDeleted _ ->
             model ! []
@@ -237,7 +243,7 @@ update msg model =
                         case subMsg of
                             Components.CotonomaModal.Messages.Posted (Ok _) ->
                                 { newModel | cotonomasLoading = True } 
-                                    ! (fetchCotonomas :: commands)
+                                    ! ((fetchCotonomas model.cotonoma) :: commands)
                             _ -> 
                                 newModel ! commands
                                 

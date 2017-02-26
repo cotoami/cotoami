@@ -23,6 +23,6 @@ init : ( Model, Cmd Msg )
 init =
     initModel ! 
         [ fetchSession
-        , fetchCotonomas
+        , fetchCotonomas Nothing
         , Cmd.map TimelineMsg fetchPosts 
         ]

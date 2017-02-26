@@ -76,9 +76,10 @@ defmodule Cotoami.CotonomaService do
     |> Repo.one()
   end
   
-  def find_by_amishi(amishi_id) do
+  def find_by_amishi(amishi_id, cotonoma_id_nillable) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
+    |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
     |> preload([:coto])
     |> Repo.all()
   end

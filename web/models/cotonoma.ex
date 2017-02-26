@@ -40,4 +40,14 @@ defmodule Cotoami.Cotonoma do
       where: c.owner_id == ^amishi_id or m.amishi_id == ^amishi_id,
       order_by: [desc: c.updated_at]
   end
+  
+  def in_cotonoma_if_specified(query, cotonoma_id_nillable) do
+    if cotonoma_id_nillable do
+      from c in query,
+        join: coto in assoc(c, :coto),
+        where: coto.posted_in_id == ^cotonoma_id_nillable
+    else
+      query
+    end
+  end
 end
