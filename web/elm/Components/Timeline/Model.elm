@@ -2,7 +2,7 @@ module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing (Coto, Cotonoma, decodeCotonoma)
+import App.Types exposing (Coto, Amishi, Cotonoma, decodeAmishi, decodeCotonoma)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
@@ -10,6 +10,7 @@ type alias Post =
     { postId : Maybe Int
     , cotoId : Maybe Int
     , content : String
+    , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
     , cotonomaKey : String
@@ -22,6 +23,7 @@ defaultPost =
     { postId = Nothing 
     , cotoId = Nothing
     , content = ""
+    , amishi = Nothing
     , postedIn = Nothing
     , asCotonoma = False
     , cotonomaKey = ""
@@ -31,10 +33,11 @@ defaultPost =
 
 decodePost : Decode.Decoder Post
 decodePost =
-    Decode.map7 Post
+    Decode.map8 Post
         (Decode.maybe (Decode.field "postId" Decode.int))
         (Decode.maybe (Decode.field "id" Decode.int))
         (Decode.field "content" Decode.string)
+        (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "as_cotonoma" Decode.bool)
         (Decode.field "cotonoma_key" Decode.string)
