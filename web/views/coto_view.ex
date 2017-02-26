@@ -14,6 +14,12 @@ defmodule Cotoami.CotoView do
   end
   
   def render("coto.json", %{coto: coto}) do
+    amishi_as_json =
+      case coto.amishi do
+        %Ecto.Association.NotLoaded{} -> nil
+        amishi ->
+          render_one(coto.amishi, AmishiView, "amishi.json")
+      end
     posted_in_as_json =
       case coto.posted_in do
         %Ecto.Association.NotLoaded{} -> nil
@@ -28,7 +34,7 @@ defmodule Cotoami.CotoView do
     %{
       id: coto.id,
       content: coto.content,
-      amishi: render_one(coto.amishi, AmishiView, "amishi.json"),
+      amishi: amishi_as_json,
       posted_in: posted_in_as_json,
       as_cotonoma: coto.as_cotonoma,
       cotonoma_key: cotonoma_key,

@@ -88,6 +88,20 @@
         display: inline;
       }
     }
+    
+    div.author {
+      margin-bottom: 8px;
+      
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+    }
   }
 }
 .editing #timeline {
