@@ -70,6 +70,7 @@ update msg model =
             in
                 { model 
                 | cotonoma = Just cotonoma
+                , cotonomasOpen = False
                 , timeline = timeline
                 } ! 
                     [ Cmd.map TimelineMsg cmd

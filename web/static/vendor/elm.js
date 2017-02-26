@@ -19285,6 +19285,7 @@ var _user$project$App_Update$update = F2(
 							model,
 							{
 								cotonoma: _elm_lang$core$Maybe$Just(_p3),
+								cotonomasOpen: false,
 								timeline: timeline
 							}),
 						{
