@@ -126,6 +126,7 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
                     else
                         span [] []
               )
+            , authorDiv maybeSession post
             , contentDiv post
             ]
         
@@ -137,13 +138,21 @@ isActive post activeCotoId =
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
 
 
-amishiDiv : Maybe Session -> Post -> Html Msg
-amishiDiv maybeSession post =
+authorDiv : Maybe Session -> Post -> Html Msg
+authorDiv maybeSession post =
     case maybeSession of
-        Nothing ->
-            span [] []
+        Nothing -> span [] []
         Just session -> 
-            span [] []
+            case post.amishi of
+                Nothing -> span [] []
+                Just author ->
+                    if author.id == session.id then
+                        span [] []
+                    else
+                        div [ class "amishi author" ]
+                            [ img [ class "avatar", src author.avatarUrl ] []
+                            , span [ class "name" ] [ text author.displayName ]
+                            ]
             
     
 contentDiv : Post -> Html Msg

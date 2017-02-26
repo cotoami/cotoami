@@ -1,6 +1,6 @@
 defmodule Cotoami.CotonomaService do
   require Logger
-  import Ecto.Query, only: [preload: 2, where: 3]
+  import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
   alias Cotoami.Repo
   alias Cotoami.Coto
   alias Cotoami.Cotonoma
@@ -93,7 +93,16 @@ defmodule Cotoami.CotonomaService do
             Coto 
             |> Coto.in_cotonoma(cotonoma.id)
             |> preload([:amishi, :posted_in, :cotonoma])
+            |> limit(100)
             |> Repo.all
+            |> Enum.map(fn(coto) ->
+              if coto.amishi.id != amishi_id do
+                anotherAmishi = AmishiService.append_gravatar_profile(coto.amishi)
+                %{coto | :amishi => anotherAmishi}
+              else
+                coto
+              end
+            end)
           {cotonoma, cotos}
         else
           nil

@@ -1,6 +1,6 @@
 defmodule Cotoami.CotoService do
   require Logger
-  import Ecto.Query, only: [preload: 2]
+  import Ecto.Query, only: [preload: 2, limit: 2]
   alias Cotoami.Repo
   alias Cotoami.Coto
   
@@ -19,6 +19,7 @@ defmodule Cotoami.CotoService do
     Coto 
     |> Coto.for_amishi(amishi_id)
     |> preload([:amishi, :posted_in, :cotonoma])
+    |> limit(100)
     |> Repo.all
   end
 end
