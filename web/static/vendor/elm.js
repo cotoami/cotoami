@@ -21112,21 +21112,33 @@ var _user$project$App_View$view = function (model) {
 									_0: _elm_lang$html$Html_Attributes$classList(
 										{
 											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'hidden',
-												_1: _elm_lang$core$List$isEmpty(model.cotonomas) || (!model.cotonomasToggled)
-											},
+											_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.cotonomasToggled},
 											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'animated', _1: model.cotonomasToggled},
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'empty',
+													_1: _elm_lang$core$List$isEmpty(model.cotonomas)
+												},
 												_1: {
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'slideInDown', _1: model.cotonomasToggled && model.cotonomasOpen},
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'notEmpty',
+														_1: !_elm_lang$core$List$isEmpty(model.cotonomas)
+													},
 													_1: {
 														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'slideOutUp', _1: model.cotonomasToggled && (!model.cotonomasOpen)},
-														_1: {ctor: '[]'}
+														_0: {ctor: '_Tuple2', _0: 'animated', _1: model.cotonomasToggled},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'slideInDown', _1: model.cotonomasToggled && model.cotonomasOpen},
+															_1: {
+																ctor: '::',
+																_0: {ctor: '_Tuple2', _0: 'slideOutUp', _1: model.cotonomasToggled && (!model.cotonomasOpen)},
+																_1: {ctor: '[]'}
+															}
+														}
 													}
 												}
 											}

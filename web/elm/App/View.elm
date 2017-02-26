@@ -28,7 +28,9 @@ view model =
               [ div 
                   [ id "cotonomas" 
                   , classList 
-                      [ ( "hidden", List.isEmpty model.cotonomas || not model.cotonomasToggled )
+                      [ ( "neverToggled", not model.cotonomasToggled )
+                      , ( "empty", List.isEmpty model.cotonomas )
+                      , ( "notEmpty", not (List.isEmpty model.cotonomas) )
                       , ( "animated", model.cotonomasToggled )
                       , ( "slideInDown", model.cotonomasToggled && model.cotonomasOpen )
                       , ( "slideOutUp", model.cotonomasToggled && not model.cotonomasOpen )

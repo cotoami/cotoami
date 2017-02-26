@@ -52,6 +52,11 @@ html, body, #elm-container, #app, #app-body {
   background-color: #fff;
   animation-duration: 0.5s;
   
+  &.neverToggled,
+  &.empty {
+    display: none;
+  }
+  
   div.cotonomas {
     max-height: 40vh;
     padding: 0 10px;
@@ -96,7 +101,6 @@ html, body, #elm-container, #app, #app-body {
   }
   
   #cotonomas {
-    display: block !important;
     position: relative;
     top: auto;
     width: 160px;
@@ -105,6 +109,10 @@ html, body, #elm-container, #app, #app-body {
     
     // Disable pull-down animation
     animation-name: none;
+    
+    &.notEmpty {
+      display: block;
+    }
     
     div.cotonomas {
       position: absolute;
