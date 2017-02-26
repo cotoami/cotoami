@@ -20174,15 +20174,30 @@ var _user$project$Components_Timeline_View$contentDiv = function (post) {
 			_1: {ctor: '[]'}
 		}) : _user$project$Components_Timeline_View$markdown(post.content);
 };
+var _user$project$Components_Timeline_View$amishiDiv = F2(
+	function (maybeSession, post) {
+		var _p0 = maybeSession;
+		if (_p0.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			return A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		}
+	});
 var _user$project$Components_Timeline_View$isActive = F2(
 	function (post, activeCotoId) {
-		var _p0 = post.cotoId;
-		if (_p0.ctor === 'Nothing') {
+		var _p1 = post.cotoId;
+		if (_p1.ctor === 'Nothing') {
 			return false;
 		} else {
 			return _elm_lang$core$Native_Utils.eq(
 				A2(_elm_lang$core$Maybe$withDefault, -1, activeCotoId),
-				_p0._0);
+				_p1._0);
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
@@ -20225,12 +20240,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p1 = post.cotoId;
-						if (_p1.ctor === 'Nothing') {
+						var _p2 = post.cotoId;
+						if (_p2.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p1._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p2._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -20249,8 +20264,8 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p2 = post.cotoId;
-						if (_p2.ctor === 'Nothing') {
+						var _p3 = post.cotoId;
+						if (_p3.ctor === 'Nothing') {
 							return A2(
 								_elm_lang$html$Html$span,
 								{ctor: '[]'},
@@ -20293,14 +20308,14 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					_1: {
 						ctor: '::',
 						_0: function () {
-							var _p3 = post.postedIn;
-							if (_p3.ctor === 'Nothing') {
+							var _p4 = post.postedIn;
+							if (_p4.ctor === 'Nothing') {
 								return A2(
 									_elm_lang$html$Html$span,
 									{ctor: '[]'},
 									{ctor: '[]'});
 							} else {
-								var _p4 = _p3._0;
+								var _p5 = _p4._0;
 								return postedInAnother ? A2(
 									_elm_lang$html$Html$a,
 									{
@@ -20309,13 +20324,13 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 										_1: {
 											ctor: '::',
 											_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
-												_user$project$Components_Timeline_Messages$CotonomaClick(_p4.key)),
+												_user$project$Components_Timeline_Messages$CotonomaClick(_p5.key)),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p4.name),
+										_0: _elm_lang$html$Html$text(_p5.name),
 										_1: {ctor: '[]'}
 									}) : A2(
 									_elm_lang$html$Html$span,
@@ -20333,13 +20348,13 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 			});
 	});
 var _user$project$Components_Timeline_View$getKey = function (post) {
-	var _p5 = post.cotoId;
-	if (_p5.ctor === 'Just') {
-		return _elm_lang$core$Basics$toString(_p5._0);
+	var _p6 = post.cotoId;
+	if (_p6.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p6._0);
 	} else {
-		var _p6 = post.postId;
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p6._0);
+		var _p7 = post.postId;
+		if (_p7.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p7._0);
 		} else {
 			return '';
 		}
@@ -20417,8 +20432,8 @@ var _user$project$Components_Timeline_View$view = F4(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p7 = maybeSession;
-										if (_p7.ctor === 'Nothing') {
+										var _p8 = maybeSession;
+										if (_p8.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -20447,7 +20462,7 @@ var _user$project$Components_Timeline_View$view = F4(
 													}
 												});
 										} else {
-											var _p8 = _p7._0;
+											var _p9 = _p8._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -20464,7 +20479,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p8.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p9.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -20480,7 +20495,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p8.displayName),
+																_0: _elm_lang$html$Html$text(_p9.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}

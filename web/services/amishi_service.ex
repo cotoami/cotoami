@@ -19,8 +19,17 @@ defmodule Cotoami.AmishiService do
     Logger.info "gravatar_profile: #{inspect gravatar_profile}"
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
-      display_name: Map.get(gravatar_profile, "displayName", amishi.email)
+      display_name: 
+        Map.get(
+          gravatar_profile, 
+          "displayName", 
+          get_default_display_name(amishi)
+        )
     })
+  end
+  
+  def get_default_display_name(amishi) do
+    String.split(amishi.email, "@") |> List.first()
   end
   
   def create!(email) do

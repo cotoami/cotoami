@@ -92,7 +92,7 @@ defmodule Cotoami.CotonomaService do
           cotos =
             Coto 
             |> Coto.in_cotonoma(cotonoma.id)
-            |> preload([:posted_in, :cotonoma])
+            |> preload([:amishi, :posted_in, :cotonoma])
             |> Repo.all
           {cotonoma, cotos}
         else

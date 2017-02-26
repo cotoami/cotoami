@@ -135,7 +135,16 @@ isActive post activeCotoId =
     case post.cotoId of
         Nothing -> False
         Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
-    
+
+
+amishiDiv : Maybe Session -> Post -> Html Msg
+amishiDiv maybeSession post =
+    case maybeSession of
+        Nothing ->
+            span [] []
+        Just session -> 
+            span [] []
+            
     
 contentDiv : Post -> Html Msg
 contentDiv post =
