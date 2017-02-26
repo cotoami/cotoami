@@ -103,6 +103,9 @@ html, body, #elm-container, #app, #app-body {
     margin-right: 10px;
     padding: 0;
     
+    // Disable pull-down and up animation
+    animation-name: none;
+    
     div.cotonomas {
       position: absolute;
       top: 0;
