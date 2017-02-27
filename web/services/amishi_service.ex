@@ -60,7 +60,7 @@ defmodule Cotoami.AmishiService do
   
   defp do_get_gravatar_profile(email) do
     url = @gravatar_url_prefix <> email_hash(email) <> ".json"
-    Logger.info "Gravatar request: #{url}"
+    Logger.info "Gravatar request: #{email} - #{url}"
     response = HTTPotion.get url, [headers: ["User-Agent": @gravatar_user_agent]]
     case response do
       %{status_code: 200, body: body} -> body
