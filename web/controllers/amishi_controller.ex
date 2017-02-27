@@ -2,7 +2,6 @@ defmodule Cotoami.AmishiController do
   use Cotoami.Web, :controller
   require Logger
   alias Cotoami.AmishiService
-  alias Cotoami.AmishiView
   
   def show_by_email(conn, %{"email" => email}) do
     case AmishiService.get_by_email(email) do

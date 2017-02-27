@@ -18,7 +18,7 @@ defmodule Cotoami.CotoView do
       case coto.amishi do
         %Ecto.Association.NotLoaded{} -> nil
         amishi ->
-          render_one(coto.amishi, AmishiView, "amishi.json")
+          render_one(amishi, AmishiView, "amishi.json")
       end
     posted_in_as_json =
       case coto.posted_in do

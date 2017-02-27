@@ -5,6 +5,7 @@ defmodule Cotoami.RedisService do
   @default_port 6379
   
   @signin_key_expire_seconds 60 * 10
+  @gravatar_key_expire_seconds 60 * 10
   
   def anonymous_key(anonymous_id), do: "anonymous-" <> anonymous_id
   
@@ -69,6 +70,26 @@ defmodule Cotoami.RedisService do
     Redix.command!(conn, ["DEL", signin_key(token)])
     stop(conn)
     email
+  end
+  
+  def gravatar_key(email), do: "gravatar-" <> email
+  
+  def get_gravatar_profile(email) do
+    {:ok, conn} = start()
+    gravatar = Redix.command!(conn, ["GET", gravatar_key(email)])
+    stop(conn)
+    gravatar
+  end
+  
+  def put_gravatar_profile(email, profile_json) do
+    {:ok, conn} = start()
+    Redix.command!(conn, [
+      "SETEX", 
+      gravatar_key(email), 
+      @gravatar_key_expire_seconds, 
+      profile_json
+    ])
+    stop(conn)
   end
   
   defp host() do

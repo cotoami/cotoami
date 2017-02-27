@@ -2,6 +2,7 @@ defmodule Cotoami.AmishiService do
   require Logger
   alias Cotoami.Repo
   alias Cotoami.Amishi
+  alias Cotoami.RedisService
   
   @gravatar_url_prefix "https://secure.gravatar.com/"
   @gravatar_user_agent "Cotoami"
@@ -38,15 +39,31 @@ defmodule Cotoami.AmishiService do
   end
   
   def get_gravatar_profile(email) do
+    case RedisService.get_gravatar_profile(email) do
+      nil ->
+        case do_get_gravatar_profile(email) do
+          nil -> nil
+          json ->
+            RedisService.put_gravatar_profile(email, json)
+            decode_gravatar_profile_json(json)
+        end
+      json -> 
+        decode_gravatar_profile_json(json)
+    end
+  end
+  
+  defp decode_gravatar_profile_json(json) do
+    Poison.decode!(json)
+    |> Map.get("entry")
+    |> List.first
+  end
+  
+  defp do_get_gravatar_profile(email) do
     url = @gravatar_url_prefix <> email_hash(email) <> ".json"
     response = HTTPotion.get url, [headers: ["User-Agent": @gravatar_user_agent]]
     case response do
-      %{status_code: 200, body: body} -> 
-        Poison.decode!(body)
-        |> Map.get("entry")
-        |> List.first
-      _ -> 
-        %{}
+      %{status_code: 200, body: body} -> body
+      _ -> nil
     end
   end
   
