@@ -1,4 +1,4 @@
-/* This file is for your main application css. */
+@import "variables.scss";
 
 html, body, #elm-container, #app, #app-body {
   height: 100%;
@@ -93,7 +93,7 @@ html, body, #elm-container, #app, #app-body {
   }
 }
 
-@media (min-width: 750px) {
+@media (#{$wide-viewport}) {
   #app-body {
     flex-direction: row;
     width: 80%;
