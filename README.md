@@ -6,6 +6,10 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univapay.com) under the Apache 2.0 Licence.
 
+## Roadmap
+
+* Cotoami Roadmap - https://github.com/cotoami/cotoami/issues/2
+
 ## Requirements
 
 * Node.js 5.0.0 or greater
