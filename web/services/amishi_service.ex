@@ -16,7 +16,7 @@ defmodule Cotoami.AmishiService do
   end
   
   def append_gravatar_profile(amishi) do
-    gravatar_profile = get_gravatar_profile(amishi.email)
+    gravatar_profile = get_gravatar_profile(amishi.email) || %{}
     Logger.info "gravatar_profile: #{inspect gravatar_profile}"
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
