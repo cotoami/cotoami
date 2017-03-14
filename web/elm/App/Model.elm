@@ -1,6 +1,6 @@
 module App.Model exposing (..)
 
-import App.Types
+import App.Types exposing (CotonomaKey)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
@@ -8,6 +8,12 @@ import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
 
+
+type Route
+    = HomeRoute
+    | CotonomaRoute CotonomaKey
+    | NotFoundRoute
+    
 
 type alias Model =
     { ctrlDown : Bool

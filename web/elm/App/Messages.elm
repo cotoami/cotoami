@@ -2,7 +2,7 @@ module App.Messages exposing (Msg(..))
 
 import Http
 import Keyboard exposing (..)
-import App.Types exposing (Session, Coto, Cotonoma)
+import App.Types exposing (Session, Coto, Cotonoma, CotonomaKey)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -32,4 +32,4 @@ type Msg
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
-    | CotonomaClick String
+    | CotonomaClick CotonomaKey
