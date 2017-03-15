@@ -4,11 +4,10 @@ import Navigation exposing (Location)
 import App.Routing exposing (parseLocation)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Update exposing (update)
+import App.Update exposing (update, loadHome, loadCotonoma)
 import App.Commands exposing (fetchSession, fetchCotonomas)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
-import Components.Timeline.Commands exposing (fetchPosts)
 
 main : Program Never Model Msg
 main =
@@ -22,8 +21,12 @@ main =
 
 init : Location -> ( Model, Cmd Msg )
 init location =
-    initModel (parseLocation location) ! 
-        [ fetchSession
-        , fetchCotonomas Nothing
-        , Cmd.map TimelineMsg fetchPosts 
-        ]
+    let
+        route = parseLocation location
+        initialModel = initModel route
+        ( model, cmd ) =
+            case route of
+                CotonomaRoute key -> loadCotonoma key initialModel
+                _ -> loadHome initialModel
+    in
+        model ! [fetchSession, cmd]

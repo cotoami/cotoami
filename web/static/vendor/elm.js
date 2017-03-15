@@ -21989,21 +21989,28 @@ var _user$project$App_View$view = function (model) {
 };
 
 var _user$project$Main$init = function (location) {
+	var route = _user$project$App_Routing$parseLocation(location);
+	var initialModel = _user$project$App_Model$initModel(route);
+	var _p0 = function () {
+		var _p1 = route;
+		if (_p1.ctor === 'CotonomaRoute') {
+			return A2(_user$project$App_Update$loadCotonoma, _p1._0, initialModel);
+		} else {
+			return _user$project$App_Update$loadHome(initialModel);
+		}
+	}();
+	var model = _p0._0;
+	var cmd = _p0._1;
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
-		_user$project$App_Model$initModel(
-			_user$project$App_Routing$parseLocation(location)),
+		model,
 		{
 			ctor: '::',
 			_0: _user$project$App_Commands$fetchSession,
 			_1: {
 				ctor: '::',
-				_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
-					_1: {ctor: '[]'}
-				}
+				_0: cmd,
+				_1: {ctor: '[]'}
 			}
 		});
 };
