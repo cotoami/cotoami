@@ -1,6 +1,6 @@
 module App.Model exposing (..)
 
-import App.Types
+import App.Types exposing (CotonomaKey)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
@@ -9,8 +9,15 @@ import Components.CotoModal
 import Components.CotonomaModal.Model
 
 
+type Route
+    = HomeRoute
+    | CotonomaRoute CotonomaKey
+    | NotFoundRoute
+    
+
 type alias Model =
-    { ctrlDown : Bool
+    { route : Route
+    , ctrlDown : Bool
     , session : Maybe App.Types.Session
     , cotonoma : Maybe App.Types.Cotonoma
     , confirmModal : Components.ConfirmModal.Model.Model
@@ -27,9 +34,10 @@ type alias Model =
     }
 
 
-initModel : Model
-initModel =
-    { ctrlDown = False
+initModel : Route -> Model
+initModel route =
+    { route = route
+    , ctrlDown = False
     , session = Nothing
     , cotonoma = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel

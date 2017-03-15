@@ -2,7 +2,15 @@ module App.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types exposing (Amishi, Cotonoma, decodeSession, decodeAmishi, decodeCotonoma)
+import App.Types 
+    exposing 
+        ( Amishi
+        , Cotonoma
+        , CotonomaKey
+        , decodeSession
+        , decodeAmishi
+        , decodeCotonoma
+        )
 import App.Messages exposing (..)
 import Components.Timeline.Model exposing (decodePost)
 
@@ -31,7 +39,7 @@ fetchAmishi msg email =
         <| decodeAmishi
     
   
-fetchCotonoma : String -> Cmd Msg
+fetchCotonoma : CotonomaKey -> Cmd Msg
 fetchCotonoma key =
     let
         url = "/api/cotonomas/" ++ key ++ "/cotos"

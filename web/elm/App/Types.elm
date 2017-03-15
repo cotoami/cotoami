@@ -46,18 +46,21 @@ toAmishi session =
         session.displayName
 
 
+type alias CotonomaKey = String
+
+
 type alias Coto =
     { id : Int
     , content : String
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
-    , cotonomaKey : String
+    , cotonomaKey : CotonomaKey
     }
 
 
 type alias Cotonoma =
     { id : Int
-    , key : String
+    , key : CotonomaKey
     , name : String
     , cotoId : Int
     }

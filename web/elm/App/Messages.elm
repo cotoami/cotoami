@@ -2,7 +2,8 @@ module App.Messages exposing (Msg(..))
 
 import Http
 import Keyboard exposing (..)
-import App.Types exposing (Session, Coto, Cotonoma)
+import Navigation exposing (Location)
+import App.Types exposing (Session, Coto, Cotonoma, CotonomaKey)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -14,6 +15,7 @@ import Components.CotonomaModal.Messages
 
 type Msg
     = NoOp
+    | OnLocationChange Location
     | SessionFetched (Result Http.Error Session)
     | CotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomasToggle
@@ -32,4 +34,4 @@ type Msg
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
-    | CotonomaClick String
+    | CotonomaClick CotonomaKey

@@ -4,8 +4,11 @@ import Task
 import Process
 import Time
 import Keys exposing (ctrl, meta, enter)
+import Navigation 
+import App.Types exposing (CotonomaKey)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Routing exposing (parseLocation)
 import App.Commands exposing (fetchCotonomas, fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -25,6 +28,22 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
+            
+        OnLocationChange location ->
+            let
+                newRoute = parseLocation location
+                newModel = { model | route = newRoute }
+            in
+                case newRoute of
+                    HomeRoute ->
+                        loadHome model
+                        
+                    CotonomaRoute key ->
+                        loadCotonoma key newModel
+                      
+                    NotFoundRoute ->
+                        ( newModel, Cmd.none )
+                
             
         SessionFetched (Ok session) ->
             { model | session = Just session } ! []
@@ -48,16 +67,7 @@ update msg model =
             } ! []
             
         HomeClick ->
-            let
-                timeline = model.timeline
-            in
-                { model 
-                | cotonoma = Nothing
-                , timeline = setLoading timeline 
-                } ! 
-                    [ Cmd.map TimelineMsg fetchPosts
-                    , fetchCotonomas Nothing
-                    ]
+            changeLocationToHome model
             
         CotonomaFetched (Ok (cotonoma, posts)) ->
             let
@@ -197,8 +207,7 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        { model | cotonoma = Nothing, timeline = setLoading timeline } 
-                            ! [ fetchCotonoma key ]
+                        changeLocationToCotonoma key model
 
                     _ -> 
                         { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
@@ -249,8 +258,36 @@ update msg model =
                                 newModel ! commands
                                 
         CotonomaClick key ->
-            { model | cotonoma = Nothing, timeline = setLoading model.timeline } 
-                ! [ fetchCotonoma key ]
+            changeLocationToCotonoma key model
+
+
+changeLocationToHome : Model -> ( Model, Cmd Msg )
+changeLocationToHome model =
+    ( model, Navigation.newUrl "/" )
+
+
+loadHome : Model -> ( Model, Cmd Msg )
+loadHome model =
+    { model 
+    | cotonoma = Nothing
+    , timeline = setLoading model.timeline 
+    } ! 
+        [ Cmd.map TimelineMsg fetchPosts
+        , fetchCotonomas Nothing
+        ]
+        
+
+changeLocationToCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
+changeLocationToCotonoma key model =
+    ( model, Navigation.newUrl ("/cotonomas/" ++ key) )
+
+
+loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
+loadCotonoma key model =
+    { model 
+    | cotonoma = Nothing
+    , timeline = setLoading model.timeline 
+    } ! [ fetchCotonoma key ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int
