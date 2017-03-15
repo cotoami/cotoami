@@ -19918,6 +19918,25 @@ var _user$project$App_Update$changeLocationToCotonoma = F2(
 				A2(_elm_lang$core$Basics_ops['++'], '/cotonomas/', key))
 		};
 	});
+var _user$project$App_Update$loadHome = function (model) {
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotonoma: _elm_lang$core$Maybe$Nothing,
+				timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
+			}),
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
+			_1: {
+				ctor: '::',
+				_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -19981,24 +20000,7 @@ var _user$project$App_Update$update = F2(
 						{cotonomasToggled: true, cotonomasOpen: !model.cotonomasOpen}),
 					{ctor: '[]'});
 			case 'HomeClick':
-				var timeline = model.timeline;
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cotonoma: _elm_lang$core$Maybe$Nothing,
-							timeline: _user$project$Components_Timeline_Model$setLoading(timeline)
-						}),
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
-						_1: {
-							ctor: '::',
-							_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
-							_1: {ctor: '[]'}
-						}
-					});
+				return _user$project$App_Update$loadHome(model);
 			case 'CotonomaFetched':
 				if (_p1._0.ctor === 'Ok') {
 					var _p4 = _p1._0._0._0;

@@ -67,16 +67,7 @@ update msg model =
             } ! []
             
         HomeClick ->
-            let
-                timeline = model.timeline
-            in
-                { model 
-                | cotonoma = Nothing
-                , timeline = setLoading timeline 
-                } ! 
-                    [ Cmd.map TimelineMsg fetchPosts
-                    , fetchCotonomas Nothing
-                    ]
+            loadHome model
             
         CotonomaFetched (Ok (cotonoma, posts)) ->
             let
@@ -269,6 +260,17 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
 
+
+loadHome : Model -> ( Model, Cmd Msg )
+loadHome model =
+    { model 
+    | cotonoma = Nothing
+    , timeline = setLoading model.timeline 
+    } ! 
+        [ Cmd.map TimelineMsg fetchPosts
+        , fetchCotonomas Nothing
+        ]
+        
 
 changeLocationToCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 changeLocationToCotonoma key model =
