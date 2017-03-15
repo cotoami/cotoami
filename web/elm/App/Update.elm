@@ -4,6 +4,7 @@ import Task
 import Process
 import Time
 import Keys exposing (ctrl, meta, enter)
+import App.Types exposing (CotonomaKey)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Routing exposing (parseLocation)
@@ -204,8 +205,7 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        { model | cotonoma = Nothing, timeline = setLoading timeline } 
-                            ! [ fetchCotonoma key ]
+                        changeCotonoma key model
 
                     _ -> 
                         { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
@@ -256,8 +256,16 @@ update msg model =
                                 newModel ! commands
                                 
         CotonomaClick key ->
-            { model | cotonoma = Nothing, timeline = setLoading model.timeline } 
-                ! [ fetchCotonoma key ]
+            changeCotonoma key model
+
+
+changeCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
+changeCotonoma key model =
+    { model 
+    | cotonoma = Nothing
+    , timeline = setLoading model.timeline 
+    } 
+        ! [ fetchCotonoma key ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

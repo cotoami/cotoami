@@ -19893,6 +19893,22 @@ var _user$project$App_Update$newActiveCotoId = F2(
 			return _elm_lang$core$Native_Utils.eq(clickedId, _p0._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(clickedId);
 		}
 	});
+var _user$project$App_Update$changeCotonoma = F2(
+	function (key, model) {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			_elm_lang$core$Native_Utils.update(
+				model,
+				{
+					cotonoma: _elm_lang$core$Maybe$Nothing,
+					timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
+				}),
+			{
+				ctor: '::',
+				_0: _user$project$App_Commands$fetchCotonoma(key),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -20231,19 +20247,7 @@ var _user$project$App_Update$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'CotonomaClick':
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{
-									cotonoma: _elm_lang$core$Maybe$Nothing,
-									timeline: _user$project$Components_Timeline_Model$setLoading(timeline)
-								}),
-							{
-								ctor: '::',
-								_0: _user$project$App_Commands$fetchCotonoma(_p17._0),
-								_1: {ctor: '[]'}
-							});
+						return A2(_user$project$App_Update$changeCotonoma, _p17._0, model);
 					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -20336,19 +20340,7 @@ var _user$project$App_Update$update = F2(
 					}
 				}
 			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cotonoma: _elm_lang$core$Maybe$Nothing,
-							timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
-						}),
-					{
-						ctor: '::',
-						_0: _user$project$App_Commands$fetchCotonoma(_p1._0),
-						_1: {ctor: '[]'}
-					});
+				return A2(_user$project$App_Update$changeCotonoma, _p1._0, model);
 		}
 	});
 
