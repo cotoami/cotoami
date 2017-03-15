@@ -6,6 +6,7 @@ import Time
 import Keys exposing (ctrl, meta, enter)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Routing exposing (parseLocation)
 import App.Commands exposing (fetchCotonomas, fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -25,6 +26,12 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
+            
+        OnLocationChange location ->
+            let
+                newRoute = parseLocation location
+            in
+                ( { model | route = newRoute }, Cmd.none )
             
         SessionFetched (Ok session) ->
             { model | session = Just session } ! []

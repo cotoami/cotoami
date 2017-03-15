@@ -16,7 +16,8 @@ type Route
     
 
 type alias Model =
-    { ctrlDown : Bool
+    { route : Route
+    , ctrlDown : Bool
     , session : Maybe App.Types.Session
     , cotonoma : Maybe App.Types.Cotonoma
     , confirmModal : Components.ConfirmModal.Model.Model
@@ -33,9 +34,10 @@ type alias Model =
     }
 
 
-initModel : Model
-initModel =
-    { ctrlDown = False
+initModel : Route -> Model
+initModel route =
+    { route = route
+    , ctrlDown = False
     , session = Nothing
     , cotonoma = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel

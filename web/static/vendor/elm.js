@@ -13518,6 +13518,659 @@ var _elm_lang$keyboard$Keyboard$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Keyboard'] = {pkg: 'elm-lang/keyboard', init: _elm_lang$keyboard$Keyboard$init, onEffects: _elm_lang$keyboard$Keyboard$onEffects, onSelfMsg: _elm_lang$keyboard$Keyboard$onSelfMsg, tag: 'sub', subMap: _elm_lang$keyboard$Keyboard$subMap};
 
+var _elm_lang$navigation$Native_Navigation = function() {
+
+
+// FAKE NAVIGATION
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+
+// REAL NAVIGATION
+
+function reloadPage(skipCache)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		document.location.reload(skipCache);
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function setLocation(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			window.location = url;
+		}
+		catch(err)
+		{
+			// Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
+			// Other browsers reload the page, so let's be consistent about that.
+			document.location.reload(false);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+
+// GET LOCATION
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+// DETECT IE11 PROBLEMS
+
+function isInternetExplorer11()
+{
+	return window.navigator.userAgent.indexOf('Trident') !== -1;
+}
+
+
+return {
+	go: go,
+	setLocation: setLocation,
+	reloadPage: reloadPage,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation,
+	isInternetExplorer11: isInternetExplorer11
+};
+
+}();
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$reloadPage = _elm_lang$navigation$Native_Navigation.reloadPage;
+var _elm_lang$navigation$Navigation$setLocation = _elm_lang$navigation$Native_Navigation.setLocation;
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p1) {
+			var _p2 = _p1;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p2._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p3 = cmd;
+		switch (_p3.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p3._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$pushState(_p3._0));
+			case 'Modify':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$replaceState(_p3._0));
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$setLocation(_p3._0);
+			default:
+				return _elm_lang$navigation$Navigation$reloadPage(_p3._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$killPopWatcher = function (popWatcher) {
+	var _p4 = popWatcher;
+	if (_p4.ctor === 'Normal') {
+		return _elm_lang$core$Process$kill(_p4._0);
+	} else {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Process$kill(_p4._0),
+			_elm_lang$core$Process$kill(_p4._1));
+	}
+};
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, popWatcher: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$Reload = function (a) {
+	return {ctor: 'Reload', _0: a};
+};
+var _elm_lang$navigation$Navigation$reload = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(false));
+var _elm_lang$navigation$Navigation$reloadAndSkipCache = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(true));
+var _elm_lang$navigation$Navigation$Visit = function (a) {
+	return {ctor: 'Visit', _0: a};
+};
+var _elm_lang$navigation$Navigation$load = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Visit(url));
+};
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p5, myCmd) {
+		var _p6 = myCmd;
+		switch (_p6.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p6._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p6._0);
+			case 'Modify':
+				return _elm_lang$navigation$Navigation$Modify(_p6._0);
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$Visit(_p6._0);
+			default:
+				return _elm_lang$navigation$Navigation$Reload(_p6._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$program = F2(
+	function (locationToMessage, stuff) {
+		var init = stuff.init(
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$program(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (locationToMessage, stuff) {
+		var init = function (flags) {
+			return A2(
+				stuff.init,
+				flags,
+				_elm_lang$navigation$Native_Navigation.getLocation(
+					{ctor: '_Tuple0'}));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$programWithFlags(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p7) {
+		var _p8 = _p7;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p9) {
+				return func(
+					_p8._0(_p9));
+			});
+	});
+var _elm_lang$navigation$Navigation$InternetExplorer = F2(
+	function (a, b) {
+		return {ctor: 'InternetExplorer', _0: a, _1: b};
+	});
+var _elm_lang$navigation$Navigation$Normal = function (a) {
+	return {ctor: 'Normal', _0: a};
+};
+var _elm_lang$navigation$Navigation$spawnPopWatcher = function (router) {
+	var reportLocation = function (_p10) {
+		return A2(
+			_elm_lang$core$Platform$sendToSelf,
+			router,
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+	};
+	return _elm_lang$navigation$Native_Navigation.isInternetExplorer11(
+		{ctor: '_Tuple0'}) ? A3(
+		_elm_lang$core$Task$map2,
+		_elm_lang$navigation$Navigation$InternetExplorer,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)),
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'hashchange', _elm_lang$core$Json_Decode$value, reportLocation))) : A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$navigation$Navigation$Normal,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)));
+};
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p11) {
+		var _p12 = _p11;
+		var _p15 = _p12.popWatcher;
+		var stepState = function () {
+			var _p13 = {ctor: '_Tuple2', _0: subs, _1: _p15};
+			_v6_2:
+			do {
+				if (_p13._0.ctor === '[]') {
+					if (_p13._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$navigation$Navigation$killPopWatcher(_p13._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v6_2;
+					}
+				} else {
+					if (_p13._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$map,
+							function (_p14) {
+								return A2(
+									_elm_lang$navigation$Navigation$State,
+									subs,
+									_elm_lang$core$Maybe$Just(_p14));
+							},
+							_elm_lang$navigation$Navigation$spawnPopWatcher(router));
+					} else {
+						break _v6_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p15));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+
+var _evancz$url_parser$UrlParser$toKeyValuePair = function (segment) {
+	var _p0 = A2(_elm_lang$core$String$split, '=', segment);
+	if (((_p0.ctor === '::') && (_p0._1.ctor === '::')) && (_p0._1._1.ctor === '[]')) {
+		return A3(
+			_elm_lang$core$Maybe$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			_elm_lang$http$Http$decodeUri(_p0._0),
+			_elm_lang$http$Http$decodeUri(_p0._1._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _evancz$url_parser$UrlParser$parseParams = function (queryString) {
+	return _elm_lang$core$Dict$fromList(
+		A2(
+			_elm_lang$core$List$filterMap,
+			_evancz$url_parser$UrlParser$toKeyValuePair,
+			A2(
+				_elm_lang$core$String$split,
+				'&',
+				A2(_elm_lang$core$String$dropLeft, 1, queryString))));
+};
+var _evancz$url_parser$UrlParser$splitUrl = function (url) {
+	var _p1 = A2(_elm_lang$core$String$split, '/', url);
+	if ((_p1.ctor === '::') && (_p1._0 === '')) {
+		return _p1._1;
+	} else {
+		return _p1;
+	}
+};
+var _evancz$url_parser$UrlParser$parseHelp = function (states) {
+	parseHelp:
+	while (true) {
+		var _p2 = states;
+		if (_p2.ctor === '[]') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			var _p4 = _p2._0;
+			var _p3 = _p4.unvisited;
+			if (_p3.ctor === '[]') {
+				return _elm_lang$core$Maybe$Just(_p4.value);
+			} else {
+				if ((_p3._0 === '') && (_p3._1.ctor === '[]')) {
+					return _elm_lang$core$Maybe$Just(_p4.value);
+				} else {
+					var _v4 = _p2._1;
+					states = _v4;
+					continue parseHelp;
+				}
+			}
+		}
+	}
+};
+var _evancz$url_parser$UrlParser$parse = F3(
+	function (_p5, url, params) {
+		var _p6 = _p5;
+		return _evancz$url_parser$UrlParser$parseHelp(
+			_p6._0(
+				{
+					visited: {ctor: '[]'},
+					unvisited: _evancz$url_parser$UrlParser$splitUrl(url),
+					params: params,
+					value: _elm_lang$core$Basics$identity
+				}));
+	});
+var _evancz$url_parser$UrlParser$parseHash = F2(
+	function (parser, location) {
+		return A3(
+			_evancz$url_parser$UrlParser$parse,
+			parser,
+			A2(_elm_lang$core$String$dropLeft, 1, location.hash),
+			_evancz$url_parser$UrlParser$parseParams(location.search));
+	});
+var _evancz$url_parser$UrlParser$parsePath = F2(
+	function (parser, location) {
+		return A3(
+			_evancz$url_parser$UrlParser$parse,
+			parser,
+			location.pathname,
+			_evancz$url_parser$UrlParser$parseParams(location.search));
+	});
+var _evancz$url_parser$UrlParser$intParamHelp = function (maybeValue) {
+	var _p7 = maybeValue;
+	if (_p7.ctor === 'Nothing') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Result$toMaybe(
+			_elm_lang$core$String$toInt(_p7._0));
+	}
+};
+var _evancz$url_parser$UrlParser$mapHelp = F2(
+	function (func, _p8) {
+		var _p9 = _p8;
+		return {
+			visited: _p9.visited,
+			unvisited: _p9.unvisited,
+			params: _p9.params,
+			value: func(_p9.value)
+		};
+	});
+var _evancz$url_parser$UrlParser$State = F4(
+	function (a, b, c, d) {
+		return {visited: a, unvisited: b, params: c, value: d};
+	});
+var _evancz$url_parser$UrlParser$Parser = function (a) {
+	return {ctor: 'Parser', _0: a};
+};
+var _evancz$url_parser$UrlParser$s = function (str) {
+	return _evancz$url_parser$UrlParser$Parser(
+		function (_p10) {
+			var _p11 = _p10;
+			var _p12 = _p11.unvisited;
+			if (_p12.ctor === '[]') {
+				return {ctor: '[]'};
+			} else {
+				var _p13 = _p12._0;
+				return _elm_lang$core$Native_Utils.eq(_p13, str) ? {
+					ctor: '::',
+					_0: A4(
+						_evancz$url_parser$UrlParser$State,
+						{ctor: '::', _0: _p13, _1: _p11.visited},
+						_p12._1,
+						_p11.params,
+						_p11.value),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'};
+			}
+		});
+};
+var _evancz$url_parser$UrlParser$custom = F2(
+	function (tipe, stringToSomething) {
+		return _evancz$url_parser$UrlParser$Parser(
+			function (_p14) {
+				var _p15 = _p14;
+				var _p16 = _p15.unvisited;
+				if (_p16.ctor === '[]') {
+					return {ctor: '[]'};
+				} else {
+					var _p18 = _p16._0;
+					var _p17 = stringToSomething(_p18);
+					if (_p17.ctor === 'Ok') {
+						return {
+							ctor: '::',
+							_0: A4(
+								_evancz$url_parser$UrlParser$State,
+								{ctor: '::', _0: _p18, _1: _p15.visited},
+								_p16._1,
+								_p15.params,
+								_p15.value(_p17._0)),
+							_1: {ctor: '[]'}
+						};
+					} else {
+						return {ctor: '[]'};
+					}
+				}
+			});
+	});
+var _evancz$url_parser$UrlParser$string = A2(_evancz$url_parser$UrlParser$custom, 'STRING', _elm_lang$core$Result$Ok);
+var _evancz$url_parser$UrlParser$int = A2(_evancz$url_parser$UrlParser$custom, 'NUMBER', _elm_lang$core$String$toInt);
+var _evancz$url_parser$UrlParser_ops = _evancz$url_parser$UrlParser_ops || {};
+_evancz$url_parser$UrlParser_ops['</>'] = F2(
+	function (_p20, _p19) {
+		var _p21 = _p20;
+		var _p22 = _p19;
+		return _evancz$url_parser$UrlParser$Parser(
+			function (state) {
+				return A2(
+					_elm_lang$core$List$concatMap,
+					_p22._0,
+					_p21._0(state));
+			});
+	});
+var _evancz$url_parser$UrlParser$map = F2(
+	function (subValue, _p23) {
+		var _p24 = _p23;
+		return _evancz$url_parser$UrlParser$Parser(
+			function (_p25) {
+				var _p26 = _p25;
+				return A2(
+					_elm_lang$core$List$map,
+					_evancz$url_parser$UrlParser$mapHelp(_p26.value),
+					_p24._0(
+						{visited: _p26.visited, unvisited: _p26.unvisited, params: _p26.params, value: subValue}));
+			});
+	});
+var _evancz$url_parser$UrlParser$oneOf = function (parsers) {
+	return _evancz$url_parser$UrlParser$Parser(
+		function (state) {
+			return A2(
+				_elm_lang$core$List$concatMap,
+				function (_p27) {
+					var _p28 = _p27;
+					return _p28._0(state);
+				},
+				parsers);
+		});
+};
+var _evancz$url_parser$UrlParser$top = _evancz$url_parser$UrlParser$Parser(
+	function (state) {
+		return {
+			ctor: '::',
+			_0: state,
+			_1: {ctor: '[]'}
+		};
+	});
+var _evancz$url_parser$UrlParser_ops = _evancz$url_parser$UrlParser_ops || {};
+_evancz$url_parser$UrlParser_ops['<?>'] = F2(
+	function (_p30, _p29) {
+		var _p31 = _p30;
+		var _p32 = _p29;
+		return _evancz$url_parser$UrlParser$Parser(
+			function (state) {
+				return A2(
+					_elm_lang$core$List$concatMap,
+					_p32._0,
+					_p31._0(state));
+			});
+	});
+var _evancz$url_parser$UrlParser$QueryParser = function (a) {
+	return {ctor: 'QueryParser', _0: a};
+};
+var _evancz$url_parser$UrlParser$customParam = F2(
+	function (key, func) {
+		return _evancz$url_parser$UrlParser$QueryParser(
+			function (_p33) {
+				var _p34 = _p33;
+				var _p35 = _p34.params;
+				return {
+					ctor: '::',
+					_0: A4(
+						_evancz$url_parser$UrlParser$State,
+						_p34.visited,
+						_p34.unvisited,
+						_p35,
+						_p34.value(
+							func(
+								A2(_elm_lang$core$Dict$get, key, _p35)))),
+					_1: {ctor: '[]'}
+				};
+			});
+	});
+var _evancz$url_parser$UrlParser$stringParam = function (name) {
+	return A2(_evancz$url_parser$UrlParser$customParam, name, _elm_lang$core$Basics$identity);
+};
+var _evancz$url_parser$UrlParser$intParam = function (name) {
+	return A2(_evancz$url_parser$UrlParser$customParam, name, _evancz$url_parser$UrlParser$intParamHelp);
+};
+
 var _krisajenkins$elm_exts$Exts_Maybe$oneOf = A2(
 	_elm_lang$core$List$foldl,
 	F2(
@@ -18444,6 +19097,9 @@ var _user$project$App_Messages$CotonomasFetched = function (a) {
 var _user$project$App_Messages$SessionFetched = function (a) {
 	return {ctor: 'SessionFetched', _0: a};
 };
+var _user$project$App_Messages$OnLocationChange = function (a) {
+	return {ctor: 'OnLocationChange', _0: a};
+};
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
 var _user$project$App_Commands$deleteCoto = function (cotoId) {
@@ -18594,21 +19250,24 @@ var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
 	return {ctor: 'SignedUp', _0: a};
 };
 
-var _user$project$App_Model$initModel = {
-	ctrlDown: false,
-	session: _elm_lang$core$Maybe$Nothing,
-	cotonoma: _elm_lang$core$Maybe$Nothing,
-	confirmModal: _user$project$Components_ConfirmModal_Model$initModel,
-	signinModal: _user$project$Components_SigninModal$initModel,
-	profileModal: _user$project$Components_ProfileModal$initModel,
-	cotoModal: _user$project$Components_CotoModal$initModel,
-	cotonomas: {ctor: '[]'},
-	cotonomasToggled: false,
-	cotonomasOpen: false,
-	cotonomasLoading: true,
-	timeline: _user$project$Components_Timeline_Model$initModel,
-	activeCotoId: _elm_lang$core$Maybe$Nothing,
-	cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
+var _user$project$App_Model$initModel = function (route) {
+	return {
+		route: route,
+		ctrlDown: false,
+		session: _elm_lang$core$Maybe$Nothing,
+		cotonoma: _elm_lang$core$Maybe$Nothing,
+		confirmModal: _user$project$Components_ConfirmModal_Model$initModel,
+		signinModal: _user$project$Components_SigninModal$initModel,
+		profileModal: _user$project$Components_ProfileModal$initModel,
+		cotoModal: _user$project$Components_CotoModal$initModel,
+		cotonomas: {ctor: '[]'},
+		cotonomasToggled: false,
+		cotonomasOpen: false,
+		cotonomasLoading: true,
+		timeline: _user$project$Components_Timeline_Model$initModel,
+		activeCotoId: _elm_lang$core$Maybe$Nothing,
+		cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
+	};
 };
 var _user$project$App_Model$Model = function (a) {
 	return function (b) {
@@ -18624,7 +19283,9 @@ var _user$project$App_Model$Model = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {ctrlDown: a, session: b, cotonoma: c, confirmModal: d, signinModal: e, profileModal: f, cotoModal: g, cotonomas: h, cotonomasToggled: i, cotonomasOpen: j, cotonomasLoading: k, timeline: l, activeCotoId: m, cotonomaModal: n};
+														return function (o) {
+															return {route: a, ctrlDown: b, session: c, cotonoma: d, confirmModal: e, signinModal: f, profileModal: g, cotoModal: h, cotonomas: i, cotonomasToggled: j, cotonomasOpen: k, cotonomasLoading: l, timeline: m, activeCotoId: n, cotonomaModal: o};
+														};
 													};
 												};
 											};
@@ -18644,6 +19305,31 @@ var _user$project$App_Model$CotonomaRoute = function (a) {
 	return {ctor: 'CotonomaRoute', _0: a};
 };
 var _user$project$App_Model$HomeRoute = {ctor: 'HomeRoute'};
+
+var _user$project$App_Routing$matchers = _evancz$url_parser$UrlParser$oneOf(
+	{
+		ctor: '::',
+		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$App_Model$HomeRoute, _evancz$url_parser$UrlParser$top),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_evancz$url_parser$UrlParser$map,
+				_user$project$App_Model$CotonomaRoute,
+				A2(
+					_evancz$url_parser$UrlParser_ops['</>'],
+					_evancz$url_parser$UrlParser$s('cotonomas'),
+					_evancz$url_parser$UrlParser$string)),
+			_1: {ctor: '[]'}
+		}
+	});
+var _user$project$App_Routing$parseLocation = function (location) {
+	var _p0 = A2(_evancz$url_parser$UrlParser$parsePath, _user$project$App_Routing$matchers, location);
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
+	} else {
+		return _user$project$App_Model$NotFoundRoute;
+	}
+};
 
 var _user$project$App_Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
@@ -19216,6 +19902,15 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
+			case 'OnLocationChange':
+				var newRoute = _user$project$App_Routing$parseLocation(_p1._0);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{route: newRoute}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'SessionFetched':
 				if (_p1._0.ctor === 'Ok') {
 					return A2(
@@ -21278,29 +21973,34 @@ var _user$project$App_View$view = function (model) {
 		});
 };
 
-var _user$project$Main$init = A2(
-	_elm_lang$core$Platform_Cmd_ops['!'],
-	_user$project$App_Model$initModel,
-	{
-		ctor: '::',
-		_0: _user$project$App_Commands$fetchSession,
-		_1: {
+var _user$project$Main$init = function (location) {
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_user$project$App_Model$initModel(
+			_user$project$App_Routing$parseLocation(location)),
+		{
 			ctor: '::',
-			_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
+			_0: _user$project$App_Commands$fetchSession,
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
-				_1: {ctor: '[]'}
+				_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, _user$project$Components_Timeline_Commands$fetchPosts),
+					_1: {ctor: '[]'}
+				}
 			}
-		}
-	});
-var _user$project$Main$main = _elm_lang$html$Html$program(
+		});
+};
+var _user$project$Main$main = A2(
+	_elm_lang$navigation$Navigation$program,
+	_user$project$App_Messages$OnLocationChange,
 	{init: _user$project$Main$init, view: _user$project$App_View$view, update: _user$project$App_Update$update, subscriptions: _user$project$App_Subscriptions$subscriptions})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma, List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"CotonomasToggle":[],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma, List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"CotonomasToggle":[],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
