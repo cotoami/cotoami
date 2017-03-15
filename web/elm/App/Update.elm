@@ -39,7 +39,7 @@ update msg model =
                         ( newModel, Cmd.none )
                         
                     CotonomaRoute key ->
-                        changeCotonoma key newModel
+                        loadCotonoma key newModel
                       
                     NotFoundRoute ->
                         ( newModel, Cmd.none )
@@ -275,8 +275,8 @@ changeLocationToCotonoma key model =
     ( model, Navigation.newUrl ("/cotonomas/" ++ key) )
 
 
-changeCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
-changeCotonoma key model =
+loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
+loadCotonoma key model =
     { model 
     | cotonoma = Nothing
     , timeline = setLoading model.timeline 

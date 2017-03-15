@@ -19893,7 +19893,7 @@ var _user$project$App_Update$newActiveCotoId = F2(
 			return _elm_lang$core$Native_Utils.eq(clickedId, _p0._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(clickedId);
 		}
 	});
-var _user$project$App_Update$changeCotonoma = F2(
+var _user$project$App_Update$loadCotonoma = F2(
 	function (key, model) {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
@@ -19937,7 +19937,7 @@ var _user$project$App_Update$update = F2(
 					case 'HomeRoute':
 						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 					case 'CotonomaRoute':
-						return A2(_user$project$App_Update$changeCotonoma, _p2._0, newModel);
+						return A2(_user$project$App_Update$loadCotonoma, _p2._0, newModel);
 					default:
 						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 				}
