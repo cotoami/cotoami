@@ -19937,6 +19937,13 @@ var _user$project$App_Update$loadHome = function (model) {
 			}
 		});
 };
+var _user$project$App_Update$changeLocationToHome = function (model) {
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: _elm_lang$navigation$Navigation$newUrl('/')
+	};
+};
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -19954,7 +19961,7 @@ var _user$project$App_Update$update = F2(
 				var _p2 = newRoute;
 				switch (_p2.ctor) {
 					case 'HomeRoute':
-						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+						return _user$project$App_Update$loadHome(model);
 					case 'CotonomaRoute':
 						return A2(_user$project$App_Update$loadCotonoma, _p2._0, newModel);
 					default:
@@ -20000,7 +20007,7 @@ var _user$project$App_Update$update = F2(
 						{cotonomasToggled: true, cotonomasOpen: !model.cotonomasOpen}),
 					{ctor: '[]'});
 			case 'HomeClick':
-				return _user$project$App_Update$loadHome(model);
+				return _user$project$App_Update$changeLocationToHome(model);
 			case 'CotonomaFetched':
 				if (_p1._0.ctor === 'Ok') {
 					var _p4 = _p1._0._0._0;

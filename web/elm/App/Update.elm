@@ -36,7 +36,7 @@ update msg model =
             in
                 case newRoute of
                     HomeRoute ->
-                        ( newModel, Cmd.none )
+                        loadHome model
                         
                     CotonomaRoute key ->
                         loadCotonoma key newModel
@@ -67,7 +67,7 @@ update msg model =
             } ! []
             
         HomeClick ->
-            loadHome model
+            changeLocationToHome model
             
         CotonomaFetched (Ok (cotonoma, posts)) ->
             let
@@ -259,6 +259,11 @@ update msg model =
                                 
         CotonomaClick key ->
             changeLocationToCotonoma key model
+
+
+changeLocationToHome : Model -> ( Model, Cmd Msg )
+changeLocationToHome model =
+    ( model, Navigation.newUrl "/" )
 
 
 loadHome : Model -> ( Model, Cmd Msg )
