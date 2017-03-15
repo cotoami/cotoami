@@ -4,6 +4,7 @@ import Task
 import Process
 import Time
 import Keys exposing (ctrl, meta, enter)
+import Navigation 
 import App.Types exposing (CotonomaKey)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -31,8 +32,18 @@ update msg model =
         OnLocationChange location ->
             let
                 newRoute = parseLocation location
+                newModel = { model | route = newRoute }
             in
-                ( { model | route = newRoute }, Cmd.none )
+                case newRoute of
+                    HomeRoute ->
+                        ( newModel, Cmd.none )
+                        
+                    CotonomaRoute key ->
+                        changeCotonoma key newModel
+                      
+                    NotFoundRoute ->
+                        ( newModel, Cmd.none )
+                
             
         SessionFetched (Ok session) ->
             { model | session = Just session } ! []
@@ -205,7 +216,7 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        changeCotonoma key model
+                        changeLocationToCotonoma key model
 
                     _ -> 
                         { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
@@ -256,7 +267,12 @@ update msg model =
                                 newModel ! commands
                                 
         CotonomaClick key ->
-            changeCotonoma key model
+            changeLocationToCotonoma key model
+
+
+changeLocationToCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
+changeLocationToCotonoma key model =
+    ( model, Navigation.newUrl ("/cotonomas/" ++ key) )
 
 
 changeCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
@@ -264,8 +280,7 @@ changeCotonoma key model =
     { model 
     | cotonoma = Nothing
     , timeline = setLoading model.timeline 
-    } 
-        ! [ fetchCotonoma key ]
+    } ! [ fetchCotonoma key ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

@@ -19909,6 +19909,15 @@ var _user$project$App_Update$changeCotonoma = F2(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$App_Update$changeLocationToCotonoma = F2(
+	function (key, model) {
+		return {
+			ctor: '_Tuple2',
+			_0: model,
+			_1: _elm_lang$navigation$Navigation$newUrl(
+				A2(_elm_lang$core$Basics_ops['++'], '/cotonomas/', key))
+		};
+	});
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -19920,13 +19929,18 @@ var _user$project$App_Update$update = F2(
 					{ctor: '[]'});
 			case 'OnLocationChange':
 				var newRoute = _user$project$App_Routing$parseLocation(_p1._0);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{route: newRoute}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				var newModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{route: newRoute});
+				var _p2 = newRoute;
+				switch (_p2.ctor) {
+					case 'HomeRoute':
+						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+					case 'CotonomaRoute':
+						return A2(_user$project$App_Update$changeCotonoma, _p2._0, newModel);
+					default:
+						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'SessionFetched':
 				if (_p1._0.ctor === 'Ok') {
 					return A2(
@@ -19987,22 +20001,22 @@ var _user$project$App_Update$update = F2(
 					});
 			case 'CotonomaFetched':
 				if (_p1._0.ctor === 'Ok') {
-					var _p3 = _p1._0._0._0;
-					var _p2 = A4(
+					var _p4 = _p1._0._0._0;
+					var _p3 = A4(
 						_user$project$Components_Timeline_Update$update,
 						_user$project$Components_Timeline_Messages$PostsFetched(
 							_elm_lang$core$Result$Ok(_p1._0._0._1)),
 						model.timeline,
 						model.cotonoma,
 						model.ctrlDown);
-					var timeline = _p2._0;
-					var cmd = _p2._1;
+					var timeline = _p3._0;
+					var cmd = _p3._1;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								cotonoma: _elm_lang$core$Maybe$Just(_p3),
+								cotonoma: _elm_lang$core$Maybe$Just(_p4),
 								cotonomasOpen: false,
 								timeline: timeline
 							}),
@@ -20012,7 +20026,7 @@ var _user$project$App_Update$update = F2(
 							_1: {
 								ctor: '::',
 								_0: _user$project$App_Commands$fetchCotonomas(
-									_elm_lang$core$Maybe$Just(_p3)),
+									_elm_lang$core$Maybe$Just(_p4)),
 								_1: {ctor: '[]'}
 							}
 						});
@@ -20023,8 +20037,8 @@ var _user$project$App_Update$update = F2(
 						{ctor: '[]'});
 				}
 			case 'KeyDown':
-				var _p4 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p4, _user$project$Keys$meta.keyCode)) ? A2(
+				var _p5 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -20034,8 +20048,8 @@ var _user$project$App_Update$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'KeyUp':
-				var _p5 = _p1._0;
-				return (_elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p5, _user$project$Keys$meta.keyCode)) ? A2(
+				var _p6 = _p1._0;
+				return (_elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p6, _user$project$Keys$meta.keyCode)) ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -20045,9 +20059,9 @@ var _user$project$App_Update$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'ConfirmModalMsg':
-				var _p6 = A2(_user$project$Components_ConfirmModal_Update$update, _p1._0, model.confirmModal);
-				var confirmModal = _p6._0;
-				var cmd = _p6._1;
+				var _p7 = A2(_user$project$Components_ConfirmModal_Update$update, _p1._0, model.confirmModal);
+				var confirmModal = _p7._0;
+				var cmd = _p7._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -20071,9 +20085,9 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'SigninModalMsg':
-				var _p7 = A2(_user$project$Components_SigninModal$update, _p1._0, model.signinModal);
-				var signinModal = _p7._0;
-				var cmd = _p7._1;
+				var _p8 = A2(_user$project$Components_SigninModal$update, _p1._0, model.signinModal);
+				var signinModal = _p8._0;
+				var cmd = _p8._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -20097,9 +20111,9 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'ProfileModalMsg':
-				var _p8 = A2(_user$project$Components_ProfileModal$update, _p1._0, model.profileModal);
-				var profileModal = _p8._0;
-				var cmd = _p8._1;
+				var _p9 = A2(_user$project$Components_ProfileModal$update, _p1._0, model.profileModal);
+				var profileModal = _p9._0;
+				var cmd = _p9._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -20111,15 +20125,15 @@ var _user$project$App_Update$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'CotoModalMsg':
-				var _p15 = _p1._0;
+				var _p16 = _p1._0;
 				var timeline = model.timeline;
 				var posts = timeline.posts;
 				var confirmModal = model.confirmModal;
-				var _p9 = A2(_user$project$Components_CotoModal$update, _p15, model.cotoModal);
-				var cotoModal = _p9._0;
-				var cmd = _p9._1;
-				var _p10 = _p15;
-				switch (_p10.ctor) {
+				var _p10 = A2(_user$project$Components_CotoModal$update, _p16, model.cotoModal);
+				var cotoModal = _p10._0;
+				var cmd = _p10._1;
+				var _p11 = _p16;
+				switch (_p11.ctor) {
 					case 'ConfirmDelete':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -20131,14 +20145,14 @@ var _user$project$App_Update$update = F2(
 										confirmModal,
 										{
 											open: true,
-											message: _p10._0,
+											message: _p11._0,
 											msgOnConfirm: function () {
-												var _p11 = cotoModal.coto;
-												if (_p11.ctor === 'Nothing') {
+												var _p12 = cotoModal.coto;
+												if (_p12.ctor === 'Nothing') {
 													return _user$project$App_Messages$NoOp;
 												} else {
 													return _user$project$App_Messages$CotoModalMsg(
-														_user$project$Components_CotoModal$Delete(_p11._0));
+														_user$project$Components_CotoModal$Delete(_p12._0));
 												}
 											}()
 										})
@@ -20149,7 +20163,7 @@ var _user$project$App_Update$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'Delete':
-						var _p14 = _p10._0;
+						var _p15 = _p11._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
@@ -20162,7 +20176,7 @@ var _user$project$App_Update$update = F2(
 											posts: A2(
 												_elm_lang$core$List$map,
 												function (post) {
-													return A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p14, post) ? _elm_lang$core$Native_Utils.update(
+													return A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p15, post) ? _elm_lang$core$Native_Utils.update(
 														post,
 														{beingDeleted: true}) : post;
 												},
@@ -20174,17 +20188,17 @@ var _user$project$App_Update$update = F2(
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
 								_1: {
 									ctor: '::',
-									_0: _user$project$App_Commands$deleteCoto(_p14.id),
+									_0: _user$project$App_Commands$deleteCoto(_p15.id),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_elm_lang$core$Task$perform,
-											function (_p12) {
-												return _user$project$App_Messages$DeleteCoto(_p14);
+											function (_p13) {
+												return _user$project$App_Messages$DeleteCoto(_p15);
 											},
 											A2(
 												_elm_lang$core$Task$andThen,
-												function (_p13) {
+												function (_p14) {
 													return _elm_lang$core$Task$succeed(
 														{ctor: '_Tuple0'});
 												},
@@ -20206,13 +20220,13 @@ var _user$project$App_Update$update = F2(
 							});
 				}
 			case 'TimelineMsg':
-				var _p18 = _p1._0;
+				var _p19 = _p1._0;
 				var cotoModal = model.cotoModal;
-				var _p16 = A4(_user$project$Components_Timeline_Update$update, _p18, model.timeline, model.cotonoma, model.ctrlDown);
-				var timeline = _p16._0;
-				var cmd = _p16._1;
-				var _p17 = _p18;
-				switch (_p17.ctor) {
+				var _p17 = A4(_user$project$Components_Timeline_Update$update, _p19, model.timeline, model.cotonoma, model.ctrlDown);
+				var timeline = _p17._0;
+				var cmd = _p17._1;
+				var _p18 = _p19;
+				switch (_p18.ctor) {
 					case 'PostClick':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -20220,7 +20234,7 @@ var _user$project$App_Update$update = F2(
 								model,
 								{
 									timeline: timeline,
-									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p17._0)
+									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p18._0)
 								}),
 							{
 								ctor: '::',
@@ -20238,7 +20252,7 @@ var _user$project$App_Update$update = F2(
 										cotoModal,
 										{
 											open: true,
-											coto: _user$project$Components_Timeline_Model$toCoto(_p17._0)
+											coto: _user$project$Components_Timeline_Model$toCoto(_p18._0)
 										})
 								}),
 							{
@@ -20247,7 +20261,7 @@ var _user$project$App_Update$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'CotonomaClick':
-						return A2(_user$project$App_Update$changeCotonoma, _p17._0, model);
+						return A2(_user$project$App_Update$changeLocationToCotonoma, _p18._0, model);
 					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -20261,7 +20275,7 @@ var _user$project$App_Update$update = F2(
 							});
 				}
 			case 'DeleteCoto':
-				var _p19 = _p1._0;
+				var _p20 = _p1._0;
 				var timeline = model.timeline;
 				var posts = timeline.posts;
 				return A2(
@@ -20275,12 +20289,12 @@ var _user$project$App_Update$update = F2(
 									posts: A2(
 										_elm_lang$core$List$filter,
 										function (post) {
-											return !A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p19, post);
+											return !A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p20, post);
 										},
 										posts)
 								})
 						}),
-					_p19.asCotonoma ? {
+					_p20.asCotonoma ? {
 						ctor: '::',
 						_0: _user$project$App_Commands$fetchCotonomas(model.cotonoma),
 						_1: {ctor: '[]'}
@@ -20303,18 +20317,18 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'CotonomaModalMsg':
-				var _p23 = _p1._0;
-				var _p20 = model.session;
-				if (_p20.ctor === 'Nothing') {
+				var _p24 = _p1._0;
+				var _p21 = model.session;
+				if (_p21.ctor === 'Nothing') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				} else {
-					var _p21 = A5(_user$project$Components_CotonomaModal_Update$update, _p23, _p20._0, model.cotonoma, model.timeline, model.cotonomaModal);
-					var cotonomaModal = _p21._0;
-					var timeline = _p21._1;
-					var cmd = _p21._2;
+					var _p22 = A5(_user$project$Components_CotonomaModal_Update$update, _p24, _p21._0, model.cotonoma, model.timeline, model.cotonomaModal);
+					var cotonomaModal = _p22._0;
+					var timeline = _p22._1;
+					var cmd = _p22._2;
 					var newModel = _elm_lang$core$Native_Utils.update(
 						model,
 						{cotonomaModal: cotonomaModal, timeline: timeline});
@@ -20323,8 +20337,8 @@ var _user$project$App_Update$update = F2(
 						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
 						_1: {ctor: '[]'}
 					};
-					var _p22 = _p23;
-					if ((_p22.ctor === 'Posted') && (_p22._0.ctor === 'Ok')) {
+					var _p23 = _p24;
+					if ((_p23.ctor === 'Posted') && (_p23._0.ctor === 'Ok')) {
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
@@ -20340,7 +20354,7 @@ var _user$project$App_Update$update = F2(
 					}
 				}
 			default:
-				return A2(_user$project$App_Update$changeCotonoma, _p1._0, model);
+				return A2(_user$project$App_Update$changeLocationToCotonoma, _p1._0, model);
 		}
 	});
 
