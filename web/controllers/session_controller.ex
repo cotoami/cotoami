@@ -2,13 +2,13 @@ defmodule Cotoami.SessionController do
   use Cotoami.Web, :controller
   require Logger
   alias Cotoami.AmishiService
-  alias Cotoami.AmishiView
   
   def index(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
-        render(conn, AmishiView, "amishi.json", 
-          amishi: AmishiService.append_gravatar_profile(amishi)
+        render(conn, "session.json", 
+          amishi: AmishiService.append_gravatar_profile(amishi),
+          token: Phoenix.Token.sign(conn, "amishi", amishi.id)
         )
       _ ->
         send_resp(conn, :not_found, "")

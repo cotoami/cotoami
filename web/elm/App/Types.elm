@@ -21,7 +21,8 @@ decodeAmishi =
 
 
 type alias Session =
-    { id : Int
+    { token : String
+    , id : Int
     , email : String
     , avatarUrl : String
     , displayName : String
@@ -30,7 +31,8 @@ type alias Session =
 
 decodeSession : Decode.Decoder Session
 decodeSession =
-    Decode.map4 Session
+    Decode.map5 Session
+        (Decode.field "token" Decode.string)
         (Decode.field "id" Decode.int)
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
