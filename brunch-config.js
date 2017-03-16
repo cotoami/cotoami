@@ -53,9 +53,9 @@ exports.config = {
   // Configure your plugins
   plugins: {
     elmBrunch: {
-      elmFolder: "web/elm",
+      elmFolder: "elm",
       mainModules: ["Main.elm"],
-      outputFolder: "../static/vendor",
+      outputFolder: "../web/static/vendor",
       outputFile: "elm.js",
       makeParameters: ['--debug']
     },
