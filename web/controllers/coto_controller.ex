@@ -24,8 +24,16 @@ defmodule Cotoami.CotoController do
         cotonoma_id = coto_params["cotonoma_id"]
         content = coto_params["content"]
         postId = coto_params["postId"]
-        coto = CotoService.create!(cotonoma_id, amishi.id, content)
+        
+        {coto, cotonoma} = CotoService.create!(cotonoma_id, amishi.id, content)
+        
+        Cotoami.Endpoint.broadcast(
+          "cotonomas:#{cotonoma.key}", 
+          "post", 
+          Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
+        )
         render(conn, "created.json", coto: coto, postId: postId)
+        
       _ ->
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
