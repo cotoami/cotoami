@@ -1,9 +1,10 @@
 module Components.Timeline.Update exposing (..)
 
+import Json.Decode as Decode
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
 import App.Types exposing (Cotonoma)
-import Components.Timeline.Model exposing (Post, defaultPost, Model)
+import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
@@ -59,7 +60,13 @@ update msg model maybeCotonoma ctrlDown =
             model ! []
             
         PostPushed payload ->
-            model ! []
+            case Decode.decodeValue decodePost payload of
+                Ok post ->
+                    { model 
+                    | posts = post :: model.posts
+                    } ! [ scrollToBottom NoOp ]
+                Err err ->
+                    model ! []
     
 
 post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
@@ -78,9 +85,9 @@ post maybeCotonoma model =
         , postIdCounter = postId
         , newContent = ""
         } ! 
-        [ scrollToBottom NoOp
-        , Components.Timeline.Commands.post maybeCotonoma newPost
-        ]
+            [ scrollToBottom NoOp
+            , Components.Timeline.Commands.post maybeCotonoma newPost
+            ]
 
 
 setCotoSaved : Post -> Post -> Post

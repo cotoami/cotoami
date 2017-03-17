@@ -21731,10 +21731,26 @@ var _user$project$Components_Timeline_Update$update = F4(
 					model,
 					{ctor: '[]'});
 			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
+				var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Components_Timeline_Model$decodePost, _p0._0);
+				if (_p1.ctor === 'Ok') {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								posts: {ctor: '::', _0: _p1._0, _1: model.posts}
+							}),
+						{
+							ctor: '::',
+							_0: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_Timeline_Messages$NoOp),
+							_1: {ctor: '[]'}
+						});
+				} else {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
 		}
 	});
 
