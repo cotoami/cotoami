@@ -1,4 +1,5 @@
 defmodule Cotoami.UserSocket do
+  require Logger
   use Phoenix.Socket
   alias Cotoami.Repo
 
@@ -12,6 +13,7 @@ defmodule Cotoami.UserSocket do
   @max_age 2 * 7 * 24 * 60 * 60
 
   def connect(%{"token" => token}, socket) do
+    Logger.info "Connecting: #{token}"
     case Phoenix.Token.verify(socket, "amishi", token, max_age: @max_age) do
       {:ok, amishi_id} ->
         amishi = Repo.get!(Cotoami.Amishi, amishi_id)
