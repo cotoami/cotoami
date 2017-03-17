@@ -2,7 +2,9 @@ exports.config = {
   // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
-      joinTo: "js/app.js"
+      joinTo: {
+        "js/app.js": path => path.endsWith('.js') && !path.startsWith('elm')
+      }
 
       // To use a separate vendor.js bundle, specify two files path
       // http://brunch.io/docs/config#-files-
@@ -31,6 +33,11 @@ exports.config = {
   },
 
   conventions: {
+    ignored: [
+      /(\/|\\)_/,
+      /^(elm)/
+    ],
+    
     // This option sets where we should place non-css and non-js assets in.
     // By default, we set this to "/web/static/assets". Files in this directory
     // will be copied to `paths.public`, which is "priv/static" by default.
