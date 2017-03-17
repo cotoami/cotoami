@@ -57,6 +57,9 @@ update msg model maybeCotonoma ctrlDown =
             
         CotonomaClick key ->
             model ! []
+            
+        PostPushed payload ->
+            model ! []
     
 
 post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )

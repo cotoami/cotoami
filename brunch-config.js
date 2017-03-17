@@ -35,7 +35,7 @@ exports.config = {
   conventions: {
     ignored: [
       /(\/|\\)_/,
-      /^(elm)/
+      /^(elm\/elm-stuff)/
     ],
     
     // This option sets where we should place non-css and non-js assets in.
