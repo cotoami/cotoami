@@ -5,6 +5,7 @@ defmodule Cotoami.CotoController do
   alias Cotoami.Coto
   alias Cotoami.RedisService
   alias Cotoami.CotoService
+  alias Cotoami.AmishiService
   
   plug :scrub_params, "coto" when action in [:create]
     
@@ -30,7 +31,11 @@ defmodule Cotoami.CotoController do
         Cotoami.Endpoint.broadcast(
           "cotonomas:#{cotonoma.key}", 
           "post", 
-          Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
+          Phoenix.View.render_one(
+            %{coto | :amishi => AmishiService.append_gravatar_profile(amishi)}, 
+            Cotoami.CotoView, 
+            "coto.json"
+          )
         )
         render(conn, "created.json", coto: coto, postId: postId)
         
