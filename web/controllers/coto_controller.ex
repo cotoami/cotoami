@@ -19,12 +19,14 @@ defmodule Cotoami.CotoController do
     end
   end
 
-  def create(conn, %{"coto" => coto_params}) do
+  def create(conn, %{"clientId" => clientId, "coto" => coto_params}) do
     case conn.assigns do
       %{amishi: amishi} ->
         cotonoma_id = coto_params["cotonoma_id"]
         content = coto_params["content"]
         postId = coto_params["postId"]
+        
+        Logger.info "clientId: #{clientId}"
         
         {coto, cotonoma} = CotoService.create!(cotonoma_id, amishi.id, content)
         

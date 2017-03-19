@@ -12,8 +12,8 @@ import Components.CotonomaModal.Messages exposing (..)
 import Components.CotonomaModal.Commands exposing (..)
 
 
-update : Msg -> Session -> Maybe Cotonoma -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
-update msg session maybeCotonoma timeline model =
+update : String -> Session -> Maybe Cotonoma-> Msg -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
+update clientId session maybeCotonoma msg timeline model =
     case msg of
         NoOp ->
             ( model, timeline, Cmd.none )
@@ -84,10 +84,11 @@ update msg session maybeCotonoma timeline model =
             let
                 ( newTimeline, _ ) =
                     Components.Timeline.Update.update 
-                        (Components.Timeline.Messages.Posted (Ok response)) 
-                        timeline 
+                        clientId
                         maybeCotonoma 
                         False
+                        (Components.Timeline.Messages.Posted (Ok response)) 
+                        timeline
             in
                 ( model, newTimeline, Cmd.none )
           

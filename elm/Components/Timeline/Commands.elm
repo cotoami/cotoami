@@ -24,31 +24,32 @@ fetchPosts =
     Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
 
 
-post : Maybe Cotonoma -> Post -> Cmd Msg
-post maybeCotonoma post =
+post : String -> Maybe Cotonoma -> Post -> Cmd Msg
+post clientId maybeCotonoma post =
     Http.send Posted 
         <| Http.post 
             "/api/cotos" 
-            (Http.jsonBody (encodePost maybeCotonoma post)) 
+            (Http.jsonBody (encodePost clientId maybeCotonoma post)) 
             decodePost
         
 
-encodePost : Maybe Cotonoma -> Post -> Encode.Value
-encodePost maybeCotonoma post =
+encodePost : String -> Maybe Cotonoma -> Post -> Encode.Value
+encodePost clientId maybeCotonoma post =
     Encode.object 
-        [ ("coto", 
-            (Encode.object 
-                [ ("cotonoma_id"
+        [ ( "clientId", Encode.string clientId )
+        , ( "coto"
+          , (Encode.object 
+                [ ( "cotonoma_id"
                   , case maybeCotonoma of
                         Nothing -> Encode.null 
                         Just cotonoma -> Encode.int cotonoma.id
                   )
-                , ("postId"
+                , ( "postId"
                   , case post.postId of
                         Nothing -> Encode.null 
                         Just postId -> Encode.int postId
                   )
-                , ("content", Encode.string post.content)
+                , ( "content", Encode.string post.content )
                 ]
             )
           )

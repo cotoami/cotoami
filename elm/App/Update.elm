@@ -73,10 +73,11 @@ update msg model =
             let
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
-                      (Components.Timeline.Messages.PostsFetched (Ok posts))
-                      model.timeline
+                      model.clientId
                       model.cotonoma
                       model.ctrlDown
+                      (Components.Timeline.Messages.PostsFetched (Ok posts))
+                      model.timeline
             in
                 { model 
                 | cotonoma = Just cotonoma
@@ -183,10 +184,11 @@ update msg model =
             let
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
-                        subMsg 
-                        model.timeline 
+                        model.clientId
                         model.cotonoma
                         model.ctrlDown
+                        subMsg 
+                        model.timeline
                 cotoModal = model.cotoModal
             in
                 case subMsg of
@@ -241,9 +243,10 @@ update msg model =
                     let
                         ( cotonomaModal, timeline, cmd ) = 
                             Components.CotonomaModal.Update.update
-                                subMsg
+                                model.clientId
                                 session
                                 model.cotonoma
+                                subMsg
                                 model.timeline
                                 model.cotonomaModal
                         newModel = 
