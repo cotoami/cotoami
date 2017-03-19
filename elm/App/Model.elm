@@ -1,5 +1,7 @@
 module App.Model exposing (..)
 
+import Uuid
+import Random.Pcg exposing (initialSeed, step)
 import App.Types exposing (CotonomaKey)
 import Components.ConfirmModal.Model
 import Components.SigninModal
@@ -16,7 +18,8 @@ type Route
     
 
 type alias Model =
-    { route : Route
+    { clientId : String
+    , route : Route
     , ctrlDown : Bool
     , session : Maybe App.Types.Session
     , cotonoma : Maybe App.Types.Cotonoma
@@ -34,21 +37,25 @@ type alias Model =
     }
 
 
-initModel : Route -> Model
-initModel route =
-    { route = route
-    , ctrlDown = False
-    , session = Nothing
-    , cotonoma = Nothing
-    , confirmModal = Components.ConfirmModal.Model.initModel
-    , signinModal = Components.SigninModal.initModel
-    , profileModal = Components.ProfileModal.initModel
-    , cotoModal = Components.CotoModal.initModel
-    , cotonomas = []
-    , cotonomasToggled = False
-    , cotonomasOpen = False
-    , cotonomasLoading = True
-    , timeline = Components.Timeline.Model.initModel
-    , activeCotoId = Nothing
-    , cotonomaModal = Components.CotonomaModal.Model.initModel
-    }
+initModel : Int -> Route -> Model
+initModel seed route =
+    let
+        ( newUuid, newSeed ) = step Uuid.uuidGenerator (initialSeed seed)
+    in
+        { clientId = Uuid.toString newUuid
+        , route = route
+        , ctrlDown = False
+        , session = Nothing
+        , cotonoma = Nothing
+        , confirmModal = Components.ConfirmModal.Model.initModel
+        , signinModal = Components.SigninModal.initModel
+        , profileModal = Components.ProfileModal.initModel
+        , cotoModal = Components.CotoModal.initModel
+        , cotonomas = []
+        , cotonomasToggled = False
+        , cotonomasOpen = False
+        , cotonomasLoading = True
+        , timeline = Components.Timeline.Model.initModel
+        , activeCotoId = Nothing
+        , cotonomaModal = Components.CotonomaModal.Model.initModel
+        }

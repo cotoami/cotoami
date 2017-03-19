@@ -9,9 +9,15 @@ import App.Commands exposing (fetchSession, fetchCotonomas)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
 
-main : Program Never Model Msg
+
+type alias Flags =
+    { seed : Int
+    }
+  
+
+main : Program Flags Model Msg
 main =
-    Navigation.program OnLocationChange
+    Navigation.programWithFlags OnLocationChange
         { init = init
         , view = view
         , update = update
@@ -19,11 +25,11 @@ main =
         }
 
 
-init : Location -> ( Model, Cmd Msg )
-init location =
+init : Flags -> Location -> ( Model, Cmd Msg )
+init flags location =
     let
         route = parseLocation location
-        initialModel = initModel route
+        initialModel = initModel flags.seed route
         ( model, cmd ) =
             case route of
                 CotonomaRoute key -> loadCotonoma key initialModel
