@@ -32,7 +32,10 @@ defmodule Cotoami.CotoController do
           "cotonomas:#{cotonoma.key}", 
           "post", 
           Phoenix.View.render_one(
-            %{coto | :amishi => AmishiService.append_gravatar_profile(amishi)}, 
+            %{coto | 
+              :posted_in => cotonoma,
+              :amishi => AmishiService.append_gravatar_profile(amishi)
+            }, 
             Cotoami.CotoView, 
             "coto.json"
           )
