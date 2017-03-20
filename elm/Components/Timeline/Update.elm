@@ -4,6 +4,7 @@ import Json.Decode as Decode
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
 import App.Types exposing (Cotonoma)
+import App.Channels exposing (decodePayload)
 import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
@@ -60,11 +61,14 @@ update clientId maybeCotonoma ctrlDown msg model =
             model ! []
             
         PostPushed payload ->
-            case Decode.decodeValue decodePost payload of
-                Ok post ->
-                    { model 
-                    | posts = post :: model.posts
-                    } ! [ scrollToBottom NoOp ]
+            case Decode.decodeValue (decodePayload "post" decodePost) payload of
+                Ok decodedPayload ->
+                    if decodedPayload.clientId /= clientId then
+                        { model | posts = decodedPayload.body :: model.posts } 
+                            ! [ scrollToBottom NoOp ]
+                    else
+                        model ! []
+                    
                 Err err ->
                     model ! []
     

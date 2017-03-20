@@ -21862,6 +21862,18 @@ var _user$project$App_Channels$cotonomaChannel = function (key) {
 		_saschatimme$elm_phoenix$Phoenix_Channel$init(
 			A2(_elm_lang$core$Basics_ops['++'], 'cotonomas:', key)));
 };
+var _user$project$App_Channels$Payload = F2(
+	function (a, b) {
+		return {clientId: a, body: b};
+	});
+var _user$project$App_Channels$decodePayload = F2(
+	function (bodyName, bodyDecoder) {
+		return A3(
+			_elm_lang$core$Json_Decode$map2,
+			_user$project$App_Channels$Payload,
+			A2(_elm_lang$core$Json_Decode$field, 'clientId', _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$field, bodyName, bodyDecoder));
+	});
 
 var _user$project$App_Commands$deleteCoto = function (cotoId) {
 	return A2(
@@ -22475,20 +22487,27 @@ var _user$project$Components_Timeline_Update$update = F5(
 					model,
 					{ctor: '[]'});
 			default:
-				var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Components_Timeline_Model$decodePost, _p0._0);
+				var _p1 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					A2(_user$project$App_Channels$decodePayload, 'post', _user$project$Components_Timeline_Model$decodePost),
+					_p0._0);
 				if (_p1.ctor === 'Ok') {
-					return A2(
+					var _p2 = _p1._0;
+					return (!_elm_lang$core$Native_Utils.eq(_p2.clientId, clientId)) ? A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								posts: {ctor: '::', _0: _p1._0, _1: model.posts}
+								posts: {ctor: '::', _0: _p2.body, _1: model.posts}
 							}),
 						{
 							ctor: '::',
 							_0: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_Timeline_Messages$NoOp),
 							_1: {ctor: '[]'}
-						});
+						}) : A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				} else {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
