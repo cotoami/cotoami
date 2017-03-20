@@ -8,9 +8,9 @@ import App.Messages exposing (..)
 import App.Channels exposing (cotonomaChannel)
 
 
-socket : String -> Socket Msg
-socket token =
-    Socket.init "ws://localhost:4000/socket/websocket"
+socket : String -> String -> Socket Msg
+socket token websocketUrl =
+    Socket.init websocketUrl
         |> Socket.withParams [ ( "token", token ) ]
 
 
@@ -23,7 +23,7 @@ phoenixChannels model =
                 Nothing -> Sub.none
                 Just cotonoma ->
                     Phoenix.connect 
-                      (socket session.token) 
+                      (socket session.token session.websocketUrl) 
                       [cotonomaChannel cotonoma.key]
 
 
