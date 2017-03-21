@@ -3,6 +3,9 @@
 Dockerfile
 sysconfcpus
 
+# Mix artifacts
+deps
+
 # Static artifacts
 node_modules
 elm
