@@ -22,4 +22,6 @@ import "phoenix_html"
 
 // Set up our Elm App
 const elmDiv = document.querySelector("#elm-container")
-const elmApp = Elm.Main.embed(elmDiv)
+const elmApp = Elm.Main.embed(elmDiv, {
+  seed: Math.floor(Math.random() * 0x0FFFFFFF)
+})

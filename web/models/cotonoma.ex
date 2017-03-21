@@ -4,7 +4,6 @@ defmodule Cotoami.Cotonoma do
   """
   
   use Cotoami.Web, :model
-  alias Cotoami.Member
   
   @key_length 10
 

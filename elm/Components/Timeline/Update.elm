@@ -1,15 +1,17 @@
 module Components.Timeline.Update exposing (..)
 
+import Json.Decode as Decode
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank)
 import App.Types exposing (Cotonoma)
-import Components.Timeline.Model exposing (Post, defaultPost, Model)
+import App.Channels exposing (decodePayload)
+import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
 
-update : Msg -> Model -> Maybe Cotonoma -> Bool -> ( Model, Cmd Msg )
-update msg model maybeCotonoma ctrlDown =
+update : String -> Maybe Cotonoma -> Bool -> Msg -> Model -> ( Model, Cmd Msg )
+update clientId maybeCotonoma ctrlDown msg model =
     case msg of
         NoOp ->
             model ! []
@@ -37,12 +39,12 @@ update msg model maybeCotonoma ctrlDown =
 
         EditorKeyDown key ->
             if key == enter.keyCode && ctrlDown && (not (isBlank model.newContent)) then
-                post maybeCotonoma model
+                post clientId maybeCotonoma model
             else
                 model ! []
                 
         Post ->
-            post maybeCotonoma model
+            post clientId maybeCotonoma model
                 
         Posted (Ok response) ->
             { model 
@@ -57,10 +59,22 @@ update msg model maybeCotonoma ctrlDown =
             
         CotonomaClick key ->
             model ! []
+            
+        PostPushed payload ->
+            case Decode.decodeValue (decodePayload "post" decodePost) payload of
+                Ok decodedPayload ->
+                    if decodedPayload.clientId /= clientId then
+                        { model | posts = decodedPayload.body :: model.posts } 
+                            ! [ scrollToBottom NoOp ]
+                    else
+                        model ! []
+                    
+                Err err ->
+                    model ! []
     
 
-post : Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
-post maybeCotonoma model =
+post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
+post clientId maybeCotonoma model =
     let
         postId = model.postIdCounter + 1
         newPost = 
@@ -75,9 +89,9 @@ post maybeCotonoma model =
         , postIdCounter = postId
         , newContent = ""
         } ! 
-        [ scrollToBottom NoOp
-        , Components.Timeline.Commands.post maybeCotonoma newPost
-        ]
+            [ scrollToBottom NoOp
+            , Components.Timeline.Commands.post clientId maybeCotonoma newPost
+            ]
 
 
 setCotoSaved : Post -> Post -> Post

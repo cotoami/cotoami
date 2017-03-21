@@ -1,6 +1,7 @@
 module Components.Timeline.Messages exposing (..)
 
 import Http
+import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Components.Timeline.Model exposing (Post)
 
@@ -18,3 +19,4 @@ type Msg
     | Posted (Result Http.Error Post)
     | PostOpen Post
     | CotonomaClick String
+    | PostPushed Value

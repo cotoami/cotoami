@@ -5,6 +5,7 @@ defmodule Cotoami.CotoController do
   alias Cotoami.Coto
   alias Cotoami.RedisService
   alias Cotoami.CotoService
+  alias Cotoami.AmishiService
   
   plug :scrub_params, "coto" when action in [:create]
     
@@ -18,18 +19,37 @@ defmodule Cotoami.CotoController do
     end
   end
 
-  def create(conn, %{"coto" => coto_params}) do
+  def create(conn, %{"clientId" => clientId, "coto" => coto_params}) do
     case conn.assigns do
       %{amishi: amishi} ->
         cotonoma_id = coto_params["cotonoma_id"]
         content = coto_params["content"]
         postId = coto_params["postId"]
-        coto = CotoService.create!(cotonoma_id, amishi.id, content)
+        
+        {coto, cotonoma} = CotoService.create!(cotonoma_id, amishi.id, content)
+        
+        %{coto | 
+          :posted_in => cotonoma,
+          :amishi => AmishiService.append_gravatar_profile(amishi)
+        } |> broadcast_post(cotonoma.key, clientId)
+        
         render(conn, "created.json", coto: coto, postId: postId)
+        
       _ ->
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
     end
+  end
+  
+  defp broadcast_post(coto, cotonoma_key, clientId) do
+    Cotoami.Endpoint.broadcast(
+      "cotonomas:#{cotonoma_key}", 
+      "post",
+      %{
+        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json"),
+        clientId: clientId
+      }
+    )
   end
   
   def delete(conn, %{"id" => id}) do
