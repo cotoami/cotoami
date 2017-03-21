@@ -13,7 +13,6 @@ dependencies:
     - ~/.elm-install
     - ~/sysconfcpus
     - deps
-    - elm/elm-stuff
   override:
     # elixir container
     - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
@@ -28,7 +27,7 @@ dependencies:
       then
         git clone https://github.com/obmarg/libsysconfcpus.git; 
         cd libsysconfcpus;
-        ./configure --prefix=~/sysconfcpus;
+        ./configure --prefix=$HOME/sysconfcpus;
         make && make install;
         cd ..;
       fi

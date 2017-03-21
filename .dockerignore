@@ -1,6 +1,7 @@
 # .dockerignore
 .git
 Dockerfile
+sysconfcpus
 
 # Static artifacts
 node_modules
