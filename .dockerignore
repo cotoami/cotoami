@@ -1,0 +1,7 @@
+# .dockerignore
+.git
+Dockerfile
+
+# Static artifacts
+node_modules
+elm
