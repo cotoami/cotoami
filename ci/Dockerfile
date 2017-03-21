@@ -30,15 +30,3 @@ RUN apt-get install -y esl-erlang=1:19.0.2 && \
     apt-get clean -y
 
 RUN mix local.hex --force && mix local.rebar --force
-
-# PostgreSQL
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-RUN apt-get update && apt-get -y -q install python-software-properties software-properties-common && \
-    apt-get -y -q install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
-
-# Alter postgres user for test
-USER postgres
-RUN /etc/init.d/postgresql start && \
-    psql --command "ALTER USER postgres WITH SUPERUSER PASSWORD 'postgres';"
-USER root

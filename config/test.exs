@@ -12,8 +12,7 @@ config :logger, level: :warn
 # Configure your database
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "cotoami_test",
+  username: "ubuntu",
+  database: "circle_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
