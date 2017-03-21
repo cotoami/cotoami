@@ -43,7 +43,7 @@ dependencies:
     - npm install
     - cd elm && elm-install
     - node_modules/brunch/bin/brunch build --production
-    - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && MIX_ENV=prod mix phoenix.digest
+    - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && MIX_ENV=prod mix phoenix.digest'
     
     # k8s
     - ./ci/ensure-kubectl.sh
