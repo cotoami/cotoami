@@ -11,6 +11,7 @@ dependencies:
     - ~/docker
     - ~/.kube
     - ~/.elm-install
+    - ~/sysconfcpus
     - deps
     - elm/elm-stuff
   override:
@@ -20,6 +21,17 @@ dependencies:
     
     # compile elixir
     - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && mix deps.get --only prod && MIX_ENV=prod mix compile'
+    
+    # https://github.com/elm-lang/elm-compiler/issues/1473#issuecomment-245704142
+    - |
+      if [ ! -d ~/sysconfcpus/bin ];
+      then
+        git clone https://github.com/obmarg/libsysconfcpus.git; 
+        cd libsysconfcpus;
+        ./configure --prefix=~/sysconfcpus;
+        make && make install;
+        cd ..;
+      fi
     
     # compile assets
     - npm install
