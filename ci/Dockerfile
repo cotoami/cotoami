@@ -19,7 +19,7 @@ RUN apt-get -y install rlwrap && \
 
 # Elm
 RUN npm install -g elm
-RUN mkdir /root/.elm-install && npm install -g elm-github-install
+RUN npm install -g --unsafe-perm elm-github-install
 
 # Erlang and Elixir
 RUN curl -o /tmp/erlang.deb http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && \
