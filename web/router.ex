@@ -37,6 +37,7 @@ defmodule Cotoami.Router do
     pipe_through :api_public
     
     get "/", PublicController, :index
+    get "/info", PublicController, :info
   end
 
   scope "/api", Cotoami do
