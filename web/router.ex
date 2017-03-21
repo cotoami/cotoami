@@ -9,6 +9,10 @@ defmodule Cotoami.Router do
     plug :put_secure_browser_headers
     plug Cotoami.Auth
   end
+  
+  pipeline :api_public do
+    plug :accepts, ["json"]
+  end
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -27,6 +31,12 @@ defmodule Cotoami.Router do
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token/:anonymous_id", SigninController, :signin
     get "/signout", SessionController, :signout
+  end
+  
+  scope "/api/public", GyronConnect do
+    pipe_through :api_public
+    
+    get "/", PublicController, :index
   end
 
   scope "/api", Cotoami do
