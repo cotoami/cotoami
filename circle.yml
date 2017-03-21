@@ -4,7 +4,7 @@ machine:
   services:
     - docker
   node:
-    version: 5.1.0
+    version: 5.5.0
 
 dependencies:
   cache_directories:
@@ -14,6 +14,7 @@ dependencies:
     - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
     - if [[ ! -e ~/docker/elixir.tar ]]; then mkdir -p ~/docker; docker save elixir > ~/docker/elixir.tar; fi
     - ./ci/ensure-kubectl.sh
+    - npm install
     
 test:
   override:
