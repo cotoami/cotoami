@@ -33,7 +33,7 @@ defmodule Cotoami.Router do
     get "/signout", SessionController, :signout
   end
   
-  scope "/api/public", GyronConnect do
+  scope "/api/public", Cotoami do
     pipe_through :api_public
     
     get "/", PublicController, :index
