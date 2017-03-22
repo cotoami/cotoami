@@ -7,15 +7,8 @@ defmodule Cotoami.CotoService do
   
   def create!(cotonoma_id_nillable, amishi_id, content) do
     cotonoma = 
-      case cotonoma_id_nillable do
-        nil -> nil
-        cotonoma_id ->
-          case CotonomaService.get(cotonoma_id, amishi_id) do
-            nil -> raise "Cotonoma not found: #{cotonoma_id}"
-            cotonoma -> cotonoma
-          end
-      end
-    
+      CotonomaService.check_permission_if_id_is_not_nil!(
+        cotonoma_id_nillable, amishi_id)
     coto = 
       Coto.changeset(%Coto{}, %{
         posted_in_id: cotonoma_id_nillable,
@@ -24,7 +17,6 @@ defmodule Cotoami.CotoService do
         as_cotonoma: false
       }) 
       |> Repo.insert!
-      
     {coto, cotonoma}
   end
   

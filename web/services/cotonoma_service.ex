@@ -88,6 +88,20 @@ defmodule Cotoami.CotonomaService do
     |> append_gravatar_profile_to_owner()
   end
   
+  def check_permission!(cotonoma_id, amishi_id) do
+    case check_permission(cotonoma_id, amishi_id) do
+      nil -> raise "Forbidden cotonoma: #{cotonoma_id}"
+      cotonoma -> cotonoma
+    end
+  end
+  
+  def check_permission_if_id_is_not_nil!(cotonoma_id_nillable, amishi_id) do
+    case cotonoma_id_nillable do
+      nil -> nil
+      cotonoma_id -> check_permission!(cotonoma_id, amishi_id)
+    end
+  end
+  
   def check_permission(cotonoma_id, amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
