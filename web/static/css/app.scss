@@ -57,12 +57,18 @@ html, body, #elm-container, #app, #app-body {
     display: none;
   }
   
-  div.cotonomas {
+  #navigation-content {
     max-height: 40vh;
     padding: 0 10px;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    
+    div.navigation-title {
+      margin-bottom: 4px;
+      color: #ccc;
+      font-weight: bold;
+    }
     
     div.coto-as-cotonoma {
       margin-bottom: 5px;
@@ -114,7 +120,7 @@ html, body, #elm-container, #app, #app-body {
       display: block;
     }
     
-    div.cotonomas {
+    #navigation-content {
       position: absolute;
       top: 0;
       bottom: 0;

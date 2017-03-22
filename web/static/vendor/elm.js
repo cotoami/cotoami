@@ -23576,7 +23576,33 @@ var _user$project$Components_Cotonomas$view = function (cotonomas) {
 var _user$project$Components_Navigation$view = function (model) {
 	return {
 		ctor: '::',
-		_0: _user$project$Components_Cotonomas$view(model.cotonomas),
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('navigation-content'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Recent'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Components_Cotonomas$view(model.cotonomas),
+					_1: {ctor: '[]'}
+				}
+			}),
 		_1: {ctor: '[]'}
 	};
 };
