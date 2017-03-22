@@ -7,13 +7,13 @@ defmodule Cotoami.CotonomaService do
   alias Cotoami.Member
   alias Cotoami.AmishiService
   
-  def create!(cotonoma_id, amishi_id, name, member_params) do
-    # TODO: check cotonoma membership
+  def create!(cotonoma_id_nillable, amishi_id, name, member_params) do
+    check_permission!(cotonoma_id_nillable, amishi_id)
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
         coto = 
           Coto.changeset(%Coto{}, %{
-            posted_in_id: cotonoma_id,
+            posted_in_id: cotonoma_id_nillable,
             amishi_id: amishi_id,
             content: name,
             as_cotonoma: true
