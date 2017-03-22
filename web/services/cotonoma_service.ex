@@ -98,6 +98,15 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(&append_gravatar_profile_to_owner(&1))
   end
   
+  def get_members(cotonoma_id) do
+    Member
+    |> Member.for_cotonoma(cotonoma_id)
+    |> preload([:amishi])
+    |> Repo.all()
+    |> Enum.map(&(&1.amishi))
+    |> Enum.map(&append_gravatar_profile_to_owner(&1))
+  end
+  
   def get_cotos(key, amishi_id) do
     case get_by_key(key, amishi_id) do
       nil -> nil
@@ -117,7 +126,8 @@ defmodule Cotoami.CotonomaService do
                 coto
               end
             end)
-          {cotonoma, cotos}
+          members = get_members(cotonoma.id)
+          {cotos, cotonoma, members}
         else
           nil
         end

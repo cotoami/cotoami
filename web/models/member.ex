@@ -14,4 +14,10 @@ defmodule Cotoami.Member do
     |> cast(params, [:email, :cotonoma_id, :amishi_id])
     |> validate_required([:email, :cotonoma_id])
   end
+  
+  def for_cotonoma(query, cotonoma_id) do
+    from m in query, 
+      where: m.cotonoma_id == ^cotonoma_id,
+      order_by: [desc: m.inserted_at]
+  end
 end

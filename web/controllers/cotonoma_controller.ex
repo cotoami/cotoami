@@ -34,8 +34,10 @@ defmodule Cotoami.CotonomaController do
     case CotonomaService.get_cotos(key, amishi.id) do
       nil ->
         send_resp(conn, :not_found, "")
-      {cotonoma, cotos} ->
-        render(conn, "cotos.json", %{cotonoma: cotonoma, cotos: cotos})
+      {cotos, cotonoma, members} ->
+        render(conn, "cotos.json", 
+          %{cotos: cotos, cotonoma: cotonoma, members: members}
+        )
     end
   end
 end
