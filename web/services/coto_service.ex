@@ -7,7 +7,7 @@ defmodule Cotoami.CotoService do
   
   def create!(cotonoma_id_nillable, amishi_id, content) do
     cotonoma = 
-      CotonomaService.check_permission_if_id_is_not_nil!(
+      CotonomaService.check_permission!(
         cotonoma_id_nillable, amishi_id)
     coto = 
       Coto.changeset(%Coto{}, %{
