@@ -17032,6 +17032,11 @@ var _user$project$App_Types$decodeCotonoma = A5(
 	A2(_elm_lang$core$Json_Decode$field, 'key', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'coto_id', _elm_lang$core$Json_Decode$int));
+var _user$project$App_Types$NotFoundRoute = {ctor: 'NotFoundRoute'};
+var _user$project$App_Types$CotonomaRoute = function (a) {
+	return {ctor: 'CotonomaRoute', _0: a};
+};
+var _user$project$App_Types$HomeRoute = {ctor: 'HomeRoute'};
 
 var _user$project$Components_ConfirmModal_Messages$Confirm = {ctor: 'Confirm'};
 var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
@@ -22084,21 +22089,16 @@ var _user$project$App_Model$Model = function (a) {
 		};
 	};
 };
-var _user$project$App_Model$NotFoundRoute = {ctor: 'NotFoundRoute'};
-var _user$project$App_Model$CotonomaRoute = function (a) {
-	return {ctor: 'CotonomaRoute', _0: a};
-};
-var _user$project$App_Model$HomeRoute = {ctor: 'HomeRoute'};
 
 var _user$project$App_Routing$matchers = _evancz$url_parser$UrlParser$oneOf(
 	{
 		ctor: '::',
-		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$App_Model$HomeRoute, _evancz$url_parser$UrlParser$top),
+		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$App_Types$HomeRoute, _evancz$url_parser$UrlParser$top),
 		_1: {
 			ctor: '::',
 			_0: A2(
 				_evancz$url_parser$UrlParser$map,
-				_user$project$App_Model$CotonomaRoute,
+				_user$project$App_Types$CotonomaRoute,
 				A2(
 					_evancz$url_parser$UrlParser_ops['</>'],
 					_evancz$url_parser$UrlParser$s('cotonomas'),
@@ -22111,7 +22111,7 @@ var _user$project$App_Routing$parseLocation = function (location) {
 	if (_p0.ctor === 'Just') {
 		return _p0._0;
 	} else {
-		return _user$project$App_Model$NotFoundRoute;
+		return _user$project$App_Types$NotFoundRoute;
 	}
 };
 

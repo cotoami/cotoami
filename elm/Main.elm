@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Navigation exposing (Location)
+import App.Types exposing (..)
 import App.Routing exposing (parseLocation)
 import App.Model exposing (..)
 import App.Messages exposing (..)

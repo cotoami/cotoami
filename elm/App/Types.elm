@@ -3,6 +3,12 @@ module App.Types exposing (..)
 import Json.Decode as Decode
         
         
+type Route
+    = HomeRoute
+    | CotonomaRoute CotonomaKey
+    | NotFoundRoute
+            
+
 type alias Amishi =
     { id : Int
     , email : String

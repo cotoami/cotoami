@@ -5,7 +5,7 @@ import Process
 import Time
 import Keys exposing (ctrl, meta, enter)
 import Navigation 
-import App.Types exposing (CotonomaKey)
+import App.Types exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Routing exposing (parseLocation)

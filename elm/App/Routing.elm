@@ -1,7 +1,7 @@
 module App.Routing exposing (..)
 
 import Navigation exposing (Location)
-import App.Model exposing (Route(..))
+import App.Types exposing (Route(..))
 import UrlParser exposing (..)
 
 
