@@ -39,7 +39,7 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
   registry: :default,
   duration_unit: :microseconds
     
-config :cotoami, Cotoami.RedisService,
+config :cotoami, Cotoami.Redix,
   host: System.get_env("COTOAMI_REDIS_HOST")
 
 config :cotoami, Cotoami.Mailer,

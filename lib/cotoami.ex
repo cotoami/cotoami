@@ -2,14 +2,23 @@ defmodule Cotoami do
   use Application
   require Logger
   require Prometheus.Registry
-
+  
   def start(_type, _args) do
     import Supervisor.Spec
+    
+    redix_workers = for i <- 0..(Cotoami.Redix.redix_pool_size() - 1) do
+      worker(
+        Redix, 
+        [[host: Cotoami.Redix.host(), port: Cotoami.Redix.port()], 
+         [name: :"redix_#{i}"]], 
+        id: {Redix, i}
+      )
+    end
 
     children = [
       supervisor(Cotoami.Repo, []),
       supervisor(Cotoami.Endpoint, []),
-    ]
+    ] ++ redix_workers
     
     # Prometheus
     Cotoami.Endpoint.Instrumenter.setup()
