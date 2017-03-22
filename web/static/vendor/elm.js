@@ -22053,6 +22053,7 @@ var _user$project$App_Model$initModel = F2(
 			navigationOpen: false,
 			session: _elm_lang$core$Maybe$Nothing,
 			cotonoma: _elm_lang$core$Maybe$Nothing,
+			members: {ctor: '[]'},
 			confirmModal: _user$project$Components_ConfirmModal_Model$initModel,
 			signinModal: _user$project$Components_SigninModal$initModel,
 			profileModal: _user$project$Components_ProfileModal$initModel,
@@ -22080,7 +22081,9 @@ var _user$project$App_Model$Model = function (a) {
 													return function (n) {
 														return function (o) {
 															return function (p) {
-																return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, confirmModal: h, signinModal: i, profileModal: j, cotoModal: k, cotonomas: l, cotonomasLoading: m, timeline: n, activeCotoId: o, cotonomaModal: p};
+																return function (q) {
+																	return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, confirmModal: i, signinModal: j, profileModal: k, cotoModal: l, cotonomas: m, cotonomasLoading: n, timeline: o, activeCotoId: p, cotonomaModal: q};
+																};
 															};
 														};
 													};
@@ -22766,6 +22769,7 @@ var _user$project$App_Update$loadCotonoma = F2(
 				model,
 				{
 					cotonoma: _elm_lang$core$Maybe$Nothing,
+					members: {ctor: '[]'},
 					timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
 				}),
 			{
@@ -22790,6 +22794,7 @@ var _user$project$App_Update$loadHome = function (model) {
 			model,
 			{
 				cotonoma: _elm_lang$core$Maybe$Nothing,
+				members: {ctor: '[]'},
 				timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
 			}),
 		{
@@ -22892,6 +22897,7 @@ var _user$project$App_Update$update = F2(
 							model,
 							{
 								cotonoma: _elm_lang$core$Maybe$Just(_p4),
+								members: _p1._0._0._1,
 								navigationOpen: false,
 								timeline: timeline
 							}),
@@ -23609,72 +23615,131 @@ var _user$project$Components_Navigation$recentCotonomasNav = function (cotonomas
 			}
 		});
 };
-var _user$project$Components_Navigation$cotonomaNav = function (cotonoma) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('members'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Members'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
+var _user$project$Components_Navigation$cotonomaNav = F2(
+	function (members, cotonoma) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('members'),
+				_1: {ctor: '[]'}
+			},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('amishi member owner'),
+						_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$img,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('avatar'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(cotonoma.owner.avatarUrl),
-									_1: {ctor: '[]'}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {
+						_0: _elm_lang$html$Html$text('Members'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('amishi member owner'),
+							_1: {ctor: '[]'}
+						},
+						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$span,
+								_elm_lang$html$Html$img,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('name'),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$class('avatar'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$src(cotonoma.owner.avatarUrl),
+										_1: {ctor: '[]'}
+									}
 								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(cotonoma.owner.displayName),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('name'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(cotonoma.owner.displayName),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A3(
+							_elm_lang$html$Html_Keyed$node,
+							'div',
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('members'),
+								_1: {ctor: '[]'}
+							},
+							A2(
+								_elm_lang$core$List$map,
+								function (member) {
+									return {
+										ctor: '_Tuple2',
+										_0: _elm_lang$core$Basics$toString(member.id),
+										_1: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('amishi member'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$img,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('avatar'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$src(member.avatarUrl),
+															_1: {ctor: '[]'}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('name'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(member.displayName),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											})
+									};
+								},
+								members)),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
 var _user$project$Components_Navigation$view = function (model) {
 	return {
 		ctor: '::',
@@ -23690,7 +23755,7 @@ var _user$project$Components_Navigation$view = function (model) {
 				_0: function () {
 					var _p0 = model.cotonoma;
 					if (_p0.ctor === 'Just') {
-						return _user$project$Components_Navigation$cotonomaNav(_p0._0);
+						return A2(_user$project$Components_Navigation$cotonomaNav, model.members, _p0._0);
 					} else {
 						return A2(
 							_elm_lang$html$Html$div,

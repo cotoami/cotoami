@@ -104,7 +104,7 @@ defmodule Cotoami.CotonomaService do
     |> preload([:amishi])
     |> Repo.all()
     |> Enum.map(&(&1.amishi))
-    |> Enum.map(&append_gravatar_profile_to_owner(&1))
+    |> Enum.map(&AmishiService.append_gravatar_profile(&1))
   end
   
   def get_cotos(key, amishi_id) do
