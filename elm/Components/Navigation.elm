@@ -15,7 +15,7 @@ view model =
         [ case model.cotonoma of
             Just cotonoma -> cotonomaNav model.members cotonoma
             Nothing -> div [] []
-        , recentCotonomasNav model.cotonomas
+        , recentCotonomasNav model.recentCotonomas
         ]
     ]
 

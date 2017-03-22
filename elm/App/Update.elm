@@ -9,7 +9,7 @@ import App.Types exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Routing exposing (parseLocation)
-import App.Commands exposing (fetchCotonomas, fetchCotonoma, deleteCoto)
+import App.Commands exposing (fetchRecentCotonomas, fetchCotonomas, fetchCotonoma, deleteCoto)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -50,6 +50,15 @@ update msg model =
             
         SessionFetched (Err _) ->
             model ! []
+            
+        RecentCotonomasFetched (Ok cotonomas) ->
+            { model 
+            | recentCotonomas = cotonomas
+            , cotonomasLoading = False 
+            } ! []
+            
+        RecentCotonomasFetched (Err _) ->
+            { model | cotonomasLoading = False } ! []
             
         CotonomasFetched (Ok cotonomas) ->
             { model 
@@ -275,9 +284,11 @@ loadHome model =
     { model 
     | cotonoma = Nothing
     , members = []
+    , cotonomasLoading = True
     , timeline = setLoading model.timeline 
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
+        , fetchRecentCotonomas
         , fetchCotonomas Nothing
         ]
         
@@ -292,8 +303,12 @@ loadCotonoma key model =
     { model 
     | cotonoma = Nothing
     , members = []
+    , cotonomasLoading = True
     , timeline = setLoading model.timeline 
-    } ! [ fetchCotonoma key ]
+    } ! 
+        [ fetchRecentCotonomas
+        , fetchCotonoma key 
+        ]
 
 
 newActiveCotoId : Maybe Int -> Int -> Maybe Int

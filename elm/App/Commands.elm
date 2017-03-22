@@ -20,6 +20,13 @@ fetchSession =
     Http.send SessionFetched (Http.get "/api/session" decodeSession)
 
 
+fetchRecentCotonomas : Cmd Msg
+fetchRecentCotonomas =
+    Http.send RecentCotonomasFetched 
+        <| Http.get "/api/cotonomas"
+        <| Decode.list decodeCotonoma
+        
+
 fetchCotonomas : Maybe Cotonoma -> Cmd Msg
 fetchCotonomas maybeCotonoma =
     let
