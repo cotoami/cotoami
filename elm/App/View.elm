@@ -36,7 +36,7 @@ view model =
                       , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
                       ]
                   ] 
-                  [ Components.Cotonomas.view model ]
+                  [ Components.Cotonomas.view model.cotonomas ]
               , div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 

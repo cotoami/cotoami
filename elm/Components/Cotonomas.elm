@@ -4,12 +4,12 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import App.Model exposing (Model)
+import App.Types exposing (Cotonoma)
 import App.Messages exposing (Msg(CotonomaClick))
 
 
-view : Model -> Html Msg
-view model =
+view : List Cotonoma -> Html Msg
+view cotonomas =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
@@ -24,5 +24,5 @@ view model =
                     ]
                 )
             ) 
-            (List.reverse model.cotonomas)
+            (List.reverse cotonomas)
         )

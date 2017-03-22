@@ -23502,7 +23502,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 		});
 };
 
-var _user$project$Components_Cotonomas$view = function (model) {
+var _user$project$Components_Cotonomas$view = function (cotonomas) {
 	return A3(
 		_elm_lang$html$Html_Keyed$node,
 		'div',
@@ -23569,7 +23569,7 @@ var _user$project$Components_Cotonomas$view = function (model) {
 						})
 				};
 			},
-			_elm_lang$core$List$reverse(model.cotonomas)));
+			_elm_lang$core$List$reverse(cotonomas)));
 };
 
 var _user$project$Components_ConfirmModal_View$modalConfig = function (model) {
@@ -24721,7 +24721,7 @@ var _user$project$App_View$view = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: _user$project$Components_Cotonomas$view(model),
+								_0: _user$project$Components_Cotonomas$view(model.cotonomas),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
