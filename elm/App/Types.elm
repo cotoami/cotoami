@@ -73,13 +73,15 @@ type alias Cotonoma =
     , key : CotonomaKey
     , name : String
     , cotoId : Int
+    , owner : Amishi
     }
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
 decodeCotonoma =
-    Decode.map4 Cotonoma
+    Decode.map5 Cotonoma
         (Decode.field "id" Decode.int)
         (Decode.field "key" Decode.string)
         (Decode.field "name" Decode.string)
         (Decode.field "coto_id" Decode.int)
+        (Decode.field "owner" decodeAmishi)

@@ -62,18 +62,26 @@ defmodule Cotoami.CotonomaService do
     end
   end
   
-  def get(id, amishi_id) do
+  defp base_query_for_amishi(amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
-    |> preload([:coto])
-    |> Repo.get(id)
+    |> preload([:coto, :owner])
+  end
+  
+  defp append_gravatar_profile_to_owner(cotonoma) do
+    %{cotonoma | :owner => AmishiService.append_gravatar_profile(cotonoma.owner)}
+  end
+  
+  def get(id, amishi_id) do
+    base_query_for_amishi(amishi_id) 
+    |> Repo.get!(id)
+    |> append_gravatar_profile_to_owner()
   end
   
   def get_by_key(key, amishi_id) do
-    Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
-    |> preload([:coto])
-    |> Repo.get_by(key: key)
+    base_query_for_amishi(amishi_id) 
+    |> Repo.get_by!(key: key)
+    |> append_gravatar_profile_to_owner()
   end
   
   def check_permission(cotonoma, amishi_id) do
@@ -84,11 +92,10 @@ defmodule Cotoami.CotonomaService do
   end
   
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
-    Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
+    base_query_for_amishi(amishi_id)
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
-    |> preload([:coto])
     |> Repo.all()
+    |> Enum.map(&append_gravatar_profile_to_owner(&1))
   end
   
   def get_cotos(key, amishi_id) do
