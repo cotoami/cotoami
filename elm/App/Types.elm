@@ -73,7 +73,7 @@ type alias Cotonoma =
     , key : CotonomaKey
     , name : String
     , cotoId : Int
-    , owner : Amishi
+    , owner : Maybe Amishi
     }
 
 
@@ -84,4 +84,4 @@ decodeCotonoma =
         (Decode.field "key" Decode.string)
         (Decode.field "name" Decode.string)
         (Decode.field "coto_id" Decode.int)
-        (Decode.field "owner" decodeAmishi)
+        (Decode.maybe (Decode.field "owner" decodeAmishi))
