@@ -3,7 +3,7 @@ module Components.AppHeader exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import App.Model exposing (Model)
+import App.Model exposing (Model, isNavigationEmpty)
 import App.Messages exposing 
     (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
@@ -51,7 +51,7 @@ navigationToggle model =
     a 
         [ classList 
             [ ( "toggle-navigation", True )
-            , ( "hidden", List.isEmpty model.cotonomas ) 
+            , ( "hidden", isNavigationEmpty model ) 
             ]
         , onClick NavigationToggle
         ] 

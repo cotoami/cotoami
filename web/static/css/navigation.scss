@@ -1,0 +1,26 @@
+#navigation-content {
+  div.navigation-title {
+    margin-bottom: 4px;
+    color: #ccc;
+    font-weight: bold;
+  }
+  
+  div.member {
+    margin-bottom: 16px;
+    
+    img.avatar {
+      margin: 0;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 4px;
+      vertical-align: middle;
+    }
+    
+    span.name {
+      color: #666;
+      font-weight: bold;
+    }
+  }
+}

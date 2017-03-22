@@ -2,6 +2,7 @@ module App.Model exposing (..)
 
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
+import Exts.Maybe exposing (isNothing)
 import App.Types exposing (Route, CotonomaKey)
 import Components.ConfirmModal.Model
 import Components.SigninModal
@@ -53,3 +54,8 @@ initModel seed route =
         , activeCotoId = Nothing
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         }
+
+
+isNavigationEmpty : Model -> Bool
+isNavigationEmpty model =
+    (isNothing model.cotonoma) && (List.isEmpty model.cotonomas)

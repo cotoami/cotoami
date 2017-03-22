@@ -22030,6 +22030,9 @@ var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
 	return {ctor: 'SignedUp', _0: a};
 };
 
+var _user$project$App_Model$isNavigationEmpty = function (model) {
+	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && _elm_lang$core$List$isEmpty(model.cotonomas);
+};
 var _user$project$App_Model$initModel = F2(
 	function (seed, route) {
 		var _p0 = A2(
@@ -23240,7 +23243,7 @@ var _user$project$Components_AppHeader$navigationToggle = function (model) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'hidden',
-							_1: _elm_lang$core$List$isEmpty(model.cotonomas)
+							_1: _user$project$App_Model$isNavigationEmpty(model)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -23573,6 +23576,101 @@ var _user$project$Components_Cotonomas$view = function (cotonomas) {
 			_elm_lang$core$List$reverse(cotonomas)));
 };
 
+var _user$project$Components_Navigation$recentCotonomasNav = function (cotonomas) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('recent'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Recent'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Components_Cotonomas$view(cotonomas),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Navigation$cotonomaNav = function (cotonoma) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('members'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Members'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('amishi member owner'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$img,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('avatar'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$src(cotonoma.owner.avatarUrl),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('name'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(cotonoma.owner.displayName),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Components_Navigation$view = function (model) {
 	return {
 		ctor: '::',
@@ -23585,21 +23683,20 @@ var _user$project$Components_Navigation$view = function (model) {
 			},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Recent'),
-						_1: {ctor: '[]'}
-					}),
+				_0: function () {
+					var _p0 = model.cotonoma;
+					if (_p0.ctor === 'Just') {
+						return _user$project$Components_Navigation$cotonomaNav(_p0._0);
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					}
+				}(),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Components_Cotonomas$view(model.cotonomas),
+					_0: _user$project$Components_Navigation$recentCotonomasNav(model.cotonomas),
 					_1: {ctor: '[]'}
 				}
 			}),
@@ -24679,7 +24776,6 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 	});
 
 var _user$project$App_View$view = function (model) {
-	var isNavigationEmpty = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && _elm_lang$core$List$isEmpty(model.cotonomas);
 	var anyAnonymousCotos = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.posts));
 	return A2(
 		_elm_lang$html$Html$div,
@@ -24724,10 +24820,18 @@ var _user$project$App_View$view = function (model) {
 											_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.navigationToggled},
 											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'empty', _1: isNavigationEmpty},
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'empty',
+													_1: _user$project$App_Model$isNavigationEmpty(model)
+												},
 												_1: {
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'notEmpty', _1: !isNavigationEmpty},
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'notEmpty',
+														_1: !_user$project$App_Model$isNavigationEmpty(model)
+													},
 													_1: {
 														ctor: '::',
 														_0: {ctor: '_Tuple2', _0: 'animated', _1: model.navigationToggled},

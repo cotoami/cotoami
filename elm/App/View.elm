@@ -19,7 +19,6 @@ view : Model -> Html Msg
 view model =
     let
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
-        isNavigationEmpty = (isNothing model.cotonoma) && (List.isEmpty model.cotonomas)
     in
       div [ id "app" 
           , classList [ ( "cotonomas-loading", model.cotonomasLoading ) ] 
@@ -30,8 +29,8 @@ view model =
                   [ id "navigation" 
                   , classList 
                       [ ( "neverToggled", not model.navigationToggled )
-                      , ( "empty", isNavigationEmpty )
-                      , ( "notEmpty", not isNavigationEmpty )
+                      , ( "empty", isNavigationEmpty model )
+                      , ( "notEmpty", not (isNavigationEmpty model) )
                       , ( "animated", model.navigationToggled )
                       , ( "slideInDown", model.navigationToggled && model.navigationOpen )
                       , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
