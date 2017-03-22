@@ -16,9 +16,9 @@ import Components.CotonomaModal.Messages
 type Msg
     = NoOp
     | OnLocationChange Location
+    | NavigationToggle
     | SessionFetched (Result Http.Error Session)
     | CotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomasToggle
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Post))
     | KeyDown KeyCode

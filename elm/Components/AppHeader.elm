@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Model exposing (Model)
 import App.Messages exposing 
-    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, CotonomasToggle))
+    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
 
 view : Model -> Html Msg
@@ -15,14 +15,14 @@ view model =
             (case model.cotonoma of
                 Nothing -> 
                   [ i [ class "material-icons" ] [ text "home" ]
-                  , cotonomasToggle model
+                  , navigationToggle model
                   ]
                 Just cotonoma ->
                   [ a [ class "to-home", onClick HomeClick ] 
                       [ i [ class "material-icons" ] [ text "home" ] ]
                   , i [ class "material-icons" ] [ text "navigate_next" ]
                   , span [ class "cotonoma-name" ] [ text cotonoma.name ]
-                  , cotonomasToggle model
+                  , navigationToggle model
                   ]
             )
         , (case model.session of
@@ -46,18 +46,18 @@ view model =
         ]
 
 
-cotonomasToggle : Model -> Html Msg
-cotonomasToggle model =
+navigationToggle : Model -> Html Msg
+navigationToggle model =
     a 
         [ classList 
-            [ ( "toggle-cotonomas", True )
+            [ ( "toggle-navigation", True )
             , ( "hidden", List.isEmpty model.cotonomas ) 
             ]
-        , onClick CotonomasToggle
+        , onClick NavigationToggle
         ] 
         [ i [ class "material-icons" ] 
             [ text 
-                (if model.cotonomasOpen then 
+                (if model.navigationOpen then 
                   "arrow_drop_up" 
                 else 
                   "arrow_drop_down" 

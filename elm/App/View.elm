@@ -26,14 +26,14 @@ view model =
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
               [ div 
-                  [ id "cotonomas" 
+                  [ id "navigation" 
                   , classList 
-                      [ ( "neverToggled", not model.cotonomasToggled )
+                      [ ( "neverToggled", not model.navigationToggled )
                       , ( "empty", List.isEmpty model.cotonomas )
                       , ( "notEmpty", not (List.isEmpty model.cotonomas) )
-                      , ( "animated", model.cotonomasToggled )
-                      , ( "slideInDown", model.cotonomasToggled && model.cotonomasOpen )
-                      , ( "slideOutUp", model.cotonomasToggled && not model.cotonomasOpen )
+                      , ( "animated", model.navigationToggled )
+                      , ( "slideInDown", model.navigationToggled && model.navigationOpen )
+                      , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
                       ]
                   ] 
                   [ Components.Cotonomas.view model ]

@@ -41,7 +41,7 @@ html, body, #elm-container, #app, #app-body {
   box-sizing: border-box;
 }
 
-#cotonomas {
+#navigation {
   position: absolute;
   z-index: 2;
   top: 35px;
@@ -100,7 +100,7 @@ html, body, #elm-container, #app, #app-body {
     margin: 0 auto;
   }
   
-  #cotonomas {
+  #navigation {
     position: relative;
     top: auto;
     width: 160px;

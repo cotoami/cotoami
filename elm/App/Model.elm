@@ -15,6 +15,8 @@ type alias Model =
     { clientId : String
     , route : Route
     , ctrlDown : Bool
+    , navigationToggled : Bool
+    , navigationOpen : Bool
     , session : Maybe App.Types.Session
     , cotonoma : Maybe App.Types.Cotonoma
     , confirmModal : Components.ConfirmModal.Model.Model
@@ -22,8 +24,6 @@ type alias Model =
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
     , cotonomas : List App.Types.Cotonoma
-    , cotonomasToggled : Bool
-    , cotonomasOpen : Bool
     , cotonomasLoading : Bool
     , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
@@ -39,6 +39,8 @@ initModel seed route =
         { clientId = Uuid.toString newUuid
         , route = route
         , ctrlDown = False
+        , navigationToggled = False
+        , navigationOpen = False
         , session = Nothing
         , cotonoma = Nothing
         , confirmModal = Components.ConfirmModal.Model.initModel
@@ -46,8 +48,6 @@ initModel seed route =
         , profileModal = Components.ProfileModal.initModel
         , cotoModal = Components.CotoModal.initModel
         , cotonomas = []
-        , cotonomasToggled = False
-        , cotonomasOpen = False
         , cotonomasLoading = True
         , timeline = Components.Timeline.Model.initModel
         , activeCotoId = Nothing

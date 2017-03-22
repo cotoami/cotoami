@@ -60,10 +60,10 @@ update msg model =
         CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } ! []
             
-        CotonomasToggle ->
+        NavigationToggle ->
             { model 
-            | cotonomasToggled = True
-            , cotonomasOpen = (not model.cotonomasOpen) 
+            | navigationToggled = True
+            , navigationOpen = (not model.navigationOpen) 
             } ! []
             
         HomeClick ->
@@ -81,7 +81,7 @@ update msg model =
             in
                 { model 
                 | cotonoma = Just cotonoma
-                , cotonomasOpen = False
+                , navigationOpen = False
                 , timeline = timeline
                 } ! 
                     [ Cmd.map TimelineMsg cmd
