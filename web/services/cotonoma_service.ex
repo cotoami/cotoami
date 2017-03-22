@@ -88,10 +88,10 @@ defmodule Cotoami.CotonomaService do
     |> append_gravatar_profile_to_owner()
   end
   
-  def check_permission(cotonoma, amishi_id) do
+  def check_permission(cotonoma_id, amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
-    |> where([c], c.id == ^cotonoma.id)
+    |> where([c], c.id == ^cotonoma_id)
     |> Repo.one()
   end
   
@@ -116,7 +116,7 @@ defmodule Cotoami.CotonomaService do
     case get_by_key(key, amishi_id) do
       nil -> nil
       cotonoma ->
-        if check_permission(cotonoma, amishi_id) do
+        if check_permission(cotonoma.id, amishi_id) do
           cotos =
             Coto 
             |> Coto.in_cotonoma(cotonoma.id)
