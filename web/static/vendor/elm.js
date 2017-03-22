@@ -23572,6 +23572,14 @@ var _user$project$Components_Cotonomas$view = function (cotonomas) {
 			_elm_lang$core$List$reverse(cotonomas)));
 };
 
+var _user$project$Components_Navigation$view = function (model) {
+	return {
+		ctor: '::',
+		_0: _user$project$Components_Cotonomas$view(model.cotonomas),
+		_1: {ctor: '[]'}
+	};
+};
+
 var _user$project$Components_ConfirmModal_View$modalConfig = function (model) {
 	return {
 		closeMessage: _user$project$Components_ConfirmModal_Messages$Close,
@@ -24719,11 +24727,7 @@ var _user$project$App_View$view = function (model) {
 									_1: {ctor: '[]'}
 								}
 							},
-							{
-								ctor: '::',
-								_0: _user$project$Components_Cotonomas$view(model.cotonomas),
-								_1: {ctor: '[]'}
-							}),
+							_user$project$Components_Navigation$view(model)),
 						_1: {
 							ctor: '::',
 							_0: A2(

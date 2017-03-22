@@ -6,7 +6,7 @@ import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
-import Components.Cotonomas
+import Components.Navigation
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
@@ -35,13 +35,12 @@ view model =
                       , ( "slideInDown", model.navigationToggled && model.navigationOpen )
                       , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
                       ]
-                  ] 
-                  [ Components.Cotonomas.view model.cotonomas ]
+                  ] (Components.Navigation.view model)
               , div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
                           model.timeline 
-                          model.session 
+                          model.session
                           model.cotonoma 
                           model.activeCotoId
                       )
