@@ -26,8 +26,8 @@ type alias Model =
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
     , recentCotonomas : List App.Types.Cotonoma
-    , cotonomas : List App.Types.Cotonoma
     , cotonomasLoading : Bool
+    , subCotonomas : List App.Types.Cotonoma
     , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
     , cotonomaModal : Components.CotonomaModal.Model.Model
@@ -52,8 +52,8 @@ initModel seed route =
         , profileModal = Components.ProfileModal.initModel
         , cotoModal = Components.CotoModal.initModel
         , recentCotonomas = []
-        , cotonomas = []
         , cotonomasLoading = False
+        , subCotonomas = []
         , timeline = Components.Timeline.Model.initModel
         , activeCotoId = Nothing
         , cotonomaModal = Components.CotonomaModal.Model.initModel
@@ -62,4 +62,6 @@ initModel seed route =
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
-    (isNothing model.cotonoma) && (List.isEmpty model.cotonomas)
+    (isNothing model.cotonoma)
+        && (List.isEmpty model.recentCotonomas) 
+        && (List.isEmpty model.subCotonomas)

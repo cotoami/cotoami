@@ -21846,8 +21846,8 @@ var _user$project$App_Messages$CotonomaFetched = function (a) {
 	return {ctor: 'CotonomaFetched', _0: a};
 };
 var _user$project$App_Messages$HomeClick = {ctor: 'HomeClick'};
-var _user$project$App_Messages$CotonomasFetched = function (a) {
-	return {ctor: 'CotonomasFetched', _0: a};
+var _user$project$App_Messages$SubCotonomasFetched = function (a) {
+	return {ctor: 'SubCotonomasFetched', _0: a};
 };
 var _user$project$App_Messages$RecentCotonomasFetched = function (a) {
 	return {ctor: 'RecentCotonomasFetched', _0: a};
@@ -21940,25 +21940,22 @@ var _user$project$App_Commands$fetchAmishi = F2(
 				A2(_elm_lang$core$Basics_ops['++'], '/api/amishis/email/', email),
 				_user$project$App_Types$decodeAmishi));
 	});
-var _user$project$App_Commands$fetchCotonomas = function (maybeCotonoma) {
-	var url = function () {
-		var _p0 = maybeCotonoma;
-		if (_p0.ctor === 'Nothing') {
-			return '/api/cotonomas';
-		} else {
-			return A2(
-				_elm_lang$core$Basics_ops['++'],
-				'/api/cotonomas?cotonoma_id=',
-				_elm_lang$core$Basics$toString(_p0._0.id));
-		}
-	}();
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$App_Messages$CotonomasFetched,
-		A2(
-			_elm_lang$http$Http$get,
-			url,
-			_elm_lang$core$Json_Decode$list(_user$project$App_Types$decodeCotonoma)));
+var _user$project$App_Commands$fetchSubCotonomas = function (maybeCotonoma) {
+	var _p0 = maybeCotonoma;
+	if (_p0.ctor === 'Nothing') {
+		return _elm_lang$core$Platform_Cmd$none;
+	} else {
+		return A2(
+			_elm_lang$http$Http$send,
+			_user$project$App_Messages$SubCotonomasFetched,
+			A2(
+				_elm_lang$http$Http$get,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/api/cotonomas?cotonoma_id=',
+					_elm_lang$core$Basics$toString(_p0._0.id)),
+				_elm_lang$core$Json_Decode$list(_user$project$App_Types$decodeCotonoma)));
+	}
 };
 var _user$project$App_Commands$fetchRecentCotonomas = A2(
 	_elm_lang$http$Http$send,
@@ -22045,7 +22042,7 @@ var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
 };
 
 var _user$project$App_Model$isNavigationEmpty = function (model) {
-	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && _elm_lang$core$List$isEmpty(model.cotonomas);
+	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && (_elm_lang$core$List$isEmpty(model.recentCotonomas) && _elm_lang$core$List$isEmpty(model.subCotonomas));
 };
 var _user$project$App_Model$initModel = F2(
 	function (seed, route) {
@@ -22069,8 +22066,8 @@ var _user$project$App_Model$initModel = F2(
 			profileModal: _user$project$Components_ProfileModal$initModel,
 			cotoModal: _user$project$Components_CotoModal$initModel,
 			recentCotonomas: {ctor: '[]'},
-			cotonomas: {ctor: '[]'},
 			cotonomasLoading: false,
+			subCotonomas: {ctor: '[]'},
 			timeline: _user$project$Components_Timeline_Model$initModel,
 			activeCotoId: _elm_lang$core$Maybe$Nothing,
 			cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel
@@ -22094,7 +22091,7 @@ var _user$project$App_Model$Model = function (a) {
 															return function (p) {
 																return function (q) {
 																	return function (r) {
-																		return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, confirmModal: i, signinModal: j, profileModal: k, cotoModal: l, recentCotonomas: m, cotonomas: n, cotonomasLoading: o, timeline: p, activeCotoId: q, cotonomaModal: r};
+																		return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, confirmModal: i, signinModal: j, profileModal: k, cotoModal: l, recentCotonomas: m, cotonomasLoading: n, subCotonomas: o, timeline: p, activeCotoId: q, cotonomaModal: r};
 																	};
 																};
 															};
@@ -22814,6 +22811,7 @@ var _user$project$App_Update$loadHome = function (model) {
 				cotonoma: _elm_lang$core$Maybe$Nothing,
 				members: {ctor: '[]'},
 				cotonomasLoading: true,
+				subCotonomas: {ctor: '[]'},
 				timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
 			}),
 		{
@@ -22822,11 +22820,7 @@ var _user$project$App_Update$loadHome = function (model) {
 			_1: {
 				ctor: '::',
 				_0: _user$project$App_Commands$fetchRecentCotonomas,
-				_1: {
-					ctor: '::',
-					_0: _user$project$App_Commands$fetchCotonomas(_elm_lang$core$Maybe$Nothing),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -22892,20 +22886,18 @@ var _user$project$App_Update$update = F2(
 							{cotonomasLoading: false}),
 						{ctor: '[]'});
 				}
-			case 'CotonomasFetched':
+			case 'SubCotonomasFetched':
 				if (_p1._0.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{cotonomas: _p1._0._0, cotonomasLoading: false}),
+							{subCotonomas: _p1._0._0}),
 						{ctor: '[]'});
 				} else {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{cotonomasLoading: false}),
+						model,
 						{ctor: '[]'});
 				}
 			case 'NavigationToggle':
@@ -22945,7 +22937,7 @@ var _user$project$App_Update$update = F2(
 							_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
 							_1: {
 								ctor: '::',
-								_0: _user$project$App_Commands$fetchCotonomas(
+								_0: _user$project$App_Commands$fetchSubCotonomas(
 									_elm_lang$core$Maybe$Just(_p4)),
 								_1: {ctor: '[]'}
 							}
@@ -23216,8 +23208,12 @@ var _user$project$App_Update$update = F2(
 						}),
 					_p20.asCotonoma ? {
 						ctor: '::',
-						_0: _user$project$App_Commands$fetchCotonomas(model.cotonoma),
-						_1: {ctor: '[]'}
+						_0: _user$project$App_Commands$fetchRecentCotonomas,
+						_1: {
+							ctor: '::',
+							_0: _user$project$App_Commands$fetchSubCotonomas(model.cotonoma),
+							_1: {ctor: '[]'}
+						}
 					} : {ctor: '[]'});
 			case 'CotoDeleted':
 				return A2(
@@ -23264,11 +23260,18 @@ var _user$project$App_Update$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								newModel,
 								{cotonomasLoading: true}),
-							{
-								ctor: '::',
-								_0: _user$project$App_Commands$fetchCotonomas(model.cotonoma),
-								_1: commands
-							});
+							A2(
+								_elm_lang$core$List$append,
+								{
+									ctor: '::',
+									_0: _user$project$App_Commands$fetchRecentCotonomas,
+									_1: {
+										ctor: '::',
+										_0: _user$project$App_Commands$fetchSubCotonomas(model.cotonoma),
+										_1: {ctor: '[]'}
+									}
+								},
+								commands));
 					} else {
 						return A2(_elm_lang$core$Platform_Cmd_ops['!'], newModel, commands);
 					}
@@ -23654,6 +23657,35 @@ var _user$project$Components_Navigation$recentCotonomasNav = function (cotonomas
 			}
 		});
 };
+var _user$project$Components_Navigation$subCotonomasNav = function (cotonomas) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('sub'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('navigation-title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Sub'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Components_Cotonomas$view(cotonomas),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Components_Navigation$cotonomaNav = F2(
 	function (members, cotonoma) {
 		return A2(
@@ -23804,8 +23836,15 @@ var _user$project$Components_Navigation$view = function (model) {
 				}(),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Components_Navigation$recentCotonomasNav(model.recentCotonomas),
-					_1: {ctor: '[]'}
+					_0: (!_elm_lang$core$List$isEmpty(model.subCotonomas)) ? _user$project$Components_Navigation$subCotonomasNav(model.subCotonomas) : A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Components_Navigation$recentCotonomasNav(model.recentCotonomas),
+						_1: {ctor: '[]'}
+					}
 				}
 			}),
 		_1: {ctor: '[]'}
@@ -25127,7 +25166,7 @@ var _user$project$Main$Flags = function (a) {
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

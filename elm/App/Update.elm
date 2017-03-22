@@ -9,7 +9,12 @@ import App.Types exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Routing exposing (parseLocation)
-import App.Commands exposing (fetchRecentCotonomas, fetchCotonomas, fetchCotonoma, deleteCoto)
+import App.Commands exposing 
+    ( fetchRecentCotonomas
+    , fetchSubCotonomas
+    , fetchCotonoma
+    , deleteCoto
+    )
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -60,14 +65,11 @@ update msg model =
         RecentCotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } ! []
             
-        CotonomasFetched (Ok cotonomas) ->
-            { model 
-            | cotonomas = cotonomas
-            , cotonomasLoading = False 
-            } ! []
+        SubCotonomasFetched (Ok cotonomas) ->
+            { model | subCotonomas = cotonomas } ! []
             
-        CotonomasFetched (Err _) ->
-            { model | cotonomasLoading = False } ! []
+        SubCotonomasFetched (Err _) ->
+            model ! []
             
         NavigationToggle ->
             { model 
@@ -95,7 +97,7 @@ update msg model =
                 , timeline = timeline
                 } ! 
                     [ Cmd.map TimelineMsg cmd
-                    , fetchCotonomas (Just cotonoma)
+                    , fetchSubCotonomas (Just cotonoma)
                     ]
             
         CotonomaFetched (Err _) ->
@@ -235,7 +237,12 @@ update msg model =
                     | posts = posts |> 
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
-                } ! (if coto.asCotonoma then [ fetchCotonomas model.cotonoma ] else []) 
+                } ! 
+                    (if coto.asCotonoma then 
+                        [ fetchRecentCotonomas 
+                        , fetchSubCotonomas model.cotonoma 
+                        ] 
+                     else []) 
                 
         CotoDeleted _ ->
             model ! []
@@ -266,7 +273,11 @@ update msg model =
                         case subMsg of
                             Components.CotonomaModal.Messages.Posted (Ok _) ->
                                 { newModel | cotonomasLoading = True } 
-                                    ! ((fetchCotonomas model.cotonoma) :: commands)
+                                    ! List.append
+                                        [ fetchRecentCotonomas
+                                        , fetchSubCotonomas model.cotonoma
+                                        ]
+                                        commands
                             _ -> 
                                 newModel ! commands
                                 
@@ -285,11 +296,11 @@ loadHome model =
     | cotonoma = Nothing
     , members = []
     , cotonomasLoading = True
+    , subCotonomas = []
     , timeline = setLoading model.timeline 
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
-        , fetchCotonomas Nothing
         ]
         
 

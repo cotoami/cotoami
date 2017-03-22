@@ -27,17 +27,15 @@ fetchRecentCotonomas =
         <| Decode.list decodeCotonoma
         
 
-fetchCotonomas : Maybe Cotonoma -> Cmd Msg
-fetchCotonomas maybeCotonoma =
-    let
-        url = case maybeCotonoma of
-            Nothing -> "/api/cotonomas"
-            Just cotonoma -> "/api/cotonomas?cotonoma_id=" ++ (toString cotonoma.id)
-    in
-        Http.send CotonomasFetched 
-            <| Http.get url
-            <| Decode.list decodeCotonoma
-    
+fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
+fetchSubCotonomas maybeCotonoma =
+    case maybeCotonoma of
+        Nothing -> Cmd.none
+        Just cotonoma -> 
+            Http.send SubCotonomasFetched 
+                <| Http.get ("/api/cotonomas?cotonoma_id=" ++ (toString cotonoma.id))
+                <| Decode.list decodeCotonoma
+
 
 fetchAmishi : (Result Http.Error Amishi -> msg) -> String -> Cmd msg
 fetchAmishi msg email =

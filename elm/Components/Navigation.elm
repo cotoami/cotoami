@@ -15,6 +15,10 @@ view model =
         [ case model.cotonoma of
             Just cotonoma -> cotonomaNav model.members cotonoma
             Nothing -> div [] []
+        , if not (List.isEmpty model.subCotonomas) then
+            subCotonomasNav model.subCotonomas
+          else
+            div [] []
         , recentCotonomasNav model.recentCotonomas
         ]
     ]
@@ -44,6 +48,14 @@ cotonomaNav members cotonoma =
             )
         ]
     
+
+subCotonomasNav : List Cotonoma -> Html Msg
+subCotonomasNav cotonomas =
+    div [ class "sub" ]
+        [ div [ class "navigation-title" ] [ text "Sub" ]
+        , Components.Cotonomas.view cotonomas
+        ]
+
 
 recentCotonomasNav : List Cotonoma -> Html Msg
 recentCotonomasNav cotonomas =

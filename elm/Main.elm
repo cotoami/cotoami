@@ -6,7 +6,7 @@ import App.Routing exposing (parseLocation)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Update exposing (update, loadHome, loadCotonoma)
-import App.Commands exposing (fetchSession, fetchCotonomas)
+import App.Commands exposing (fetchSession)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
 

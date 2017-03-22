@@ -19,7 +19,7 @@ type Msg
     | NavigationToggle
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
     | KeyDown KeyCode
