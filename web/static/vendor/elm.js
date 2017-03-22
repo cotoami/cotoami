@@ -24679,6 +24679,7 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 	});
 
 var _user$project$App_View$view = function (model) {
+	var isNavigationEmpty = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && _elm_lang$core$List$isEmpty(model.cotonomas);
 	var anyAnonymousCotos = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.posts));
 	return A2(
 		_elm_lang$html$Html$div,
@@ -24723,18 +24724,10 @@ var _user$project$App_View$view = function (model) {
 											_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.navigationToggled},
 											_1: {
 												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'empty',
-													_1: _elm_lang$core$List$isEmpty(model.cotonomas)
-												},
+												_0: {ctor: '_Tuple2', _0: 'empty', _1: isNavigationEmpty},
 												_1: {
 													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'notEmpty',
-														_1: !_elm_lang$core$List$isEmpty(model.cotonomas)
-													},
+													_0: {ctor: '_Tuple2', _0: 'notEmpty', _1: !isNavigationEmpty},
 													_1: {
 														ctor: '::',
 														_0: {ctor: '_Tuple2', _0: 'animated', _1: model.navigationToggled},
