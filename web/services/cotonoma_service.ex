@@ -69,18 +69,22 @@ defmodule Cotoami.CotonomaService do
   end
   
   defp append_gravatar_profile_to_owner(cotonoma) do
-    %{cotonoma | :owner => AmishiService.append_gravatar_profile(cotonoma.owner)}
+    if cotonoma do
+      %{cotonoma | :owner => AmishiService.append_gravatar_profile(cotonoma.owner)}
+    else
+      nil
+    end
   end
   
   def get(id, amishi_id) do
     base_query_for_amishi(amishi_id) 
-    |> Repo.get!(id)
+    |> Repo.get(id)
     |> append_gravatar_profile_to_owner()
   end
   
   def get_by_key(key, amishi_id) do
     base_query_for_amishi(amishi_id) 
-    |> Repo.get_by!(key: key)
+    |> Repo.get_by(key: key)
     |> append_gravatar_profile_to_owner()
   end
   
@@ -94,6 +98,7 @@ defmodule Cotoami.CotonomaService do
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
     base_query_for_amishi(amishi_id)
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
+    |> limit(100)
     |> Repo.all()
     |> Enum.map(&append_gravatar_profile_to_owner(&1))
   end

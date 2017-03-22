@@ -28,10 +28,12 @@ defmodule Cotoami.CotoController do
         
         {coto, cotonoma} = CotoService.create!(cotonoma_id, amishi.id, content)
         
-        %{coto | 
-          :posted_in => cotonoma,
-          :amishi => AmishiService.append_gravatar_profile(amishi)
-        } |> broadcast_post(cotonoma.key, clientId)
+        if cotonoma do
+          %{coto | 
+            :posted_in => cotonoma,
+            :amishi => AmishiService.append_gravatar_profile(amishi)
+          } |> broadcast_post(cotonoma.key, clientId)
+        end
         
         render(conn, "created.json", coto: coto, postId: postId)
         

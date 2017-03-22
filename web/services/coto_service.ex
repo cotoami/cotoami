@@ -5,15 +5,20 @@ defmodule Cotoami.CotoService do
   alias Cotoami.Coto
   alias Cotoami.CotonomaService
   
-  def create!(cotonoma_id, amishi_id, content) do
-    cotonoma = CotonomaService.get(cotonoma_id, amishi_id)
-    if !cotonoma do
-      raise "Cotonoma not found: #{cotonoma_id}"
-    end
+  def create!(cotonoma_id_nillable, amishi_id, content) do
+    cotonoma = 
+      case cotonoma_id_nillable do
+        nil -> nil
+        cotonoma_id ->
+          case CotonomaService.get(cotonoma_id, amishi_id) do
+            nil -> raise "Cotonoma not found: #{cotonoma_id}"
+            cotonoma -> cotonoma
+          end
+      end
     
     coto = 
       Coto.changeset(%Coto{}, %{
-        posted_in_id: cotonoma_id,
+        posted_in_id: cotonoma_id_nillable,
         amishi_id: amishi_id,
         content: content,
         as_cotonoma: false
