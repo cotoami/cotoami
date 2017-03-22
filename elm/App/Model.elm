@@ -20,6 +20,7 @@ type alias Model =
     , navigationOpen : Bool
     , session : Maybe App.Types.Session
     , cotonoma : Maybe App.Types.Cotonoma
+    , members : List App.Types.Amishi
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -44,6 +45,7 @@ initModel seed route =
         , navigationOpen = False
         , session = Nothing
         , cotonoma = Nothing
+        , members = []
         , confirmModal = Components.ConfirmModal.Model.initModel
         , signinModal = Components.SigninModal.initModel
         , profileModal = Components.ProfileModal.initModel

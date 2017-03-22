@@ -69,7 +69,7 @@ update msg model =
         HomeClick ->
             changeLocationToHome model
             
-        CotonomaFetched (Ok (cotonoma, posts)) ->
+        CotonomaFetched (Ok (cotonoma, members, posts)) ->
             let
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
@@ -81,6 +81,7 @@ update msg model =
             in
                 { model 
                 | cotonoma = Just cotonoma
+                , members = members
                 , navigationOpen = False
                 , timeline = timeline
                 } ! 
@@ -273,6 +274,7 @@ loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model 
     | cotonoma = Nothing
+    , members = []
     , timeline = setLoading model.timeline 
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
@@ -289,6 +291,7 @@ loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
     { model 
     | cotonoma = Nothing
+    , members = []
     , timeline = setLoading model.timeline 
     } ! [ fetchCotonoma key ]
 

@@ -3,7 +3,7 @@ module App.Messages exposing (Msg(..))
 import Http
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.Types exposing (Session, Coto, Cotonoma, CotonomaKey)
+import App.Types exposing (Session, Amishi, Coto, Cotonoma, CotonomaKey)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -20,7 +20,7 @@ type Msg
     | SessionFetched (Result Http.Error Session)
     | CotonomasFetched (Result Http.Error (List Cotonoma))
     | HomeClick
-    | CotonomaFetched (Result Http.Error (Cotonoma, List Post))
+    | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
     | KeyDown KeyCode
     | KeyUp KeyCode
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg

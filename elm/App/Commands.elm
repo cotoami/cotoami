@@ -46,8 +46,9 @@ fetchCotonoma key =
     in
         Http.send CotonomaFetched
             <| Http.get url
-            <| Decode.map2 (,)
+            <| Decode.map3 (,,)
                 (Decode.field "cotonoma" decodeCotonoma)
+                (Decode.field "members" (Decode.list decodeAmishi))
                 (Decode.field "cotos" (Decode.list decodePost))
 
 
