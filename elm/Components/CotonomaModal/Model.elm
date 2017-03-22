@@ -27,6 +27,16 @@ initModel =
     }
 
 
+setDefaultMembers : Session -> List Amishi -> Model -> Model
+setDefaultMembers session amishis model =
+    List.foldl
+        (\amishi model -> 
+          addMember session (SignedUp amishi) model
+        )
+        model
+        amishis
+    
+
 addMember : Session -> Member -> Model -> Model
 addMember session member model =
     let

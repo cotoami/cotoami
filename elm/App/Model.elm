@@ -3,7 +3,7 @@ module App.Model exposing (..)
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing (Route, CotonomaKey)
+import App.Types exposing (..)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
@@ -18,16 +18,16 @@ type alias Model =
     , ctrlDown : Bool
     , navigationToggled : Bool
     , navigationOpen : Bool
-    , session : Maybe App.Types.Session
-    , cotonoma : Maybe App.Types.Cotonoma
-    , members : List App.Types.Amishi
+    , session : Maybe Session
+    , cotonoma : Maybe Cotonoma
+    , members : List Amishi
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
     , cotoModal : Components.CotoModal.Model
-    , recentCotonomas : List App.Types.Cotonoma
+    , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
-    , subCotonomas : List App.Types.Cotonoma
+    , subCotonomas : List Cotonoma
     , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
     , cotonomaModal : Components.CotonomaModal.Model.Model
@@ -65,3 +65,13 @@ isNavigationEmpty model =
     (isNothing model.cotonoma)
         && (List.isEmpty model.recentCotonomas) 
         && (List.isEmpty model.subCotonomas)
+        
+        
+getOwnerAndMembers : Model -> List Amishi
+getOwnerAndMembers model =
+    case model.cotonoma of
+        Nothing -> []
+        Just cotonoma ->
+            case cotonoma.owner of
+                Nothing -> model.members
+                Just owner -> owner :: model.members

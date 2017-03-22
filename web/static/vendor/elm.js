@@ -22041,18 +22041,46 @@ var _user$project$Components_CotonomaModal_Model$NotYetSignedUp = function (a) {
 var _user$project$Components_CotonomaModal_Model$SignedUp = function (a) {
 	return {ctor: 'SignedUp', _0: a};
 };
+var _user$project$Components_CotonomaModal_Model$setDefaultMembers = F3(
+	function (session, amishis, model) {
+		return A3(
+			_elm_lang$core$List$foldl,
+			F2(
+				function (amishi, model) {
+					return A3(
+						_user$project$Components_CotonomaModal_Model$addMember,
+						session,
+						_user$project$Components_CotonomaModal_Model$SignedUp(amishi),
+						model);
+				}),
+			model,
+			amishis);
+	});
 
+var _user$project$App_Model$getOwnerAndMembers = function (model) {
+	var _p0 = model.cotonoma;
+	if (_p0.ctor === 'Nothing') {
+		return {ctor: '[]'};
+	} else {
+		var _p1 = _p0._0.owner;
+		if (_p1.ctor === 'Nothing') {
+			return model.members;
+		} else {
+			return {ctor: '::', _0: _p1._0, _1: model.members};
+		}
+	}
+};
 var _user$project$App_Model$isNavigationEmpty = function (model) {
 	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && (_elm_lang$core$List$isEmpty(model.recentCotonomas) && _elm_lang$core$List$isEmpty(model.subCotonomas));
 };
 var _user$project$App_Model$initModel = F2(
 	function (seed, route) {
-		var _p0 = A2(
+		var _p2 = A2(
 			_mgold$elm_random_pcg$Random_Pcg$step,
 			_danyx23$elm_uuid$Uuid$uuidGenerator,
 			_mgold$elm_random_pcg$Random_Pcg$initialSeed(seed));
-		var newUuid = _p0._0;
-		var newSeed = _p0._1;
+		var newUuid = _p2._0;
+		var newSeed = _p2._1;
 		return {
 			clientId: _danyx23$elm_uuid$Uuid$toString(newUuid),
 			route: route,
@@ -23222,7 +23250,18 @@ var _user$project$App_Update$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'OpenCotonomaModal':
-				var cotonomaModal = model.cotonomaModal;
+				var cotonomaModal = function () {
+					var _p21 = model.session;
+					if (_p21.ctor === 'Nothing') {
+						return model.cotonomaModal;
+					} else {
+						return A3(
+							_user$project$Components_CotonomaModal_Model$setDefaultMembers,
+							_p21._0,
+							_user$project$App_Model$getOwnerAndMembers(model),
+							model.cotonomaModal);
+					}
+				}();
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -23234,18 +23273,18 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'CotonomaModalMsg':
-				var _p24 = _p1._0;
-				var _p21 = model.session;
-				if (_p21.ctor === 'Nothing') {
+				var _p25 = _p1._0;
+				var _p22 = model.session;
+				if (_p22.ctor === 'Nothing') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				} else {
-					var _p22 = A6(_user$project$Components_CotonomaModal_Update$update, model.clientId, _p21._0, model.cotonoma, _p24, model.timeline, model.cotonomaModal);
-					var cotonomaModal = _p22._0;
-					var timeline = _p22._1;
-					var cmd = _p22._2;
+					var _p23 = A6(_user$project$Components_CotonomaModal_Update$update, model.clientId, _p22._0, model.cotonoma, _p25, model.timeline, model.cotonomaModal);
+					var cotonomaModal = _p23._0;
+					var timeline = _p23._1;
+					var cmd = _p23._2;
 					var newModel = _elm_lang$core$Native_Utils.update(
 						model,
 						{cotonomaModal: cotonomaModal, timeline: timeline});
@@ -23254,8 +23293,8 @@ var _user$project$App_Update$update = F2(
 						_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotonomaModalMsg, cmd),
 						_1: {ctor: '[]'}
 					};
-					var _p23 = _p24;
-					if ((_p23.ctor === 'Posted') && (_p23._0.ctor === 'Ok')) {
+					var _p24 = _p25;
+					if ((_p24.ctor === 'Posted') && (_p24._0.ctor === 'Ok')) {
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(

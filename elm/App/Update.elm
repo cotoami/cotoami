@@ -24,6 +24,7 @@ import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
+import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 
@@ -249,7 +250,15 @@ update msg model =
             
         OpenCotonomaModal ->
             let
-                cotonomaModal = model.cotonomaModal
+                cotonomaModal = 
+                    case model.session of
+                        Nothing -> 
+                            model.cotonomaModal
+                        Just session -> 
+                            setDefaultMembers 
+                                session 
+                                (getOwnerAndMembers model) 
+                                model.cotonomaModal
             in
                 { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
