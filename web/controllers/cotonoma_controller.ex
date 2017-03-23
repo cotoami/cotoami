@@ -28,15 +28,18 @@ defmodule Cotoami.CotonomaController do
     {{coto, cotonoma}, posted_in} = 
       CotonomaService.create!(cotonoma_id, amishi.id, name, members)
       
+    full_fledged_coto = %{coto | 
+      :posted_in => posted_in,
+      :amishi => AmishiService.append_gravatar_profile(amishi),
+      :cotonoma => cotonoma
+    }
+      
     if posted_in do
-      %{coto | 
-        :posted_in => posted_in,
-        :amishi => AmishiService.append_gravatar_profile(amishi)
-      } |> broadcast_post(posted_in.key, clientId)
+      full_fledged_coto |> broadcast_post(posted_in.key, clientId)
     end
   
     render(conn, CotoView, "created.json", 
-      coto: %{coto | :cotonoma => cotonoma}, 
+      coto: full_fledged_coto, 
       postId: postId
     )
   end
