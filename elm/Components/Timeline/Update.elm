@@ -72,7 +72,7 @@ update clientId maybeCotonoma ctrlDown msg model =
             model ! []
     
 
-handlePushedPost : String -> Payload Post -> Model -> (  Model, Cmd Msg )
+handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
         { model | posts = payload.body :: model.posts } 
