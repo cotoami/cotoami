@@ -22053,7 +22053,11 @@ var _user$project$Components_CotonomaModal_Model$setDefaultMembers = F3(
 						_user$project$Components_CotonomaModal_Model$SignedUp(amishi),
 						model);
 				}),
-			model,
+			_elm_lang$core$Native_Utils.update(
+				model,
+				{
+					members: {ctor: '[]'}
+				}),
 			amishis);
 	});
 

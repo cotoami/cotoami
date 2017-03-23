@@ -33,7 +33,7 @@ setDefaultMembers session amishis model =
         (\amishi model -> 
           addMember session (SignedUp amishi) model
         )
-        model
+        { model | members = [] }
         amishis
     
 
