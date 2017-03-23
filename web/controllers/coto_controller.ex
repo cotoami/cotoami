@@ -26,13 +26,13 @@ defmodule Cotoami.CotoController do
         content = coto_params["content"]
         postId = coto_params["postId"]
         
-        {coto, cotonoma} = CotoService.create!(cotonoma_id, amishi.id, content)
+        {coto, posted_in} = CotoService.create!(cotonoma_id, amishi.id, content)
         
-        if cotonoma do
+        if posted_in do
           %{coto | 
-            :posted_in => cotonoma,
+            :posted_in => posted_in,
             :amishi => AmishiService.append_gravatar_profile(amishi)
-          } |> broadcast_post(cotonoma.key, clientId)
+          } |> broadcast_post(posted_in.key, clientId)
         end
         
         render(conn, "created.json", coto: coto, postId: postId)
@@ -41,17 +41,6 @@ defmodule Cotoami.CotoController do
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
     end
-  end
-  
-  defp broadcast_post(coto, cotonoma_key, clientId) do
-    Cotoami.Endpoint.broadcast(
-      "cotonomas:#{cotonoma_key}", 
-      "post",
-      %{
-        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json"),
-        clientId: clientId
-      }
-    )
   end
   
   def delete(conn, %{"id" => id}) do

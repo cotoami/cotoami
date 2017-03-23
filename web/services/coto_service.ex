@@ -6,7 +6,7 @@ defmodule Cotoami.CotoService do
   alias Cotoami.CotonomaService
   
   def create!(cotonoma_id_nillable, amishi_id, content) do
-    cotonoma = 
+    posted_in = 
       CotonomaService.check_permission!(
         cotonoma_id_nillable, amishi_id)
     coto = 
@@ -17,7 +17,7 @@ defmodule Cotoami.CotoService do
         as_cotonoma: false
       }) 
       |> Repo.insert!
-    {coto, cotonoma}
+    {coto, posted_in}
   end
   
   def get_cotos_by_amishi(amishi_id) do

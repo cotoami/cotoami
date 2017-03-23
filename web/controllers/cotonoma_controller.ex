@@ -3,6 +3,7 @@ defmodule Cotoami.CotonomaController do
   require Logger
   alias Cotoami.CotonomaService
   alias Cotoami.CotoView
+  alias Cotoami.AmishiService
   
   plug :scrub_params, "cotonoma" when action in [:create]
   
@@ -18,12 +19,22 @@ defmodule Cotoami.CotonomaController do
     render(conn, "index.json", %{rows: cotonomas})
   end
   
-  def create(conn, %{"cotonoma" => cotonoma_params}, amishi) do
+  def create(conn, %{"clientId" => clientId, "cotonoma" => cotonoma_params}, amishi) do
     cotonoma_id = cotonoma_params["cotonoma_id"]
     name = cotonoma_params["name"]
     members = cotonoma_params["members"] || []
     postId = cotonoma_params["postId"]
-    {coto, cotonoma} = CotonomaService.create!(cotonoma_id, amishi.id, name, members)
+    
+    {{coto, cotonoma}, posted_in} = 
+      CotonomaService.create!(cotonoma_id, amishi.id, name, members)
+      
+    if posted_in do
+      %{coto | 
+        :posted_in => posted_in,
+        :amishi => AmishiService.append_gravatar_profile(amishi)
+      } |> broadcast_post(posted_in.key, clientId)
+    end
+  
     render(conn, CotoView, "created.json", 
       coto: %{coto | :cotonoma => cotonoma}, 
       postId: postId

@@ -36,6 +36,7 @@ defmodule Cotoami.Web do
 
       import Cotoami.Router.Helpers
       import Cotoami.Gettext
+      import Cotoami.ControllerHelpers
     end
   end
 

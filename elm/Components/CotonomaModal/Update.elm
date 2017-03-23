@@ -76,7 +76,12 @@ update clientId session maybeCotonoma msg timeline model =
                   }
                 , Cmd.batch
                     [ scrollToBottom NoOp
-                    , postCotonoma maybeCotonoma postId model.members model.name 
+                    , postCotonoma 
+                        clientId 
+                        maybeCotonoma 
+                        postId 
+                        model.members 
+                        model.name 
                     ]
                 )
                 

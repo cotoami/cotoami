@@ -8,7 +8,7 @@ defmodule Cotoami.CotonomaService do
   alias Cotoami.AmishiService
   
   def create!(cotonoma_id_nillable, amishi_id, name, member_params) do
-    check_permission!(cotonoma_id_nillable, amishi_id)
+    posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
         coto = 
@@ -34,7 +34,7 @@ defmodule Cotoami.CotonomaService do
           
         {coto, cotonoma}
       end)
-    {coto, cotonoma}
+    {{coto, cotonoma}, posted_in}
   end
   
   def add_member(cotonoma, member_param) do

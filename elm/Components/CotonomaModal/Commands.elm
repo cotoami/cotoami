@@ -8,19 +8,20 @@ import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 
 
-postCotonoma : Maybe Cotonoma -> Int -> List Member -> String -> Cmd Msg
-postCotonoma maybeCotonoma postId members name =
+postCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Cmd Msg
+postCotonoma clientId maybeCotonoma postId members name =
     Http.send Posted 
         <| Http.post 
             "/api/cotonomas" 
-            (Http.jsonBody (encodeCotonoma maybeCotonoma postId members name)) 
+            (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId members name)) 
             decodePost
 
     
-encodeCotonoma : Maybe Cotonoma -> Int -> List Member -> String -> Encode.Value
-encodeCotonoma maybeCotonoma postId members name =
+encodeCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Encode.Value
+encodeCotonoma clientId maybeCotonoma postId members name =
     Encode.object 
-        [ ( "cotonoma", 
+        [ ( "clientId", Encode.string clientId )
+        , ( "cotonoma", 
             (Encode.object 
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
