@@ -223,6 +223,13 @@ update msg model =
                         
                     Components.Timeline.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key model
+                        
+                    Components.Timeline.Messages.CotonomaPushed post ->
+                        { model | timeline = timeline } ! 
+                            [ Cmd.map TimelineMsg cmd
+                            , fetchRecentCotonomas
+                            , fetchSubCotonomas model.cotonoma
+                            ]
 
                     _ -> 
                         { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]

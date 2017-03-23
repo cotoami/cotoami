@@ -20,3 +20,4 @@ type Msg
     | PostOpen Post
     | CotonomaClick String
     | PostPushed Value
+    | CotonomaPushed Post
