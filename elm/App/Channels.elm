@@ -37,6 +37,7 @@ decodePayload bodyName bodyDecoder =
 
 type alias PresenceEntry = ( String, List ( String, List ( String, Int ) ) )
 
+
 decodePresenceEntries : Decode.Decoder (List PresenceEntry)
 decodePresenceEntries =
     Decode.keyValuePairs          -- Amishi ID
