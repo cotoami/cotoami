@@ -102,4 +102,12 @@ defmodule Cotoami.RedisService do
   def cotonoma_channel_key(cotonoma_id), do: "cotonoma:" <> cotonoma_id
   def cotonoma_joined_key(cotonoma_id), do: cotonoma_channel_key(cotonoma_id) <> ":joined"
   
+  def join_cotonoma(cotonoma_id, amishi_id) do
+    Cotoami.Redix.command!(["SADD", cotonoma_joined_key(cotonoma_id), amishi_id])
+  end
+  
+  def leave_cotonoma(cotonoma_id, amishi_id) do
+    Cotoami.Redix.command!(["SREM", cotonoma_joined_key(cotonoma_id), amishi_id])
+  end
+  
 end
