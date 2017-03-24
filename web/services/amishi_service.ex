@@ -17,7 +17,6 @@ defmodule Cotoami.AmishiService do
   
   def append_gravatar_profile(amishi) do
     gravatar_profile = get_gravatar_profile(amishi.email) || %{}
-    Logger.info "gravatar_profile: #{inspect gravatar_profile}"
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
       display_name: 
@@ -60,8 +59,9 @@ defmodule Cotoami.AmishiService do
   
   defp do_get_gravatar_profile(email) do
     url = @gravatar_url_prefix <> email_hash(email) <> ".json"
-    Logger.info "Gravatar request: #{email} - #{url}"
+    Logger.info "Gravatar request <#{email}> - #{url}"
     response = HTTPotion.get url, [headers: ["User-Agent": @gravatar_user_agent]]
+    Logger.info "Gravatar response <#{email}> - #{inspect response}"
     case response do
       %{status_code: 200, body: body} -> body
       _ -> nil
