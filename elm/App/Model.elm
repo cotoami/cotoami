@@ -1,5 +1,6 @@
 module App.Model exposing (..)
 
+import Set exposing (Set, fromList)
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
@@ -21,6 +22,7 @@ type alias Model =
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
     , members : List Amishi
+    , memberPresence : Set Int
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -47,6 +49,7 @@ initModel seed route =
         , session = Nothing
         , cotonoma = Nothing
         , members = []
+        , memberPresence = fromList []
         , confirmModal = Components.ConfirmModal.Model.initModel
         , signinModal = Components.SigninModal.initModel
         , profileModal = Components.ProfileModal.initModel
