@@ -22,7 +22,7 @@ type alias Model =
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
     , members : List Amishi
-    , memberPresence : Set Int
+    , memberPresences : Set Int
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -49,7 +49,7 @@ initModel seed route =
         , session = Nothing
         , cotonoma = Nothing
         , members = []
-        , memberPresence = fromList []
+        , memberPresences = fromList []
         , confirmModal = Components.ConfirmModal.Model.initModel
         , signinModal = Components.SigninModal.initModel
         , profileModal = Components.ProfileModal.initModel

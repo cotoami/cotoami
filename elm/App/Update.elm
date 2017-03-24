@@ -303,17 +303,17 @@ update msg model =
             changeLocationToCotonoma key model
             
         CotonomaPresenceState payload ->
-            { model | memberPresence = decodePresenceState payload } ! []
+            { model | memberPresences = decodePresenceState payload } ! []
             
         CotonomaPresenceDiff payload ->
             let
-                oldPresence = model.memberPresence
+                oldPresences = model.memberPresences
                 presenceDiff = decodePresenceDiff payload
-                newPresence =
-                    diff oldPresence (Tuple.second presenceDiff)
+                newPresences =
+                    diff oldPresences (Tuple.second presenceDiff)
                         |> union (Tuple.first presenceDiff)
             in
-                { model | memberPresence = newPresence } ! []
+                { model | memberPresences = newPresences } ! []
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )

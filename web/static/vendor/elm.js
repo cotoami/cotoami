@@ -22308,7 +22308,7 @@ var _user$project$App_Model$initModel = F2(
 			session: _elm_lang$core$Maybe$Nothing,
 			cotonoma: _elm_lang$core$Maybe$Nothing,
 			members: {ctor: '[]'},
-			memberPresence: _elm_lang$core$Set$fromList(
+			memberPresences: _elm_lang$core$Set$fromList(
 				{ctor: '[]'}),
 			confirmModal: _user$project$Components_ConfirmModal_Model$initModel,
 			signinModal: _user$project$Components_SigninModal$initModel,
@@ -22341,7 +22341,7 @@ var _user$project$App_Model$Model = function (a) {
 																return function (q) {
 																	return function (r) {
 																		return function (s) {
-																			return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresence: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, activeCotoId: r, cotonomaModal: s};
+																			return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, activeCotoId: r, cotonomaModal: s};
 																		};
 																	};
 																};
@@ -23591,24 +23591,24 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							memberPresence: _user$project$App_Channels$decodePresenceState(_p1._0)
+							memberPresences: _user$project$App_Channels$decodePresenceState(_p1._0)
 						}),
 					{ctor: '[]'});
 			default:
 				var presenceDiff = _user$project$App_Channels$decodePresenceDiff(_p1._0);
-				var oldPresence = model.memberPresence;
-				var newPresence = A2(
+				var oldPresences = model.memberPresences;
+				var newPresences = A2(
 					_elm_lang$core$Set$union,
 					_elm_lang$core$Tuple$first(presenceDiff),
 					A2(
 						_elm_lang$core$Set$diff,
-						oldPresence,
+						oldPresences,
 						_elm_lang$core$Tuple$second(presenceDiff)));
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{memberPresence: newPresence}),
+						{memberPresences: newPresences}),
 					{ctor: '[]'});
 		}
 	});
@@ -24019,7 +24019,7 @@ var _user$project$Components_Navigation$subCotonomasNav = function (cotonomas) {
 		});
 };
 var _user$project$Components_Navigation$cotonomaNav = F3(
-	function (memberPresence, members, cotonoma) {
+	function (memberPresences, members, cotonoma) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24068,7 +24068,7 @@ var _user$project$Components_Navigation$cotonomaNav = F3(
 													_0: {
 														ctor: '_Tuple2',
 														_0: 'online',
-														_1: A2(_elm_lang$core$Set$member, _p1.id, memberPresence)
+														_1: A2(_elm_lang$core$Set$member, _p1.id, memberPresences)
 													},
 													_1: {ctor: '[]'}
 												}
@@ -24138,7 +24138,7 @@ var _user$project$Components_Navigation$cotonomaNav = F3(
 															_0: {
 																ctor: '_Tuple2',
 																_0: 'online',
-																_1: A2(_elm_lang$core$Set$member, member.id, memberPresence)
+																_1: A2(_elm_lang$core$Set$member, member.id, memberPresences)
 															},
 															_1: {ctor: '[]'}
 														}
@@ -24204,7 +24204,7 @@ var _user$project$Components_Navigation$view = function (model) {
 							{ctor: '[]'},
 							{ctor: '[]'});
 					} else {
-						return A3(_user$project$Components_Navigation$cotonomaNav, model.memberPresence, model.members, _p2._0);
+						return A3(_user$project$Components_Navigation$cotonomaNav, model.memberPresences, model.members, _p2._0);
 					}
 				}(),
 				_1: {

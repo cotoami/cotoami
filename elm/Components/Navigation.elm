@@ -15,7 +15,7 @@ view model =
     [ div [ id "navigation-content" ]
         [ case model.cotonoma of
             Nothing -> div [] []
-            Just cotonoma -> cotonomaNav model.memberPresence model.members cotonoma
+            Just cotonoma -> cotonomaNav model.memberPresences model.members cotonoma
         , if not (List.isEmpty model.subCotonomas) then
             subCotonomasNav model.subCotonomas
           else
@@ -26,7 +26,7 @@ view model =
 
 
 cotonomaNav : Set.Set Int -> List Amishi -> Cotonoma -> Html Msg
-cotonomaNav memberPresence members cotonoma =
+cotonomaNav memberPresences members cotonoma =
     div [ class "members" ] 
         [ div [ class "navigation-title" ] [ text "Members" ]
         , case cotonoma.owner of
@@ -36,7 +36,7 @@ cotonomaNav memberPresence members cotonoma =
                     [ classList
                         [ ( "member", True )
                         , ( "owner", True )
-                        , ( "online", Set.member owner.id memberPresence )
+                        , ( "online", Set.member owner.id memberPresences )
                         ]
                     ]
                     [ img [ class "avatar", src owner.avatarUrl ] []
@@ -51,7 +51,7 @@ cotonomaNav memberPresence members cotonoma =
                     , div 
                         [ classList
                             [ ( "member", True )
-                            , ( "online", Set.member member.id memberPresence )
+                            , ( "online", Set.member member.id memberPresences )
                             ]
                         ]
                         [ img [ class "avatar", src member.avatarUrl ] []
