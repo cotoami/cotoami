@@ -1,6 +1,6 @@
 module App.Model exposing (..)
 
-import Set exposing (Set, fromList)
+import Dict
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
@@ -22,7 +22,7 @@ type alias Model =
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
     , members : List Amishi
-    , memberPresences : Set Int
+    , memberPresences : MemberConnCounts
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -49,7 +49,7 @@ initModel seed route =
         , session = Nothing
         , cotonoma = Nothing
         , members = []
-        , memberPresences = fromList []
+        , memberPresences = Dict.empty
         , confirmModal = Components.ConfirmModal.Model.initModel
         , signinModal = Components.SigninModal.initModel
         , profileModal = Components.ProfileModal.initModel
@@ -62,6 +62,11 @@ initModel seed route =
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         }
 
+
+isPresent : Int -> Dict.Dict Int Int -> Bool
+isPresent amishiId memberPresences =
+    (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0
+    
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =

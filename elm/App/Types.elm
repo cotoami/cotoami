@@ -1,5 +1,6 @@
 module App.Types exposing (..)
 
+import Dict
 import Json.Decode as Decode
         
         
@@ -85,3 +86,6 @@ decodeCotonoma =
         (Decode.field "name" Decode.string)
         (Decode.field "coto_id" Decode.int)
         (Decode.maybe (Decode.field "owner" decodeAmishi))
+
+
+type alias MemberConnCounts = Dict.Dict Int Int

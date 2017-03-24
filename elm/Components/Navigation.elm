@@ -1,11 +1,10 @@
 module Components.Navigation exposing (..)
 
-import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
-import App.Types exposing (Cotonoma, Amishi)
-import App.Model exposing (Model)
+import App.Types exposing (Cotonoma, Amishi, MemberConnCounts)
+import App.Model exposing (Model, isPresent)
 import App.Messages exposing (Msg)
 import Components.Cotonomas
 
@@ -25,7 +24,7 @@ view model =
     ]
 
 
-cotonomaNav : Set.Set Int -> List Amishi -> Cotonoma -> Html Msg
+cotonomaNav : MemberConnCounts -> List Amishi -> Cotonoma -> Html Msg
 cotonomaNav memberPresences members cotonoma =
     div [ class "members" ] 
         [ div [ class "navigation-title" ] [ text "Members" ]
@@ -36,7 +35,7 @@ cotonomaNav memberPresences members cotonoma =
                     [ classList
                         [ ( "member", True )
                         , ( "owner", True )
-                        , ( "online", Set.member owner.id memberPresences )
+                        , ( "online", isPresent owner.id memberPresences )
                         ]
                     ]
                     [ img [ class "avatar", src owner.avatarUrl ] []
@@ -51,7 +50,7 @@ cotonomaNav memberPresences members cotonoma =
                     , div 
                         [ classList
                             [ ( "member", True )
-                            , ( "online", Set.member member.id memberPresences )
+                            , ( "online", isPresent member.id memberPresences )
                             ]
                         ]
                         [ img [ class "avatar", src member.avatarUrl ] []

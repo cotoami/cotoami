@@ -1,10 +1,10 @@
 module App.Channels exposing (..)
 
-import Set exposing (Set, fromList)
+import Dict
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
-import App.Types exposing (CotonomaKey)
+import App.Types exposing (CotonomaKey, MemberConnCounts)
 import App.Messages exposing (..)
 import Components.Timeline.Messages
 
@@ -47,24 +47,28 @@ decodePresenceEntries =
             (Decode.field "online_at" Decode.int)
 
 
-convertPresenceEntriesToIds : List PresenceEntry -> Set Int
-convertPresenceEntriesToIds entries =
+convertPresenceEntriesToDict : List PresenceEntry -> MemberConnCounts
+convertPresenceEntriesToDict entries =
     (List.map 
-        (\entry -> Tuple.first entry |> String.toInt |> Result.withDefault 0) 
+        (\entry -> 
+            ( Tuple.first entry |> String.toInt |> Result.withDefault 0
+            , Tuple.second entry |> List.length
+            )
+        ) 
         entries
-    ) |> fromList
+    ) |> Dict.fromList
 
 
-decodePresenceState : Value -> Set Int
+decodePresenceState : Value -> MemberConnCounts
 decodePresenceState payload =
     case Decode.decodeValue decodePresenceEntries payload of
         Ok decodedPayload ->
-            convertPresenceEntriesToIds decodedPayload
+            convertPresenceEntriesToDict decodedPayload
         Err err ->
-            fromList []
+            Dict.empty
         
     
-decodePresenceDiff : Value -> ( Set Int, Set Int )
+decodePresenceDiff : Value -> ( MemberConnCounts, MemberConnCounts )
 decodePresenceDiff payload =
     let
         decoder =
@@ -74,8 +78,8 @@ decodePresenceDiff payload =
     in
         case Decode.decodeValue decoder payload of
             Ok decodedPayload ->
-                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToIds
-                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToIds
+                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToDict
+                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToDict
                 )
             Err err ->
-                ( fromList [], fromList [] )
+                ( Dict.empty, Dict.empty )

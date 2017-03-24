@@ -1,6 +1,6 @@
 module App.Update exposing (..)
 
-import Set exposing (union, diff)
+import Dict
 import Task
 import Process
 import Time
@@ -307,13 +307,44 @@ update msg model =
             
         CotonomaPresenceDiff payload ->
             let
-                oldPresences = model.memberPresences
                 presenceDiff = decodePresenceDiff payload
-                newPresences =
-                    diff oldPresences (Tuple.second presenceDiff)
-                        |> union (Tuple.first presenceDiff)
+                newMemberPresences =
+                    applyPresenceDiff presenceDiff model.memberPresences
             in
-                { model | memberPresences = newPresences } ! []
+                { model | memberPresences = newMemberPresences } ! []
+
+
+applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
+applyPresenceDiff diff presences =
+    let
+        presencesJoined =
+          Dict.foldl
+              (\amishiId count presences -> 
+                  Dict.update 
+                      amishiId 
+                      (\maybeValue ->
+                          case maybeValue of
+                              Nothing -> Just count
+                              Just value -> Just (value + count)
+                      )
+                      presences
+              )
+              presences
+              (Tuple.first diff)
+    in
+        Dict.foldl
+            (\amishiId count presences -> 
+                Dict.update 
+                    amishiId 
+                    (\maybeValue ->
+                        case maybeValue of
+                            Nothing -> Nothing
+                            Just value -> Just (value - count)
+                    )
+                    presences
+            )
+            presencesJoined
+            (Tuple.second diff)
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
