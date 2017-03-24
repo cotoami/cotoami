@@ -299,6 +299,12 @@ update msg model =
                                 
         CotonomaClick key ->
             changeLocationToCotonoma key model
+            
+        CotonomaPresenceState payload ->
+            model ! []
+            
+        CotonomaPresenceDiff payload ->
+            model ! []
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )

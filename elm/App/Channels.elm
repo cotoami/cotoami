@@ -14,6 +14,10 @@ cotonomaChannel key =
             (\payload -> 
                 TimelineMsg (Components.Timeline.Messages.PostPushed payload)
             )
+        |> Channel.on "presence_state" 
+            (\payload -> CotonomaPresenceState payload)
+        |> Channel.on "presence_diff" 
+            (\payload -> CotonomaPresenceDiff payload)
 
 
 type alias Payload body =
