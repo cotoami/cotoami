@@ -5,7 +5,7 @@ defmodule Cotoami.RedisService do
   # Anonymous posts
   #
   
-  def anonymous_key(anonymous_id), do: "anonymous-" <> anonymous_id
+  def anonymous_key(anonymous_id), do: "anonymous:" <> anonymous_id
   
   def get_cotos(anonymous_id) do
     cotos =
@@ -44,7 +44,7 @@ defmodule Cotoami.RedisService do
   
   @signin_key_expire_seconds 60 * 10
   
-  def signin_key(token), do: "signin-" <> token
+  def signin_key(token), do: "signin:" <> token
   
   def generate_signin_token(email) do
     token = put_signin_token(email)
@@ -74,7 +74,7 @@ defmodule Cotoami.RedisService do
   
   @gravatar_key_expire_seconds 60 * 10
   
-  def gravatar_key(email), do: "gravatar-" <> email
+  def gravatar_key(email), do: "gravatar:" <> email
   
   def get_gravatar_profile(email) do
     Cotoami.Redix.command!(["GET", gravatar_key(email)])
@@ -88,4 +88,13 @@ defmodule Cotoami.RedisService do
       profile_json
     ])
   end
+  
+  
+  #
+  # Cotonoma channel state
+  #
+
+  def cotonoma_channel_key(cotonoma_id), do: "cotonoma:" <> cotonoma_id
+  def cotonoma_joined_key(cotonoma_id), do: cotonoma_channel_key(cotonoma_id) <> ":joined"
+  
 end
