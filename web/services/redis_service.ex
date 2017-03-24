@@ -1,8 +1,9 @@
 defmodule Cotoami.RedisService do
   require Logger
   
-  @signin_key_expire_seconds 60 * 10
-  @gravatar_key_expire_seconds 60 * 10
+  #
+  # Anonymous posts
+  #
   
   def anonymous_key(anonymous_id), do: "anonymous-" <> anonymous_id
   
@@ -36,6 +37,13 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["DEL", anonymous_key(anonymous_id)])
   end
   
+  
+  #
+  # Sign-in keys
+  #
+  
+  @signin_key_expire_seconds 60 * 10
+  
   def signin_key(token), do: "signin-" <> token
   
   def generate_signin_token(email) do
@@ -58,6 +66,13 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["DEL", signin_key(token)])
     email
   end
+  
+  
+  #
+  # Gravatar profile cache
+  #
+  
+  @gravatar_key_expire_seconds 60 * 10
   
   def gravatar_key(email), do: "gravatar-" <> email
   
