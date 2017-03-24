@@ -24018,8 +24018,8 @@ var _user$project$Components_Navigation$subCotonomasNav = function (cotonomas) {
 			}
 		});
 };
-var _user$project$Components_Navigation$cotonomaNav = F2(
-	function (members, cotonoma) {
+var _user$project$Components_Navigation$cotonomaNav = F3(
+	function (memberPresence, members, cotonoma) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24056,7 +24056,24 @@ var _user$project$Components_Navigation$cotonomaNav = F2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('amishi member owner'),
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'member', _1: true},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'owner', _1: true},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'online',
+														_1: A2(_elm_lang$core$Set$member, _p1.id, memberPresence)
+													},
+													_1: {ctor: '[]'}
+												}
+											}
+										}),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -24112,7 +24129,20 @@ var _user$project$Components_Navigation$cotonomaNav = F2(
 											_elm_lang$html$Html$div,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('amishi member'),
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'member', _1: true},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'online',
+																_1: A2(_elm_lang$core$Set$member, member.id, memberPresence)
+															},
+															_1: {ctor: '[]'}
+														}
+													}),
 												_1: {ctor: '[]'}
 											},
 											{
@@ -24174,7 +24204,7 @@ var _user$project$Components_Navigation$view = function (model) {
 							{ctor: '[]'},
 							{ctor: '[]'});
 					} else {
-						return A2(_user$project$Components_Navigation$cotonomaNav, model.members, _p2._0);
+						return A3(_user$project$Components_Navigation$cotonomaNav, model.memberPresence, model.members, _p2._0);
 					}
 				}(),
 				_1: {

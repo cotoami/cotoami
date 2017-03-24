@@ -9,7 +9,12 @@
     margin-bottom: 20px;
     
     div.member {
+      opacity: 0.3;
       margin-bottom: 5px;
+      
+      &.online {
+        opacity: 1;
+      }
       
       img.avatar {
         margin: 0;

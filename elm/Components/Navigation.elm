@@ -1,5 +1,6 @@
 module Components.Navigation exposing (..)
 
+import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
@@ -14,7 +15,7 @@ view model =
     [ div [ id "navigation-content" ]
         [ case model.cotonoma of
             Nothing -> div [] []
-            Just cotonoma -> cotonomaNav model.members cotonoma
+            Just cotonoma -> cotonomaNav model.memberPresence model.members cotonoma
         , if not (List.isEmpty model.subCotonomas) then
             subCotonomasNav model.subCotonomas
           else
@@ -24,14 +25,20 @@ view model =
     ]
 
 
-cotonomaNav : List Amishi -> Cotonoma -> Html Msg
-cotonomaNav members cotonoma =
+cotonomaNav : Set.Set Int -> List Amishi -> Cotonoma -> Html Msg
+cotonomaNav memberPresence members cotonoma =
     div [ class "members" ] 
         [ div [ class "navigation-title" ] [ text "Members" ]
         , case cotonoma.owner of
             Nothing -> div [] []
             Just owner ->
-                div [ class "amishi member owner" ]
+                div 
+                    [ classList
+                        [ ( "member", True )
+                        , ( "owner", True )
+                        , ( "online", Set.member owner.id memberPresence )
+                        ]
+                    ]
                     [ img [ class "avatar", src owner.avatarUrl ] []
                     , span [ class "name" ] [ text owner.displayName ]
                     ]
@@ -41,7 +48,12 @@ cotonomaNav members cotonoma =
             (List.map 
                 (\member -> 
                     ( toString member.id
-                    , div [ class "amishi member" ]
+                    , div 
+                        [ classList
+                            [ ( "member", True )
+                            , ( "online", Set.member member.id memberPresence )
+                            ]
+                        ]
                         [ img [ class "avatar", src member.avatarUrl ] []
                         , span [ class "name" ] [ text member.displayName ]
                         ]
