@@ -50,8 +50,8 @@ decodePresenceEntries =
             (Decode.field "online_at" Decode.int)
 
 
-convertPresenceEntriesToDict : List PresenceEntry -> MemberConnCounts
-convertPresenceEntriesToDict entries =
+convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberConnCounts
+convertPresenceEntriesToConnCounts entries =
     (List.map 
         (\entry -> 
             ( Tuple.first entry |> String.toInt |> Result.withDefault 0
@@ -66,7 +66,7 @@ decodePresenceState : Value -> MemberConnCounts
 decodePresenceState payload =
     case Decode.decodeValue decodePresenceEntries payload of
         Ok decodedPayload ->
-            convertPresenceEntriesToDict decodedPayload
+            convertPresenceEntriesToConnCounts decodedPayload
         Err err ->
             Dict.empty
         
@@ -83,8 +83,8 @@ decodePresenceDiff payload =
     in
         case Decode.decodeValue decoder payload of
             Ok decodedPayload ->
-                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToDict
-                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToDict
+                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToConnCounts
+                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToConnCounts
                 )
             Err err ->
                 ( Dict.empty, Dict.empty )

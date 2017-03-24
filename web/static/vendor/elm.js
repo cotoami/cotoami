@@ -21871,7 +21871,7 @@ var _user$project$App_Messages$OnLocationChange = function (a) {
 };
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
-var _user$project$App_Channels$convertPresenceEntriesToDict = function (entries) {
+var _user$project$App_Channels$convertPresenceEntriesToConnCounts = function (entries) {
 	return _elm_lang$core$Dict$fromList(
 		A2(
 			_elm_lang$core$List$map,
@@ -21903,7 +21903,7 @@ var _user$project$App_Channels$decodePresenceEntries = _elm_lang$core$Json_Decod
 var _user$project$App_Channels$decodePresenceState = function (payload) {
 	var _p0 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$App_Channels$decodePresenceEntries, payload);
 	if (_p0.ctor === 'Ok') {
-		return _user$project$App_Channels$convertPresenceEntriesToDict(_p0._0);
+		return _user$project$App_Channels$convertPresenceEntriesToConnCounts(_p0._0);
 	} else {
 		return _elm_lang$core$Dict$empty;
 	}
@@ -21922,9 +21922,9 @@ var _user$project$App_Channels$decodePresenceDiff = function (payload) {
 		var _p2 = _p1._0;
 		return {
 			ctor: '_Tuple2',
-			_0: _user$project$App_Channels$convertPresenceEntriesToDict(
+			_0: _user$project$App_Channels$convertPresenceEntriesToConnCounts(
 				_elm_lang$core$Tuple$first(_p2)),
-			_1: _user$project$App_Channels$convertPresenceEntriesToDict(
+			_1: _user$project$App_Channels$convertPresenceEntriesToConnCounts(
 				_elm_lang$core$Tuple$second(_p2))
 		};
 	} else {
