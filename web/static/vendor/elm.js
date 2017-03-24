@@ -22002,6 +22002,36 @@ var _user$project$App_Messages$OnLocationChange = function (a) {
 };
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Channels$decodePresenceState = function (payload) {
+	var decoder = _elm_lang$core$Json_Decode$keyValuePairs(
+		_elm_lang$core$Json_Decode$keyValuePairs(
+			_elm_lang$core$Json_Decode$list(
+				A3(
+					_elm_lang$core$Json_Decode$map2,
+					F2(
+						function (v0, v1) {
+							return {ctor: '_Tuple2', _0: v0, _1: v1};
+						}),
+					A2(_elm_lang$core$Json_Decode$field, 'phx_ref', _elm_lang$core$Json_Decode$string),
+					A2(_elm_lang$core$Json_Decode$field, 'online_at', _elm_lang$core$Json_Decode$int)))));
+	var _p0 = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, payload);
+	if (_p0.ctor === 'Ok') {
+		return _elm_lang$core$Set$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				function (entry) {
+					return A2(
+						_elm_lang$core$Result$withDefault,
+						0,
+						_elm_lang$core$String$toInt(
+							_elm_lang$core$Tuple$first(entry)));
+				},
+				_p0._0));
+	} else {
+		return _elm_lang$core$Set$fromList(
+			{ctor: '[]'});
+	}
+};
 var _user$project$App_Channels$cotonomaChannel = function (key) {
 	return A3(
 		_saschatimme$elm_phoenix$Phoenix_Channel$on,
@@ -23526,7 +23556,11 @@ var _user$project$App_Update$update = F2(
 			case 'CotonomaPresenceState':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							memberPresence: _user$project$App_Channels$decodePresenceState(_p1._0)
+						}),
 					{ctor: '[]'});
 			default:
 				return A2(

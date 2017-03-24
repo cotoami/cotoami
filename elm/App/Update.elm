@@ -15,6 +15,7 @@ import App.Commands exposing
     , fetchCotonoma
     , deleteCoto
     )
+import App.Channels exposing (decodePresenceState)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -301,7 +302,7 @@ update msg model =
             changeLocationToCotonoma key model
             
         CotonomaPresenceState payload ->
-            model ! []
+            { model | memberPresence = decodePresenceState payload } ! []
             
         CotonomaPresenceDiff payload ->
             model ! []
