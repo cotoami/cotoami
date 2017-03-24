@@ -35,24 +35,47 @@ decodePayload bodyName bodyDecoder =
         (Decode.field bodyName bodyDecoder)
 
 
+type alias PresenceEntry = ( String, List ( String, List ( String, Int ) ) )
+
+decodePresenceEntries : Decode.Decoder (List PresenceEntry)
+decodePresenceEntries =
+    Decode.keyValuePairs          -- Amishi ID
+        <| Decode.keyValuePairs   -- "metas"
+        <| Decode.list            
+        <| Decode.map2 (,)
+            (Decode.field "phx_ref" Decode.string)
+            (Decode.field "online_at" Decode.int)
+
+
+convertPresenceEntriesToIds : List PresenceEntry -> Set Int
+convertPresenceEntriesToIds entries =
+    (List.map 
+        (\entry -> Tuple.first entry |> String.toInt |> Result.withDefault 0) 
+        entries
+    ) |> fromList
+
+
 decodePresenceState : Value -> Set Int
 decodePresenceState payload =
+    case Decode.decodeValue decodePresenceEntries payload of
+        Ok decodedPayload ->
+            convertPresenceEntriesToIds decodedPayload
+        Err err ->
+            fromList []
+        
+    
+decodePresenceDiff : Value -> ( Set Int, Set Int )
+decodePresenceDiff payload =
     let
         decoder =
-            Decode.keyValuePairs          -- Amishi ID
-                <| Decode.keyValuePairs   -- "metas"
-                <| Decode.list            
-                <| Decode.map2 (,)
-                    (Decode.field "phx_ref" Decode.string)
-                    (Decode.field "online_at" Decode.int)
+            Decode.map2 (,)
+                (Decode.field "joins" decodePresenceEntries)
+                (Decode.field "leaves" decodePresenceEntries)
     in
         case Decode.decodeValue decoder payload of
             Ok decodedPayload ->
-                (List.map 
-                    (\entry -> Tuple.first entry |> String.toInt |> Result.withDefault 0) 
-                    decodedPayload
-                ) |> fromList
+                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToIds
+                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToIds
+                )
             Err err ->
-                fromList []
-        
-                
+                ( fromList [], fromList [] )

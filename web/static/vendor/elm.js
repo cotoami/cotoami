@@ -22002,34 +22002,66 @@ var _user$project$App_Messages$OnLocationChange = function (a) {
 };
 var _user$project$App_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Channels$convertPresenceEntriesToIds = function (entries) {
+	return _elm_lang$core$Set$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			function (entry) {
+				return A2(
+					_elm_lang$core$Result$withDefault,
+					0,
+					_elm_lang$core$String$toInt(
+						_elm_lang$core$Tuple$first(entry)));
+			},
+			entries));
+};
+var _user$project$App_Channels$decodePresenceEntries = _elm_lang$core$Json_Decode$keyValuePairs(
+	_elm_lang$core$Json_Decode$keyValuePairs(
+		_elm_lang$core$Json_Decode$list(
+			A3(
+				_elm_lang$core$Json_Decode$map2,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				A2(_elm_lang$core$Json_Decode$field, 'phx_ref', _elm_lang$core$Json_Decode$string),
+				A2(_elm_lang$core$Json_Decode$field, 'online_at', _elm_lang$core$Json_Decode$int)))));
 var _user$project$App_Channels$decodePresenceState = function (payload) {
-	var decoder = _elm_lang$core$Json_Decode$keyValuePairs(
-		_elm_lang$core$Json_Decode$keyValuePairs(
-			_elm_lang$core$Json_Decode$list(
-				A3(
-					_elm_lang$core$Json_Decode$map2,
-					F2(
-						function (v0, v1) {
-							return {ctor: '_Tuple2', _0: v0, _1: v1};
-						}),
-					A2(_elm_lang$core$Json_Decode$field, 'phx_ref', _elm_lang$core$Json_Decode$string),
-					A2(_elm_lang$core$Json_Decode$field, 'online_at', _elm_lang$core$Json_Decode$int)))));
-	var _p0 = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, payload);
+	var _p0 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$App_Channels$decodePresenceEntries, payload);
 	if (_p0.ctor === 'Ok') {
-		return _elm_lang$core$Set$fromList(
-			A2(
-				_elm_lang$core$List$map,
-				function (entry) {
-					return A2(
-						_elm_lang$core$Result$withDefault,
-						0,
-						_elm_lang$core$String$toInt(
-							_elm_lang$core$Tuple$first(entry)));
-				},
-				_p0._0));
+		return _user$project$App_Channels$convertPresenceEntriesToIds(_p0._0);
 	} else {
 		return _elm_lang$core$Set$fromList(
 			{ctor: '[]'});
+	}
+};
+var _user$project$App_Channels$decodePresenceDiff = function (payload) {
+	var decoder = A3(
+		_elm_lang$core$Json_Decode$map2,
+		F2(
+			function (v0, v1) {
+				return {ctor: '_Tuple2', _0: v0, _1: v1};
+			}),
+		A2(_elm_lang$core$Json_Decode$field, 'joins', _user$project$App_Channels$decodePresenceEntries),
+		A2(_elm_lang$core$Json_Decode$field, 'leaves', _user$project$App_Channels$decodePresenceEntries));
+	var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, payload);
+	if (_p1.ctor === 'Ok') {
+		var _p2 = _p1._0;
+		return {
+			ctor: '_Tuple2',
+			_0: _user$project$App_Channels$convertPresenceEntriesToIds(
+				_elm_lang$core$Tuple$first(_p2)),
+			_1: _user$project$App_Channels$convertPresenceEntriesToIds(
+				_elm_lang$core$Tuple$second(_p2))
+		};
+	} else {
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Set$fromList(
+				{ctor: '[]'}),
+			_1: _elm_lang$core$Set$fromList(
+				{ctor: '[]'})
+		};
 	}
 };
 var _user$project$App_Channels$cotonomaChannel = function (key) {
@@ -23563,9 +23595,20 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			default:
+				var presenceDiff = _user$project$App_Channels$decodePresenceDiff(_p1._0);
+				var oldPresence = model.memberPresence;
+				var newPresence = A2(
+					_elm_lang$core$Set$union,
+					_elm_lang$core$Tuple$first(presenceDiff),
+					A2(
+						_elm_lang$core$Set$diff,
+						oldPresence,
+						_elm_lang$core$Tuple$second(presenceDiff)));
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{memberPresence: newPresence}),
 					{ctor: '[]'});
 		}
 	});

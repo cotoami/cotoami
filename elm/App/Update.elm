@@ -1,5 +1,6 @@
 module App.Update exposing (..)
 
+import Set exposing (union, diff)
 import Task
 import Process
 import Time
@@ -15,7 +16,7 @@ import App.Commands exposing
     , fetchCotonoma
     , deleteCoto
     )
-import App.Channels exposing (decodePresenceState)
+import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -305,7 +306,14 @@ update msg model =
             { model | memberPresence = decodePresenceState payload } ! []
             
         CotonomaPresenceDiff payload ->
-            model ! []
+            let
+                oldPresence = model.memberPresence
+                presenceDiff = decodePresenceDiff payload
+                newPresence =
+                    diff oldPresence (Tuple.second presenceDiff)
+                        |> union (Tuple.first presenceDiff)
+            in
+                { model | memberPresence = newPresence } ! []
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
