@@ -18,6 +18,7 @@ defmodule Cotoami do
     children = [
       supervisor(Cotoami.Repo, []),
       supervisor(Cotoami.Endpoint, []),
+      supervisor(Cotoami.Presence, [])
     ] ++ redix_workers
     
     # Prometheus

@@ -5,7 +5,9 @@ defmodule Cotoami.RedisService do
   # Anonymous posts
   #
   
-  def anonymous_key(anonymous_id), do: "anonymous-" <> anonymous_id
+  @anonymous_key_expire_seconds 60 * 60 * 24 * 30
+  
+  def anonymous_key(anonymous_id), do: "anonymous:" <> anonymous_id
   
   def get_cotos(anonymous_id) do
     cotos =
@@ -30,7 +32,10 @@ defmodule Cotoami.RedisService do
   
   def add_coto(anonymous_id, coto) do
     coto_as_json = Poison.encode!(coto)
-    Cotoami.Redix.command!(["LPUSH", anonymous_key(anonymous_id), coto_as_json])
+    count = Cotoami.Redix.command!(["LPUSH", anonymous_key(anonymous_id), coto_as_json])
+    if count == 1 do
+      Cotoami.Redix.command!(["EXPIRE", anonymous_key(anonymous_id), @anonymous_key_expire_seconds]) 
+    end
   end
   
   def clear_cotos(anonymous_id) do
@@ -44,7 +49,7 @@ defmodule Cotoami.RedisService do
   
   @signin_key_expire_seconds 60 * 10
   
-  def signin_key(token), do: "signin-" <> token
+  def signin_key(token), do: "signin:" <> token
   
   def generate_signin_token(email) do
     token = put_signin_token(email)
@@ -74,7 +79,7 @@ defmodule Cotoami.RedisService do
   
   @gravatar_key_expire_seconds 60 * 10
   
-  def gravatar_key(email), do: "gravatar-" <> email
+  def gravatar_key(email), do: "gravatar:" <> email
   
   def get_gravatar_profile(email) do
     Cotoami.Redix.command!(["GET", gravatar_key(email)])
@@ -87,5 +92,5 @@ defmodule Cotoami.RedisService do
       @gravatar_key_expire_seconds, 
       profile_json
     ])
-  end
+  end  
 end

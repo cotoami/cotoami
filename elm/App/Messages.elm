@@ -1,6 +1,7 @@
 module App.Messages exposing (Msg(..))
 
 import Http
+import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.Types exposing (Session, Amishi, Coto, Cotonoma, CotonomaKey)
@@ -36,3 +37,5 @@ type Msg
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
     | CotonomaClick CotonomaKey
+    | CotonomaPresenceState Value
+    | CotonomaPresenceDiff Value

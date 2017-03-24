@@ -1,5 +1,6 @@
 module App.Update exposing (..)
 
+import Dict
 import Task
 import Process
 import Time
@@ -15,6 +16,7 @@ import App.Commands exposing
     , fetchCotonoma
     , deleteCoto
     )
+import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
@@ -299,6 +301,50 @@ update msg model =
                                 
         CotonomaClick key ->
             changeLocationToCotonoma key model
+            
+        CotonomaPresenceState payload ->
+            { model | memberPresences = decodePresenceState payload } ! []
+            
+        CotonomaPresenceDiff payload ->
+            let
+                presenceDiff = decodePresenceDiff payload
+                newMemberPresences =
+                    applyPresenceDiff presenceDiff model.memberPresences
+            in
+                { model | memberPresences = newMemberPresences } ! []
+
+
+applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
+applyPresenceDiff diff presences =
+    let
+        presencesJoined =
+          Dict.foldl
+              (\amishiId count presences -> 
+                  Dict.update 
+                      amishiId 
+                      (\maybeValue ->
+                          case maybeValue of
+                              Nothing -> Just count
+                              Just value -> Just (value + count)
+                      )
+                      presences
+              )
+              presences
+              (Tuple.first diff)
+    in
+        Dict.foldl
+            (\amishiId count presences -> 
+                Dict.update 
+                    amishiId 
+                    (\maybeValue ->
+                        case maybeValue of
+                            Nothing -> Nothing
+                            Just value -> Just (value - count)
+                    )
+                    presences
+            )
+            presencesJoined
+            (Tuple.second diff)
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
