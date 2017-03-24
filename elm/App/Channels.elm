@@ -35,6 +35,8 @@ decodePayload bodyName bodyDecoder =
         (Decode.field bodyName bodyDecoder)
 
 
+-- https://hexdocs.pm/phoenix/Phoenix.Presence.html
+-- {3: {metas: [{phx_ref: "5OaVq4AmYbU=", online_at: 1490350876053}]}}
 type alias PresenceEntry = ( String, List ( String, List ( String, Int ) ) )
 
 
@@ -68,7 +70,9 @@ decodePresenceState payload =
         Err err ->
             Dict.empty
         
-    
+
+-- https://hexdocs.pm/phoenix/Phoenix.Presence.html
+-- {leaves: {3: {metas: [{phx_ref: "7h9YpxuqCmM=", online_at: 1490350421829}]}}, joins: {}}
 decodePresenceDiff : Value -> ( MemberConnCounts, MemberConnCounts )
 decodePresenceDiff payload =
     let
