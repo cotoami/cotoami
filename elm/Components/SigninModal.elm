@@ -107,7 +107,7 @@ signinModalConfig model showAnonymousOption =
                       [] 
                     ]
                 , (if showAnonymousOption then
-                    div []
+                    div [ class "save-anonymous-cotos-option" ]
                         [ label [] 
                             [ input [ type_ "checkbox", onCheck SaveAnonymousCotosCheck ] []
                             , span [ class "label-body" ] 

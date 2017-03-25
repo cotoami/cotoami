@@ -17423,7 +17423,11 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 										ctor: '::',
 										_0: showAnonymousOption ? A2(
 											_elm_lang$html$Html$div,
-											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('save-anonymous-cotos-option'),
+												_1: {ctor: '[]'}
+											},
 											{
 												ctor: '::',
 												_0: A2(
