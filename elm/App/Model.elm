@@ -63,6 +63,14 @@ initModel seed route =
         }
 
 
+openSigninModal : Model -> Model
+openSigninModal model =
+    let
+        signinModal = model.signinModal
+    in
+        { model | signinModal = { signinModal | open = True } }
+        
+
 isPresent : Int -> MemberConnCounts -> Bool
 isPresent amishiId memberPresences =
     (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0

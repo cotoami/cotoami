@@ -4,6 +4,7 @@ import Dict
 import Task
 import Process
 import Time
+import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter)
 import Navigation 
 import App.Types exposing (..)
@@ -56,8 +57,15 @@ update msg model =
         SessionFetched (Ok session) ->
             { model | session = Just session } ! []
             
-        SessionFetched (Err _) ->
-            model ! []
+        SessionFetched (Err error) ->
+            case error of
+                BadStatus response ->
+                    if response.status.code == 404 then
+                        openSigninModal model ! []
+                    else
+                        model ! []
+                _ ->
+                    model ! []
             
         RecentCotonomasFetched (Ok cotonomas) ->
             { model 
@@ -125,10 +133,7 @@ update msg model =
                 { model | confirmModal = confirmModal } ! [ cmd ]
             
         OpenSigninModal ->
-            let
-                signinModal = model.signinModal
-            in
-                { model | signinModal = { signinModal | open = True } } ! []
+            openSigninModal model ! []
             
         SigninModalMsg subMsg ->
             let
