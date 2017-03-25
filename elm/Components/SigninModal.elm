@@ -90,9 +90,10 @@ signinModalConfig model showAnonymousOption =
         }
     else
         { closeMessage = Close
-        , title = "Sign in with your email"
+        , title = "Sign in/up with your email"
         , content = div []
-            [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+            [ p [] [ text "Welcome to Cotoami!" ]
+            , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , Html.form [ name "signin" ]
                 [ div []
                     [ input 
@@ -119,7 +120,9 @@ signinModalConfig model showAnonymousOption =
                 ]
             ]
         , buttons = 
-            [ button [ class "button", onClick Close ] [ text "Cancel" ]
+            [ button 
+                [ class "button close", onClick Close ] 
+                [ text "Try it out w/o signing up" ]
             , button 
                 [ class "button button-primary"
                 , disabled (not (validateEmail model.email) || model.requestProcessing)

@@ -17349,7 +17349,7 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 			}
 		} : {
 			closeMessage: _user$project$Components_SigninModal$Close,
-			title: 'Sign in with your email',
+			title: 'Sign in/up with your email',
 			content: A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -17360,105 +17360,116 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Cotoami doesn\'t use passwords. Just enter your email address and we\'ll send you a sign-in (or sign-up) link.'),
+							_0: _elm_lang$html$Html$text('Welcome to Cotoami!'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$form,
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$name('signin'),
+								_0: _elm_lang$html$Html$text('Cotoami doesn\'t use passwords. Just enter your email address and we\'ll send you a sign-in (or sign-up) link.'),
 								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$input,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('email'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$name('email'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$placeholder('you@example.com'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$value(model.email),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_SigninModal$EmailInput),
-																	_1: {ctor: '[]'}
-																}
-															}
-														}
-													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$form,
+								{
 									ctor: '::',
-									_0: showAnonymousOption ? A2(
+									_0: _elm_lang$html$Html_Attributes$name('signin'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
 										_elm_lang$html$Html$div,
 										{ctor: '[]'},
 										{
 											ctor: '::',
 											_0: A2(
-												_elm_lang$html$Html$label,
-												{ctor: '[]'},
+												_elm_lang$html$Html$input,
 												{
 													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$input,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onCheck(_user$project$Components_SigninModal$SaveAnonymousCotosCheck),
-																_1: {ctor: '[]'}
-															}
-														},
-														{ctor: '[]'}),
+													_0: _elm_lang$html$Html_Attributes$type_('email'),
 													_1: {
 														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$span,
-															{
+														_0: _elm_lang$html$Html_Attributes$class('u-full-width'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$name('email'),
+															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('label-body'),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Save the anonymous cotos (posts) into your account'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
+																_0: _elm_lang$html$Html_Attributes$placeholder('you@example.com'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$value(model.email),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_SigninModal$EmailInput),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														}
 													}
-												}),
+												},
+												{ctor: '[]'}),
 											_1: {ctor: '[]'}
-										}) : A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: showAnonymousOption ? A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$label,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$input,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onCheck(_user$project$Components_SigninModal$SaveAnonymousCotosCheck),
+																	_1: {ctor: '[]'}
+																}
+															},
+															{ctor: '[]'}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$span,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('label-body'),
+																	_1: {ctor: '[]'}
+																},
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html$text('Save the anonymous cotos (posts) into your account'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}) : A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}),
 			buttons: {
@@ -17467,7 +17478,7 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 					_elm_lang$html$Html$button,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('button'),
+						_0: _elm_lang$html$Html_Attributes$class('button close'),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_SigninModal$Close),
@@ -17476,7 +17487,7 @@ var _user$project$Components_SigninModal$signinModalConfig = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Cancel'),
+						_0: _elm_lang$html$Html$text('Try it out w/o signing up'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
