@@ -88,6 +88,12 @@ update msg model =
             , navigationOpen = (not model.navigationOpen) 
             } ! []
             
+        StockToggle ->
+            { model 
+            | stockToggled = True
+            , stockOpen = (not model.stockOpen) 
+            } ! []
+            
         HomeClick ->
             changeLocationToHome model
             

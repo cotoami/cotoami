@@ -11,6 +11,7 @@ import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
+import Components.Connections.Model
 
 
 type alias Model =
@@ -33,6 +34,9 @@ type alias Model =
     , timeline : Components.Timeline.Model.Model
     , activeCotoId : Maybe Int
     , cotonomaModal : Components.CotonomaModal.Model.Model
+    , stockToggled : Bool
+    , stockOpen : Bool
+    , connections : Components.Connections.Model.Model
     }
 
 
@@ -60,6 +64,9 @@ initModel seed route =
         , timeline = Components.Timeline.Model.initModel
         , activeCotoId = Nothing
         , cotonomaModal = Components.CotonomaModal.Model.initModel
+        , stockToggled = False
+        , stockOpen = False
+        , connections = Components.Connections.Model.initModel
         }
 
 
@@ -81,6 +88,11 @@ isNavigationEmpty model =
     (isNothing model.cotonoma)
         && (List.isEmpty model.recentCotonomas) 
         && (List.isEmpty model.subCotonomas)
+        
+        
+isStockEmpty : Model -> Bool
+isStockEmpty model =
+      False
         
         
 getOwnerAndMembers : Model -> List Amishi

@@ -2,6 +2,7 @@ module App.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -23,7 +24,7 @@ view model =
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( "any-connections", True )
+              , ( "stock-is-not-empty", not (isStockEmpty model) )
               ] 
           ]
           [ Components.AppHeader.view model
@@ -50,20 +51,18 @@ view model =
                   ]
               , div 
                   [ id "stock"
-                  , classList [ ( "hidden", True ) ]
+                  , classList 
+                      [ ( "neverToggled", not model.stockToggled )
+                      , ( "empty", isStockEmpty model )
+                      , ( "notEmpty", not (isStockEmpty model) )
+                      , ( "animated", model.stockToggled )
+                      , ( "slideInRight", model.stockToggled && model.stockOpen )
+                      , ( "slideOutRight", model.stockToggled && not model.stockOpen )
+                      ]
                   ] 
                   [ div [] [ text "stock" ]
                   ]
-              , div
-                  [ id "open-flow", class "flow-stock-switch" ]
-                  [ a [ class "tool-button", title "Show timeline" ] 
-                      [ i [ class "material-icons" ] [ text "navigate_next" ] ] 
-                  ]
-              , div
-                  [ id "open-stock", class "flow-stock-switch" ]
-                  [ a [ class "tool-button", title "Show connections" ] 
-                      [ i [ class "material-icons" ] [ text "navigate_before" ] ] 
-                  ]
+              , flowStockSwitch model
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
@@ -84,3 +83,26 @@ view model =
               ] 
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
+
+
+flowStockSwitch : Model -> Html Msg
+flowStockSwitch model =
+    if isStockEmpty model then
+        div [] []
+    else
+        let
+            ( divId, linkTitle, iconName ) =
+                if model.stockOpen then
+                    ( "open-flow", "Show timeline", "navigate_next" )
+                else
+                    ( "open-stock", "Show connections", "navigate_before" )
+        in
+            div
+                [ id divId, class "flow-stock-switch" ]
+                [ a 
+                    [ class "tool-button"
+                    , title linkTitle
+                    , onClick StockToggle 
+                    ] 
+                    [ i [ class "material-icons" ] [ text iconName ] ] 
+                ]

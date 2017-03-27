@@ -18,6 +18,7 @@ type Msg
     = NoOp
     | OnLocationChange Location
     | NavigationToggle
+    | StockToggle
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
@@ -39,3 +40,4 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    
