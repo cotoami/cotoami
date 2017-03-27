@@ -25248,7 +25248,7 @@ var _user$project$App_View$view = function (model) {
 						_0: {ctor: '_Tuple2', _0: 'cotonomas-loading', _1: model.cotonomasLoading},
 						_1: {
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'any-connections', _1: true},
+							_0: {ctor: '_Tuple2', _0: 'any-connections', _1: false},
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -25343,7 +25343,7 @@ var _user$project$App_View$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$classList(
 												{
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'hidden', _1: false},
+													_0: {ctor: '_Tuple2', _0: 'hidden', _1: true},
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -25361,7 +25361,89 @@ var _user$project$App_View$view = function (model) {
 											}),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('open-flow'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('flow-stock-switch'),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$a,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$title('Show timeline'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$i,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('navigate_next'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$id('open-stock'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('flow-stock-switch'),
+													_1: {ctor: '[]'}
+												}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$a,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$title('Show connections'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$i,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('navigate_before'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
 							}
 						}
 					}),

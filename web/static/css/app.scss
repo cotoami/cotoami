@@ -43,7 +43,7 @@ html, body, #elm-container, #app, #app-body {
 
 #navigation {
   position: absolute;
-  z-index: 3;
+  z-index: 8;
   top: 35px;
   left: 0;
   right: 0;
@@ -72,7 +72,7 @@ html, body, #elm-container, #app, #app-body {
 
 #stock {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 35px;
   left: 0;
   right: 0;
@@ -94,6 +94,34 @@ html, body, #elm-container, #app, #app-body {
     // workaround for chrome rendering bug
     opacity: 0.99;
   }
+}
+
+div.flow-stock-switch {
+  z-index: 4;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 60px;
+  border: solid 1px #ddd;
+  background-color: #fff;
+  
+  i {
+    line-height: 60px;
+  }
+}
+
+#open-flow {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+  border-left-style: none;
+}
+
+#open-stock {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+  border-right-style: none;
 }
 
 @media (#{$wide-viewport}) {

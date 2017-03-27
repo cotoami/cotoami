@@ -23,7 +23,7 @@ view model =
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( "any-connections", True )
+              , ( "any-connections", False )
               ] 
           ]
           [ Components.AppHeader.view model
@@ -50,9 +50,19 @@ view model =
                   ]
               , div 
                   [ id "stock"
-                  , classList [ ( "hidden", False ) ] 
+                  , classList [ ( "hidden", True ) ]
                   ] 
                   [ div [] [ text "stock" ]
+                  ]
+              , div
+                  [ id "open-flow", class "flow-stock-switch" ]
+                  [ a [ title "Show timeline" ] 
+                      [ i [ class "material-icons" ] [ text "navigate_next" ] ] 
+                  ]
+              , div
+                  [ id "open-stock", class "flow-stock-switch" ]
+                  [ a [ title "Show connections" ] 
+                      [ i [ class "material-icons" ] [ text "navigate_before" ] ] 
                   ]
               ]
           , Html.map ConfirmModalMsg 
