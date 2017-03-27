@@ -25246,7 +25246,11 @@ var _user$project$App_View$view = function (model) {
 					{
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'cotonomas-loading', _1: model.cotonomasLoading},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'any-connections', _1: true},
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {ctor: '[]'}
 			}
@@ -25339,13 +25343,24 @@ var _user$project$App_View$view = function (model) {
 											_0: _elm_lang$html$Html_Attributes$classList(
 												{
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'hidden', _1: true},
+													_0: {ctor: '_Tuple2', _0: 'hidden', _1: false},
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
 										}
 									},
-									{ctor: '[]'}),
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('stock'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
 								_1: {ctor: '[]'}
 							}
 						}

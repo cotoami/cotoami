@@ -21,7 +21,10 @@ view model =
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
     in
       div [ id "app" 
-          , classList [ ( "cotonomas-loading", model.cotonomasLoading ) ] 
+          , classList 
+              [ ( "cotonomas-loading", model.cotonomasLoading )
+              , ( "any-connections", True )
+              ] 
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
@@ -47,9 +50,10 @@ view model =
                   ]
               , div 
                   [ id "stock"
-                  , classList [ ( "hidden", True ) ] 
+                  , classList [ ( "hidden", False ) ] 
                   ] 
-                  []
+                  [ div [] [ text "stock" ]
+                  ]
               ]
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
