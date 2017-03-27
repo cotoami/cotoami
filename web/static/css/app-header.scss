@@ -15,11 +15,9 @@
     line-height: 35px;
     white-space: nowrap;
     
-    a.to-home,
-    a.toggle-navigation {
+    a.to-home {
       color: #1eaedb;
       cursor: pointer;
-      
       i {
         opacity: 1;
       }
@@ -27,6 +25,7 @@
     
     a.toggle-navigation {
       margin-left: 5px;
+      cursor: pointer;
       
       @media (min-width: 750px) {
         display: none;
