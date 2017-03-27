@@ -56,12 +56,12 @@ view model =
                   ]
               , div
                   [ id "open-flow", class "flow-stock-switch" ]
-                  [ a [ title "Show timeline" ] 
+                  [ a [ class "tool-button", title "Show timeline" ] 
                       [ i [ class "material-icons" ] [ text "navigate_next" ] ] 
                   ]
               , div
                   [ id "open-stock", class "flow-stock-switch" ]
-                  [ a [ title "Show connections" ] 
+                  [ a [ class "tool-button", title "Show connections" ] 
                       [ i [ class "material-icons" ] [ text "navigate_before" ] ] 
                   ]
               ]

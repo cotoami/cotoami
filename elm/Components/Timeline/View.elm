@@ -108,7 +108,7 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
                 Nothing -> span [] []
                 Just cotoId ->
                     a 
-                        [ class "open-coto"
+                        [ class "tool-button open-coto"
                         , title "Open coto view"
                         , onClickWithoutPropagation (PostOpen post)
                         ] 

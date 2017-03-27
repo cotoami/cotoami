@@ -14,6 +14,12 @@ html, body, #elm-container, #app, #app-body {
   transition: visibility 0s 1s, opacity 1s linear;
 }
 
+.tool-button {
+  color: black;
+  opacity: 0.26;
+  cursor: pointer;
+}
+
 #app {
   position: relative;
   

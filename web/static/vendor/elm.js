@@ -23559,15 +23559,19 @@ var _user$project$Components_AppHeader$navigationToggle = function (model) {
 			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'toggle-navigation', _1: true},
+					_0: {ctor: '_Tuple2', _0: 'tool-button', _1: true},
 					_1: {
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'hidden',
-							_1: _user$project$App_Model$isNavigationEmpty(model)
-						},
-						_1: {ctor: '[]'}
+						_0: {ctor: '_Tuple2', _0: 'toggle-navigation', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'hidden',
+								_1: _user$project$App_Model$isNavigationEmpty(model)
+							},
+							_1: {ctor: '[]'}
+						}
 					}
 				}),
 			_1: {
@@ -23620,7 +23624,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 								_elm_lang$html$Html$i,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_0: _elm_lang$html$Html_Attributes$class('at-home material-icons'),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -23670,7 +23674,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 									_elm_lang$html$Html$i,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+										_0: _elm_lang$html$Html_Attributes$class('arrow material-icons'),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -23716,7 +23720,7 @@ var _user$project$Components_AppHeader$view = function (model) {
 							_elm_lang$html$Html$a,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('add-cotonoma'),
+								_0: _elm_lang$html$Html_Attributes$class('tool-button add-cotonoma'),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$title('Add Cotonoma'),
@@ -23763,11 +23767,15 @@ var _user$project$Components_AppHeader$view = function (model) {
 										_elm_lang$html$Html$a,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$title('Sign in'),
+											_0: _elm_lang$html$Html_Attributes$class('tool-button'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$title('Sign in'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$OpenSigninModal),
+													_1: {ctor: '[]'}
+												}
 											}
 										},
 										{
@@ -24486,7 +24494,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 								_elm_lang$html$Html$a,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('open-coto'),
+									_0: _elm_lang$html$Html_Attributes$class('tool-button open-coto'),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
@@ -25380,8 +25388,12 @@ var _user$project$App_View$view = function (model) {
 												_elm_lang$html$Html$a,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$title('Show timeline'),
-													_1: {ctor: '[]'}
+													_0: _elm_lang$html$Html_Attributes$class('tool-button'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$title('Show timeline'),
+														_1: {ctor: '[]'}
+													}
 												},
 												{
 													ctor: '::',
@@ -25420,8 +25432,12 @@ var _user$project$App_View$view = function (model) {
 													_elm_lang$html$Html$a,
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$title('Show connections'),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$html$Html_Attributes$class('tool-button'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$title('Show connections'),
+															_1: {ctor: '[]'}
+														}
 													},
 													{
 														ctor: '::',

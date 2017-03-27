@@ -8,12 +8,22 @@
   border-bottom: 1px solid #eee;
   background-color: rgba(255,255,255,0.9);
   
+  .material-icons {
+    line-height: 35px;
+    font-size: 30px;
+    padding-top: 1px;
+  }
+  
   div.location {
     margin: 0 auto;
     text-align: center;
     height: 35px;
     line-height: 35px;
     white-space: nowrap;
+    
+    .at-home {
+      opacity: 0.26;
+    }
     
     a.to-home {
       color: #1eaedb;
@@ -23,9 +33,12 @@
       }
     }
     
+    i.arrow {
+      opacity: 0.26;
+    }
+    
     a.toggle-navigation {
       margin-left: 5px;
-      cursor: pointer;
       
       @media (min-width: 750px) {
         display: none;
@@ -67,17 +80,6 @@
       height: 27px;
       border-radius: 4px;
     }
-  }
-  
-  .material-icons {
-    line-height: 35px;
-    font-size: 30px;
-    opacity: 0.26;
-    padding-top: 1px;
-  }
-  
-  a {
-    color: black;
   }
 }
 
