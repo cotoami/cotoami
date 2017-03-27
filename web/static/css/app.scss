@@ -129,15 +129,20 @@ div.flow-stock-switch {
 }
 
 #open-flow {
+  display: none;
   left: 0;
   border-radius: 0 6px 6px 0;
   border-left-style: none;
 }
 
 #open-stock {
+  display: none;
   right: 0;
   border-radius: 6px 0 0 6px;
   border-right-style: none;
+}
+.any-connections #open-stock {
+  display: inline-block;
 }
 
 @media (#{$wide-viewport}) {
@@ -195,5 +200,9 @@ div.flow-stock-switch {
     margin-bottom: 0;
     padding: 0;
     padding-left: 10px;
+  }
+  
+  div.flow-stock-switch {
+    display: none;
   }
 }

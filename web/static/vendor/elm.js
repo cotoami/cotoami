@@ -25256,7 +25256,7 @@ var _user$project$App_View$view = function (model) {
 						_0: {ctor: '_Tuple2', _0: 'cotonomas-loading', _1: model.cotonomasLoading},
 						_1: {
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'any-connections', _1: false},
+							_0: {ctor: '_Tuple2', _0: 'any-connections', _1: true},
 							_1: {ctor: '[]'}
 						}
 					}),

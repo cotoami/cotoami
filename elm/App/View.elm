@@ -23,7 +23,7 @@ view model =
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( "any-connections", False )
+              , ( "any-connections", True )
               ] 
           ]
           [ Components.AppHeader.view model
