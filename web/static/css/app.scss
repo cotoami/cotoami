@@ -4,6 +4,12 @@ html, body, #elm-container, #app, #app-body {
   height: 100%;
 }
 
+html, body, #elm-container, #app {
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 .hidden {
   display: none;
 }
