@@ -14,6 +14,7 @@ import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
+import Components.Connections.View
 
 
 view : Model -> Html Msg
@@ -60,7 +61,8 @@ view model =
                       , ( "slideOutRight", model.stockToggled && not model.stockOpen )
                       ]
                   ] 
-                  [ div [] [ text "stock" ]
+                  [ Html.map ConnectionsMsg 
+                      (Components.Connections.View.view model.connections)
                   ]
               , flowStockSwitch model
               ]

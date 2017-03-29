@@ -323,6 +323,9 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
+                
+        ConnectionsMsg subMsg ->
+            model ! []
 
 
 applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts

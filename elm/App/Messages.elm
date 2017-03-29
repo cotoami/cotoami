@@ -12,6 +12,7 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
+import Components.Connections.Messages
 
 
 type Msg
@@ -40,4 +41,5 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | ConnectionsMsg Components.Connections.Messages.Msg
     
