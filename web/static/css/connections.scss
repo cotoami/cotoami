@@ -6,10 +6,6 @@
   box-sizing: border-box;
   height: 100%;
   
-  @media (#{$wide-viewport}) {
-    font-size: 90%;
-  }
-  
   div.coto {
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -33,8 +29,8 @@
     width: 90vw;
     
     @media (#{$wide-viewport}) {
-      min-width: 400px;
-      width: 400px;
+      min-width: 500px;
+      width: 500px;
     }
     
     div.coto {
@@ -47,6 +43,9 @@
     width: 90vw;
     
     div.sub-cotos {
+      @media (#{$wide-viewport}) {
+        font-size: 90%;
+      }
       div.coto {
         margin-top: 10px;
         border: 1px solid #eee;
