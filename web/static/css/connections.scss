@@ -4,7 +4,6 @@
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
-  width: 100%;
   height: 100%;
   
   @media (#{$wide-viewport}) {
@@ -18,19 +17,36 @@
     padding: 10px;
   }
   
-  #root-connections {
-    display: flex;
-    flex-direction: column;
+  .connections-column {
     overflow-x: hidden;
     overflow-y: auto;
     padding-top: 10px;
+    padding-right: 15px;
+  }
+  
+  #column-roots {
+    display: flex;
+    flex-direction: column;
+    min-width: 90vw;
+    width: 90vw;
     
     @media (#{$wide-viewport}) {
+      min-width: 400px;
       width: 400px;
     }
     
     div.coto {
       margin-bottom: 10px;
+    }
+  }
+  
+  #column-traversal {
+    min-width: 90vw;
+    width: 90vw;
+    
+    @media (#{$wide-viewport}) {
+      min-width: 400px;
+      width: 400px;
     }
   }
 }

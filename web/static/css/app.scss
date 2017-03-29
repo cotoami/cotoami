@@ -96,6 +96,7 @@ html, body, #elm-container, #app, #app-body {
   padding: 10px 20px;
   background-color: #fbfbfb;
   animation-duration: 0.5s;
+  overflow-x: auto;
   
   &.neverToggled,
   &.empty {
