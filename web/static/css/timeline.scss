@@ -36,6 +36,10 @@
       }
     }
     
+    &:first-child {
+      margin-top: 6px;
+    }
+    
     &.active {
       border: 2px solid #ffa500;
       
