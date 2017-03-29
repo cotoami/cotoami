@@ -1,0 +1,32 @@
+@import "variables.scss";
+
+#connections {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  
+  div.coto {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 10px;
+  }
+  
+  #root-connections {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-top: 10px;
+    
+    @media (#{$wide-viewport}) {
+      width: 500px;
+    }
+    
+    div.coto {
+      margin-bottom: 10px;
+    }
+  }
+}
