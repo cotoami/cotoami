@@ -20,8 +20,8 @@
   .connections-column {
     overflow-x: hidden;
     overflow-y: auto;
-    padding-top: 10px;
-    padding-right: 15px;
+    padding: 10px;
+    padding-bottom: 30px;
   }
   
   #column-roots {
@@ -43,6 +43,13 @@
   #column-traversal {
     min-width: 90vw;
     width: 90vw;
+    
+    div.sub-cotos {
+      div.coto {
+        margin-top: 10px;
+        border: 1px solid #eee;
+      }
+    }
     
     @media (#{$wide-viewport}) {
       min-width: 400px;
