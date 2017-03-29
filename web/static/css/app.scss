@@ -205,6 +205,7 @@ div.flow-stock-switch {
     margin-bottom: 0;
     padding: 0;
     animation-name: none;
+    overflow-y: hidden;
     
     &.notEmpty {
       display: block;
