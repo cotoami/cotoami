@@ -103,6 +103,7 @@ html, body, #elm-container, #app {
   background-color: #fbfbfb;
   animation-duration: 0.5s;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   
   &.neverToggled,
   &.empty {

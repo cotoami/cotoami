@@ -20,6 +20,7 @@
   .connections-column {
     overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 10px;
     padding-top: 15px;
     padding-bottom: 50px;
