@@ -94,7 +94,7 @@ html, body, #elm-container, #app, #app-body {
   right: 0;
   bottom: 0;
   padding: 10px 20px;
-  background-color: #fff;
+  background-color: #fbfbfb;
   animation-duration: 0.5s;
   
   &.neverToggled,
@@ -202,6 +202,7 @@ div.flow-stock-switch {
     
     &.notEmpty {
       display: block;
+      flex: 1;
     }
   }
   
