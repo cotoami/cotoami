@@ -66,6 +66,7 @@ view model =
                   ]
               , flowStockSwitch model
               ]
+          , connectModePanel model
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
@@ -85,6 +86,14 @@ view model =
               ] 
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
+
+
+connectModePanel : Model -> Html Msg
+connectModePanel model =
+    div [ id "connect-mode" ] 
+        [ span [] [ text "Select target cotos or just " ]
+        , button [ class "button" ] [ text "Save it" ]
+        ]
 
 
 flowStockSwitch : Model -> Html Msg

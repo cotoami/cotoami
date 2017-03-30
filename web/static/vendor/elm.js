@@ -25666,6 +25666,42 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 			});
 	}
 };
+var _user$project$App_View$connectModePanel = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('connect-mode'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Select target cotos or just '),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Save it'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$App_View$view = function (model) {
 	var anyAnonymousCotos = _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.session) && (!_elm_lang$core$List$isEmpty(model.timeline.posts));
 	return A2(
@@ -25832,76 +25868,80 @@ var _user$project$App_View$view = function (model) {
 					}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$map,
-						_user$project$App_Messages$ConfirmModalMsg,
-						_user$project$Components_ConfirmModal_View$view(model.confirmModal)),
+					_0: _user$project$App_View$connectModePanel(model),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$map,
-							_user$project$App_Messages$SigninModalMsg,
-							A2(_user$project$Components_SigninModal$view, model.signinModal, anyAnonymousCotos)),
+							_user$project$App_Messages$ConfirmModalMsg,
+							_user$project$Components_ConfirmModal_View$view(model.confirmModal)),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$map,
-								_user$project$App_Messages$ProfileModalMsg,
-								A2(_user$project$Components_ProfileModal$view, model.session, model.profileModal)),
+								_user$project$App_Messages$SigninModalMsg,
+								A2(_user$project$Components_SigninModal$view, model.signinModal, anyAnonymousCotos)),
 							_1: {
 								ctor: '::',
 								_0: A2(
 									_elm_lang$html$Html$map,
-									_user$project$App_Messages$CotoModalMsg,
-									_user$project$Components_CotoModal$view(model.cotoModal)),
+									_user$project$App_Messages$ProfileModalMsg,
+									A2(_user$project$Components_ProfileModal$view, model.session, model.profileModal)),
 								_1: {
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$map,
-										_user$project$App_Messages$CotonomaModalMsg,
-										A2(_user$project$Components_CotonomaModal_View$view, model.session, model.cotonomaModal)),
+										_user$project$App_Messages$CotoModalMsg,
+										_user$project$Components_CotoModal$view(model.cotoModal)),
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$a,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('tool-button info-button'),
-												_1: {
+											_elm_lang$html$Html$map,
+											_user$project$App_Messages$CotonomaModalMsg,
+											A2(_user$project$Components_CotonomaModal_View$view, model.session, model.cotonomaModal)),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$a,
+												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$title('News and Feedback'),
+													_0: _elm_lang$html$Html_Attributes$class('tool-button info-button'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$href('https://twitter.com/cotoami'),
+														_0: _elm_lang$html$Html_Attributes$title('News and Feedback'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$target('_blank'),
+															_0: _elm_lang$html$Html_Attributes$href('https://twitter.com/cotoami'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$hidden(model.timeline.editingNew),
-																_1: {ctor: '[]'}
+																_0: _elm_lang$html$Html_Attributes$target('_blank'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$hidden(model.timeline.editingNew),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
-												}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$i,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('info'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$i,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('info'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}

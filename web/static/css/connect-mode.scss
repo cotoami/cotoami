@@ -1,0 +1,26 @@
+@import "variables.scss";
+
+#connect-mode {
+  z-index: 12;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 90vw;
+  padding: 10px;
+  background: rgba(85,85,85,0.65);
+  color: #eee;
+  font-size: 16px;
+  text-align: center;
+  
+  @media (#{$wide-viewport}) {
+    width: 500px;
+  }
+  
+  button {
+    background-color: #fff;
+    margin: 0;
+    margin-left: 5px;
+  }
+}
