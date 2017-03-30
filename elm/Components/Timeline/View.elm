@@ -11,16 +11,16 @@ import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank)
-import App.Types exposing (Session, Cotonoma)
+import App.Types exposing (Session, Cotonoma, ConnectMode)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
 import Components.Timeline.Messages exposing (..)
 
 
-view : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
-view model maybeSession maybeCotonoma activeCotoId =
+view : Maybe ConnectMode -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
+view  maybeConnectMode maybeCotonoma maybeSession model =
     div [ id "input-and-timeline", class (timelineClass model) ]
-        [ timelineDiv model maybeSession maybeCotonoma activeCotoId
+        [ timelineDiv maybeConnectMode maybeCotonoma maybeSession model
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNew) ]
                 [ (case maybeSession of
@@ -60,15 +60,15 @@ view model maybeSession maybeCotonoma activeCotoId =
         ]
 
 
-timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
-timelineDiv model maybeSession maybeCotonoma activeCotoId =
+timelineDiv : Maybe ConnectMode -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
+timelineDiv maybeConnectMode maybeCotonoma maybeSession model =
     Html.Keyed.node
         "div"
         [ id "timeline", classList [ ( "loading", model.loading ) ] ]
         (List.map 
             (\post -> 
                 ( getKey post
-                , postDiv maybeSession maybeCotonoma activeCotoId post
+                , postDiv maybeConnectMode maybeCotonoma maybeSession post
                 )
             ) 
             (List.reverse model.posts)
@@ -85,15 +85,15 @@ getKey post =
                 Nothing -> ""
     
     
-postDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Post -> Html Msg
-postDiv maybeSession maybeCotonoma activeCotoId post =
+postDiv : Maybe ConnectMode -> Maybe Cotonoma -> Maybe Session -> Post -> Html Msg
+postDiv maybeConnectMode maybeCotonoma maybeSession post =
     let
         postedInAnother = not (isPostedInCotonoma maybeCotonoma post)
     in
         div
             [ classList 
                 [ ( "coto", True )
-                , ( "active", isActive post activeCotoId )
+                , ( "active", isActive maybeConnectMode post )
                 , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "posted-in-another-cotonoma", postedInAnother )
@@ -131,11 +131,14 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
             ]
         
 
-isActive : Post -> Maybe Int -> Bool
-isActive post activeCotoId =
+isActive : Maybe ConnectMode -> Post -> Bool
+isActive maybeConnectMode post =
     case post.cotoId of
         Nothing -> False
-        Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
+        Just cotoId -> 
+            case maybeConnectMode of
+                Nothing -> False
+                Just connectMode -> connectMode.baseCotoId == cotoId
 
 
 authorDiv : Maybe Session -> Post -> Html Msg

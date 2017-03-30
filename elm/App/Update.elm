@@ -202,13 +202,6 @@ update msg model =
                                 |> Task.andThen (\_ -> Task.succeed ())
                                 |> Task.perform (\_ -> DeleteCoto coto)
                             ]
-                            
-                    Components.CotoModal.Connect coto  -> 
-                        { model 
-                        | cotoModal = cotoModal
-                        , connectMode = Just (ConnectMode coto [])
-                        , activeCotoId = Just coto.id
-                        } ! [ Cmd.map CotoModalMsg cmd ]
                         
                     _ ->
                         { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]
@@ -228,7 +221,7 @@ update msg model =
                     Components.Timeline.Messages.PostClick cotoId ->
                         { model 
                         | timeline = timeline
-                        , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
+                        , connectMode = updateConnectMode cotoId model.connectMode
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
@@ -405,13 +398,21 @@ loadCotonoma key model =
         ]
 
 
-newActiveCotoId : Maybe Int -> Int -> Maybe Int
-newActiveCotoId currentActiveId clickedId =
-    case currentActiveId of
-        Nothing -> Just clickedId
-        Just activeId -> 
-            if clickedId == activeId then
+updateConnectMode : Int -> Maybe ConnectMode -> Maybe ConnectMode
+updateConnectMode clickedId maybeConnectMode =
+    case maybeConnectMode of
+        Nothing -> Just (ConnectMode clickedId [])
+        Just connectMode -> 
+            if clickedId == connectMode.baseCotoId then
                 Nothing
             else
-                Just clickedId
+                let
+                    otherCotoIds = connectMode.otherCotoIds
+                    newOtherCotoIds =
+                        if List.member clickedId otherCotoIds then
+                            List.filter (\id -> clickedId /= id) otherCotoIds
+                        else
+                            clickedId :: otherCotoIds
+                in
+                    Just { connectMode | otherCotoIds = newOtherCotoIds }
             

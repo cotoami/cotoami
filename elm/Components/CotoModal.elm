@@ -25,7 +25,6 @@ type Msg
     = Close
     | ConfirmDelete String
     | Delete Coto
-    | Connect Coto
     
     
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,9 +37,6 @@ update msg model =
             ( model, Cmd.none )
             
         Delete coto ->
-            ( { model | open = False }, Cmd.none )
-            
-        Connect coto ->
             ( { model | open = False }, Cmd.none )
 
 
@@ -68,11 +64,6 @@ modalConfig coto model =
         ]
     , buttons = 
         [ button 
-            [ class "button"
-            , onClick (Connect coto)
-            ]
-            [ text "Connect" ]
-        , button 
             [ class "button"
             , onClick (ConfirmDelete "Are you sure you want to delete this coto?") 
             ] 

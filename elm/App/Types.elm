@@ -72,7 +72,7 @@ type alias Coto =
 type alias Connection =
     { end : Int
     }
-  
+
 
 type alias Cotonoma =
     { id : Int
@@ -91,6 +91,12 @@ decodeCotonoma =
         (Decode.field "name" Decode.string)
         (Decode.field "coto_id" Decode.int)
         (Decode.maybe (Decode.field "owner" decodeAmishi))
+
+
+type alias ConnectMode =
+    { baseCotoId : Int
+    , otherCotoIds : List Int
+    }
 
 
 type alias MemberConnCounts = Dict.Dict Int Int

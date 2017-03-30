@@ -44,10 +44,10 @@ view model =
               , div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
-                          model.timeline 
+                          model.connectMode
+                          model.cotonoma
                           model.session
-                          model.cotonoma 
-                          model.activeCotoId
+                          model.timeline 
                       )
                   ]
               , div 
@@ -95,7 +95,7 @@ connectModePanel model =
             div [] []
         Just connectMode ->
             div [ id "connect-mode" ] 
-                [ span [] [ text "Select target cotos or just " ]
+                [ span [] [ text "Connect other cotos or just " ]
                 , button [ class "button" ] [ text "Save it" ]
                 ]
 

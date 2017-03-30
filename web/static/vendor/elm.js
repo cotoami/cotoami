@@ -17037,6 +17037,10 @@ var _user$project$App_Types$decodeCotonoma = A6(
 	A2(_elm_lang$core$Json_Decode$field, 'coto_id', _elm_lang$core$Json_Decode$int),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'owner', _user$project$App_Types$decodeAmishi)));
+var _user$project$App_Types$ConnectMode = F2(
+	function (a, b) {
+		return {baseCotoId: a, otherCotoIds: b};
+	});
 var _user$project$App_Types$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _user$project$App_Types$CotonomaRoute = function (a) {
 	return {ctor: 'CotonomaRoute', _0: a};
@@ -21715,14 +21719,6 @@ var _user$project$Components_CotoModal$update = F2(
 				};
 			case 'ConfirmDelete':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Delete':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{open: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 			default:
 				return {
 					ctor: '_Tuple2',
@@ -21738,9 +21734,6 @@ var _user$project$Components_CotoModal$Model = F2(
 	function (a, b) {
 		return {open: a, coto: b};
 	});
-var _user$project$Components_CotoModal$Connect = function (a) {
-	return {ctor: 'Connect', _0: a};
-};
 var _user$project$Components_CotoModal$Delete = function (a) {
 	return {ctor: 'Delete', _0: a};
 };
@@ -21782,36 +21775,16 @@ var _user$project$Components_CotoModal$modalConfig = F2(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_CotoModal$Connect(coto)),
+								_user$project$Components_CotoModal$ConfirmDelete('Are you sure you want to delete this coto?')),
 							_1: {ctor: '[]'}
 						}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Connect'),
+						_0: _elm_lang$html$Html$text('Delete'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$button,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('button'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Components_CotoModal$ConfirmDelete('Are you sure you want to delete this coto?')),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Delete'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
 		};
 	});
@@ -22266,17 +22239,12 @@ var _user$project$App_Model$initModel = F2(
 			cotonomasLoading: false,
 			subCotonomas: {ctor: '[]'},
 			timeline: _user$project$Components_Timeline_Model$initModel,
-			activeCotoId: _elm_lang$core$Maybe$Nothing,
 			cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel,
 			stockToggled: false,
 			stockOpen: false,
 			connections: _user$project$Components_Connections_Model$initModel,
 			connectMode: _elm_lang$core$Maybe$Nothing
 		};
-	});
-var _user$project$App_Model$ConnectMode = F2(
-	function (a, b) {
-		return {baseCoto: a, otherCotos: b};
 	});
 var _user$project$App_Model$Model = function (a) {
 	return function (b) {
@@ -22300,9 +22268,7 @@ var _user$project$App_Model$Model = function (a) {
 																			return function (t) {
 																				return function (u) {
 																					return function (v) {
-																						return function (w) {
-																							return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, activeCotoId: r, cotonomaModal: s, stockToggled: t, stockOpen: u, connections: v, connectMode: w};
-																						};
+																						return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, connectMode: r, cotonomaModal: s, stockToggled: t, stockOpen: u, connections: v};
 																					};
 																				};
 																			};
@@ -23003,13 +22969,32 @@ var _user$project$Components_CotonomaModal_Update$update = F6(
 		}
 	});
 
-var _user$project$App_Update$newActiveCotoId = F2(
-	function (currentActiveId, clickedId) {
-		var _p0 = currentActiveId;
+var _user$project$App_Update$updateConnectMode = F2(
+	function (clickedId, maybeConnectMode) {
+		var _p0 = maybeConnectMode;
 		if (_p0.ctor === 'Nothing') {
-			return _elm_lang$core$Maybe$Just(clickedId);
+			return _elm_lang$core$Maybe$Just(
+				A2(
+					_user$project$App_Types$ConnectMode,
+					clickedId,
+					{ctor: '[]'}));
 		} else {
-			return _elm_lang$core$Native_Utils.eq(clickedId, _p0._0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(clickedId);
+			var _p1 = _p0._0;
+			if (_elm_lang$core$Native_Utils.eq(clickedId, _p1.baseCotoId)) {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var otherCotoIds = _p1.otherCotoIds;
+				var newOtherCotoIds = A2(_elm_lang$core$List$member, clickedId, otherCotoIds) ? A2(
+					_elm_lang$core$List$filter,
+					function (id) {
+						return !_elm_lang$core$Native_Utils.eq(clickedId, id);
+					},
+					otherCotoIds) : {ctor: '::', _0: clickedId, _1: otherCotoIds};
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Native_Utils.update(
+						_p1,
+						{otherCotoIds: newOtherCotoIds}));
+			}
 		}
 	});
 var _user$project$App_Update$loadCotonoma = F2(
@@ -23082,11 +23067,11 @@ var _user$project$App_Update$applyPresenceDiff = F2(
 						_elm_lang$core$Dict$update,
 						amishiId,
 						function (maybeValue) {
-							var _p1 = maybeValue;
-							if (_p1.ctor === 'Nothing') {
+							var _p2 = maybeValue;
+							if (_p2.ctor === 'Nothing') {
 								return _elm_lang$core$Maybe$Just(count);
 							} else {
-								return _elm_lang$core$Maybe$Just(_p1._0 + count);
+								return _elm_lang$core$Maybe$Just(_p2._0 + count);
 							}
 						},
 						presences);
@@ -23101,11 +23086,11 @@ var _user$project$App_Update$applyPresenceDiff = F2(
 						_elm_lang$core$Dict$update,
 						amishiId,
 						function (maybeValue) {
-							var _p2 = maybeValue;
-							if (_p2.ctor === 'Nothing') {
+							var _p3 = maybeValue;
+							if (_p3.ctor === 'Nothing') {
 								return _elm_lang$core$Maybe$Nothing;
 							} else {
-								return _elm_lang$core$Maybe$Just(_p2._0 - count);
+								return _elm_lang$core$Maybe$Just(_p3._0 - count);
 							}
 						},
 						presences);
@@ -23115,41 +23100,41 @@ var _user$project$App_Update$applyPresenceDiff = F2(
 	});
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
 			case 'OnLocationChange':
-				var newRoute = _user$project$App_Routing$parseLocation(_p3._0);
+				var newRoute = _user$project$App_Routing$parseLocation(_p4._0);
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
 					{route: newRoute});
-				var _p4 = newRoute;
-				switch (_p4.ctor) {
+				var _p5 = newRoute;
+				switch (_p5.ctor) {
 					case 'HomeRoute':
 						return _user$project$App_Update$loadHome(model);
 					case 'CotonomaRoute':
-						return A2(_user$project$App_Update$loadCotonoma, _p4._0, newModel);
+						return A2(_user$project$App_Update$loadCotonoma, _p5._0, newModel);
 					default:
 						return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SessionFetched':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								session: _elm_lang$core$Maybe$Just(_p3._0._0)
+								session: _elm_lang$core$Maybe$Just(_p4._0._0)
 							}),
 						{ctor: '[]'});
 				} else {
-					var _p5 = _p3._0._0;
-					if (_p5.ctor === 'BadStatus') {
-						return _elm_lang$core$Native_Utils.eq(_p5._0.status.code, 404) ? A2(
+					var _p6 = _p4._0._0;
+					if (_p6.ctor === 'BadStatus') {
+						return _elm_lang$core$Native_Utils.eq(_p6._0.status.code, 404) ? A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_user$project$App_Model$openSigninModal(model),
 							{ctor: '[]'}) : A2(
@@ -23164,12 +23149,12 @@ var _user$project$App_Update$update = F2(
 					}
 				}
 			case 'RecentCotonomasFetched':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{recentCotonomas: _p3._0._0, cotonomasLoading: false}),
+							{recentCotonomas: _p4._0._0, cotonomasLoading: false}),
 						{ctor: '[]'});
 				} else {
 					return A2(
@@ -23180,12 +23165,12 @@ var _user$project$App_Update$update = F2(
 						{ctor: '[]'});
 				}
 			case 'SubCotonomasFetched':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{subCotonomas: _p3._0._0}),
+							{subCotonomas: _p4._0._0}),
 						{ctor: '[]'});
 				} else {
 					return A2(
@@ -23210,25 +23195,25 @@ var _user$project$App_Update$update = F2(
 			case 'HomeClick':
 				return _user$project$App_Update$changeLocationToHome(model);
 			case 'CotonomaFetched':
-				if (_p3._0.ctor === 'Ok') {
-					var _p7 = _p3._0._0._0;
-					var _p6 = A5(
+				if (_p4._0.ctor === 'Ok') {
+					var _p8 = _p4._0._0._0;
+					var _p7 = A5(
 						_user$project$Components_Timeline_Update$update,
 						model.clientId,
 						model.cotonoma,
 						model.ctrlDown,
 						_user$project$Components_Timeline_Messages$PostsFetched(
-							_elm_lang$core$Result$Ok(_p3._0._0._2)),
+							_elm_lang$core$Result$Ok(_p4._0._0._2)),
 						model.timeline);
-					var timeline = _p6._0;
-					var cmd = _p6._1;
+					var timeline = _p7._0;
+					var cmd = _p7._1;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								cotonoma: _elm_lang$core$Maybe$Just(_p7),
-								members: _p3._0._0._1,
+								cotonoma: _elm_lang$core$Maybe$Just(_p8),
+								members: _p4._0._0._1,
 								navigationOpen: false,
 								timeline: timeline
 							}),
@@ -23238,7 +23223,7 @@ var _user$project$App_Update$update = F2(
 							_1: {
 								ctor: '::',
 								_0: _user$project$App_Commands$fetchSubCotonomas(
-									_elm_lang$core$Maybe$Just(_p7)),
+									_elm_lang$core$Maybe$Just(_p8)),
 								_1: {ctor: '[]'}
 							}
 						});
@@ -23249,8 +23234,8 @@ var _user$project$App_Update$update = F2(
 						{ctor: '[]'});
 				}
 			case 'KeyDown':
-				var _p8 = _p3._0;
-				return (_elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p8, _user$project$Keys$meta.keyCode)) ? A2(
+				var _p9 = _p4._0;
+				return (_elm_lang$core$Native_Utils.eq(_p9, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p9, _user$project$Keys$meta.keyCode)) ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -23260,8 +23245,8 @@ var _user$project$App_Update$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'KeyUp':
-				var _p9 = _p3._0;
-				return (_elm_lang$core$Native_Utils.eq(_p9, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p9, _user$project$Keys$meta.keyCode)) ? A2(
+				var _p10 = _p4._0;
+				return (_elm_lang$core$Native_Utils.eq(_p10, _user$project$Keys$ctrl.keyCode) || _elm_lang$core$Native_Utils.eq(_p10, _user$project$Keys$meta.keyCode)) ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -23271,9 +23256,9 @@ var _user$project$App_Update$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'ConfirmModalMsg':
-				var _p10 = A2(_user$project$Components_ConfirmModal_Update$update, _p3._0, model.confirmModal);
-				var confirmModal = _p10._0;
-				var cmd = _p10._1;
+				var _p11 = A2(_user$project$Components_ConfirmModal_Update$update, _p4._0, model.confirmModal);
+				var confirmModal = _p11._0;
+				var cmd = _p11._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -23290,9 +23275,9 @@ var _user$project$App_Update$update = F2(
 					_user$project$App_Model$openSigninModal(model),
 					{ctor: '[]'});
 			case 'SigninModalMsg':
-				var _p11 = A2(_user$project$Components_SigninModal$update, _p3._0, model.signinModal);
-				var signinModal = _p11._0;
-				var cmd = _p11._1;
+				var _p12 = A2(_user$project$Components_SigninModal$update, _p4._0, model.signinModal);
+				var signinModal = _p12._0;
+				var cmd = _p12._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -23316,9 +23301,9 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'ProfileModalMsg':
-				var _p12 = A2(_user$project$Components_ProfileModal$update, _p3._0, model.profileModal);
-				var profileModal = _p12._0;
-				var cmd = _p12._1;
+				var _p13 = A2(_user$project$Components_ProfileModal$update, _p4._0, model.profileModal);
+				var profileModal = _p13._0;
+				var cmd = _p13._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -23330,15 +23315,15 @@ var _user$project$App_Update$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'CotoModalMsg':
-				var _p20 = _p3._0;
+				var _p20 = _p4._0;
 				var timeline = model.timeline;
 				var posts = timeline.posts;
 				var confirmModal = model.confirmModal;
-				var _p13 = A2(_user$project$Components_CotoModal$update, _p20, model.cotoModal);
-				var cotoModal = _p13._0;
-				var cmd = _p13._1;
-				var _p14 = _p20;
-				switch (_p14.ctor) {
+				var _p14 = A2(_user$project$Components_CotoModal$update, _p20, model.cotoModal);
+				var cotoModal = _p14._0;
+				var cmd = _p14._1;
+				var _p15 = _p20;
+				switch (_p15.ctor) {
 					case 'ConfirmDelete':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -23350,14 +23335,14 @@ var _user$project$App_Update$update = F2(
 										confirmModal,
 										{
 											open: true,
-											message: _p14._0,
+											message: _p15._0,
 											msgOnConfirm: function () {
-												var _p15 = cotoModal.coto;
-												if (_p15.ctor === 'Nothing') {
+												var _p16 = cotoModal.coto;
+												if (_p16.ctor === 'Nothing') {
 													return _user$project$App_Messages$NoOp;
 												} else {
 													return _user$project$App_Messages$CotoModalMsg(
-														_user$project$Components_CotoModal$Delete(_p15._0));
+														_user$project$Components_CotoModal$Delete(_p16._0));
 												}
 											}()
 										})
@@ -23368,7 +23353,7 @@ var _user$project$App_Update$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'Delete':
-						var _p18 = _p14._0;
+						var _p19 = _p15._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
@@ -23381,7 +23366,7 @@ var _user$project$App_Update$update = F2(
 											posts: A2(
 												_elm_lang$core$List$map,
 												function (post) {
-													return A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p18, post) ? _elm_lang$core$Native_Utils.update(
+													return A2(_user$project$Components_Timeline_Model$isSelfOrPostedIn, _p19, post) ? _elm_lang$core$Native_Utils.update(
 														post,
 														{beingDeleted: true}) : post;
 												},
@@ -23393,17 +23378,17 @@ var _user$project$App_Update$update = F2(
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
 								_1: {
 									ctor: '::',
-									_0: _user$project$App_Commands$deleteCoto(_p18.id),
+									_0: _user$project$App_Commands$deleteCoto(_p19.id),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_elm_lang$core$Task$perform,
-											function (_p16) {
-												return _user$project$App_Messages$DeleteCoto(_p18);
+											function (_p17) {
+												return _user$project$App_Messages$DeleteCoto(_p19);
 											},
 											A2(
 												_elm_lang$core$Task$andThen,
-												function (_p17) {
+												function (_p18) {
 													return _elm_lang$core$Task$succeed(
 														{ctor: '_Tuple0'});
 												},
@@ -23411,26 +23396,6 @@ var _user$project$App_Update$update = F2(
 										_1: {ctor: '[]'}
 									}
 								}
-							});
-					case 'Connect':
-						var _p19 = _p14._0;
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{
-									cotoModal: cotoModal,
-									connectMode: _elm_lang$core$Maybe$Just(
-										A2(
-											_user$project$App_Model$ConnectMode,
-											_p19,
-											{ctor: '[]'})),
-									activeCotoId: _elm_lang$core$Maybe$Just(_p19.id)
-								}),
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
-								_1: {ctor: '[]'}
 							});
 					default:
 						return A2(
@@ -23445,7 +23410,7 @@ var _user$project$App_Update$update = F2(
 							});
 				}
 			case 'TimelineMsg':
-				var _p23 = _p3._0;
+				var _p23 = _p4._0;
 				var cotoModal = model.cotoModal;
 				var _p21 = A5(_user$project$Components_Timeline_Update$update, model.clientId, model.cotonoma, model.ctrlDown, _p23, model.timeline);
 				var timeline = _p21._0;
@@ -23459,7 +23424,7 @@ var _user$project$App_Update$update = F2(
 								model,
 								{
 									timeline: timeline,
-									activeCotoId: A2(_user$project$App_Update$newActiveCotoId, model.activeCotoId, _p22._0)
+									connectMode: A2(_user$project$App_Update$updateConnectMode, _p22._0, model.connectMode)
 								}),
 							{
 								ctor: '::',
@@ -23519,7 +23484,7 @@ var _user$project$App_Update$update = F2(
 							});
 				}
 			case 'DeleteCoto':
-				var _p24 = _p3._0;
+				var _p24 = _p4._0;
 				var timeline = model.timeline;
 				var posts = timeline.posts;
 				return A2(
@@ -23576,7 +23541,7 @@ var _user$project$App_Update$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'CotonomaModalMsg':
-				var _p29 = _p3._0;
+				var _p29 = _p4._0;
 				var _p26 = model.session;
 				if (_p26.ctor === 'Nothing') {
 					return A2(
@@ -23620,18 +23585,18 @@ var _user$project$App_Update$update = F2(
 					}
 				}
 			case 'CotonomaClick':
-				return A2(_user$project$App_Update$changeLocationToCotonoma, _p3._0, model);
+				return A2(_user$project$App_Update$changeLocationToCotonoma, _p4._0, model);
 			case 'CotonomaPresenceState':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							memberPresences: _user$project$App_Channels$decodePresenceState(_p3._0)
+							memberPresences: _user$project$App_Channels$decodePresenceState(_p4._0)
 						}),
 					{ctor: '[]'});
 			case 'CotonomaPresenceDiff':
-				var presenceDiff = _user$project$App_Channels$decodePresenceDiff(_p3._0);
+				var presenceDiff = _user$project$App_Channels$decodePresenceDiff(_p4._0);
 				var newMemberPresences = A2(_user$project$App_Update$applyPresenceDiff, presenceDiff, model.memberPresences);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -24505,18 +24470,21 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 		}
 	});
 var _user$project$Components_Timeline_View$isActive = F2(
-	function (post, activeCotoId) {
+	function (maybeConnectMode, post) {
 		var _p3 = post.cotoId;
 		if (_p3.ctor === 'Nothing') {
 			return false;
 		} else {
-			return _elm_lang$core$Native_Utils.eq(
-				A2(_elm_lang$core$Maybe$withDefault, -1, activeCotoId),
-				_p3._0);
+			var _p4 = maybeConnectMode;
+			if (_p4.ctor === 'Nothing') {
+				return false;
+			} else {
+				return _elm_lang$core$Native_Utils.eq(_p4._0.baseCotoId, _p3._0);
+			}
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
-	function (maybeSession, maybeCotonoma, activeCotoId, post) {
+	function (maybeConnectMode, maybeCotonoma, maybeSession, post) {
 		var postedInAnother = !A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post);
 		return A2(
 			_elm_lang$html$Html$div,
@@ -24531,7 +24499,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'active',
-								_1: A2(_user$project$Components_Timeline_View$isActive, post, activeCotoId)
+								_1: A2(_user$project$Components_Timeline_View$isActive, maybeConnectMode, post)
 							},
 							_1: {
 								ctor: '::',
@@ -24555,12 +24523,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p4 = post.cotoId;
-						if (_p4.ctor === 'Nothing') {
+						var _p5 = post.cotoId;
+						if (_p5.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p4._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p5._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24579,8 +24547,8 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p5 = post.cotoId;
-						if (_p5.ctor === 'Nothing') {
+						var _p6 = post.cotoId;
+						if (_p6.ctor === 'Nothing') {
 							return A2(
 								_elm_lang$html$Html$span,
 								{ctor: '[]'},
@@ -24623,14 +24591,14 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					_1: {
 						ctor: '::',
 						_0: function () {
-							var _p6 = post.postedIn;
-							if (_p6.ctor === 'Nothing') {
+							var _p7 = post.postedIn;
+							if (_p7.ctor === 'Nothing') {
 								return A2(
 									_elm_lang$html$Html$span,
 									{ctor: '[]'},
 									{ctor: '[]'});
 							} else {
-								var _p7 = _p6._0;
+								var _p8 = _p7._0;
 								return postedInAnother ? A2(
 									_elm_lang$html$Html$a,
 									{
@@ -24639,13 +24607,13 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 										_1: {
 											ctor: '::',
 											_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
-												_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
+												_user$project$Components_Timeline_Messages$CotonomaClick(_p8.key)),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p7.name),
+										_0: _elm_lang$html$Html$text(_p8.name),
 										_1: {ctor: '[]'}
 									}) : A2(
 									_elm_lang$html$Html$span,
@@ -24667,20 +24635,20 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 			});
 	});
 var _user$project$Components_Timeline_View$getKey = function (post) {
-	var _p8 = post.cotoId;
-	if (_p8.ctor === 'Just') {
-		return _elm_lang$core$Basics$toString(_p8._0);
+	var _p9 = post.cotoId;
+	if (_p9.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p9._0);
 	} else {
-		var _p9 = post.postId;
-		if (_p9.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p9._0);
+		var _p10 = post.postId;
+		if (_p10.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p10._0);
 		} else {
 			return '';
 		}
 	}
 };
 var _user$project$Components_Timeline_View$timelineDiv = F4(
-	function (model, maybeSession, maybeCotonoma, activeCotoId) {
+	function (maybeConnectMode, maybeCotonoma, maybeSession, model) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -24704,13 +24672,13 @@ var _user$project$Components_Timeline_View$timelineDiv = F4(
 					return {
 						ctor: '_Tuple2',
 						_0: _user$project$Components_Timeline_View$getKey(post),
-						_1: A4(_user$project$Components_Timeline_View$postDiv, maybeSession, maybeCotonoma, activeCotoId, post)
+						_1: A4(_user$project$Components_Timeline_View$postDiv, maybeConnectMode, maybeCotonoma, maybeSession, post)
 					};
 				},
 				_elm_lang$core$List$reverse(model.posts)));
 	});
 var _user$project$Components_Timeline_View$view = F4(
-	function (model, maybeSession, maybeCotonoma, activeCotoId) {
+	function (maybeConnectMode, maybeCotonoma, maybeSession, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24725,7 +24693,7 @@ var _user$project$Components_Timeline_View$view = F4(
 			},
 			{
 				ctor: '::',
-				_0: A4(_user$project$Components_Timeline_View$timelineDiv, model, maybeSession, maybeCotonoma, activeCotoId),
+				_0: A4(_user$project$Components_Timeline_View$timelineDiv, maybeConnectMode, maybeCotonoma, maybeSession, model),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -24751,8 +24719,8 @@ var _user$project$Components_Timeline_View$view = F4(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p10 = maybeSession;
-										if (_p10.ctor === 'Nothing') {
+										var _p11 = maybeSession;
+										if (_p11.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -24781,7 +24749,7 @@ var _user$project$Components_Timeline_View$view = F4(
 													}
 												});
 										} else {
-											var _p11 = _p10._0;
+											var _p12 = _p11._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -24798,7 +24766,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p11.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p12.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -24814,7 +24782,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p11.displayName),
+																_0: _elm_lang$html$Html$text(_p12.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
@@ -25719,7 +25687,7 @@ var _user$project$App_View$connectModePanel = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Select target cotos or just '),
+						_0: _elm_lang$html$Html$text('Connect other cotos or just '),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -25840,7 +25808,7 @@ var _user$project$App_View$view = function (model) {
 									_0: A2(
 										_elm_lang$html$Html$map,
 										_user$project$App_Messages$TimelineMsg,
-										A4(_user$project$Components_Timeline_View$view, model.timeline, model.session, model.cotonoma, model.activeCotoId)),
+										A4(_user$project$Components_Timeline_View$view, model.connectMode, model.cotonoma, model.session, model.timeline)),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -26036,7 +26004,7 @@ var _user$project$Main$Flags = function (a) {
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"Connect":["App.Types.Coto"],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"SigninModalMsg":["Components.SigninModal.Msg"],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
