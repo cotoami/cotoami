@@ -90,10 +90,14 @@ view model =
 
 connectModePanel : Model -> Html Msg
 connectModePanel model =
-    div [ id "connect-mode" ] 
-        [ span [] [ text "Select target cotos or just " ]
-        , button [ class "button" ] [ text "Save it" ]
-        ]
+    case model.connectMode of
+        Nothing -> 
+            div [] []
+        Just connectMode ->
+            div [ id "connect-mode" ] 
+                [ span [] [ text "Select target cotos or just " ]
+                , button [ class "button" ] [ text "Save it" ]
+                ]
 
 
 flowStockSwitch : Model -> Html Msg
