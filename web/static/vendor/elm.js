@@ -21737,90 +21737,85 @@ var _user$project$Components_CotoModal$ConfirmDelete = function (a) {
 	return {ctor: 'ConfirmDelete', _0: a};
 };
 var _user$project$Components_CotoModal$Close = {ctor: 'Close'};
-var _user$project$Components_CotoModal$modalConfig = function (model) {
-	return {
-		closeMessage: _user$project$Components_CotoModal$Close,
-		title: function () {
-			var _p1 = model.coto;
-			if (_p1.ctor === 'Nothing') {
-				return '';
-			} else {
-				return _p1._0.asCotonoma ? 'Cotonoma' : 'Coto';
-			}
-		}(),
-		content: A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('coto'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: function () {
-							var _p2 = model.coto;
-							if (_p2.ctor === 'Nothing') {
-								return A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
-									{ctor: '[]'});
-							} else {
-								return _user$project$App_Markdown$markdown(_p2._0.content);
-							}
-						}(),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}),
-		buttons: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$button,
+var _user$project$Components_CotoModal$modalConfig = F2(
+	function (coto, model) {
+		return {
+			closeMessage: _user$project$Components_CotoModal$Close,
+			title: coto.asCotonoma ? 'Cotonoma' : 'Coto',
+			content: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Connect'),
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('coto'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _user$project$App_Markdown$markdown(coto.content),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				}),
-			_1: {
+			buttons: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$button,
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$class('button'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_CotoModal$ConfirmDelete('Are you sure you want to delete this coto?')),
-							_1: {ctor: '[]'}
-						}
+						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Delete'),
+						_0: _elm_lang$html$Html$text('Connect'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('button'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Components_CotoModal$ConfirmDelete('Are you sure you want to delete this coto?')),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Delete'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
-		}
-	};
-};
+		};
+	});
 var _user$project$Components_CotoModal$view = function (model) {
 	return A2(
 		_user$project$Modal$view,
 		'coto-modal',
-		model.open ? _elm_lang$core$Maybe$Just(
-			_user$project$Components_CotoModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
+		function () {
+			if (model.open) {
+				var _p1 = model.coto;
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						A2(_user$project$Components_CotoModal$modalConfig, _p1._0, model));
+				}
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}());
 };
 
 var _user$project$Components_CotonomaModal_Messages$AmishiFetched = function (a) {
