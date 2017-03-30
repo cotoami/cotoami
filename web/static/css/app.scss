@@ -99,7 +99,8 @@ html, body, #elm-container, #app {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 10px;
+  padding: 0;
+  padding-left: 10px;
   background-color: #fbfbfb;
   animation-duration: 0.5s;
   overflow-x: auto;
