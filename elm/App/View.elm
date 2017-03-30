@@ -95,8 +95,12 @@ connectModePanel model =
             div [] []
         Just connectMode ->
             div [ id "connect-mode" ] 
-                [ span [] [ text "Connect other cotos or just " ]
-                , button [ class "button" ] [ text "Save it" ]
+                [ button 
+                    [ class "button", disabled True ] 
+                    [ text "Connect to" ]
+                , button 
+                    [ class "button" ] 
+                    [ text "Save" ]
                 ]
 
 

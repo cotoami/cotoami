@@ -25683,11 +25683,19 @@ var _user$project$App_View$connectModePanel = function (model) {
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
+					_elm_lang$html$Html$button,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Connect other cotos or just '),
+						_0: _elm_lang$html$Html_Attributes$class('button'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$disabled(true),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Connect to'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -25701,7 +25709,7 @@ var _user$project$App_View$connectModePanel = function (model) {
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Save it'),
+							_0: _elm_lang$html$Html$text('Save'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
