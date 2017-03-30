@@ -25682,6 +25682,7 @@ var _user$project$App_View$connectModePanel = function (model) {
 			{ctor: '[]'},
 			{ctor: '[]'});
 	} else {
+		var targetCount = _elm_lang$core$List$length(_p1._0.targetCotoIds);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -25698,14 +25699,52 @@ var _user$project$App_View$connectModePanel = function (model) {
 						_0: _elm_lang$html$Html_Attributes$class('button'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$disabled(true),
+							_0: _elm_lang$html$Html_Attributes$disabled(
+								_elm_lang$core$Native_Utils.eq(targetCount, 0)),
 							_1: {ctor: '[]'}
 						}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Connect to'),
-						_1: {ctor: '[]'}
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Connect to'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: (_elm_lang$core$Native_Utils.cmp(targetCount, 0) > 0) ? A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('target-count'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_elm_lang$core$Basics$toString(targetCount)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(' cotos'),
+										_1: {ctor: '[]'}
+									}
+								}) : A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {
 					ctor: '::',

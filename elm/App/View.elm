@@ -94,14 +94,27 @@ connectModePanel model =
         Nothing -> 
             div [] []
         Just connectMode ->
-            div [ id "connect-mode" ] 
-                [ button 
-                    [ class "button", disabled True ] 
-                    [ text "Connect to" ]
-                , button 
-                    [ class "button" ] 
-                    [ text "Save" ]
-                ]
+            let
+                targetCount = List.length connectMode.targetCotoIds
+            in
+                div [ id "connect-mode" ] 
+                    [ button 
+                        [ class "button", disabled (targetCount == 0) ] 
+                        [ span [] [ text "Connect to" ]
+                        , if targetCount > 0 then 
+                            span [] 
+                                [ span 
+                                    [ class "target-count" ] 
+                                    [ text (toString targetCount) ]
+                                , text " cotos"
+                                ]
+                          else
+                            span [] []
+                        ]
+                    , button 
+                        [ class "button" ] 
+                        [ text "Save" ]
+                    ]
 
 
 flowStockSwitch : Model -> Html Msg
