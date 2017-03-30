@@ -89,11 +89,13 @@ postDiv : Maybe ConnectMode -> Maybe Cotonoma -> Maybe Session -> Post -> Html M
 postDiv maybeConnectMode maybeCotonoma maybeSession post =
     let
         postedInAnother = not (isPostedInCotonoma maybeCotonoma post)
+        ( base, target ) = isActive maybeConnectMode post
     in
         div
             [ classList 
                 [ ( "coto", True )
-                , ( "active", isActive maybeConnectMode post )
+                , ( "active", base )
+                , ( "target", target )
                 , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "posted-in-another-cotonoma", postedInAnother )
@@ -131,14 +133,17 @@ postDiv maybeConnectMode maybeCotonoma maybeSession post =
             ]
         
 
-isActive : Maybe ConnectMode -> Post -> Bool
+isActive : Maybe ConnectMode -> Post -> ( Bool, Bool )
 isActive maybeConnectMode post =
     case post.cotoId of
-        Nothing -> False
+        Nothing -> ( False, False )
         Just cotoId -> 
             case maybeConnectMode of
-                Nothing -> False
-                Just connectMode -> connectMode.baseCotoId == cotoId
+                Nothing -> ( False, False )
+                Just connectMode ->
+                    ( cotoId == connectMode.baseCotoId
+                    , List.member cotoId connectMode.targetCotoIds
+                    )
 
 
 authorDiv : Maybe Session -> Post -> Html Msg

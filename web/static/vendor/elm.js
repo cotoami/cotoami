@@ -17039,7 +17039,7 @@ var _user$project$App_Types$decodeCotonoma = A6(
 		A2(_elm_lang$core$Json_Decode$field, 'owner', _user$project$App_Types$decodeAmishi)));
 var _user$project$App_Types$ConnectMode = F2(
 	function (a, b) {
-		return {baseCotoId: a, otherCotoIds: b};
+		return {baseCotoId: a, targetCotoIds: b};
 	});
 var _user$project$App_Types$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _user$project$App_Types$CotonomaRoute = function (a) {
@@ -22983,17 +22983,17 @@ var _user$project$App_Update$updateConnectMode = F2(
 			if (_elm_lang$core$Native_Utils.eq(clickedId, _p1.baseCotoId)) {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				var otherCotoIds = _p1.otherCotoIds;
-				var newOtherCotoIds = A2(_elm_lang$core$List$member, clickedId, otherCotoIds) ? A2(
+				var targetCotoIds = _p1.targetCotoIds;
+				var newTargetCotoIds = A2(_elm_lang$core$List$member, clickedId, targetCotoIds) ? A2(
 					_elm_lang$core$List$filter,
 					function (id) {
 						return !_elm_lang$core$Native_Utils.eq(clickedId, id);
 					},
-					otherCotoIds) : {ctor: '::', _0: clickedId, _1: otherCotoIds};
+					targetCotoIds) : {ctor: '::', _0: clickedId, _1: targetCotoIds};
 				return _elm_lang$core$Maybe$Just(
 					_elm_lang$core$Native_Utils.update(
 						_p1,
-						{otherCotoIds: newOtherCotoIds}));
+						{targetCotoIds: newTargetCotoIds}));
 			}
 		}
 	});
@@ -24473,18 +24473,27 @@ var _user$project$Components_Timeline_View$isActive = F2(
 	function (maybeConnectMode, post) {
 		var _p3 = post.cotoId;
 		if (_p3.ctor === 'Nothing') {
-			return false;
+			return {ctor: '_Tuple2', _0: false, _1: false};
 		} else {
+			var _p6 = _p3._0;
 			var _p4 = maybeConnectMode;
 			if (_p4.ctor === 'Nothing') {
-				return false;
+				return {ctor: '_Tuple2', _0: false, _1: false};
 			} else {
-				return _elm_lang$core$Native_Utils.eq(_p4._0.baseCotoId, _p3._0);
+				var _p5 = _p4._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.eq(_p6, _p5.baseCotoId),
+					_1: A2(_elm_lang$core$List$member, _p6, _p5.targetCotoIds)
+				};
 			}
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
 	function (maybeConnectMode, maybeCotonoma, maybeSession, post) {
+		var _p7 = A2(_user$project$Components_Timeline_View$isActive, maybeConnectMode, post);
+		var base = _p7._0;
+		var target = _p7._1;
 		var postedInAnother = !A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post);
 		return A2(
 			_elm_lang$html$Html$div,
@@ -24496,25 +24505,25 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 						_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
 						_1: {
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'active',
-								_1: A2(_user$project$Components_Timeline_View$isActive, maybeConnectMode, post)
-							},
+							_0: {ctor: '_Tuple2', _0: 'active', _1: base},
 							_1: {
 								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'posting',
-									_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeSession) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(post.cotoId)
-								},
+								_0: {ctor: '_Tuple2', _0: 'target', _1: target},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: post.beingDeleted},
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'posting',
+										_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeSession) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(post.cotoId)
+									},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'posted-in-another-cotonoma', _1: postedInAnother},
-										_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: post.beingDeleted},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'posted-in-another-cotonoma', _1: postedInAnother},
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
@@ -24523,12 +24532,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p5 = post.cotoId;
-						if (_p5.ctor === 'Nothing') {
+						var _p8 = post.cotoId;
+						if (_p8.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p5._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p8._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24547,8 +24556,8 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p6 = post.cotoId;
-						if (_p6.ctor === 'Nothing') {
+						var _p9 = post.cotoId;
+						if (_p9.ctor === 'Nothing') {
 							return A2(
 								_elm_lang$html$Html$span,
 								{ctor: '[]'},
@@ -24591,14 +24600,14 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					_1: {
 						ctor: '::',
 						_0: function () {
-							var _p7 = post.postedIn;
-							if (_p7.ctor === 'Nothing') {
+							var _p10 = post.postedIn;
+							if (_p10.ctor === 'Nothing') {
 								return A2(
 									_elm_lang$html$Html$span,
 									{ctor: '[]'},
 									{ctor: '[]'});
 							} else {
-								var _p8 = _p7._0;
+								var _p11 = _p10._0;
 								return postedInAnother ? A2(
 									_elm_lang$html$Html$a,
 									{
@@ -24607,13 +24616,13 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 										_1: {
 											ctor: '::',
 											_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
-												_user$project$Components_Timeline_Messages$CotonomaClick(_p8.key)),
+												_user$project$Components_Timeline_Messages$CotonomaClick(_p11.key)),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p8.name),
+										_0: _elm_lang$html$Html$text(_p11.name),
 										_1: {ctor: '[]'}
 									}) : A2(
 									_elm_lang$html$Html$span,
@@ -24635,13 +24644,13 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 			});
 	});
 var _user$project$Components_Timeline_View$getKey = function (post) {
-	var _p9 = post.cotoId;
-	if (_p9.ctor === 'Just') {
-		return _elm_lang$core$Basics$toString(_p9._0);
+	var _p12 = post.cotoId;
+	if (_p12.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p12._0);
 	} else {
-		var _p10 = post.postId;
-		if (_p10.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p10._0);
+		var _p13 = post.postId;
+		if (_p13.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p13._0);
 		} else {
 			return '';
 		}
@@ -24719,8 +24728,8 @@ var _user$project$Components_Timeline_View$view = F4(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p11 = maybeSession;
-										if (_p11.ctor === 'Nothing') {
+										var _p14 = maybeSession;
+										if (_p14.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -24749,7 +24758,7 @@ var _user$project$Components_Timeline_View$view = F4(
 													}
 												});
 										} else {
-											var _p12 = _p11._0;
+											var _p15 = _p14._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -24766,7 +24775,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p12.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p15.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -24782,7 +24791,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p12.displayName),
+																_0: _elm_lang$html$Html$text(_p15.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}

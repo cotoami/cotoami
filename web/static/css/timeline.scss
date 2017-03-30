@@ -48,6 +48,10 @@
       }
     }
     
+    &.target {
+      border: 2px solid #ffdd33;
+    }
+    
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;

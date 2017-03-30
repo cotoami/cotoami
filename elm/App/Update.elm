@@ -407,12 +407,12 @@ updateConnectMode clickedId maybeConnectMode =
                 Nothing
             else
                 let
-                    otherCotoIds = connectMode.otherCotoIds
-                    newOtherCotoIds =
-                        if List.member clickedId otherCotoIds then
-                            List.filter (\id -> clickedId /= id) otherCotoIds
+                    targetCotoIds = connectMode.targetCotoIds
+                    newTargetCotoIds =
+                        if List.member clickedId targetCotoIds then
+                            List.filter (\id -> clickedId /= id) targetCotoIds
                         else
-                            clickedId :: otherCotoIds
+                            clickedId :: targetCotoIds
                 in
-                    Just { connectMode | otherCotoIds = newOtherCotoIds }
+                    Just { connectMode | targetCotoIds = newTargetCotoIds }
             

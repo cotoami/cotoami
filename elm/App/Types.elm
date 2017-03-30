@@ -95,7 +95,7 @@ decodeCotonoma =
 
 type alias ConnectMode =
     { baseCotoId : Int
-    , otherCotoIds : List Int
+    , targetCotoIds : List Int
     }
 
 
