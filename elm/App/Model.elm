@@ -92,7 +92,7 @@ isNavigationEmpty model =
         
 isStockEmpty : Model -> Bool
 isStockEmpty model =
-      False
+      List.isEmpty model.connections.rootConnections
         
         
 getOwnerAndMembers : Model -> List Amishi

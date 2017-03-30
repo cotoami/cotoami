@@ -17021,6 +17021,9 @@ var _user$project$App_Types$Coto = F5(
 	function (a, b, c, d, e) {
 		return {id: a, content: b, postedIn: c, asCotonoma: d, cotonomaKey: e};
 	});
+var _user$project$App_Types$Connection = function (a) {
+	return {end: a};
+};
 var _user$project$App_Types$Cotonoma = F5(
 	function (a, b, c, d, e) {
 		return {id: a, key: b, name: c, cotoId: d, owner: e};
@@ -22163,8 +22166,15 @@ var _user$project$Components_CotonomaModal_Model$setDefaultMembers = F3(
 			amishis);
 	});
 
-var _user$project$Components_Connections_Model$initModel = {};
-var _user$project$Components_Connections_Model$Model = {};
+var _user$project$Components_Connections_Model$initModel = {
+	cotos: _elm_lang$core$Dict$empty,
+	rootConnections: {ctor: '[]'},
+	connections: _elm_lang$core$Dict$empty
+};
+var _user$project$Components_Connections_Model$Model = F3(
+	function (a, b, c) {
+		return {cotos: a, rootConnections: b, connections: c};
+	});
 
 var _user$project$App_Model$getOwnerAndMembers = function (model) {
 	var _p0 = model.cotonoma;
@@ -22180,7 +22190,7 @@ var _user$project$App_Model$getOwnerAndMembers = function (model) {
 	}
 };
 var _user$project$App_Model$isStockEmpty = function (model) {
-	return false;
+	return _elm_lang$core$List$isEmpty(model.connections.rootConnections);
 };
 var _user$project$App_Model$isNavigationEmpty = function (model) {
 	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && (_elm_lang$core$List$isEmpty(model.recentCotonomas) && _elm_lang$core$List$isEmpty(model.subCotonomas));

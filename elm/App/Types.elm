@@ -69,6 +69,11 @@ type alias Coto =
     }
 
 
+type alias Connection =
+    { end : Int
+    }
+  
+
 type alias Cotonoma =
     { id : Int
     , key : CotonomaKey
