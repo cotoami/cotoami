@@ -77,7 +77,7 @@ view model =
           , Html.map CotonomaModalMsg 
               (Components.CotonomaModal.View.view model.session model.cotonomaModal)
           , a 
-              [ class "info-button"
+              [ class "tool-button info-button"
               , title "News and Feedback"
               , href "https://twitter.com/cotoami"
               , target "_blank"

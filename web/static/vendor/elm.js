@@ -25866,7 +25866,7 @@ var _user$project$App_View$view = function (model) {
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('info-button'),
+												_0: _elm_lang$html$Html_Attributes$class('tool-button info-button'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$title('News and Feedback'),
