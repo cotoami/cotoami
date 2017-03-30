@@ -22259,8 +22259,13 @@ var _user$project$App_Model$initModel = F2(
 			cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel,
 			stockToggled: false,
 			stockOpen: false,
-			connections: _user$project$Components_Connections_Model$initModel
+			connections: _user$project$Components_Connections_Model$initModel,
+			connectMode: _elm_lang$core$Maybe$Nothing
 		};
+	});
+var _user$project$App_Model$ConnectMode = F2(
+	function (a, b) {
+		return {baseCotoId: a, otherCotoIds: b};
 	});
 var _user$project$App_Model$Model = function (a) {
 	return function (b) {
@@ -22284,7 +22289,9 @@ var _user$project$App_Model$Model = function (a) {
 																			return function (t) {
 																				return function (u) {
 																					return function (v) {
-																						return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, activeCotoId: r, cotonomaModal: s, stockToggled: t, stockOpen: u, connections: v};
+																						return function (w) {
+																							return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, activeCotoId: r, cotonomaModal: s, stockToggled: t, stockOpen: u, connections: v, connectMode: w};
+																						};
 																					};
 																				};
 																			};

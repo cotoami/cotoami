@@ -14,6 +14,12 @@ import Components.CotonomaModal.Model
 import Components.Connections.Model
 
 
+type alias ConnectMode =
+    { baseCotoId : Int
+    , otherCotoIds : List Int
+    }
+
+
 type alias Model =
     { clientId : String
     , route : Route
@@ -37,6 +43,7 @@ type alias Model =
     , stockToggled : Bool
     , stockOpen : Bool
     , connections : Components.Connections.Model.Model
+    , connectMode : Maybe ConnectMode
     }
 
 
@@ -67,6 +74,7 @@ initModel seed route =
         , stockToggled = False
         , stockOpen = False
         , connections = Components.Connections.Model.initModel
+        , connectMode = Nothing
         }
 
 
