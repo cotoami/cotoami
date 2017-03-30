@@ -202,6 +202,13 @@ update msg model =
                                 |> Task.andThen (\_ -> Task.succeed ())
                                 |> Task.perform (\_ -> DeleteCoto coto)
                             ]
+                            
+                    Components.CotoModal.Connect coto  -> 
+                        { model 
+                        | cotoModal = cotoModal
+                        , connectMode = Just (ConnectMode coto [])
+                        , activeCotoId = Just coto.id
+                        } ! [ Cmd.map CotoModalMsg cmd ]
                         
                     _ ->
                         { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]

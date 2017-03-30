@@ -15,8 +15,8 @@ import Components.Connections.Model
 
 
 type alias ConnectMode =
-    { baseCotoId : Int
-    , otherCotoIds : List Int
+    { baseCoto : Coto
+    , otherCotos : List Coto
     }
 
 
