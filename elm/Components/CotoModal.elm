@@ -68,7 +68,10 @@ modalConfig model =
             ]
         ]
     , buttons = 
-        [ a 
+        [ button 
+            [ class "button" ]
+            [ text "Connect" ]
+        , button 
             [ class "button"
             , onClick (ConfirmDelete "Are you sure you want to delete this coto?") 
             ] 
