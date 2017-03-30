@@ -20,19 +20,19 @@ html, body, #elm-container, #app {
   transition: visibility 0s 1s, opacity 1s linear;
 }
 
+$tool-button-color: #3572A5 !default;
+
 .tool-button {
-  color: black;
-  opacity: 0.4;
+  color: $tool-button-color;
   cursor: pointer;
   
   &:active,
   &:visited {
-    color: black;
+    color: $tool-button-color;
   }
   
   &:hover {
-    color: black;
-    opacity: 0.6;
+    color: darken($tool-button-color, 5%);
   }
 }
 
