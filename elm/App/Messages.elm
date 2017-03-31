@@ -42,4 +42,5 @@ type Msg
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | ConnectionsMsg Components.Connections.Messages.Msg
+    | Stock
     

@@ -112,7 +112,7 @@ connectModePanel model =
                             span [] []
                         ]
                     , button 
-                        [ class "button" ] 
+                        [ class "button", onClick Stock ] 
                         [ text "Stock" ]
                     ]
 

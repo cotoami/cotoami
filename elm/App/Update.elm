@@ -30,6 +30,7 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
+import Components.Connections.Model exposing (addRootConnection)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -326,7 +327,26 @@ update msg model =
                 
         ConnectionsMsg subMsg ->
             model ! []
+            
+        Stock ->
+            case model.connectMode of
+                Nothing -> model ! []
+                Just connectMode -> stock connectMode model ! []
 
+
+stock : ConnectMode -> Model -> Model
+stock connectMode model =
+    let
+        newConnections =
+            case getCoto connectMode.baseCotoId model of
+                Nothing -> model.connections
+                Just coto -> addRootConnection coto model.connections
+    in
+        { model 
+        | connections = newConnections
+        , connectMode = Nothing 
+        }
+        
 
 applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
 applyPresenceDiff diff presences =

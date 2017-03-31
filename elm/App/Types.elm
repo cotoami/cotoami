@@ -69,12 +69,6 @@ type alias Coto =
     }
 
 
-type alias Connection =
-    { key : String
-    , end : Int
-    }
-
-
 type alias Cotonoma =
     { id : Int
     , key : CotonomaKey

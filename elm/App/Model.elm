@@ -70,6 +70,15 @@ initModel seed route =
         }
 
 
+getCoto : Int ->  Model -> Maybe Coto
+getCoto cotoId model =
+    case Dict.get cotoId model.connections.cotos of
+        Nothing ->
+            Components.Timeline.Model.getCoto cotoId model.timeline
+        Just coto ->
+            Just coto
+
+
 openSigninModal : Model -> Model
 openSigninModal model =
     let
