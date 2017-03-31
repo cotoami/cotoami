@@ -39,7 +39,7 @@ addRootConnection coto model =
         { model 
         | cotos = Dict.insert coto.id coto model.cotos
         , rootConnections = 
-            (Connection Nothing "" coto.id) :: model.rootConnections
+            List.append model.rootConnections [Connection Nothing "" coto.id]
         }
 
 getSecondConnections : Model -> List ( Coto, List Connection )

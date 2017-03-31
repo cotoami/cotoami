@@ -22225,11 +22225,14 @@ var _user$project$Components_Connections_Model$addRootConnection = F2(
 			model,
 			{
 				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
-				rootConnections: {
-					ctor: '::',
-					_0: A3(_user$project$Components_Connections_Model$Connection, _elm_lang$core$Maybe$Nothing, '', coto.id),
-					_1: model.rootConnections
-				}
+				rootConnections: A2(
+					_elm_lang$core$List$append,
+					model.rootConnections,
+					{
+						ctor: '::',
+						_0: A3(_user$project$Components_Connections_Model$Connection, _elm_lang$core$Maybe$Nothing, '', coto.id),
+						_1: {ctor: '[]'}
+					})
 			});
 	});
 var _user$project$Components_Connections_Model$Model = F3(
