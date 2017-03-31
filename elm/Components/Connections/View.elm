@@ -20,7 +20,19 @@ view model =
           ( "column-roots"
           , div [ id "column-roots", class "connections-column" ]
               [ rootConnections model ]
-          ) :: []
+          ) ::
+              List.map
+                  (\traversal ->
+                      let
+                          coto = Tuple.first traversal
+                          connections = Tuple.second traversal
+                      in
+                          ( "column-traversal-" ++ toString coto.id
+                          , div [ class "column-traversal connections-column" ]
+                              [ traversalCoto connections coto model ]
+                          )  
+                  ) 
+                  (getSecondConnections model)
         )
 
 

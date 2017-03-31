@@ -22181,6 +22181,26 @@ var _user$project$Components_CotonomaModal_Model$setDefaultMembers = F3(
 			amishis);
 	});
 
+var _user$project$Components_Connections_Model$getSecondConnections = function (model) {
+	return A2(
+		_elm_lang$core$List$filterMap,
+		function (conn) {
+			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
+			if (_p0.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p2 = _p0._0;
+				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, model.connections);
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{ctor: '_Tuple2', _0: _p2, _1: _p1._0});
+				}
+			}
+		},
+		model.rootConnections);
+};
 var _user$project$Components_Connections_Model$connectedAsRoot = F2(
 	function (cotoId, model) {
 		return A2(
@@ -25509,7 +25529,32 @@ var _user$project$Components_Connections_View$view = function (model) {
 						_1: {ctor: '[]'}
 					})
 			},
-			_1: {ctor: '[]'}
+			_1: A2(
+				_elm_lang$core$List$map,
+				function (traversal) {
+					var connections = _elm_lang$core$Tuple$second(traversal);
+					var coto = _elm_lang$core$Tuple$first(traversal);
+					return {
+						ctor: '_Tuple2',
+						_0: A2(
+							_elm_lang$core$Basics_ops['++'],
+							'column-traversal-',
+							_elm_lang$core$Basics$toString(coto.id)),
+						_1: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('column-traversal connections-column'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A3(_user$project$Components_Connections_View$traversalCoto, connections, coto, model),
+								_1: {ctor: '[]'}
+							})
+					};
+				},
+				_user$project$Components_Connections_Model$getSecondConnections(model))
 		});
 };
 

@@ -41,3 +41,17 @@ addRootConnection coto model =
         , rootConnections = 
             (Connection Nothing "" coto.id) :: model.rootConnections
         }
+
+getSecondConnections : Model -> List ( Coto, List Connection )
+getSecondConnections model =
+    List.filterMap 
+        (\conn ->
+            case Dict.get conn.end model.cotos of
+                Nothing -> Nothing
+                Just rootCoto ->
+                    case Dict.get rootCoto.id model.connections of
+                        Nothing -> Nothing
+                        Just connections -> Just ( rootCoto, connections )
+                      
+        ) 
+        model.rootConnections
