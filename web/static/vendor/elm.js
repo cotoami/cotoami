@@ -22225,14 +22225,11 @@ var _user$project$Components_Connections_Model$addRootConnection = F2(
 			model,
 			{
 				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
-				rootConnections: A2(
-					_elm_lang$core$List$append,
-					model.rootConnections,
-					{
-						ctor: '::',
-						_0: A3(_user$project$Components_Connections_Model$Connection, _elm_lang$core$Maybe$Nothing, '', coto.id),
-						_1: {ctor: '[]'}
-					})
+				rootConnections: {
+					ctor: '::',
+					_0: A3(_user$project$Components_Connections_Model$Connection, _elm_lang$core$Maybe$Nothing, '', coto.id),
+					_1: model.rootConnections
+				}
 			});
 	});
 var _user$project$Components_Connections_Model$Model = F3(
@@ -25477,7 +25474,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F3(
 						}()
 					};
 				},
-				connections));
+				_elm_lang$core$List$reverse(connections)));
 	});
 var _user$project$Components_Connections_View$traversalCoto = F3(
 	function (connections, coto, model) {
@@ -25510,55 +25507,56 @@ var _user$project$Components_Connections_View$view = function (model) {
 			_0: _elm_lang$html$Html_Attributes$id('connections'),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'column-roots',
-				_1: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$id('column-roots'),
-						_1: {
+		_elm_lang$core$List$reverse(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'column-roots',
+					_1: A2(
+						_elm_lang$html$Html$div,
+						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('connections-column'),
+							_0: _elm_lang$html$Html_Attributes$id('column-roots'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('connections-column'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _user$project$Components_Connections_View$rootConnections(model),
 							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _user$project$Components_Connections_View$rootConnections(model),
-						_1: {ctor: '[]'}
-					})
-			},
-			_1: A2(
-				_elm_lang$core$List$map,
-				function (traversal) {
-					var connections = _elm_lang$core$Tuple$second(traversal);
-					var coto = _elm_lang$core$Tuple$first(traversal);
-					return {
-						ctor: '_Tuple2',
-						_0: A2(
-							_elm_lang$core$Basics_ops['++'],
-							'column-traversal-',
-							_elm_lang$core$Basics$toString(coto.id)),
-						_1: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('column-traversal connections-column'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A3(_user$project$Components_Connections_View$traversalCoto, connections, coto, model),
-								_1: {ctor: '[]'}
-							})
-					};
+						})
 				},
-				_user$project$Components_Connections_Model$getSecondConnections(model))
-		});
+				_1: A2(
+					_elm_lang$core$List$map,
+					function (traversal) {
+						var connections = _elm_lang$core$Tuple$second(traversal);
+						var coto = _elm_lang$core$Tuple$first(traversal);
+						return {
+							ctor: '_Tuple2',
+							_0: A2(
+								_elm_lang$core$Basics_ops['++'],
+								'column-traversal-',
+								_elm_lang$core$Basics$toString(coto.id)),
+							_1: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('column-traversal connections-column'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A3(_user$project$Components_Connections_View$traversalCoto, connections, coto, model),
+									_1: {ctor: '[]'}
+								})
+						};
+					},
+					_user$project$Components_Connections_Model$getSecondConnections(model))
+			}));
 };
 
 var _user$project$App_View$flowStockSwitch = function (model) {

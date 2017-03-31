@@ -32,7 +32,7 @@ view model =
                               [ traversalCoto connections coto model ]
                           )  
                   ) 
-                  (getSecondConnections model)
+                  (getSecondConnections model) |> List.reverse
         )
 
 
@@ -65,7 +65,7 @@ connectionsDiv divClass connections model =
                         Just coto -> cotoDiv coto
                     )
             ) 
-            connections
+            (List.reverse connections)
         )
         
   
