@@ -39,14 +39,14 @@ modalConfig connectMode model =
                 Nothing -> 
                     div [] [ text "Coto deleted" ]
                 Just baseCoto ->
-                    div [ class "base-coto" ]
+                    div [ class "base-coto coto" ]
                         [ App.Markdown.markdown baseCoto.content ]
             , div [ class "connect-buttons" ]
                 [ button 
-                    [ class "button connect-downward" ] 
+                    [ class "button button-primary connect-downward" ] 
                     [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
                 , button 
-                    [ class "button connect-upward" ] 
+                    [ class "button button-primary connect-upward" ] 
                     [ i [ class "material-icons" ] [ text "arrow_upward" ] ]
                 ]
             , Html.Keyed.node

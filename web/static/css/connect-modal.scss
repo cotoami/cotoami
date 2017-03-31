@@ -1,5 +1,29 @@
 #connect-modal {
+  div.coto {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+  }
+  
+  div.base-coto {
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  div.target-cotos {
+    max-height: 45vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    div.coto {
+      margin-bottom: 10px;
+    }
+  }
+  
   div.connect-buttons {
+    padding-top: 15px;
+    padding-bottom: 5px;
     text-align: center;
     
     button {
@@ -12,5 +36,9 @@
         margin-left: 20px;
       }
     }
+  }
+  
+  .modal-buttons-seperator {
+    display: none;
   }
 }

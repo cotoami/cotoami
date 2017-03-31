@@ -25611,7 +25611,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('base-coto'),
+									_0: _elm_lang$html$Html_Attributes$class('base-coto coto'),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -25636,7 +25636,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 									_elm_lang$html$Html$button,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button connect-downward'),
+										_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-downward'),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -25661,7 +25661,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 										_elm_lang$html$Html$button,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('button connect-upward'),
+											_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-upward'),
 											_1: {ctor: '[]'}
 										},
 										{
