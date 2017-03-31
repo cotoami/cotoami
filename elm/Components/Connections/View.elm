@@ -13,10 +13,15 @@ import Components.Connections.Messages exposing (..)
 
 view : Model -> Html Msg
 view model =
-    div [ id "connections" ] 
-        [ div [ id "column-roots", class "connections-column" ]
-            [ rootConnections model ]
-        ]
+    Html.Keyed.node
+        "div"
+        [ id "connections" ]
+        (
+          ( "column-roots"
+          , div [ id "column-roots", class "connections-column" ]
+              [ rootConnections model ]
+          ) :: []
+        )
 
 
 rootConnections : Model -> Html Msg

@@ -25479,8 +25479,9 @@ var _user$project$Components_Connections_View$rootConnections = function (model)
 	return A3(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', model.rootConnections, model);
 };
 var _user$project$Components_Connections_View$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
+	return A3(
+		_elm_lang$html$Html_Keyed$node,
+		'div',
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$id('connections'),
@@ -25488,22 +25489,26 @@ var _user$project$Components_Connections_View$view = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('column-roots'),
-					_1: {
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'column-roots',
+				_1: A2(
+					_elm_lang$html$Html$div,
+					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('connections-column'),
+						_0: _elm_lang$html$Html_Attributes$id('column-roots'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('connections-column'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _user$project$Components_Connections_View$rootConnections(model),
 						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _user$project$Components_Connections_View$rootConnections(model),
-					_1: {ctor: '[]'}
-				}),
+					})
+			},
 			_1: {ctor: '[]'}
 		});
 };
