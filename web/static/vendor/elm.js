@@ -25578,23 +25578,166 @@ var _user$project$Components_Connections_View$view = function (model) {
 		});
 };
 
-var _user$project$Components_ConnectModal$modalConfig = function (model) {
-	return {
-		closeMessage: _user$project$App_Messages$CloseConnectModal,
-		title: 'Connect cotos',
-		content: A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{ctor: '[]'}),
-		buttons: {ctor: '[]'}
-	};
-};
+var _user$project$Components_ConnectModal$modalConfig = F2(
+	function (connectMode, model) {
+		var targetCotos = A2(
+			_elm_lang$core$List$filterMap,
+			function (cotoId) {
+				return A2(_user$project$App_Model$getCoto, cotoId, model);
+			},
+			connectMode.targetCotoIds);
+		var maybeBaseCoto = A2(_user$project$App_Model$getCoto, connectMode.baseCotoId, model);
+		return {
+			closeMessage: _user$project$App_Messages$CloseConnectModal,
+			title: 'Connect cotos',
+			content: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: function () {
+						var _p0 = maybeBaseCoto;
+						if (_p0.ctor === 'Nothing') {
+							return A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Coto deleted'),
+									_1: {ctor: '[]'}
+								});
+						} else {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('base-coto'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _user$project$App_Markdown$markdown(_p0._0.content),
+									_1: {ctor: '[]'}
+								});
+						}
+					}(),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('connect-buttons'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('button connect-downward'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$i,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('arrow_downward'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('button connect-upward'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$i,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('arrow_upward'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A3(
+								_elm_lang$html$Html_Keyed$node,
+								'div',
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('target-cotos'),
+									_1: {ctor: '[]'}
+								},
+								A2(
+									_elm_lang$core$List$map,
+									function (coto) {
+										return {
+											ctor: '_Tuple2',
+											_0: _elm_lang$core$Basics$toString(coto.id),
+											_1: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('coto'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _user$project$App_Markdown$markdown(coto.content),
+													_1: {ctor: '[]'}
+												})
+										};
+									},
+									_elm_lang$core$List$reverse(targetCotos))),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			buttons: {ctor: '[]'}
+		};
+	});
 var _user$project$Components_ConnectModal$view = function (model) {
 	return A2(
 		_user$project$Modal$view,
 		'connect-modal',
-		model.connectModalOpen ? _elm_lang$core$Maybe$Just(
-			_user$project$Components_ConnectModal$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
+		function () {
+			if (model.connectModalOpen) {
+				var _p1 = model.connectMode;
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						A2(_user$project$Components_ConnectModal$modalConfig, _p1._0, model));
+				}
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}());
 };
 
 var _user$project$App_View$flowStockSwitch = function (model) {

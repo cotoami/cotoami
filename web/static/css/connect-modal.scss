@@ -1,0 +1,16 @@
+#connect-modal {
+  div.connect-buttons {
+    text-align: center;
+    
+    button {
+      padding-top: 6px;
+      
+      &.connect-downward {
+        margin-right: 20px;
+      }
+      &.connect-upward {
+        margin-left: 20px;
+      }
+    }
+  }
+}
