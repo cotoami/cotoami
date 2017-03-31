@@ -25402,55 +25402,81 @@ var _user$project$Components_Connections_View$markdown = function (content) {
 		},
 		A3(_user$project$Markdown$customHtml, _user$project$App_Markdown$markdownOptions, _user$project$App_Markdown$markdownElements, content));
 };
-var _user$project$Components_Connections_View$rootConnections = function (model) {
-	return A3(
-		_elm_lang$html$Html_Keyed$node,
-		'div',
+var _user$project$Components_Connections_View$cotoDiv = function (coto) {
+	return A2(
+		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('root-connections'),
+			_0: _elm_lang$html$Html_Attributes$class('coto'),
 			_1: {ctor: '[]'}
 		},
-		A2(
-			_elm_lang$core$List$map,
-			function (connection) {
-				var maybeCoto = A2(_elm_lang$core$Dict$get, connection.end, model.cotos);
-				return {
-					ctor: '_Tuple2',
-					_0: connection.key,
-					_1: function () {
-						var _p0 = maybeCoto;
-						if (_p0.ctor === 'Nothing') {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto missing'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Missing'),
-									_1: {ctor: '[]'}
-								});
-						} else {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _user$project$Components_Connections_View$markdown(_p0._0.content),
-									_1: {ctor: '[]'}
-								});
-						}
-					}()
-				};
+		{
+			ctor: '::',
+			_0: _user$project$Components_Connections_View$markdown(coto.content),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Components_Connections_View$connectionsDiv = F3(
+	function (divClass, connections, model) {
+		return A3(
+			_elm_lang$html$Html_Keyed$node,
+			'div',
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(divClass),
+				_1: {ctor: '[]'}
 			},
-			_elm_lang$core$List$reverse(model.rootConnections)));
+			A2(
+				_elm_lang$core$List$map,
+				function (conn) {
+					var maybeCoto = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
+					return {
+						ctor: '_Tuple2',
+						_0: conn.key,
+						_1: function () {
+							var _p0 = maybeCoto;
+							if (_p0.ctor === 'Nothing') {
+								return A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('coto missing'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Missing'),
+										_1: {ctor: '[]'}
+									});
+							} else {
+								return _user$project$Components_Connections_View$cotoDiv(_p0._0);
+							}
+						}()
+					};
+				},
+				connections));
+	});
+var _user$project$Components_Connections_View$traversalCoto = F3(
+	function (connections, coto, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('coto'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _user$project$Components_Connections_View$markdown(coto.content),
+				_1: {
+					ctor: '::',
+					_0: A3(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, model),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Components_Connections_View$rootConnections = function (model) {
+	return A3(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', model.rootConnections, model);
 };
 var _user$project$Components_Connections_View$view = function (model) {
 	return A2(

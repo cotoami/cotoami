@@ -14,7 +14,7 @@ type alias Connection =
 type alias Model =
     { cotos : Dict.Dict Int Coto
     , rootConnections : List Connection
-    , connections : Dict.Dict Int Connection
+    , connections : Dict.Dict Int (List Connection)
     }
 
 

@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Markdown
+import App.Types exposing (Coto)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Connections.Model exposing (..)
 import Components.Connections.Messages exposing (..)
@@ -14,8 +15,7 @@ view : Model -> Html Msg
 view model =
     div [ id "connections" ] 
         [ div [ id "column-roots", class "connections-column" ]
-            [ rootConnections model
-            ]
+            [ rootConnections model ]
         , div [ id "column-traversal", class "connections-column" ]
             [ div [ class "coto" ]
                 [ div [ class "content" ]
@@ -51,23 +51,41 @@ view model =
 
 rootConnections : Model -> Html Msg
 rootConnections model =
+    connectionsDiv "root-connections" model.rootConnections model
+
+
+traversalCoto : List Connection -> Coto -> Model -> Html Msg
+traversalCoto connections coto model =
+    div [ class "coto" ]
+        [ markdown coto.content
+        , connectionsDiv "sub-cotos" connections model
+        ]
+  
+
+connectionsDiv : String -> List Connection -> Model -> Html Msg
+connectionsDiv divClass connections model =
     Html.Keyed.node
         "div"
-        [ class "root-connections" ]
+        [ class divClass ]
         (List.map 
-            (\connection ->
+            (\conn ->
                 let
-                    maybeCoto = Dict.get connection.end model.cotos
+                    maybeCoto = Dict.get conn.end model.cotos
                 in
-                    ( connection.key
+                    ( conn.key
                     , case maybeCoto of
                         Nothing -> div [ class "coto missing" ] [ text "Missing" ]
-                        Just coto -> div [ class "coto" ] [ markdown coto.content ]
+                        Just coto -> cotoDiv coto
                     )
             ) 
-            (List.reverse model.rootConnections)
+            connections
         )
-
+        
+  
+cotoDiv : Coto -> Html Msg
+cotoDiv coto =
+    div [ class "coto" ] [ markdown coto.content ]
+    
 
 markdown : String -> Html Msg
 markdown content =
