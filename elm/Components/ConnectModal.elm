@@ -29,7 +29,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     Modal.view
-        "profile-modal"
+        "connect-modal"
         (if model.open then
             Just (modalConfig model)
          else
