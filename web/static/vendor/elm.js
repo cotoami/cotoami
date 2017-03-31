@@ -17021,9 +17021,10 @@ var _user$project$App_Types$Coto = F5(
 	function (a, b, c, d, e) {
 		return {id: a, content: b, postedIn: c, asCotonoma: d, cotonomaKey: e};
 	});
-var _user$project$App_Types$Connection = function (a) {
-	return {end: a};
-};
+var _user$project$App_Types$Connection = F2(
+	function (a, b) {
+		return {key: a, end: b};
+	});
 var _user$project$App_Types$Cotonoma = F5(
 	function (a, b, c, d, e) {
 		return {id: a, key: b, name: c, cotoId: d, owner: e};
@@ -25314,6 +25315,66 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 			}());
 	});
 
+var _user$project$Components_Connections_View$markdown = function (content) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('content'),
+			_1: {ctor: '[]'}
+		},
+		A3(_user$project$Markdown$customHtml, _user$project$App_Markdown$markdownOptions, _user$project$App_Markdown$markdownElements, content));
+};
+var _user$project$Components_Connections_View$rootConnections = function (model) {
+	return A3(
+		_elm_lang$html$Html_Keyed$node,
+		'div',
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('root-connections'),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$List$map,
+			function (connection) {
+				var maybeCoto = A2(_elm_lang$core$Dict$get, connection.end, model.cotos);
+				return {
+					ctor: '_Tuple2',
+					_0: connection.key,
+					_1: function () {
+						var _p0 = maybeCoto;
+						if (_p0.ctor === 'Nothing') {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('coto missing'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Missing'),
+									_1: {ctor: '[]'}
+								});
+						} else {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('coto'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _user$project$Components_Connections_View$markdown(_p0._0.content),
+									_1: {ctor: '[]'}
+								});
+						}
+					}()
+				};
+			},
+			_elm_lang$core$List$reverse(model.rootConnections)));
+};
 var _user$project$Components_Connections_View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -25337,82 +25398,8 @@ var _user$project$Components_Connections_View$view = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('coto'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('content'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Is is possible to attach additional security groups to the rules for the node security group? Our use case is that we want to deploy Kubernetes into an existing VPC. The Kubernetes VPC is peered with another VPC that holds things like RDS instances and long-lived EC2 sysstems and want the Kubernetes nodes to be able to communicate with these systems by basically creating an ALLOW ALL set of ingress and egress rules.'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('coto'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('content'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Kubernetes'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('coto'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('content'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('ODLEは有機化合物を用いた発光素子で、液晶（LCD）などに比べ薄型で軽量、かつ低消費電力、高速応答、高コントラストなどの特徴があります。サムスンディスプレイでは、アクティブマトリクスという駆動方式を採用したAMOLED(Active Matrix Organic Light Emitting Diode)を主力にしています。AMOLEDは、Apple Watchやサムスンギャラクシーシリーズに搭載されています。変形が用意であるため、スマホ表示面のエッジを曲げることなども可能です。'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
+					_0: _user$project$Components_Connections_View$rootConnections(model),
+					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',

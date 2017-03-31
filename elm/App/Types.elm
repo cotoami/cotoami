@@ -70,7 +70,8 @@ type alias Coto =
 
 
 type alias Connection =
-    { end : Int
+    { key : String
+    , end : Int
     }
 
 
