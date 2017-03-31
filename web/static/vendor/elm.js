@@ -25757,7 +25757,7 @@ var _user$project$App_View$connectModePanel = function (model) {
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Save'),
+							_0: _elm_lang$html$Html$text('Stock'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

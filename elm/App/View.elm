@@ -113,7 +113,7 @@ connectModePanel model =
                         ]
                     , button 
                         [ class "button" ] 
-                        [ text "Save" ]
+                        [ text "Stock" ]
                     ]
 
 
