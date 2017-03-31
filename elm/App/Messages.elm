@@ -43,4 +43,6 @@ type Msg
     | CotonomaPresenceDiff Value
     | ConnectionsMsg Components.Connections.Messages.Msg
     | Stock
+    | OpenConnectModal
+    | CloseConnectModal
     

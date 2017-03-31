@@ -2,35 +2,15 @@ module Components.ConnectModal exposing (..)
 
 import Html exposing (..)
 import Modal
-
-
-type alias Model =
-    { open : Bool
-    }
-
-
-initModel : Model
-initModel =
-    { open = False
-    }
-
-
-type Msg
-    = Close
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Close ->
-            ( { model | open = False }, Cmd.none )
+import App.Messages exposing (..)
+import App.Model exposing (..)
 
 
 view : Model -> Html Msg
 view model =
     Modal.view
         "connect-modal"
-        (if model.open then
+        (if model.connectModalOpen then
             Just (modalConfig model)
          else
             Nothing
@@ -39,7 +19,7 @@ view model =
 
 modalConfig : Model -> Modal.Config Msg
 modalConfig model =
-    { closeMessage = Close
+    { closeMessage = CloseConnectModal
     , title = "Connect cotos"
     , content = div []
         [ 

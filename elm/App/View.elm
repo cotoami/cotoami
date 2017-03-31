@@ -15,6 +15,7 @@ import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Connections.View
+import Components.ConnectModal
 
 
 view : Model -> Html Msg
@@ -77,6 +78,7 @@ view model =
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg 
               (Components.CotonomaModal.View.view model.session model.cotonomaModal)
+          , Components.ConnectModal.view model
           , a 
               [ class "tool-button info-button"
               , title "News and Feedback"
@@ -99,7 +101,10 @@ connectModePanel model =
             in
                 div [ id "connect-mode" ] 
                     [ button 
-                        [ class "button", disabled (targetCount == 0) ] 
+                        [ class "button"
+                        , disabled (targetCount == 0)
+                        , onClick OpenConnectModal 
+                        ] 
                         [ span [] [ text "Connect to" ]
                         , if targetCount > 0 then 
                             span [] 

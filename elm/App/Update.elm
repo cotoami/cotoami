@@ -332,6 +332,12 @@ update msg model =
             case model.connectMode of
                 Nothing -> model ! []
                 Just connectMode -> stock connectMode model ! []
+                
+        OpenConnectModal ->
+            { model | connectModalOpen = True } ! []
+            
+        CloseConnectModal ->
+            { model | connectModalOpen = False } ! []
 
 
 stock : ConnectMode -> Model -> Model

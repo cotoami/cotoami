@@ -33,6 +33,7 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , timeline : Components.Timeline.Model.Model
     , connectMode : Maybe ConnectMode
+    , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , stockToggled : Bool
     , stockOpen : Bool
@@ -62,11 +63,12 @@ initModel seed route =
         , cotonomasLoading = False
         , subCotonomas = []
         , timeline = Components.Timeline.Model.initModel
+        , connectMode = Nothing
+        , connectModalOpen = False
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         , stockToggled = False
         , stockOpen = False
         , connections = Components.Connections.Model.initModel
-        , connectMode = Nothing
         }
 
 
