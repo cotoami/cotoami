@@ -31,6 +31,8 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Connections.Model exposing (addRootConnections, addConnections)
+import Components.Connections.Messages
+import Components.Connections.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -325,7 +327,19 @@ update msg model =
                 { model | memberPresences = newMemberPresences } ! []
                 
         ConnectionsMsg subMsg ->
-            model ! []
+            let
+                ( connections, cmd ) = 
+                    Components.Connections.Update.update 
+                        subMsg 
+                        model.connections
+                newModel = { model | connections = connections }
+            in
+                case subMsg of
+                    Components.Connections.Messages.CotoClick cotoId ->
+                        (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
+                        
+                    _ -> 
+                        newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
         Stock ->
             stock model ! []
