@@ -45,7 +45,7 @@ rootConnections selection model =
 
 traversalCoto : List Connection -> Coto -> CotoSelection -> Model -> Html Msg
 traversalCoto connections coto selection model =
-    div [ class "coto" ]
+    div (cotoDivAttrs selection coto)
         [ markdown coto.content
         , connectionsDiv "sub-cotos" connections selection model
         ]
@@ -69,18 +69,21 @@ connectionsDiv divClass connections selection model =
             ) 
             (List.reverse connections)
         )
-        
+
+
+cotoDivAttrs : CotoSelection -> Coto -> List (Attribute Msg)
+cotoDivAttrs selection coto =
+    [ classList 
+        [ ( "coto", True )
+        , ( "active", List.member coto.id selection )
+        ]
+    , onClick (CotoClick coto.id)
+    ] 
+    
   
 cotoDiv : CotoSelection -> Coto -> Html Msg
 cotoDiv selection coto =
-    div 
-        [ classList 
-            [ ( "coto", True )
-            , ( "active", List.member coto.id selection )
-            ]
-        , onClick (CotoClick coto.id)
-        ] 
-        [ markdown coto.content ]
+    div (cotoDivAttrs selection coto) [ markdown coto.content ]
     
 
 markdown : String -> Html Msg

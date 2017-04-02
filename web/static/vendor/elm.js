@@ -25573,33 +25573,37 @@ var _user$project$Components_Connections_View$markdown = function (content) {
 		},
 		A3(_user$project$Markdown$customHtml, _user$project$App_Markdown$markdownOptions, _user$project$App_Markdown$markdownElements, content));
 };
+var _user$project$Components_Connections_View$cotoDivAttrs = F2(
+	function (selection, coto) {
+		return {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'active',
+							_1: A2(_elm_lang$core$List$member, coto.id, selection)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_user$project$Components_Connections_Messages$CotoClick(coto.id)),
+				_1: {ctor: '[]'}
+			}
+		};
+	});
 var _user$project$Components_Connections_View$cotoDiv = F2(
 	function (selection, coto) {
 		return A2(
 			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'active',
-								_1: A2(_elm_lang$core$List$member, coto.id, selection)
-							},
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Components_Connections_Messages$CotoClick(coto.id)),
-					_1: {ctor: '[]'}
-				}
-			},
+			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
 			{
 				ctor: '::',
 				_0: _user$project$Components_Connections_View$markdown(coto.content),
@@ -25650,11 +25654,7 @@ var _user$project$Components_Connections_View$traversalCoto = F4(
 	function (connections, coto, selection, model) {
 		return A2(
 			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('coto'),
-				_1: {ctor: '[]'}
-			},
+			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
 			{
 				ctor: '::',
 				_0: _user$project$Components_Connections_View$markdown(coto.content),
