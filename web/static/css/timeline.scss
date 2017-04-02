@@ -30,14 +30,6 @@
       margin-top: 6px;
     }
     
-    &.active {
-      border: 2px solid #ffa500;
-      
-      a.open-coto {
-        display: inline;
-      }
-    }
-    
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;

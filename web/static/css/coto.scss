@@ -8,6 +8,14 @@ div.coto {
       }
     }
   }
+  
+  &.active {
+    border: 2px solid #ffa500 !important;
+    
+    a.open-coto {
+      display: inline;
+    }
+  }
 }
 
 div.coto-as-cotonoma {
