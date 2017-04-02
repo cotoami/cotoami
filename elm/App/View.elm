@@ -63,7 +63,10 @@ view model =
                       ]
                   ] 
                   [ Html.map ConnectionsMsg 
-                      (Components.Connections.View.view model.connections)
+                      (Components.Connections.View.view 
+                          model.cotoSelection 
+                          model.connections
+                      )
                   ]
               , flowStockSwitch model
               ]
