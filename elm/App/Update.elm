@@ -222,7 +222,7 @@ update msg model =
                     Components.Timeline.Messages.PostClick cotoId ->
                         { model 
                         | timeline = timeline
-                        , connectMode = updateConnectMode cotoId model.connectMode
+                        , cotoSelection = updateCotoSelection cotoId model.cotoSelection
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
@@ -430,23 +430,3 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
-
-
-updateConnectMode : Int -> Maybe ConnectMode -> Maybe ConnectMode
-updateConnectMode clickedId maybeConnectMode =
-    case maybeConnectMode of
-        Nothing -> Just (ConnectMode clickedId [])
-        Just connectMode -> 
-            if clickedId == connectMode.baseCotoId then
-                Nothing
-            else
-                let
-                    targetCotoIds = connectMode.targetCotoIds
-                    newTargetCotoIds =
-                        if List.member clickedId targetCotoIds then
-                            List.filter (\id -> clickedId /= id) targetCotoIds
-                        else
-                            clickedId :: targetCotoIds
-                in
-                    Just { connectMode | targetCotoIds = newTargetCotoIds }
-            

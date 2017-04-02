@@ -88,6 +88,17 @@ decodeCotonoma =
         (Decode.maybe (Decode.field "owner" decodeAmishi))
 
 
+type alias CotoSelection = List Int
+
+
+updateCotoSelection : Int -> CotoSelection -> CotoSelection
+updateCotoSelection cotoId selection =
+    if selection |> List.member cotoId  then
+        List.filter (\id -> cotoId /= id) selection
+    else
+        cotoId :: selection
+        
+
 type alias ConnectMode =
     { baseCotoId : Int
     , targetCotoIds : List Int

@@ -45,7 +45,7 @@ view model =
               , div [ id "flow" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
-                          model.connectMode
+                          model.cotoSelection
                           model.cotonoma
                           model.session
                           model.timeline 
@@ -67,7 +67,7 @@ view model =
                   ]
               , flowStockSwitch model
               ]
-          , connectModePanel model
+          , cotoSelectionTools model
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
@@ -90,36 +90,19 @@ view model =
           ]
 
 
-connectModePanel : Model -> Html Msg
-connectModePanel model =
-    case model.connectMode of
-        Nothing -> 
-            div [] []
-        Just connectMode ->
-            let
-                targetCount = List.length connectMode.targetCotoIds
-            in
-                div [ id "connect-mode" ] 
-                    [ button 
-                        [ class "button"
-                        , disabled (targetCount == 0)
-                        , onClick OpenConnectModal 
-                        ] 
-                        [ span [] [ text "Connect to" ]
-                        , if targetCount > 0 then 
-                            span [] 
-                                [ span 
-                                    [ class "target-count" ] 
-                                    [ text (toString targetCount) ]
-                                , text " cotos"
-                                ]
-                          else
-                            span [] []
-                        ]
-                    , button 
-                        [ class "button", onClick Stock ] 
-                        [ text "Stock" ]
-                    ]
+cotoSelectionTools : Model -> Html Msg
+cotoSelectionTools model =
+    if List.isEmpty model.cotoSelection then
+        div [] []
+    else
+        div [ id "connect-mode" ] 
+            [ button 
+                [ class "button" , onClick OpenConnectModal ] 
+                [ text "Connect to" ]
+            , button 
+                [ class "button", onClick Stock ] 
+                [ text "Stock" ]
+            ]
 
 
 flowStockSwitch : Model -> Html Msg

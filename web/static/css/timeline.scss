@@ -28,7 +28,7 @@
     
     @media (min-device-width: 1200px) {
       &:hover {
-        border: 2px solid #eee;
+        border: 2px solid #ffdd33;
         
         a.open-coto {
           display: inline;
@@ -46,10 +46,6 @@
       a.open-coto {
         display: inline;
       }
-    }
-    
-    &.target {
-      border: 2px solid #ffdd33;
     }
     
     &.posting {
