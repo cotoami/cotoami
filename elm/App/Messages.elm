@@ -44,7 +44,7 @@ type Msg
     | ConnectionsMsg Components.Connections.Messages.Msg
     | Stock
     | ClearSelection
-    | OpenConnectModal
+    | SetConnectMode Bool
     | CloseConnectModal
     | Connect Bool Coto (List Coto)
     

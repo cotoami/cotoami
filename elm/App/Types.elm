@@ -99,10 +99,4 @@ updateCotoSelection cotoId selection =
         cotoId :: selection
         
 
-type alias ConnectMode =
-    { baseCotoId : Int
-    , targetCotoIds : List Int
-    }
-
-
 type alias MemberConnCounts = Dict.Dict Int Int

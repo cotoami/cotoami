@@ -19,17 +19,28 @@
     width: 450px;
   }
   
-  div.selection-info {
-    span.selection-count {
-      font-weight: bold;
-      font-family: arial, sans-serif;
-    }
-  }
-  
   button {
     background-color: #fff;
     margin: 0;
-    margin-left: 5px;
+    margin-left: 3px;
+    margin-right: 3px;
     padding: 0 20px;
+  }
+  
+  div.default {
+    div.selection-info {
+      span.selection-count {
+        font-weight: bold;
+        font-family: arial, sans-serif;
+      }
+    }
+  }
+  
+  div.connect-mode {
+    padding-top: 10px;
+    
+    button {
+      margin-left: 10px;
+    }
   }
 }

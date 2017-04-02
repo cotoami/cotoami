@@ -96,23 +96,33 @@ cotoSelectionTools model =
         div [] []
     else
         div [ id "coto-selection-tools" ] 
-            [ div [ class "selection-info" ]
-                [ span 
-                    [ class "selection-count" ] 
-                    [ text (model.cotoSelection |> List.length |> toString) ]
-                , text " cotos"
-                ]
-            , div [ class "buttons" ]
-                [ button 
-                   [ class "button" , onClick OpenConnectModal ] 
-                   [ text "Connect" ]
-                , button 
-                   [ class "button", onClick Stock ] 
-                   [ text "Stock" ]
-                , button 
-                   [ class "button", onClick ClearSelection ] 
-                   [ text "Clear" ]
-                ]
+            [ if model.connectMode then
+                div [ class "connect-mode" ]
+                    [ text "Select a target coto..."
+                    , button 
+                       [ class "button", onClick (SetConnectMode False) ] 
+                       [ text "Cancel" ]
+                    ]
+              else
+                div [ class "default" ]
+                    [ div [ class "selection-info" ]
+                        [ span 
+                            [ class "selection-count" ] 
+                            [ text (model.cotoSelection |> List.length |> toString) ]
+                        , text " cotos"
+                        ]
+                    , div [ class "buttons" ]
+                        [ button 
+                           [ class "button", onClick (SetConnectMode True) ] 
+                           [ text "Connect" ]
+                        , button 
+                           [ class "button", onClick Stock ] 
+                           [ text "Stock" ]
+                        , button 
+                           [ class "button", onClick ClearSelection ] 
+                           [ text "Clear" ]
+                        ]
+                    ]
             ]
 
 

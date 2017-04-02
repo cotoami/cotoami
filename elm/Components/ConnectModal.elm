@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Modal
-import App.Types exposing (Coto, ConnectMode)
+import App.Types exposing (Coto)
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Markdown
@@ -16,22 +16,22 @@ view model =
     Modal.view
         "connect-modal"
         (if model.connectModalOpen then
-            case model.connectMode of 
+            case model.connectingTo of 
                 Nothing -> Nothing
-                Just connectMode -> Just (modalConfig connectMode model)
+                Just baseCotoId -> Just (modalConfig baseCotoId model)
          else
             Nothing
         )
 
 
-modalConfig : ConnectMode -> Model -> Modal.Config Msg
-modalConfig connectMode model =
+modalConfig : Int -> Model -> Modal.Config Msg
+modalConfig baseCotoId model =
     let
-        maybeBaseCoto = getCoto connectMode.baseCotoId model
+        maybeBaseCoto = getCoto baseCotoId model
         targetCotos = 
             List.filterMap 
                 (\cotoId -> getCoto cotoId model) 
-                connectMode.targetCotoIds
+                model.cotoSelection
     in
         { closeMessage = CloseConnectModal
         , title = "Connect cotos"

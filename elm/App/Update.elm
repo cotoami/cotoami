@@ -333,10 +333,10 @@ update msg model =
             
         ClearSelection ->
             { model | cotoSelection = [] } ! []
-                
-        OpenConnectModal ->
-            { model | connectModalOpen = True } ! []
             
+        SetConnectMode enabled ->
+            { model | connectMode = enabled } ! []
+                
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
             
@@ -344,7 +344,7 @@ update msg model =
             { model 
             | connections = 
                 model.connections |> addConnections baseCoto targetCotos reverse   
-            , connectMode = Nothing 
+            , connectMode = False 
             , connectModalOpen = False
             } ! []
 
