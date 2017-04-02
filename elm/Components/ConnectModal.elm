@@ -2,9 +2,10 @@ module Components.ConnectModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Html.Keyed
 import Modal
-import App.Types exposing (ConnectMode)
+import App.Types exposing (Coto, ConnectMode)
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Markdown
@@ -34,33 +35,43 @@ modalConfig connectMode model =
     in
         { closeMessage = CloseConnectModal
         , title = "Connect cotos"
-        , content = div []
-            [ case maybeBaseCoto of
+        , content = 
+            case maybeBaseCoto of
                 Nothing -> 
-                    div [] [ text "Coto deleted" ]
+                    div [] [ text "Selected coto has been deleted." ]
                 Just baseCoto ->
-                    div [ class "base-coto coto" ]
-                        [ App.Markdown.markdown baseCoto.content ]
-            , div [ class "connect-buttons" ]
-                [ button 
-                    [ class "button button-primary connect-downward" ] 
-                    [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
-                , button 
-                    [ class "button button-primary connect-upward" ] 
-                    [ i [ class "material-icons" ] [ text "arrow_upward" ] ]
-                ]
-            , Html.Keyed.node
-                "div"
-                [ class "target-cotos" ]
-                (List.map 
-                    (\coto ->
-                        ( toString coto.id
-                        , div [ class "coto" ] 
-                            [ App.Markdown.markdown coto.content ]
-                        )
-                    ) 
-                    (List.reverse targetCotos)
-                )
-            ]
+                    modalContent targetCotos baseCoto
         , buttons = []
         }
+
+
+modalContent : List Coto -> Coto -> Html Msg
+modalContent targetCotos baseCoto =
+    div []
+        [ div [ class "base-coto coto" ]
+            [ App.Markdown.markdown baseCoto.content ]
+        , div [ class "connect-buttons" ]
+            [ button 
+                [ class "button button-primary connect-downward"
+                , onClick (Connect False baseCoto targetCotos)
+                ] 
+                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
+            , button 
+                [ class "button button-primary connect-upward"
+                , onClick (Connect True baseCoto targetCotos)
+                ] 
+                [ i [ class "material-icons" ] [ text "arrow_upward" ] ]
+            ]
+        , Html.Keyed.node
+            "div"
+            [ class "target-cotos" ]
+            (List.map 
+                (\coto ->
+                    ( toString coto.id
+                    , div [ class "coto" ] 
+                        [ App.Markdown.markdown coto.content ]
+                    )
+                ) 
+                (List.reverse targetCotos)
+            )
+        ]

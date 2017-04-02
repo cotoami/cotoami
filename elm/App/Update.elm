@@ -30,7 +30,7 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Connections.Model exposing (addRootConnection)
+import Components.Connections.Model exposing (addRootConnection, addConnections)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -338,6 +338,14 @@ update msg model =
             
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
+            
+        Connect reverse baseCoto targetCotos ->
+            { model 
+            | connections = 
+                model.connections |> addConnections baseCoto targetCotos reverse   
+            , connectMode = Nothing 
+            , connectModalOpen = False
+            } ! []
 
 
 stock : ConnectMode -> Model -> Model

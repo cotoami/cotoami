@@ -45,4 +45,5 @@ type Msg
     | Stock
     | OpenConnectModal
     | CloseConnectModal
+    | Connect Bool Coto (List Coto)
     
