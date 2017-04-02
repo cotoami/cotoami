@@ -95,13 +95,16 @@ cotoSelectionTools model =
     if List.isEmpty model.cotoSelection then
         div [] []
     else
-        div [ id "connect-mode" ] 
+        div [ id "coto-selection-tools" ] 
             [ button 
                 [ class "button" , onClick OpenConnectModal ] 
-                [ text "Connect to" ]
+                [ text "Connect" ]
             , button 
                 [ class "button", onClick Stock ] 
                 [ text "Stock" ]
+            , button 
+                [ class "button", onClick ClearSelection ] 
+                [ text "Clear" ]
             ]
 
 

@@ -330,6 +330,9 @@ update msg model =
             
         Stock ->
             stock model ! []
+            
+        ClearSelection ->
+            { model | cotoSelection = [] } ! []
                 
         OpenConnectModal ->
             { model | connectModalOpen = True } ! []

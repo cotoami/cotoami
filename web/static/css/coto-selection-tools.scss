@@ -1,6 +1,6 @@
 @import "variables.scss";
 
-#connect-mode {
+#coto-selection-tools {
   z-index: 12;
   position: absolute;
   top: 10px;
@@ -15,13 +15,14 @@
   text-align: center;
   
   @media (#{$wide-viewport}) {
-    width: 500px;
+    width: 450px;
   }
   
   button {
     background-color: #fff;
     margin: 0;
     margin-left: 5px;
+    padding: 0 20px;
     
     span.target-count {
       margin-left: 5px;

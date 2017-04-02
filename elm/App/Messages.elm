@@ -43,6 +43,7 @@ type Msg
     | CotonomaPresenceDiff Value
     | ConnectionsMsg Components.Connections.Messages.Msg
     | Stock
+    | ClearSelection
     | OpenConnectModal
     | CloseConnectModal
     | Connect Bool Coto (List Coto)
