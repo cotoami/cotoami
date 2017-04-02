@@ -163,15 +163,15 @@ update msg model =
         CotoModalMsg subMsg ->
             let
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
-                confirmModal = model.confirmModal
-                timeline = model.timeline
+                newModel = { model | cotoModal = cotoModal }
+                confirmModal = newModel.confirmModal
+                timeline = newModel.timeline
                 posts = timeline.posts
             in
                 case subMsg of
                     Components.CotoModal.ConfirmDelete message ->
-                        { model 
-                        | cotoModal = cotoModal
-                        , confirmModal =
+                        { newModel 
+                        | confirmModal =
                             { confirmModal
                             | open = True
                             , message = message
@@ -184,9 +184,8 @@ update msg model =
                         } ! [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
-                        { model 
-                        | cotoModal = cotoModal
-                        , timeline =
+                        { newModel 
+                        | timeline =
                             { timeline
                             | posts = posts |> List.map 
                                 (\post -> 
@@ -205,7 +204,7 @@ update msg model =
                             ]
                         
                     _ ->
-                        { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]
+                        newModel ! [ Cmd.map CotoModalMsg cmd ]
             
         TimelineMsg subMsg ->
             let
@@ -216,19 +215,16 @@ update msg model =
                         model.ctrlDown
                         subMsg 
                         model.timeline
-                cotoModal = model.cotoModal
+                newModel = { model | timeline = timeline }
+                cotoModal = newModel.cotoModal
             in
                 case subMsg of
                     Components.Timeline.Messages.PostClick cotoId ->
-                        { model 
-                        | timeline = timeline
-                        , cotoSelection = updateCotoSelection cotoId model.cotoSelection
-                        } ! [ Cmd.map TimelineMsg cmd ]
+                        (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
-                        { model 
-                        | timeline = timeline
-                        , cotoModal = 
+                        { newModel 
+                        | cotoModal = 
                             { cotoModal 
                             | open = True
                             , coto = toCoto post
@@ -236,17 +232,17 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        changeLocationToCotonoma key model
+                        changeLocationToCotonoma key newModel
                         
                     Components.Timeline.Messages.CotonomaPushed post ->
-                        { model | timeline = timeline } ! 
+                        newModel ! 
                             [ Cmd.map TimelineMsg cmd
                             , fetchRecentCotonomas
                             , fetchSubCotonomas model.cotonoma
                             ]
 
                     _ -> 
-                        { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
+                        newModel ! [ Cmd.map TimelineMsg cmd ]
   
         DeleteCoto coto ->
             let
@@ -297,7 +293,10 @@ update msg model =
                                 model.timeline
                                 model.cotonomaModal
                         newModel = 
-                            { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                            { model 
+                            | cotonomaModal = cotonomaModal
+                            , timeline = timeline 
+                            }
                         commands = [ Cmd.map CotonomaModalMsg cmd ]
                     in
                         case subMsg of
@@ -343,11 +342,25 @@ update msg model =
         Connect reverse baseCoto targetCotos ->
             { model 
             | connections = 
-                model.connections |> addConnections baseCoto targetCotos reverse   
+                model.connections |> addConnections baseCoto targetCotos reverse
+            , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False
             } ! []
 
+
+clickCoto : Int -> Model -> Model
+clickCoto cotoId model =
+    if model.connectMode then
+        { model
+        | connectModalOpen = True
+        , connectingTo = Just cotoId
+        }
+    else 
+        { model 
+        | cotoSelection = updateCotoSelection cotoId model.cotoSelection
+        }
+                        
 
 stock : Model -> Model
 stock model =

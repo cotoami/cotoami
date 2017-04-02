@@ -23274,6 +23274,19 @@ var _user$project$App_Update$stock = function (model) {
 			cotoSelection: {ctor: '[]'}
 		});
 };
+var _user$project$App_Update$clickCoto = F2(
+	function (cotoId, model) {
+		return model.connectMode ? _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				connectModalOpen: true,
+				connectingTo: _elm_lang$core$Maybe$Just(cotoId)
+			}) : _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotoSelection: A2(_user$project$App_Types$updateCotoSelection, cotoId, model.cotoSelection)
+			});
+	});
 var _user$project$App_Update$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
@@ -23492,21 +23505,23 @@ var _user$project$App_Update$update = F2(
 					});
 			case 'CotoModalMsg':
 				var _p18 = _p2._0;
-				var timeline = model.timeline;
-				var posts = timeline.posts;
-				var confirmModal = model.confirmModal;
 				var _p12 = A2(_user$project$Components_CotoModal$update, _p18, model.cotoModal);
 				var cotoModal = _p12._0;
 				var cmd = _p12._1;
+				var newModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{cotoModal: cotoModal});
+				var confirmModal = newModel.confirmModal;
+				var timeline = newModel.timeline;
+				var posts = timeline.posts;
 				var _p13 = _p18;
 				switch (_p13.ctor) {
 					case 'ConfirmDelete':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
-								model,
+								newModel,
 								{
-									cotoModal: cotoModal,
 									confirmModal: _elm_lang$core$Native_Utils.update(
 										confirmModal,
 										{
@@ -23533,9 +23548,8 @@ var _user$project$App_Update$update = F2(
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
-								model,
+								newModel,
 								{
-									cotoModal: cotoModal,
 									timeline: _elm_lang$core$Native_Utils.update(
 										timeline,
 										{
@@ -23576,9 +23590,7 @@ var _user$project$App_Update$update = F2(
 					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{cotoModal: cotoModal}),
+							newModel,
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$CotoModalMsg, cmd),
@@ -23587,21 +23599,19 @@ var _user$project$App_Update$update = F2(
 				}
 			case 'TimelineMsg':
 				var _p21 = _p2._0;
-				var cotoModal = model.cotoModal;
 				var _p19 = A5(_user$project$Components_Timeline_Update$update, model.clientId, model.cotonoma, model.ctrlDown, _p21, model.timeline);
 				var timeline = _p19._0;
 				var cmd = _p19._1;
+				var newModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{timeline: timeline});
+				var cotoModal = newModel.cotoModal;
 				var _p20 = _p21;
 				switch (_p20.ctor) {
 					case 'PostClick':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{
-									timeline: timeline,
-									cotoSelection: A2(_user$project$App_Types$updateCotoSelection, _p20._0, model.cotoSelection)
-								}),
+							A2(_user$project$App_Update$clickCoto, _p20._0, newModel),
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
@@ -23611,9 +23621,8 @@ var _user$project$App_Update$update = F2(
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
-								model,
+								newModel,
 								{
-									timeline: timeline,
 									cotoModal: _elm_lang$core$Native_Utils.update(
 										cotoModal,
 										{
@@ -23627,13 +23636,11 @@ var _user$project$App_Update$update = F2(
 								_1: {ctor: '[]'}
 							});
 					case 'CotonomaClick':
-						return A2(_user$project$App_Update$changeLocationToCotonoma, _p20._0, model);
+						return A2(_user$project$App_Update$changeLocationToCotonoma, _p20._0, newModel);
 					case 'CotonomaPushed':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{timeline: timeline}),
+							newModel,
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
@@ -23650,9 +23657,7 @@ var _user$project$App_Update$update = F2(
 					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{timeline: timeline}),
+							newModel,
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App_Messages$TimelineMsg, cmd),
@@ -23820,6 +23825,7 @@ var _user$project$App_Update$update = F2(
 						model,
 						{
 							connections: A4(_user$project$Components_Connections_Model$addConnections, _p2._1, _p2._2, _p2._0, model.connections),
+							cotoSelection: {ctor: '[]'},
 							connectMode: false,
 							connectModalOpen: false
 						}),
