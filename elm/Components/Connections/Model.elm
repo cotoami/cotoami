@@ -49,6 +49,16 @@ connectedAsRoot cotoId model =
     List.any (\conn -> conn.end == cotoId) model.rootConnections
     
 
+addRootConnections : List Coto -> Model -> Model
+addRootConnections cotos model =
+    List.foldr 
+        (\coto model ->
+            addRootConnection coto model
+        ) 
+        model 
+        cotos
+        
+
 addRootConnection : Coto -> Model -> Model
 addRootConnection coto model = 
     if connectedAsRoot coto.id model then
@@ -59,6 +69,7 @@ addRootConnection coto model =
         , rootConnections = 
             (newConnection Nothing coto.id) :: model.rootConnections
         }
+
 
 getSecondConnections : Model -> List ( Coto, List Connection )
 getSecondConnections model =

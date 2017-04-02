@@ -30,7 +30,7 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Connections.Model exposing (addRootConnection, addConnections)
+import Components.Connections.Model exposing (addRootConnections, addConnections)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -329,9 +329,7 @@ update msg model =
             model ! []
             
         Stock ->
-            case model.connectMode of
-                Nothing -> model ! []
-                Just connectMode -> stock connectMode model ! []
+            stock model ! []
                 
         OpenConnectModal ->
             { model | connectModalOpen = True } ! []
@@ -348,17 +346,15 @@ update msg model =
             } ! []
 
 
-stock : ConnectMode -> Model -> Model
-stock connectMode model =
+stock : Model -> Model
+stock model =
     let
-        newConnections =
-            case getCoto connectMode.baseCotoId model of
-                Nothing -> model.connections
-                Just coto -> addRootConnection coto model.connections
+        cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
+        connections = addRootConnections cotos model.connections
     in
         { model 
-        | connections = newConnections
-        , connectMode = Nothing 
+        | connections = connections
+        , cotoSelection = [] 
         }
         
 
