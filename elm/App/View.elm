@@ -96,15 +96,23 @@ cotoSelectionTools model =
         div [] []
     else
         div [ id "coto-selection-tools" ] 
-            [ button 
-                [ class "button" , onClick OpenConnectModal ] 
-                [ text "Connect" ]
-            , button 
-                [ class "button", onClick Stock ] 
-                [ text "Stock" ]
-            , button 
-                [ class "button", onClick ClearSelection ] 
-                [ text "Clear" ]
+            [ div [ class "selection-info" ]
+                [ span 
+                    [ class "selection-count" ] 
+                    [ text (model.cotoSelection |> List.length |> toString) ]
+                , text " cotos"
+                ]
+            , div [ class "buttons" ]
+                [ button 
+                   [ class "button" , onClick OpenConnectModal ] 
+                   [ text "Connect" ]
+                , button 
+                   [ class "button", onClick Stock ] 
+                   [ text "Stock" ]
+                , button 
+                   [ class "button", onClick ClearSelection ] 
+                   [ text "Clear" ]
+                ]
             ]
 
 

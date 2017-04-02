@@ -3,12 +3,13 @@
 #coto-selection-tools {
   z-index: 12;
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 0;
   right: 0;
   margin: auto;
   width: 90vw;
   padding: 10px;
+  padding-top: 2px;
   background: rgba(85,85,85,0.6);
   color: #eee;
   font-size: 16px;
@@ -18,17 +19,17 @@
     width: 450px;
   }
   
+  div.selection-info {
+    span.selection-count {
+      font-weight: bold;
+      font-family: arial, sans-serif;
+    }
+  }
+  
   button {
     background-color: #fff;
     margin: 0;
     margin-left: 5px;
     padding: 0 20px;
-    
-    span.target-count {
-      margin-left: 5px;
-      font-size: 120%;
-      font-weight: bold;
-      font-family: arial, sans-serif;
-    }
   }
 }
