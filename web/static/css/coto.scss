@@ -1,3 +1,23 @@
+div.coto {
+  @media (min-device-width: 1200px) {
+    &:hover {
+      border: 2px solid #ffdd33 !important;
+      
+      a.open-coto {
+        display: inline;
+      }
+    }
+  }
+  
+  &.active {
+    border: 2px solid #ffa500 !important;
+    
+    a.open-coto {
+      display: inline;
+    }
+  }
+}
+
 div.coto-as-cotonoma {
   a {
     i {

@@ -30,6 +30,9 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
+import Components.Connections.Model exposing (addRootConnections, addConnections)
+import Components.Connections.Messages
+import Components.Connections.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -86,6 +89,12 @@ update msg model =
             { model 
             | navigationToggled = True
             , navigationOpen = (not model.navigationOpen) 
+            } ! []
+            
+        StockToggle ->
+            { model 
+            | stockToggled = True
+            , stockOpen = (not model.stockOpen) 
             } ! []
             
         HomeClick ->
@@ -156,15 +165,15 @@ update msg model =
         CotoModalMsg subMsg ->
             let
                 ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
-                confirmModal = model.confirmModal
-                timeline = model.timeline
+                newModel = { model | cotoModal = cotoModal }
+                confirmModal = newModel.confirmModal
+                timeline = newModel.timeline
                 posts = timeline.posts
             in
                 case subMsg of
                     Components.CotoModal.ConfirmDelete message ->
-                        { model 
-                        | cotoModal = cotoModal
-                        , confirmModal =
+                        { newModel 
+                        | confirmModal =
                             { confirmModal
                             | open = True
                             , message = message
@@ -177,9 +186,8 @@ update msg model =
                         } ! [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
-                        { model 
-                        | cotoModal = cotoModal
-                        , timeline =
+                        { newModel 
+                        | timeline =
                             { timeline
                             | posts = posts |> List.map 
                                 (\post -> 
@@ -198,7 +206,7 @@ update msg model =
                             ]
                         
                     _ ->
-                        { model | cotoModal = cotoModal } ! [ Cmd.map CotoModalMsg cmd ]
+                        newModel ! [ Cmd.map CotoModalMsg cmd ]
             
         TimelineMsg subMsg ->
             let
@@ -209,19 +217,16 @@ update msg model =
                         model.ctrlDown
                         subMsg 
                         model.timeline
-                cotoModal = model.cotoModal
+                newModel = { model | timeline = timeline }
+                cotoModal = newModel.cotoModal
             in
                 case subMsg of
                     Components.Timeline.Messages.PostClick cotoId ->
-                        { model 
-                        | timeline = timeline
-                        , activeCotoId = (newActiveCotoId model.activeCotoId cotoId)
-                        } ! [ Cmd.map TimelineMsg cmd ]
+                        (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
-                        { model 
-                        | timeline = timeline
-                        , cotoModal = 
+                        { newModel 
+                        | cotoModal = 
                             { cotoModal 
                             | open = True
                             , coto = toCoto post
@@ -229,17 +234,17 @@ update msg model =
                         } ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
-                        changeLocationToCotonoma key model
+                        changeLocationToCotonoma key newModel
                         
                     Components.Timeline.Messages.CotonomaPushed post ->
-                        { model | timeline = timeline } ! 
+                        newModel ! 
                             [ Cmd.map TimelineMsg cmd
                             , fetchRecentCotonomas
                             , fetchSubCotonomas model.cotonoma
                             ]
 
                     _ -> 
-                        { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
+                        newModel ! [ Cmd.map TimelineMsg cmd ]
   
         DeleteCoto coto ->
             let
@@ -290,7 +295,10 @@ update msg model =
                                 model.timeline
                                 model.cotonomaModal
                         newModel = 
-                            { model | cotonomaModal = cotonomaModal, timeline = timeline }
+                            { model 
+                            | cotonomaModal = cotonomaModal
+                            , timeline = timeline 
+                            }
                         commands = [ Cmd.map CotonomaModalMsg cmd ]
                     in
                         case subMsg of
@@ -317,7 +325,71 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
+                
+        ConnectionsMsg subMsg ->
+            let
+                ( connections, cmd ) = 
+                    Components.Connections.Update.update 
+                        subMsg 
+                        model.connections
+                newModel = { model | connections = connections }
+            in
+                case subMsg of
+                    Components.Connections.Messages.CotoClick cotoId ->
+                        (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
+                        
+                    _ -> 
+                        newModel ! [ Cmd.map ConnectionsMsg cmd ]
+            
+        Stock ->
+            stock model ! []
+            
+        ClearSelection ->
+            { model | cotoSelection = [] } ! []
+            
+        SetConnectMode enabled ->
+            { model | connectMode = enabled } ! []
+                
+        CloseConnectModal ->
+            { model | connectModalOpen = False } ! []
+            
+        Connect reverse baseCoto targetCotos ->
+            { model 
+            | connections = 
+                model.connections |> addConnections baseCoto targetCotos reverse
+            , cotoSelection = []
+            , connectMode = False 
+            , connectModalOpen = False
+            } ! []
 
+
+clickCoto : Int -> Model -> Model
+clickCoto cotoId model =
+    if model.connectMode then
+        if model.cotoSelection |> List.member cotoId then
+            model
+        else
+            { model
+            | connectModalOpen = True
+            , connectingTo = Just cotoId
+            }
+    else 
+        { model 
+        | cotoSelection = updateCotoSelection cotoId model.cotoSelection
+        }
+                        
+
+stock : Model -> Model
+stock model =
+    let
+        cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
+        connections = addRootConnections cotos model.connections
+    in
+        { model 
+        | connections = connections
+        , cotoSelection = [] 
+        }
+        
 
 applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
 applyPresenceDiff diff presences =
@@ -387,15 +459,3 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
-
-
-newActiveCotoId : Maybe Int -> Int -> Maybe Int
-newActiveCotoId currentActiveId clickedId =
-    case currentActiveId of
-        Nothing -> Just clickedId
-        Just activeId -> 
-            if clickedId == activeId then
-                Nothing
-            else
-                Just clickedId
-            

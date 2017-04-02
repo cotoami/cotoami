@@ -26,22 +26,8 @@
     padding: 8px;
     margin-bottom: 12px;
     
-    @media (min-device-width: 1200px) {
-      &:hover {
-        border: 2px solid #ffdd33;
-        
-        a.open-coto {
-          display: inline;
-        }
-      }
-    }
-    
-    &.active {
-      border: 2px solid #ffa500;
-      
-      a.open-coto {
-        display: inline;
-      }
+    &:first-child {
+      margin-top: 6px;
     }
     
     &.posting {
@@ -62,7 +48,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      z-index: 10;
+      z-index: 2;
       
       i {
         font-size: 30px;

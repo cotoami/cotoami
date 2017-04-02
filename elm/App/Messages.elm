@@ -12,12 +12,14 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
+import Components.Connections.Messages
 
 
 type Msg
     = NoOp
     | OnLocationChange Location
     | NavigationToggle
+    | StockToggle
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
@@ -39,3 +41,10 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | ConnectionsMsg Components.Connections.Messages.Msg
+    | Stock
+    | ClearSelection
+    | SetConnectMode Bool
+    | CloseConnectModal
+    | Connect Bool Coto (List Coto)
+    

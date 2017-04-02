@@ -4,6 +4,12 @@ html, body, #elm-container, #app, #app-body {
   height: 100%;
 }
 
+html, body, #elm-container, #app {
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 .hidden {
   display: none;
 }
@@ -12,6 +18,24 @@ html, body, #elm-container, #app, #app-body {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s 1s, opacity 1s linear;
+}
+
+$tool-button-color: #3572A5 !default;
+
+.tool-button {
+  color: $tool-button-color;
+  opacity: 0.6;
+  cursor: pointer;
+  
+  &:active,
+  &:visited {
+    color: $tool-button-color;
+  }
+  
+  &:hover {
+    color: $tool-button-color;
+    opacity: 1;
+  }
 }
 
 #app {
@@ -26,8 +50,6 @@ html, body, #elm-container, #app, #app-body {
     
     i.material-icons {
       font-size: 32px;
-      color: black;
-      opacity: 0.26;
     }
   }
 }
@@ -37,13 +59,13 @@ html, body, #elm-container, #app, #app-body {
   flex-direction: column-reverse;
   z-index: 1;
   width: 100%;
-  padding-top: 45px;
+  padding-top: 35px;
   box-sizing: border-box;
 }
 
 #navigation {
   position: absolute;
-  z-index: 2;
+  z-index: 8;
   top: 35px;
   left: 0;
   right: 0;
@@ -71,12 +93,23 @@ html, body, #elm-container, #app, #app-body {
 }
 
 #stock {
-  max-height: 20vh;
-  border-bottom: solid 1px #eee;
-  margin-bottom: 8px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 8px;
+  position: absolute;
+  z-index: 3;
+  top: 35px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0;
+  padding-left: 10px;
+  background-color: #fbfbfb;
+  animation-duration: 0.5s;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  &.neverToggled,
+  &.empty {
+    display: none;
+  }
 }
 
 #flow {
@@ -93,11 +126,44 @@ html, body, #elm-container, #app, #app-body {
   }
 }
 
+div.flow-stock-switch {
+  z-index: 4;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 60px;
+  border: solid 1px #ddd;
+  background-color: #fff;
+  
+  i {
+    line-height: 60px;
+  }
+}
+
+#open-flow {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+  border-left-style: none;
+}
+
+#open-stock {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+  border-right-style: none;
+}
+
 @media (#{$wide-viewport}) {
   #app-body {
     flex-direction: row;
     width: 80%;
     margin: 0 auto;
+  }
+  .stock-is-not-empty #app-body {
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
   }
   
   #navigation {
@@ -106,8 +172,6 @@ html, body, #elm-container, #app, #app-body {
     width: 160px;
     margin-right: 10px;
     padding: 0;
-    
-    // Disable pull-down animation
     animation-name: none;
     
     &.notEmpty {
@@ -120,6 +184,7 @@ html, body, #elm-container, #app, #app-body {
       bottom: 0;
       left: 0;
       right: 0;
+      padding-top: 10px;
       padding-left: 0;
       max-height: none;
     }
@@ -130,12 +195,29 @@ html, body, #elm-container, #app, #app-body {
     height: 100%;
     padding: 0;
   }
+  .stock-is-not-empty #flow {
+    flex: none;
+    width: 500px;
+  }
 
   #stock {
+    position: relative;
+    top: auto;
     flex: none;
-    width: 200px;
     border-bottom-style: none;
     margin-bottom: 0;
     padding: 0;
+    padding-left: 5px;
+    animation-name: none;
+    overflow-y: hidden;
+    
+    &.notEmpty {
+      display: block;
+      flex: 1;
+    }
+  }
+  
+  div.flow-stock-switch {
+    display: none;
   }
 }

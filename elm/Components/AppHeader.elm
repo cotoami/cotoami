@@ -14,13 +14,13 @@ view model =
         [ div [ class "location" ]
             (case model.cotonoma of
                 Nothing -> 
-                  [ i [ class "material-icons" ] [ text "home" ]
+                  [ i [ class "at-home material-icons" ] [ text "home" ]
                   , navigationToggle model
                   ]
                 Just cotonoma ->
                   [ a [ class "to-home", onClick HomeClick ] 
                       [ i [ class "material-icons" ] [ text "home" ] ]
-                  , i [ class "material-icons" ] [ text "navigate_next" ]
+                  , i [ class "arrow material-icons" ] [ text "navigate_next" ]
                   , span [ class "cotonoma-name" ] [ text cotonoma.name ]
                   , navigationToggle model
                   ]
@@ -29,13 +29,20 @@ view model =
             Nothing -> 
                 span [] []
             Just session -> 
-                a [ class "add-cotonoma", title "Add Cotonoma", onClick OpenCotonomaModal ] 
+                a 
+                    [ class "tool-button add-cotonoma"
+                    , title "Add Cotonoma"
+                    , onClick OpenCotonomaModal 
+                    ] 
                     [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
           )
         , div [ class "user" ]
             (case model.session of
                 Nothing -> 
-                    [ a [ title "Sign in", onClick OpenSigninModal ] 
+                    [ a [ class "tool-button"
+                        , title "Sign in"
+                        , onClick OpenSigninModal 
+                        ] 
                         [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
                     ]
                 Just session -> 
@@ -50,7 +57,8 @@ navigationToggle : Model -> Html Msg
 navigationToggle model =
     a 
         [ classList 
-            [ ( "toggle-navigation", True )
+            [ ( "tool-button", True )
+            , ( "toggle-navigation", True )
             , ( "hidden", isNavigationEmpty model ) 
             ]
         , onClick NavigationToggle

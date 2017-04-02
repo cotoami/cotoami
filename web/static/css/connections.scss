@@ -1,0 +1,70 @@
+@import "variables.scss";
+
+#connections {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  height: 100%;
+  
+  div.coto {
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 10px;
+  }
+  
+  .connections-column {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    padding-top: 15px;
+    padding-bottom: 50px;
+  }
+  
+  #column-roots {
+    display: flex;
+    flex-direction: column;
+    min-width: 90vw;
+    width: 90vw;
+    
+    @media (#{$wide-viewport}) {
+      min-width: 400px;
+      width: 400px;
+      font-size: 90%;
+    }
+    
+    div.coto {
+      margin-bottom: 10px;
+      border: 2px solid #eee;
+    }
+  }
+  
+  div.column-traversal {
+    min-width: 90vw;
+    width: 90vw;
+    background-color: #f4f4f4;
+    
+    div.coto {
+      border: 2px solid rgba(0,0,0,0);
+    }
+    
+    div.main-sub-border {
+      padding-top: 3px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    div.sub-cotos {
+      @media (#{$wide-viewport}) {
+        font-size: 90%;
+      }
+      div.coto {
+        margin-top: 10px;
+      }
+    }
+    
+    @media (#{$wide-viewport}) {
+      min-width: 400px;
+      width: 400px;
+    }
+  }
+}

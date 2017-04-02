@@ -1,0 +1,46 @@
+@import "variables.scss";
+
+#coto-selection-tools {
+  z-index: 12;
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 90vw;
+  padding: 10px;
+  padding-top: 2px;
+  background: rgba(85,85,85,0.6);
+  color: #eee;
+  font-size: 16px;
+  text-align: center;
+  
+  @media (#{$wide-viewport}) {
+    width: 450px;
+  }
+  
+  button {
+    background-color: #fff;
+    margin: 0;
+    margin-left: 3px;
+    margin-right: 3px;
+    padding: 0 20px;
+  }
+  
+  div.default {
+    div.selection-info {
+      span.selection-count {
+        font-weight: bold;
+        font-family: arial, sans-serif;
+      }
+    }
+  }
+  
+  div.connect-mode {
+    padding-top: 10px;
+    
+    button {
+      margin-left: 10px;
+    }
+  }
+}

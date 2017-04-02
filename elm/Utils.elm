@@ -1,7 +1,15 @@
-module Utils exposing ( isBlank, validateEmail )
+module Utils exposing 
+    ( isBlank
+    , validateEmail
+    , onClickWithoutPropagation
+    )
 
 import String
 import Regex exposing (Regex, caseInsensitive, regex, contains)
+import Html exposing (Attribute)
+import Html.Events exposing (onWithOptions)
+import Json.Decode as Decode
+    
 
 isBlank : String -> Bool
 isBlank string =
@@ -19,3 +27,13 @@ emailRegex =
         |> regex
         |> caseInsensitive
     
+
+onClickWithoutPropagation : msg -> Attribute msg
+onClickWithoutPropagation message =
+    let
+        defaultOptions = Html.Events.defaultOptions
+    in
+        onWithOptions 
+            "click"
+            { defaultOptions | stopPropagation = True }
+            (Decode.succeed message)

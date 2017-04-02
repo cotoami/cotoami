@@ -11,6 +11,7 @@ import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
+import Components.Connections.Model
 
 
 type alias Model =
@@ -31,8 +32,14 @@ type alias Model =
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
     , timeline : Components.Timeline.Model.Model
-    , activeCotoId : Maybe Int
+    , cotoSelection : CotoSelection
+    , connectMode : Bool
+    , connectingTo : Maybe Int
+    , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
+    , stockToggled : Bool
+    , stockOpen : Bool
+    , connections : Components.Connections.Model.Model
     }
 
 
@@ -58,9 +65,24 @@ initModel seed route =
         , cotonomasLoading = False
         , subCotonomas = []
         , timeline = Components.Timeline.Model.initModel
-        , activeCotoId = Nothing
+        , cotoSelection = []
+        , connectMode = False
+        , connectingTo = Nothing
+        , connectModalOpen = False
         , cotonomaModal = Components.CotonomaModal.Model.initModel
+        , stockToggled = False
+        , stockOpen = False
+        , connections = Components.Connections.Model.initModel
         }
+
+
+getCoto : Int ->  Model -> Maybe Coto
+getCoto cotoId model =
+    case Dict.get cotoId model.connections.cotos of
+        Nothing ->
+            Components.Timeline.Model.getCoto cotoId model.timeline
+        Just coto ->
+            Just coto
 
 
 openSigninModal : Model -> Model
@@ -81,6 +103,11 @@ isNavigationEmpty model =
     (isNothing model.cotonoma)
         && (List.isEmpty model.recentCotonomas) 
         && (List.isEmpty model.subCotonomas)
+        
+        
+isStockEmpty : Model -> Bool
+isStockEmpty model =
+      List.isEmpty model.connections.rootConnections
         
         
 getOwnerAndMembers : Model -> List Amishi

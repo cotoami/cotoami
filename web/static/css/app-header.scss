@@ -8,6 +8,12 @@
   border-bottom: 1px solid #eee;
   background-color: rgba(255,255,255,0.9);
   
+  .material-icons {
+    line-height: 35px;
+    font-size: 30px;
+    padding-top: 1px;
+  }
+  
   div.location {
     margin: 0 auto;
     text-align: center;
@@ -15,14 +21,20 @@
     line-height: 35px;
     white-space: nowrap;
     
-    a.to-home,
-    a.toggle-navigation {
+    .at-home {
+      opacity: 0.5;
+    }
+    
+    a.to-home {
       color: #1eaedb;
       cursor: pointer;
-      
       i {
         opacity: 1;
       }
+    }
+    
+    i.arrow {
+      opacity: 0.26;
     }
     
     a.toggle-navigation {
@@ -68,17 +80,6 @@
       height: 27px;
       border-radius: 4px;
     }
-  }
-  
-  .material-icons {
-    line-height: 35px;
-    font-size: 30px;
-    opacity: 0.26;
-    padding-top: 1px;
-  }
-  
-  a {
-    color: black;
   }
 }
 

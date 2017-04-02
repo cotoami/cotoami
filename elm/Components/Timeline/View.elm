@@ -10,17 +10,17 @@ import Json.Decode as Decode
 import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
-import Utils exposing (isBlank)
-import App.Types exposing (Session, Cotonoma)
+import Utils exposing (isBlank, onClickWithoutPropagation)
+import App.Types exposing (Session, Cotonoma, CotoSelection)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
 import Components.Timeline.Messages exposing (..)
 
 
-view : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
-view model maybeSession maybeCotonoma activeCotoId =
+view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
+view  selection maybeCotonoma maybeSession model =
     div [ id "input-and-timeline", class (timelineClass model) ]
-        [ timelineDiv model maybeSession maybeCotonoma activeCotoId
+        [ timelineDiv selection maybeCotonoma maybeSession model
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNew) ]
                 [ (case maybeSession of
@@ -60,15 +60,15 @@ view model maybeSession maybeCotonoma activeCotoId =
         ]
 
 
-timelineDiv : Model -> Maybe Session -> Maybe Cotonoma -> Maybe Int -> Html Msg
-timelineDiv model maybeSession maybeCotonoma activeCotoId =
+timelineDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
+timelineDiv selection maybeCotonoma maybeSession model =
     Html.Keyed.node
         "div"
         [ id "timeline", classList [ ( "loading", model.loading ) ] ]
         (List.map 
             (\post -> 
                 ( getKey post
-                , postDiv maybeSession maybeCotonoma activeCotoId post
+                , postDiv selection maybeCotonoma maybeSession post
                 )
             ) 
             (List.reverse model.posts)
@@ -85,15 +85,15 @@ getKey post =
                 Nothing -> ""
     
     
-postDiv : Maybe Session -> Maybe Cotonoma -> Maybe Int -> Post -> Html Msg
-postDiv maybeSession maybeCotonoma activeCotoId post =
+postDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Post -> Html Msg
+postDiv selection maybeCotonoma maybeSession post =
     let
         postedInAnother = not (isPostedInCotonoma maybeCotonoma post)
     in
         div
             [ classList 
                 [ ( "coto", True )
-                , ( "active", isActive post activeCotoId )
+                , ( "active", isActive selection post )
                 , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "posted-in-another-cotonoma", postedInAnother )
@@ -108,7 +108,7 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
                 Nothing -> span [] []
                 Just cotoId ->
                     a 
-                        [ class "open-coto"
+                        [ class "tool-button open-coto"
                         , title "Open coto view"
                         , onClickWithoutPropagation (PostOpen post)
                         ] 
@@ -131,11 +131,11 @@ postDiv maybeSession maybeCotonoma activeCotoId post =
             ]
         
 
-isActive : Post -> Maybe Int -> Bool
-isActive post activeCotoId =
+isActive : CotoSelection -> Post -> Bool
+isActive selection post =
     case post.cotoId of
         Nothing -> False
-        Just cotoId -> (Maybe.withDefault -1 activeCotoId) == cotoId
+        Just cotoId -> List.member cotoId selection
 
 
 authorDiv : Maybe Session -> Post -> Html Msg
@@ -206,16 +206,5 @@ onKeyDown tagger =
 onLoad : msg -> Attribute msg
 onLoad message =
     on "load" (Decode.succeed message)
-  
-
-onClickWithoutPropagation : msg -> Attribute msg
-onClickWithoutPropagation message =
-    let
-        defaultOptions = Html.Events.defaultOptions
-    in
-        onWithOptions 
-            "click"
-            { defaultOptions | stopPropagation = True }
-            (Decode.succeed message)
   
   

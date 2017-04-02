@@ -45,30 +45,25 @@ view model =
     Modal.view
         "coto-modal"
         (if model.open then
-            Just (modalConfig model)
+            case model.coto of
+                Nothing -> Nothing
+                Just coto -> Just (modalConfig coto model)
          else
             Nothing
         )
       
 
-modalConfig : Model -> Modal.Config Msg
-modalConfig model =
+modalConfig : Coto -> Model -> Modal.Config Msg
+modalConfig coto model =
     { closeMessage = Close
-    , title =
-        (case model.coto of
-            Nothing -> ""
-            Just coto -> if coto.asCotonoma then "Cotonoma" else "Coto"
-        )
+    , title = if coto.asCotonoma then "Cotonoma" else "Coto"
     , content = div []
         [ div [ class "coto" ]
-            [ (case model.coto of
-                Nothing -> div [] []
-                Just coto -> App.Markdown.markdown coto.content
-              )
+            [ App.Markdown.markdown coto.content
             ]
         ]
     , buttons = 
-        [ a 
+        [ button 
             [ class "button"
             , onClick (ConfirmDelete "Are you sure you want to delete this coto?") 
             ] 
