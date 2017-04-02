@@ -7,7 +7,6 @@
   height: 100%;
   
   div.coto {
-    border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #fff;
     padding: 10px;
@@ -36,6 +35,7 @@
     
     div.coto {
       margin-bottom: 10px;
+      border: 2px solid #eee;
     }
   }
   
@@ -44,13 +44,16 @@
     width: 90vw;
     background-color: #f4f4f4;
     
+    div.coto {
+      border: 2px solid rgba(0,0,0,0);
+    }
+    
     div.sub-cotos {
       @media (#{$wide-viewport}) {
         font-size: 90%;
       }
       div.coto {
         margin-top: 10px;
-        border: 1px solid #eee;
       }
     }
     
