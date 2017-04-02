@@ -47,6 +47,7 @@ traversalCoto : List Connection -> Coto -> CotoSelection -> Model -> Html Msg
 traversalCoto connections coto selection model =
     div (cotoDivAttrs selection coto)
         [ markdown coto.content
+        , div [ class "main-sub-border" ] []
         , connectionsDiv "sub-cotos" connections selection model
         ]
   

@@ -48,6 +48,11 @@
       border: 2px solid rgba(0,0,0,0);
     }
     
+    div.main-sub-border {
+      padding-top: 3px;
+      border-bottom: 1px solid #eee;
+    }
+    
     div.sub-cotos {
       @media (#{$wide-viewport}) {
         font-size: 90%;

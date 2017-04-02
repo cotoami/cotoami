@@ -25660,8 +25660,19 @@ var _user$project$Components_Connections_View$traversalCoto = F4(
 				_0: _user$project$Components_Connections_View$markdown(coto.content),
 				_1: {
 					ctor: '::',
-					_0: A4(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, model),
-					_1: {ctor: '[]'}
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('main-sub-border'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A4(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, model),
+						_1: {ctor: '[]'}
+					}
 				}
 			});
 	});
