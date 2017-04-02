@@ -26,16 +26,6 @@
     padding: 8px;
     margin-bottom: 12px;
     
-    @media (min-device-width: 1200px) {
-      &:hover {
-        border: 2px solid #ffdd33;
-        
-        a.open-coto {
-          display: inline;
-        }
-      }
-    }
-    
     &:first-child {
       margin-top: 6px;
     }
