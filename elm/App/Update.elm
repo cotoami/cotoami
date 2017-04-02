@@ -366,10 +366,13 @@ update msg model =
 clickCoto : Int -> Model -> Model
 clickCoto cotoId model =
     if model.connectMode then
-        { model
-        | connectModalOpen = True
-        , connectingTo = Just cotoId
-        }
+        if model.cotoSelection |> List.member cotoId then
+            model
+        else
+            { model
+            | connectModalOpen = True
+            , connectingTo = Just cotoId
+            }
     else 
         { model 
         | cotoSelection = updateCotoSelection cotoId model.cotoSelection

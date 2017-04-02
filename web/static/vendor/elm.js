@@ -23295,12 +23295,12 @@ var _user$project$App_Update$stock = function (model) {
 };
 var _user$project$App_Update$clickCoto = F2(
 	function (cotoId, model) {
-		return model.connectMode ? _elm_lang$core$Native_Utils.update(
+		return model.connectMode ? (A2(_elm_lang$core$List$member, cotoId, model.cotoSelection) ? model : _elm_lang$core$Native_Utils.update(
 			model,
 			{
 				connectModalOpen: true,
 				connectingTo: _elm_lang$core$Maybe$Just(cotoId)
-			}) : _elm_lang$core$Native_Utils.update(
+			})) : _elm_lang$core$Native_Utils.update(
 			model,
 			{
 				cotoSelection: A2(_user$project$App_Types$updateCotoSelection, cotoId, model.cotoSelection)
