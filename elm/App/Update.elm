@@ -436,7 +436,11 @@ loadHome model =
     , members = []
     , cotonomasLoading = True
     , subCotonomas = []
-    , timeline = setLoading model.timeline 
+    , timeline = setLoading model.timeline
+    , cotoSelection = []
+    , connectMode = False
+    , connectingTo = Nothing
+    , connections = Components.Connections.Model.initModel
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -454,7 +458,11 @@ loadCotonoma key model =
     | cotonoma = Nothing
     , members = []
     , cotonomasLoading = True
-    , timeline = setLoading model.timeline 
+    , timeline = setLoading model.timeline
+    , cotoSelection = []
+    , connectMode = False
+    , connectingTo = Nothing
+    , connections = Components.Connections.Model.initModel
     } ! 
         [ fetchRecentCotonomas
         , fetchCotonoma key 

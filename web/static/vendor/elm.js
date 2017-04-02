@@ -23197,7 +23197,11 @@ var _user$project$App_Update$loadCotonoma = F2(
 					cotonoma: _elm_lang$core$Maybe$Nothing,
 					members: {ctor: '[]'},
 					cotonomasLoading: true,
-					timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
+					timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline),
+					cotoSelection: {ctor: '[]'},
+					connectMode: false,
+					connectingTo: _elm_lang$core$Maybe$Nothing,
+					connections: _user$project$Components_Connections_Model$initModel
 				}),
 			{
 				ctor: '::',
@@ -23228,7 +23232,11 @@ var _user$project$App_Update$loadHome = function (model) {
 				members: {ctor: '[]'},
 				cotonomasLoading: true,
 				subCotonomas: {ctor: '[]'},
-				timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline)
+				timeline: _user$project$Components_Timeline_Model$setLoading(model.timeline),
+				cotoSelection: {ctor: '[]'},
+				connectMode: false,
+				connectingTo: _elm_lang$core$Maybe$Nothing,
+				connections: _user$project$Components_Connections_Model$initModel
 			}),
 		{
 			ctor: '::',
