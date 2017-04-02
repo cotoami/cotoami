@@ -10,7 +10,7 @@ import Json.Decode as Decode
 import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
-import Utils exposing (isBlank)
+import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types exposing (Session, Cotonoma, CotoSelection)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
@@ -206,16 +206,5 @@ onKeyDown tagger =
 onLoad : msg -> Attribute msg
 onLoad message =
     on "load" (Decode.succeed message)
-  
-
-onClickWithoutPropagation : msg -> Attribute msg
-onClickWithoutPropagation message =
-    let
-        defaultOptions = Html.Events.defaultOptions
-    in
-        onWithOptions 
-            "click"
-            { defaultOptions | stopPropagation = True }
-            (Decode.succeed message)
   
   

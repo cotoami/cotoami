@@ -4,8 +4,8 @@ import Dict
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Markdown
+import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoSelection)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Connections.Model exposing (..)
@@ -77,7 +77,7 @@ cotoDivAttrs selection coto =
         [ ( "coto", True )
         , ( "active", List.member coto.id selection )
         ]
-    , onClick (CotoClick coto.id)
+    , onClickWithoutPropagation (CotoClick coto.id)
     ] 
     
   

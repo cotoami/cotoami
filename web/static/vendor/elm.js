@@ -17052,6 +17052,16 @@ var _user$project$App_Types$HomeRoute = {ctor: 'HomeRoute'};
 var _user$project$Components_ConfirmModal_Messages$Confirm = {ctor: 'Confirm'};
 var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
 
+var _user$project$Utils$onClickWithoutPropagation = function (message) {
+	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		_elm_lang$core$Native_Utils.update(
+			defaultOptions,
+			{stopPropagation: true}),
+		_elm_lang$core$Json_Decode$succeed(message));
+};
 var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
 	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
 var _user$project$Utils$isBlank = function (string) {
@@ -24555,16 +24565,6 @@ var _user$project$Components_ConfirmModal_View$view = function (model) {
 			_user$project$Components_ConfirmModal_View$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
-var _user$project$Components_Timeline_View$onClickWithoutPropagation = function (message) {
-	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'click',
-		_elm_lang$core$Native_Utils.update(
-			defaultOptions,
-			{stopPropagation: true}),
-		_elm_lang$core$Json_Decode$succeed(message));
-};
 var _user$project$Components_Timeline_View$onLoad = function (message) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -24633,7 +24633,7 @@ var _user$project$Components_Timeline_View$contentDiv = function (post) {
 				_elm_lang$html$Html$a,
 				{
 					ctor: '::',
-					_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
+					_0: _user$project$Utils$onClickWithoutPropagation(
 						_user$project$Components_Timeline_Messages$CotonomaClick(post.cotonomaKey)),
 					_1: {ctor: '[]'}
 				},
@@ -24822,7 +24822,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 										_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
 										_1: {
 											ctor: '::',
-											_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
+											_0: _user$project$Utils$onClickWithoutPropagation(
 												_user$project$Components_Timeline_Messages$PostOpen(post)),
 											_1: {ctor: '[]'}
 										}
@@ -24864,7 +24864,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 										_0: _elm_lang$html$Html_Attributes$class('posted-in'),
 										_1: {
 											ctor: '::',
-											_0: _user$project$Components_Timeline_View$onClickWithoutPropagation(
+											_0: _user$project$Utils$onClickWithoutPropagation(
 												_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
 											_1: {ctor: '[]'}
 										}
@@ -25593,7 +25593,7 @@ var _user$project$Components_Connections_View$cotoDivAttrs = F2(
 				}),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
+				_0: _user$project$Utils$onClickWithoutPropagation(
 					_user$project$Components_Connections_Messages$CotoClick(coto.id)),
 				_1: {ctor: '[]'}
 			}
