@@ -26007,7 +26007,18 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Select a target coto...'),
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('connect-mode-message'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Select a target coto...'),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(

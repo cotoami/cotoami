@@ -10,9 +10,8 @@
   width: 90vw;
   padding: 10px;
   padding-top: 2px;
-  background: rgba(85,85,85,0.6);
+  background: rgba(85,85,85,0.7);
   color: #eee;
-  font-size: 16px;
   text-align: center;
   
   @media (#{$wide-viewport}) {
@@ -38,6 +37,10 @@
   
   div.connect-mode {
     padding-top: 10px;
+    
+    span.connect-mode-message {
+      font-size: 18px;
+    }
     
     button {
       margin-left: 10px;

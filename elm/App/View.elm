@@ -101,10 +101,12 @@ cotoSelectionTools model =
         div [ id "coto-selection-tools" ] 
             [ if model.connectMode then
                 div [ class "connect-mode" ]
-                    [ text "Select a target coto..."
+                    [ span 
+                        [ class "connect-mode-message" ] 
+                        [ text "Select a target coto..." ]
                     , button 
-                       [ class "button", onClick (SetConnectMode False) ] 
-                       [ text "Cancel" ]
+                        [ class "button", onClick (SetConnectMode False) ] 
+                        [ text "Cancel" ]
                     ]
               else
                 div [ class "default" ]
