@@ -24762,25 +24762,29 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 						_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
 						_1: {
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'active',
-								_1: A2(_user$project$Components_Timeline_View$isActive, selection, post)
-							},
+							_0: {ctor: '_Tuple2', _0: 'selectable', _1: true},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
-									_0: 'posting',
-									_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeSession) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(post.cotoId)
+									_0: 'active',
+									_1: A2(_user$project$Components_Timeline_View$isActive, selection, post)
 								},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: post.beingDeleted},
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'posting',
+										_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeSession) && _krisajenkins$elm_exts$Exts_Maybe$isNothing(post.cotoId)
+									},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'posted-in-another-cotonoma', _1: postedInAnother},
-										_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: post.beingDeleted},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'posted-in-another-cotonoma', _1: postedInAnother},
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
@@ -25591,12 +25595,16 @@ var _user$project$Components_Connections_View$cotoDivAttrs = F2(
 					_0: {ctor: '_Tuple2', _0: 'coto', _1: true},
 					_1: {
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'active',
-							_1: A2(_elm_lang$core$List$member, coto.id, selection)
-						},
-						_1: {ctor: '[]'}
+						_0: {ctor: '_Tuple2', _0: 'selectable', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'active',
+								_1: A2(_elm_lang$core$List$member, coto.id, selection)
+							},
+							_1: {ctor: '[]'}
+						}
 					}
 				}),
 			_1: {

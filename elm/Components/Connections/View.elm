@@ -76,6 +76,7 @@ cotoDivAttrs : CotoSelection -> Coto -> List (Attribute Msg)
 cotoDivAttrs selection coto =
     [ classList 
         [ ( "coto", True )
+        , ( "selectable", True )
         , ( "active", List.member coto.id selection )
         ]
     , onClickWithoutPropagation (CotoClick coto.id)

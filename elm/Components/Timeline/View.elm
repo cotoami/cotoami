@@ -93,6 +93,7 @@ postDiv selection maybeCotonoma maybeSession post =
         div
             [ classList 
                 [ ( "coto", True )
+                , ( "selectable", True )
                 , ( "active", isActive selection post )
                 , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
