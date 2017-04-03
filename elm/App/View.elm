@@ -114,7 +114,7 @@ cotoSelectionTools model =
                         [ span 
                             [ class "selection-count" ] 
                             [ text (model.cotoSelection |> List.length |> toString) ]
-                        , text " cotos"
+                        , text " cotos selected"
                         ]
                     , div [ class "buttons" ]
                         [ button 

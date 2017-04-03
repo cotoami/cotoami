@@ -26074,7 +26074,7 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 								}),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(' cotos'),
+								_0: _elm_lang$html$Html$text(' cotos selected'),
 								_1: {ctor: '[]'}
 							}
 						}),
