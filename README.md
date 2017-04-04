@@ -6,6 +6,15 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univapay.com) under the Apache 2.0 Licence.
 
+## Concept
+
+Cotoami's concept of knowledge generation:
+
+![](docs/images/cotoami-concept.png)
+
+* Coto - Post. A unit of information in Cotoami.
+* Cotonoma - Chatroom-like unit which has a timeline and a coto-connections. Nestable.
+
 ## Roadmap
 
 * Cotoami Roadmap - https://github.com/cotoami/cotoami/issues/2
