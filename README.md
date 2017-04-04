@@ -15,9 +15,10 @@ Cotoami's concept of knowledge generation:
 * **Coto**: Post. A unit of information in Cotoami.
 * **Cotonoma**: Chatroom-like unit which has a timeline and coto-connections. Nestable.
 
-## Roadmap
+## Development
 
 * Cotoami Roadmap - https://github.com/cotoami/cotoami/issues/2
+* News and updates - https://twitter.com/cotoami
 
 ## Requirements
 
