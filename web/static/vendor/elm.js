@@ -25745,11 +25745,7 @@ var _user$project$Components_Connections_View$view = F2(
 											}
 										},
 										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Pinned'),
-										_1: {ctor: '[]'}
-									}
+									_1: {ctor: '[]'}
 								}),
 							_1: {
 								ctor: '::',

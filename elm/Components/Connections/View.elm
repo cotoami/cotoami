@@ -22,7 +22,6 @@ view selection model =
           , div [ id "column-roots", class "connections-column" ]
               [ div [ class "column-header" ] 
                   [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                  , text "Pinned" 
                   ]
               , rootConnections selection model 
               ]
