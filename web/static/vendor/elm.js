@@ -25971,10 +25971,42 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 			{ctor: '[]'},
 			{ctor: '[]'});
 	} else {
-		var _p0 = model.stockOpen ? {ctor: '_Tuple3', _0: 'open-flow', _1: 'Show timeline', _2: 'navigate_next'} : {ctor: '_Tuple3', _0: 'open-stock', _1: 'Show connections', _2: 'navigate_before'};
+		var _p0 = model.stockOpen ? {
+			ctor: '_Tuple3',
+			_0: 'open-flow',
+			_1: 'Show timeline',
+			_2: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('navigate_next'),
+					_1: {ctor: '[]'}
+				})
+		} : {
+			ctor: '_Tuple3',
+			_0: 'open-stock',
+			_1: 'Show connections',
+			_2: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'})
+		};
 		var divId = _p0._0;
 		var linkTitle = _p0._1;
-		var iconName = _p0._2;
+		var icon = _p0._2;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -26005,18 +26037,7 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$i,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(iconName),
-								_1: {ctor: '[]'}
-							}),
+						_0: icon,
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}

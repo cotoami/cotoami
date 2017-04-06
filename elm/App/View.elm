@@ -138,11 +138,18 @@ flowStockSwitch model =
         div [] []
     else
         let
-            ( divId, linkTitle, iconName ) =
+            ( divId, linkTitle, icon ) =
                 if model.stockOpen then
-                    ( "open-flow", "Show timeline", "navigate_next" )
+                    ( "open-flow"
+                    , "Show timeline"
+                    , i [ class "material-icons" ] [ text "navigate_next" ]
+                    
+                    )
                 else
-                    ( "open-stock", "Show connections", "navigate_before" )
+                    ( "open-stock"
+                    , "Show connections"
+                    , i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+                    )
         in
             div
                 [ id divId, class "flow-stock-switch" ]
@@ -151,5 +158,5 @@ flowStockSwitch model =
                     , title linkTitle
                     , onClick StockToggle 
                     ] 
-                    [ i [ class "material-icons" ] [ text iconName ] ] 
+                    [ icon ] 
                 ]
