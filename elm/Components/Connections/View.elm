@@ -20,7 +20,12 @@ view selection model =
         (
           ( "column-roots"
           , div [ id "column-roots", class "connections-column" ]
-              [ rootConnections selection model ]
+              [ div [ class "column-header" ] 
+                  [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+                  , text "Pinned" 
+                  ]
+              , rootConnections selection model 
+              ]
           ) ::
               List.map
                   (\traversal ->

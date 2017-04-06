@@ -25724,8 +25724,38 @@ var _user$project$Components_Connections_View$view = F2(
 						},
 						{
 							ctor: '::',
-							_0: A2(_user$project$Components_Connections_View$rootConnections, selection, model),
-							_1: {ctor: '[]'}
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('column-header'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$i,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+												_1: {ctor: '[]'}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Pinned'),
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$Components_Connections_View$rootConnections, selection, model),
+								_1: {ctor: '[]'}
+							}
 						})
 				},
 				_1: A2(
@@ -26158,8 +26188,23 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Stock'),
-												_1: {ctor: '[]'}
+												_0: A2(
+													_elm_lang$html$Html$i,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+														_1: {
+															ctor: '::',
+															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+															_1: {ctor: '[]'}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Pin'),
+													_1: {ctor: '[]'}
+												}
 											}),
 										_1: {ctor: '[]'}
 									}
