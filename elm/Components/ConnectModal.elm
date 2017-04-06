@@ -34,7 +34,7 @@ modalConfig baseCotoId model =
                 model.cotoSelection
     in
         { closeMessage = CloseConnectModal
-        , title = "Connect cotos"
+        , title = "Connect Preview"
         , content = 
             case maybeBaseCoto of
                 Nothing -> 

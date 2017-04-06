@@ -12,7 +12,7 @@
   }
   
   div.target-cotos {
-    max-height: 45vh;
+    max-height: 40vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     
@@ -36,9 +36,5 @@
         margin-left: 20px;
       }
     }
-  }
-  
-  .modal-buttons-seperator {
-    display: none;
   }
 }

@@ -25924,7 +25924,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 		var maybeBaseCoto = A2(_user$project$App_Model$getCoto, baseCotoId, model);
 		return {
 			closeMessage: _user$project$App_Messages$CloseConnectModal,
-			title: 'Connect cotos',
+			title: 'Connect Preview',
 			content: function () {
 				var _p0 = maybeBaseCoto;
 				if (_p0.ctor === 'Nothing') {
