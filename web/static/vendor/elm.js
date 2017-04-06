@@ -26006,115 +26006,125 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: model.connectMode ? A2(
-				_elm_lang$html$Html$div,
+			_0: A2(
+				_elm_lang$html$Html$a,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('connect-mode'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$class('close'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$ClearSelection),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$span,
+						_elm_lang$html$Html$i,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('connect-mode-message'),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
 						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Select a target coto...'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: model.connectMode ? A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('connect-mode'),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
+							_elm_lang$html$Html$span,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('button'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$App_Messages$SetConnectMode(false)),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Attributes$class('connect-mode-message'),
+								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Cancel'),
+								_0: _elm_lang$html$Html$text('Select a target coto...'),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
-					}
-				}) : A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('default'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('selection-info'),
-							_1: {ctor: '[]'}
-						},
-						{
+						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$span,
+								_elm_lang$html$Html$button,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('selection-count'),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$class('button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											_user$project$App_Messages$SetConnectMode(false)),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(
-											_elm_lang$core$List$length(model.cotoSelection))),
+									_0: _elm_lang$html$Html$text('Cancel'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(' cotos selected'),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
+							_1: {ctor: '[]'}
+						}
+					}) : A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('default'),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('buttons'),
+								_0: _elm_lang$html$Html_Attributes$class('selection-info'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$button,
+									_elm_lang$html$Html$span,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$App_Messages$SetConnectMode(true)),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Attributes$class('selection-count'),
+										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Connect'),
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(
+												_elm_lang$core$List$length(model.cotoSelection))),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(' cotos selected'),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('buttons'),
+									_1: {ctor: '[]'}
+								},
+								{
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$button,
@@ -26123,13 +26133,14 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('button'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Stock),
+												_0: _elm_lang$html$Html_Events$onClick(
+													_user$project$App_Messages$SetConnectMode(true)),
 												_1: {ctor: '[]'}
 											}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Stock'),
+											_0: _elm_lang$html$Html$text('Connect'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -26141,23 +26152,23 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 												_0: _elm_lang$html$Html_Attributes$class('button'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$ClearSelection),
+													_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Stock),
 													_1: {ctor: '[]'}
 												}
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Clear'),
+												_0: _elm_lang$html$Html$text('Stock'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$App_View$view = function (model) {

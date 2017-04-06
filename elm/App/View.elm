@@ -99,7 +99,9 @@ cotoSelectionTools model =
         div [] []
     else
         div [ id "coto-selection-tools" ] 
-            [ if model.connectMode then
+            [ a [ class "close", onClick ClearSelection ] 
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+            , if model.connectMode then
                 div [ class "connect-mode" ]
                     [ span 
                         [ class "connect-mode-message" ] 
@@ -123,9 +125,6 @@ cotoSelectionTools model =
                         , button 
                            [ class "button", onClick Stock ] 
                            [ text "Stock" ]
-                        , button 
-                           [ class "button", onClick ClearSelection ] 
-                           [ text "Clear" ]
                         ]
                     ]
             ]
