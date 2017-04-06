@@ -142,7 +142,7 @@ flowStockSwitch model =
                 if model.stockOpen then
                     ( "open-flow"
                     , "Show timeline"
-                    , i [ class "material-icons" ] [ text "navigate_next" ]
+                    , i [ class "fa fa-comments", (attribute "aria-hidden" "true") ] []
                     
                     )
                 else

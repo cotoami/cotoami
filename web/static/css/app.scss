@@ -138,6 +138,9 @@ div.flow-stock-switch {
   background-color: #fff;
   
   i {
+    width: 24px;
+    text-align: center;
+    font-size: 16px;
     line-height: 60px;
   }
 }
@@ -152,12 +155,6 @@ div.flow-stock-switch {
   right: 0;
   border-radius: 6px 0 0 6px;
   border-right-style: none;
-  
-  i {
-    width: 24px;
-    text-align: center;
-    font-size: 17px;
-  }
 }
 
 @media (#{$wide-viewport}) {

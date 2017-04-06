@@ -25977,14 +25977,14 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 				_elm_lang$html$Html$i,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$class('fa fa-comments'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+						_1: {ctor: '[]'}
+					}
 				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('navigate_next'),
-					_1: {ctor: '[]'}
-				})
+				{ctor: '[]'})
 		} : {
 			ctor: '_Tuple3',
 			_0: 'open-stock',
