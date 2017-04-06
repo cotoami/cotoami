@@ -23861,7 +23861,9 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							cotoSelection: {ctor: '[]'}
+							cotoSelection: {ctor: '[]'},
+							connectMode: false,
+							connectModalOpen: false
 						}),
 					{ctor: '[]'});
 			case 'SetConnectMode':

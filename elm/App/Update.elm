@@ -345,7 +345,11 @@ update msg model =
             stock model ! []
             
         ClearSelection ->
-            { model | cotoSelection = [] } ! []
+            { model 
+            | cotoSelection = []
+            , connectMode = False 
+            , connectModalOpen = False
+            } ! []
             
         SetConnectMode enabled ->
             { model | connectMode = enabled } ! []
