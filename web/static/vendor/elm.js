@@ -25784,7 +25784,7 @@ var _user$project$Components_Connections_View$view = F2(
 	});
 
 var _user$project$Components_ConnectModal$modalContent = F2(
-	function (targetCotos, baseCoto) {
+	function (startCoto, endCotos) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -25794,12 +25794,12 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('base-coto coto'),
+						_0: _elm_lang$html$Html_Attributes$class('start-coto coto'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _user$project$App_Markdown$markdown(baseCoto.content),
+						_0: _user$project$App_Markdown$markdown(startCoto.content),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -25834,7 +25834,7 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 							'div',
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('target-cotos'),
+								_0: _elm_lang$html$Html_Attributes$class('end-cotos'),
 								_1: {ctor: '[]'}
 							},
 							A2(
@@ -25857,22 +25857,22 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 											})
 									};
 								},
-								_elm_lang$core$List$reverse(targetCotos))),
+								_elm_lang$core$List$reverse(endCotos))),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Components_ConnectModal$modalConfig = F2(
-	function (baseCotoId, model) {
-		var targetCotos = A2(
+	function (startCotoId, model) {
+		var endCotos = A2(
 			_elm_lang$core$List$filterMap,
 			function (cotoId) {
 				return A2(_user$project$App_Model$getCoto, cotoId, model);
 			},
 			model.cotoSelection);
-		var maybeBaseCoto = A2(_user$project$App_Model$getCoto, baseCotoId, model);
-		var _p0 = maybeBaseCoto;
+		var maybeStartCoto = A2(_user$project$App_Model$getCoto, startCotoId, model);
+		var _p0 = maybeStartCoto;
 		if (_p0.ctor === 'Nothing') {
 			return {
 				closeMessage: _user$project$App_Messages$CloseConnectModal,
@@ -25892,7 +25892,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 			return {
 				closeMessage: _user$project$App_Messages$CloseConnectModal,
 				title: 'Connect Preview',
-				content: A2(_user$project$Components_ConnectModal$modalContent, targetCotos, _p1),
+				content: A2(_user$project$Components_ConnectModal$modalContent, _p1, endCotos),
 				buttons: {
 					ctor: '::',
 					_0: A2(
@@ -25903,7 +25903,7 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onClick(
-									A2(_user$project$App_Messages$Connect, _p1, targetCotos)),
+									A2(_user$project$App_Messages$Connect, _p1, endCotos)),
 								_1: {ctor: '[]'}
 							}
 						},
