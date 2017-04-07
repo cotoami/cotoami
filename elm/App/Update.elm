@@ -341,8 +341,8 @@ update msg model =
                     _ -> 
                         newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
-        Stock ->
-            stock model ! []
+        Pin ->
+            pinSelectedCotos model ! []
             
         ClearSelection ->
             { model 
@@ -383,8 +383,8 @@ clickCoto cotoId model =
         }
                         
 
-stock : Model -> Model
-stock model =
+pinSelectedCotos : Model -> Model
+pinSelectedCotos model =
     let
         cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
         connections = addRootConnections cotos model.connections

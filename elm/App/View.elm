@@ -120,7 +120,7 @@ cotoSelectionTools model =
                         ]
                     , div [ class "buttons" ]
                         [ button 
-                           [ class "button", onClick Stock ] 
+                           [ class "button", onClick Pin ] 
                            [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                            , text "Pin" 
                            ]
