@@ -25817,65 +25817,18 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$button,
+								_elm_lang$html$Html$i,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-downward'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											A3(_user$project$App_Messages$Connect, false, baseCoto, targetCotos)),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('arrow_downward'),
-											_1: {ctor: '[]'}
-										}),
+									_0: _elm_lang$html$Html$text('arrow_downward'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$button,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-upward'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												A3(_user$project$App_Messages$Connect, true, baseCoto, targetCotos)),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('arrow_upward'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
@@ -25922,26 +25875,50 @@ var _user$project$Components_ConnectModal$modalConfig = F2(
 			},
 			model.cotoSelection);
 		var maybeBaseCoto = A2(_user$project$App_Model$getCoto, baseCotoId, model);
-		return {
-			closeMessage: _user$project$App_Messages$CloseConnectModal,
-			title: 'Connect Preview',
-			content: function () {
-				var _p0 = maybeBaseCoto;
-				if (_p0.ctor === 'Nothing') {
-					return A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
+		var _p0 = maybeBaseCoto;
+		if (_p0.ctor === 'Nothing') {
+			return {
+				closeMessage: _user$project$App_Messages$CloseConnectModal,
+				title: 'Connect Preview',
+				content: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Selected coto has been deleted.'),
+						_1: {ctor: '[]'}
+					}),
+				buttons: {ctor: '[]'}
+			};
+		} else {
+			var _p1 = _p0._0;
+			return {
+				closeMessage: _user$project$App_Messages$CloseConnectModal,
+				title: 'Connect Preview',
+				content: A2(_user$project$Components_ConnectModal$modalContent, targetCotos, _p1),
+				buttons: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Selected coto has been deleted.'),
+							_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									A3(_user$project$App_Messages$Connect, false, _p1, targetCotos)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Connect'),
 							_1: {ctor: '[]'}
-						});
-				} else {
-					return A2(_user$project$Components_ConnectModal$modalContent, targetCotos, _p0._0);
+						}),
+					_1: {ctor: '[]'}
 				}
-			}(),
-			buttons: {ctor: '[]'}
-		};
+			};
+		}
 	});
 var _user$project$Components_ConnectModal$view = function (model) {
 	return A2(
@@ -25949,12 +25926,12 @@ var _user$project$Components_ConnectModal$view = function (model) {
 		'connect-modal',
 		function () {
 			if (model.connectModalOpen) {
-				var _p1 = model.connectingTo;
-				if (_p1.ctor === 'Nothing') {
+				var _p2 = model.connectingTo;
+				if (_p2.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return _elm_lang$core$Maybe$Just(
-						A2(_user$project$Components_ConnectModal$modalConfig, _p1._0, model));
+						A2(_user$project$Components_ConnectModal$modalConfig, _p2._0, model));
 				}
 			} else {
 				return _elm_lang$core$Maybe$Nothing;

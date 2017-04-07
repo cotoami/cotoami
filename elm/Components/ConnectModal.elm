@@ -33,35 +33,37 @@ modalConfig baseCotoId model =
                 (\cotoId -> getCoto cotoId model) 
                 model.cotoSelection
     in
-        { closeMessage = CloseConnectModal
-        , title = "Connect Preview"
-        , content = 
-            case maybeBaseCoto of
-                Nothing -> 
-                    div [] [ text "Selected coto has been deleted." ]
-                Just baseCoto ->
-                    modalContent targetCotos baseCoto
-        , buttons = []
-        }
+        case maybeBaseCoto of
+            Nothing ->
+                { closeMessage = CloseConnectModal
+                , title = "Connect Preview"
+                , content = div [] [ text "Selected coto has been deleted." ]
+                , buttons = []
+                }
+                
+            Just baseCoto ->
+                { closeMessage = CloseConnectModal
+                , title = "Connect Preview"
+                , content = modalContent targetCotos baseCoto
+                , buttons = 
+                    [ button
+                        [ class "button button-primary"
+                        , onClick (Connect False baseCoto targetCotos)
+                        ] 
+                        [ text "Connect" ]
+                    ]
+                }
 
 
 modalContent : List Coto -> Coto -> Html Msg
 modalContent targetCotos baseCoto =
     div []
-        [ div [ class "base-coto coto" ]
+        [ div 
+            [ class "base-coto coto" ]
             [ App.Markdown.markdown baseCoto.content ]
-        , div [ class "connect-buttons" ]
-            [ button 
-                [ class "button button-primary connect-downward"
-                , onClick (Connect False baseCoto targetCotos)
-                ] 
-                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
-            , button 
-                [ class "button button-primary connect-upward"
-                , onClick (Connect True baseCoto targetCotos)
-                ] 
-                [ i [ class "material-icons" ] [ text "arrow_upward" ] ]
-            ]
+        , div 
+            [ class "connect-buttons" ]
+            [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
         , Html.Keyed.node
             "div"
             [ class "target-cotos" ]
