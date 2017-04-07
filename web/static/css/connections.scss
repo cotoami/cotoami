@@ -17,7 +17,6 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 10px;
-    padding-top: 15px;
     padding-bottom: 50px;
   }
   
@@ -33,6 +32,18 @@
       font-size: 90%;
     }
     
+    div.column-header {
+      text-align: center;
+      font-size: 18px;
+      color: gray;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      
+      i {
+        margin-right: 5px;
+      }
+    }
+    
     div.coto {
       margin-bottom: 10px;
       border: 2px solid #eee;
@@ -42,6 +53,7 @@
   div.column-traversal {
     min-width: 90vw;
     width: 90vw;
+    padding-top: 15px;
     background-color: #f4f4f4;
     
     div.coto {

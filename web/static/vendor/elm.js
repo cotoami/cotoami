@@ -21862,16 +21862,16 @@ var _user$project$Components_Connections_Messages$CotoClick = function (a) {
 };
 var _user$project$Components_Connections_Messages$NoOp = {ctor: 'NoOp'};
 
-var _user$project$App_Messages$Connect = F3(
-	function (a, b, c) {
-		return {ctor: 'Connect', _0: a, _1: b, _2: c};
+var _user$project$App_Messages$Connect = F2(
+	function (a, b) {
+		return {ctor: 'Connect', _0: a, _1: b};
 	});
 var _user$project$App_Messages$CloseConnectModal = {ctor: 'CloseConnectModal'};
 var _user$project$App_Messages$SetConnectMode = function (a) {
 	return {ctor: 'SetConnectMode', _0: a};
 };
 var _user$project$App_Messages$ClearSelection = {ctor: 'ClearSelection'};
-var _user$project$App_Messages$Stock = {ctor: 'Stock'};
+var _user$project$App_Messages$Pin = {ctor: 'Pin'};
 var _user$project$App_Messages$ConnectionsMsg = function (a) {
 	return {ctor: 'ConnectionsMsg', _0: a};
 };
@@ -22296,29 +22296,21 @@ var _user$project$Components_Connections_Model$addRootConnections = F2(
 			model,
 			cotos);
 	});
-var _user$project$Components_Connections_Model$addConnection = F4(
-	function (baseCoto, targetCoto, reverse, model) {
-		var _p4 = reverse ? {ctor: '_Tuple2', _0: targetCoto, _1: baseCoto} : {ctor: '_Tuple2', _0: baseCoto, _1: targetCoto};
-		var from = _p4._0;
-		var to = _p4._1;
-		var rootConnections = A2(_user$project$Components_Connections_Model$connected, from.id, model) ? model.rootConnections : {
-			ctor: '::',
-			_0: A2(_user$project$Components_Connections_Model$newConnection, _elm_lang$core$Maybe$Nothing, from.id),
-			_1: model.rootConnections
-		};
+var _user$project$Components_Connections_Model$addConnection = F3(
+	function (start, end, model) {
 		var connections = A3(
 			_elm_lang$core$Dict$update,
-			from.id,
+			start.id,
 			function (maybeConns) {
-				var _p5 = maybeConns;
-				if (_p5.ctor === 'Nothing') {
+				var _p4 = maybeConns;
+				if (_p4.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
 							_0: A2(
 								_user$project$Components_Connections_Model$newConnection,
-								_elm_lang$core$Maybe$Just(from.id),
-								to.id),
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
 							_1: {ctor: '[]'}
 						});
 				} else {
@@ -22327,32 +22319,37 @@ var _user$project$Components_Connections_Model$addConnection = F4(
 							ctor: '::',
 							_0: A2(
 								_user$project$Components_Connections_Model$newConnection,
-								_elm_lang$core$Maybe$Just(from.id),
-								to.id),
-							_1: _p5._0
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
+							_1: _p4._0
 						});
 				}
 			},
 			model.connections);
+		var rootConnections = A2(_user$project$Components_Connections_Model$connected, start.id, model) ? model.rootConnections : {
+			ctor: '::',
+			_0: A2(_user$project$Components_Connections_Model$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
+			_1: model.rootConnections
+		};
 		var cotos = A3(
 			_elm_lang$core$Dict$insert,
-			targetCoto.id,
-			targetCoto,
-			A3(_elm_lang$core$Dict$insert, baseCoto.id, baseCoto, model.cotos));
+			end.id,
+			end,
+			A3(_elm_lang$core$Dict$insert, start.id, start, model.cotos));
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{cotos: cotos, rootConnections: rootConnections, connections: connections});
 	});
-var _user$project$Components_Connections_Model$addConnections = F4(
-	function (baseCoto, targetCotos, reverse, model) {
+var _user$project$Components_Connections_Model$addConnections = F3(
+	function (startCoto, endCotos, model) {
 		return A3(
 			_elm_lang$core$List$foldr,
 			F2(
-				function (targetCoto, model) {
-					return A4(_user$project$Components_Connections_Model$addConnection, baseCoto, targetCoto, reverse, model);
+				function (endCoto, model) {
+					return A3(_user$project$Components_Connections_Model$addConnection, startCoto, endCoto, model);
 				}),
 			model,
-			targetCotos);
+			endCotos);
 	});
 var _user$project$Components_Connections_Model$Model = F3(
 	function (a, b, c) {
@@ -23296,7 +23293,7 @@ var _user$project$App_Update$applyPresenceDiff = F2(
 			presencesJoined,
 			_elm_lang$core$Tuple$second(diff));
 	});
-var _user$project$App_Update$stock = function (model) {
+var _user$project$App_Update$pinSelectedCotos = function (model) {
 	var cotos = A2(
 		_elm_lang$core$List$filterMap,
 		function (cotoId) {
@@ -23850,10 +23847,10 @@ var _user$project$App_Update$update = F2(
 							_1: {ctor: '[]'}
 						});
 				}
-			case 'Stock':
+			case 'Pin':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					_user$project$App_Update$stock(model),
+					_user$project$App_Update$pinSelectedCotos(model),
 					{ctor: '[]'});
 			case 'ClearSelection':
 				return A2(
@@ -23861,7 +23858,9 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							cotoSelection: {ctor: '[]'}
+							cotoSelection: {ctor: '[]'},
+							connectMode: false,
+							connectModalOpen: false
 						}),
 					{ctor: '[]'});
 			case 'SetConnectMode':
@@ -23884,7 +23883,7 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							connections: A4(_user$project$Components_Connections_Model$addConnections, _p2._1, _p2._2, _p2._0, model.connections),
+							connections: A3(_user$project$Components_Connections_Model$addConnections, _p2._0, _p2._1, model.connections),
 							cotoSelection: {ctor: '[]'},
 							connectMode: false,
 							connectModalOpen: false
@@ -25724,8 +25723,34 @@ var _user$project$Components_Connections_View$view = F2(
 						},
 						{
 							ctor: '::',
-							_0: A2(_user$project$Components_Connections_View$rootConnections, selection, model),
-							_1: {ctor: '[]'}
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('column-header'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$i,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+												_1: {ctor: '[]'}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$Components_Connections_View$rootConnections, selection, model),
+								_1: {ctor: '[]'}
+							}
 						})
 				},
 				_1: A2(
@@ -25759,7 +25784,7 @@ var _user$project$Components_Connections_View$view = F2(
 	});
 
 var _user$project$Components_ConnectModal$modalContent = F2(
-	function (targetCotos, baseCoto) {
+	function (startCoto, endCotos) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -25769,12 +25794,12 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('base-coto coto'),
+						_0: _elm_lang$html$Html_Attributes$class('start-coto coto'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _user$project$App_Markdown$markdown(baseCoto.content),
+						_0: _user$project$App_Markdown$markdown(startCoto.content),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -25789,65 +25814,18 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$button,
+								_elm_lang$html$Html$i,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-downward'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											A3(_user$project$App_Messages$Connect, false, baseCoto, targetCotos)),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('arrow_downward'),
-											_1: {ctor: '[]'}
-										}),
+									_0: _elm_lang$html$Html$text('arrow_downward'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$button,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button button-primary connect-upward'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												A3(_user$project$App_Messages$Connect, true, baseCoto, targetCotos)),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$i,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('arrow_upward'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
@@ -25856,7 +25834,7 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 							'div',
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('target-cotos'),
+								_0: _elm_lang$html$Html_Attributes$class('end-cotos'),
 								_1: {ctor: '[]'}
 							},
 							A2(
@@ -25879,41 +25857,65 @@ var _user$project$Components_ConnectModal$modalContent = F2(
 											})
 									};
 								},
-								_elm_lang$core$List$reverse(targetCotos))),
+								_elm_lang$core$List$reverse(endCotos))),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Components_ConnectModal$modalConfig = F2(
-	function (baseCotoId, model) {
-		var targetCotos = A2(
+	function (startCotoId, model) {
+		var endCotos = A2(
 			_elm_lang$core$List$filterMap,
 			function (cotoId) {
 				return A2(_user$project$App_Model$getCoto, cotoId, model);
 			},
 			model.cotoSelection);
-		var maybeBaseCoto = A2(_user$project$App_Model$getCoto, baseCotoId, model);
-		return {
-			closeMessage: _user$project$App_Messages$CloseConnectModal,
-			title: 'Connect cotos',
-			content: function () {
-				var _p0 = maybeBaseCoto;
-				if (_p0.ctor === 'Nothing') {
-					return A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
+		var maybeStartCoto = A2(_user$project$App_Model$getCoto, startCotoId, model);
+		var _p0 = maybeStartCoto;
+		if (_p0.ctor === 'Nothing') {
+			return {
+				closeMessage: _user$project$App_Messages$CloseConnectModal,
+				title: 'Connect Preview',
+				content: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Selected coto has been deleted.'),
+						_1: {ctor: '[]'}
+					}),
+				buttons: {ctor: '[]'}
+			};
+		} else {
+			var _p1 = _p0._0;
+			return {
+				closeMessage: _user$project$App_Messages$CloseConnectModal,
+				title: 'Connect Preview',
+				content: A2(_user$project$Components_ConnectModal$modalContent, _p1, endCotos),
+				buttons: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Selected coto has been deleted.'),
+							_0: _elm_lang$html$Html_Attributes$class('button button-primary'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									A2(_user$project$App_Messages$Connect, _p1, endCotos)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Connect'),
 							_1: {ctor: '[]'}
-						});
-				} else {
-					return A2(_user$project$Components_ConnectModal$modalContent, targetCotos, _p0._0);
+						}),
+					_1: {ctor: '[]'}
 				}
-			}(),
-			buttons: {ctor: '[]'}
-		};
+			};
+		}
 	});
 var _user$project$Components_ConnectModal$view = function (model) {
 	return A2(
@@ -25921,12 +25923,12 @@ var _user$project$Components_ConnectModal$view = function (model) {
 		'connect-modal',
 		function () {
 			if (model.connectModalOpen) {
-				var _p1 = model.connectingTo;
-				if (_p1.ctor === 'Nothing') {
+				var _p2 = model.connectingTo;
+				if (_p2.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return _elm_lang$core$Maybe$Just(
-						A2(_user$project$Components_ConnectModal$modalConfig, _p1._0, model));
+						A2(_user$project$Components_ConnectModal$modalConfig, _p2._0, model));
 				}
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
@@ -25941,10 +25943,42 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 			{ctor: '[]'},
 			{ctor: '[]'});
 	} else {
-		var _p0 = model.stockOpen ? {ctor: '_Tuple3', _0: 'open-flow', _1: 'Show timeline', _2: 'navigate_next'} : {ctor: '_Tuple3', _0: 'open-stock', _1: 'Show connections', _2: 'navigate_before'};
+		var _p0 = model.stockOpen ? {
+			ctor: '_Tuple3',
+			_0: 'open-flow',
+			_1: 'Show timeline',
+			_2: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('fa fa-comments'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'})
+		} : {
+			ctor: '_Tuple3',
+			_0: 'open-stock',
+			_1: 'Show connections',
+			_2: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'})
+		};
 		var divId = _p0._0;
 		var linkTitle = _p0._1;
-		var iconName = _p0._2;
+		var icon = _p0._2;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -25975,18 +26009,7 @@ var _user$project$App_View$flowStockSwitch = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$i,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(iconName),
-								_1: {ctor: '[]'}
-							}),
+						_0: icon,
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -26006,115 +26029,125 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: model.connectMode ? A2(
-				_elm_lang$html$Html$div,
+			_0: A2(
+				_elm_lang$html$Html$a,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('connect-mode'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$class('close'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$ClearSelection),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$span,
+						_elm_lang$html$Html$i,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('connect-mode-message'),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('fa fa-times'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
 						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Select a target coto...'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: model.connectMode ? A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('connect-mode'),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
+							_elm_lang$html$Html$span,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('button'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$App_Messages$SetConnectMode(false)),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Attributes$class('connect-mode-message'),
+								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Cancel'),
+								_0: _elm_lang$html$Html$text('Select a target coto...'),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
-					}
-				}) : A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('default'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('selection-info'),
-							_1: {ctor: '[]'}
-						},
-						{
+						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$span,
+								_elm_lang$html$Html$button,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('selection-count'),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$class('button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											_user$project$App_Messages$SetConnectMode(false)),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(
-											_elm_lang$core$List$length(model.cotoSelection))),
+									_0: _elm_lang$html$Html$text('Cancel'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(' cotos selected'),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
+							_1: {ctor: '[]'}
+						}
+					}) : A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('default'),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('buttons'),
+								_0: _elm_lang$html$Html_Attributes$class('selection-info'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$button,
+									_elm_lang$html$Html$span,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('button'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$App_Messages$SetConnectMode(true)),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Attributes$class('selection-count'),
+										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Connect'),
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(
+												_elm_lang$core$List$length(model.cotoSelection))),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(' cotos selected'),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('buttons'),
+									_1: {ctor: '[]'}
+								},
+								{
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$button,
@@ -26123,14 +26156,29 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('button'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Stock),
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Pin),
 												_1: {ctor: '[]'}
 											}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Stock'),
-											_1: {ctor: '[]'}
+											_0: A2(
+												_elm_lang$html$Html$i,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Pin'),
+												_1: {ctor: '[]'}
+											}
 										}),
 									_1: {
 										ctor: '::',
@@ -26141,23 +26189,24 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 												_0: _elm_lang$html$Html_Attributes$class('button'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$ClearSelection),
+													_0: _elm_lang$html$Html_Events$onClick(
+														_user$project$App_Messages$SetConnectMode(true)),
 													_1: {ctor: '[]'}
 												}
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Clear'),
+												_0: _elm_lang$html$Html$text('Connect'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$App_View$view = function (model) {
@@ -26459,7 +26508,7 @@ var _user$project$Main$Flags = function (a) {
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["Bool","App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"Stock":[],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotoClick":["Int"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"Pin":[],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotoClick":["Int"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

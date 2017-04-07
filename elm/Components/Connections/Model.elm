@@ -86,35 +86,29 @@ getSecondConnections model =
         model.rootConnections
 
 
-addConnection : Coto -> Coto -> Bool -> Model -> Model
-addConnection baseCoto targetCoto reverse model =
+addConnection : Coto -> Coto -> Model -> Model
+addConnection start end model =
     let
         cotos = 
             model.cotos 
-                |> Dict.insert baseCoto.id baseCoto 
-                |> Dict.insert targetCoto.id targetCoto 
+                |> Dict.insert start.id start 
+                |> Dict.insert end.id end 
             
-        ( from, to ) = 
-            if reverse then 
-                ( targetCoto, baseCoto ) 
-            else 
-                ( baseCoto, targetCoto )
-        
         rootConnections = 
-            if connected from.id model then
+            if connected start.id model then
                 model.rootConnections
             else
-                (newConnection Nothing from.id) :: model.rootConnections
+                (newConnection Nothing start.id) :: model.rootConnections
                 
         connections =
             Dict.update
-                from.id
+                start.id
                 (\maybeConns ->
                     case maybeConns of
                         Nothing ->
-                            Just [ (newConnection (Just from.id) to.id) ]
+                            Just [ (newConnection (Just start.id) end.id) ]
                         Just conns ->
-                            Just ((newConnection (Just from.id) to.id) :: conns)
+                            Just ((newConnection (Just start.id) end.id) :: conns)
                 )
                 model.connections
     in
@@ -125,13 +119,13 @@ addConnection baseCoto targetCoto reverse model =
         }
         
 
-addConnections : Coto -> (List Coto) -> Bool -> Model -> Model
-addConnections baseCoto targetCotos reverse model =
+addConnections : Coto -> (List Coto) -> Model -> Model
+addConnections startCoto endCotos model =
     List.foldr 
-        (\targetCoto model ->
-            addConnection baseCoto targetCoto reverse model
+        (\endCoto model ->
+            addConnection startCoto endCoto model
         ) 
         model 
-        targetCotos
+        endCotos
         
       

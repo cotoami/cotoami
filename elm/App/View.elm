@@ -99,7 +99,9 @@ cotoSelectionTools model =
         div [] []
     else
         div [ id "coto-selection-tools" ] 
-            [ if model.connectMode then
+            [ a [ class "close", onClick ClearSelection ] 
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+            , if model.connectMode then
                 div [ class "connect-mode" ]
                     [ span 
                         [ class "connect-mode-message" ] 
@@ -118,14 +120,13 @@ cotoSelectionTools model =
                         ]
                     , div [ class "buttons" ]
                         [ button 
+                           [ class "button", onClick Pin ] 
+                           [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+                           , text "Pin" 
+                           ]
+                        , button 
                            [ class "button", onClick (SetConnectMode True) ] 
                            [ text "Connect" ]
-                        , button 
-                           [ class "button", onClick Stock ] 
-                           [ text "Stock" ]
-                        , button 
-                           [ class "button", onClick ClearSelection ] 
-                           [ text "Clear" ]
                         ]
                     ]
             ]
@@ -137,11 +138,18 @@ flowStockSwitch model =
         div [] []
     else
         let
-            ( divId, linkTitle, iconName ) =
+            ( divId, linkTitle, icon ) =
                 if model.stockOpen then
-                    ( "open-flow", "Show timeline", "navigate_next" )
+                    ( "open-flow"
+                    , "Show timeline"
+                    , i [ class "fa fa-comments", (attribute "aria-hidden" "true") ] []
+                    
+                    )
                 else
-                    ( "open-stock", "Show connections", "navigate_before" )
+                    ( "open-stock"
+                    , "Show connections"
+                    , i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+                    )
         in
             div
                 [ id divId, class "flow-stock-switch" ]
@@ -150,5 +158,5 @@ flowStockSwitch model =
                     , title linkTitle
                     , onClick StockToggle 
                     ] 
-                    [ i [ class "material-icons" ] [ text iconName ] ] 
+                    [ icon ] 
                 ]

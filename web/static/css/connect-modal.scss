@@ -5,14 +5,14 @@
     padding: 10px;
   }
   
-  div.base-coto {
+  div.start-coto {
     max-height: 15vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
   
-  div.target-cotos {
-    max-height: 45vh;
+  div.end-cotos {
+    max-height: 40vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     
@@ -36,9 +36,5 @@
         margin-left: 20px;
       }
     }
-  }
-  
-  .modal-buttons-seperator {
-    display: none;
   }
 }

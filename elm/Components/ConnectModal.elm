@@ -18,53 +18,55 @@ view model =
         (if model.connectModalOpen then
             case model.connectingTo of 
                 Nothing -> Nothing
-                Just baseCotoId -> Just (modalConfig baseCotoId model)
+                Just startCotoId -> Just (modalConfig startCotoId model)
          else
             Nothing
         )
 
 
 modalConfig : Int -> Model -> Modal.Config Msg
-modalConfig baseCotoId model =
+modalConfig startCotoId model =
     let
-        maybeBaseCoto = getCoto baseCotoId model
-        targetCotos = 
+        maybeStartCoto = getCoto startCotoId model
+        endCotos = 
             List.filterMap 
                 (\cotoId -> getCoto cotoId model) 
                 model.cotoSelection
     in
-        { closeMessage = CloseConnectModal
-        , title = "Connect cotos"
-        , content = 
-            case maybeBaseCoto of
-                Nothing -> 
-                    div [] [ text "Selected coto has been deleted." ]
-                Just baseCoto ->
-                    modalContent targetCotos baseCoto
-        , buttons = []
-        }
+        case maybeStartCoto of
+            Nothing ->
+                { closeMessage = CloseConnectModal
+                , title = "Connect Preview"
+                , content = div [] [ text "Selected coto has been deleted." ]
+                , buttons = []
+                }
+                
+            Just startCoto ->
+                { closeMessage = CloseConnectModal
+                , title = "Connect Preview"
+                , content = modalContent startCoto endCotos
+                , buttons = 
+                    [ button
+                        [ class "button button-primary"
+                        , onClick (Connect startCoto endCotos)
+                        ] 
+                        [ text "Connect" ]
+                    ]
+                }
 
 
-modalContent : List Coto -> Coto -> Html Msg
-modalContent targetCotos baseCoto =
+modalContent : Coto -> List Coto -> Html Msg
+modalContent startCoto endCotos =
     div []
-        [ div [ class "base-coto coto" ]
-            [ App.Markdown.markdown baseCoto.content ]
-        , div [ class "connect-buttons" ]
-            [ button 
-                [ class "button button-primary connect-downward"
-                , onClick (Connect False baseCoto targetCotos)
-                ] 
-                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
-            , button 
-                [ class "button button-primary connect-upward"
-                , onClick (Connect True baseCoto targetCotos)
-                ] 
-                [ i [ class "material-icons" ] [ text "arrow_upward" ] ]
-            ]
+        [ div 
+            [ class "start-coto coto" ]
+            [ App.Markdown.markdown startCoto.content ]
+        , div 
+            [ class "connect-buttons" ]
+            [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
         , Html.Keyed.node
             "div"
-            [ class "target-cotos" ]
+            [ class "end-cotos" ]
             (List.map 
                 (\coto ->
                     ( toString coto.id
@@ -72,6 +74,6 @@ modalContent targetCotos baseCoto =
                         [ App.Markdown.markdown coto.content ]
                     )
                 ) 
-                (List.reverse targetCotos)
+                (List.reverse endCotos)
             )
         ]

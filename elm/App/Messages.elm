@@ -42,9 +42,9 @@ type Msg
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | ConnectionsMsg Components.Connections.Messages.Msg
-    | Stock
+    | Pin
     | ClearSelection
     | SetConnectMode Bool
     | CloseConnectModal
-    | Connect Bool Coto (List Coto)
+    | Connect Coto (List Coto)
     

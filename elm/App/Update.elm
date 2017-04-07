@@ -341,11 +341,15 @@ update msg model =
                     _ -> 
                         newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
-        Stock ->
-            stock model ! []
+        Pin ->
+            pinSelectedCotos model ! []
             
         ClearSelection ->
-            { model | cotoSelection = [] } ! []
+            { model 
+            | cotoSelection = []
+            , connectMode = False 
+            , connectModalOpen = False
+            } ! []
             
         SetConnectMode enabled ->
             { model | connectMode = enabled } ! []
@@ -353,10 +357,10 @@ update msg model =
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
             
-        Connect reverse baseCoto targetCotos ->
+        Connect startCoto endCotos ->
             { model 
             | connections = 
-                model.connections |> addConnections baseCoto targetCotos reverse
+                model.connections |> addConnections startCoto endCotos
             , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False
@@ -379,8 +383,8 @@ clickCoto cotoId model =
         }
                         
 
-stock : Model -> Model
-stock model =
+pinSelectedCotos : Model -> Model
+pinSelectedCotos model =
     let
         cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
         connections = addRootConnections cotos model.connections

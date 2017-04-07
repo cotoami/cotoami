@@ -18,12 +18,27 @@
     width: 450px;
   }
   
+  a.close {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    padding: 0;
+    font-size: 20px;
+    line-height: 20px;
+    color: #ccc;
+  }
+  
   button {
     background-color: #fff;
     margin: 0;
     margin-left: 3px;
     margin-right: 3px;
     padding: 0 20px;
+    
+    i {
+      margin-right: 5px;
+      font-size: 14px;
+    }
   }
   
   div.default {
