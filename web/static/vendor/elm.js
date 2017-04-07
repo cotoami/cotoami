@@ -26156,15 +26156,29 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 											_0: _elm_lang$html$Html_Attributes$class('button'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$App_Messages$SetConnectMode(true)),
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Stock),
 												_1: {ctor: '[]'}
 											}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Connect'),
-											_1: {ctor: '[]'}
+											_0: A2(
+												_elm_lang$html$Html$i,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Pin'),
+												_1: {ctor: '[]'}
+											}
 										}),
 									_1: {
 										ctor: '::',
@@ -26175,29 +26189,15 @@ var _user$project$App_View$cotoSelectionTools = function (model) {
 												_0: _elm_lang$html$Html_Attributes$class('button'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$Stock),
+													_0: _elm_lang$html$Html_Events$onClick(
+														_user$project$App_Messages$SetConnectMode(true)),
 													_1: {ctor: '[]'}
 												}
 											},
 											{
 												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$i,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
-														_1: {
-															ctor: '::',
-															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-															_1: {ctor: '[]'}
-														}
-													},
-													{ctor: '[]'}),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Pin'),
-													_1: {ctor: '[]'}
-												}
+												_0: _elm_lang$html$Html$text('Connect'),
+												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}

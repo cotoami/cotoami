@@ -120,13 +120,13 @@ cotoSelectionTools model =
                         ]
                     , div [ class "buttons" ]
                         [ button 
-                           [ class "button", onClick (SetConnectMode True) ] 
-                           [ text "Connect" ]
-                        , button 
                            [ class "button", onClick Stock ] 
                            [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                            , text "Pin" 
                            ]
+                        , button 
+                           [ class "button", onClick (SetConnectMode True) ] 
+                           [ text "Connect" ]
                         ]
                     ]
             ]
