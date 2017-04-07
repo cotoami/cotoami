@@ -357,10 +357,10 @@ update msg model =
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
             
-        Connect reverse baseCoto targetCotos ->
+        Connect startCoto endCotos ->
             { model 
             | connections = 
-                model.connections |> addConnections baseCoto targetCotos reverse
+                model.connections |> addConnections startCoto endCotos
             , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False

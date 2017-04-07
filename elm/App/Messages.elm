@@ -46,5 +46,5 @@ type Msg
     | ClearSelection
     | SetConnectMode Bool
     | CloseConnectModal
-    | Connect Bool Coto (List Coto)
+    | Connect Coto (List Coto)
     

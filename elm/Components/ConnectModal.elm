@@ -48,7 +48,7 @@ modalConfig baseCotoId model =
                 , buttons = 
                     [ button
                         [ class "button button-primary"
-                        , onClick (Connect False baseCoto targetCotos)
+                        , onClick (Connect baseCoto targetCotos)
                         ] 
                         [ text "Connect" ]
                     ]
