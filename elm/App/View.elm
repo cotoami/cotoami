@@ -65,7 +65,8 @@ view model =
                   ] 
                   [ Html.map ConnectionsMsg 
                       (Components.Connections.View.view 
-                          model.cotoSelection 
+                          model.cotoSelection
+                          model.cotonoma
                           model.connections
                       )
                   ]

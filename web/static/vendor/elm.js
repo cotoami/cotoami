@@ -21871,6 +21871,9 @@ var _user$project$Components_CotonomaModal_Messages$NameInput = function (a) {
 var _user$project$Components_CotonomaModal_Messages$Close = {ctor: 'Close'};
 var _user$project$Components_CotonomaModal_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$Components_Connections_Messages$CotonomaClick = function (a) {
+	return {ctor: 'CotonomaClick', _0: a};
+};
 var _user$project$Components_Connections_Messages$CotoClick = function (a) {
 	return {ctor: 'CotoClick', _0: a};
 };
@@ -23185,16 +23188,22 @@ var _user$project$Components_CotonomaModal_Update$update = F6(
 var _user$project$Components_Connections_Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0.ctor === 'NoOp') {
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				model,
-				{ctor: '[]'});
-		} else {
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				model,
-				{ctor: '[]'});
+		switch (_p0.ctor) {
+			case 'NoOp':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			case 'CotoClick':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 		}
 	});
 
@@ -25684,19 +25693,23 @@ var _user$project$Components_Connections_View$cotoDivAttrs = F2(
 			}
 		};
 	});
-var _user$project$Components_Connections_View$cotoDiv = F2(
-	function (selection, coto) {
+var _user$project$Components_Connections_View$cotoDiv = F4(
+	function (selection, maybeCotonoma, graph, coto) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
 			{
 				ctor: '::',
-				_0: _user$project$Components_Connections_View$markdown(coto.content),
-				_1: {ctor: '[]'}
+				_0: A4(_user$project$Components_Coto$headerDiv, _user$project$Components_Connections_Messages$CotonomaClick, maybeCotonoma, graph, coto),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Components_Connections_View$markdown(coto.content),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
-var _user$project$Components_Connections_View$connectionsDiv = F4(
-	function (divClass, connections, selection, graph) {
+var _user$project$Components_Connections_View$connectionsDiv = F5(
+	function (divClass, connections, selection, maybeCotonoma, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25728,45 +25741,49 @@ var _user$project$Components_Connections_View$connectionsDiv = F4(
 										_1: {ctor: '[]'}
 									});
 							} else {
-								return A2(_user$project$Components_Connections_View$cotoDiv, selection, _p0._0);
+								return A4(_user$project$Components_Connections_View$cotoDiv, selection, maybeCotonoma, graph, _p0._0);
 							}
 						}()
 					};
 				},
 				_elm_lang$core$List$reverse(connections)));
 	});
-var _user$project$Components_Connections_View$traversalCoto = F4(
-	function (connections, coto, selection, graph) {
+var _user$project$Components_Connections_View$traversalCoto = F5(
+	function (connections, coto, selection, maybeCotonoma, graph) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
 			{
 				ctor: '::',
-				_0: _user$project$Components_Connections_View$markdown(coto.content),
+				_0: A4(_user$project$Components_Coto$headerDiv, _user$project$Components_Connections_Messages$CotonomaClick, maybeCotonoma, graph, coto),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('main-sub-border'),
-							_1: {ctor: '[]'}
-						},
-						{ctor: '[]'}),
+					_0: _user$project$Components_Connections_View$markdown(coto.content),
 					_1: {
 						ctor: '::',
-						_0: A4(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, graph),
-						_1: {ctor: '[]'}
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('main-sub-border'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A5(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, maybeCotonoma, graph),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			});
 	});
-var _user$project$Components_Connections_View$rootConnections = F2(
-	function (selection, graph) {
-		return A4(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', graph.rootConnections, selection, graph);
+var _user$project$Components_Connections_View$rootConnections = F3(
+	function (selection, maybeCotonoma, graph) {
+		return A5(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', graph.rootConnections, selection, maybeCotonoma, graph);
 	});
-var _user$project$Components_Connections_View$view = F2(
-	function (selection, graph) {
+var _user$project$Components_Connections_View$view = F3(
+	function (selection, maybeCotonoma, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25818,7 +25835,7 @@ var _user$project$Components_Connections_View$view = F2(
 								}),
 							_1: {
 								ctor: '::',
-								_0: A2(_user$project$Components_Connections_View$rootConnections, selection, graph),
+								_0: A3(_user$project$Components_Connections_View$rootConnections, selection, maybeCotonoma, graph),
 								_1: {ctor: '[]'}
 							}
 						})
@@ -25843,7 +25860,7 @@ var _user$project$Components_Connections_View$view = F2(
 								},
 								{
 									ctor: '::',
-									_0: A4(_user$project$Components_Connections_View$traversalCoto, connections, coto, selection, graph),
+									_0: A5(_user$project$Components_Connections_View$traversalCoto, connections, coto, selection, maybeCotonoma, graph),
 									_1: {ctor: '[]'}
 								})
 						};
@@ -26432,7 +26449,7 @@ var _user$project$App_View$view = function (model) {
 										_0: A2(
 											_elm_lang$html$Html$map,
 											_user$project$App_Messages$ConnectionsMsg,
-											A2(_user$project$Components_Connections_View$view, model.cotoSelection, model.connections)),
+											A3(_user$project$Components_Connections_View$view, model.cotoSelection, model.cotonoma, model.connections)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -26578,7 +26595,7 @@ var _user$project$Main$Flags = function (a) {
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["String"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"Pin":[],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotoClick":["Int"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"Pin":[],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"CotoClick":["Int"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : Int , owner : Maybe.Maybe App.Types.Amishi }"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : Int , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

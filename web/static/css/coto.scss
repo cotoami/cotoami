@@ -1,3 +1,21 @@
+div.coto {
+  div.coto-header {
+    min-height: 8px;
+    text-align: right;
+    
+    a.posted-in {
+      font-size: 12px;
+      color: black;
+      opacity: 0.3;
+    }
+    
+    i.pinned {
+      margin-left: 10px;
+      opacity: 0.3;
+    }
+  }  
+}    
+
 div.coto.selectable {
   @media (min-device-width: 1200px) {
     &:hover {

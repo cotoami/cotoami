@@ -6,14 +6,15 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Markdown
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoSelection)
+import App.Types exposing (Coto, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Connections.Messages exposing (..)
+import Components.Coto
 
 
-view : CotoSelection -> Graph -> Html Msg
-view selection graph =
+view : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+view selection maybeCotonoma graph =
     Html.Keyed.node
         "div"
         [ id "connections" ]
@@ -23,7 +24,7 @@ view selection graph =
               [ div [ class "column-header" ] 
                   [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                   ]
-              , rootConnections selection graph 
+              , rootConnections selection maybeCotonoma graph 
               ]
           ) ::
               List.map
@@ -35,29 +36,35 @@ view selection graph =
                           ( "column-traversal-" ++ toString coto.id
                           , div 
                               [ class "column-traversal connections-column" ]
-                              [ traversalCoto connections coto selection graph ]
+                              [ traversalCoto connections coto selection maybeCotonoma graph ]
                           )  
                   ) 
                   (graph |> getSecondConnections |> List.reverse)
         )
 
 
-rootConnections : CotoSelection -> Graph -> Html Msg
-rootConnections selection graph =
-    connectionsDiv "root-connections" graph.rootConnections selection graph
+rootConnections : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+rootConnections selection maybeCotonoma graph =
+    connectionsDiv 
+        "root-connections" 
+        graph.rootConnections 
+        selection 
+        maybeCotonoma 
+        graph
 
 
-traversalCoto : List Connection -> Coto -> CotoSelection -> Graph -> Html Msg
-traversalCoto connections coto selection graph =
+traversalCoto : List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+traversalCoto connections coto selection maybeCotonoma graph =
     div (cotoDivAttrs selection coto)
-        [ markdown coto.content
+        [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+        , markdown coto.content
         , div [ class "main-sub-border" ] []
-        , connectionsDiv "sub-cotos" connections selection graph
+        , connectionsDiv "sub-cotos" connections selection maybeCotonoma graph
         ]
   
 
-connectionsDiv : String -> List Connection -> CotoSelection -> Graph -> Html Msg
-connectionsDiv divClass connections selection graph =
+connectionsDiv : String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+connectionsDiv divClass connections selection maybeCotonoma graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
@@ -69,7 +76,7 @@ connectionsDiv divClass connections selection graph =
                     ( conn.key
                     , case maybeCoto of
                         Nothing -> div [ class "coto missing" ] [ text "Missing" ]
-                        Just coto -> cotoDiv selection coto
+                        Just coto -> cotoDiv selection maybeCotonoma graph coto
                     )
             ) 
             (List.reverse connections)
@@ -87,9 +94,12 @@ cotoDivAttrs selection coto =
     ] 
     
   
-cotoDiv : CotoSelection -> Coto -> Html Msg
-cotoDiv selection coto =
-    div (cotoDivAttrs selection coto) [ markdown coto.content ]
+cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv selection maybeCotonoma graph coto =
+    div (cotoDivAttrs selection coto) 
+        [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+        , markdown coto.content 
+        ]
     
 
 markdown : String -> Html Msg
