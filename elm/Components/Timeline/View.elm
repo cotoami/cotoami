@@ -129,6 +129,7 @@ headerDiv maybeCotonoma post =
                         [ text postedIn.name ]
                 else
                     span [] []
+        , i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
         ]
 
 

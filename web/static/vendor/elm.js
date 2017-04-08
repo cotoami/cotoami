@@ -24837,7 +24837,22 @@ var _user$project$Components_Timeline_View$headerDiv = F2(
 							{ctor: '[]'});
 					}
 				}(),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$Components_Timeline_View$isActive = F2(
@@ -25757,7 +25772,7 @@ var _user$project$Components_Connections_View$view = F2(
 										_elm_lang$html$Html$i,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('fa fa-thumb-tack'),
+											_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
 											_1: {
 												ctor: '::',
 												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
