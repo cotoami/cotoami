@@ -5,13 +5,13 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
+import App.Graph exposing (Graph, initGraph)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
-import Components.Connections.Model
 
 
 type alias Model =
@@ -39,7 +39,7 @@ type alias Model =
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , stockToggled : Bool
     , stockOpen : Bool
-    , connections : Components.Connections.Model.Model
+    , connections : Graph
     }
 
 
@@ -72,7 +72,7 @@ initModel seed route =
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         , stockToggled = False
         , stockOpen = False
-        , connections = Components.Connections.Model.initModel
+        , connections = initGraph
         }
 
 

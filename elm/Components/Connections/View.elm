@@ -6,14 +6,14 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Markdown
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoSelection, Connection)
+import App.Types exposing (Coto, CotoSelection)
+import App.Graph exposing (..)
 import App.Markdown exposing (markdownOptions, markdownElements)
-import Components.Connections.Model exposing (..)
 import Components.Connections.Messages exposing (..)
 
 
-view : CotoSelection -> Model -> Html Msg
-view selection model =
+view : CotoSelection -> Graph -> Html Msg
+view selection graph =
     Html.Keyed.node
         "div"
         [ id "connections" ]
@@ -23,7 +23,7 @@ view selection model =
               [ div [ class "column-header" ] 
                   [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                   ]
-              , rootConnections selection model 
+              , rootConnections selection graph 
               ]
           ) ::
               List.map
@@ -35,36 +35,36 @@ view selection model =
                           ( "column-traversal-" ++ toString coto.id
                           , div 
                               [ class "column-traversal connections-column" ]
-                              [ traversalCoto connections coto selection model ]
+                              [ traversalCoto connections coto selection graph ]
                           )  
                   ) 
-                  (model |> getSecondConnections |> List.reverse)
+                  (graph |> getSecondConnections |> List.reverse)
         )
 
 
-rootConnections : CotoSelection -> Model -> Html Msg
-rootConnections selection model =
-    connectionsDiv "root-connections" model.rootConnections selection model
+rootConnections : CotoSelection -> Graph -> Html Msg
+rootConnections selection graph =
+    connectionsDiv "root-connections" graph.rootConnections selection graph
 
 
-traversalCoto : List Connection -> Coto -> CotoSelection -> Model -> Html Msg
-traversalCoto connections coto selection model =
+traversalCoto : List Connection -> Coto -> CotoSelection -> Graph -> Html Msg
+traversalCoto connections coto selection graph =
     div (cotoDivAttrs selection coto)
         [ markdown coto.content
         , div [ class "main-sub-border" ] []
-        , connectionsDiv "sub-cotos" connections selection model
+        , connectionsDiv "sub-cotos" connections selection graph
         ]
   
 
-connectionsDiv : String -> List Connection -> CotoSelection -> Model -> Html Msg
-connectionsDiv divClass connections selection model =
+connectionsDiv : String -> List Connection -> CotoSelection -> Graph -> Html Msg
+connectionsDiv divClass connections selection graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
         (List.map 
             (\conn ->
                 let
-                    maybeCoto = Dict.get conn.end model.cotos
+                    maybeCoto = Dict.get conn.end graph.cotos
                 in
                     ( conn.key
                     , case maybeCoto of

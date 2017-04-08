@@ -8,6 +8,7 @@ import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter)
 import Navigation 
 import App.Types exposing (..)
+import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Routing exposing (parseLocation)
@@ -30,7 +31,6 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Connections.Model exposing (addRootConnections, addConnections)
 import Components.Connections.Messages
 import Components.Connections.Update
 
@@ -444,7 +444,7 @@ loadHome model =
     , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
-    , connections = Components.Connections.Model.initModel
+    , connections = initGraph
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -466,7 +466,7 @@ loadCotonoma key model =
     , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
-    , connections = Components.Connections.Model.initModel
+    , connections = initGraph
     } ! 
         [ fetchRecentCotonomas
         , fetchCotonoma key 

@@ -17043,32 +17043,6 @@ var _user$project$App_Types$decodeCotonoma = A6(
 	A2(_elm_lang$core$Json_Decode$field, 'coto_id', _elm_lang$core$Json_Decode$int),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'owner', _user$project$App_Types$decodeAmishi)));
-var _user$project$App_Types$Connection = F2(
-	function (a, b) {
-		return {key: a, end: b};
-	});
-var _user$project$App_Types$newConnection = F2(
-	function (maybeStart, end) {
-		var endLabel = _elm_lang$core$Basics$toString(end);
-		var startLabel = function () {
-			var _p0 = maybeStart;
-			if (_p0.ctor === 'Nothing') {
-				return 'root';
-			} else {
-				return _elm_lang$core$Basics$toString(_p0._0);
-			}
-		}();
-		return A2(
-			_user$project$App_Types$Connection,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'connection-',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					startLabel,
-					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
-			end);
-	});
 var _user$project$App_Types$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _user$project$App_Types$CotonomaRoute = function (a) {
 	return {ctor: 'CotonomaRoute', _0: a};
@@ -22143,6 +22117,154 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Types$decodeSession));
 
+var _user$project$App_Graph$getSecondConnections = function (model) {
+	return A2(
+		_elm_lang$core$List$filterMap,
+		function (conn) {
+			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
+			if (_p0.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p2 = _p0._0;
+				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, model.connections);
+				if (_p1.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{ctor: '_Tuple2', _0: _p2, _1: _p1._0});
+				}
+			}
+		},
+		model.rootConnections);
+};
+var _user$project$App_Graph$connectedAsRoot = F2(
+	function (cotoId, model) {
+		return A2(
+			_elm_lang$core$List$any,
+			function (conn) {
+				return _elm_lang$core$Native_Utils.eq(conn.end, cotoId);
+			},
+			model.rootConnections);
+	});
+var _user$project$App_Graph$connected = F2(
+	function (cotoId, model) {
+		return A2(_elm_lang$core$Dict$member, cotoId, model.cotos);
+	});
+var _user$project$App_Graph$initGraph = {
+	cotos: _elm_lang$core$Dict$empty,
+	rootConnections: {ctor: '[]'},
+	connections: _elm_lang$core$Dict$empty
+};
+var _user$project$App_Graph$Connection = F2(
+	function (a, b) {
+		return {key: a, end: b};
+	});
+var _user$project$App_Graph$newConnection = F2(
+	function (maybeStart, end) {
+		var endLabel = _elm_lang$core$Basics$toString(end);
+		var startLabel = function () {
+			var _p3 = maybeStart;
+			if (_p3.ctor === 'Nothing') {
+				return 'root';
+			} else {
+				return _elm_lang$core$Basics$toString(_p3._0);
+			}
+		}();
+		return A2(
+			_user$project$App_Graph$Connection,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'connection-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					startLabel,
+					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
+			end);
+	});
+var _user$project$App_Graph$addRootConnection = F2(
+	function (coto, model) {
+		return A2(_user$project$App_Graph$connectedAsRoot, coto.id, model) ? model : _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
+				rootConnections: {
+					ctor: '::',
+					_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
+					_1: model.rootConnections
+				}
+			});
+	});
+var _user$project$App_Graph$addRootConnections = F2(
+	function (cotos, model) {
+		return A3(
+			_elm_lang$core$List$foldr,
+			F2(
+				function (coto, model) {
+					return A2(_user$project$App_Graph$addRootConnection, coto, model);
+				}),
+			model,
+			cotos);
+	});
+var _user$project$App_Graph$addConnection = F3(
+	function (start, end, model) {
+		var connections = A3(
+			_elm_lang$core$Dict$update,
+			start.id,
+			function (maybeConns) {
+				var _p4 = maybeConns;
+				if (_p4.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(
+								_user$project$App_Graph$newConnection,
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
+							_1: {ctor: '[]'}
+						});
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(
+								_user$project$App_Graph$newConnection,
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
+							_1: _p4._0
+						});
+				}
+			},
+			model.connections);
+		var rootConnections = A2(_user$project$App_Graph$connected, start.id, model) ? model.rootConnections : {
+			ctor: '::',
+			_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
+			_1: model.rootConnections
+		};
+		var cotos = A3(
+			_elm_lang$core$Dict$insert,
+			end.id,
+			end,
+			A3(_elm_lang$core$Dict$insert, start.id, start, model.cotos));
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{cotos: cotos, rootConnections: rootConnections, connections: connections});
+	});
+var _user$project$App_Graph$addConnections = F3(
+	function (startCoto, endCotos, model) {
+		return A3(
+			_elm_lang$core$List$foldr,
+			F2(
+				function (endCoto, model) {
+					return A3(_user$project$App_Graph$addConnection, startCoto, endCoto, model);
+				}),
+			model,
+			endCotos);
+	});
+var _user$project$App_Graph$Graph = F3(
+	function (a, b, c) {
+		return {cotos: a, rootConnections: b, connections: c};
+	});
+
 var _user$project$Components_ConfirmModal_Model$initModel = {open: false, message: '', msgOnConfirm: _user$project$App_Messages$NoOp};
 var _user$project$Components_ConfirmModal_Model$Model = F3(
 	function (a, b, c) {
@@ -22234,128 +22356,6 @@ var _user$project$Components_CotonomaModal_Model$setDefaultMembers = F3(
 			amishis);
 	});
 
-var _user$project$Components_Connections_Model$getSecondConnections = function (model) {
-	return A2(
-		_elm_lang$core$List$filterMap,
-		function (conn) {
-			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
-			if (_p0.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				var _p2 = _p0._0;
-				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, model.connections);
-				if (_p1.ctor === 'Nothing') {
-					return _elm_lang$core$Maybe$Nothing;
-				} else {
-					return _elm_lang$core$Maybe$Just(
-						{ctor: '_Tuple2', _0: _p2, _1: _p1._0});
-				}
-			}
-		},
-		model.rootConnections);
-};
-var _user$project$Components_Connections_Model$connectedAsRoot = F2(
-	function (cotoId, model) {
-		return A2(
-			_elm_lang$core$List$any,
-			function (conn) {
-				return _elm_lang$core$Native_Utils.eq(conn.end, cotoId);
-			},
-			model.rootConnections);
-	});
-var _user$project$Components_Connections_Model$addRootConnection = F2(
-	function (coto, model) {
-		return A2(_user$project$Components_Connections_Model$connectedAsRoot, coto.id, model) ? model : _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
-				rootConnections: {
-					ctor: '::',
-					_0: A2(_user$project$App_Types$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
-					_1: model.rootConnections
-				}
-			});
-	});
-var _user$project$Components_Connections_Model$addRootConnections = F2(
-	function (cotos, model) {
-		return A3(
-			_elm_lang$core$List$foldr,
-			F2(
-				function (coto, model) {
-					return A2(_user$project$Components_Connections_Model$addRootConnection, coto, model);
-				}),
-			model,
-			cotos);
-	});
-var _user$project$Components_Connections_Model$connected = F2(
-	function (cotoId, model) {
-		return A2(_elm_lang$core$Dict$member, cotoId, model.cotos);
-	});
-var _user$project$Components_Connections_Model$addConnection = F3(
-	function (start, end, model) {
-		var connections = A3(
-			_elm_lang$core$Dict$update,
-			start.id,
-			function (maybeConns) {
-				var _p3 = maybeConns;
-				if (_p3.ctor === 'Nothing') {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(
-								_user$project$App_Types$newConnection,
-								_elm_lang$core$Maybe$Just(start.id),
-								end.id),
-							_1: {ctor: '[]'}
-						});
-				} else {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(
-								_user$project$App_Types$newConnection,
-								_elm_lang$core$Maybe$Just(start.id),
-								end.id),
-							_1: _p3._0
-						});
-				}
-			},
-			model.connections);
-		var rootConnections = A2(_user$project$Components_Connections_Model$connected, start.id, model) ? model.rootConnections : {
-			ctor: '::',
-			_0: A2(_user$project$App_Types$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
-			_1: model.rootConnections
-		};
-		var cotos = A3(
-			_elm_lang$core$Dict$insert,
-			end.id,
-			end,
-			A3(_elm_lang$core$Dict$insert, start.id, start, model.cotos));
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{cotos: cotos, rootConnections: rootConnections, connections: connections});
-	});
-var _user$project$Components_Connections_Model$addConnections = F3(
-	function (startCoto, endCotos, model) {
-		return A3(
-			_elm_lang$core$List$foldr,
-			F2(
-				function (endCoto, model) {
-					return A3(_user$project$Components_Connections_Model$addConnection, startCoto, endCoto, model);
-				}),
-			model,
-			endCotos);
-	});
-var _user$project$Components_Connections_Model$initModel = {
-	cotos: _elm_lang$core$Dict$empty,
-	rootConnections: {ctor: '[]'},
-	connections: _elm_lang$core$Dict$empty
-};
-var _user$project$Components_Connections_Model$Model = F3(
-	function (a, b, c) {
-		return {cotos: a, rootConnections: b, connections: c};
-	});
-
 var _user$project$App_Model$getOwnerAndMembers = function (model) {
 	var _p0 = model.cotonoma;
 	if (_p0.ctor === 'Nothing') {
@@ -22436,7 +22436,7 @@ var _user$project$App_Model$initModel = F2(
 			cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel,
 			stockToggled: false,
 			stockOpen: false,
-			connections: _user$project$Components_Connections_Model$initModel
+			connections: _user$project$App_Graph$initGraph
 		};
 	});
 var _user$project$App_Model$Model = function (a) {
@@ -23198,7 +23198,7 @@ var _user$project$App_Update$loadCotonoma = F2(
 					cotoSelection: {ctor: '[]'},
 					connectMode: false,
 					connectingTo: _elm_lang$core$Maybe$Nothing,
-					connections: _user$project$Components_Connections_Model$initModel
+					connections: _user$project$App_Graph$initGraph
 				}),
 			{
 				ctor: '::',
@@ -23233,7 +23233,7 @@ var _user$project$App_Update$loadHome = function (model) {
 				cotoSelection: {ctor: '[]'},
 				connectMode: false,
 				connectingTo: _elm_lang$core$Maybe$Nothing,
-				connections: _user$project$Components_Connections_Model$initModel
+				connections: _user$project$App_Graph$initGraph
 			}),
 		{
 			ctor: '::',
@@ -23300,7 +23300,7 @@ var _user$project$App_Update$pinSelectedCotos = function (model) {
 			return A2(_user$project$App_Model$getCoto, cotoId, model);
 		},
 		model.cotoSelection);
-	var connections = A2(_user$project$Components_Connections_Model$addRootConnections, cotos, model.connections);
+	var connections = A2(_user$project$App_Graph$addRootConnections, cotos, model.connections);
 	return _elm_lang$core$Native_Utils.update(
 		model,
 		{
@@ -23883,7 +23883,7 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							connections: A3(_user$project$Components_Connections_Model$addConnections, _p2._0, _p2._1, model.connections),
+							connections: A3(_user$project$App_Graph$addConnections, _p2._0, _p2._1, model.connections),
 							cotoSelection: {ctor: '[]'},
 							connectMode: false,
 							connectModalOpen: false
@@ -25662,7 +25662,7 @@ var _user$project$Components_Connections_View$cotoDiv = F2(
 			});
 	});
 var _user$project$Components_Connections_View$connectionsDiv = F4(
-	function (divClass, connections, selection, model) {
+	function (divClass, connections, selection, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25674,7 +25674,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F4(
 			A2(
 				_elm_lang$core$List$map,
 				function (conn) {
-					var maybeCoto = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
+					var maybeCoto = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
 					return {
 						ctor: '_Tuple2',
 						_0: conn.key,
@@ -25702,7 +25702,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F4(
 				_elm_lang$core$List$reverse(connections)));
 	});
 var _user$project$Components_Connections_View$traversalCoto = F4(
-	function (connections, coto, selection, model) {
+	function (connections, coto, selection, graph) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
@@ -25721,18 +25721,18 @@ var _user$project$Components_Connections_View$traversalCoto = F4(
 						{ctor: '[]'}),
 					_1: {
 						ctor: '::',
-						_0: A4(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, model),
+						_0: A4(_user$project$Components_Connections_View$connectionsDiv, 'sub-cotos', connections, selection, graph),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Components_Connections_View$rootConnections = F2(
-	function (selection, model) {
-		return A4(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', model.rootConnections, selection, model);
+	function (selection, graph) {
+		return A4(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', graph.rootConnections, selection, graph);
 	});
 var _user$project$Components_Connections_View$view = F2(
-	function (selection, model) {
+	function (selection, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25784,7 +25784,7 @@ var _user$project$Components_Connections_View$view = F2(
 								}),
 							_1: {
 								ctor: '::',
-								_0: A2(_user$project$Components_Connections_View$rootConnections, selection, model),
+								_0: A2(_user$project$Components_Connections_View$rootConnections, selection, graph),
 								_1: {ctor: '[]'}
 							}
 						})
@@ -25809,13 +25809,13 @@ var _user$project$Components_Connections_View$view = F2(
 								},
 								{
 									ctor: '::',
-									_0: A4(_user$project$Components_Connections_View$traversalCoto, connections, coto, selection, model),
+									_0: A4(_user$project$Components_Connections_View$traversalCoto, connections, coto, selection, graph),
 									_1: {ctor: '[]'}
 								})
 						};
 					},
 					_elm_lang$core$List$reverse(
-						_user$project$Components_Connections_Model$getSecondConnections(model)))
+						_user$project$App_Graph$getSecondConnections(graph)))
 			});
 	});
 

@@ -1,10 +1,10 @@
 module Components.Connections.Update exposing (..)
 
-import Components.Connections.Model exposing (..)
+import App.Graph exposing (Graph)
 import Components.Connections.Messages exposing (..)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Graph -> ( Graph, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->

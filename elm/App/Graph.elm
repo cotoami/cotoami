@@ -1,35 +1,55 @@
-module Components.Connections.Model exposing (..)
+module App.Graph exposing (..)
 
 import Dict
 import App.Types exposing (..)
 
 
-type alias Model =
+type alias Connection =
+    { key : String
+    , end : Int
+    }
+    
+    
+newConnection : Maybe Int -> Int -> Connection
+newConnection maybeStart end =
+    let
+        startLabel =
+            case maybeStart of
+                Nothing -> "root"
+                Just start -> toString start
+        endLabel = toString end
+    in
+        Connection 
+            ("connection-" ++ startLabel ++ "-" ++ endLabel)
+            end
+
+
+type alias Graph =
     { cotos : Dict.Dict Int Coto
     , rootConnections : List Connection
     , connections : Dict.Dict Int (List Connection)
     }
 
 
-initModel : Model
-initModel =
+initGraph : Graph
+initGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty
     }
 
 
-connected : Int -> Model -> Bool
+connected : Int -> Graph -> Bool
 connected cotoId model =
     model.cotos |> Dict.member cotoId
     
 
-connectedAsRoot : Int -> Model -> Bool
+connectedAsRoot : Int -> Graph -> Bool
 connectedAsRoot cotoId model =
     List.any (\conn -> conn.end == cotoId) model.rootConnections
     
 
-addRootConnections : List Coto -> Model -> Model
+addRootConnections : List Coto -> Graph -> Graph
 addRootConnections cotos model =
     List.foldr 
         (\coto model ->
@@ -39,7 +59,7 @@ addRootConnections cotos model =
         cotos
         
 
-addRootConnection : Coto -> Model -> Model
+addRootConnection : Coto -> Graph -> Graph
 addRootConnection coto model = 
     if connectedAsRoot coto.id model then
         model
@@ -51,7 +71,7 @@ addRootConnection coto model =
         }
 
 
-getSecondConnections : Model -> List ( Coto, List Connection )
+getSecondConnections : Graph -> List ( Coto, List Connection )
 getSecondConnections model =
     List.filterMap 
         (\conn ->
@@ -66,7 +86,7 @@ getSecondConnections model =
         model.rootConnections
 
 
-addConnection : Coto -> Coto -> Model -> Model
+addConnection : Coto -> Coto -> Graph -> Graph
 addConnection start end model =
     let
         cotos = 
@@ -99,7 +119,7 @@ addConnection start end model =
         }
         
 
-addConnections : Coto -> (List Coto) -> Model -> Model
+addConnections : Coto -> (List Coto) -> Graph -> Graph
 addConnections startCoto endCotos model =
     List.foldr 
         (\endCoto model ->
