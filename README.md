@@ -8,12 +8,15 @@ Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univ
 
 ## Concept
 
+* **Coto**: Post. A unit of information in Cotoami.
+* **Cotonoma**: Chatroom-like unit which has a timeline and coto-connections. Nestable.
+    * Cotonoma is a kind of coto
+
+![](docs/images/cotoami-model.png)
+
 Cotoami's concept of knowledge generation:
 
 ![](docs/images/cotoami-concept.png)
-
-* **Coto**: Post. A unit of information in Cotoami.
-* **Cotonoma**: Chatroom-like unit which has a timeline and coto-connections. Nestable.
 
 ## Development
 
