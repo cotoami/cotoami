@@ -97,6 +97,26 @@ updateCotoSelection cotoId selection =
         List.filter (\id -> cotoId /= id) selection
     else
         cotoId :: selection
-        
+
+
+type alias Connection =
+    { key : String
+    , end : Int
+    }
+    
+    
+newConnection : Maybe Int -> Int -> Connection
+newConnection maybeStart end =
+    let
+        startLabel =
+            case maybeStart of
+                Nothing -> "root"
+                Just start -> toString start
+        endLabel = toString end
+    in
+        Connection 
+            ("connection-" ++ startLabel ++ "-" ++ endLabel)
+            end
+
 
 type alias MemberConnCounts = Dict.Dict Int Int

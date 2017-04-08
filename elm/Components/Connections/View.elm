@@ -6,7 +6,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Markdown
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoSelection)
+import App.Types exposing (Coto, CotoSelection, Connection)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Connections.Model exposing (..)
 import Components.Connections.Messages exposing (..)

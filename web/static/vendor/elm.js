@@ -17043,6 +17043,32 @@ var _user$project$App_Types$decodeCotonoma = A6(
 	A2(_elm_lang$core$Json_Decode$field, 'coto_id', _elm_lang$core$Json_Decode$int),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode$field, 'owner', _user$project$App_Types$decodeAmishi)));
+var _user$project$App_Types$Connection = F2(
+	function (a, b) {
+		return {key: a, end: b};
+	});
+var _user$project$App_Types$newConnection = F2(
+	function (maybeStart, end) {
+		var endLabel = _elm_lang$core$Basics$toString(end);
+		var startLabel = function () {
+			var _p0 = maybeStart;
+			if (_p0.ctor === 'Nothing') {
+				return 'root';
+			} else {
+				return _elm_lang$core$Basics$toString(_p0._0);
+			}
+		}();
+		return A2(
+			_user$project$App_Types$Connection,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'connection-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					startLabel,
+					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
+			end);
+	});
 var _user$project$App_Types$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _user$project$App_Types$CotonomaRoute = function (a) {
 	return {ctor: 'CotonomaRoute', _0: a};
@@ -22237,41 +22263,6 @@ var _user$project$Components_Connections_Model$connectedAsRoot = F2(
 			},
 			model.rootConnections);
 	});
-var _user$project$Components_Connections_Model$connected = F2(
-	function (cotoId, model) {
-		return A2(_elm_lang$core$Dict$member, cotoId, model.cotos);
-	});
-var _user$project$Components_Connections_Model$initModel = {
-	cotos: _elm_lang$core$Dict$empty,
-	rootConnections: {ctor: '[]'},
-	connections: _elm_lang$core$Dict$empty
-};
-var _user$project$Components_Connections_Model$Connection = F2(
-	function (a, b) {
-		return {key: a, end: b};
-	});
-var _user$project$Components_Connections_Model$newConnection = F2(
-	function (maybeStart, end) {
-		var endLabel = _elm_lang$core$Basics$toString(end);
-		var startLabel = function () {
-			var _p3 = maybeStart;
-			if (_p3.ctor === 'Nothing') {
-				return 'root';
-			} else {
-				return _elm_lang$core$Basics$toString(_p3._0);
-			}
-		}();
-		return A2(
-			_user$project$Components_Connections_Model$Connection,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'connection-',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					startLabel,
-					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
-			end);
-	});
 var _user$project$Components_Connections_Model$addRootConnection = F2(
 	function (coto, model) {
 		return A2(_user$project$Components_Connections_Model$connectedAsRoot, coto.id, model) ? model : _elm_lang$core$Native_Utils.update(
@@ -22280,7 +22271,7 @@ var _user$project$Components_Connections_Model$addRootConnection = F2(
 				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
 				rootConnections: {
 					ctor: '::',
-					_0: A2(_user$project$Components_Connections_Model$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
+					_0: A2(_user$project$App_Types$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
 					_1: model.rootConnections
 				}
 			});
@@ -22296,19 +22287,23 @@ var _user$project$Components_Connections_Model$addRootConnections = F2(
 			model,
 			cotos);
 	});
+var _user$project$Components_Connections_Model$connected = F2(
+	function (cotoId, model) {
+		return A2(_elm_lang$core$Dict$member, cotoId, model.cotos);
+	});
 var _user$project$Components_Connections_Model$addConnection = F3(
 	function (start, end, model) {
 		var connections = A3(
 			_elm_lang$core$Dict$update,
 			start.id,
 			function (maybeConns) {
-				var _p4 = maybeConns;
-				if (_p4.ctor === 'Nothing') {
+				var _p3 = maybeConns;
+				if (_p3.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
 							_0: A2(
-								_user$project$Components_Connections_Model$newConnection,
+								_user$project$App_Types$newConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
 							_1: {ctor: '[]'}
@@ -22318,17 +22313,17 @@ var _user$project$Components_Connections_Model$addConnection = F3(
 						{
 							ctor: '::',
 							_0: A2(
-								_user$project$Components_Connections_Model$newConnection,
+								_user$project$App_Types$newConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
-							_1: _p4._0
+							_1: _p3._0
 						});
 				}
 			},
 			model.connections);
 		var rootConnections = A2(_user$project$Components_Connections_Model$connected, start.id, model) ? model.rootConnections : {
 			ctor: '::',
-			_0: A2(_user$project$Components_Connections_Model$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
+			_0: A2(_user$project$App_Types$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
 			_1: model.rootConnections
 		};
 		var cotos = A3(
@@ -22351,6 +22346,11 @@ var _user$project$Components_Connections_Model$addConnections = F3(
 			model,
 			endCotos);
 	});
+var _user$project$Components_Connections_Model$initModel = {
+	cotos: _elm_lang$core$Dict$empty,
+	rootConnections: {ctor: '[]'},
+	connections: _elm_lang$core$Dict$empty
+};
 var _user$project$Components_Connections_Model$Model = F3(
 	function (a, b, c) {
 		return {cotos: a, rootConnections: b, connections: c};
