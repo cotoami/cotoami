@@ -16999,6 +16999,20 @@ var _user$project$App_Types$updateCotoSelection = F2(
 			},
 			selection) : {ctor: '::', _0: cotoId, _1: selection};
 	});
+var _user$project$App_Types$isPostedInCotonoma = F2(
+	function (maybeCotonoma, coto) {
+		var _p0 = maybeCotonoma;
+		if (_p0.ctor === 'Nothing') {
+			return _krisajenkins$elm_exts$Exts_Maybe$isNothing(coto.postedIn);
+		} else {
+			var _p1 = coto.postedIn;
+			if (_p1.ctor === 'Nothing') {
+				return false;
+			} else {
+				return _elm_lang$core$Native_Utils.eq(_p1._0.id, _p0._0.id);
+			}
+		}
+	});
 var _user$project$App_Types$Amishi = F4(
 	function (a, b, c, d) {
 		return {id: a, email: b, avatarUrl: c, displayName: d};
@@ -24572,6 +24586,70 @@ var _user$project$Components_ConfirmModal_View$view = function (model) {
 			_user$project$Components_ConfirmModal_View$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
+var _user$project$Components_Coto$headerDiv = F4(
+	function (cotonomaClick, maybeCotonoma, graph, coto) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('coto-header'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: function () {
+					var _p0 = coto.postedIn;
+					if (_p0.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					} else {
+						var _p1 = _p0._0;
+						return (!A2(_user$project$App_Types$isPostedInCotonoma, maybeCotonoma, coto)) ? A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('posted-in'),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Utils$onClickWithoutPropagation(
+										cotonomaClick(_p1.key)),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p1.name),
+								_1: {ctor: '[]'}
+							}) : A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					}
+				}(),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$App_Graph$pinned, coto.id, graph) ? A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}) : A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+
 var _user$project$Components_Timeline_View$onLoad = function (message) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -24797,84 +24875,27 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 	});
 var _user$project$Components_Timeline_View$headerDiv = F3(
 	function (maybeCotonoma, graph, post) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('coto-header'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: function () {
-					var _p4 = post.postedIn;
-					if (_p4.ctor === 'Nothing') {
-						return A2(
-							_elm_lang$html$Html$span,
-							{ctor: '[]'},
-							{ctor: '[]'});
-					} else {
-						var _p5 = _p4._0;
-						return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
-							_elm_lang$html$Html$a,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('posted-in'),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Utils$onClickWithoutPropagation(
-										_user$project$Components_Timeline_Messages$CotonomaClick(_p5.key)),
-									_1: {ctor: '[]'}
-								}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p5.name),
-								_1: {ctor: '[]'}
-							}) : A2(
-							_elm_lang$html$Html$span,
-							{ctor: '[]'},
-							{ctor: '[]'});
-					}
-				}(),
-				_1: {
+		var _p4 = _user$project$Components_Timeline_Model$toCoto(post);
+		if (_p4.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{
 					ctor: '::',
-					_0: function () {
-						var _p6 = post.cotoId;
-						if (_p6.ctor === 'Nothing') {
-							return A2(
-								_elm_lang$html$Html$span,
-								{ctor: '[]'},
-								{ctor: '[]'});
-						} else {
-							return A2(_user$project$App_Graph$pinned, _p6._0, graph) ? A2(
-								_elm_lang$html$Html$i,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{ctor: '[]'}) : A2(
-								_elm_lang$html$Html$span,
-								{ctor: '[]'},
-								{ctor: '[]'});
-						}
-					}(),
+					_0: _elm_lang$html$Html_Attributes$class('coto-header'),
 					_1: {ctor: '[]'}
-				}
-			});
+				},
+				{ctor: '[]'});
+		} else {
+			return A4(_user$project$Components_Coto$headerDiv, _user$project$Components_Timeline_Messages$CotonomaClick, maybeCotonoma, graph, _p4._0);
+		}
 	});
 var _user$project$Components_Timeline_View$isActive = F2(
 	function (selection, post) {
-		var _p7 = post.cotoId;
-		if (_p7.ctor === 'Nothing') {
+		var _p5 = post.cotoId;
+		if (_p5.ctor === 'Nothing') {
 			return false;
 		} else {
-			return A2(_elm_lang$core$List$member, _p7._0, selection);
+			return A2(_elm_lang$core$List$member, _p5._0, selection);
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F5(
@@ -24916,12 +24937,12 @@ var _user$project$Components_Timeline_View$postDiv = F5(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p8 = post.cotoId;
-						if (_p8.ctor === 'Nothing') {
+						var _p6 = post.cotoId;
+						if (_p6.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p8._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p6._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24953,13 +24974,13 @@ var _user$project$Components_Timeline_View$postDiv = F5(
 			});
 	});
 var _user$project$Components_Timeline_View$getKey = function (post) {
-	var _p9 = post.cotoId;
-	if (_p9.ctor === 'Just') {
-		return _elm_lang$core$Basics$toString(_p9._0);
+	var _p7 = post.cotoId;
+	if (_p7.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p7._0);
 	} else {
-		var _p10 = post.postId;
-		if (_p10.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p10._0);
+		var _p8 = post.postId;
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p8._0);
 		} else {
 			return '';
 		}
@@ -25037,8 +25058,8 @@ var _user$project$Components_Timeline_View$view = F5(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p11 = maybeSession;
-										if (_p11.ctor === 'Nothing') {
+										var _p9 = maybeSession;
+										if (_p9.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -25067,7 +25088,7 @@ var _user$project$Components_Timeline_View$view = F5(
 													}
 												});
 										} else {
-											var _p12 = _p11._0;
+											var _p10 = _p9._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -25084,7 +25105,7 @@ var _user$project$Components_Timeline_View$view = F5(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p12.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p10.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -25100,7 +25121,7 @@ var _user$project$Components_Timeline_View$view = F5(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p12.displayName),
+																_0: _elm_lang$html$Html$text(_p10.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}

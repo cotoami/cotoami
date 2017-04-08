@@ -12,10 +12,11 @@ import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types exposing (Session, Cotonoma, CotoSelection)
-import App.Graph exposing (Graph, pinned)
+import App.Graph exposing (Graph)
 import App.Markdown exposing (markdownOptions, markdownElements)
-import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
+import Components.Timeline.Model exposing (Post, Model, toCoto)
 import Components.Timeline.Messages exposing (..)
+import Components.Coto
 
 
 view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
@@ -117,30 +118,11 @@ isActive selection post =
 
 headerDiv : Maybe Cotonoma -> Graph -> Post -> Html Msg
 headerDiv maybeCotonoma graph post =
-    div 
-        [ class "coto-header" ]
-        [ case post.postedIn of
-            Nothing -> span [] []
-            Just postedIn ->
-                if not (isPostedInCotonoma maybeCotonoma post) then
-                    a 
-                        [ class "posted-in"
-                        , onClickWithoutPropagation (CotonomaClick postedIn.key) 
-                        ] 
-                        [ text postedIn.name ]
-                else
-                    span [] []
-        , case post.cotoId of
-            Nothing ->
-                span [] []
-            Just cotoId -> 
-                if pinned cotoId graph then
-                    i [ class "pinned fa fa-thumb-tack"
-                      , (attribute "aria-hidden" "true") 
-                      ] []
-                else
-                    span [] []
-        ]
+    case toCoto post of
+        Nothing -> 
+            div [ class "coto-header" ] []
+        Just coto -> 
+            Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
 
 
 authorDiv : Maybe Session -> Post -> Html Msg

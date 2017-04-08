@@ -2,7 +2,8 @@ module App.Types exposing (..)
 
 import Dict
 import Json.Decode as Decode
-        
+import Exts.Maybe exposing (isNothing)
+
         
 type Route
     = HomeRoute
@@ -88,6 +89,17 @@ decodeCotonoma =
         (Decode.maybe (Decode.field "owner" decodeAmishi))
 
 
+isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool
+isPostedInCotonoma maybeCotonoma coto =
+    case maybeCotonoma of
+        Nothing -> 
+            isNothing coto.postedIn
+        Just cotonoma -> 
+            case coto.postedIn of
+                Nothing -> False
+                Just postedIn -> postedIn.id == cotonoma.id
+                
+                
 type alias CotoSelection = List Int
 
 
