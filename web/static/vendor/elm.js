@@ -22117,16 +22117,16 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Types$decodeSession));
 
-var _user$project$App_Graph$getSecondConnections = function (model) {
+var _user$project$App_Graph$getSecondConnections = function (graph) {
 	return A2(
 		_elm_lang$core$List$filterMap,
 		function (conn) {
-			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, model.cotos);
+			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
 			if (_p0.ctor === 'Nothing') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
 				var _p2 = _p0._0;
-				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, model.connections);
+				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, graph.connections);
 				if (_p1.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
@@ -22135,20 +22135,20 @@ var _user$project$App_Graph$getSecondConnections = function (model) {
 				}
 			}
 		},
-		model.rootConnections);
+		graph.rootConnections);
 };
-var _user$project$App_Graph$connectedAsRoot = F2(
-	function (cotoId, model) {
+var _user$project$App_Graph$connected = F2(
+	function (cotoId, graph) {
+		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
+	});
+var _user$project$App_Graph$pinned = F2(
+	function (cotoId, graph) {
 		return A2(
 			_elm_lang$core$List$any,
 			function (conn) {
 				return _elm_lang$core$Native_Utils.eq(conn.end, cotoId);
 			},
-			model.rootConnections);
-	});
-var _user$project$App_Graph$connected = F2(
-	function (cotoId, model) {
-		return A2(_elm_lang$core$Dict$member, cotoId, model.cotos);
+			graph.rootConnections);
 	});
 var _user$project$App_Graph$initGraph = {
 	cotos: _elm_lang$core$Dict$empty,
@@ -22182,15 +22182,15 @@ var _user$project$App_Graph$newConnection = F2(
 			end);
 	});
 var _user$project$App_Graph$addRootConnection = F2(
-	function (coto, model) {
-		return A2(_user$project$App_Graph$connectedAsRoot, coto.id, model) ? model : _elm_lang$core$Native_Utils.update(
-			model,
+	function (coto, graph) {
+		return A2(_user$project$App_Graph$pinned, coto.id, graph) ? graph : _elm_lang$core$Native_Utils.update(
+			graph,
 			{
-				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, model.cotos),
+				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, graph.cotos),
 				rootConnections: {
 					ctor: '::',
 					_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
-					_1: model.rootConnections
+					_1: graph.rootConnections
 				}
 			});
 	});
@@ -22206,7 +22206,7 @@ var _user$project$App_Graph$addRootConnections = F2(
 			cotos);
 	});
 var _user$project$App_Graph$addConnection = F3(
-	function (start, end, model) {
+	function (start, end, graph) {
 		var connections = A3(
 			_elm_lang$core$Dict$update,
 			start.id,
@@ -22234,30 +22234,30 @@ var _user$project$App_Graph$addConnection = F3(
 						});
 				}
 			},
-			model.connections);
-		var rootConnections = A2(_user$project$App_Graph$connected, start.id, model) ? model.rootConnections : {
+			graph.connections);
+		var rootConnections = A2(_user$project$App_Graph$connected, start.id, graph) ? graph.rootConnections : {
 			ctor: '::',
 			_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
-			_1: model.rootConnections
+			_1: graph.rootConnections
 		};
 		var cotos = A3(
 			_elm_lang$core$Dict$insert,
 			end.id,
 			end,
-			A3(_elm_lang$core$Dict$insert, start.id, start, model.cotos));
+			A3(_elm_lang$core$Dict$insert, start.id, start, graph.cotos));
 		return _elm_lang$core$Native_Utils.update(
-			model,
+			graph,
 			{cotos: cotos, rootConnections: rootConnections, connections: connections});
 	});
 var _user$project$App_Graph$addConnections = F3(
-	function (startCoto, endCotos, model) {
+	function (startCoto, endCotos, graph) {
 		return A3(
 			_elm_lang$core$List$foldr,
 			F2(
-				function (endCoto, model) {
-					return A3(_user$project$App_Graph$addConnection, startCoto, endCoto, model);
+				function (endCoto, graph) {
+					return A3(_user$project$App_Graph$addConnection, startCoto, endCoto, graph);
 				}),
-			model,
+			graph,
 			endCotos);
 	});
 var _user$project$App_Graph$Graph = F3(
@@ -24795,8 +24795,8 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 			}
 		}
 	});
-var _user$project$Components_Timeline_View$headerDiv = F2(
-	function (maybeCotonoma, post) {
+var _user$project$Components_Timeline_View$headerDiv = F3(
+	function (maybeCotonoma, graph, post) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24839,33 +24839,46 @@ var _user$project$Components_Timeline_View$headerDiv = F2(
 				}(),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$i,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
+					_0: function () {
+						var _p6 = post.cotoId;
+						if (_p6.ctor === 'Nothing') {
+							return A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{ctor: '[]'});
+						} else {
+							return A2(_user$project$App_Graph$pinned, _p6._0, graph) ? A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{ctor: '[]'}) : A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{ctor: '[]'});
+						}
+					}(),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
 var _user$project$Components_Timeline_View$isActive = F2(
 	function (selection, post) {
-		var _p6 = post.cotoId;
-		if (_p6.ctor === 'Nothing') {
+		var _p7 = post.cotoId;
+		if (_p7.ctor === 'Nothing') {
 			return false;
 		} else {
-			return A2(_elm_lang$core$List$member, _p6._0, selection);
+			return A2(_elm_lang$core$List$member, _p7._0, selection);
 		}
 	});
-var _user$project$Components_Timeline_View$postDiv = F4(
-	function (selection, maybeCotonoma, maybeSession, post) {
+var _user$project$Components_Timeline_View$postDiv = F5(
+	function (selection, maybeCotonoma, maybeSession, graph, post) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24903,12 +24916,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p7 = post.cotoId;
-						if (_p7.ctor === 'Nothing') {
+						var _p8 = post.cotoId;
+						if (_p8.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p7._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p8._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24926,7 +24939,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, post),
+					_0: A3(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, graph, post),
 					_1: {
 						ctor: '::',
 						_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
@@ -24940,20 +24953,20 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 			});
 	});
 var _user$project$Components_Timeline_View$getKey = function (post) {
-	var _p8 = post.cotoId;
-	if (_p8.ctor === 'Just') {
-		return _elm_lang$core$Basics$toString(_p8._0);
+	var _p9 = post.cotoId;
+	if (_p9.ctor === 'Just') {
+		return _elm_lang$core$Basics$toString(_p9._0);
 	} else {
-		var _p9 = post.postId;
-		if (_p9.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p9._0);
+		var _p10 = post.postId;
+		if (_p10.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p10._0);
 		} else {
 			return '';
 		}
 	}
 };
-var _user$project$Components_Timeline_View$timelineDiv = F4(
-	function (selection, maybeCotonoma, maybeSession, model) {
+var _user$project$Components_Timeline_View$timelineDiv = F5(
+	function (selection, maybeCotonoma, maybeSession, graph, model) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -24977,13 +24990,13 @@ var _user$project$Components_Timeline_View$timelineDiv = F4(
 					return {
 						ctor: '_Tuple2',
 						_0: _user$project$Components_Timeline_View$getKey(post),
-						_1: A4(_user$project$Components_Timeline_View$postDiv, selection, maybeCotonoma, maybeSession, post)
+						_1: A5(_user$project$Components_Timeline_View$postDiv, selection, maybeCotonoma, maybeSession, graph, post)
 					};
 				},
 				_elm_lang$core$List$reverse(model.posts)));
 	});
-var _user$project$Components_Timeline_View$view = F4(
-	function (selection, maybeCotonoma, maybeSession, model) {
+var _user$project$Components_Timeline_View$view = F5(
+	function (selection, maybeCotonoma, maybeSession, graph, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24998,7 +25011,7 @@ var _user$project$Components_Timeline_View$view = F4(
 			},
 			{
 				ctor: '::',
-				_0: A4(_user$project$Components_Timeline_View$timelineDiv, selection, maybeCotonoma, maybeSession, model),
+				_0: A5(_user$project$Components_Timeline_View$timelineDiv, selection, maybeCotonoma, maybeSession, graph, model),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -25024,8 +25037,8 @@ var _user$project$Components_Timeline_View$view = F4(
 								{
 									ctor: '::',
 									_0: function () {
-										var _p10 = maybeSession;
-										if (_p10.ctor === 'Nothing') {
+										var _p11 = maybeSession;
+										if (_p11.ctor === 'Nothing') {
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -25054,7 +25067,7 @@ var _user$project$Components_Timeline_View$view = F4(
 													}
 												});
 										} else {
-											var _p11 = _p10._0;
+											var _p12 = _p11._0;
 											return A2(
 												_elm_lang$html$Html$span,
 												{
@@ -25071,7 +25084,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															_0: _elm_lang$html$Html_Attributes$class('avatar'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src(_p11.avatarUrl),
+																_0: _elm_lang$html$Html_Attributes$src(_p12.avatarUrl),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -25087,7 +25100,7 @@ var _user$project$Components_Timeline_View$view = F4(
 															},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text(_p11.displayName),
+																_0: _elm_lang$html$Html$text(_p12.displayName),
 																_1: {ctor: '[]'}
 															}),
 														_1: {ctor: '[]'}
@@ -26344,7 +26357,7 @@ var _user$project$App_View$view = function (model) {
 									_0: A2(
 										_elm_lang$html$Html$map,
 										_user$project$App_Messages$TimelineMsg,
-										A4(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.timeline)),
+										A5(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.connections, model.timeline)),
 									_1: {ctor: '[]'}
 								}),
 							_1: {

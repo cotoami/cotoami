@@ -39,14 +39,14 @@ initGraph =
     }
 
 
-connected : Int -> Graph -> Bool
-connected cotoId model =
-    model.cotos |> Dict.member cotoId
-    
+pinned : Int -> Graph -> Bool
+pinned cotoId graph =
+    List.any (\conn -> conn.end == cotoId) graph.rootConnections
+  
 
-connectedAsRoot : Int -> Graph -> Bool
-connectedAsRoot cotoId model =
-    List.any (\conn -> conn.end == cotoId) model.rootConnections
+connected : Int -> Graph -> Bool
+connected cotoId graph =
+    graph.cotos |> Dict.member cotoId
     
 
 addRootConnections : List Coto -> Graph -> Graph
@@ -60,45 +60,45 @@ addRootConnections cotos model =
         
 
 addRootConnection : Coto -> Graph -> Graph
-addRootConnection coto model = 
-    if connectedAsRoot coto.id model then
-        model
+addRootConnection coto graph = 
+    if pinned coto.id graph then
+        graph
     else
-        { model 
-        | cotos = Dict.insert coto.id coto model.cotos
+        { graph 
+        | cotos = Dict.insert coto.id coto graph.cotos
         , rootConnections = 
-            (newConnection Nothing coto.id) :: model.rootConnections
+            (newConnection Nothing coto.id) :: graph.rootConnections
         }
 
 
 getSecondConnections : Graph -> List ( Coto, List Connection )
-getSecondConnections model =
+getSecondConnections graph =
     List.filterMap 
         (\conn ->
-            case Dict.get conn.end model.cotos of
+            case Dict.get conn.end graph.cotos of
                 Nothing -> Nothing
                 Just rootCoto ->
-                    case Dict.get rootCoto.id model.connections of
+                    case Dict.get rootCoto.id graph.connections of
                         Nothing -> Nothing
                         Just connections -> Just ( rootCoto, connections )
                       
         ) 
-        model.rootConnections
+        graph.rootConnections
 
 
 addConnection : Coto -> Coto -> Graph -> Graph
-addConnection start end model =
+addConnection start end graph =
     let
         cotos = 
-            model.cotos 
+            graph.cotos 
                 |> Dict.insert start.id start 
                 |> Dict.insert end.id end 
             
         rootConnections = 
-            if connected start.id model then
-                model.rootConnections
+            if connected start.id graph then
+                graph.rootConnections
             else
-                (newConnection Nothing start.id) :: model.rootConnections
+                (newConnection Nothing start.id) :: graph.rootConnections
                 
         connections =
             Dict.update
@@ -110,9 +110,9 @@ addConnection start end model =
                         Just conns ->
                             Just ((newConnection (Just start.id) end.id) :: conns)
                 )
-                model.connections
+                graph.connections
     in
-        { model
+        { graph
         | cotos = cotos
         , rootConnections = rootConnections
         , connections = connections
@@ -120,12 +120,12 @@ addConnection start end model =
         
 
 addConnections : Coto -> (List Coto) -> Graph -> Graph
-addConnections startCoto endCotos model =
+addConnections startCoto endCotos graph =
     List.foldr 
-        (\endCoto model ->
-            addConnection startCoto endCoto model
+        (\endCoto graph ->
+            addConnection startCoto endCoto graph
         ) 
-        model 
+        graph 
         endCotos
         
       

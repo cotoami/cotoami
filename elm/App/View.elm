@@ -48,6 +48,7 @@ view model =
                           model.cotoSelection
                           model.cotonoma
                           model.session
+                          model.connections
                           model.timeline 
                       )
                   ]

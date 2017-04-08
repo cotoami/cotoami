@@ -12,15 +12,16 @@ import Markdown.Config exposing (defaultElements, defaultOptions)
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types exposing (Session, Cotonoma, CotoSelection)
+import App.Graph exposing (Graph, pinned)
 import App.Markdown exposing (markdownOptions, markdownElements)
 import Components.Timeline.Model exposing (Post, Model, isPostedInCotonoma)
 import Components.Timeline.Messages exposing (..)
 
 
-view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
-view  selection maybeCotonoma maybeSession model =
+view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
+view  selection maybeCotonoma maybeSession graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
-        [ timelineDiv selection maybeCotonoma maybeSession model
+        [ timelineDiv selection maybeCotonoma maybeSession graph model
         , div [ id "new-coto" ]
             [ div [ class "toolbar", hidden (not model.editingNew) ]
                 [ (case maybeSession of
@@ -60,15 +61,15 @@ view  selection maybeCotonoma maybeSession model =
         ]
 
 
-timelineDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Model -> Html Msg
-timelineDiv selection maybeCotonoma maybeSession model =
+timelineDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
+timelineDiv selection maybeCotonoma maybeSession graph model =
     Html.Keyed.node
         "div"
         [ id "timeline", classList [ ( "loading", model.loading ) ] ]
         (List.map 
             (\post -> 
                 ( getKey post
-                , postDiv selection maybeCotonoma maybeSession post
+                , postDiv selection maybeCotonoma maybeSession graph post
                 )
             ) 
             (List.reverse model.posts)
@@ -85,8 +86,8 @@ getKey post =
                 Nothing -> ""
     
     
-postDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Post -> Html Msg
-postDiv selection maybeCotonoma maybeSession post =
+postDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Post -> Html Msg
+postDiv selection maybeCotonoma maybeSession graph post =
     div
         [ classList 
             [ ( "coto", True )
@@ -101,7 +102,7 @@ postDiv selection maybeCotonoma maybeSession post =
           )
         ] 
         [ div [ class "border" ] []
-        , headerDiv maybeCotonoma post
+        , headerDiv maybeCotonoma graph post
         , authorDiv maybeSession post
         , bodyDiv post
         ]
@@ -114,8 +115,8 @@ isActive selection post =
         Just cotoId -> List.member cotoId selection
 
 
-headerDiv : Maybe Cotonoma -> Post -> Html Msg
-headerDiv maybeCotonoma post =
+headerDiv : Maybe Cotonoma -> Graph -> Post -> Html Msg
+headerDiv maybeCotonoma graph post =
     div 
         [ class "coto-header" ]
         [ case post.postedIn of
@@ -129,7 +130,16 @@ headerDiv maybeCotonoma post =
                         [ text postedIn.name ]
                 else
                     span [] []
-        , i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+        , case post.cotoId of
+            Nothing ->
+                span [] []
+            Just cotoId -> 
+                if pinned cotoId graph then
+                    i [ class "pinned fa fa-thumb-tack"
+                      , (attribute "aria-hidden" "true") 
+                      ] []
+                else
+                    span [] []
         ]
 
 
