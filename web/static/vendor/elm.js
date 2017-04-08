@@ -24795,13 +24795,58 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 			}
 		}
 	});
+var _user$project$Components_Timeline_View$headerDiv = F2(
+	function (maybeCotonoma, post) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('coto-header'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: function () {
+					var _p4 = post.postedIn;
+					if (_p4.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					} else {
+						var _p5 = _p4._0;
+						return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('posted-in'),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Utils$onClickWithoutPropagation(
+										_user$project$Components_Timeline_Messages$CotonomaClick(_p5.key)),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p5.name),
+								_1: {ctor: '[]'}
+							}) : A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{ctor: '[]'});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Components_Timeline_View$isActive = F2(
 	function (selection, post) {
-		var _p4 = post.cotoId;
-		if (_p4.ctor === 'Nothing') {
+		var _p6 = post.cotoId;
+		if (_p6.ctor === 'Nothing') {
 			return false;
 		} else {
-			return A2(_elm_lang$core$List$member, _p4._0, selection);
+			return A2(_elm_lang$core$List$member, _p6._0, selection);
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
@@ -24843,12 +24888,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p5 = post.cotoId;
-						if (_p5.ctor === 'Nothing') {
+						var _p7 = post.cotoId;
+						if (_p7.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p5._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p7._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24866,48 +24911,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('coto-header'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: function () {
-								var _p6 = post.postedIn;
-								if (_p6.ctor === 'Nothing') {
-									return A2(
-										_elm_lang$html$Html$span,
-										{ctor: '[]'},
-										{ctor: '[]'});
-								} else {
-									var _p7 = _p6._0;
-									return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('posted-in'),
-											_1: {
-												ctor: '::',
-												_0: _user$project$Utils$onClickWithoutPropagation(
-													_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(_p7.name),
-											_1: {ctor: '[]'}
-										}) : A2(
-										_elm_lang$html$Html$span,
-										{ctor: '[]'},
-										{ctor: '[]'});
-								}
-							}(),
-							_1: {ctor: '[]'}
-						}),
+					_0: A2(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, post),
 					_1: {
 						ctor: '::',
 						_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),

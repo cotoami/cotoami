@@ -101,20 +101,7 @@ postDiv selection maybeCotonoma maybeSession post =
           )
         ] 
         [ div [ class "border" ] []
-        , div 
-            [ class "coto-header" ]
-            [ case post.postedIn of
-                Nothing -> span [] []
-                Just postedIn ->
-                    if not (isPostedInCotonoma maybeCotonoma post) then
-                        a 
-                            [ class "posted-in"
-                            , onClickWithoutPropagation (CotonomaClick postedIn.key) 
-                            ] 
-                            [ text postedIn.name ]
-                    else
-                        span [] []
-            ]
+        , headerDiv maybeCotonoma post
         , authorDiv maybeSession post
         , bodyDiv post
         ]
@@ -125,6 +112,24 @@ isActive selection post =
     case post.cotoId of
         Nothing -> False
         Just cotoId -> List.member cotoId selection
+
+
+headerDiv : Maybe Cotonoma -> Post -> Html Msg
+headerDiv maybeCotonoma post =
+    div 
+        [ class "coto-header" ]
+        [ case post.postedIn of
+            Nothing -> span [] []
+            Just postedIn ->
+                if not (isPostedInCotonoma maybeCotonoma post) then
+                    a 
+                        [ class "posted-in"
+                        , onClickWithoutPropagation (CotonomaClick postedIn.key) 
+                        ] 
+                        [ text postedIn.name ]
+                else
+                    span [] []
+        ]
 
 
 authorDiv : Maybe Session -> Post -> Html Msg
