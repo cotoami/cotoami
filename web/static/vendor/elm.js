@@ -24750,7 +24750,6 @@ var _user$project$Components_Timeline_View$isActive = F2(
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
 	function (selection, maybeCotonoma, maybeSession, post) {
-		var postedInAnother = !A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24779,11 +24778,7 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 									_1: {
 										ctor: '::',
 										_0: {ctor: '_Tuple2', _0: 'being-hidden', _1: post.beingDeleted},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'posted-in-another-cotonoma', _1: postedInAnother},
-											_1: {ctor: '[]'}
-										}
+										_1: {ctor: '[]'}
 									}
 								}
 							}
@@ -24859,37 +24854,48 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					}(),
 					_1: {
 						ctor: '::',
-						_0: function () {
-							var _p6 = post.postedIn;
-							if (_p6.ctor === 'Nothing') {
-								return A2(
-									_elm_lang$html$Html$span,
-									{ctor: '[]'},
-									{ctor: '[]'});
-							} else {
-								var _p7 = _p6._0;
-								return postedInAnother ? A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('posted-in'),
-										_1: {
-											ctor: '::',
-											_0: _user$project$Utils$onClickWithoutPropagation(
-												_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p7.name),
-										_1: {ctor: '[]'}
-									}) : A2(
-									_elm_lang$html$Html$span,
-									{ctor: '[]'},
-									{ctor: '[]'});
-							}
-						}(),
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('coto-header'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: function () {
+									var _p6 = post.postedIn;
+									if (_p6.ctor === 'Nothing') {
+										return A2(
+											_elm_lang$html$Html$span,
+											{ctor: '[]'},
+											{ctor: '[]'});
+									} else {
+										var _p7 = _p6._0;
+										return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
+											_elm_lang$html$Html$a,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('posted-in'),
+												_1: {
+													ctor: '::',
+													_0: _user$project$Utils$onClickWithoutPropagation(
+														_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
+													_1: {ctor: '[]'}
+												}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(_p7.name),
+												_1: {ctor: '[]'}
+											}) : A2(
+											_elm_lang$html$Html$span,
+											{ctor: '[]'},
+											{ctor: '[]'});
+									}
+								}(),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),

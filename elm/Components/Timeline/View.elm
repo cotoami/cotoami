@@ -87,38 +87,36 @@ getKey post =
     
 postDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Post -> Html Msg
 postDiv selection maybeCotonoma maybeSession post =
-    let
-        postedInAnother = not (isPostedInCotonoma maybeCotonoma post)
-    in
-        div
-            [ classList 
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "active", isActive selection post )
-                , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
-                , ( "being-hidden", post.beingDeleted )
-                , ( "posted-in-another-cotonoma", postedInAnother )
-                ]
-            , (case post.cotoId of
-                Nothing -> onClick NoOp
-                Just cotoId -> onClick (PostClick cotoId)
-              )
-            ] 
-            [ div [ class "border" ] []
-            ,  (case post.cotoId of
-                Nothing -> span [] []
-                Just cotoId ->
-                    a 
-                        [ class "tool-button open-coto"
-                        , title "Open coto view"
-                        , onClickWithoutPropagation (PostOpen post)
-                        ] 
-                        [ i [ class "material-icons" ] [ text "open_in_new" ] ]
-              )
-            , (case post.postedIn of
+    div
+        [ classList 
+            [ ( "coto", True )
+            , ( "selectable", True )
+            , ( "active", isActive selection post )
+            , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
+            , ( "being-hidden", post.beingDeleted )
+            ]
+        , (case post.cotoId of
+            Nothing -> onClick NoOp
+            Just cotoId -> onClick (PostClick cotoId)
+          )
+        ] 
+        [ div [ class "border" ] []
+        ,  (case post.cotoId of
+            Nothing -> span [] []
+            Just cotoId ->
+                a 
+                    [ class "tool-button open-coto"
+                    , title "Open coto view"
+                    , onClickWithoutPropagation (PostOpen post)
+                    ] 
+                    [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+          )
+        , div 
+            [ class "coto-header" ]
+            [ case post.postedIn of
                 Nothing -> span [] []
                 Just postedIn ->
-                    if postedInAnother then
+                    if not (isPostedInCotonoma maybeCotonoma post) then
                         a 
                             [ class "posted-in"
                             , onClickWithoutPropagation (CotonomaClick postedIn.key) 
@@ -126,10 +124,10 @@ postDiv selection maybeCotonoma maybeSession post =
                             [ text postedIn.name ]
                     else
                         span [] []
-              )
-            , authorDiv maybeSession post
-            , contentDiv post
             ]
+        , authorDiv maybeSession post
+        , contentDiv post
+        ]
         
 
 isActive : CotoSelection -> Post -> Bool
