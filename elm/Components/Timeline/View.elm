@@ -101,16 +101,6 @@ postDiv selection maybeCotonoma maybeSession post =
           )
         ] 
         [ div [ class "border" ] []
-        ,  (case post.cotoId of
-            Nothing -> span [] []
-            Just cotoId ->
-                a 
-                    [ class "tool-button open-coto"
-                    , title "Open coto view"
-                    , onClickWithoutPropagation (PostOpen post)
-                    ] 
-                    [ i [ class "material-icons" ] [ text "open_in_new" ] ]
-          )
         , div 
             [ class "coto-header" ]
             [ case post.postedIn of
@@ -126,7 +116,7 @@ postDiv selection maybeCotonoma maybeSession post =
                         span [] []
             ]
         , authorDiv maybeSession post
-        , contentDiv post
+        , bodyDiv post
         ]
         
 
@@ -154,17 +144,29 @@ authorDiv maybeSession post =
                             ]
             
     
-contentDiv : Post -> Html Msg
-contentDiv post =
-    if post.asCotonoma then
-        div [ class "coto-as-cotonoma" ]
-            [ a [ onClickWithoutPropagation (CotonomaClick post.cotonomaKey) ]
-                [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                , span [ class "cotonoma-name" ] [ text post.content ]
+bodyDiv : Post -> Html Msg
+bodyDiv post =
+    div [ class "coto-body" ]
+        [ (case post.cotoId of
+            Nothing -> span [] []
+            Just cotoId ->
+                a 
+                    [ class "tool-button open-coto"
+                    , title "Open coto view"
+                    , onClickWithoutPropagation (PostOpen post)
+                    ] 
+                    [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+          )
+        , if post.asCotonoma then
+            div [ class "coto-as-cotonoma" ]
+                [ a [ onClickWithoutPropagation (CotonomaClick post.cotonomaKey) ]
+                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                    , span [ class "cotonoma-name" ] [ text post.content ]
+                    ]
                 ]
-            ]
-    else 
-        markdown post.content 
+          else 
+              markdown post.content 
+        ]
         
         
 markdown : String -> Html Msg

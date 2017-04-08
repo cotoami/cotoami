@@ -24626,76 +24626,132 @@ var _user$project$Components_Timeline_View$markdown = function (content) {
 				{image: _user$project$Components_Timeline_View$customImageElement}),
 			content));
 };
-var _user$project$Components_Timeline_View$contentDiv = function (post) {
-	return post.asCotonoma ? A2(
+var _user$project$Components_Timeline_View$bodyDiv = function (post) {
+	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
+			_0: _elm_lang$html$Html_Attributes$class('coto-body'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$a,
-				{
-					ctor: '::',
-					_0: _user$project$Utils$onClickWithoutPropagation(
-						_user$project$Components_Timeline_Messages$CotonomaClick(post.cotonomaKey)),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$i,
+			_0: function () {
+				var _p0 = post.cotoId;
+				if (_p0.ctor === 'Nothing') {
+					return A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{ctor: '[]'});
+				} else {
+					return A2(
+						_elm_lang$html$Html$a,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('tool-button open-coto'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Utils$onClickWithoutPropagation(
+										_user$project$Components_Timeline_Messages$PostOpen(post)),
+									_1: {ctor: '[]'}
+								}
+							}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('exit_to_app'),
+							_0: A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('open_in_new'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
-						}),
-					_1: {
+						});
+				}
+			}(),
+			_1: {
+				ctor: '::',
+				_0: post.asCotonoma ? A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('coto-as-cotonoma'),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$span,
+							_elm_lang$html$Html$a,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
+								_0: _user$project$Utils$onClickWithoutPropagation(
+									_user$project$Components_Timeline_Messages$CotonomaClick(post.cotonomaKey)),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(post.content),
-								_1: {ctor: '[]'}
+								_0: A2(
+									_elm_lang$html$Html$i,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('exit_to_app'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('cotonoma-name'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(post.content),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
-		}) : _user$project$Components_Timeline_View$markdown(post.content);
+					}) : _user$project$Components_Timeline_View$markdown(post.content),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Components_Timeline_View$authorDiv = F2(
 	function (maybeSession, post) {
-		var _p0 = maybeSession;
-		if (_p0.ctor === 'Nothing') {
+		var _p1 = maybeSession;
+		if (_p1.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$span,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
-			var _p1 = post.amishi;
-			if (_p1.ctor === 'Nothing') {
+			var _p2 = post.amishi;
+			if (_p2.ctor === 'Nothing') {
 				return A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					{ctor: '[]'});
 			} else {
-				var _p2 = _p1._0;
-				return _elm_lang$core$Native_Utils.eq(_p2.id, _p0._0.id) ? A2(
+				var _p3 = _p2._0;
+				return _elm_lang$core$Native_Utils.eq(_p3.id, _p1._0.id) ? A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					{ctor: '[]'}) : A2(
@@ -24714,7 +24770,7 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 								_0: _elm_lang$html$Html_Attributes$class('avatar'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(_p2.avatarUrl),
+									_0: _elm_lang$html$Html_Attributes$src(_p3.avatarUrl),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -24730,7 +24786,7 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p2.displayName),
+									_0: _elm_lang$html$Html$text(_p3.displayName),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -24741,11 +24797,11 @@ var _user$project$Components_Timeline_View$authorDiv = F2(
 	});
 var _user$project$Components_Timeline_View$isActive = F2(
 	function (selection, post) {
-		var _p3 = post.cotoId;
-		if (_p3.ctor === 'Nothing') {
+		var _p4 = post.cotoId;
+		if (_p4.ctor === 'Nothing') {
 			return false;
 		} else {
-			return A2(_elm_lang$core$List$member, _p3._0, selection);
+			return A2(_elm_lang$core$List$member, _p4._0, selection);
 		}
 	});
 var _user$project$Components_Timeline_View$postDiv = F4(
@@ -24787,12 +24843,12 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p4 = post.cotoId;
-						if (_p4.ctor === 'Nothing') {
+						var _p5 = post.cotoId;
+						if (_p5.ctor === 'Nothing') {
 							return _elm_lang$html$Html_Events$onClick(_user$project$Components_Timeline_Messages$NoOp);
 						} else {
 							return _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_Timeline_Messages$PostClick(_p4._0));
+								_user$project$Components_Timeline_Messages$PostClick(_p5._0));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -24810,100 +24866,55 @@ var _user$project$Components_Timeline_View$postDiv = F4(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: function () {
-						var _p5 = post.cotoId;
-						if (_p5.ctor === 'Nothing') {
-							return A2(
-								_elm_lang$html$Html$span,
-								{ctor: '[]'},
-								{ctor: '[]'});
-						} else {
-							return A2(
-								_elm_lang$html$Html$a,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('tool-button open-coto'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$title('Open coto view'),
-										_1: {
-											ctor: '::',
-											_0: _user$project$Utils$onClickWithoutPropagation(
-												_user$project$Components_Timeline_Messages$PostOpen(post)),
-											_1: {ctor: '[]'}
-										}
-									}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('coto-header'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: function () {
+								var _p6 = post.postedIn;
+								if (_p6.ctor === 'Nothing') {
+									return A2(
+										_elm_lang$html$Html$span,
+										{ctor: '[]'},
+										{ctor: '[]'});
+								} else {
+									var _p7 = _p6._0;
+									return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
+										_elm_lang$html$Html$a,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('material-icons'),
-											_1: {ctor: '[]'}
+											_0: _elm_lang$html$Html_Attributes$class('posted-in'),
+											_1: {
+												ctor: '::',
+												_0: _user$project$Utils$onClickWithoutPropagation(
+													_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
+												_1: {ctor: '[]'}
+											}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('open_in_new'),
+											_0: _elm_lang$html$Html$text(_p7.name),
 											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								});
-						}
-					}(),
+										}) : A2(
+										_elm_lang$html$Html$span,
+										{ctor: '[]'},
+										{ctor: '[]'});
+								}
+							}(),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('coto-header'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: function () {
-									var _p6 = post.postedIn;
-									if (_p6.ctor === 'Nothing') {
-										return A2(
-											_elm_lang$html$Html$span,
-											{ctor: '[]'},
-											{ctor: '[]'});
-									} else {
-										var _p7 = _p6._0;
-										return (!A2(_user$project$Components_Timeline_Model$isPostedInCotonoma, maybeCotonoma, post)) ? A2(
-											_elm_lang$html$Html$a,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('posted-in'),
-												_1: {
-													ctor: '::',
-													_0: _user$project$Utils$onClickWithoutPropagation(
-														_user$project$Components_Timeline_Messages$CotonomaClick(_p7.key)),
-													_1: {ctor: '[]'}
-												}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p7.name),
-												_1: {ctor: '[]'}
-											}) : A2(
-											_elm_lang$html$Html$span,
-											{ctor: '[]'},
-											{ctor: '[]'});
-									}
-								}(),
-								_1: {ctor: '[]'}
-							}),
+						_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
 						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
-							_1: {
-								ctor: '::',
-								_0: _user$project$Components_Timeline_View$contentDiv(post),
-								_1: {ctor: '[]'}
-							}
+							_0: _user$project$Components_Timeline_View$bodyDiv(post),
+							_1: {ctor: '[]'}
 						}
 					}
 				}

@@ -44,18 +44,6 @@
       border-top: 1px dashed #ccc;
     }
     
-    a.open-coto {
-      display: none;
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      z-index: 2;
-      
-      i {
-        font-size: 30px;
-      }
-    }
-    
     div.coto-header {
       min-height: 8px;
       text-align: right;
@@ -83,6 +71,22 @@
       span.name {
         color: #aaa;
         font-weight: bold;
+      }
+    }
+    
+    div.coto-body {
+      position: relative;
+      
+      a.open-coto {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        
+        i {
+          font-size: 30px;
+        }
       }
     }
   }
