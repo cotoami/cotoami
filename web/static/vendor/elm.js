@@ -17066,6 +17066,23 @@ var _user$project$App_Types$HomeRoute = {ctor: 'HomeRoute'};
 var _user$project$Components_ConfirmModal_Messages$Confirm = {ctor: 'Confirm'};
 var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
 
+var _user$project$Utils$post = F3(
+	function (url, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: {
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-Requested-With', 'XMLHttpRequest'),
+					_1: {ctor: '[]'}
+				},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
 var _user$project$Utils$onClickWithoutPropagation = function (message) {
 	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
 	return A3(
@@ -22748,7 +22765,7 @@ var _user$project$Components_Timeline_Commands$post = F3(
 			_elm_lang$http$Http$send,
 			_user$project$Components_Timeline_Messages$Posted,
 			A3(
-				_elm_lang$http$Http$post,
+				_user$project$Utils$post,
 				'/api/cotos',
 				_elm_lang$http$Http$jsonBody(
 					A3(_user$project$Components_Timeline_Commands$encodePost, clientId, maybeCotonoma, post)),
@@ -23052,7 +23069,7 @@ var _user$project$Components_CotonomaModal_Commands$postCotonoma = F5(
 			_elm_lang$http$Http$send,
 			_user$project$Components_CotonomaModal_Messages$Posted,
 			A3(
-				_elm_lang$http$Http$post,
+				_user$project$Utils$post,
 				'/api/cotonomas',
 				_elm_lang$http$Http$jsonBody(
 					A5(_user$project$Components_CotonomaModal_Commands$encodeCotonoma, clientId, maybeCotonoma, postId, members, name)),

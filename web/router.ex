@@ -17,6 +17,8 @@ defmodule Cotoami.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
+    plug :put_secure_browser_headers
+    plug Cotoami.ApiCsrfProtection
     plug Cotoami.Auth
   end
   
