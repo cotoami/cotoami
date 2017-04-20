@@ -7,6 +7,7 @@ import Task
 import Process
 import Time
 import Http
+import Utils
 import App.Types exposing (Cotonoma)
 import Components.Timeline.Model exposing (Post, decodePost)
 import Components.Timeline.Messages exposing (..)
@@ -27,7 +28,7 @@ fetchPosts =
 post : String -> Maybe Cotonoma -> Post -> Cmd Msg
 post clientId maybeCotonoma post =
     Http.send Posted 
-        <| Http.post 
+        <| Utils.post 
             "/api/cotos" 
             (Http.jsonBody (encodePost clientId maybeCotonoma post)) 
             decodePost

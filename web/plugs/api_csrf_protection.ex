@@ -55,6 +55,7 @@ defmodule Cotoami.ApiCsrfProtection do
   
   # Ensure the request has been sent via xhr
   # http://blog.alutam.com/2011/09/14/jersey-and-cross-site-request-forgery-csrf/
+  # http://stackoverflow.com/questions/17478731/whats-the-point-of-the-x-requested-with-header
   defp custom_header_exists?(conn) do
     case get_req_header(conn, @custom_header) do
       [_value] ->

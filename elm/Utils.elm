@@ -2,6 +2,7 @@ module Utils exposing
     ( isBlank
     , validateEmail
     , onClickWithoutPropagation
+    , post
     )
 
 import String
@@ -9,7 +10,8 @@ import Regex exposing (Regex, caseInsensitive, regex, contains)
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
 import Json.Decode as Decode
-    
+import Http
+
 
 isBlank : String -> Bool
 isBlank string =
@@ -37,3 +39,18 @@ onClickWithoutPropagation message =
             "click"
             { defaultOptions | stopPropagation = True }
             (Decode.succeed message)
+
+
+post : String -> Http.Body -> Decode.Decoder a -> Http.Request a
+post url body decoder =
+    Http.request
+        { method = "POST"
+        , headers = 
+            [ Http.header "X-Requested-With" "XMLHttpRequest"
+            ]
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
