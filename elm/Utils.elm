@@ -3,6 +3,7 @@ module Utils exposing
     , validateEmail
     , onClickWithoutPropagation
     , post
+    , delete
     )
 
 import String
@@ -41,16 +42,33 @@ onClickWithoutPropagation message =
             (Decode.succeed message)
 
 
+commonRequestHeaders : List Http.Header
+commonRequestHeaders =
+    [ Http.header "X-Requested-With" "XMLHttpRequest"
+    ]
+    
+
 post : String -> Http.Body -> Decode.Decoder a -> Http.Request a
 post url body decoder =
     Http.request
         { method = "POST"
-        , headers = 
-            [ Http.header "X-Requested-With" "XMLHttpRequest"
-            ]
+        , headers = commonRequestHeaders
         , url = url
         , body = body
         , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+        
+        
+delete : String -> Http.Request String
+delete url =
+    Http.request
+        { method = "DELETE"
+        , headers = commonRequestHeaders
+        , url = url
+        , body = Http.emptyBody
+        , expect = Http.expectString 
         , timeout = Nothing
         , withCredentials = False
         }

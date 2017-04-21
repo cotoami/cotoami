@@ -2,6 +2,7 @@ module App.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode
+import Utils
 import App.Types 
     exposing 
         ( Amishi
@@ -61,14 +62,5 @@ deleteCoto : Int -> Cmd Msg
 deleteCoto cotoId =
     Http.send 
         CotoDeleted
-        (Http.request
-          { method = "DELETE"
-          , headers = []
-          , url = "/api/cotos/" ++ toString(cotoId)
-          , body = Http.emptyBody
-          , expect = Http.expectString 
-          , timeout = Nothing
-          , withCredentials = False
-          }
-        )
+        ("/api/cotos/" ++ toString(cotoId) |> Utils.delete)
           

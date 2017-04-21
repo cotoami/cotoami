@@ -17066,16 +17066,17 @@ var _user$project$App_Types$HomeRoute = {ctor: 'HomeRoute'};
 var _user$project$Components_ConfirmModal_Messages$Confirm = {ctor: 'Confirm'};
 var _user$project$Components_ConfirmModal_Messages$Close = {ctor: 'Close'};
 
+var _user$project$Utils$commonRequestHeaders = {
+	ctor: '::',
+	_0: A2(_elm_lang$http$Http$header, 'X-Requested-With', 'XMLHttpRequest'),
+	_1: {ctor: '[]'}
+};
 var _user$project$Utils$post = F3(
 	function (url, body, decoder) {
 		return _elm_lang$http$Http$request(
 			{
 				method: 'POST',
-				headers: {
-					ctor: '::',
-					_0: A2(_elm_lang$http$Http$header, 'X-Requested-With', 'XMLHttpRequest'),
-					_1: {ctor: '[]'}
-				},
+				headers: _user$project$Utils$commonRequestHeaders,
 				url: url,
 				body: body,
 				expect: _elm_lang$http$Http$expectJson(decoder),
@@ -17083,6 +17084,10 @@ var _user$project$Utils$post = F3(
 				withCredentials: false
 			});
 	});
+var _user$project$Utils$delete = function (url) {
+	return _elm_lang$http$Http$request(
+		{method: 'DELETE', headers: _user$project$Utils$commonRequestHeaders, url: url, body: _elm_lang$http$Http$emptyBody, expect: _elm_lang$http$Http$expectString, timeout: _elm_lang$core$Maybe$Nothing, withCredentials: false});
+};
 var _user$project$Utils$onClickWithoutPropagation = function (message) {
 	var defaultOptions = _elm_lang$html$Html_Events$defaultOptions;
 	return A3(
@@ -22071,19 +22076,11 @@ var _user$project$App_Commands$deleteCoto = function (cotoId) {
 	return A2(
 		_elm_lang$http$Http$send,
 		_user$project$App_Messages$CotoDeleted,
-		_elm_lang$http$Http$request(
-			{
-				method: 'DELETE',
-				headers: {ctor: '[]'},
-				url: A2(
-					_elm_lang$core$Basics_ops['++'],
-					'/api/cotos/',
-					_elm_lang$core$Basics$toString(cotoId)),
-				body: _elm_lang$http$Http$emptyBody,
-				expect: _elm_lang$http$Http$expectString,
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			}));
+		_user$project$Utils$delete(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/api/cotos/',
+				_elm_lang$core$Basics$toString(cotoId))));
 };
 var _user$project$App_Commands$fetchCotonoma = function (key) {
 	var url = A2(
