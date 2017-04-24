@@ -1,32 +1,29 @@
 // Lists
 //––––––––––––––––––––––––––––––––––––––––––––––––––
 
-ul {
-  list-style: circle inside;
-}
-
-ol {
-  list-style: decimal inside;
-  padding-left: 0;
+ul, ol {
   margin-top: 0;
+  margin-left: 3rem;
+  padding-left: 0;
 }
 
 ul {
-  padding-left: 0;
-  margin-top: 0;
+  list-style: circle;
+  
   ul, ol {
-    margin: 1.5rem 0 1.5rem 3rem;
-    font-size: 90%;
+    margin-left: 3rem;
   }
 }
 
 ol {
+  list-style: decimal;
+  
   ol, ul {
-    margin: 1.5rem 0 1.5rem 3rem;
-    font-size: 90%;
+    margin-left: 3rem;
   }
 }
 
 li {
   margin-bottom: 0.5rem;
+  margin-left: 0;
 }
