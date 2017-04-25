@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events
 import Html.Events exposing 
     (on, onWithOptions, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
+import Html.Lazy exposing (lazy3)
 import Json.Decode as Decode
 import Markdown
 import Markdown.Config exposing (defaultElements, defaultOptions)
@@ -23,44 +24,49 @@ view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Htm
 view  selection maybeCotonoma maybeSession graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
         [ timelineDiv selection maybeCotonoma maybeSession graph model
-        , div [ id "new-coto" ]
-            [ div [ class "toolbar", hidden (not model.editingNew) ]
-                [ (case maybeSession of
-                      Nothing -> 
-                          span [ class "user anonymous" ]
-                              [ i [ class "material-icons" ] [ text "perm_identity" ]
-                              , text "Anonymous"
-                              ]
-                      Just session -> 
-                          span [ class "user session" ]
-                              [ img [ class "avatar", src session.avatarUrl ] []
-                              , span [ class "name" ] [ text session.displayName ]
-                              ]
-                  )
-                , div [ class "tool-buttons" ]
-                    [ button 
-                        [ class "button-primary"
-                        , disabled (isBlank model.newContent)
-                        , onMouseDown Components.Timeline.Messages.Post 
-                        ]
-                        [ text "Post"
-                        , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
-                        ]
-                    ]
-                ]
-            , textarea
-                [ class "coto"
-                , placeholder "Write your idea in Markdown"
-                , value model.newContent
-                , onFocus EditorFocus
-                , onBlur EditorBlur
-                , onInput EditorInput
-                , onKeyDown EditorKeyDown
-                ]
-                []
-            ]
+        , lazy3 newPostEditor maybeCotonoma maybeSession model
         ]
 
+
+newPostEditor : Maybe Cotonoma ->  Maybe Session -> Model -> Html Msg
+newPostEditor maybeCotonoma maybeSession model =
+    div [ id "new-coto" ]
+        [ div [ class "toolbar", hidden (not model.editingNew) ]
+            [ (case maybeSession of
+                  Nothing -> 
+                      span [ class "user anonymous" ]
+                          [ i [ class "material-icons" ] [ text "perm_identity" ]
+                          , text "Anonymous"
+                          ]
+                  Just session -> 
+                      span [ class "user session" ]
+                          [ img [ class "avatar", src session.avatarUrl ] []
+                          , span [ class "name" ] [ text session.displayName ]
+                          ]
+              )
+            , div [ class "tool-buttons" ]
+                [ button 
+                    [ class "button-primary"
+                    , disabled (isBlank model.newContent)
+                    , onMouseDown Components.Timeline.Messages.Post 
+                    ]
+                    [ text "Post"
+                    , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
+                    ]
+                ]
+            ]
+        , textarea
+            [ class "coto"
+            , placeholder "Write your idea in Markdown"
+            , value model.newContent
+            , onFocus EditorFocus
+            , onBlur EditorBlur
+            , onInput EditorInput
+            , onKeyDown EditorKeyDown
+            ]
+            []
+        ]
+  
 
 timelineDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
 timelineDiv selection maybeCotonoma maybeSession graph model =
