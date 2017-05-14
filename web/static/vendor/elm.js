@@ -26335,10 +26335,18 @@ var _user$project$App_View$view = function (model) {
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
-								_0: 'stock-is-not-empty',
-								_1: !_user$project$App_Model$isStockEmpty(model)
+								_0: 'navigation-is-not-empty',
+								_1: !_user$project$App_Model$isNavigationEmpty(model)
 							},
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'stock-is-not-empty',
+									_1: !_user$project$App_Model$isStockEmpty(model)
+								},
+								_1: {ctor: '[]'}
+							}
 						}
 					}),
 				_1: {ctor: '[]'}

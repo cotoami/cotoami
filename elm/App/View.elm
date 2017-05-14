@@ -26,6 +26,7 @@ view model =
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
+              , ( "navigation-is-not-empty", not (isNavigationEmpty model) )
               , ( "stock-is-not-empty", not (isStockEmpty model) )
               ] 
           ]
