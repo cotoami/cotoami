@@ -23,6 +23,7 @@ $column-width-in-wide-viewport: 500px !default;
     
     @media (#{$wide-viewport}) {
       padding: 5px;
+      padding-bottom: 50px;
     }
   }
   
