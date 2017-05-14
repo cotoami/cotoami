@@ -1,5 +1,7 @@
 @import "variables.scss";
 
+$column-width-in-wide-viewport: 500px !default;
+
 #connections {
   display: flex;
   flex-direction: row;
@@ -31,8 +33,8 @@
     width: 90vw;
     
     @media (#{$wide-viewport}) {
-      min-width: 400px;
-      width: 400px;
+      min-width: $column-width-in-wide-viewport;
+      width: $column-width-in-wide-viewport;
       font-size: 90%;
     }
     
@@ -79,8 +81,8 @@
     }
     
     @media (#{$wide-viewport}) {
-      min-width: 400px;
-      width: 400px;
+      min-width: $column-width-in-wide-viewport;
+      width: $column-width-in-wide-viewport;
     }
   }
 }
