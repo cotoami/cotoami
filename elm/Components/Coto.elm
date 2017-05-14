@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Graph exposing (Graph, pinned)
+import App.Graph exposing (Graph, pinned, hasChildren)
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -29,3 +29,19 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
           else
               span [] []
         ]
+
+
+subCotosButtonDiv : Graph -> Maybe Int -> Html msg
+subCotosButtonDiv graph maybeCotoId =
+    case maybeCotoId of
+        Nothing ->
+            div [] []
+        Just cotoId -> 
+            if hasChildren cotoId graph then
+                div [ class "sub-cotos-button" ]
+                    [ a []
+                        [ i [ class "material-icons" ] [ text "more_horiz" ]
+                        ]
+                    ]
+            else
+                div [] []

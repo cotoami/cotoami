@@ -22172,6 +22172,10 @@ var _user$project$App_Graph$getSecondConnections = function (graph) {
 		},
 		graph.rootConnections);
 };
+var _user$project$App_Graph$hasChildren = F2(
+	function (cotoId, graph) {
+		return A2(_elm_lang$core$Dict$member, cotoId, graph.connections);
+	});
 var _user$project$App_Graph$connected = F2(
 	function (cotoId, graph) {
 		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
@@ -24613,6 +24617,50 @@ var _user$project$Components_ConfirmModal_View$view = function (model) {
 			_user$project$Components_ConfirmModal_View$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
+var _user$project$Components_Coto$subCotosButtonDiv = F2(
+	function (graph, maybeCotoId) {
+		var _p0 = maybeCotoId;
+		if (_p0.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			return A2(_user$project$App_Graph$hasChildren, _p0._0, graph) ? A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('sub-cotos-button'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$i,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('material-icons'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('more_horiz'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}) : A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		}
+	});
 var _user$project$Components_Coto$headerDiv = F4(
 	function (cotonomaClick, maybeCotonoma, graph, coto) {
 		return A2(
@@ -24625,14 +24673,14 @@ var _user$project$Components_Coto$headerDiv = F4(
 			{
 				ctor: '::',
 				_0: function () {
-					var _p0 = coto.postedIn;
-					if (_p0.ctor === 'Nothing') {
+					var _p1 = coto.postedIn;
+					if (_p1.ctor === 'Nothing') {
 						return A2(
 							_elm_lang$html$Html$span,
 							{ctor: '[]'},
 							{ctor: '[]'});
 					} else {
-						var _p1 = _p0._0;
+						var _p2 = _p1._0;
 						return (!A2(_user$project$App_Types$isPostedInCotonoma, maybeCotonoma, coto)) ? A2(
 							_elm_lang$html$Html$a,
 							{
@@ -24641,13 +24689,13 @@ var _user$project$Components_Coto$headerDiv = F4(
 								_1: {
 									ctor: '::',
 									_0: _user$project$Utils$onClickWithoutPropagation(
-										cotonomaClick(_p1.key)),
+										cotonomaClick(_p2.key)),
 									_1: {ctor: '[]'}
 								}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p1.name),
+								_0: _elm_lang$html$Html$text(_p2.name),
 								_1: {ctor: '[]'}
 							}) : A2(
 							_elm_lang$html$Html$span,
@@ -24994,7 +25042,11 @@ var _user$project$Components_Timeline_View$postDiv = F5(
 						_1: {
 							ctor: '::',
 							_0: _user$project$Components_Timeline_View$bodyDiv(post),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$Components_Coto$subCotosButtonDiv, graph, post.cotoId),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}

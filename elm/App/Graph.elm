@@ -48,6 +48,11 @@ connected : Int -> Graph -> Bool
 connected cotoId graph =
     graph.cotos |> Dict.member cotoId
     
+    
+hasChildren : Int -> Graph -> Bool
+hasChildren cotoId graph =
+    graph.connections |> Dict.member cotoId
+    
 
 addRootConnections : List Coto -> Graph -> Graph
 addRootConnections cotos model =

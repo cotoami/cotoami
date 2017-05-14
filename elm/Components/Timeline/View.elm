@@ -112,6 +112,7 @@ postDiv selection maybeCotonoma maybeSession graph post =
         , headerDiv maybeCotonoma graph post
         , authorDiv maybeSession post
         , bodyDiv post
+        , Components.Coto.subCotosButtonDiv graph post.cotoId 
         ]
         
 

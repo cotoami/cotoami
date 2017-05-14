@@ -13,7 +13,16 @@ div.coto {
       margin-left: 10px;
       opacity: 0.3;
     }
-  }  
+  }
+  
+  div.sub-cotos-button {
+    text-align: center;
+    padding-top: 5px;
+    
+    i {
+      vertical-align: bottom;
+    }
+  }
 }    
 
 div.coto.selectable {
