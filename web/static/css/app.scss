@@ -160,6 +160,7 @@ div.flow-stock-switch {
 @media (#{$wide-viewport}) {
   $navigation-width: 160px !default;
   $flow-width-default: 600px !default;
+  $flow-width-with-stock: 500px !default;
   
   #app-body {
     flex-direction: row;
@@ -207,7 +208,7 @@ div.flow-stock-switch {
   }
   .stock-is-not-empty #flow {
     flex: none;
-    width: 500px;
+    width: $flow-width-with-stock;
     font-size: 90%;
   }
 
