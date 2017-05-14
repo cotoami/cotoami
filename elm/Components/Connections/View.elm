@@ -98,7 +98,8 @@ cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
 cotoDiv selection maybeCotonoma graph coto =
     div (cotoDivAttrs selection coto) 
         [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-        , markdown coto.content 
+        , markdown coto.content
+        , Components.Coto.subCotosButtonDiv graph (Just coto.id)
         ]
     
 

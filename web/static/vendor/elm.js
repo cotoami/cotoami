@@ -25778,7 +25778,14 @@ var _user$project$Components_Connections_View$cotoDiv = F4(
 				_1: {
 					ctor: '::',
 					_0: _user$project$Components_Connections_View$markdown(coto.content),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Components_Coto$subCotosButtonDiv,
+							graph,
+							_elm_lang$core$Maybe$Just(coto.id)),
+						_1: {ctor: '[]'}
+					}
 				}
 			});
 	});
