@@ -22152,31 +22152,39 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Types$decodeSession));
 
-var _user$project$App_Graph$initTraversal = function (cotoId) {
-	return {
-		startCoto: cotoId,
-		steps: {
-			ctor: '::',
-			_0: cotoId,
-			_1: {ctor: '[]'}
-		}
-	};
-};
+var _user$project$App_Graph$initTraversal = F2(
+	function (start, maybeNext) {
+		return {
+			start: start,
+			steps: function () {
+				var _p0 = maybeNext;
+				if (_p0.ctor === 'Nothing') {
+					return {ctor: '[]'};
+				} else {
+					return {
+						ctor: '::',
+						_0: _p0._0,
+						_1: {ctor: '[]'}
+					};
+				}
+			}()
+		};
+	});
 var _user$project$App_Graph$getTraversalStarts = function (graph) {
 	return A2(
 		_elm_lang$core$List$filterMap,
 		function (conn) {
-			var _p0 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
-			if (_p0.ctor === 'Nothing') {
+			var _p1 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
+			if (_p1.ctor === 'Nothing') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				var _p2 = _p0._0;
-				var _p1 = A2(_elm_lang$core$Dict$get, _p2.id, graph.connections);
-				if (_p1.ctor === 'Nothing') {
+				var _p3 = _p1._0;
+				var _p2 = A2(_elm_lang$core$Dict$get, _p3.id, graph.connections);
+				if (_p2.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return _elm_lang$core$Maybe$Just(
-						{ctor: '_Tuple2', _0: _p2, _1: _p1._0});
+						{ctor: '_Tuple2', _0: _p3, _1: _p2._0});
 				}
 			}
 		},
@@ -22212,11 +22220,11 @@ var _user$project$App_Graph$initConnection = F2(
 	function (maybeStart, end) {
 		var endLabel = _elm_lang$core$Basics$toString(end);
 		var startLabel = function () {
-			var _p3 = maybeStart;
-			if (_p3.ctor === 'Nothing') {
+			var _p4 = maybeStart;
+			if (_p4.ctor === 'Nothing') {
 				return 'root';
 			} else {
-				return _elm_lang$core$Basics$toString(_p3._0);
+				return _elm_lang$core$Basics$toString(_p4._0);
 			}
 		}();
 		return A2(
@@ -22260,8 +22268,8 @@ var _user$project$App_Graph$addConnection = F3(
 			_elm_lang$core$Dict$update,
 			start.id,
 			function (maybeConns) {
-				var _p4 = maybeConns;
-				if (_p4.ctor === 'Nothing') {
+				var _p5 = maybeConns;
+				if (_p5.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
@@ -22279,7 +22287,7 @@ var _user$project$App_Graph$addConnection = F3(
 								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
-							_1: _p4._0
+							_1: _p5._0
 						});
 				}
 			},
@@ -22315,7 +22323,7 @@ var _user$project$App_Graph$Graph = F3(
 	});
 var _user$project$App_Graph$Traversal = F2(
 	function (a, b) {
-		return {startCoto: a, steps: b};
+		return {start: a, steps: b};
 	});
 
 var _user$project$Components_ConfirmModal_Model$initModel = {open: false, message: '', msgOnConfirm: _user$project$App_Messages$NoOp};
@@ -25846,7 +25854,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F5(
 				},
 				_elm_lang$core$List$reverse(connections)));
 	});
-var _user$project$Components_Connections_View$traversalCoto = F5(
+var _user$project$Components_Connections_View$traversalStepCotoDiv = F5(
 	function (connections, coto, selection, maybeCotonoma, graph) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -25876,12 +25884,84 @@ var _user$project$Components_Connections_View$traversalCoto = F5(
 				}
 			});
 	});
+var _user$project$Components_Connections_View$traversalStepDiv = F4(
+	function (cotoId, selection, maybeCotonoma, graph) {
+		var _p1 = A2(_elm_lang$core$Dict$get, cotoId, graph.cotos);
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('step'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A5(
+								_user$project$Components_Connections_View$traversalStepCotoDiv,
+								function () {
+									var _p2 = A2(_elm_lang$core$Dict$get, cotoId, graph.connections);
+									if (_p2.ctor === 'Nothing') {
+										return {ctor: '[]'};
+									} else {
+										return _p2._0;
+									}
+								}(),
+								_p1._0,
+								selection,
+								maybeCotonoma,
+								graph),
+							_1: {ctor: '[]'}
+						}
+					}));
+		}
+	});
+var _user$project$Components_Connections_View$traversalDiv = F6(
+	function (traversal, connections, coto, selection, maybeCotonoma, graph) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('traversal'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A5(_user$project$Components_Connections_View$traversalStepCotoDiv, connections, coto, selection, maybeCotonoma, graph),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('steps'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$List$filterMap,
+							function (step) {
+								return A4(_user$project$Components_Connections_View$traversalStepDiv, step, selection, maybeCotonoma, graph);
+							},
+							_elm_lang$core$List$reverse(traversal.steps))),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Components_Connections_View$rootConnections = F3(
 	function (selection, maybeCotonoma, graph) {
 		return A5(_user$project$Components_Connections_View$connectionsDiv, 'root-connections', graph.rootConnections, selection, maybeCotonoma, graph);
 	});
-var _user$project$Components_Connections_View$view = F3(
-	function (selection, maybeCotonoma, graph) {
+var _user$project$Components_Connections_View$view = F4(
+	function (traversals, selection, maybeCotonoma, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25958,7 +26038,21 @@ var _user$project$Components_Connections_View$view = F3(
 								},
 								{
 									ctor: '::',
-									_0: A5(_user$project$Components_Connections_View$traversalCoto, connections, coto, selection, maybeCotonoma, graph),
+									_0: A6(
+										_user$project$Components_Connections_View$traversalDiv,
+										function () {
+											var _p3 = A2(_elm_lang$core$Dict$get, coto.id, traversals);
+											if (_p3.ctor === 'Nothing') {
+												return A2(_user$project$App_Graph$initTraversal, coto.id, _elm_lang$core$Maybe$Nothing);
+											} else {
+												return _p3._0;
+											}
+										}(),
+										connections,
+										coto,
+										selection,
+										maybeCotonoma,
+										graph),
 									_1: {ctor: '[]'}
 								})
 						};
@@ -26555,7 +26649,7 @@ var _user$project$App_View$view = function (model) {
 										_0: A2(
 											_elm_lang$html$Html$map,
 											_user$project$App_Messages$ConnectionsMsg,
-											A3(_user$project$Components_Connections_View$view, model.cotoSelection, model.cotonoma, model.connections)),
+											A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.connections)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {

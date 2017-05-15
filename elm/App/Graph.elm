@@ -135,13 +135,16 @@ addConnections startCoto endCotos graph =
         
     
 type alias Traversal =
-    { startCoto : CotoId
+    { start : CotoId
     , steps : List CotoId
     }
 
 
-initTraversal : CotoId -> Traversal
-initTraversal cotoId =
-    { startCoto = cotoId
-    , steps = [ cotoId ]
+initTraversal : CotoId -> Maybe CotoId -> Traversal
+initTraversal start maybeNext =
+    { start = start
+    , steps = 
+        case maybeNext of
+            Nothing -> []
+            Just next -> [ next ]
     }
