@@ -69,7 +69,7 @@ rootConnections selection maybeCotonoma graph =
 traversalDiv : Traversal -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
 traversalDiv traversal connections coto selection maybeCotonoma graph =
     div [ class "traversal" ]
-        [ traversalStepCotoDiv Nothing connections coto selection maybeCotonoma graph
+        [ traversalStepCotoDiv -1 connections coto selection maybeCotonoma graph
         , div [ class "steps" ]
             (List.reverse traversal.steps
             |> List.indexedMap (\index step -> traversalStepDiv index step selection maybeCotonoma graph) 
@@ -78,25 +78,25 @@ traversalDiv traversal connections coto selection maybeCotonoma graph =
         ]
   
 
-traversalStepCotoDiv : Maybe Int -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-traversalStepCotoDiv maybeTraversalIndex connections coto selection maybeCotonoma graph =
+traversalStepCotoDiv : Int -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+traversalStepCotoDiv index connections coto selection maybeCotonoma graph =
     div (cotoDivAttrs selection coto)
         [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
         , markdown coto.content
         , div [ class "main-sub-border" ] []
-        , connectionsDiv maybeTraversalIndex "sub-cotos" connections selection maybeCotonoma graph
+        , connectionsDiv (Just index) "sub-cotos" connections selection maybeCotonoma graph
         ]
         
         
 traversalStepDiv : Int -> CotoId -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
-traversalStepDiv traversalIndex cotoId selection maybeCotonoma graph =
+traversalStepDiv index cotoId selection maybeCotonoma graph =
     case Dict.get cotoId graph.cotos of
         Nothing -> Nothing
         Just coto -> Just
             (div [ class "step" ]
                 [ div [] []
                 , traversalStepCotoDiv 
-                    (Just traversalIndex)
+                    index
                     (case Dict.get cotoId graph.connections of
                         Nothing -> []
                         Just connections -> connections

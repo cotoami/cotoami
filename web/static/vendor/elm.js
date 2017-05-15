@@ -25935,7 +25935,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 				_elm_lang$core$List$reverse(connections)));
 	});
 var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
-	function (maybeTraversalIndex, connections, coto, selection, maybeCotonoma, graph) {
+	function (index, connections, coto, selection, maybeCotonoma, graph) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
@@ -25957,7 +25957,14 @@ var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
 							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
-							_0: A6(_user$project$Components_Connections_View$connectionsDiv, maybeTraversalIndex, 'sub-cotos', connections, selection, maybeCotonoma, graph),
+							_0: A6(
+								_user$project$Components_Connections_View$connectionsDiv,
+								_elm_lang$core$Maybe$Just(index),
+								'sub-cotos',
+								connections,
+								selection,
+								maybeCotonoma,
+								graph),
 							_1: {ctor: '[]'}
 						}
 					}
@@ -25965,7 +25972,7 @@ var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
 			});
 	});
 var _user$project$Components_Connections_View$traversalStepDiv = F5(
-	function (traversalIndex, cotoId, selection, maybeCotonoma, graph) {
+	function (index, cotoId, selection, maybeCotonoma, graph) {
 		var _p2 = A2(_elm_lang$core$Dict$get, cotoId, graph.cotos);
 		if (_p2.ctor === 'Nothing') {
 			return _elm_lang$core$Maybe$Nothing;
@@ -25988,7 +25995,7 @@ var _user$project$Components_Connections_View$traversalStepDiv = F5(
 							ctor: '::',
 							_0: A6(
 								_user$project$Components_Connections_View$traversalStepCotoDiv,
-								_elm_lang$core$Maybe$Just(traversalIndex),
+								index,
 								function () {
 									var _p3 = A2(_elm_lang$core$Dict$get, cotoId, graph.connections);
 									if (_p3.ctor === 'Nothing') {
@@ -26017,7 +26024,7 @@ var _user$project$Components_Connections_View$traversalDiv = F6(
 			},
 			{
 				ctor: '::',
-				_0: A6(_user$project$Components_Connections_View$traversalStepCotoDiv, _elm_lang$core$Maybe$Nothing, connections, coto, selection, maybeCotonoma, graph),
+				_0: A6(_user$project$Components_Connections_View$traversalStepCotoDiv, -1, connections, coto, selection, maybeCotonoma, graph),
 				_1: {
 					ctor: '::',
 					_0: A2(
