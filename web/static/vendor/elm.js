@@ -24875,10 +24875,21 @@ var _user$project$Components_Coto$headerDiv = F4(
 								_1: {ctor: '[]'}
 							}
 						},
+						{ctor: '[]'}) : (A2(_user$project$App_Graph$member, coto.id, graph) ? A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('connected fa fa-share-alt'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
+						},
 						{ctor: '[]'}) : A2(
 						_elm_lang$html$Html$span,
 						{ctor: '[]'},
-						{ctor: '[]'}),
+						{ctor: '[]'})),
 					_1: {ctor: '[]'}
 				}
 			});

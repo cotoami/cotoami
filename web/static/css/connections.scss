@@ -12,6 +12,10 @@ $column-width-in-wide-viewport: 500px !default;
     background-color: #fff;
     padding: 10px;
     padding-top: 2px;
+    
+    i.connected {
+      display: none;
+    }
   }
   
   .connections-column {

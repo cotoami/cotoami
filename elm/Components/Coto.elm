@@ -26,6 +26,10 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
             i [ class "pinned fa fa-thumb-tack"
               , (attribute "aria-hidden" "true") 
               ] []
+          else if App.Graph.member coto.id graph then
+            i [ class "connected fa fa-share-alt"
+              , (attribute "aria-hidden" "true") 
+              ] []
           else
               span [] []
         ]
