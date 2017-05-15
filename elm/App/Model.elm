@@ -39,7 +39,7 @@ type alias Model =
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , stockToggled : Bool
     , stockOpen : Bool
-    , connections : Graph
+    , graph : Graph
     , traversals : Dict.Dict CotoId Traversal
     }
 
@@ -73,14 +73,14 @@ initModel seed route =
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         , stockToggled = False
         , stockOpen = False
-        , connections = initGraph
+        , graph = initGraph
         , traversals = Dict.empty
         }
 
 
 getCoto : Int ->  Model -> Maybe Coto
 getCoto cotoId model =
-    case Dict.get cotoId model.connections.cotos of
+    case Dict.get cotoId model.graph.cotos of
         Nothing ->
             Components.Timeline.Model.getCoto cotoId model.timeline
         Just coto ->
@@ -109,7 +109,7 @@ isNavigationEmpty model =
         
 isStockEmpty : Model -> Bool
 isStockEmpty model =
-      List.isEmpty model.connections.rootConnections
+      List.isEmpty model.graph.rootConnections
         
         
 getOwnerAndMembers : Model -> List Amishi

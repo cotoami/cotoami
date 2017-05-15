@@ -22444,7 +22444,7 @@ var _user$project$App_Model$getOwnerAndMembers = function (model) {
 	}
 };
 var _user$project$App_Model$isStockEmpty = function (model) {
-	return _elm_lang$core$List$isEmpty(model.connections.rootConnections);
+	return _elm_lang$core$List$isEmpty(model.graph.rootConnections);
 };
 var _user$project$App_Model$isNavigationEmpty = function (model) {
 	return _krisajenkins$elm_exts$Exts_Maybe$isNothing(model.cotonoma) && (_elm_lang$core$List$isEmpty(model.recentCotonomas) && _elm_lang$core$List$isEmpty(model.subCotonomas));
@@ -22470,7 +22470,7 @@ var _user$project$App_Model$openSigninModal = function (model) {
 };
 var _user$project$App_Model$getCoto = F2(
 	function (cotoId, model) {
-		var _p2 = A2(_elm_lang$core$Dict$get, cotoId, model.connections.cotos);
+		var _p2 = A2(_elm_lang$core$Dict$get, cotoId, model.graph.cotos);
 		if (_p2.ctor === 'Nothing') {
 			return A2(_user$project$Components_Timeline_Model$getCoto, cotoId, model.timeline);
 		} else {
@@ -22510,7 +22510,7 @@ var _user$project$App_Model$initModel = F2(
 			cotonomaModal: _user$project$Components_CotonomaModal_Model$initModel,
 			stockToggled: false,
 			stockOpen: false,
-			connections: _user$project$App_Graph$initGraph,
+			graph: _user$project$App_Graph$initGraph,
 			traversals: _elm_lang$core$Dict$empty
 		};
 	});
@@ -22540,7 +22540,7 @@ var _user$project$App_Model$Model = function (a) {
 																							return function (x) {
 																								return function (y) {
 																									return function (z) {
-																										return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, connections: y, traversals: z};
+																										return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, graph: y, traversals: z};
 																									};
 																								};
 																							};
@@ -23296,7 +23296,7 @@ var _user$project$App_Update$loadCotonoma = F2(
 					cotoSelection: {ctor: '[]'},
 					connectMode: false,
 					connectingTo: _elm_lang$core$Maybe$Nothing,
-					connections: _user$project$App_Graph$initGraph
+					graph: _user$project$App_Graph$initGraph
 				}),
 			{
 				ctor: '::',
@@ -23331,7 +23331,7 @@ var _user$project$App_Update$loadHome = function (model) {
 				cotoSelection: {ctor: '[]'},
 				connectMode: false,
 				connectingTo: _elm_lang$core$Maybe$Nothing,
-				connections: _user$project$App_Graph$initGraph
+				graph: _user$project$App_Graph$initGraph
 			}),
 		{
 			ctor: '::',
@@ -23398,11 +23398,11 @@ var _user$project$App_Update$pinSelectedCotos = function (model) {
 			return A2(_user$project$App_Model$getCoto, cotoId, model);
 		},
 		model.cotoSelection);
-	var connections = A2(_user$project$App_Graph$addRootConnections, cotos, model.connections);
+	var graph = A2(_user$project$App_Graph$addRootConnections, cotos, model.graph);
 	return _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			connections: connections,
+			graph: graph,
 			cotoSelection: {ctor: '[]'}
 		});
 };
@@ -23919,12 +23919,12 @@ var _user$project$App_Update$update = F2(
 					{ctor: '[]'});
 			case 'ConnectionsMsg':
 				var _p30 = _p2._0;
-				var _p28 = A2(_user$project$Components_Connections_Update$update, _p30, model.connections);
-				var connections = _p28._0;
+				var _p28 = A2(_user$project$Components_Connections_Update$update, _p30, model.graph);
+				var graph = _p28._0;
 				var cmd = _p28._1;
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
-					{connections: connections});
+					{graph: graph});
 				var _p29 = _p30;
 				if (_p29.ctor === 'CotoClick') {
 					return A2(
@@ -23981,7 +23981,7 @@ var _user$project$App_Update$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							connections: A3(_user$project$App_Graph$addConnections, _p2._0, _p2._1, model.connections),
+							graph: A3(_user$project$App_Graph$addConnections, _p2._0, _p2._1, model.graph),
 							cotoSelection: {ctor: '[]'},
 							connectMode: false,
 							connectModalOpen: false
@@ -26704,7 +26704,7 @@ var _user$project$App_View$view = function (model) {
 									_0: A2(
 										_elm_lang$html$Html$map,
 										_user$project$App_Messages$TimelineMsg,
-										A5(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.connections, model.timeline)),
+										A5(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.graph, model.timeline)),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -26758,7 +26758,7 @@ var _user$project$App_View$view = function (model) {
 										_0: A2(
 											_elm_lang$html$Html$map,
 											_user$project$App_Messages$ConnectionsMsg,
-											A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.connections)),
+											A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.graph)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {

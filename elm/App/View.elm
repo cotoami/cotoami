@@ -49,7 +49,7 @@ view model =
                           model.cotoSelection
                           model.cotonoma
                           model.session
-                          model.connections
+                          model.graph
                           model.timeline 
                       )
                   ]
@@ -69,7 +69,7 @@ view model =
                           model.traversals
                           model.cotoSelection
                           model.cotonoma
-                          model.connections
+                          model.graph
                       )
                   ]
               , flowStockSwitch model
