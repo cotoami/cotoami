@@ -49,6 +49,13 @@ member cotoId graph =
     graph.cotos |> Dict.member cotoId
     
     
+connected : CotoId -> CotoId -> Graph -> Bool
+connected startId endId graph =
+    case Dict.get startId graph.connections of
+        Nothing -> False
+        Just conns -> List.any (\conn -> conn.end == endId) conns
+        
+    
 hasChildren : CotoId -> Graph -> Bool
 hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
@@ -106,19 +113,19 @@ addConnection start end graph =
                 (initConnection Nothing start.id) :: graph.rootConnections
                 
         connections =
-            Dict.update
-                start.id
-                (\maybeConns ->
-                    case maybeConns of
-                        Nothing ->
-                            Just [ (initConnection (Just start.id) end.id) ]
-                        Just conns ->
-                            if List.any (\conn -> conn.end == end.id) conns then
-                              Just conns
-                            else
-                              Just ((initConnection (Just start.id) end.id) :: conns)
-                )
+            if connected start.id end.id graph then
                 graph.connections
+            else
+                Dict.update
+                    start.id
+                    (\maybeConns ->
+                        case maybeConns of
+                            Nothing ->
+                                Just [ (initConnection (Just start.id) end.id) ]
+                            Just conns ->
+                                Just ((initConnection (Just start.id) end.id) :: conns)
+                    )
+                    graph.connections
     in
         { graph
         | cotos = cotos

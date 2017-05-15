@@ -21957,6 +21957,20 @@ var _user$project$App_Graph$hasChildren = F2(
 	function (cotoId, graph) {
 		return A2(_elm_lang$core$Dict$member, cotoId, graph.connections);
 	});
+var _user$project$App_Graph$connected = F3(
+	function (startId, endId, graph) {
+		var _p4 = A2(_elm_lang$core$Dict$get, startId, graph.connections);
+		if (_p4.ctor === 'Nothing') {
+			return false;
+		} else {
+			return A2(
+				_elm_lang$core$List$any,
+				function (conn) {
+					return _elm_lang$core$Native_Utils.eq(conn.end, endId);
+				},
+				_p4._0);
+		}
+	});
 var _user$project$App_Graph$member = F2(
 	function (cotoId, graph) {
 		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
@@ -21983,11 +21997,11 @@ var _user$project$App_Graph$initConnection = F2(
 	function (maybeStart, end) {
 		var endLabel = _elm_lang$core$Basics$toString(end);
 		var startLabel = function () {
-			var _p4 = maybeStart;
-			if (_p4.ctor === 'Nothing') {
+			var _p5 = maybeStart;
+			if (_p5.ctor === 'Nothing') {
 				return 'root';
 			} else {
-				return _elm_lang$core$Basics$toString(_p4._0);
+				return _elm_lang$core$Basics$toString(_p5._0);
 			}
 		}();
 		return A2(
@@ -22027,12 +22041,12 @@ var _user$project$App_Graph$addRootConnections = F2(
 	});
 var _user$project$App_Graph$addConnection = F3(
 	function (start, end, graph) {
-		var connections = A3(
+		var connections = A3(_user$project$App_Graph$connected, start.id, end.id, graph) ? graph.connections : A3(
 			_elm_lang$core$Dict$update,
 			start.id,
 			function (maybeConns) {
-				var _p5 = maybeConns;
-				if (_p5.ctor === 'Nothing') {
+				var _p6 = maybeConns;
+				if (_p6.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
@@ -22043,20 +22057,14 @@ var _user$project$App_Graph$addConnection = F3(
 							_1: {ctor: '[]'}
 						});
 				} else {
-					var _p6 = _p5._0;
-					return A2(
-						_elm_lang$core$List$any,
-						function (conn) {
-							return _elm_lang$core$Native_Utils.eq(conn.end, end.id);
-						},
-						_p6) ? _elm_lang$core$Maybe$Just(_p6) : _elm_lang$core$Maybe$Just(
+					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
 							_0: A2(
 								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
-							_1: _p6
+							_1: _p6._0
 						});
 				}
 			},
