@@ -22198,7 +22198,7 @@ var _user$project$App_Graph$Connection = F2(
 	function (a, b) {
 		return {key: a, end: b};
 	});
-var _user$project$App_Graph$newConnection = F2(
+var _user$project$App_Graph$initConnection = F2(
 	function (maybeStart, end) {
 		var endLabel = _elm_lang$core$Basics$toString(end);
 		var startLabel = function () {
@@ -22228,7 +22228,7 @@ var _user$project$App_Graph$addRootConnection = F2(
 				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, graph.cotos),
 				rootConnections: {
 					ctor: '::',
-					_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, coto.id),
+					_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, coto.id),
 					_1: graph.rootConnections
 				}
 			});
@@ -22256,7 +22256,7 @@ var _user$project$App_Graph$addConnection = F3(
 						{
 							ctor: '::',
 							_0: A2(
-								_user$project$App_Graph$newConnection,
+								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
 							_1: {ctor: '[]'}
@@ -22266,7 +22266,7 @@ var _user$project$App_Graph$addConnection = F3(
 						{
 							ctor: '::',
 							_0: A2(
-								_user$project$App_Graph$newConnection,
+								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
 							_1: _p4._0
@@ -22276,7 +22276,7 @@ var _user$project$App_Graph$addConnection = F3(
 			graph.connections);
 		var rootConnections = A2(_user$project$App_Graph$connected, start.id, graph) ? graph.rootConnections : {
 			ctor: '::',
-			_0: A2(_user$project$App_Graph$newConnection, _elm_lang$core$Maybe$Nothing, start.id),
+			_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, start.id),
 			_1: graph.rootConnections
 		};
 		var cotos = A3(

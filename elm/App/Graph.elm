@@ -8,10 +8,17 @@ type alias Connection =
     { key : String
     , end : Int
     }
+
+
+type alias Graph =
+    { cotos : Dict.Dict Int Coto
+    , rootConnections : List Connection
+    , connections : Dict.Dict Int (List Connection)
+    }
     
     
-newConnection : Maybe Int -> Int -> Connection
-newConnection maybeStart end =
+initConnection : Maybe Int -> Int -> Connection
+initConnection maybeStart end =
     let
         startLabel =
             case maybeStart of
@@ -22,13 +29,6 @@ newConnection maybeStart end =
         Connection 
             ("connection-" ++ startLabel ++ "-" ++ endLabel)
             end
-
-
-type alias Graph =
-    { cotos : Dict.Dict Int Coto
-    , rootConnections : List Connection
-    , connections : Dict.Dict Int (List Connection)
-    }
 
 
 initGraph : Graph
@@ -72,7 +72,7 @@ addRootConnection coto graph =
         { graph 
         | cotos = Dict.insert coto.id coto graph.cotos
         , rootConnections = 
-            (newConnection Nothing coto.id) :: graph.rootConnections
+            (initConnection Nothing coto.id) :: graph.rootConnections
         }
 
 
@@ -103,7 +103,7 @@ addConnection start end graph =
             if connected start.id graph then
                 graph.rootConnections
             else
-                (newConnection Nothing start.id) :: graph.rootConnections
+                (initConnection Nothing start.id) :: graph.rootConnections
                 
         connections =
             Dict.update
@@ -111,9 +111,9 @@ addConnection start end graph =
                 (\maybeConns ->
                     case maybeConns of
                         Nothing ->
-                            Just [ (newConnection (Just start.id) end.id) ]
+                            Just [ (initConnection (Just start.id) end.id) ]
                         Just conns ->
-                            Just ((newConnection (Just start.id) end.id) :: conns)
+                            Just ((initConnection (Just start.id) end.id) :: conns)
                 )
                 graph.connections
     in
