@@ -122,9 +122,12 @@ connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma g
                     ( conn.key
                     , case maybeCoto of
                         Nothing -> 
-                            div [ class "coto missing" ] [ text "Missing" ]
-                        Just coto -> 
-                            cotoDiv maybeTraversalStep selection maybeCotonoma graph coto
+                            div [ class "outbound-conn missing" ] [ text "Missing" ]
+                        Just coto ->
+                            div [ class "outbound-conn" ]
+                                [ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto
+                                ]
+                            
                     )
             ) 
             (List.reverse connections)

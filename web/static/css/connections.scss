@@ -76,8 +76,11 @@ $column-width-in-wide-viewport: 500px !default;
       @media (#{$wide-viewport}) {
         font-size: 90%;
       }
-      div.coto {
+      
+      div.outbound-conn {
         margin-top: 5px;
+        border-left: 3px solid #ddd;
+        border-radius: 4px 4px 4px 4px;
       }
     }
     

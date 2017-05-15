@@ -25922,7 +25922,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('coto missing'),
+										_0: _elm_lang$html$Html_Attributes$class('outbound-conn missing'),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -25931,7 +25931,18 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 										_1: {ctor: '[]'}
 									});
 							} else {
-								return A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalStep, selection, maybeCotonoma, graph, _p1._0);
+								return A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('outbound-conn'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalStep, selection, maybeCotonoma, graph, _p1._0),
+										_1: {ctor: '[]'}
+									});
 							}
 						}()
 					};
