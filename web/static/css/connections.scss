@@ -78,9 +78,17 @@ $column-width-in-wide-viewport: 500px !default;
       }
       
       div.outbound-conn {
-        margin-top: 5px;
+        margin-top: 8px;
         border-left: 3px solid #ddd;
         border-radius: 4px 4px 4px 4px;
+        
+        div.coto {
+          padding-bottom: 0;
+          
+          div.coto-header {
+            min-height: auto;
+          }
+        }
       }
     }
     
