@@ -22152,6 +22152,16 @@ var _user$project$App_Commands$fetchSession = A2(
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Types$decodeSession));
 
+var _user$project$App_Graph$initTraversal = function (cotoId) {
+	return {
+		startCoto: cotoId,
+		steps: {
+			ctor: '::',
+			_0: cotoId,
+			_1: {ctor: '[]'}
+		}
+	};
+};
 var _user$project$App_Graph$getSecondConnections = function (graph) {
 	return A2(
 		_elm_lang$core$List$filterMap,
@@ -22303,7 +22313,10 @@ var _user$project$App_Graph$Graph = F3(
 	function (a, b, c) {
 		return {cotos: a, rootConnections: b, connections: c};
 	});
-var _user$project$App_Graph$Traversal = {};
+var _user$project$App_Graph$Traversal = F2(
+	function (a, b) {
+		return {startCoto: a, steps: b};
+	});
 
 var _user$project$Components_ConfirmModal_Model$initModel = {open: false, message: '', msgOnConfirm: _user$project$App_Messages$NoOp};
 var _user$project$Components_ConfirmModal_Model$Model = F3(

@@ -8,18 +8,6 @@ type alias Connection =
     { key : String
     , end : CotoId
     }
-
-
-type alias Graph =
-    { cotos : Dict.Dict CotoId Coto
-    , rootConnections : List Connection
-    , connections : Dict.Dict CotoId (List Connection)
-    }
-    
-    
-type alias Traversal =
-    {
-    }
     
     
 initConnection : Maybe CotoId -> CotoId -> Connection
@@ -34,6 +22,13 @@ initConnection maybeStart end =
         Connection 
             ("connection-" ++ startLabel ++ "-" ++ endLabel)
             end
+
+
+type alias Graph =
+    { cotos : Dict.Dict CotoId Coto
+    , rootConnections : List Connection
+    , connections : Dict.Dict CotoId (List Connection)
+    }
 
 
 initGraph : Graph
@@ -138,4 +133,15 @@ addConnections startCoto endCotos graph =
         graph 
         endCotos
         
-      
+    
+type alias Traversal =
+    { startCoto : CotoId
+    , steps : List CotoId
+    }
+
+
+initTraversal : CotoId -> Traversal
+initTraversal cotoId =
+    { startCoto = cotoId
+    , steps = [ cotoId ]
+    }
