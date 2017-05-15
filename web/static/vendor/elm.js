@@ -22043,14 +22043,20 @@ var _user$project$App_Graph$addConnection = F3(
 							_1: {ctor: '[]'}
 						});
 				} else {
-					return _elm_lang$core$Maybe$Just(
+					var _p6 = _p5._0;
+					return A2(
+						_elm_lang$core$List$any,
+						function (conn) {
+							return _elm_lang$core$Native_Utils.eq(conn.end, end.id);
+						},
+						_p6) ? _elm_lang$core$Maybe$Just(_p6) : _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
 							_0: A2(
 								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
-							_1: _p5._0
+							_1: _p6
 						});
 				}
 			},

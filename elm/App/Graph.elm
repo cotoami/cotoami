@@ -113,7 +113,10 @@ addConnection start end graph =
                         Nothing ->
                             Just [ (initConnection (Just start.id) end.id) ]
                         Just conns ->
-                            Just ((initConnection (Just start.id) end.id) :: conns)
+                            if List.any (\conn -> conn.end == end.id) conns then
+                              Just conns
+                            else
+                              Just ((initConnection (Just start.id) end.id) :: conns)
                 )
                 graph.connections
     in
