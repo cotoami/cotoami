@@ -179,3 +179,19 @@ doTraverse traverse =
             |> List.drop (stepsCount - (traverse.startIndex + 1))
             |> (::) traverse.endCotoId
         }
+
+
+traversed : Int -> CotoId -> Traversal -> Bool
+traversed index cotoId traversal =
+    let
+        steps = 
+          if index < 0 then
+              traversal.steps |> List.reverse 
+          else
+              traversal.steps |> List.reverse |> List.drop (index + 1)
+          
+    in  
+        case List.head steps of
+            Nothing -> False
+            Just nextStep -> nextStep == cotoId
+            

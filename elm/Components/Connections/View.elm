@@ -126,7 +126,17 @@ connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma g
                         Nothing -> 
                             div [ class "outbound-conn missing" ] [ text "Missing" ]
                         Just coto ->
-                            div [ class "outbound-conn" ]
+                            div 
+                                [ classList 
+                                    [ ( "outbound-conn", True )
+                                    , ( "traversed"
+                                      , case maybeTraversalStep of
+                                          Nothing -> False
+                                          Just ( traversal, index ) -> 
+                                              traversed index coto.id traversal
+                                      )
+                                    ]
+                                ]
                                 [ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto
                                 ]
                             

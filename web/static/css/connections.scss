@@ -89,6 +89,14 @@ $column-width-in-wide-viewport: 500px !default;
             min-height: auto;
           }
         }
+        
+        &.traversed {
+          border: 1px dashed #ffdd33 !important;
+          
+          div.coto {
+            background-color: #ffffdd;
+          }
+        }
       }
     }
     

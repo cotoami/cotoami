@@ -21900,6 +21900,19 @@ var _user$project$Components_CotonomaModal_Messages$NameInput = function (a) {
 var _user$project$Components_CotonomaModal_Messages$Close = {ctor: 'Close'};
 var _user$project$Components_CotonomaModal_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Graph$traversed = F3(
+	function (index, cotoId, traversal) {
+		var steps = (_elm_lang$core$Native_Utils.cmp(index, 0) < 0) ? _elm_lang$core$List$reverse(traversal.steps) : A2(
+			_elm_lang$core$List$drop,
+			index + 1,
+			_elm_lang$core$List$reverse(traversal.steps));
+		var _p0 = _elm_lang$core$List$head(steps);
+		if (_p0.ctor === 'Nothing') {
+			return false;
+		} else {
+			return _elm_lang$core$Native_Utils.eq(_p0._0, cotoId);
+		}
+	});
 var _user$project$App_Graph$doTraverse = function (traverse) {
 	var traversal = traverse.traversal;
 	var stepsCount = _elm_lang$core$List$length(traversal.steps);
@@ -21920,13 +21933,13 @@ var _user$project$App_Graph$initTraversal = F2(
 		return {
 			start: start,
 			steps: function () {
-				var _p0 = maybeNext;
-				if (_p0.ctor === 'Nothing') {
+				var _p1 = maybeNext;
+				if (_p1.ctor === 'Nothing') {
 					return {ctor: '[]'};
 				} else {
 					return {
 						ctor: '::',
-						_0: _p0._0,
+						_0: _p1._0,
 						_1: {ctor: '[]'}
 					};
 				}
@@ -21937,17 +21950,17 @@ var _user$project$App_Graph$getTraversalStarts = function (graph) {
 	return A2(
 		_elm_lang$core$List$filterMap,
 		function (conn) {
-			var _p1 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
-			if (_p1.ctor === 'Nothing') {
+			var _p2 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
+			if (_p2.ctor === 'Nothing') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				var _p3 = _p1._0;
-				var _p2 = A2(_elm_lang$core$Dict$get, _p3.id, graph.connections);
-				if (_p2.ctor === 'Nothing') {
+				var _p4 = _p2._0;
+				var _p3 = A2(_elm_lang$core$Dict$get, _p4.id, graph.connections);
+				if (_p3.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Nothing;
 				} else {
 					return _elm_lang$core$Maybe$Just(
-						{ctor: '_Tuple2', _0: _p3, _1: _p2._0});
+						{ctor: '_Tuple2', _0: _p4, _1: _p3._0});
 				}
 			}
 		},
@@ -21959,8 +21972,8 @@ var _user$project$App_Graph$hasChildren = F2(
 	});
 var _user$project$App_Graph$connected = F3(
 	function (startId, endId, graph) {
-		var _p4 = A2(_elm_lang$core$Dict$get, startId, graph.connections);
-		if (_p4.ctor === 'Nothing') {
+		var _p5 = A2(_elm_lang$core$Dict$get, startId, graph.connections);
+		if (_p5.ctor === 'Nothing') {
 			return false;
 		} else {
 			return A2(
@@ -21968,7 +21981,7 @@ var _user$project$App_Graph$connected = F3(
 				function (conn) {
 					return _elm_lang$core$Native_Utils.eq(conn.end, endId);
 				},
-				_p4._0);
+				_p5._0);
 		}
 	});
 var _user$project$App_Graph$member = F2(
@@ -21997,11 +22010,11 @@ var _user$project$App_Graph$initConnection = F2(
 	function (maybeStart, end) {
 		var endLabel = _elm_lang$core$Basics$toString(end);
 		var startLabel = function () {
-			var _p5 = maybeStart;
-			if (_p5.ctor === 'Nothing') {
+			var _p6 = maybeStart;
+			if (_p6.ctor === 'Nothing') {
 				return 'root';
 			} else {
-				return _elm_lang$core$Basics$toString(_p5._0);
+				return _elm_lang$core$Basics$toString(_p6._0);
 			}
 		}();
 		return A2(
@@ -22045,8 +22058,8 @@ var _user$project$App_Graph$addConnection = F3(
 			_elm_lang$core$Dict$update,
 			start.id,
 			function (maybeConns) {
-				var _p6 = maybeConns;
-				if (_p6.ctor === 'Nothing') {
+				var _p7 = maybeConns;
+				if (_p7.ctor === 'Nothing') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
@@ -22064,7 +22077,7 @@ var _user$project$App_Graph$addConnection = F3(
 								_user$project$App_Graph$initConnection,
 								_elm_lang$core$Maybe$Just(start.id),
 								end.id),
-							_1: _p6._0
+							_1: _p7._0
 						});
 				}
 			},
@@ -25976,16 +25989,37 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 										_1: {ctor: '[]'}
 									});
 							} else {
+								var _p3 = _p1._0;
 								return A2(
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('outbound-conn'),
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'outbound-conn', _1: true},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'traversed',
+														_1: function () {
+															var _p2 = maybeTraversalStep;
+															if (_p2.ctor === 'Nothing') {
+																return false;
+															} else {
+																return A3(_user$project$App_Graph$traversed, _p2._0._1, _p3.id, _p2._0._0);
+															}
+														}()
+													},
+													_1: {ctor: '[]'}
+												}
+											}),
 										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalStep, selection, maybeCotonoma, graph, _p1._0),
+										_0: A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalStep, selection, maybeCotonoma, graph, _p3),
 										_1: {ctor: '[]'}
 									});
 							}
@@ -26033,8 +26067,8 @@ var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
 	});
 var _user$project$Components_Connections_View$traversalStepDiv = F5(
 	function (traversalStep, cotoId, selection, maybeCotonoma, graph) {
-		var _p2 = A2(_elm_lang$core$Dict$get, cotoId, graph.cotos);
-		if (_p2.ctor === 'Nothing') {
+		var _p4 = A2(_elm_lang$core$Dict$get, cotoId, graph.cotos);
+		if (_p4.ctor === 'Nothing') {
 			return _elm_lang$core$Maybe$Nothing;
 		} else {
 			return _elm_lang$core$Maybe$Just(
@@ -26076,14 +26110,14 @@ var _user$project$Components_Connections_View$traversalStepDiv = F5(
 								_user$project$Components_Connections_View$traversalStepCotoDiv,
 								traversalStep,
 								function () {
-									var _p3 = A2(_elm_lang$core$Dict$get, cotoId, graph.connections);
-									if (_p3.ctor === 'Nothing') {
+									var _p5 = A2(_elm_lang$core$Dict$get, cotoId, graph.connections);
+									if (_p5.ctor === 'Nothing') {
 										return {ctor: '[]'};
 									} else {
-										return _p3._0;
+										return _p5._0;
 									}
 								}(),
-								_p2._0,
+								_p4._0,
 								selection,
 								maybeCotonoma,
 								graph),
@@ -26225,11 +26259,11 @@ var _user$project$Components_Connections_View$view = F4(
 									_0: A6(
 										_user$project$Components_Connections_View$traversalDiv,
 										function () {
-											var _p4 = A2(_elm_lang$core$Dict$get, coto.id, traversals);
-											if (_p4.ctor === 'Nothing') {
+											var _p6 = A2(_elm_lang$core$Dict$get, coto.id, traversals);
+											if (_p6.ctor === 'Nothing') {
 												return A2(_user$project$App_Graph$initTraversal, coto.id, _elm_lang$core$Maybe$Nothing);
 											} else {
-												return _p4._0;
+												return _p6._0;
 											}
 										}(),
 										connections,
