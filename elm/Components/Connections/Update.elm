@@ -1,10 +1,15 @@
 module Components.Connections.Update exposing (..)
 
-import App.Graph exposing (Graph)
+import Dict
+import App.Types exposing (CotoId)
+import App.Graph exposing (Graph, Traversal)
 import Components.Connections.Messages exposing (..)
 
 
-update : Msg -> Graph -> ( Graph, Cmd Msg )
+type alias Model = ( Graph, Dict.Dict CotoId Traversal )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->

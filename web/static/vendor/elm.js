@@ -23919,12 +23919,16 @@ var _user$project$App_Update$update = F2(
 					{ctor: '[]'});
 			case 'ConnectionsMsg':
 				var _p30 = _p2._0;
-				var _p28 = A2(_user$project$Components_Connections_Update$update, _p30, model.graph);
-				var graph = _p28._0;
+				var _p28 = A2(
+					_user$project$Components_Connections_Update$update,
+					_p30,
+					{ctor: '_Tuple2', _0: model.graph, _1: model.traversals});
+				var graph = _p28._0._0;
+				var traversals = _p28._0._1;
 				var cmd = _p28._1;
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
-					{graph: graph});
+					{graph: graph, traversals: traversals});
 				var _p29 = _p30;
 				if (_p29.ctor === 'CotoClick') {
 					return A2(

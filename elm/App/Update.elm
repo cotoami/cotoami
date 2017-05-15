@@ -328,16 +328,15 @@ update msg model =
                 
         ConnectionsMsg subMsg ->
             let
-                ( graph, cmd ) = 
+                ( ( graph, traversals ), cmd ) = 
                     Components.Connections.Update.update 
                         subMsg 
-                        model.graph
-                newModel = { model | graph = graph }
+                        ( model.graph, model.traversals )
+                newModel = { model | graph = graph, traversals = traversals }
             in
                 case subMsg of
                     Components.Connections.Messages.CotoClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
-                        
                     _ -> 
                         newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
