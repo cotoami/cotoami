@@ -44,8 +44,8 @@ pinned cotoId graph =
     List.any (\conn -> conn.end == cotoId) graph.rootConnections
   
 
-connected : CotoId -> Graph -> Bool
-connected cotoId graph =
+member : CotoId -> Graph -> Bool
+member cotoId graph =
     graph.cotos |> Dict.member cotoId
     
     
@@ -100,7 +100,7 @@ addConnection start end graph =
                 |> Dict.insert end.id end 
             
         rootConnections = 
-            if connected start.id graph then
+            if member start.id graph then
                 graph.rootConnections
             else
                 (initConnection Nothing start.id) :: graph.rootConnections

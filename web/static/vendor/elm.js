@@ -21957,7 +21957,7 @@ var _user$project$App_Graph$hasChildren = F2(
 	function (cotoId, graph) {
 		return A2(_elm_lang$core$Dict$member, cotoId, graph.connections);
 	});
-var _user$project$App_Graph$connected = F2(
+var _user$project$App_Graph$member = F2(
 	function (cotoId, graph) {
 		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
 	});
@@ -22061,7 +22061,7 @@ var _user$project$App_Graph$addConnection = F3(
 				}
 			},
 			graph.connections);
-		var rootConnections = A2(_user$project$App_Graph$connected, start.id, graph) ? graph.rootConnections : {
+		var rootConnections = A2(_user$project$App_Graph$member, start.id, graph) ? graph.rootConnections : {
 			ctor: '::',
 			_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, start.id),
 			_1: graph.rootConnections
