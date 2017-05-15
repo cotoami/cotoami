@@ -328,16 +328,15 @@ update msg model =
                 
         ConnectionsMsg subMsg ->
             let
-                ( connections, cmd ) = 
+                ( ( graph, traversals ), cmd ) = 
                     Components.Connections.Update.update 
                         subMsg 
-                        model.connections
-                newModel = { model | connections = connections }
+                        ( model.graph, model.traversals )
+                newModel = { model | graph = graph, traversals = traversals }
             in
                 case subMsg of
                     Components.Connections.Messages.CotoClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
-                        
                     _ -> 
                         newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
@@ -359,8 +358,8 @@ update msg model =
             
         Connect startCoto endCotos ->
             { model 
-            | connections = 
-                model.connections |> addConnections startCoto endCotos
+            | graph = 
+                model.graph |> addConnections startCoto endCotos
             , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False
@@ -387,10 +386,10 @@ pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
     let
         cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        connections = addRootConnections cotos model.connections
+        graph = model.graph |> addRootConnections cotos 
     in
         { model 
-        | connections = connections
+        | graph = graph
         , cotoSelection = [] 
         }
         
@@ -444,7 +443,7 @@ loadHome model =
     , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
-    , connections = initGraph
+    , graph = initGraph
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -466,7 +465,7 @@ loadCotonoma key model =
     , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
-    , connections = initGraph
+    , graph = initGraph
     } ! 
         [ fetchRecentCotonomas
         , fetchCotonoma key 

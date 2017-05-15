@@ -3,7 +3,7 @@ module Components.Timeline.Messages exposing (..)
 import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
-import App.Types exposing (CotonomaKey)
+import App.Types exposing (CotoId, CotonomaKey)
 import Components.Timeline.Model exposing (Post)
 
 
@@ -22,3 +22,4 @@ type Msg
     | CotonomaClick CotonomaKey
     | PostPushed Value
     | CotonomaPushed Post
+    | OpenTraversal CotoId

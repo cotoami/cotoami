@@ -70,6 +70,9 @@ update clientId maybeCotonoma ctrlDown msg model =
                     
         CotonomaPushed post ->
             model ! []
+            
+        OpenTraversal cotoId ->
+            model ! []
     
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )

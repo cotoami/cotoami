@@ -49,7 +49,7 @@ view model =
                           model.cotoSelection
                           model.cotonoma
                           model.session
-                          model.connections
+                          model.graph
                           model.timeline 
                       )
                   ]
@@ -66,9 +66,10 @@ view model =
                   ] 
                   [ Html.map ConnectionsMsg 
                       (Components.Connections.View.view 
+                          model.traversals
                           model.cotoSelection
                           model.cotonoma
-                          model.connections
+                          model.graph
                       )
                   ]
               , flowStockSwitch model

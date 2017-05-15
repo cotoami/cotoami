@@ -3,8 +3,8 @@ module Components.Coto exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Graph exposing (Graph, pinned)
+import App.Types exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Graph exposing (Graph, pinned, hasChildren, Traversal, Traverse)
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -29,3 +29,32 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
           else
               span [] []
         ]
+
+
+openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
+openTraversalButtonDiv buttonClick maybeCotoId graph =
+    case maybeCotoId of
+        Nothing ->
+            div [] []
+        Just cotoId -> 
+            if hasChildren cotoId graph && False then
+                div [ class "sub-cotos-button" ]
+                    [ a [ onClickWithoutPropagation (buttonClick cotoId) ]
+                        [ i [ class "material-icons" ] [ text "more_horiz" ]
+                        ]
+                    ]
+            else
+                div [] []
+
+
+traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg
+traverseButtonDiv buttonClick index cotoId traversal graph =
+    if hasChildren cotoId graph then
+        div [ class "sub-cotos-button" ]
+            [ a [ onClickWithoutPropagation (buttonClick (Traverse traversal index cotoId)) ]
+                [ i [ class "material-icons" ] [ text "more_horiz" ]
+                ]
+            ]
+    else
+        div [] []
+            
