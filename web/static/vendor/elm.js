@@ -25940,9 +25940,9 @@ var _user$project$Components_Connections_View$view = F3(
 				},
 				_1: A2(
 					_elm_lang$core$List$map,
-					function (traversal) {
-						var connections = _elm_lang$core$Tuple$second(traversal);
-						var coto = _elm_lang$core$Tuple$first(traversal);
+					function (traversalStart) {
+						var connections = _elm_lang$core$Tuple$second(traversalStart);
+						var coto = _elm_lang$core$Tuple$first(traversalStart);
 						return {
 							ctor: '_Tuple2',
 							_0: A2(

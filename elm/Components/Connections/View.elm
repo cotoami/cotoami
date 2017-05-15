@@ -28,10 +28,10 @@ view selection maybeCotonoma graph =
               ]
           ) ::
               List.map
-                  (\traversal ->
+                  (\traversalStart ->
                       let
-                          coto = Tuple.first traversal
-                          connections = Tuple.second traversal
+                          coto = Tuple.first traversalStart
+                          connections = Tuple.second traversalStart
                       in
                           ( "column-traversal-" ++ toString coto.id
                           , div 
