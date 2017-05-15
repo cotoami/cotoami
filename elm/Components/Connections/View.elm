@@ -94,7 +94,9 @@ traversalStepDiv traversalStep cotoId selection maybeCotonoma graph =
         Nothing -> Nothing
         Just coto -> Just
             (div [ class "step" ]
-                [ div [] []
+                [ div [ class "arrow" ]
+                    [ i [ class "material-icons" ] [ text "arrow_downward" ]
+                    ]
                 , traversalStepCotoDiv 
                     traversalStep
                     (case Dict.get cotoId graph.connections of
