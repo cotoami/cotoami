@@ -92,6 +92,10 @@ $column-width-in-wide-viewport: 500px !default;
       }
     }
     
+    div.step {
+      margin-top: 20px;
+    }
+    
     @media (#{$wide-viewport}) {
       min-width: $column-width-in-wide-viewport;
       width: $column-width-in-wide-viewport;

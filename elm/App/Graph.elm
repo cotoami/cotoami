@@ -155,3 +155,17 @@ initTraversal start maybeNext =
             Nothing -> []
             Just next -> [ next ]
     }
+
+
+doTraverse : Traverse -> Traversal
+doTraverse traverse =
+    let
+        traversal = traverse.traversal
+        stepsCount = List.length traversal.steps
+    in
+        { traversal
+        | steps = 
+            traversal.steps
+            |> List.drop (stepsCount - (traverse.startIndex + 1))
+            |> (::) traverse.endCotoId
+        }

@@ -2,7 +2,7 @@ module Components.Connections.Update exposing (..)
 
 import Dict
 import App.Types exposing (CotoId)
-import App.Graph exposing (Graph, Traversal)
+import App.Graph exposing (Graph, Traversal, doTraverse)
 import Components.Connections.Messages exposing (..)
 
 
@@ -10,19 +10,24 @@ type alias Model = ( Graph, Dict.Dict CotoId Traversal )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg ( graph, traversals ) =
     case msg of
         NoOp ->
-            model ! []
+            ( graph, traversals ) ! []
             
         CotoClick cotoId ->
-            model ! []
+            ( graph, traversals ) ! []
             
         CotonomaClick key ->
-            model ! []
+            ( graph, traversals ) ! []
             
         TraverseClick traverse ->
-            model ! []
+            ( graph
+            , Dict.insert 
+                traverse.traversal.start 
+                (doTraverse traverse) 
+                traversals 
+            ) ! []
         
         OpenTraversal cotoId ->
-            model ! []
+            ( graph, traversals ) ! []

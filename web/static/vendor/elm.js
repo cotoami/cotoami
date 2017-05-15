@@ -21900,6 +21900,21 @@ var _user$project$Components_CotonomaModal_Messages$NameInput = function (a) {
 var _user$project$Components_CotonomaModal_Messages$Close = {ctor: 'Close'};
 var _user$project$Components_CotonomaModal_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Graph$doTraverse = function (traverse) {
+	var traversal = traverse.traversal;
+	var stepsCount = _elm_lang$core$List$length(traversal.steps);
+	return _elm_lang$core$Native_Utils.update(
+		traversal,
+		{
+			steps: A2(
+				F2(
+					function (x, y) {
+						return {ctor: '::', _0: x, _1: y};
+					}),
+				traverse.endCotoId,
+				A2(_elm_lang$core$List$drop, stepsCount - (traverse.startIndex + 1), traversal.steps))
+		});
+};
 var _user$project$App_Graph$initTraversal = F2(
 	function (start, maybeNext) {
 		return {
@@ -23251,33 +23266,45 @@ var _user$project$Components_CotonomaModal_Update$update = F6(
 	});
 
 var _user$project$Components_Connections_Update$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+	function (msg, _p0) {
+		var _p1 = _p0;
+		var _p5 = _p1._1;
+		var _p4 = _p1._0;
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					{ctor: '_Tuple2', _0: _p4, _1: _p5},
 					{ctor: '[]'});
 			case 'CotoClick':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					{ctor: '_Tuple2', _0: _p4, _1: _p5},
 					{ctor: '[]'});
 			case 'CotonomaClick':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					{ctor: '_Tuple2', _0: _p4, _1: _p5},
 					{ctor: '[]'});
 			case 'TraverseClick':
+				var _p3 = _p2._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					{
+						ctor: '_Tuple2',
+						_0: _p4,
+						_1: A3(
+							_elm_lang$core$Dict$insert,
+							_p3.traversal.start,
+							_user$project$App_Graph$doTraverse(_p3),
+							_p5)
+					},
 					{ctor: '[]'});
 			default:
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					{ctor: '_Tuple2', _0: _p4, _1: _p5},
 					{ctor: '[]'});
 		}
 	});
