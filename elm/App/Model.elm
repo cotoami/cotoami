@@ -5,7 +5,7 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
-import App.Graph exposing (Graph, initGraph)
+import App.Graph exposing (Graph, initGraph, Traversal)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
@@ -40,6 +40,7 @@ type alias Model =
     , stockToggled : Bool
     , stockOpen : Bool
     , connections : Graph
+    , traversals : Dict.Dict CotoId Traversal
     }
 
 
@@ -73,6 +74,7 @@ initModel seed route =
         , stockToggled = False
         , stockOpen = False
         , connections = initGraph
+        , traversals = Dict.empty
         }
 
 
