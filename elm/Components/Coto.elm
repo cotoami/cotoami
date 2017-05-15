@@ -37,7 +37,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
         Nothing ->
             div [] []
         Just cotoId -> 
-            if hasChildren cotoId graph then
+            if hasChildren cotoId graph && False then
                 div [ class "sub-cotos-button" ]
                     [ a [ onClickWithoutPropagation (buttonClick cotoId) ]
                         [ i [ class "material-icons" ] [ text "more_horiz" ]

@@ -24780,7 +24780,7 @@ var _user$project$Components_Coto$openTraversalButtonDiv = F3(
 				{ctor: '[]'});
 		} else {
 			var _p1 = _p0._0;
-			return A2(_user$project$App_Graph$hasChildren, _p1, graph) ? A2(
+			return (A2(_user$project$App_Graph$hasChildren, _p1, graph) && false) ? A2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
