@@ -6,18 +6,23 @@ import App.Types exposing (..)
 
 type alias Connection =
     { key : String
-    , end : Int
+    , end : CotoId
     }
 
 
 type alias Graph =
-    { cotos : Dict.Dict Int Coto
+    { cotos : Dict.Dict CotoId Coto
     , rootConnections : List Connection
-    , connections : Dict.Dict Int (List Connection)
+    , connections : Dict.Dict CotoId (List Connection)
     }
     
     
-initConnection : Maybe Int -> Int -> Connection
+type alias Traversal =
+    {
+    }
+    
+    
+initConnection : Maybe CotoId -> CotoId -> Connection
 initConnection maybeStart end =
     let
         startLabel =
@@ -39,17 +44,17 @@ initGraph =
     }
 
 
-pinned : Int -> Graph -> Bool
+pinned : CotoId -> Graph -> Bool
 pinned cotoId graph =
     List.any (\conn -> conn.end == cotoId) graph.rootConnections
   
 
-connected : Int -> Graph -> Bool
+connected : CotoId -> Graph -> Bool
 connected cotoId graph =
     graph.cotos |> Dict.member cotoId
     
     
-hasChildren : Int -> Graph -> Bool
+hasChildren : CotoId -> Graph -> Bool
 hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
     

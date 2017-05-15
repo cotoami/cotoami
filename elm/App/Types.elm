@@ -58,11 +58,14 @@ toAmishi session =
         session.displayName
 
 
+type alias CotoId = Int
+
+
 type alias CotonomaKey = String
 
 
 type alias Coto =
-    { id : Int
+    { id : CotoId
     , content : String
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
@@ -74,7 +77,7 @@ type alias Cotonoma =
     { id : Int
     , key : CotonomaKey
     , name : String
-    , cotoId : Int
+    , cotoId : CotoId
     , owner : Maybe Amishi
     }
 
@@ -103,7 +106,7 @@ isPostedInCotonoma maybeCotonoma coto =
 type alias CotoSelection = List Int
 
 
-updateCotoSelection : Int -> CotoSelection -> CotoSelection
+updateCotoSelection : CotoId -> CotoSelection -> CotoSelection
 updateCotoSelection cotoId selection =
     if selection |> List.member cotoId  then
         List.filter (\id -> cotoId /= id) selection
