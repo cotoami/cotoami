@@ -22162,7 +22162,7 @@ var _user$project$App_Graph$initTraversal = function (cotoId) {
 		}
 	};
 };
-var _user$project$App_Graph$getSecondConnections = function (graph) {
+var _user$project$App_Graph$getTraversalStarts = function (graph) {
 	return A2(
 		_elm_lang$core$List$filterMap,
 		function (conn) {
@@ -25964,7 +25964,7 @@ var _user$project$Components_Connections_View$view = F3(
 						};
 					},
 					_elm_lang$core$List$reverse(
-						_user$project$App_Graph$getSecondConnections(graph)))
+						_user$project$App_Graph$getTraversalStarts(graph)))
 			});
 	});
 

@@ -76,8 +76,8 @@ addRootConnection coto graph =
         }
 
 
-getSecondConnections : Graph -> List ( Coto, List Connection )
-getSecondConnections graph =
+getTraversalStarts : Graph -> List ( Coto, List Connection )
+getTraversalStarts graph =
     List.filterMap 
         (\conn ->
             case Dict.get conn.end graph.cotos of

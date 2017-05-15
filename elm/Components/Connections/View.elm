@@ -39,7 +39,7 @@ view selection maybeCotonoma graph =
                               [ traversalCoto connections coto selection maybeCotonoma graph ]
                           )  
                   ) 
-                  (graph |> getSecondConnections |> List.reverse)
+                  (graph |> getTraversalStarts |> List.reverse)
         )
 
 
