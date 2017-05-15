@@ -1,11 +1,12 @@
 module Components.Connections.Messages exposing (..)
 
 import App.Types exposing (CotoId, CotonomaKey)
+import App.Graph exposing (Traverse)
 
 
 type Msg
     = NoOp
     | CotoClick CotoId
     | CotonomaClick CotonomaKey
-    | Traverse ( Int, CotoId )
+    | TraverseClick Traverse
     | OpenTraversal CotoId

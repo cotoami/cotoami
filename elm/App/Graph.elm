@@ -140,6 +140,13 @@ type alias Traversal =
     }
 
 
+type alias Traverse =
+    { traversal : Traversal
+    , startIndex : Int
+    , endCotoId : CotoId
+    }                
+
+
 initTraversal : CotoId -> Maybe CotoId -> Traversal
 initTraversal start maybeNext =
     { start = start

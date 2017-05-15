@@ -16,7 +16,7 @@ update msg model =
         CotonomaClick key ->
             model ! []
             
-        Traverse ( index, cotoId ) ->
+        TraverseClick traverse ->
             model ! []
         
         OpenTraversal cotoId ->

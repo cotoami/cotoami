@@ -21900,11 +21900,189 @@ var _user$project$Components_CotonomaModal_Messages$NameInput = function (a) {
 var _user$project$Components_CotonomaModal_Messages$Close = {ctor: 'Close'};
 var _user$project$Components_CotonomaModal_Messages$NoOp = {ctor: 'NoOp'};
 
+var _user$project$App_Graph$initTraversal = F2(
+	function (start, maybeNext) {
+		return {
+			start: start,
+			steps: function () {
+				var _p0 = maybeNext;
+				if (_p0.ctor === 'Nothing') {
+					return {ctor: '[]'};
+				} else {
+					return {
+						ctor: '::',
+						_0: _p0._0,
+						_1: {ctor: '[]'}
+					};
+				}
+			}()
+		};
+	});
+var _user$project$App_Graph$getTraversalStarts = function (graph) {
+	return A2(
+		_elm_lang$core$List$filterMap,
+		function (conn) {
+			var _p1 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
+			if (_p1.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p3 = _p1._0;
+				var _p2 = A2(_elm_lang$core$Dict$get, _p3.id, graph.connections);
+				if (_p2.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{ctor: '_Tuple2', _0: _p3, _1: _p2._0});
+				}
+			}
+		},
+		graph.rootConnections);
+};
+var _user$project$App_Graph$hasChildren = F2(
+	function (cotoId, graph) {
+		return A2(_elm_lang$core$Dict$member, cotoId, graph.connections);
+	});
+var _user$project$App_Graph$connected = F2(
+	function (cotoId, graph) {
+		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
+	});
+var _user$project$App_Graph$pinned = F2(
+	function (cotoId, graph) {
+		return A2(
+			_elm_lang$core$List$any,
+			function (conn) {
+				return _elm_lang$core$Native_Utils.eq(conn.end, cotoId);
+			},
+			graph.rootConnections);
+	});
+var _user$project$App_Graph$initGraph = {
+	cotos: _elm_lang$core$Dict$empty,
+	rootConnections: {ctor: '[]'},
+	connections: _elm_lang$core$Dict$empty
+};
+var _user$project$App_Graph$Connection = F2(
+	function (a, b) {
+		return {key: a, end: b};
+	});
+var _user$project$App_Graph$initConnection = F2(
+	function (maybeStart, end) {
+		var endLabel = _elm_lang$core$Basics$toString(end);
+		var startLabel = function () {
+			var _p4 = maybeStart;
+			if (_p4.ctor === 'Nothing') {
+				return 'root';
+			} else {
+				return _elm_lang$core$Basics$toString(_p4._0);
+			}
+		}();
+		return A2(
+			_user$project$App_Graph$Connection,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'connection-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					startLabel,
+					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
+			end);
+	});
+var _user$project$App_Graph$addRootConnection = F2(
+	function (coto, graph) {
+		return A2(_user$project$App_Graph$pinned, coto.id, graph) ? graph : _elm_lang$core$Native_Utils.update(
+			graph,
+			{
+				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, graph.cotos),
+				rootConnections: {
+					ctor: '::',
+					_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, coto.id),
+					_1: graph.rootConnections
+				}
+			});
+	});
+var _user$project$App_Graph$addRootConnections = F2(
+	function (cotos, model) {
+		return A3(
+			_elm_lang$core$List$foldr,
+			F2(
+				function (coto, model) {
+					return A2(_user$project$App_Graph$addRootConnection, coto, model);
+				}),
+			model,
+			cotos);
+	});
+var _user$project$App_Graph$addConnection = F3(
+	function (start, end, graph) {
+		var connections = A3(
+			_elm_lang$core$Dict$update,
+			start.id,
+			function (maybeConns) {
+				var _p5 = maybeConns;
+				if (_p5.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(
+								_user$project$App_Graph$initConnection,
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
+							_1: {ctor: '[]'}
+						});
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(
+								_user$project$App_Graph$initConnection,
+								_elm_lang$core$Maybe$Just(start.id),
+								end.id),
+							_1: _p5._0
+						});
+				}
+			},
+			graph.connections);
+		var rootConnections = A2(_user$project$App_Graph$connected, start.id, graph) ? graph.rootConnections : {
+			ctor: '::',
+			_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, start.id),
+			_1: graph.rootConnections
+		};
+		var cotos = A3(
+			_elm_lang$core$Dict$insert,
+			end.id,
+			end,
+			A3(_elm_lang$core$Dict$insert, start.id, start, graph.cotos));
+		return _elm_lang$core$Native_Utils.update(
+			graph,
+			{cotos: cotos, rootConnections: rootConnections, connections: connections});
+	});
+var _user$project$App_Graph$addConnections = F3(
+	function (startCoto, endCotos, graph) {
+		return A3(
+			_elm_lang$core$List$foldr,
+			F2(
+				function (endCoto, graph) {
+					return A3(_user$project$App_Graph$addConnection, startCoto, endCoto, graph);
+				}),
+			graph,
+			endCotos);
+	});
+var _user$project$App_Graph$Graph = F3(
+	function (a, b, c) {
+		return {cotos: a, rootConnections: b, connections: c};
+	});
+var _user$project$App_Graph$Traversal = F2(
+	function (a, b) {
+		return {start: a, steps: b};
+	});
+var _user$project$App_Graph$Traverse = F3(
+	function (a, b, c) {
+		return {traversal: a, startIndex: b, endCotoId: c};
+	});
+
 var _user$project$Components_Connections_Messages$OpenTraversal = function (a) {
 	return {ctor: 'OpenTraversal', _0: a};
 };
-var _user$project$Components_Connections_Messages$Traverse = function (a) {
-	return {ctor: 'Traverse', _0: a};
+var _user$project$Components_Connections_Messages$TraverseClick = function (a) {
+	return {ctor: 'TraverseClick', _0: a};
 };
 var _user$project$Components_Connections_Messages$CotonomaClick = function (a) {
 	return {ctor: 'CotonomaClick', _0: a};
@@ -22160,180 +22338,6 @@ var _user$project$App_Commands$fetchSession = A2(
 	_elm_lang$http$Http$send,
 	_user$project$App_Messages$SessionFetched,
 	A2(_elm_lang$http$Http$get, '/api/session', _user$project$App_Types$decodeSession));
-
-var _user$project$App_Graph$initTraversal = F2(
-	function (start, maybeNext) {
-		return {
-			start: start,
-			steps: function () {
-				var _p0 = maybeNext;
-				if (_p0.ctor === 'Nothing') {
-					return {ctor: '[]'};
-				} else {
-					return {
-						ctor: '::',
-						_0: _p0._0,
-						_1: {ctor: '[]'}
-					};
-				}
-			}()
-		};
-	});
-var _user$project$App_Graph$getTraversalStarts = function (graph) {
-	return A2(
-		_elm_lang$core$List$filterMap,
-		function (conn) {
-			var _p1 = A2(_elm_lang$core$Dict$get, conn.end, graph.cotos);
-			if (_p1.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				var _p3 = _p1._0;
-				var _p2 = A2(_elm_lang$core$Dict$get, _p3.id, graph.connections);
-				if (_p2.ctor === 'Nothing') {
-					return _elm_lang$core$Maybe$Nothing;
-				} else {
-					return _elm_lang$core$Maybe$Just(
-						{ctor: '_Tuple2', _0: _p3, _1: _p2._0});
-				}
-			}
-		},
-		graph.rootConnections);
-};
-var _user$project$App_Graph$hasChildren = F2(
-	function (cotoId, graph) {
-		return A2(_elm_lang$core$Dict$member, cotoId, graph.connections);
-	});
-var _user$project$App_Graph$connected = F2(
-	function (cotoId, graph) {
-		return A2(_elm_lang$core$Dict$member, cotoId, graph.cotos);
-	});
-var _user$project$App_Graph$pinned = F2(
-	function (cotoId, graph) {
-		return A2(
-			_elm_lang$core$List$any,
-			function (conn) {
-				return _elm_lang$core$Native_Utils.eq(conn.end, cotoId);
-			},
-			graph.rootConnections);
-	});
-var _user$project$App_Graph$initGraph = {
-	cotos: _elm_lang$core$Dict$empty,
-	rootConnections: {ctor: '[]'},
-	connections: _elm_lang$core$Dict$empty
-};
-var _user$project$App_Graph$Connection = F2(
-	function (a, b) {
-		return {key: a, end: b};
-	});
-var _user$project$App_Graph$initConnection = F2(
-	function (maybeStart, end) {
-		var endLabel = _elm_lang$core$Basics$toString(end);
-		var startLabel = function () {
-			var _p4 = maybeStart;
-			if (_p4.ctor === 'Nothing') {
-				return 'root';
-			} else {
-				return _elm_lang$core$Basics$toString(_p4._0);
-			}
-		}();
-		return A2(
-			_user$project$App_Graph$Connection,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'connection-',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					startLabel,
-					A2(_elm_lang$core$Basics_ops['++'], '-', endLabel))),
-			end);
-	});
-var _user$project$App_Graph$addRootConnection = F2(
-	function (coto, graph) {
-		return A2(_user$project$App_Graph$pinned, coto.id, graph) ? graph : _elm_lang$core$Native_Utils.update(
-			graph,
-			{
-				cotos: A3(_elm_lang$core$Dict$insert, coto.id, coto, graph.cotos),
-				rootConnections: {
-					ctor: '::',
-					_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, coto.id),
-					_1: graph.rootConnections
-				}
-			});
-	});
-var _user$project$App_Graph$addRootConnections = F2(
-	function (cotos, model) {
-		return A3(
-			_elm_lang$core$List$foldr,
-			F2(
-				function (coto, model) {
-					return A2(_user$project$App_Graph$addRootConnection, coto, model);
-				}),
-			model,
-			cotos);
-	});
-var _user$project$App_Graph$addConnection = F3(
-	function (start, end, graph) {
-		var connections = A3(
-			_elm_lang$core$Dict$update,
-			start.id,
-			function (maybeConns) {
-				var _p5 = maybeConns;
-				if (_p5.ctor === 'Nothing') {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(
-								_user$project$App_Graph$initConnection,
-								_elm_lang$core$Maybe$Just(start.id),
-								end.id),
-							_1: {ctor: '[]'}
-						});
-				} else {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(
-								_user$project$App_Graph$initConnection,
-								_elm_lang$core$Maybe$Just(start.id),
-								end.id),
-							_1: _p5._0
-						});
-				}
-			},
-			graph.connections);
-		var rootConnections = A2(_user$project$App_Graph$connected, start.id, graph) ? graph.rootConnections : {
-			ctor: '::',
-			_0: A2(_user$project$App_Graph$initConnection, _elm_lang$core$Maybe$Nothing, start.id),
-			_1: graph.rootConnections
-		};
-		var cotos = A3(
-			_elm_lang$core$Dict$insert,
-			end.id,
-			end,
-			A3(_elm_lang$core$Dict$insert, start.id, start, graph.cotos));
-		return _elm_lang$core$Native_Utils.update(
-			graph,
-			{cotos: cotos, rootConnections: rootConnections, connections: connections});
-	});
-var _user$project$App_Graph$addConnections = F3(
-	function (startCoto, endCotos, graph) {
-		return A3(
-			_elm_lang$core$List$foldr,
-			F2(
-				function (endCoto, graph) {
-					return A3(_user$project$App_Graph$addConnection, startCoto, endCoto, graph);
-				}),
-			graph,
-			endCotos);
-	});
-var _user$project$App_Graph$Graph = F3(
-	function (a, b, c) {
-		return {cotos: a, rootConnections: b, connections: c};
-	});
-var _user$project$App_Graph$Traversal = F2(
-	function (a, b) {
-		return {start: a, steps: b};
-	});
 
 var _user$project$Components_ConfirmModal_Model$initModel = {open: false, message: '', msgOnConfirm: _user$project$App_Messages$NoOp};
 var _user$project$Components_ConfirmModal_Model$Model = F3(
@@ -23265,7 +23269,7 @@ var _user$project$Components_Connections_Update$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					{ctor: '[]'});
-			case 'Traverse':
+			case 'TraverseClick':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -24666,8 +24670,8 @@ var _user$project$Components_ConfirmModal_View$view = function (model) {
 			_user$project$Components_ConfirmModal_View$modalConfig(model)) : _elm_lang$core$Maybe$Nothing);
 };
 
-var _user$project$Components_Coto$traverseButtonDiv = F4(
-	function (buttonClick, index, cotoId, graph) {
+var _user$project$Components_Coto$traverseButtonDiv = F5(
+	function (buttonClick, index, cotoId, traversal, graph) {
 		return A2(_user$project$App_Graph$hasChildren, cotoId, graph) ? A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24683,7 +24687,7 @@ var _user$project$Components_Coto$traverseButtonDiv = F4(
 						ctor: '::',
 						_0: _user$project$Utils$onClickWithoutPropagation(
 							buttonClick(
-								{ctor: '_Tuple2', _0: index, _1: cotoId})),
+								A3(_user$project$App_Graph$Traverse, traversal, index, cotoId))),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -25865,7 +25869,7 @@ var _user$project$Components_Connections_View$cotoDivAttrs = F2(
 		};
 	});
 var _user$project$Components_Connections_View$cotoDiv = F5(
-	function (maybeTraversalIndex, selection, maybeCotonoma, graph, coto) {
+	function (maybeTraversalStep, selection, maybeCotonoma, graph, coto) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
@@ -25878,7 +25882,7 @@ var _user$project$Components_Connections_View$cotoDiv = F5(
 					_1: {
 						ctor: '::',
 						_0: function () {
-							var _p0 = maybeTraversalIndex;
+							var _p0 = maybeTraversalStep;
 							if (_p0.ctor === 'Nothing') {
 								return A3(
 									_user$project$Components_Coto$openTraversalButtonDiv,
@@ -25886,7 +25890,7 @@ var _user$project$Components_Connections_View$cotoDiv = F5(
 									_elm_lang$core$Maybe$Just(coto.id),
 									graph);
 							} else {
-								return A4(_user$project$Components_Coto$traverseButtonDiv, _user$project$Components_Connections_Messages$Traverse, _p0._0, coto.id, graph);
+								return A5(_user$project$Components_Coto$traverseButtonDiv, _user$project$Components_Connections_Messages$TraverseClick, _p0._0._1, coto.id, _p0._0._0, graph);
 							}
 						}(),
 						_1: {ctor: '[]'}
@@ -25895,7 +25899,7 @@ var _user$project$Components_Connections_View$cotoDiv = F5(
 			});
 	});
 var _user$project$Components_Connections_View$connectionsDiv = F6(
-	function (maybeTraversalIndex, divClass, connections, selection, maybeCotonoma, graph) {
+	function (maybeTraversalStep, divClass, connections, selection, maybeCotonoma, graph) {
 		return A3(
 			_elm_lang$html$Html_Keyed$node,
 			'div',
@@ -25927,7 +25931,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 										_1: {ctor: '[]'}
 									});
 							} else {
-								return A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalIndex, selection, maybeCotonoma, graph, _p1._0);
+								return A5(_user$project$Components_Connections_View$cotoDiv, maybeTraversalStep, selection, maybeCotonoma, graph, _p1._0);
 							}
 						}()
 					};
@@ -25935,7 +25939,7 @@ var _user$project$Components_Connections_View$connectionsDiv = F6(
 				_elm_lang$core$List$reverse(connections)));
 	});
 var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
-	function (index, connections, coto, selection, maybeCotonoma, graph) {
+	function (traversalStep, connections, coto, selection, maybeCotonoma, graph) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_user$project$Components_Connections_View$cotoDivAttrs, selection, coto),
@@ -25959,7 +25963,7 @@ var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
 							ctor: '::',
 							_0: A6(
 								_user$project$Components_Connections_View$connectionsDiv,
-								_elm_lang$core$Maybe$Just(index),
+								_elm_lang$core$Maybe$Just(traversalStep),
 								'sub-cotos',
 								connections,
 								selection,
@@ -25972,7 +25976,7 @@ var _user$project$Components_Connections_View$traversalStepCotoDiv = F6(
 			});
 	});
 var _user$project$Components_Connections_View$traversalStepDiv = F5(
-	function (index, cotoId, selection, maybeCotonoma, graph) {
+	function (traversalStep, cotoId, selection, maybeCotonoma, graph) {
 		var _p2 = A2(_elm_lang$core$Dict$get, cotoId, graph.cotos);
 		if (_p2.ctor === 'Nothing') {
 			return _elm_lang$core$Maybe$Nothing;
@@ -25995,7 +25999,7 @@ var _user$project$Components_Connections_View$traversalStepDiv = F5(
 							ctor: '::',
 							_0: A6(
 								_user$project$Components_Connections_View$traversalStepCotoDiv,
-								index,
+								traversalStep,
 								function () {
 									var _p3 = A2(_elm_lang$core$Dict$get, cotoId, graph.connections);
 									if (_p3.ctor === 'Nothing') {
@@ -26024,7 +26028,14 @@ var _user$project$Components_Connections_View$traversalDiv = F6(
 			},
 			{
 				ctor: '::',
-				_0: A6(_user$project$Components_Connections_View$traversalStepCotoDiv, -1, connections, coto, selection, maybeCotonoma, graph),
+				_0: A6(
+					_user$project$Components_Connections_View$traversalStepCotoDiv,
+					{ctor: '_Tuple2', _0: traversal, _1: -1},
+					connections,
+					coto,
+					selection,
+					maybeCotonoma,
+					graph),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -26041,7 +26052,13 @@ var _user$project$Components_Connections_View$traversalDiv = F6(
 								_elm_lang$core$List$indexedMap,
 								F2(
 									function (index, step) {
-										return A5(_user$project$Components_Connections_View$traversalStepDiv, index, step, selection, maybeCotonoma, graph);
+										return A5(
+											_user$project$Components_Connections_View$traversalStepDiv,
+											{ctor: '_Tuple2', _0: traversal, _1: index},
+											step,
+											selection,
+											maybeCotonoma,
+											graph);
 									}),
 								_elm_lang$core$List$reverse(traversal.steps)))),
 					_1: {ctor: '[]'}
@@ -26887,7 +26904,7 @@ var _user$project$Main$Flags = function (a) {
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"OpenTraversal":["App.Types.CotoId"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"Pin":[],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"CotoClick":["App.Types.CotoId"],"OpenTraversal":["App.Types.CotoId"],"Traverse":["( Int, App.Types.CotoId )"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : App.Types.CotoId , owner : Maybe.Maybe App.Types.Amishi }"},"App.Types.CotoId":{"args":[],"type":"Int"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : App.Types.CotoId , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Components.SigninModal.Msg":{"args":[],"tags":{"RequestClick":[],"Close":[],"EmailInput":["String"],"SaveAnonymousCotosCheck":["Bool"],"RequestDone":["Result.Result Http.Error String"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Components.Timeline.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"EditorFocus":[],"ImageLoaded":[],"Post":[],"PostsFetched":["Result.Result Http.Error (List Components.Timeline.Model.Post)"],"OpenTraversal":["App.Types.CotoId"],"PostOpen":["Components.Timeline.Model.Post"],"EditorKeyDown":["Keyboard.KeyCode"],"EditorInput":["String"],"PostPushed":["Json.Encode.Value"],"CotonomaPushed":["Components.Timeline.Model.Post"],"EditorBlur":[],"PostClick":["Int"],"NoOp":[],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"]}},"App.Messages.Msg":{"args":[],"tags":{"OpenProfileModal":[],"CotonomaClick":["App.Types.CotonomaKey"],"RecentCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"OnLocationChange":["Navigation.Location"],"TimelineMsg":["Components.Timeline.Messages.Msg"],"CotoModalMsg":["Components.CotoModal.Msg"],"NavigationToggle":[],"CloseConnectModal":[],"Connect":["App.Types.Coto","List App.Types.Coto"],"SigninModalMsg":["Components.SigninModal.Msg"],"ClearSelection":[],"CotonomaPresenceState":["Json.Encode.Value"],"ConnectionsMsg":["Components.Connections.Messages.Msg"],"CotonomaFetched":["Result.Result Http.Error ( App.Types.Cotonoma , List App.Types.Amishi , List Components.Timeline.Model.Post )"],"SetConnectMode":["Bool"],"Pin":[],"KeyUp":["Keyboard.KeyCode"],"CotoDeleted":["Result.Result Http.Error String"],"StockToggle":[],"OpenCotonomaModal":[],"KeyDown":["Keyboard.KeyCode"],"SubCotonomasFetched":["Result.Result Http.Error (List App.Types.Cotonoma)"],"ConfirmModalMsg":["Components.ConfirmModal.Messages.Msg"],"CotonomaModalMsg":["Components.CotonomaModal.Messages.Msg"],"SessionFetched":["Result.Result Http.Error App.Types.Session"],"OpenSigninModal":[],"DeleteCoto":["App.Types.Coto"],"CotonomaPresenceDiff":["Json.Encode.Value"],"NoOp":[],"ProfileModalMsg":["Components.ProfileModal.Msg"],"HomeClick":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Components.Connections.Messages.Msg":{"args":[],"tags":{"CotonomaClick":["App.Types.CotonomaKey"],"TraverseClick":["App.Graph.Traverse"],"CotoClick":["App.Types.CotoId"],"OpenTraversal":["App.Types.CotoId"],"NoOp":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Components.CotoModal.Msg":{"args":[],"tags":{"Close":[],"ConfirmDelete":["String"],"Delete":["App.Types.Coto"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Components.CotonomaModal.Messages.Msg":{"args":[],"tags":{"AmishiFetched":["Result.Result Http.Error App.Types.Amishi"],"MemberEmailInput":["String"],"Post":[],"Close":[],"RemoveMember":["String"],"NoOp":[],"NameInput":["String"],"Posted":["Result.Result Http.Error Components.Timeline.Model.Post"],"AddMember":[]}},"Components.ConfirmModal.Messages.Msg":{"args":[],"tags":{"Confirm":[],"Close":[]}},"Components.ProfileModal.Msg":{"args":[],"tags":{"Close":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"App.Types.Session":{"args":[],"type":"{ token : String , websocketUrl : String , id : Int , email : String , avatarUrl : String , displayName : String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"App.Graph.Traverse":{"args":[],"type":"{ traversal : App.Graph.Traversal , startIndex : Int , endCotoId : App.Types.CotoId }"},"App.Graph.Traversal":{"args":[],"type":"{ start : App.Types.CotoId, steps : List App.Types.CotoId }"},"App.Types.Amishi":{"args":[],"type":"{ id : Int , email : String , avatarUrl : String , displayName : String }"},"App.Types.Cotonoma":{"args":[],"type":"{ id : Int , key : App.Types.CotonomaKey , name : String , cotoId : App.Types.CotoId , owner : Maybe.Maybe App.Types.Amishi }"},"App.Types.CotoId":{"args":[],"type":"Int"},"Components.Timeline.Model.Post":{"args":[],"type":"{ postId : Maybe.Maybe Int , cotoId : Maybe.Maybe Int , content : String , amishi : Maybe.Maybe App.Types.Amishi , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : String , beingDeleted : Bool }"},"Keyboard.KeyCode":{"args":[],"type":"Int"},"App.Types.CotonomaKey":{"args":[],"type":"String"},"App.Types.Coto":{"args":[],"type":"{ id : App.Types.CotoId , content : String , postedIn : Maybe.Maybe App.Types.Cotonoma , asCotonoma : Bool , cotonomaKey : App.Types.CotonomaKey }"},"Navigation.Location":{"args":[],"type":"{ href : String , host : String , hostname : String , protocol : String , origin : String , port_ : String , pathname : String , search : String , hash : String , username : String , password : String }"}},"message":"App.Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

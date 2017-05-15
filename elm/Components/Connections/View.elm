@@ -69,34 +69,34 @@ rootConnections selection maybeCotonoma graph =
 traversalDiv : Traversal -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
 traversalDiv traversal connections coto selection maybeCotonoma graph =
     div [ class "traversal" ]
-        [ traversalStepCotoDiv -1 connections coto selection maybeCotonoma graph
+        [ traversalStepCotoDiv ( traversal, -1 ) connections coto selection maybeCotonoma graph
         , div [ class "steps" ]
             (List.reverse traversal.steps
-            |> List.indexedMap (\index step -> traversalStepDiv index step selection maybeCotonoma graph) 
+            |> List.indexedMap (\index step -> traversalStepDiv ( traversal, index ) step selection maybeCotonoma graph) 
             |> List.filterMap identity
             )
         ]
   
 
-traversalStepCotoDiv : Int -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-traversalStepCotoDiv index connections coto selection maybeCotonoma graph =
+traversalStepCotoDiv : ( Traversal, Int ) -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+traversalStepCotoDiv traversalStep connections coto selection maybeCotonoma graph =
     div (cotoDivAttrs selection coto)
         [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
         , markdown coto.content
         , div [ class "main-sub-border" ] []
-        , connectionsDiv (Just index) "sub-cotos" connections selection maybeCotonoma graph
+        , connectionsDiv (Just traversalStep) "sub-cotos" connections selection maybeCotonoma graph
         ]
         
         
-traversalStepDiv : Int -> CotoId -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
-traversalStepDiv index cotoId selection maybeCotonoma graph =
+traversalStepDiv : ( Traversal, Int ) -> CotoId -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
+traversalStepDiv traversalStep cotoId selection maybeCotonoma graph =
     case Dict.get cotoId graph.cotos of
         Nothing -> Nothing
         Just coto -> Just
             (div [ class "step" ]
                 [ div [] []
                 , traversalStepCotoDiv 
-                    index
+                    traversalStep
                     (case Dict.get cotoId graph.connections of
                         Nothing -> []
                         Just connections -> connections
@@ -109,8 +109,8 @@ traversalStepDiv index cotoId selection maybeCotonoma graph =
             )
             
 
-connectionsDiv : Maybe Int -> String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-connectionsDiv maybeTraversalIndex divClass connections selection maybeCotonoma graph =
+connectionsDiv : Maybe ( Traversal, Int ) -> String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
@@ -124,7 +124,7 @@ connectionsDiv maybeTraversalIndex divClass connections selection maybeCotonoma 
                         Nothing -> 
                             div [ class "coto missing" ] [ text "Missing" ]
                         Just coto -> 
-                            cotoDiv maybeTraversalIndex selection maybeCotonoma graph coto
+                            cotoDiv maybeTraversalStep selection maybeCotonoma graph coto
                     )
             ) 
             (List.reverse connections)
@@ -142,16 +142,16 @@ cotoDivAttrs selection coto =
     ] 
     
   
-cotoDiv : Maybe Int -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv maybeTraversalIndex selection maybeCotonoma graph coto =
+cotoDiv : Maybe ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
     div (cotoDivAttrs selection coto) 
         [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
         , markdown coto.content
-        , case maybeTraversalIndex of
+        , case maybeTraversalStep of
             Nothing ->
                 Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
-            Just index -> 
-                Components.Coto.traverseButtonDiv Traverse index coto.id graph
+            Just ( traversal, index ) -> 
+                Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
         ]
     
 
