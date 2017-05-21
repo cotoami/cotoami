@@ -199,6 +199,10 @@ div.flow-stock-switch {
       max-height: none;
     }
   }
+  .stock-is-not-empty #navigation {
+    width: $navigation-width - 20px;
+    font-size: 90%;
+  }
   
   #flow {
     max-width: $flow-width-default;
