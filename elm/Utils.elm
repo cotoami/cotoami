@@ -1,6 +1,7 @@
 module Utils exposing 
     ( isBlank
     , validateEmail
+    , send
     , onClickWithoutPropagation
     , post
     , delete
@@ -8,6 +9,7 @@ module Utils exposing
 
 import String
 import Regex exposing (Regex, caseInsensitive, regex, contains)
+import Task
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
 import Json.Decode as Decode
@@ -29,6 +31,13 @@ emailRegex =
     "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
         |> regex
         |> caseInsensitive
+
+
+-- https://medium.com/elm-shorts/how-to-turn-a-msg-into-a-cmd-msg-in-elm-5dd095175d84
+send : msg -> Cmd msg
+send msg =
+    Task.succeed msg
+    |> Task.perform identity
     
 
 onClickWithoutPropagation : msg -> Attribute msg

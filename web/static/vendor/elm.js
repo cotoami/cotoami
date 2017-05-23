@@ -17102,6 +17102,12 @@ var _user$project$Utils$onClickWithoutPropagation = function (message) {
 			{stopPropagation: true}),
 		_elm_lang$core$Json_Decode$succeed(message));
 };
+var _user$project$Utils$send = function (msg) {
+	return A2(
+		_elm_lang$core$Task$perform,
+		_elm_lang$core$Basics$identity,
+		_elm_lang$core$Task$succeed(msg));
+};
 var _user$project$Utils$emailRegex = _elm_lang$core$Regex$caseInsensitive(
 	_elm_lang$core$Regex$regex('^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'));
 var _user$project$Utils$isBlank = function (string) {
@@ -22918,18 +22924,19 @@ var _user$project$Components_Timeline_Update$handlePushedPost = F3(
 				{
 					posts: {ctor: '::', _0: payload.body, _1: model.posts}
 				}),
-			{
+			payload.body.asCotonoma ? {
 				ctor: '::',
 				_0: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_Timeline_Messages$NoOp),
-				_1: payload.body.asCotonoma ? {
+				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$core$Task$perform,
-						_elm_lang$core$Basics$identity,
-						_elm_lang$core$Task$succeed(
-							_user$project$Components_Timeline_Messages$CotonomaPushed(payload.body))),
+					_0: _user$project$Utils$send(
+						_user$project$Components_Timeline_Messages$CotonomaPushed(payload.body)),
 					_1: {ctor: '[]'}
-				} : {ctor: '[]'}
+				}
+			} : {
+				ctor: '::',
+				_0: _user$project$Components_Timeline_Commands$scrollToBottom(_user$project$Components_Timeline_Messages$NoOp),
+				_1: {ctor: '[]'}
 			}) : A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			model,

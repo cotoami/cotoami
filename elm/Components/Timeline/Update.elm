@@ -3,7 +3,7 @@ module Components.Timeline.Update exposing (..)
 import Json.Decode as Decode
 import Task
 import Keys exposing (ctrl, meta, enter)
-import Utils exposing (isBlank)
+import Utils exposing (isBlank, send)
 import App.Types exposing (Cotonoma)
 import App.Channels exposing (Payload, decodePayload)
 import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
@@ -78,16 +78,11 @@ update clientId maybeCotonoma ctrlDown msg model =
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
-        { model | posts = payload.body :: model.posts } 
-            ! (scrollToBottom NoOp ::
-                (if payload.body.asCotonoma then
-                    [ Task.succeed (CotonomaPushed payload.body) 
-                      |> Task.perform identity 
-                    ]
-                else
-                    []
-                )
-            )
+        { model | posts = payload.body :: model.posts } ! 
+            if payload.body.asCotonoma then
+                [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
+            else
+                [ scrollToBottom NoOp ]
     else
         model ! []
         
