@@ -14,5 +14,6 @@ update msg model =
             
         Confirm ->
             ( { model | open = False }
-            , Task.perform (\_ -> model.msgOnConfirm) (Task.succeed ())
+            , Task.succeed model.msgOnConfirm
+              |> Task.perform identity
             )

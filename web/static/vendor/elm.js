@@ -22775,11 +22775,8 @@ var _user$project$Components_ConfirmModal_Update$update = F2(
 					{open: false}),
 				_1: A2(
 					_elm_lang$core$Task$perform,
-					function (_p1) {
-						return model.msgOnConfirm;
-					},
-					_elm_lang$core$Task$succeed(
-						{ctor: '_Tuple0'}))
+					_elm_lang$core$Basics$identity,
+					_elm_lang$core$Task$succeed(model.msgOnConfirm))
 			};
 		}
 	});
