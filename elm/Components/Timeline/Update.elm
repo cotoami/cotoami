@@ -81,7 +81,9 @@ handlePushedPost clientId payload model =
         { model | posts = payload.body :: model.posts } 
             ! (scrollToBottom NoOp ::
                 (if payload.body.asCotonoma then
-                    [ Task.perform (\_ -> CotonomaPushed payload.body) (Task.succeed ()) ]
+                    [ Task.succeed (CotonomaPushed payload.body) 
+                      |> Task.perform identity 
+                    ]
                 else
                     []
                 )
