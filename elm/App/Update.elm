@@ -201,8 +201,8 @@ update msg model =
                             [ Cmd.map CotoModalMsg cmd
                             , deleteCoto coto.id
                             , Process.sleep (1 * Time.second)
-                                |> Task.andThen (\_ -> Task.succeed ())
-                                |> Task.perform (\_ -> DeleteCoto coto)
+                              |> Task.andThen (\_ -> Task.succeed ())
+                              |> Task.perform (\_ -> DeleteCoto coto)
                             ]
                         
                     _ ->
