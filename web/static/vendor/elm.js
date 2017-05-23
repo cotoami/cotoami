@@ -22779,10 +22779,7 @@ var _user$project$Components_ConfirmModal_Update$update = F2(
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
 					{open: false}),
-				_1: A2(
-					_elm_lang$core$Task$perform,
-					_elm_lang$core$Basics$identity,
-					_elm_lang$core$Task$succeed(model.msgOnConfirm))
+				_1: _user$project$Utils$send(model.msgOnConfirm)
 			};
 		}
 	});

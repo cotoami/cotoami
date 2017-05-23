@@ -1,6 +1,6 @@
 module Components.ConfirmModal.Update exposing (..)
 
-import Task
+import Utils exposing (send)
 import App.Messages
 import Components.ConfirmModal.Model exposing (..)
 import Components.ConfirmModal.Messages exposing (..)
@@ -13,7 +13,4 @@ update msg model =
             ( { model | open = False }, Cmd.none )
             
         Confirm ->
-            ( { model | open = False }
-            , Task.succeed model.msgOnConfirm
-              |> Task.perform identity
-            )
+            ( { model | open = False } , send model.msgOnConfirm )
