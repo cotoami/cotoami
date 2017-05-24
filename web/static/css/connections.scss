@@ -56,8 +56,8 @@ $column-width-in-wide-viewport: 400px !default;
     }
     
     div.coto {
-      margin-bottom: 10px;
-      border: 2px solid #eee;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
     }
   }
   
@@ -65,7 +65,7 @@ $column-width-in-wide-viewport: 400px !default;
     min-width: 90vw;
     width: 90vw;
     padding-top: 15px;
-    background-color: #f4f4f4;
+    background-color: #eee;
     
     div.coto {
       border: 2px solid rgba(0,0,0,0);
