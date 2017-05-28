@@ -9,10 +9,6 @@ $column-width-in-wide-viewport: 400px !default;
   height: 100%;
   
   div.coto {
-    background-color: #fff;
-    padding: 10px;
-    padding-top: 2px;
-    
     i.connected {
       display: none;
     }
@@ -56,8 +52,6 @@ $column-width-in-wide-viewport: 400px !default;
     
     div.coto {
       margin-bottom: 10px;
-      border: 1px solid #eee;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
   }
   

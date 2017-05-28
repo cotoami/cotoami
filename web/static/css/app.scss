@@ -71,6 +71,7 @@ $tool-button-color: #3572A5 !default;
   right: 0;
   padding: 10px 20px;
   border-bottom: solid 1px #eee;
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.15);
   background-color: #fff;
   animation-duration: 0.5s;
   
@@ -180,8 +181,9 @@ div.flow-stock-switch {
     position: relative;
     top: auto;
     width: $navigation-width;
-    margin-right: 10px;
     padding: 0;
+    padding-right: 10px;
+    box-shadow: 2px 0 1px rgba(0, 0, 0, 0.15);
     animation-name: none;
     
     &.notEmpty {
@@ -204,6 +206,7 @@ div.flow-stock-switch {
     max-width: $flow-width;
     // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;
+    padding: 0 5px;
   }
   .stock-is-not-empty #flow {
     flex: none;

@@ -16,6 +16,7 @@
   right: 0;
   
   @media (#{$wide-viewport}) {
+    padding-left: 5px;
     padding-right: 5px;
   }
   
@@ -26,11 +27,6 @@
   div.coto {
     position: relative;
     margin-bottom: 6px;
-    padding: 12px;
-    
-    border: 1px solid #eee;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    background-color: #fff;
     
     &:first-child {
       margin-top: 6px;
