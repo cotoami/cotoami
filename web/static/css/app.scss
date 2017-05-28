@@ -93,6 +93,21 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
+#flow {
+  display: flex;
+  // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
+  flex: 1;
+  padding: 0 10px;
+  background-color: #f4f4f4;
+}
+
+.cotonomas-loading {
+  #flow {
+    // workaround for chrome rendering bug
+    opacity: 0.99;
+  }
+}
+
 #stock {
   position: absolute;
   z-index: 3;
@@ -110,21 +125,6 @@ $tool-button-color: #3572A5 !default;
   &.neverToggled,
   &.empty {
     display: none;
-  }
-}
-
-#flow {
-  display: flex;
-  // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
-  flex: 1;
-  padding: 0 10px;
-  background-color: #f4f4f4;
-}
-
-.cotonomas-loading {
-  #flow {
-    // workaround for chrome rendering bug
-    opacity: 0.99;
   }
 }
 
