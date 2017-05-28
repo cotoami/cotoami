@@ -25885,6 +25885,80 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 			}());
 	});
 
+var _user$project$Components_Serendipity_View$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('serendipity'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('column-header'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('column-body'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('coto'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('not-yet-implemented'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Here will be a random message stream for serendipity...'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
 var _user$project$Components_Connections_View$markdown = function (content) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -26777,10 +26851,7 @@ var _user$project$App_View$view = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$map,
-											_user$project$App_Messages$TimelineMsg,
-											A5(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.graph, model.timeline)),
+										_0: _user$project$Components_Serendipity_View$view(model),
 										_1: {ctor: '[]'}
 									}),
 								_1: {

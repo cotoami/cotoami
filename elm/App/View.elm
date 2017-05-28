@@ -14,6 +14,7 @@ import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
+import Components.Serendipity.View
 import Components.Connections.View
 import Components.ConnectModal
 
@@ -54,14 +55,7 @@ view model =
                       )
                   ]
               , div [ id "main-serendipity" ]
-                  [ Html.map TimelineMsg 
-                      (Components.Timeline.View.view 
-                          model.cotoSelection
-                          model.cotonoma
-                          model.session
-                          model.graph
-                          model.timeline 
-                      )
+                  [ Components.Serendipity.View.view model
                   ]
               , div 
                   [ id "main-stock"

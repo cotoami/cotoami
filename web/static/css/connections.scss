@@ -3,6 +3,7 @@
 $column-width-in-wide-viewport: 400px !default;
 
 #pinned-cotos {
+  position: relative;
   height: 100%;
   
   div.coto {

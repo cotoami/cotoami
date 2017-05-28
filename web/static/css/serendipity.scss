@@ -1,0 +1,46 @@
+@import "variables.scss";
+
+#serendipity {
+  position: relative;
+  width: 100%;
+  
+  div.column-header {
+    text-align: center;
+    font-size: 18px;
+    color: gray;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    padding-top: 5px;
+    
+    i {
+      margin-right: 5px;
+    }
+  }
+  
+  div.column-body {
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    padding-bottom: 50px;
+    
+    @media (#{$wide-viewport}) {
+      padding: 5px;
+      padding-bottom: 50px;
+    }
+    
+    div.coto {
+      margin-bottom: 10px;
+      
+      span.not-yet-implemented {
+        color: silver;
+      }
+    }
+  }
+}
