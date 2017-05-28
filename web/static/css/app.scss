@@ -113,7 +113,7 @@ $tool-button-color: #3572A5 !default;
   background-color: #f4f4f4;
 }
 
-#stock {
+#main-stock {
   position: absolute;
   z-index: 3;
   top: 35px;
@@ -211,7 +211,7 @@ div.flow-stock-switch {
     padding: 0 5px;
   }
 
-  #stock {
+  #main-stock {
     position: relative;
     top: auto;
     flex: 1;

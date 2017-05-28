@@ -64,7 +64,7 @@ view model =
                       )
                   ]
               , div 
-                  [ id "stock"
+                  [ id "main-stock"
                   , classList 
                       [ ( "neverToggled", not model.stockToggled )
                       , ( "empty", isStockEmpty model )
