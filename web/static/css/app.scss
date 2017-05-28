@@ -63,7 +63,7 @@ $tool-button-color: #3572A5 !default;
   box-sizing: border-box;
 }
 
-#navigation {
+#main-nav {
   position: absolute;
   z-index: 8;
   top: 35px;
@@ -165,9 +165,6 @@ div.flow-stock-switch {
 }
 
 @media (#{$wide-viewport}) {
-  $navigation-width: 160px !default;
-  $flow-width: 550px !default;
-  
   #app-body {
     flex-direction: row;
     width: 100%;
@@ -176,10 +173,10 @@ div.flow-stock-switch {
     padding-right: 20px;
   }
   
-  #navigation {
+  #main-nav {
     position: relative;
     top: auto;
-    width: $navigation-width;
+    width: 160px;
     padding: 0;
     padding-right: 10px;
     box-shadow: 2px 0 1px rgba(0, 0, 0, 0.15);

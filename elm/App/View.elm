@@ -33,7 +33,7 @@ view model =
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
               [ div 
-                  [ id "navigation" 
+                  [ id "main-nav" 
                   , classList 
                       [ ( "neverToggled", not model.navigationToggled )
                       , ( "empty", isNavigationEmpty model )
