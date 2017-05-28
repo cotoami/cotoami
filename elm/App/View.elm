@@ -53,6 +53,16 @@ view model =
                           model.timeline 
                       )
                   ]
+              , div [ id "serendipity" ]
+                  [ Html.map TimelineMsg 
+                      (Components.Timeline.View.view 
+                          model.cotoSelection
+                          model.cotonoma
+                          model.session
+                          model.graph
+                          model.timeline 
+                      )
+                  ]
               , div 
                   [ id "stock"
                   , classList 

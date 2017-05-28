@@ -26179,103 +26179,54 @@ var _user$project$Components_Connections_View$rootConnections = F3(
 	});
 var _user$project$Components_Connections_View$view = F4(
 	function (traversals, selection, maybeCotonoma, graph) {
-		return A3(
-			_elm_lang$html$Html_Keyed$node,
-			'div',
+		return A2(
+			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('connections'),
+				_0: _elm_lang$html$Html_Attributes$id('pinned-cotos'),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'column-roots',
-					_1: A2(
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('column-header'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$id('column-roots'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('connections-column'),
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$html$Html_Attributes$class('column-body'),
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('column-header'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-												_1: {ctor: '[]'}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Components_Connections_View$rootConnections, selection, maybeCotonoma, graph),
-								_1: {ctor: '[]'}
-							}
-						})
-				},
-				_1: A2(
-					_elm_lang$core$List$map,
-					function (traversalStart) {
-						var connections = _elm_lang$core$Tuple$second(traversalStart);
-						var coto = _elm_lang$core$Tuple$first(traversalStart);
-						return {
-							ctor: '_Tuple2',
-							_0: A2(
-								_elm_lang$core$Basics_ops['++'],
-								'column-traversal-',
-								_elm_lang$core$Basics$toString(coto.id)),
-							_1: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('column-traversal connections-column'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A6(
-										_user$project$Components_Connections_View$traversalDiv,
-										function () {
-											var _p6 = A2(_elm_lang$core$Dict$get, coto.id, traversals);
-											if (_p6.ctor === 'Nothing') {
-												return A2(_user$project$App_Graph$initTraversal, coto.id, _elm_lang$core$Maybe$Nothing);
-											} else {
-												return _p6._0;
-											}
-										}(),
-										connections,
-										coto,
-										selection,
-										maybeCotonoma,
-										graph),
-									_1: {ctor: '[]'}
-								})
-						};
-					},
-					_elm_lang$core$List$reverse(
-						_user$project$App_Graph$getTraversalStarts(graph)))
+							_0: A3(_user$project$Components_Connections_View$rootConnections, selection, maybeCotonoma, graph),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 
@@ -26821,58 +26772,76 @@ var _user$project$App_View$view = function (model) {
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('stock'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.stockToggled},
-													_1: {
-														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'empty',
-															_1: _user$project$App_Model$isStockEmpty(model)
-														},
-														_1: {
-															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'notEmpty',
-																_1: !_user$project$App_Model$isStockEmpty(model)
-															},
-															_1: {
-																ctor: '::',
-																_0: {ctor: '_Tuple2', _0: 'animated', _1: model.stockToggled},
-																_1: {
-																	ctor: '::',
-																	_0: {ctor: '_Tuple2', _0: 'slideInRight', _1: model.stockToggled && model.stockOpen},
-																	_1: {
-																		ctor: '::',
-																		_0: {ctor: '_Tuple2', _0: 'slideOutRight', _1: model.stockToggled && (!model.stockOpen)},
-																		_1: {ctor: '[]'}
-																	}
-																}
-															}
-														}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Attributes$id('serendipity'),
+										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
 										_0: A2(
 											_elm_lang$html$Html$map,
-											_user$project$App_Messages$ConnectionsMsg,
-											A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.graph)),
+											_user$project$App_Messages$TimelineMsg,
+											A5(_user$project$Components_Timeline_View$view, model.cotoSelection, model.cotonoma, model.session, model.graph, model.timeline)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
 									ctor: '::',
-									_0: _user$project$App_View$flowStockSwitch(model),
-									_1: {ctor: '[]'}
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('stock'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.stockToggled},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'empty',
+																_1: _user$project$App_Model$isStockEmpty(model)
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'notEmpty',
+																	_1: !_user$project$App_Model$isStockEmpty(model)
+																},
+																_1: {
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'animated', _1: model.stockToggled},
+																	_1: {
+																		ctor: '::',
+																		_0: {ctor: '_Tuple2', _0: 'slideInRight', _1: model.stockToggled && model.stockOpen},
+																		_1: {
+																			ctor: '::',
+																			_0: {ctor: '_Tuple2', _0: 'slideOutRight', _1: model.stockToggled && (!model.stockOpen)},
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																}
+															}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$map,
+												_user$project$App_Messages$ConnectionsMsg,
+												A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.graph)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: _user$project$App_View$flowStockSwitch(model),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
