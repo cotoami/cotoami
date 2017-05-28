@@ -43,7 +43,7 @@ view model =
                       , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
                       ]
                   ] (Components.Navigation.view model)
-              , div [ id "flow" ]
+              , div [ id "main-timeline" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
                           model.cotoSelection

@@ -93,7 +93,7 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-#flow {
+#main-timeline {
   display: flex;
   // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
@@ -102,7 +102,7 @@ $tool-button-color: #3572A5 !default;
 }
 
 .cotonomas-loading {
-  #flow {
+  #main-timeline {
     // workaround for chrome rendering bug
     opacity: 0.99;
   }
@@ -198,7 +198,7 @@ div.flow-stock-switch {
     }
   }
   
-  #flow {
+  #main-timeline {
     flex: 1;
     // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;

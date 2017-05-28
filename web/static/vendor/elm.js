@@ -26755,7 +26755,7 @@ var _user$project$App_View$view = function (model) {
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('flow'),
+									_0: _elm_lang$html$Html_Attributes$id('main-timeline'),
 									_1: {ctor: '[]'}
 								},
 								{
