@@ -53,7 +53,7 @@ view model =
                           model.timeline 
                       )
                   ]
-              , div [ id "serendipity" ]
+              , div [ id "main-serendipity" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
                           model.cotoSelection
