@@ -40,7 +40,6 @@ $column-width-in-wide-viewport: 400px !default;
     @media (#{$wide-viewport}) {
       min-width: $column-width-in-wide-viewport;
       width: $column-width-in-wide-viewport;
-      font-size: 90%;
     }
     
     div.column-header {
@@ -57,7 +56,7 @@ $column-width-in-wide-viewport: 400px !default;
     
     div.coto {
       margin-bottom: 10px;
-      border: 2px solid #eee;
+      border: 1px solid #eee;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
   }

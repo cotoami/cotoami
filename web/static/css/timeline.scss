@@ -15,16 +15,22 @@
   left: 0;
   right: 0;
   
+  @media (#{$wide-viewport}) {
+    padding-right: 5px;
+  }
+  
   &.loading {
     background: url(../images/loading.gif) center no-repeat #fff;
   }
   
   div.coto {
     position: relative;
-    margin-bottom: 12px;
-    border: 2px solid transparent;
-    padding: 8px;
-    padding-top: 0;
+    margin-bottom: 6px;
+    padding: 12px;
+    
+    border: 1px solid #eee;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
     
     &:first-child {
       margin-top: 6px;
@@ -33,14 +39,6 @@
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
-    }
-    
-    div.border {
-      position: absolute;
-      top: -8px;
-      left: 0;
-      right: 0;
-      border-top: 1px dashed #ccc;
     }
     
     div.author {

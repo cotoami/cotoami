@@ -25194,28 +25194,17 @@ var _user$project$Components_Timeline_View$postDiv = F5(
 			},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('border'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
+				_0: A3(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, graph, post),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, graph, post),
+					_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
+						_0: _user$project$Components_Timeline_View$bodyDiv(post),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Components_Timeline_View$bodyDiv(post),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Components_Coto$openTraversalButtonDiv, _user$project$Components_Timeline_Messages$OpenTraversal, post.cotoId, graph),
-								_1: {ctor: '[]'}
-							}
+							_0: A3(_user$project$Components_Coto$openTraversalButtonDiv, _user$project$Components_Timeline_Messages$OpenTraversal, post.cotoId, graph),
+							_1: {ctor: '[]'}
 						}
 					}
 				}
