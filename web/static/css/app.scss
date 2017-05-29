@@ -54,6 +54,8 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
+$main-background-color: #f4f4f4 !default;
+
 #app-body {
   display: flex;
   flex-direction: column-reverse;
@@ -98,7 +100,7 @@ $tool-button-color: #3572A5 !default;
   // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
   padding: 0 10px;
-  background-color: #f4f4f4;
+  background-color: $main-background-color;
 }
 
 .cotonomas-loading {
@@ -109,8 +111,20 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-serendipity {
-  display: flex;
-  background-color: #f4f4f4;
+  position: absolute;
+  z-index: 3;
+  top: 35px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0;
+  background-color: $main-background-color;
+  animation-duration: 0.5s;
+  
+  &.neverToggled,
+  &.empty {
+    display: none;
+  }
 }
 
 #main-stock {
@@ -122,7 +136,7 @@ $tool-button-color: #3572A5 !default;
   bottom: 0;
   padding: 0;
   padding-left: 10px;
-  background-color: #f4f4f4;
+  background-color: $main-background-color;
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -203,9 +217,10 @@ div.flow-stock-switch {
   }
   
   #main-serendipity {
+    position: relative;
+    top: auto;
     flex: 1;
     height: 100%;
-    padding: 0 5px;
   }
 
   #main-stock {
