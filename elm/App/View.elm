@@ -54,7 +54,15 @@ view model =
                           model.timeline 
                       )
                   ]
-              , div [ id "main-serendipity" ]
+              , div 
+                  [ id "main-serendipity"
+                  , classList 
+                      [ ( "neverToggled", not model.serendipityToggled )
+                      , ( "animated", model.serendipityToggled )
+                      , ( "slideInLeft", model.serendipityToggled && model.serendipityOpen )
+                      , ( "slideOutLeft", model.serendipityToggled && not model.serendipityOpen )
+                      ]
+                  ]
                   [ Components.Serendipity.View.view model
                   ]
               , div 

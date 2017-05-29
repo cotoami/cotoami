@@ -121,8 +121,7 @@ $main-background-color: #f4f4f4 !default;
   background-color: $main-background-color;
   animation-duration: 0.5s;
   
-  &.neverToggled,
-  &.empty {
+  &.neverToggled {
     display: none;
   }
 }
@@ -217,10 +216,12 @@ div.flow-stock-switch {
   }
   
   #main-serendipity {
+    display: block !important;
     position: relative;
     top: auto;
     flex: 1;
     height: 100%;
+    animation-name: none;
   }
 
   #main-stock {

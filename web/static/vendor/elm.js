@@ -22559,7 +22559,9 @@ var _user$project$App_Model$initModel = F2(
 			stockToggled: false,
 			stockOpen: false,
 			graph: _user$project$App_Graph$initGraph,
-			traversals: _elm_lang$core$Dict$empty
+			traversals: _elm_lang$core$Dict$empty,
+			serendipityToggled: false,
+			serendipityOpen: false
 		};
 	});
 var _user$project$App_Model$Model = function (a) {
@@ -22588,7 +22590,11 @@ var _user$project$App_Model$Model = function (a) {
 																							return function (x) {
 																								return function (y) {
 																									return function (z) {
-																										return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, graph: y, traversals: z};
+																										return function (_1) {
+																											return function (_2) {
+																												return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, graph: y, traversals: z, serendipityToggled: _1, serendipityOpen: _2};
+																											};
+																										};
 																									};
 																								};
 																							};
@@ -26847,7 +26853,28 @@ var _user$project$App_View$view = function (model) {
 									{
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$id('main-serendipity'),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.serendipityToggled},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'animated', _1: model.serendipityToggled},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'slideInLeft', _1: model.serendipityToggled && model.serendipityOpen},
+															_1: {
+																ctor: '::',
+																_0: {ctor: '_Tuple2', _0: 'slideOutLeft', _1: model.serendipityToggled && (!model.serendipityOpen)},
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}),
+											_1: {ctor: '[]'}
+										}
 									},
 									{
 										ctor: '::',
