@@ -25905,13 +25905,13 @@ var _user$project$Components_Serendipity_View$view = function (model) {
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$i,
+						_elm_lang$html$Html$img,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+							_0: _elm_lang$html$Html_Attributes$class('serendipity'),
 							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+								_0: _elm_lang$html$Html_Attributes$src('/images/serendipity.svg'),
 								_1: {ctor: '[]'}
 							}
 						},

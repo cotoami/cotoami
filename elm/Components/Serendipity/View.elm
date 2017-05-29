@@ -9,7 +9,7 @@ view : Model -> Html Msg
 view model =
     div [ id "serendipity" ]
         [ div [ class "column-header" ] 
-            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+            [ img [ class "serendipity", src "/images/serendipity.svg" ] []
             ]
         , div [ class "column-body" ]
             [ div [ class "coto" ]
