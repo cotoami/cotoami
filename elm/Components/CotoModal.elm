@@ -58,7 +58,7 @@ modalConfig coto model =
     { closeMessage = Close
     , title = if coto.asCotonoma then "Cotonoma" else "Coto"
     , content = div []
-        [ div [ class "coto" ]
+        [ div [ class "coto-content" ]
             [ App.Markdown.markdown coto.content
             ]
         ]

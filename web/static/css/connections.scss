@@ -2,23 +2,36 @@
 
 $column-width-in-wide-viewport: 400px !default;
 
-#connections {
-  display: flex;
-  flex-direction: row;
-  box-sizing: border-box;
+#pinned-cotos {
+  position: relative;
   height: 100%;
   
   div.coto {
-    background-color: #fff;
-    padding: 10px;
-    padding-top: 2px;
-    
     i.connected {
       display: none;
     }
   }
   
-  .connections-column {
+  div.column-header {
+    text-align: center;
+    font-size: 18px;
+    color: gray;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    padding-top: 5px;
+    
+    i {
+      margin-right: 5px;
+    }
+  }
+  
+  div.column-body {
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -29,35 +42,9 @@ $column-width-in-wide-viewport: 400px !default;
       padding: 5px;
       padding-bottom: 50px;
     }
-  }
-  
-  #column-roots {
-    display: flex;
-    flex-direction: column;
-    min-width: 90vw;
-    width: 90vw;
-    
-    @media (#{$wide-viewport}) {
-      min-width: $column-width-in-wide-viewport;
-      width: $column-width-in-wide-viewport;
-      font-size: 90%;
-    }
-    
-    div.column-header {
-      text-align: center;
-      font-size: 18px;
-      color: gray;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-      
-      i {
-        margin-right: 5px;
-      }
-    }
     
     div.coto {
       margin-bottom: 10px;
-      border: 2px solid #eee;
     }
   }
   

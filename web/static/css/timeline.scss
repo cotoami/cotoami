@@ -15,32 +15,26 @@
   left: 0;
   right: 0;
   
+  @media (#{$wide-viewport}) {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
   &.loading {
     background: url(../images/loading.gif) center no-repeat #fff;
   }
   
   div.coto {
     position: relative;
-    margin-bottom: 12px;
-    border: 2px solid transparent;
-    padding: 8px;
-    padding-top: 0;
+    margin-bottom: 6px;
     
     &:first-child {
-      margin-top: 6px;
+      margin-top: 12px;
     }
     
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
-    }
-    
-    div.border {
-      position: absolute;
-      top: -8px;
-      left: 0;
-      right: 0;
-      border-top: 1px dashed #ccc;
     }
     
     div.author {

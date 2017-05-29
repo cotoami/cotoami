@@ -14,6 +14,7 @@ import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
+import Components.Serendipity.View
 import Components.Connections.View
 import Components.ConnectModal
 
@@ -33,7 +34,7 @@ view model =
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
               [ div 
-                  [ id "navigation" 
+                  [ id "main-nav" 
                   , classList 
                       [ ( "neverToggled", not model.navigationToggled )
                       , ( "empty", isNavigationEmpty model )
@@ -43,7 +44,7 @@ view model =
                       , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
                       ]
                   ] (Components.Navigation.view model)
-              , div [ id "flow" ]
+              , div [ id "main-timeline" ]
                   [ Html.map TimelineMsg 
                       (Components.Timeline.View.view 
                           model.cotoSelection
@@ -54,7 +55,18 @@ view model =
                       )
                   ]
               , div 
-                  [ id "stock"
+                  [ id "main-serendipity"
+                  , classList 
+                      [ ( "neverToggled", not model.serendipityToggled )
+                      , ( "animated", model.serendipityToggled )
+                      , ( "slideInLeft", model.serendipityToggled && model.serendipityOpen )
+                      , ( "slideOutLeft", model.serendipityToggled && not model.serendipityOpen )
+                      ]
+                  ]
+                  [ Components.Serendipity.View.view model
+                  ]
+              , div 
+                  [ id "main-stock"
                   , classList 
                       [ ( "neverToggled", not model.stockToggled )
                       , ( "empty", isStockEmpty model )

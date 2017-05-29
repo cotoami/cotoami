@@ -15,44 +15,13 @@ import Components.Coto
 
 view : Dict.Dict CotoId Traversal -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
 view traversals selection maybeCotonoma graph =
-    Html.Keyed.node
-        "div"
-        [ id "connections" ]
-        (
-          ( "column-roots"
-          , div [ id "column-roots", class "connections-column" ]
-              [ div [ class "column-header" ] 
-                  [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                  ]
-              , rootConnections selection maybeCotonoma graph 
-              ]
-          ) ::
-              List.map
-                  (\traversalStart ->
-                      let
-                          coto = Tuple.first traversalStart
-                          connections = Tuple.second traversalStart
-                      in
-                          ( "column-traversal-" ++ toString coto.id
-                          , div 
-                              [ class "column-traversal connections-column" ]
-                              [ traversalDiv
-                                  (case Dict.get coto.id traversals of
-                                      Nothing -> 
-                                          initTraversal coto.id Nothing
-                                      Just traversal ->
-                                          traversal
-                                  )
-                                  connections 
-                                  coto 
-                                  selection 
-                                  maybeCotonoma 
-                                  graph 
-                              ]
-                          )  
-                  ) 
-                  (graph |> getTraversalStarts |> List.reverse)
-        )
+    div [ id "pinned-cotos" ]
+        [ div [ class "column-header" ] 
+            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+            ]
+        , div [ class "column-body" ]
+            [ rootConnections selection maybeCotonoma graph ]
+        ]
 
 
 rootConnections : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg

@@ -21834,7 +21834,7 @@ var _user$project$Components_CotoModal$modalConfig = F2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('coto'),
+							_0: _elm_lang$html$Html_Attributes$class('coto-content'),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -22559,7 +22559,9 @@ var _user$project$App_Model$initModel = F2(
 			stockToggled: false,
 			stockOpen: false,
 			graph: _user$project$App_Graph$initGraph,
-			traversals: _elm_lang$core$Dict$empty
+			traversals: _elm_lang$core$Dict$empty,
+			serendipityToggled: false,
+			serendipityOpen: false
 		};
 	});
 var _user$project$App_Model$Model = function (a) {
@@ -22588,7 +22590,11 @@ var _user$project$App_Model$Model = function (a) {
 																							return function (x) {
 																								return function (y) {
 																									return function (z) {
-																										return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, graph: y, traversals: z};
+																										return function (_1) {
+																											return function (_2) {
+																												return {clientId: a, route: b, ctrlDown: c, navigationToggled: d, navigationOpen: e, session: f, cotonoma: g, members: h, memberPresences: i, confirmModal: j, signinModal: k, profileModal: l, cotoModal: m, recentCotonomas: n, cotonomasLoading: o, subCotonomas: p, timeline: q, cotoSelection: r, connectMode: s, connectingTo: t, connectModalOpen: u, cotonomaModal: v, stockToggled: w, stockOpen: x, graph: y, traversals: z, serendipityToggled: _1, serendipityOpen: _2};
+																											};
+																										};
 																									};
 																								};
 																							};
@@ -24779,7 +24785,7 @@ var _user$project$Components_Coto$openTraversalButtonDiv = F3(
 				{ctor: '[]'});
 		} else {
 			var _p1 = _p0._0;
-			return (A2(_user$project$App_Graph$hasChildren, _p1, graph) && false) ? A2(
+			return A2(_user$project$App_Graph$hasChildren, _p1, graph) ? A2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
@@ -25194,28 +25200,17 @@ var _user$project$Components_Timeline_View$postDiv = F5(
 			},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('border'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
+				_0: A3(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, graph, post),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$Components_Timeline_View$headerDiv, maybeCotonoma, graph, post),
+					_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Components_Timeline_View$authorDiv, maybeSession, post),
+						_0: _user$project$Components_Timeline_View$bodyDiv(post),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Components_Timeline_View$bodyDiv(post),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Components_Coto$openTraversalButtonDiv, _user$project$Components_Timeline_Messages$OpenTraversal, post.cotoId, graph),
-								_1: {ctor: '[]'}
-							}
+							_0: A3(_user$project$Components_Coto$openTraversalButtonDiv, _user$project$Components_Timeline_Messages$OpenTraversal, post.cotoId, graph),
+							_1: {ctor: '[]'}
 						}
 					}
 				}
@@ -25896,6 +25891,80 @@ var _user$project$Components_CotonomaModal_View$view = F2(
 			}());
 	});
 
+var _user$project$Components_Serendipity_View$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('serendipity'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('column-header'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('serendipity'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$src('/images/serendipity.svg'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('column-body'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('coto'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('not-yet-implemented'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Here will be a random message stream for serendipity...'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
 var _user$project$Components_Connections_View$markdown = function (content) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -26190,103 +26259,54 @@ var _user$project$Components_Connections_View$rootConnections = F3(
 	});
 var _user$project$Components_Connections_View$view = F4(
 	function (traversals, selection, maybeCotonoma, graph) {
-		return A3(
-			_elm_lang$html$Html_Keyed$node,
-			'div',
+		return A2(
+			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('connections'),
+				_0: _elm_lang$html$Html_Attributes$id('pinned-cotos'),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'column-roots',
-					_1: A2(
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('column-header'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$id('column-roots'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('connections-column'),
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$html$Html_Attributes$class('column-body'),
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('column-header'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('pinned fa fa-thumb-tack'),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-hidden', 'true'),
-												_1: {ctor: '[]'}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Components_Connections_View$rootConnections, selection, maybeCotonoma, graph),
-								_1: {ctor: '[]'}
-							}
-						})
-				},
-				_1: A2(
-					_elm_lang$core$List$map,
-					function (traversalStart) {
-						var connections = _elm_lang$core$Tuple$second(traversalStart);
-						var coto = _elm_lang$core$Tuple$first(traversalStart);
-						return {
-							ctor: '_Tuple2',
-							_0: A2(
-								_elm_lang$core$Basics_ops['++'],
-								'column-traversal-',
-								_elm_lang$core$Basics$toString(coto.id)),
-							_1: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('column-traversal connections-column'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A6(
-										_user$project$Components_Connections_View$traversalDiv,
-										function () {
-											var _p6 = A2(_elm_lang$core$Dict$get, coto.id, traversals);
-											if (_p6.ctor === 'Nothing') {
-												return A2(_user$project$App_Graph$initTraversal, coto.id, _elm_lang$core$Maybe$Nothing);
-											} else {
-												return _p6._0;
-											}
-										}(),
-										connections,
-										coto,
-										selection,
-										maybeCotonoma,
-										graph),
-									_1: {ctor: '[]'}
-								})
-						};
-					},
-					_elm_lang$core$List$reverse(
-						_user$project$App_Graph$getTraversalStarts(graph)))
+							_0: A3(_user$project$Components_Connections_View$rootConnections, selection, maybeCotonoma, graph),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 
@@ -26768,7 +26788,7 @@ var _user$project$App_View$view = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$id('navigation'),
+								_0: _elm_lang$html$Html_Attributes$id('main-nav'),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$classList(
@@ -26815,7 +26835,7 @@ var _user$project$App_View$view = function (model) {
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('flow'),
+									_0: _elm_lang$html$Html_Attributes$id('main-timeline'),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -26832,39 +26852,23 @@ var _user$project$App_View$view = function (model) {
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('stock'),
+										_0: _elm_lang$html$Html_Attributes$id('main-serendipity'),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$classList(
 												{
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.stockToggled},
+													_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.serendipityToggled},
 													_1: {
 														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'empty',
-															_1: _user$project$App_Model$isStockEmpty(model)
-														},
+														_0: {ctor: '_Tuple2', _0: 'animated', _1: model.serendipityToggled},
 														_1: {
 															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'notEmpty',
-																_1: !_user$project$App_Model$isStockEmpty(model)
-															},
+															_0: {ctor: '_Tuple2', _0: 'slideInLeft', _1: model.serendipityToggled && model.serendipityOpen},
 															_1: {
 																ctor: '::',
-																_0: {ctor: '_Tuple2', _0: 'animated', _1: model.stockToggled},
-																_1: {
-																	ctor: '::',
-																	_0: {ctor: '_Tuple2', _0: 'slideInRight', _1: model.stockToggled && model.stockOpen},
-																	_1: {
-																		ctor: '::',
-																		_0: {ctor: '_Tuple2', _0: 'slideOutRight', _1: model.stockToggled && (!model.stockOpen)},
-																		_1: {ctor: '[]'}
-																	}
-																}
+																_0: {ctor: '_Tuple2', _0: 'slideOutLeft', _1: model.serendipityToggled && (!model.serendipityOpen)},
+																_1: {ctor: '[]'}
 															}
 														}
 													}
@@ -26874,16 +26878,68 @@ var _user$project$App_View$view = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$map,
-											_user$project$App_Messages$ConnectionsMsg,
-											A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.graph)),
+										_0: _user$project$Components_Serendipity_View$view(model),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
 									ctor: '::',
-									_0: _user$project$App_View$flowStockSwitch(model),
-									_1: {ctor: '[]'}
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('main-stock'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'neverToggled', _1: !model.stockToggled},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'empty',
+																_1: _user$project$App_Model$isStockEmpty(model)
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'notEmpty',
+																	_1: !_user$project$App_Model$isStockEmpty(model)
+																},
+																_1: {
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'animated', _1: model.stockToggled},
+																	_1: {
+																		ctor: '::',
+																		_0: {ctor: '_Tuple2', _0: 'slideInRight', _1: model.stockToggled && model.stockOpen},
+																		_1: {
+																			ctor: '::',
+																			_0: {ctor: '_Tuple2', _0: 'slideOutRight', _1: model.stockToggled && (!model.stockOpen)},
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																}
+															}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$map,
+												_user$project$App_Messages$ConnectionsMsg,
+												A4(_user$project$Components_Connections_View$view, model.traversals, model.cotoSelection, model.cotonoma, model.graph)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: _user$project$App_View$flowStockSwitch(model),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
