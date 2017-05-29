@@ -21834,7 +21834,7 @@ var _user$project$Components_CotoModal$modalConfig = F2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('coto'),
+							_0: _elm_lang$html$Html_Attributes$class('coto-content'),
 							_1: {ctor: '[]'}
 						},
 						{
