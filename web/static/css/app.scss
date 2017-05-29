@@ -169,8 +169,6 @@ div.flow-stock-switch {
     flex-direction: row;
     width: 100%;
     margin: 0 auto;
-    padding-left: 20px;
-    padding-right: 20px;
   }
   
   #main-nav {
@@ -178,7 +176,6 @@ div.flow-stock-switch {
     top: auto;
     width: 160px;
     padding: 0;
-    padding-right: 10px;
     box-shadow: 2px 0 1px rgba(0, 0, 0, 0.15);
     animation-name: none;
     
@@ -193,7 +190,7 @@ div.flow-stock-switch {
       left: 0;
       right: 0;
       padding-top: 10px;
-      padding-left: 0;
+      padding-left: 10px;
       max-height: none;
     }
   }
