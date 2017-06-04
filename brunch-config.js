@@ -60,6 +60,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     elmBrunch: {
+      executablePath: process.env.NPM_BIN,
       elmFolder: "elm",
       mainModules: ["Main.elm"],
       outputFolder: "../web/static/vendor",
