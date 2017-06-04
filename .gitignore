@@ -26,3 +26,6 @@ erl_crash.dump
 # Text editor artifacts
 *.swp
 *~
+
+# ctags index file
+tags
