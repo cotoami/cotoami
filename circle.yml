@@ -32,17 +32,16 @@ dependencies:
         cd ..;
       fi
       
+    # install frontend dependencies
+    - npm install
+
     # elm
-    - npm install -g elm
-    - npm install -g --unsafe-perm elm-github-install
-    - mv $(npm config get prefix)/bin/elm-make $(npm config get prefix)/bin/elm-make-old
-    - printf "#\041/bin/bash\n\necho \"Running elm-make with sysconfcpus -n 2\"\n\n$HOME/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old \"\$@\"" > $(npm config get prefix)/bin/elm-make
-    - chmod +x $(npm config get prefix)/bin/elm-make
+    - mv $(npm bin)/elm-make $(npm bin)/elm-make-old
+    - printf "#\041/bin/bash\n\necho \"Running elm-make with sysconfcpus -n 2\"\n\n$HOME/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old \"\$@\"" > $(npm bin)/elm-make
+    - chmod +x $(npm bin)/elm-make
     
     # compile assets
-    - npm install
-    - cd elm && elm-install
-    - node_modules/brunch/bin/brunch build --production
+    - npm run deploy
     - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && MIX_ENV=prod mix phoenix.digest'
     
     # k8s
