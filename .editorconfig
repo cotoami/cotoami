@@ -1,0 +1,8 @@
+[*]
+indent_stype = space
+
+[*.{json,js,ex}]
+indent_size = 2
+
+[*.elm]
+indent_size = 4
