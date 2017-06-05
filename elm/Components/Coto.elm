@@ -17,6 +17,7 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
                 if not (isPostedInCotonoma maybeCotonoma coto) then
                     a 
                         [ class "posted-in"
+                        , href ("/cotonomas/" ++ postedIn.key)
                         , onClickWithoutPropagation (cotonomaClick postedIn.key) 
                         ] 
                         [ text postedIn.name ]
