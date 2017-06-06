@@ -163,7 +163,9 @@ bodyDiv post =
           )
         , if post.asCotonoma then
             div [ class "coto-as-cotonoma" ]
-                [ a [ onClickWithoutPropagation (CotonomaClick post.cotonomaKey) ]
+                [ a [ href ("/cotonomas/" ++ post.cotonomaKey)
+                    , onClickWithoutPropagation (CotonomaClick post.cotonomaKey)
+                    ]
                     [ i [ class "material-icons" ] [ text "exit_to_app" ]
                     , span [ class "cotonoma-name" ] [ text post.content ]
                     ]

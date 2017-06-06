@@ -17099,7 +17099,7 @@ var _user$project$Utils$onClickWithoutPropagation = function (message) {
 		'click',
 		_elm_lang$core$Native_Utils.update(
 			defaultOptions,
-			{stopPropagation: true}),
+			{stopPropagation: true, preventDefault: true}),
 		_elm_lang$core$Json_Decode$succeed(message));
 };
 var _user$project$Utils$send = function (msg) {
@@ -24150,8 +24150,12 @@ var _user$project$Components_AppHeader$view = function (model) {
 									_0: _elm_lang$html$Html_Attributes$class('to-home'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(_user$project$App_Messages$HomeClick),
-										_1: {ctor: '[]'}
+										_0: _user$project$Utils$onClickWithoutPropagation(_user$project$App_Messages$HomeClick),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$href('/'),
+											_1: {ctor: '[]'}
+										}
 									}
 								},
 								{
@@ -24366,9 +24370,14 @@ var _user$project$Components_Cotonomas$view = function (cotonomas) {
 								_elm_lang$html$Html$a,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$App_Messages$CotonomaClick(cotonoma.key)),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$href(
+										A2(_elm_lang$core$Basics_ops['++'], '/cotonomas/', cotonoma.key)),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Utils$onClickWithoutPropagation(
+											_user$project$App_Messages$CotonomaClick(cotonoma.key)),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
@@ -24852,9 +24861,14 @@ var _user$project$Components_Coto$headerDiv = F4(
 								_0: _elm_lang$html$Html_Attributes$class('posted-in'),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Utils$onClickWithoutPropagation(
-										cotonomaClick(_p3.key)),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$href(
+										A2(_elm_lang$core$Basics_ops['++'], '/cotonomas/', _p3.key)),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Utils$onClickWithoutPropagation(
+											cotonomaClick(_p3.key)),
+										_1: {ctor: '[]'}
+									}
 								}
 							},
 							{
@@ -25021,9 +25035,14 @@ var _user$project$Components_Timeline_View$bodyDiv = function (post) {
 							_elm_lang$html$Html$a,
 							{
 								ctor: '::',
-								_0: _user$project$Utils$onClickWithoutPropagation(
-									_user$project$Components_Timeline_Messages$CotonomaClick(post.cotonomaKey)),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], '/cotonomas/', post.cotonomaKey)),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Utils$onClickWithoutPropagation(
+										_user$project$Components_Timeline_Messages$CotonomaClick(post.cotonomaKey)),
+									_1: {ctor: '[]'}
+								}
 							},
 							{
 								ctor: '::',

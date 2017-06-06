@@ -47,7 +47,7 @@ onClickWithoutPropagation message =
     in
         onWithOptions 
             "click"
-            { defaultOptions | stopPropagation = True }
+            { defaultOptions | stopPropagation = True, preventDefault = True }
             (Decode.succeed message)
 
 
