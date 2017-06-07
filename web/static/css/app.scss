@@ -73,7 +73,6 @@ $main-background-color: #f4f4f4 !default;
   right: 0;
   padding: 10px 20px;
   border-bottom: solid 1px #eee;
-  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.15);
   background-color: #fff;
   animation-duration: 0.5s;
   
@@ -188,8 +187,8 @@ div.flow-stock-switch {
     position: relative;
     top: auto;
     width: 160px;
+    border-right: solid 1px #eee;
     padding: 0;
-    box-shadow: 2px 0 1px rgba(0, 0, 0, 0.15);
     animation-name: none;
     
     &.notEmpty {
