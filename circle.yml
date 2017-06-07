@@ -42,6 +42,7 @@ dependencies:
     
     # compile assets
     - npm run deploy
+    - npm run deploy # https://github.com/madsflensted/elm-brunch/issues/26
     - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && MIX_ENV=prod mix phoenix.digest'
     
     # k8s
