@@ -110,6 +110,8 @@ $main-background-color: #fbfbfb !default;
 }
 
 #main-serendipity {
+  display: none;  // not yet implemented
+  
   position: absolute;
   z-index: 3;
   top: 35px;
@@ -213,35 +215,32 @@ div.flow-stock-switch {
   }
   
   #main-timeline {
-    flex: 1;
+    flex: 3;
     // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;
     padding: 0 5px;
   }
   
   #main-serendipity {
-    display: block !important;
+    display: none;  // not yet implemented
+
     position: relative;
     top: auto;
-    flex: 1;
+    flex: 2;
     height: 100%;
     animation-name: none;
   }
 
   #main-stock {
+    display: block !important;
     position: relative;
     top: auto;
-    flex: 1;
+    flex: 2;
     border-bottom-style: none;
     margin-bottom: 0;
     padding: 0;
     animation-name: none;
     overflow-y: hidden;
-    
-    &.notEmpty {
-      display: block;
-      flex: 1;
-    }
   }
   
   div.flow-stock-switch {
