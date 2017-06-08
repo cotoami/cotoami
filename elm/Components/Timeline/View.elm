@@ -108,10 +108,13 @@ postDiv selection maybeCotonoma maybeSession graph post =
             Just cotoId -> onClick (PostClick cotoId)
           )
         ] 
-        [ headerDiv maybeCotonoma graph post
-        , authorDiv maybeSession post
-        , bodyDiv post
-        , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+        [ div 
+            [ class "coto-inner" ]
+            [ headerDiv maybeCotonoma graph post
+            , authorDiv maybeSession post
+            , bodyDiv post
+            , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+            ]
         ]
         
 

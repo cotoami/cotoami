@@ -1,32 +1,37 @@
 div.coto {
   border: 1px solid #ddd;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
   background-color: #fff;
   
-  padding: 12px;
-  
-  div.coto-header {
-    text-align: right;
+  div.coto-inner {
+    margin: 0;
+    border: transparent 2px solid;
+    padding: 12px;
     
-    a.posted-in {
-      font-size: 12px;
-      color: black;
-      opacity: 0.3;
+    div.coto-header {
+      text-align: right;
+      
+      a.posted-in {
+        font-size: 12px;
+        color: black;
+        opacity: 0.3;
+      }
+      
+      i.pinned,
+      i.connected {
+        margin-left: 10px;
+        opacity: 0.3;
+      }
     }
     
-    i.pinned,
-    i.connected {
-      margin-left: 10px;
-      opacity: 0.3;
-    }
-  }
-  
-  div.sub-cotos-button {
-    text-align: center;
-    padding-top: 5px;
-    
-    i {
-      vertical-align: bottom;
+    div.sub-cotos-button {
+      text-align: center;
+      padding-top: 5px;
+      
+      i {
+        vertical-align: bottom;
+      }
     }
   }
 }    
@@ -34,19 +39,23 @@ div.coto {
 div.coto.selectable {
   @media (min-device-width: 1200px) {
     &:hover {
-      border: 2px solid #ffdd33 !important;
-      
-      a.open-coto {
-        display: inline !important;
+      div.coto-inner {
+        border: 2px solid #ffdd33 !important;
+        
+        a.open-coto {
+          display: inline !important;
+        }
       }
     }
   }
   
   &.active {
-    border: 2px solid #ffa500 !important;
-    
-    a.open-coto {
-      display: inline !important;
+    div.coto-inner {
+      border: 2px solid #ffa500 !important;
+      
+      a.open-coto {
+        display: inline !important;
+      }
     }
   }
 }
