@@ -232,7 +232,8 @@ div.flow-stock-switch {
   }
 
   #main-stock {
-    display: block !important;
+    // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
+    display: flex !important;
     position: relative;
     top: auto;
     flex: 2;
