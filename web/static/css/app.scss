@@ -54,8 +54,6 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-$main-background-color: #fbfbfb !default;
-
 #app-body {
   display: flex;
   flex-direction: column-reverse;
@@ -99,7 +97,7 @@ $main-background-color: #fbfbfb !default;
   // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
   padding: 0 10px;
-  background-color: $main-background-color;
+  background-color: #fbfbfb;
 }
 
 .cotonomas-loading {
@@ -119,7 +117,7 @@ $main-background-color: #fbfbfb !default;
   right: 0;
   bottom: 0;
   padding: 0;
-  background-color: $main-background-color;
+  background-color: #fbfbfb;
   animation-duration: 0.5s;
   
   &.neverToggled {
@@ -136,7 +134,7 @@ $main-background-color: #fbfbfb !default;
   bottom: 0;
   padding: 0;
   padding-left: 10px;
-  background-color: $main-background-color;
+  background-color: #f8f8f8;
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -218,7 +216,7 @@ div.flow-stock-switch {
     flex: 3;
     // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;
-    padding: 0 5px;
+    padding: 0;
   }
   
   #main-serendipity {
