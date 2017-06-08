@@ -8,8 +8,10 @@ div.coto {
     margin: 0;
     border: transparent 2px solid;
     padding: 12px;
+    padding-top: 0;
     
     div.coto-header {
+      min-height: 12px;
       text-align: right;
       
       a.posted-in {
