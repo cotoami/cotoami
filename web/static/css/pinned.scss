@@ -49,6 +49,12 @@ $column-width-in-wide-viewport: 400px !default;
     
     div.coto {
       margin-bottom: 10px;
+      
+      div.coto-header {
+        i.pinned {
+          display: none;
+        }
+      }
     }
   }
 }
