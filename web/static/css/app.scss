@@ -126,6 +126,9 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-stock {
+  // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
+  display: flex;
+  
   position: absolute;
   z-index: 3;
   top: 35px;
