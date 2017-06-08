@@ -1,9 +1,9 @@
-module Components.Connections.Update exposing (..)
+module Components.Pinned.Update exposing (..)
 
 import Dict
 import App.Types exposing (CotoId)
 import App.Graph exposing (Graph, Traversal, doTraverse)
-import Components.Connections.Messages exposing (..)
+import Components.Pinned.Messages exposing (..)
 
 
 type alias Model = ( Graph, Dict.Dict CotoId Traversal )

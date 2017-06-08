@@ -31,8 +31,8 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Connections.Messages
-import Components.Connections.Update
+import Components.Pinned.Messages
+import Components.Pinned.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -329,13 +329,13 @@ update msg model =
         ConnectionsMsg subMsg ->
             let
                 ( ( graph, traversals ), cmd ) = 
-                    Components.Connections.Update.update 
+                    Components.Pinned.Update.update 
                         subMsg 
                         ( model.graph, model.traversals )
                 newModel = { model | graph = graph, traversals = traversals }
             in
                 case subMsg of
-                    Components.Connections.Messages.CotoClick cotoId ->
+                    Components.Pinned.Messages.CotoClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
                     _ -> 
                         newModel ! [ Cmd.map ConnectionsMsg cmd ]

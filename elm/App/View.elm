@@ -15,7 +15,7 @@ import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Serendipity.View
-import Components.Connections.View
+import Components.Pinned.View
 import Components.ConnectModal
 
 
@@ -77,7 +77,7 @@ view model =
                       ]
                   ] 
                   [ Html.map ConnectionsMsg 
-                      (Components.Connections.View.view 
+                      (Components.Pinned.View.view 
                           model.traversals
                           model.cotoSelection
                           model.cotonoma

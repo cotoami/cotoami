@@ -1,4 +1,4 @@
-module Components.Connections.Messages exposing (..)
+module Components.Pinned.Messages exposing (..)
 
 import App.Types exposing (CotoId, CotonomaKey)
 import App.Graph exposing (Traverse)

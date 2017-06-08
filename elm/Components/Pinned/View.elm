@@ -1,4 +1,4 @@
-module Components.Connections.View exposing (..)
+module Components.Pinned.View exposing (..)
 
 import Dict
 import Html exposing (..)
@@ -9,7 +9,7 @@ import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Markdown exposing (markdownOptions, markdownElements)
-import Components.Connections.Messages exposing (..)
+import Components.Pinned.Messages exposing (..)
 import Components.Coto
 
 

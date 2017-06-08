@@ -12,7 +12,7 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
-import Components.Connections.Messages
+import Components.Pinned.Messages
 
 
 type Msg
@@ -41,7 +41,7 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
-    | ConnectionsMsg Components.Connections.Messages.Msg
+    | ConnectionsMsg Components.Pinned.Messages.Msg
     | Pin
     | ClearSelection
     | SetConnectMode Bool
