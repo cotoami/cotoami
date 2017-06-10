@@ -2,17 +2,18 @@ module App.Markdown exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Markdown
-import Markdown.Config exposing (defaultElements, defaultOptions)
+import Markdown.Config exposing (defaultOptions)
+import Markdown.Block as Block exposing (Block(..))
+import Markdown.Inline as Inline exposing (Inline(..))
 
 
 markdown : String -> Html msg
-markdown content =
-    div [ class "content" ]
-        <| Markdown.customHtml 
-            markdownOptions
-            markdownElements
-            content
+markdown markdownText =
+    markdownText
+    |> Block.parse (Just markdownOptions)
+    |> List.map (customHtmlBlock customHtmlInline)
+    |> List.concat
+    |> div [ class "content" ]
 
 
 markdownOptions : Markdown.Config.Options
@@ -20,20 +21,27 @@ markdownOptions =
     { defaultOptions
     | softAsHardLineBreak = True
     }
-    
-    
-markdownElements : Markdown.Config.Elements msg
-markdownElements =
-    { defaultElements
-    | link = customLinkElement
-    }
 
 
-customLinkElement : Markdown.Config.Link -> List (Html msg) -> Html msg
-customLinkElement link =
-    a <|
-        [ href link.url
-        , title (Maybe.withDefault "" link.title)
-        , target "_blank"
-        , rel "noopener noreferrer"
-        ]
+customHtmlBlock : (Inline i -> Html msg) -> Block b i -> List (Html msg)
+customHtmlBlock inlineTransformer block =
+    case block of
+        _ ->
+            Block.defaultHtml
+                (Just (customHtmlBlock inlineTransformer))
+                (Just inlineTransformer)
+                block    
+        
+        
+customHtmlInline : Inline i -> Html msg
+customHtmlInline inline =
+    case inline of
+        Link url maybeTitle inlines ->
+            a [ href url
+              , title (Maybe.withDefault "" maybeTitle)
+              , target "_blank"
+              , rel "noopener noreferrer"
+              ] (List.map customHtmlInline inlines)
+
+        _ ->
+            Inline.defaultHtml (Just customHtmlInline) inline

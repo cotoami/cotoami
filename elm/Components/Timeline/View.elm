@@ -8,13 +8,13 @@ import Html.Events exposing
     (on, onWithOptions, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
 import Html.Lazy exposing (lazy3)
 import Json.Decode as Decode
-import Markdown
-import Markdown.Config exposing (defaultElements, defaultOptions)
+import Markdown.Block as Block exposing (Block(..))
+import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types exposing (Session, Cotonoma, CotoSelection)
 import App.Graph exposing (Graph)
-import App.Markdown exposing (markdownOptions, markdownElements)
+import App.Markdown
 import Components.Timeline.Model exposing (Post, Model, toCoto)
 import Components.Timeline.Messages exposing (..)
 import Components.Coto
@@ -179,26 +179,26 @@ bodyDiv post =
         
         
 markdown : String -> Html Msg
-markdown content =
-    div [ class "content" ]
-        <| Markdown.customHtml 
-            markdownOptions
-            { markdownElements
-            | image = customImageElement
-            }
-            content
-
-
-customImageElement : Markdown.Config.Image -> Html Msg
-customImageElement image =
-    img
-        [ src image.src
-        , alt image.alt
-        , title (Maybe.withDefault "" image.title)
-        , onLoad ImageLoaded
-        ]
-        []
+markdown markdownText =
+    markdownText
+    |> Block.parse (Just App.Markdown.markdownOptions)
+    |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
+    |> List.concat
+    |> div [ class "content" ]
   
+
+customHtmlInline : Inline i -> Html Msg
+customHtmlInline inline =
+    case inline of
+        Image source maybeTitle inlines ->
+            img [ src source
+                , title (Maybe.withDefault "" maybeTitle)
+                , onLoad ImageLoaded
+                ] (List.map customHtmlInline inlines)
+
+        _ ->
+            App.Markdown.customHtmlInline inline
+
 
 timelineClass : Model -> String
 timelineClass model =
