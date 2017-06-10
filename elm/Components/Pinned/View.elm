@@ -4,11 +4,10 @@ import Dict
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Markdown
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
-import App.Markdown exposing (markdownOptions, markdownElements)
+import App.Markdown
 import Components.Pinned.Messages exposing (..)
 import Components.Coto
 
@@ -83,7 +82,7 @@ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
         [ div 
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-            , markdown coto.content
+            , App.Markdown.markdown coto.content
             , case maybeTraversalStep of
                 Nothing ->
                     Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
@@ -91,12 +90,3 @@ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
                     Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
-    
-
-markdown : String -> Html Msg
-markdown content =
-    div [ class "content" ]
-        <| Markdown.customHtml 
-            markdownOptions
-            markdownElements
-            content
