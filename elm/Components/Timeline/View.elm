@@ -157,12 +157,17 @@ bodyDiv post =
         [ (case post.cotoId of
             Nothing -> span [] []
             Just cotoId ->
-                a 
-                    [ class "tool-button open-coto"
-                    , title "Open coto view"
-                    , onClickWithoutPropagation (PostOpen post)
-                    ] 
-                    [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                span [ class "coto-tools" ]
+                     [ a [ class "tool-button open-coto"
+                         , title "Open coto view"
+                         , onClickWithoutPropagation (PostOpen post)
+                         ] 
+                         [ i [ class "material-icons" ] [ text "settings" ] ]
+                     , a [ class "tool-button traverse-coto"
+                         , title "Open coto traversal"
+                         ] 
+                         [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                     ]
           )
         , if post.asCotonoma then
             div [ class "coto-as-cotonoma" ]

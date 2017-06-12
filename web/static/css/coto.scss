@@ -27,6 +27,26 @@ div.coto {
       }
     }
     
+    div.coto-body {
+      position: relative;
+      
+      span.coto-tools {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        
+        a.tool-button {
+          margin-left: 6px;
+          
+          i {
+            font-size: 30px;
+          }
+        }
+      }
+    }
+    
     div.sub-cotos-button {
       text-align: center;
       padding-top: 5px;
@@ -44,7 +64,7 @@ div.coto.selectable {
       div.coto-inner {
         border: 2px solid #ffdd33 !important;
         
-        a.open-coto {
+        span.coto-tools {
           display: inline !important;
         }
       }
@@ -55,7 +75,7 @@ div.coto.selectable {
     div.coto-inner {
       border: 2px solid #ffa500 !important;
       
-      a.open-coto {
+      span.coto-tools {
         display: inline !important;
       }
     }
