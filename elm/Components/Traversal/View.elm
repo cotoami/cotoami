@@ -12,10 +12,21 @@ import Components.Coto
 import Components.Traversal.Messages exposing (..)
 
 
-traversalDiv : Traversal -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-traversalDiv traversal connections coto selection maybeCotonoma graph =
+view : Traversal -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
+view traversal selection maybeCotonoma graph =
+    case Dict.get traversal.start graph.cotos of
+        Nothing -> Nothing
+        Just startCoto ->
+            case Dict.get startCoto.id graph.connections of
+                Nothing -> Nothing
+                Just connections -> 
+                    Just (traversalDiv traversal selection maybeCotonoma connections startCoto graph)
+  
+
+traversalDiv : Traversal -> CotoSelection -> Maybe Cotonoma -> List Connection -> Coto -> Graph -> Html Msg
+traversalDiv traversal selection maybeCotonoma connections startCoto graph =
     div [ class "traversal" ]
-        [ traversalStepCotoDiv ( traversal, -1 ) connections coto selection maybeCotonoma graph
+        [ traversalStepCotoDiv ( traversal, -1 ) connections startCoto selection maybeCotonoma graph
         , div [ class "steps" ]
             (List.reverse traversal.steps
             |> List.indexedMap (\index step -> traversalStepDiv ( traversal, index ) step selection maybeCotonoma graph) 
