@@ -14,7 +14,6 @@ import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
-import Components.Serendipity.View
 import Components.Pinned.View
 import Components.ConnectModal
 
@@ -53,17 +52,6 @@ view model =
                           model.graph
                           model.timeline 
                       )
-                  ]
-              , div 
-                  [ id "main-serendipity"
-                  , classList 
-                      [ ( "neverToggled", not model.serendipityToggled )
-                      , ( "animated", model.serendipityToggled )
-                      , ( "slideInLeft", model.serendipityToggled && model.serendipityOpen )
-                      , ( "slideOutLeft", model.serendipityToggled && not model.serendipityOpen )
-                      ]
-                  ]
-                  [ Components.Serendipity.View.view model
                   ]
               , div 
                   [ id "main-stock"

@@ -41,8 +41,6 @@ type alias Model =
     , stockOpen : Bool
     , graph : Graph
     , traversals : Dict.Dict CotoId Traversal
-    , serendipityToggled : Bool
-    , serendipityOpen : Bool
     }
 
 
@@ -77,8 +75,6 @@ initModel seed route =
         , stockOpen = False
         , graph = initGraph
         , traversals = Dict.empty
-        , serendipityToggled = False
-        , serendipityOpen = False
         }
 
 
