@@ -131,6 +131,8 @@ $tool-button-color: #3572A5 !default;
 
 div.main-traversal {
   background-color: #f2f2f2;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 div.flow-stock-switch {
