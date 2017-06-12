@@ -8,25 +8,26 @@ import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Markdown
-import Components.Pinned.Messages exposing (..)
+import App.Messages exposing (..)
 import Components.Coto
 
 
-view : Dict.Dict CotoId Traversal -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-view traversals selection maybeCotonoma graph =
+view : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+view selection maybeCotonoma graph =
     div [ id "pinned-cotos" ]
-        [ div [ class "column-header" ] 
+        [ div 
+            [ class "column-header" ] 
             [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
             ]
-        , div [ class "column-body" ]
-            [ rootConnections selection maybeCotonoma graph ]
+        , div 
+            [ class "column-body" ]
+            [ pinnedCotos selection maybeCotonoma graph ]
         ]
 
 
-rootConnections : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-rootConnections selection maybeCotonoma graph =
+pinnedCotos : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+pinnedCotos selection maybeCotonoma graph =
     connectionsDiv
-        Nothing
         "root-connections" 
         graph.rootConnections 
         selection 
@@ -34,8 +35,8 @@ rootConnections selection maybeCotonoma graph =
         graph
 
 
-connectionsDiv : Maybe ( Traversal, Int ) -> String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma graph =
+connectionsDiv : String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+connectionsDiv divClass connections selection maybeCotonoma graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
@@ -45,29 +46,21 @@ connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma g
                     Nothing -> Nothing  -- Missing the end node
                     Just coto -> Just 
                         ( conn.key
-                        , connectionDiv maybeTraversalStep selection maybeCotonoma graph coto
+                        , connectionDiv selection maybeCotonoma graph coto
                         ) 
             ) 
             (List.reverse connections)
         )
         
         
-connectionDiv : Maybe ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-connectionDiv maybeTraversalStep selection maybeCotonoma graph coto =
-    div [ classList 
-            [ ( "outbound-conn", True )
-            , ( "traversed"
-              , case maybeTraversalStep of
-                  Nothing -> False
-                  Just ( traversal, index ) -> traversed index coto.id traversal
-              )
-            ]
-        ]
-        [ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto ]
+connectionDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+connectionDiv selection maybeCotonoma graph coto =
+    div [ class "outbound-conn" ]
+        [ cotoDiv selection maybeCotonoma graph coto ]
         
   
-cotoDiv : Maybe ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
+cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv selection maybeCotonoma graph coto =
     div 
         [ classList 
             [ ( "coto", True )
@@ -80,10 +73,6 @@ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
             , App.Markdown.markdown coto.content
-            , case maybeTraversalStep of
-                Nothing ->
-                    Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
-                Just ( traversal, index ) -> 
-                    Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
+            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]
         ]

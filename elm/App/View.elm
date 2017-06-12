@@ -64,13 +64,10 @@ view model =
                       , ( "slideOutRight", model.stockToggled && not model.stockOpen )
                       ]
                   ] 
-                  [ Html.map ConnectionsMsg 
-                      (Components.Pinned.View.view 
-                          model.traversals
-                          model.cotoSelection
-                          model.cotonoma
-                          model.graph
-                      )
+                  [ Components.Pinned.View.view 
+                      model.cotoSelection
+                      model.cotonoma
+                      model.graph
                   ]
               , flowStockSwitch model
               ]

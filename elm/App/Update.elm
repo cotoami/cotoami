@@ -31,8 +31,6 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Pinned.Messages
-import Components.Pinned.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -311,7 +309,13 @@ update msg model =
                                         commands
                             _ -> 
                                 newModel ! commands
-                                
+        
+        CotoClick cotoId ->
+            (clickCoto cotoId model) ! []
+            
+        OpenTraversal cotoId ->
+            model ! []
+                
         CotonomaClick key ->
             changeLocationToCotonoma key model
             
@@ -325,20 +329,6 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
-                
-        ConnectionsMsg subMsg ->
-            let
-                ( ( graph, traversals ), cmd ) = 
-                    Components.Pinned.Update.update 
-                        subMsg 
-                        ( model.graph, model.traversals )
-                newModel = { model | graph = graph, traversals = traversals }
-            in
-                case subMsg of
-                    Components.Pinned.Messages.CotoClick cotoId ->
-                        (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
-                    _ -> 
-                        newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
         Pin ->
             pinSelectedCotos model ! []

@@ -1,10 +1,11 @@
-module Components.Traversal exposing (..)
+module Components.Traversal.View exposing (..)
 
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Keyed
+import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
-import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Graph exposing (..)
 import App.Markdown
@@ -56,5 +57,52 @@ traversalStepCotoDiv traversalStep connections coto selection maybeCotonoma grap
         [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
         , App.Markdown.markdown coto.content
         , div [ class "main-sub-border" ] []
-        , connectionsDiv (Just traversalStep) "sub-cotos" connections selection maybeCotonoma graph
+        , connectionsDiv traversalStep "sub-cotos" connections selection maybeCotonoma graph
+        ]
+
+
+connectionsDiv : ( Traversal, Int ) -> String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
+connectionsDiv traversalStep divClass connections selection maybeCotonoma graph =
+    Html.Keyed.node
+        "div"
+        [ class divClass ]
+        (List.filterMap 
+            (\conn ->
+                case Dict.get conn.end graph.cotos of
+                    Nothing -> Nothing  -- Missing the end node
+                    Just coto -> Just 
+                        ( conn.key
+                        , connectionDiv traversalStep selection maybeCotonoma graph coto
+                        ) 
+            ) 
+            (List.reverse connections)
+        )
+        
+        
+connectionDiv : ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+connectionDiv ( traversal, index ) selection maybeCotonoma graph coto =
+    div [ classList 
+            [ ( "outbound-conn", True )
+            , ( "traversed", traversed index coto.id traversal )
+            ]
+        ]
+        [ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto ]
+        
+  
+cotoDiv : ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
+    div 
+        [ classList 
+            [ ( "coto", True )
+            , ( "selectable", True )
+            , ( "active", List.member coto.id selection )
+            ]
+        , onClickWithoutPropagation (CotoClick coto.id)
+        ]
+        [ div 
+            [ class "coto-inner" ]
+            [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+            , App.Markdown.markdown coto.content
+            -- , Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
+            ]
         ]
