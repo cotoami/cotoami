@@ -165,6 +165,7 @@ bodyDiv post =
                          [ i [ class "material-icons" ] [ text "settings" ] ]
                      , a [ class "tool-button traverse-coto"
                          , title "Open coto traversal"
+                         , onClickWithoutPropagation (OpenTraversal cotoId)
                          ] 
                          [ i [ class "material-icons" ] [ text "open_in_new" ] ]
                      ]

@@ -157,13 +157,10 @@ type alias Traverse =
     }                
 
 
-initTraversal : CotoId -> Maybe CotoId -> Traversal
-initTraversal start maybeNext =
+initTraversal : CotoId -> Traversal
+initTraversal start =
     { start = start
-    , steps = 
-        case maybeNext of
-            Nothing -> []
-            Just next -> [ next ]
+    , steps = []
     }
 
 

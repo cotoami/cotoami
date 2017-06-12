@@ -240,6 +240,9 @@ update msg model =
                             , fetchRecentCotonomas
                             , fetchSubCotonomas model.cotonoma
                             ]
+                            
+                    Components.Timeline.Messages.OpenTraversal cotoId ->
+                        openTraversal cotoId model ! [ Cmd.map TimelineMsg cmd ]
 
                     _ -> 
                         newModel ! [ Cmd.map TimelineMsg cmd ]
@@ -314,7 +317,7 @@ update msg model =
             (clickCoto cotoId model) ! []
             
         OpenTraversal cotoId ->
-            model ! []
+            openTraversal cotoId model ! []
                 
         CotonomaClick key ->
             changeLocationToCotonoma key model
@@ -354,9 +357,9 @@ update msg model =
             , connectMode = False 
             , connectModalOpen = False
             } ! []
-
-
-clickCoto : Int -> Model -> Model
+      
+      
+clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
     if model.connectMode then
         if model.cotoSelection |> List.member cotoId then
@@ -370,7 +373,21 @@ clickCoto cotoId model =
         { model 
         | cotoSelection = updateCotoSelection cotoId model.cotoSelection
         }
-                        
+
+
+openTraversal : CotoId -> Model -> Model
+openTraversal cotoId model =
+    if Dict.member cotoId model.traversals then
+        model
+    else
+        { model 
+        | traversals =
+            Dict.insert 
+                cotoId
+                (initTraversal cotoId)
+                model.traversals 
+        }
+                      
 
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
