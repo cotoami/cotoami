@@ -47,7 +47,8 @@ defmodule Cotoami.RedisService do
   # Sign-in keys
   #
   
-  @signin_key_expire_seconds 60 * 10
+  # @signin_key_expire_seconds 60 * 10
+  @signin_key_expire_seconds 60 * 60 * 24   # for test
   
   def signin_key(token), do: "signin:" <> token
   

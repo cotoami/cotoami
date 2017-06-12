@@ -21,7 +21,7 @@ defmodule Cotoami.SigninController do
   def signin(conn, %{"token" => token, "anonymous_id" => anonymous_id}) do
     case RedisService.get_signin_email(token) do
       nil ->
-        text conn, "Invalid token"
+        text conn, "Invalid token: #{token}"
       email ->
         amishi = 
           case AmishiService.get_by_email(email) do
