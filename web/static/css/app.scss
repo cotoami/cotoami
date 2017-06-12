@@ -70,7 +70,7 @@ $tool-button-color: #3572A5 !default;
   left: 0;
   right: 0;
   padding: 10px 20px;
-  border-bottom: solid 1px #eee;
+  border-bottom: solid 1px #ddd;
   background-color: #fff;
   animation-duration: 0.5s;
   
@@ -93,9 +93,8 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-timeline {
-  display: flex;
-  // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
+  display: flex;
   padding: 0 10px;
   background-color: #f8f8f8;
 }
@@ -108,17 +107,13 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-stock {
-  // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   display: flex;
-  
   position: absolute;
   z-index: 3;
   top: 35px;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0;
-  padding-left: 10px;
   background-color: #f2f2f2;
   animation-duration: 0.5s;
   overflow-x: auto;
@@ -199,20 +194,16 @@ div.flow-stock-switch {
   
   #main-timeline {
     flex: 1;
-    // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
     height: 100%;
     padding: 0;
   }
 
   #main-stock {
-    // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
+    flex: 1;
     display: flex !important;
     position: relative;
     top: auto;
-    flex: 1;
     border-bottom-style: none;
-    margin-bottom: 0;
-    padding: 0;
     animation-name: none;
     overflow-y: hidden;
   }
