@@ -83,21 +83,6 @@ addRootConnection coto graph =
         }
 
 
-getTraversalStarts : Graph -> List ( Coto, List Connection )
-getTraversalStarts graph =
-    List.filterMap 
-        (\conn ->
-            case Dict.get conn.end graph.cotos of
-                Nothing -> Nothing
-                Just rootCoto ->
-                    case Dict.get rootCoto.id graph.connections of
-                        Nothing -> Nothing
-                        Just connections -> Just ( rootCoto, connections )
-                      
-        ) 
-        graph.rootConnections
-
-
 addConnection : Coto -> Coto -> Graph -> Graph
 addConnection start end graph =
     let
