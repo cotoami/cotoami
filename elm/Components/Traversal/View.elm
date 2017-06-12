@@ -71,10 +71,12 @@ traversalStepCotoDiv traversalStep connections coto selection maybeCotonoma grap
             , ( "active", List.member coto.id selection )
             ]
         ]
-        [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-        , App.Markdown.markdown coto.content
-        , div [ class "main-sub-border" ] []
-        , connectionsDiv traversalStep "sub-cotos" connections selection maybeCotonoma graph
+        [ div [ class "coto-inner" ]
+              [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+              , App.Markdown.markdown coto.content
+              , div [ class "main-sub-border" ] []
+              , connectionsDiv traversalStep "sub-cotos" connections selection maybeCotonoma graph
+              ]
         ]
 
 
