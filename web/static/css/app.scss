@@ -10,6 +10,10 @@ html, body, #elm-container, #app {
   overflow-y: hidden;
 }
 
+.elm-overlay {
+  z-index: 200;
+}
+
 .hidden {
   display: none;
 }
