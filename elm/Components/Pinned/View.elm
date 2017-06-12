@@ -39,35 +39,32 @@ connectionsDiv maybeTraversalStep divClass connections selection maybeCotonoma g
     Html.Keyed.node
         "div"
         [ class divClass ]
-        (List.map 
+        (List.filterMap 
             (\conn ->
-                let
-                    maybeCoto = Dict.get conn.end graph.cotos
-                in
-                    ( conn.key
-                    , case maybeCoto of
-                        Nothing -> 
-                            div [ class "outbound-conn missing" ] [ text "Missing" ]
-                        Just coto ->
-                            div 
-                                [ classList 
-                                    [ ( "outbound-conn", True )
-                                    , ( "traversed"
-                                      , case maybeTraversalStep of
-                                          Nothing -> False
-                                          Just ( traversal, index ) -> 
-                                              traversed index coto.id traversal
-                                      )
-                                    ]
-                                ]
-                                [ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto
-                                ]
-                            
-                    )
+                case Dict.get conn.end graph.cotos of
+                    Nothing -> Nothing  -- Missing the end node
+                    Just coto -> Just 
+                        ( conn.key
+                        , connectionDiv maybeTraversalStep selection maybeCotonoma graph coto
+                        ) 
             ) 
             (List.reverse connections)
         )
-    
+        
+        
+connectionDiv : Maybe ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+connectionDiv maybeTraversalStep selection maybeCotonoma graph coto =
+    div [ classList 
+            [ ( "outbound-conn", True )
+            , ( "traversed"
+              , case maybeTraversalStep of
+                  Nothing -> False
+                  Just ( traversal, index ) -> traversed index coto.id traversal
+              )
+            ]
+        ]
+        [ cotoDiv maybeTraversalStep selection maybeCotonoma graph coto ]
+        
   
 cotoDiv : Maybe ( Traversal, Int ) -> CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
 cotoDiv maybeTraversalStep selection maybeCotonoma graph coto =
