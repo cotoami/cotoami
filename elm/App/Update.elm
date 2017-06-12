@@ -31,6 +31,8 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
+import Components.Traversal.Messages
+import Components.Traversal.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -357,6 +359,20 @@ update msg model =
             , connectMode = False 
             , connectModalOpen = False
             } ! []
+            
+        TraversalMsg subMsg ->
+            let
+                ( ( graph, traversals ), cmd ) = 
+                    Components.Traversal.Update.update 
+                        subMsg 
+                        ( model.graph, model.traversals )
+                newModel = { model | graph = graph, traversals = traversals }
+            in
+                case subMsg of
+                    Components.Traversal.Messages.CotoClick cotoId ->
+                        (clickCoto cotoId newModel) ! [ Cmd.map TraversalMsg cmd ]
+                    _ -> 
+                        newModel ! [ Cmd.map TraversalMsg cmd ]
       
       
 clickCoto : CotoId -> Model -> Model

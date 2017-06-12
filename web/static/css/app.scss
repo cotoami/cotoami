@@ -129,6 +129,10 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
+div.traversal {
+  
+}
+
 div.flow-stock-switch {
   z-index: 4;
   display: inline-block;
@@ -210,6 +214,10 @@ div.flow-stock-switch {
     border-bottom-style: none;
     animation-name: none;
     overflow-y: hidden;
+  }
+  
+  div.traversal {
+    flex: 1;
   }
   
   div.flow-stock-switch {

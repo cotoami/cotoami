@@ -1,5 +1,6 @@
 module App.View exposing (..)
 
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -16,6 +17,7 @@ import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
 import Components.ConnectModal
+import Components.Traversal.View
 
 
 view : Model -> Html Msg
@@ -32,45 +34,12 @@ view model =
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
-              [ div 
-                  [ id "main-nav" 
-                  , classList 
-                      [ ( "neverToggled", not model.navigationToggled )
-                      , ( "empty", isNavigationEmpty model )
-                      , ( "notEmpty", not (isNavigationEmpty model) )
-                      , ( "animated", model.navigationToggled )
-                      , ( "slideInDown", model.navigationToggled && model.navigationOpen )
-                      , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
-                      ]
-                  ] (Components.Navigation.view model)
-              , div [ id "main-timeline" ]
-                  [ Html.map TimelineMsg 
-                      (Components.Timeline.View.view 
-                          model.cotoSelection
-                          model.cotonoma
-                          model.session
-                          model.graph
-                          model.timeline 
-                      )
+              (List.concat
+                  [ defaultColumnDivs model
+                  , traversalDivs model
+                  , [ flowStockSwitch model ]
                   ]
-              , div 
-                  [ id "main-stock"
-                  , classList 
-                      [ ( "neverToggled", not model.stockToggled )
-                      , ( "empty", isStockEmpty model )
-                      , ( "notEmpty", not (isStockEmpty model) )
-                      , ( "animated", model.stockToggled )
-                      , ( "slideInRight", model.stockToggled && model.stockOpen )
-                      , ( "slideOutRight", model.stockToggled && not model.stockOpen )
-                      ]
-                  ] 
-                  [ Components.Pinned.View.view 
-                      model.cotoSelection
-                      model.cotonoma
-                      model.graph
-                  ]
-              , flowStockSwitch model
-              ]
+              )
           , cotoSelectionTools model
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
@@ -93,6 +62,58 @@ view model =
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
 
+
+defaultColumnDivs : Model -> List (Html Msg)
+defaultColumnDivs model =
+    [ div 
+        [ id "main-nav" 
+        , classList 
+            [ ( "neverToggled", not model.navigationToggled )
+            , ( "empty", isNavigationEmpty model )
+            , ( "notEmpty", not (isNavigationEmpty model) )
+            , ( "animated", model.navigationToggled )
+            , ( "slideInDown", model.navigationToggled && model.navigationOpen )
+            , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
+            ]
+        ] (Components.Navigation.view model)
+    , div [ id "main-timeline" ]
+        [ Html.map TimelineMsg 
+            (Components.Timeline.View.view 
+                model.cotoSelection
+                model.cotonoma
+                model.session
+                model.graph
+                model.timeline 
+            )
+        ]
+    , div 
+        [ id "main-stock"
+        , classList 
+            [ ( "neverToggled", not model.stockToggled )
+            , ( "empty", isStockEmpty model )
+            , ( "notEmpty", not (isStockEmpty model) )
+            , ( "animated", model.stockToggled )
+            , ( "slideInRight", model.stockToggled && model.stockOpen )
+            , ( "slideOutRight", model.stockToggled && not model.stockOpen )
+            ]
+        ] 
+        [ Components.Pinned.View.view 
+            model.cotoSelection
+            model.cotonoma
+            model.graph
+        ]
+    ]
+    
+
+traversalDivs : Model -> List (Html Msg)
+traversalDivs model =
+    Dict.toList model.traversals
+    |> List.filterMap
+        (\(cotoId, traversal) ->
+            Components.Traversal.View.view traversal model.cotoSelection model.cotonoma model.graph
+        )
+    |> List.map (\div -> Html.map TraversalMsg div)
+    
 
 cotoSelectionTools : Model -> Html Msg
 cotoSelectionTools model =

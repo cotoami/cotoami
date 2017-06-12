@@ -17,10 +17,16 @@ view traversal selection maybeCotonoma graph =
     case Dict.get traversal.start graph.cotos of
         Nothing -> Nothing
         Just startCoto ->
-            case Dict.get startCoto.id graph.connections of
-                Nothing -> Nothing
-                Just connections -> 
-                    Just (traversalDiv traversal selection maybeCotonoma connections startCoto graph)
+            Just <|
+              traversalDiv 
+                  traversal 
+                  selection 
+                  maybeCotonoma
+                  (Dict.get startCoto.id graph.connections
+                   |> Maybe.withDefault []
+                  )
+                  startCoto 
+                  graph                    
   
 
 traversalDiv : Traversal -> CotoSelection -> Maybe Cotonoma -> List Connection -> Coto -> Graph -> Html Msg

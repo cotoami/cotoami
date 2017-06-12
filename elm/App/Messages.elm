@@ -12,6 +12,7 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
+import Components.Traversal.Messages
 
 
 type Msg
@@ -47,4 +48,5 @@ type Msg
     | SetConnectMode Bool
     | CloseConnectModal
     | Connect Coto (List Coto)
+    | TraversalMsg Components.Traversal.Messages.Msg
     
