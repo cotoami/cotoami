@@ -8,12 +8,6 @@ $column-width-in-wide-viewport: 400px !default;
   
   position: relative;
   
-  div.coto {
-    i.connected {
-      display: none;
-    }
-  }
-  
   div.column-header {
     text-align: center;
     font-size: 18px;
@@ -49,7 +43,8 @@ $column-width-in-wide-viewport: 400px !default;
       margin-bottom: 10px;
       
       div.coto-header {
-        i.pinned {
+        i.pinned,
+        i.connected {
           display: none;
         }
       }

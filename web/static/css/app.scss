@@ -129,8 +129,8 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-div.traversal {
-  
+div.main-traversal {
+  background-color: #f2f2f2;
 }
 
 div.flow-stock-switch {
@@ -216,7 +216,7 @@ div.flow-stock-switch {
     overflow-y: hidden;
   }
   
-  div.traversal {
+  div.main-traversal {
     flex: 1;
   }
   

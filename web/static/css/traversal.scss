@@ -1,0 +1,58 @@
+@import "variables.scss";
+
+div.traversal {
+  padding-top: 15px;
+  
+  @media (#{$wide-viewport}) {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  div.coto {
+    div.coto-header {
+      i.pinned,
+      i.connected {
+        display: none;
+      }
+    }
+  }
+  
+  div.main-sub-border {
+    padding-top: 3px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  div.sub-cotos {
+    div.outbound-conn {
+      margin-top: 8px;
+      border-left: 3px solid #ddd;
+      border-radius: 4px 4px 4px 4px;
+      
+      div.coto {
+        padding-bottom: 0;
+        
+        div.coto-header {
+          min-height: auto;
+        }
+      }
+      
+      &.traversed {
+        border: 1px dashed #ffdd33 !important;
+        
+        div.coto {
+          background-color: #ffffdd;
+        }
+      }
+    }
+  }
+  
+  div.step {
+    div.arrow {
+      margin-top: 10px;
+      margin-bottom: 6px;
+      text-align: center;
+      opacity: 0.4;
+    }
+  }
+}
+  

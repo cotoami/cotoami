@@ -112,7 +112,11 @@ traversalDivs model =
         (\(cotoId, traversal) ->
             Components.Traversal.View.view traversal model.cotoSelection model.cotonoma model.graph
         )
-    |> List.map (\div -> Html.map TraversalMsg div)
+    |> List.map 
+        (\traversalDiv ->
+            div [ class "main-traversal" ]
+                [ Html.map TraversalMsg traversalDiv ]
+        )
     
 
 cotoSelectionTools : Model -> Html Msg
