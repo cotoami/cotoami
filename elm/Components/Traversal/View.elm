@@ -6,10 +6,10 @@ import Html.Attributes exposing (..)
 import Html.Keyed
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
-import App.Messages exposing (..)
 import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
+import Components.Traversal.Messages exposing (..)
 
 
 traversalDiv : Traversal -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
@@ -103,6 +103,6 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
             , App.Markdown.markdown coto.content
-            -- , Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
+            , Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
