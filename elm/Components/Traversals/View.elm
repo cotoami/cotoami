@@ -47,11 +47,19 @@ maybeTraversalDiv selection maybeCotonoma graph traversal =
 traversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
 traversalDiv selection maybeCotonoma graph traversal connections startCoto  =
     div [ class "traversal" ]
-        [ traversalStepCotoDiv selection maybeCotonoma graph ( traversal, -1 ) connections startCoto
-        , div [ class "steps" ]
-            (List.reverse traversal.steps
-            |> List.indexedMap (\index step -> traversalStepDiv selection maybeCotonoma graph step  ( traversal, index )) 
-            |> List.filterMap identity)
+        [ div 
+            [ class "column-header" ] 
+            [ a [ class "tool-button close-traversal", href "/" ]
+                [ i [ class "material-icons" ] [ text "close" ] ]
+            ]
+        , div 
+            [ class "column-body" ]
+            [ traversalStepCotoDiv selection maybeCotonoma graph ( traversal, -1 ) connections startCoto
+            , div [ class "steps" ]
+                (List.reverse traversal.steps
+                |> List.indexedMap (\index step -> traversalStepDiv selection maybeCotonoma graph step  ( traversal, index )) 
+                |> List.filterMap identity)
+            ]
         ]
         
 

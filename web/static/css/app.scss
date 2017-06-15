@@ -130,6 +130,7 @@ $tool-button-color: #3572A5 !default;
 }
 
 div.main-traversal {
+  display: flex;
   background-color: #e8e8e8;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
