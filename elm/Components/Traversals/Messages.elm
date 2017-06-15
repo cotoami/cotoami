@@ -10,3 +10,4 @@ type Msg
     | CotonomaClick CotonomaKey
     | TraverseClick Traverse
     | OpenTraversal CotoId
+    | CloseTraversal CotoId

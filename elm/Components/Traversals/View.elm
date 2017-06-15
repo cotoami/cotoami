@@ -49,7 +49,10 @@ traversalDiv selection maybeCotonoma graph traversal connections startCoto  =
     div [ class "traversal" ]
         [ div 
             [ class "column-header" ] 
-            [ a [ class "tool-button close-traversal", href "/" ]
+            [ a [ class "tool-button close-traversal"
+                , href "/"
+                , onClickWithoutPropagation (CloseTraversal traversal.start)
+                ]
                 [ i [ class "material-icons" ] [ text "close" ] ]
             ]
         , div 
