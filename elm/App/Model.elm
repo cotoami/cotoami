@@ -5,13 +5,14 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
-import App.Graph exposing (Graph, initGraph, Traversal)
+import App.Graph exposing (Graph, initGraph)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
+import Components.Traversals.Model
 
 
 type alias Model =
@@ -40,7 +41,7 @@ type alias Model =
     , stockToggled : Bool
     , stockOpen : Bool
     , graph : Graph
-    , traversals : Dict.Dict CotoId Traversal
+    , traversals : Components.Traversals.Model.Model
     }
 
 
@@ -74,7 +75,7 @@ initModel seed route =
         , stockToggled = False
         , stockOpen = False
         , graph = initGraph
-        , traversals = Dict.empty
+        , traversals = Components.Traversals.Model.initModel
         }
 
 

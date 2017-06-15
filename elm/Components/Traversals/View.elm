@@ -1,4 +1,4 @@
-module Components.Traversal.View exposing (..)
+module Components.Traversals.View exposing (..)
 
 import Dict
 import Html exposing (..)
@@ -9,39 +9,54 @@ import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
-import Components.Traversal.Messages exposing (..)
+import Components.Traversals.Messages exposing (..)
+import Components.Traversals.Model exposing (..)
 
 
-view : Traversal -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
-view traversal selection maybeCotonoma graph =
+view : CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
+view selection maybeCotonoma graph model =
+    model.order
+    |> List.filterMap
+        (\cotoId ->
+            case Dict.get cotoId model.traversals of
+                Nothing -> Nothing
+                Just traversal ->
+                    traversal |> maybeTraversalDiv selection maybeCotonoma graph
+        )
+    |> List.map 
+        (\traversalDiv -> div [ class "main-traversal" ] [ traversalDiv ] )
+
+
+maybeTraversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> Maybe (Html Msg)
+maybeTraversalDiv selection maybeCotonoma graph traversal =
     case Dict.get traversal.start graph.cotos of
         Nothing -> Nothing
         Just startCoto ->
             Just <|
               traversalDiv 
-                  traversal 
-                  selection 
+                  selection
                   maybeCotonoma
+                  graph
+                  traversal 
                   (Dict.get startCoto.id graph.connections
                    |> Maybe.withDefault []
                   )
                   startCoto 
-                  graph                    
   
 
-traversalDiv : Traversal -> CotoSelection -> Maybe Cotonoma -> List Connection -> Coto -> Graph -> Html Msg
-traversalDiv traversal selection maybeCotonoma connections startCoto graph =
+traversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
+traversalDiv selection maybeCotonoma graph traversal connections startCoto  =
     div [ class "traversal" ]
-        [ traversalStepCotoDiv ( traversal, -1 ) connections startCoto selection maybeCotonoma graph
+        [ traversalStepCotoDiv selection maybeCotonoma graph ( traversal, -1 ) connections startCoto
         , div [ class "steps" ]
             (List.reverse traversal.steps
-            |> List.indexedMap (\index step -> traversalStepDiv ( traversal, index ) step selection maybeCotonoma graph) 
+            |> List.indexedMap (\index step -> traversalStepDiv selection maybeCotonoma graph step  ( traversal, index )) 
             |> List.filterMap identity)
         ]
         
 
-traversalStepDiv : ( Traversal, Int ) -> CotoId -> CotoSelection -> Maybe Cotonoma -> Graph -> Maybe (Html Msg)
-traversalStepDiv traversalStep cotoId selection maybeCotonoma graph =
+traversalStepDiv : CotoSelection -> Maybe Cotonoma -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
+traversalStepDiv selection maybeCotonoma graph cotoId traversalStep =
     case Dict.get cotoId graph.cotos of
         Nothing -> Nothing
         Just coto -> Just
@@ -50,21 +65,21 @@ traversalStepDiv traversalStep cotoId selection maybeCotonoma graph =
                     [ i [ class "material-icons" ] [ text "arrow_downward" ]
                     ]
                 , traversalStepCotoDiv 
+                    selection 
+                    maybeCotonoma 
+                    graph
                     traversalStep
                     (case Dict.get cotoId graph.connections of
                         Nothing -> []
                         Just connections -> connections
                     )
                     coto 
-                    selection 
-                    maybeCotonoma 
-                    graph
                 ]
             )
 
 
-traversalStepCotoDiv : ( Traversal, Int ) -> List Connection -> Coto -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-traversalStepCotoDiv traversalStep connections coto selection maybeCotonoma graph =
+traversalStepCotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
+traversalStepCotoDiv selection maybeCotonoma graph traversalStep connections coto =
     div [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
@@ -122,6 +137,18 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
             , App.Markdown.markdown coto.content
-            , Components.Coto.traverseButtonDiv TraverseClick index coto.id traversal graph
+            , traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
+
+
+traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg
+traverseButtonDiv buttonClick index cotoId traversal graph =
+    if hasChildren cotoId graph then
+        div [ class "sub-cotos-button" ]
+            [ a [ onClickWithoutPropagation (buttonClick (Traverse traversal index cotoId)) ]
+                [ i [ class "material-icons" ] [ text "more_horiz" ]
+                ]
+            ]
+    else
+        div [] []

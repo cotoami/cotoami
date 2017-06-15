@@ -1,6 +1,5 @@
 module App.View exposing (..)
 
-import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -17,7 +16,7 @@ import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
 import Components.ConnectModal
-import Components.Traversal.View
+import Components.Traversals.View
 
 
 view : Model -> Html Msg
@@ -36,7 +35,14 @@ view model =
           , div [ id "app-body" ]
               (List.concat
                   [ defaultColumnDivs model
-                  , traversalDivs model
+                  , List.map
+                      (\div -> Html.map TraversalMsg div)
+                      (Components.Traversals.View.view
+                          model.cotoSelection 
+                          model.cotonoma 
+                          model.graph 
+                          model.traversals
+                      )
                   , [ flowStockSwitch model ]
                   ]
               )
@@ -103,20 +109,6 @@ defaultColumnDivs model =
             model.graph
         ]
     ]
-    
-
-traversalDivs : Model -> List (Html Msg)
-traversalDivs model =
-    Dict.toList model.traversals
-    |> List.filterMap
-        (\(cotoId, traversal) ->
-            Components.Traversal.View.view traversal model.cotoSelection model.cotonoma model.graph
-        )
-    |> List.map 
-        (\traversalDiv ->
-            div [ class "main-traversal" ]
-                [ Html.map TraversalMsg traversalDiv ]
-        )
     
 
 cotoSelectionTools : Model -> Html Msg

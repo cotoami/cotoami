@@ -31,8 +31,9 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Traversal.Messages
-import Components.Traversal.Update
+import Components.Traversals.Messages
+import Components.Traversals.Model exposing (openTraversal)
+import Components.Traversals.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -363,14 +364,12 @@ update msg model =
             
         TraversalMsg subMsg ->
             let
-                ( ( graph, traversals ), cmd ) = 
-                    Components.Traversal.Update.update 
-                        subMsg 
-                        ( model.graph, model.traversals )
-                newModel = { model | graph = graph, traversals = traversals }
+                ( traversals, cmd ) = 
+                    Components.Traversals.Update.update subMsg model.traversals
+                newModel = { model | traversals = traversals }
             in
                 case subMsg of
-                    Components.Traversal.Messages.CotoClick cotoId ->
+                    Components.Traversals.Messages.CotoClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map TraversalMsg cmd ]
                     _ -> 
                         newModel ! [ Cmd.map TraversalMsg cmd ]
@@ -390,14 +389,6 @@ clickCoto cotoId model =
         { model 
         | cotoSelection = updateCotoSelection cotoId model.cotoSelection
         }
-
-
-openTraversal : CotoId -> Dict.Dict CotoId Traversal -> Dict.Dict CotoId Traversal
-openTraversal cotoId traversals =
-    if Dict.member cotoId traversals then
-        traversals
-    else
-        Dict.insert cotoId (initTraversal cotoId) traversals
                       
 
 pinSelectedCotos : Model -> Model
