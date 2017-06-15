@@ -75,6 +75,14 @@ openTraversal cotoId model =
         | traversals = Dict.insert cotoId (initTraversal cotoId) model.traversals
         , order = cotoId :: model.order
         }
+  
+
+removeTraversal : CotoId -> Model -> Model
+removeTraversal cotoId model =   
+    { model
+    | traversals = Dict.remove cotoId model.traversals
+    , order = List.filter (\id -> id /= cotoId) model.order
+    }
         
         
 updateTraversal : Traversal -> Model -> Model
