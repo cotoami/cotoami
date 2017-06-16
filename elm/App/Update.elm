@@ -453,6 +453,7 @@ loadHome model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -475,6 +476,7 @@ loadCotonoma key model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
     } ! 
         [ fetchRecentCotonomas
         , fetchCotonoma key 
