@@ -200,10 +200,14 @@ div.main-traversal {
 }
 
 @media (#{$wide-viewport}) {
+  #app-body {
+    overflow-x: hidden !important;
+  }
+  
   #app-layout {
     flex-direction: row;
     width: 100%;
-    margin: 0 auto;
+    margin: 0 auto !important;
     
     div.main-column {
       display: flex;

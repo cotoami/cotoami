@@ -359,6 +359,7 @@ update msg model =
             , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False
+            , viewInMobile = TraversalsView
             } ! []
             
         TraversalMsg subMsg ->
