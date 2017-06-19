@@ -13,8 +13,8 @@ import Components.Traversals.Messages exposing (..)
 import Components.Traversals.Model exposing (..)
 
 
-view : CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
-view selection maybeCotonoma graph model =
+view : Bool -> CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
+view activeOnMobile selection maybeCotonoma graph model =
     model.order
     |> List.filterMap
         (\cotoId ->
@@ -24,7 +24,17 @@ view selection maybeCotonoma graph model =
                     traversal |> maybeTraversalDiv selection maybeCotonoma graph
         )
     |> List.map 
-        (\traversalDiv -> div [ class "main-traversal" ] [ traversalDiv ] )
+        (\traversalDiv -> 
+            div [ classList 
+                    [ ( "main-column", True )
+                    , ( "main-traversal", True )
+                    , ( "activeOnMobile", activeOnMobile )
+                    , ( "animated", activeOnMobile )
+                    , ( "fadeIn", activeOnMobile )
+                    ]
+                ] 
+                [ traversalDiv ] 
+        )
 
 
 maybeTraversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> Maybe (Html Msg)

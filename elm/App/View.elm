@@ -40,6 +40,7 @@ view model =
                   , List.map
                       (\div -> Html.map TraversalMsg div)
                       (Components.Traversals.View.view
+                          (model.viewInMobile == TraversalsView)
                           model.cotoSelection 
                           model.cotonoma 
                           model.graph 

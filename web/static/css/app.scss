@@ -60,7 +60,7 @@ $tool-button-color: #3572A5 !default;
 
 #app-body {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
   z-index: 1;
   width: 100%;
   padding-top: 35px;
@@ -138,6 +138,7 @@ $tool-button-color: #3572A5 !default;
 }
 
 div.main-traversal {
+  width: 90vw;
   display: flex;
   background-color: #e8e8e8;
   overflow-x: auto;
