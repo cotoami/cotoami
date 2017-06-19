@@ -55,22 +55,6 @@
         font-weight: bold;
       }
     }
-    
-    div.coto-body {
-      position: relative;
-      
-      a.open-coto {
-        display: none;
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 2;
-        
-        i {
-          font-size: 30px;
-        }
-      }
-    }
   }
 }
 .editing #timeline {

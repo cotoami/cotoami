@@ -83,21 +83,6 @@ addRootConnection coto graph =
         }
 
 
-getTraversalStarts : Graph -> List ( Coto, List Connection )
-getTraversalStarts graph =
-    List.filterMap 
-        (\conn ->
-            case Dict.get conn.end graph.cotos of
-                Nothing -> Nothing
-                Just rootCoto ->
-                    case Dict.get rootCoto.id graph.connections of
-                        Nothing -> Nothing
-                        Just connections -> Just ( rootCoto, connections )
-                      
-        ) 
-        graph.rootConnections
-
-
 addConnection : Coto -> Coto -> Graph -> Graph
 addConnection start end graph =
     let
@@ -144,54 +129,3 @@ addConnections startCoto endCotos graph =
         endCotos
         
     
-type alias Traversal =
-    { start : CotoId
-    , steps : List CotoId
-    }
-
-
-type alias Traverse =
-    { traversal : Traversal
-    , startIndex : Int
-    , endCotoId : CotoId
-    }                
-
-
-initTraversal : CotoId -> Maybe CotoId -> Traversal
-initTraversal start maybeNext =
-    { start = start
-    , steps = 
-        case maybeNext of
-            Nothing -> []
-            Just next -> [ next ]
-    }
-
-
-doTraverse : Traverse -> Traversal
-doTraverse traverse =
-    let
-        traversal = traverse.traversal
-        stepsCount = List.length traversal.steps
-    in
-        { traversal
-        | steps = 
-            traversal.steps
-            |> List.drop (stepsCount - (traverse.startIndex + 1))
-            |> (::) traverse.endCotoId
-        }
-
-
-traversed : Int -> CotoId -> Traversal -> Bool
-traversed index cotoId traversal =
-    let
-        steps = 
-          if index < 0 then
-              traversal.steps |> List.reverse 
-          else
-              traversal.steps |> List.reverse |> List.drop (index + 1)
-          
-    in  
-        case List.head steps of
-            Nothing -> False
-            Just nextStep -> nextStep == cotoId
-            

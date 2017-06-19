@@ -1,6 +1,6 @@
 @import "variables.scss";
 
-html, body, #elm-container, #app, #app-body {
+html, body, #elm-container, #app, #app-body, #app-layout {
   height: 100%;
 }
 
@@ -8,6 +8,10 @@ html, body, #elm-container, #app {
   overflow: hidden;
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.elm-overlay {
+  z-index: 200;
 }
 
 .hidden {
@@ -55,12 +59,30 @@ $tool-button-color: #3572A5 !default;
 }
 
 #app-body {
-  display: flex;
-  flex-direction: column-reverse;
-  z-index: 1;
   width: 100%;
+}
+.traversals-view-in-mobile #app-body {
+  overflow-x: auto;
+  background-color: #e8e8e8;
+}
+
+#app-layout {
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
   padding-top: 35px;
   box-sizing: border-box;
+  
+  div.main-column {
+    display: none;
+    
+    &.activeOnMobile {
+      display: flex;
+    }
+  }
+}
+.traversals-view-in-mobile #app-layout {
+  margin-left: 5px;
 }
 
 #main-nav {
@@ -70,7 +92,7 @@ $tool-button-color: #3572A5 !default;
   left: 0;
   right: 0;
   padding: 10px 20px;
-  border-bottom: solid 1px #eee;
+  border-bottom: solid 1px #ddd;
   background-color: #fff;
   animation-duration: 0.5s;
   
@@ -93,9 +115,8 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-timeline {
-  display: flex;
-  // http://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   flex: 1;
+  display: flex;
   padding: 0 10px;
   background-color: #f8f8f8;
 }
@@ -107,36 +128,14 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-#main-serendipity {
-  display: none;  // not yet implemented
-  
-  position: absolute;
-  z-index: 3;
-  top: 35px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0;
-  background-color: #fbfbfb;
-  animation-duration: 0.5s;
-  
-  &.neverToggled {
-    display: none;
-  }
-}
-
 #main-stock {
-  // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
   display: flex;
-  
   position: absolute;
   z-index: 3;
   top: 35px;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0;
-  padding-left: 10px;
   background-color: #f2f2f2;
   animation-duration: 0.5s;
   overflow-x: auto;
@@ -148,42 +147,71 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-div.flow-stock-switch {
+div.main-traversal {
+  min-width: 95vw;
+  width: 95vw;
+  display: flex;
+  background-color: #e8e8e8;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#view-switch-container {
   z-index: 4;
   display: inline-block;
   position: absolute;
   top: 0;
   bottom: 0;
-  margin: auto;
-  height: 60px;
-  border: solid 1px #ddd;
-  background-color: #fff;
-  
-  i {
-    width: 24px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 60px;
-  }
-}
-
-#open-flow {
-  left: 0;
-  border-radius: 0 6px 6px 0;
-  border-left-style: none;
-}
-
-#open-stock {
   right: 0;
-  border-radius: 6px 0 0 6px;
-  border-right-style: none;
+  margin: auto;
+  height: 210px;
+  
+  div.view-switch {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 60px;
+    border: solid 1px #ddd;
+    border-radius: 6px 0 0 6px;
+    border-right-style: none;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    i {
+      width: 24px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 60px;
+    }
+    
+    &.selected {
+      opacity: 0.5;
+      box-shadow: none;
+      
+      i {
+        opacity: 0.5;
+      }
+    }
+    
+    &.empty i {
+      color: gray;
+      opacity: 0.3;
+    }
+  }
 }
 
 @media (#{$wide-viewport}) {
   #app-body {
+    overflow-x: hidden !important;
+  }
+  
+  #app-layout {
     flex-direction: row;
     width: 100%;
-    margin: 0 auto;
+    margin: 0 auto !important;
+    
+    div.main-column {
+      display: flex;
+    }
   }
   
   #main-nav {
@@ -216,36 +244,29 @@ div.flow-stock-switch {
   }
   
   #main-timeline {
-    flex: 3;
-    // http://stackoverflow.com/questions/15381172/css-flexbox-child-height-100
+    flex: 1;
     height: 100%;
     padding: 0;
-  }
-  
-  #main-serendipity {
-    display: none;  // not yet implemented
-
-    position: relative;
-    top: auto;
-    flex: 2;
-    height: 100%;
-    animation-name: none;
   }
 
   #main-stock {
-    // https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent
+    flex: 1;
     display: flex !important;
     position: relative;
     top: auto;
-    flex: 2;
     border-bottom-style: none;
-    margin-bottom: 0;
-    padding: 0;
     animation-name: none;
     overflow-y: hidden;
   }
   
-  div.flow-stock-switch {
+  div.main-traversal {
+    min-width: auto;
+    width: auto;
+    flex: 1;
+    margin: 0;
+  }
+  
+  #view-switch-container {
     display: none;
   }
 }

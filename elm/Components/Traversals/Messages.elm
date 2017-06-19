@@ -1,7 +1,7 @@
-module Components.Pinned.Messages exposing (..)
+module Components.Traversals.Messages exposing (..)
 
 import App.Types exposing (CotoId, CotonomaKey)
-import App.Graph exposing (Traverse)
+import Components.Traversals.Model exposing (Traverse)
 
 
 type Msg
@@ -10,3 +10,4 @@ type Msg
     | CotonomaClick CotonomaKey
     | TraverseClick Traverse
     | OpenTraversal CotoId
+    | CloseTraversal CotoId

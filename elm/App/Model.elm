@@ -5,18 +5,20 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
-import App.Graph exposing (Graph, initGraph, Traversal)
+import App.Graph exposing (Graph, initGraph)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
+import Components.Traversals.Model
 
 
 type alias Model =
     { clientId : String
     , route : Route
+    , viewInMobile : ViewInMobile
     , ctrlDown : Bool
     , navigationToggled : Bool
     , navigationOpen : Bool
@@ -37,12 +39,8 @@ type alias Model =
     , connectingTo : Maybe Int
     , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
-    , stockToggled : Bool
-    , stockOpen : Bool
     , graph : Graph
-    , traversals : Dict.Dict CotoId Traversal
-    , serendipityToggled : Bool
-    , serendipityOpen : Bool
+    , traversals : Components.Traversals.Model.Model
     }
 
 
@@ -53,6 +51,7 @@ initModel seed route =
     in
         { clientId = Uuid.toString newUuid
         , route = route
+        , viewInMobile = TimelineView
         , ctrlDown = False
         , navigationToggled = False
         , navigationOpen = False
@@ -73,12 +72,8 @@ initModel seed route =
         , connectingTo = Nothing
         , connectModalOpen = False
         , cotonomaModal = Components.CotonomaModal.Model.initModel
-        , stockToggled = False
-        , stockOpen = False
         , graph = initGraph
-        , traversals = Dict.empty
-        , serendipityToggled = False
-        , serendipityOpen = False
+        , traversals = Components.Traversals.Model.initModel
         }
 
 

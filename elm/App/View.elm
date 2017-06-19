@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
+import App.Types exposing (ViewInMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
@@ -14,78 +15,46 @@ import Components.ProfileModal
 import Components.CotoModal
 import Components.Timeline.View
 import Components.CotonomaModal.View
-import Components.Serendipity.View
 import Components.Pinned.View
 import Components.ConnectModal
+import Components.Traversals.Model
+import Components.Traversals.View
 
 
 view : Model -> Html Msg
 view model =
     let
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
+        viewInMobile =
+            case model.viewInMobile of
+                TimelineView -> "timeline"
+                PinnedView -> "pinned"
+                TraversalsView -> "traversals"
     in
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( "navigation-is-not-empty", not (isNavigationEmpty model) )
-              , ( "stock-is-not-empty", not (isStockEmpty model) )
+              , ( viewInMobile ++ "-view-in-mobile", True )
               ] 
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
-              [ div 
-                  [ id "main-nav" 
-                  , classList 
-                      [ ( "neverToggled", not model.navigationToggled )
-                      , ( "empty", isNavigationEmpty model )
-                      , ( "notEmpty", not (isNavigationEmpty model) )
-                      , ( "animated", model.navigationToggled )
-                      , ( "slideInDown", model.navigationToggled && model.navigationOpen )
-                      , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
-                      ]
-                  ] (Components.Navigation.view model)
-              , div [ id "main-timeline" ]
-                  [ Html.map TimelineMsg 
-                      (Components.Timeline.View.view 
-                          model.cotoSelection
-                          model.cotonoma
-                          model.session
-                          model.graph
-                          model.timeline 
-                      )
-                  ]
-              , div 
-                  [ id "main-serendipity"
-                  , classList 
-                      [ ( "neverToggled", not model.serendipityToggled )
-                      , ( "animated", model.serendipityToggled )
-                      , ( "slideInLeft", model.serendipityToggled && model.serendipityOpen )
-                      , ( "slideOutLeft", model.serendipityToggled && not model.serendipityOpen )
-                      ]
-                  ]
-                  [ Components.Serendipity.View.view model
-                  ]
-              , div 
-                  [ id "main-stock"
-                  , classList 
-                      [ ( "neverToggled", not model.stockToggled )
-                      , ( "empty", isStockEmpty model )
-                      , ( "notEmpty", not (isStockEmpty model) )
-                      , ( "animated", model.stockToggled )
-                      , ( "slideInRight", model.stockToggled && model.stockOpen )
-                      , ( "slideOutRight", model.stockToggled && not model.stockOpen )
-                      ]
-                  ] 
-                  [ Html.map ConnectionsMsg 
-                      (Components.Pinned.View.view 
-                          model.traversals
-                          model.cotoSelection
-                          model.cotonoma
-                          model.graph
-                      )
-                  ]
-              , flowStockSwitch model
-              ]
+                [ div [ id "app-layout" ]
+                    (List.concat
+                        [ defaultColumnDivs model
+                        , List.map
+                            (\div -> Html.map TraversalMsg div)
+                            (Components.Traversals.View.view
+                                (model.viewInMobile == TraversalsView)
+                                model.cotoSelection 
+                                model.cotonoma 
+                                model.graph 
+                                model.traversals
+                            )
+                        , [ viewSwitchContainerDiv model ]
+                        ]
+                    )
+                ]
           , cotoSelectionTools model
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
@@ -108,6 +77,54 @@ view model =
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
 
+
+defaultColumnDivs : Model -> List (Html Msg)
+defaultColumnDivs model =
+    [ div 
+        [ id "main-nav" 
+        , classList 
+            [ ( "neverToggled", not model.navigationToggled )
+            , ( "empty", isNavigationEmpty model )
+            , ( "notEmpty", not (isNavigationEmpty model) )
+            , ( "animated", model.navigationToggled )
+            , ( "slideInDown", model.navigationToggled && model.navigationOpen )
+            , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
+            ]
+        ] (Components.Navigation.view model)
+    , div 
+        [ id "main-timeline"
+        , classList 
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == TimelineView )
+            , ( "animated", model.viewInMobile == TimelineView )
+            , ( "fadeIn", model.viewInMobile == TimelineView )
+            ] 
+        ]
+        [ Html.map TimelineMsg 
+            (Components.Timeline.View.view 
+                model.cotoSelection
+                model.cotonoma
+                model.session
+                model.graph
+                model.timeline 
+            )
+        ]
+    , div 
+        [ id "main-stock"
+        , classList 
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == PinnedView )
+            , ( "animated", model.viewInMobile == PinnedView )
+            , ( "fadeIn", model.viewInMobile == PinnedView )
+            ]
+        ] 
+        [ Components.Pinned.View.view 
+            model.cotoSelection
+            model.cotonoma
+            model.graph
+        ]
+    ]
+    
 
 cotoSelectionTools : Model -> Html Msg
 cotoSelectionTools model =
@@ -146,33 +163,55 @@ cotoSelectionTools model =
                         ]
                     ]
             ]
-
-
-flowStockSwitch : Model -> Html Msg
-flowStockSwitch model =
-    if isStockEmpty model then
-        div [] []
-    else
-        let
-            ( divId, linkTitle, icon ) =
-                if model.stockOpen then
-                    ( "open-flow"
-                    , "Show timeline"
-                    , i [ class "fa fa-comments", (attribute "aria-hidden" "true") ] []
-                    
-                    )
-                else
-                    ( "open-stock"
-                    , "Show connections"
-                    , i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                    )
-        in
-            div
-                [ id divId, class "flow-stock-switch" ]
-                [ a 
-                    [ class "tool-button"
-                    , title linkTitle
-                    , onClick StockToggle 
-                    ] 
-                    [ icon ] 
+            
+            
+viewSwitchContainerDiv : Model -> Html Msg
+viewSwitchContainerDiv model =
+    div
+        [ id "view-switch-container" ]
+        [ viewSwitchDiv 
+            "switch-to-timeline" 
+            "fa-comments" 
+            "Switch to timeline" 
+            (model.viewInMobile == TimelineView) 
+            False
+            (SwitchViewInMobile TimelineView)
+        , viewSwitchDiv 
+            "switch-to-pinned" 
+            "fa-thumb-tack" 
+            "Switch to pinned cotos" 
+            (model.viewInMobile == PinnedView) 
+            (isStockEmpty model)
+            (SwitchViewInMobile PinnedView)
+        , viewSwitchDiv 
+            "switch-to-traversals" 
+            "fa-share-alt" 
+            "Switch to traversals" 
+            (model.viewInMobile == TraversalsView) 
+            (Components.Traversals.Model.isEmpty model.traversals)
+            (SwitchViewInMobile TraversalsView)
+        ]
+    
+    
+viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
+viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
+    let
+        icon = i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] []
+    in
+        div
+            [ id divId
+            ,  classList 
+                [ ( "view-switch", True )
+                , ( "selected", selected )
+                , ( "empty", empty )
                 ]
+            ]
+            [ if selected || empty then
+                span [ class "tool-button" ] [ icon ]
+              else
+                a [ class "tool-button"
+                  , title buttonTitle
+                  , onClick onClickMsg
+                  ] 
+                  [ icon ] 
+            ]

@@ -31,8 +31,9 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Pinned.Messages
-import Components.Pinned.Update
+import Components.Traversals.Messages
+import Components.Traversals.Model
+import Components.Traversals.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -91,12 +92,11 @@ update msg model =
             , navigationOpen = (not model.navigationOpen) 
             } ! []
             
-        StockToggle ->
+        SwitchViewInMobile view ->
             { model 
-            | stockToggled = True
-            , stockOpen = (not model.stockOpen) 
+            | viewInMobile = view
             } ! []
-            
+                        
         HomeClick ->
             changeLocationToHome model
             
@@ -242,6 +242,9 @@ update msg model =
                             , fetchRecentCotonomas
                             , fetchSubCotonomas model.cotonoma
                             ]
+                            
+                    Components.Timeline.Messages.OpenTraversal cotoId ->
+                        openTraversal cotoId model ! [ Cmd.map TimelineMsg cmd ]
 
                     _ -> 
                         newModel ! [ Cmd.map TimelineMsg cmd ]
@@ -311,7 +314,13 @@ update msg model =
                                         commands
                             _ -> 
                                 newModel ! commands
-                                
+        
+        CotoClick cotoId ->
+            (clickCoto cotoId model) ! []
+            
+        OpenTraversal cotoId ->
+            openTraversal cotoId model ! []
+                
         CotonomaClick key ->
             changeLocationToCotonoma key model
             
@@ -325,20 +334,6 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
-                
-        ConnectionsMsg subMsg ->
-            let
-                ( ( graph, traversals ), cmd ) = 
-                    Components.Pinned.Update.update 
-                        subMsg 
-                        ( model.graph, model.traversals )
-                newModel = { model | graph = graph, traversals = traversals }
-            in
-                case subMsg of
-                    Components.Pinned.Messages.CotoClick cotoId ->
-                        (clickCoto cotoId newModel) ! [ Cmd.map ConnectionsMsg cmd ]
-                    _ -> 
-                        newModel ! [ Cmd.map ConnectionsMsg cmd ]
             
         Pin ->
             pinSelectedCotos model ! []
@@ -358,15 +353,28 @@ update msg model =
             
         Connect startCoto endCotos ->
             { model 
-            | graph = 
-                model.graph |> addConnections startCoto endCotos
+            | graph = model.graph |> addConnections startCoto endCotos
+            , traversals = Components.Traversals.Model.openTraversal startCoto.id model.traversals
             , cotoSelection = []
             , connectMode = False 
             , connectModalOpen = False
+            , viewInMobile = TraversalsView
             } ! []
-
-
-clickCoto : Int -> Model -> Model
+            
+        TraversalMsg subMsg ->
+            let
+                ( traversals, cmd ) = 
+                    Components.Traversals.Update.update subMsg model.traversals
+                newModel = { model | traversals = traversals }
+            in
+                case subMsg of
+                    Components.Traversals.Messages.CotoClick cotoId ->
+                        (clickCoto cotoId newModel) ! [ Cmd.map TraversalMsg cmd ]
+                    _ -> 
+                        newModel ! [ Cmd.map TraversalMsg cmd ]
+      
+      
+clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
     if model.connectMode then
         if model.cotoSelection |> List.member cotoId then
@@ -380,7 +388,7 @@ clickCoto cotoId model =
         { model 
         | cotoSelection = updateCotoSelection cotoId model.cotoSelection
         }
-                        
+                      
 
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
@@ -444,6 +452,7 @@ loadHome model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
     } ! 
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -466,7 +475,16 @@ loadCotonoma key model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
     } ! 
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
+
+
+openTraversal : CotoId -> Model -> Model
+openTraversal cotoId model =
+    { model 
+    | traversals = Components.Traversals.Model.openTraversal cotoId model.traversals
+    , viewInMobile = TraversalsView
+    }

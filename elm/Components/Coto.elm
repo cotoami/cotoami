@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Graph exposing (Graph, pinned, hasChildren, Traversal, Traverse)
+import App.Graph exposing (Graph, pinned, hasChildren)
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -51,15 +51,4 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             else
                 div [] []
 
-
-traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg
-traverseButtonDiv buttonClick index cotoId traversal graph =
-    if hasChildren cotoId graph then
-        div [ class "sub-cotos-button" ]
-            [ a [ onClickWithoutPropagation (buttonClick (Traverse traversal index cotoId)) ]
-                [ i [ class "material-icons" ] [ text "more_horiz" ]
-                ]
-            ]
-    else
-        div [] []
             

@@ -13,7 +13,7 @@ import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types exposing (Session, Cotonoma, CotoSelection)
-import App.Graph exposing (Graph)
+import App.Graph exposing (Graph, member)
 import App.Markdown
 import Components.Timeline.Model exposing (Post, Model, toCoto)
 import Components.Timeline.Messages exposing (..)
@@ -112,7 +112,7 @@ postDiv selection maybeCotonoma maybeSession graph post =
             [ class "coto-inner" ]
             [ headerDiv maybeCotonoma graph post
             , authorDiv maybeSession post
-            , bodyDiv post
+            , bodyDiv graph post
             , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
             ]
         ]
@@ -151,18 +151,27 @@ authorDiv maybeSession post =
                             ]
             
     
-bodyDiv : Post -> Html Msg
-bodyDiv post =
+bodyDiv : Graph -> Post -> Html Msg
+bodyDiv graph post =
     div [ class "coto-body" ]
         [ (case post.cotoId of
             Nothing -> span [] []
             Just cotoId ->
-                a 
-                    [ class "tool-button open-coto"
-                    , title "Open coto view"
-                    , onClickWithoutPropagation (PostOpen post)
-                    ] 
-                    [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                span [ class "coto-tools" ]
+                     [ if App.Graph.member cotoId graph then
+                        a [ class "tool-button traverse-coto"
+                            , title "Open coto traversal"
+                            , onClickWithoutPropagation (OpenTraversal cotoId)
+                            ] 
+                            [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                       else
+                         span [] []
+                     , a [ class "tool-button open-coto"
+                         , title "Open coto view"
+                         , onClickWithoutPropagation (PostOpen post)
+                         ] 
+                         [ i [ class "material-icons" ] [ text "settings" ] ]
+                     ]
           )
         , if post.asCotonoma then
             div [ class "coto-as-cotonoma" ]

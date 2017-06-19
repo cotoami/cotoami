@@ -4,7 +4,7 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.Types exposing (Session, Amishi, Coto, Cotonoma, CotonomaKey)
+import App.Types exposing (Session, Amishi, Coto, CotoId, Cotonoma, CotonomaKey, ViewInMobile)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -12,14 +12,14 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
-import Components.Pinned.Messages
+import Components.Traversals.Messages
 
 
 type Msg
     = NoOp
     | OnLocationChange Location
     | NavigationToggle
-    | StockToggle
+    | SwitchViewInMobile ViewInMobile
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
@@ -38,13 +38,15 @@ type Msg
     | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotoClick CotoId
+    | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
-    | ConnectionsMsg Components.Pinned.Messages.Msg
     | Pin
     | ClearSelection
     | SetConnectMode Bool
     | CloseConnectModal
     | Connect Coto (List Coto)
+    | TraversalMsg Components.Traversals.Messages.Msg
     
