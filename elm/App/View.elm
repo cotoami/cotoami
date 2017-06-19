@@ -25,30 +25,36 @@ view : Model -> Html Msg
 view model =
     let
         anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
+        viewInMobile =
+            case model.viewInMobile of
+                TimelineView -> "timeline"
+                PinnedView -> "pinned"
+                TraversalsView -> "traversals"
     in
       div [ id "app" 
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( "navigation-is-not-empty", not (isNavigationEmpty model) )
-              , ( "stock-is-not-empty", not (isStockEmpty model) )
+              , ( viewInMobile ++ "-view-in-mobile", True )
               ] 
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
-              (List.concat
-                  [ defaultColumnDivs model
-                  , List.map
-                      (\div -> Html.map TraversalMsg div)
-                      (Components.Traversals.View.view
-                          (model.viewInMobile == TraversalsView)
-                          model.cotoSelection 
-                          model.cotonoma 
-                          model.graph 
-                          model.traversals
-                      )
-                  , [ viewSwitchContainerDiv model ]
-                  ]
-              )
+                [ div [ id "app-layout" ]
+                    (List.concat
+                        [ defaultColumnDivs model
+                        , List.map
+                            (\div -> Html.map TraversalMsg div)
+                            (Components.Traversals.View.view
+                                (model.viewInMobile == TraversalsView)
+                                model.cotoSelection 
+                                model.cotonoma 
+                                model.graph 
+                                model.traversals
+                            )
+                        , [ viewSwitchContainerDiv model ]
+                        ]
+                    )
+                ]
           , cotoSelectionTools model
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)

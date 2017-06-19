@@ -4,11 +4,6 @@ div.traversal {
   flex: 1;
   position: relative;
   
-  @media (#{$wide-viewport}) {
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-  
   div.column-header {
     margin-bottom: 5px;
     padding-top: 8px;
@@ -26,13 +21,8 @@ div.traversal {
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 10px;
+    padding: 5px;
     padding-bottom: 50px;
-    
-    @media (#{$wide-viewport}) {
-      padding: 5px;
-      padding-bottom: 50px;
-    }
     
     div.coto {
       div.coto-header {

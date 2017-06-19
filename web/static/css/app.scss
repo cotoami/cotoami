@@ -1,6 +1,6 @@
 @import "variables.scss";
 
-html, body, #elm-container, #app, #app-body {
+html, body, #elm-container, #app, #app-body, #app-layout {
   height: 100%;
 }
 
@@ -59,10 +59,17 @@ $tool-button-color: #3572A5 !default;
 }
 
 #app-body {
+  width: 100%;
+}
+.traversals-view-in-mobile #app-body {
+  overflow-x: auto;
+  background-color: #e8e8e8;
+}
+
+#app-layout {
+  z-index: 1;
   display: flex;
   flex-direction: row;
-  z-index: 1;
-  width: 100%;
   padding-top: 35px;
   box-sizing: border-box;
   
@@ -73,6 +80,9 @@ $tool-button-color: #3572A5 !default;
       display: flex;
     }
   }
+}
+.traversals-view-in-mobile #app-layout {
+  margin-left: 5px;
 }
 
 #main-nav {
@@ -138,7 +148,8 @@ $tool-button-color: #3572A5 !default;
 }
 
 div.main-traversal {
-  width: 90vw;
+  min-width: 95vw;
+  width: 95vw;
   display: flex;
   background-color: #e8e8e8;
   overflow-x: auto;
@@ -189,7 +200,7 @@ div.main-traversal {
 }
 
 @media (#{$wide-viewport}) {
-  #app-body {
+  #app-layout {
     flex-direction: row;
     width: 100%;
     margin: 0 auto;
@@ -245,7 +256,10 @@ div.main-traversal {
   }
   
   div.main-traversal {
+    min-width: auto;
+    width: auto;
     flex: 1;
+    margin: 0;
   }
   
   #view-switch-container {
