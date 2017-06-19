@@ -65,6 +65,14 @@ $tool-button-color: #3572A5 !default;
   width: 100%;
   padding-top: 35px;
   box-sizing: border-box;
+  
+  div.main-column {
+    display: none;
+    
+    &.activeOnMobile {
+      display: flex;
+    }
+  }
 }
 
 #main-nav {
@@ -156,16 +164,20 @@ div.main-traversal {
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     
-    &.selected {
-      opacity: 0.5;
-      box-shadow: none;
-    }
-    
     i {
       width: 24px;
       text-align: center;
       font-size: 16px;
       line-height: 60px;
+    }
+    
+    &.selected {
+      opacity: 0.5;
+      box-shadow: none;
+      
+      i {
+        opacity: 0.5;
+      }
     }
     
     &.empty i {
@@ -180,6 +192,10 @@ div.main-traversal {
     flex-direction: row;
     width: 100%;
     margin: 0 auto;
+    
+    div.main-column {
+      display: flex;
+    }
   }
   
   #main-nav {

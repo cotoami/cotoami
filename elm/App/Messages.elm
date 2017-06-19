@@ -4,7 +4,7 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.Types exposing (Session, Amishi, Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types exposing (Session, Amishi, Coto, CotoId, Cotonoma, CotonomaKey, ViewInMobile)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -19,7 +19,7 @@ type Msg
     = NoOp
     | OnLocationChange Location
     | NavigationToggle
-    | StockToggle
+    | SwitchViewInMobile ViewInMobile
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))

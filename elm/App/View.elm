@@ -84,7 +84,15 @@ defaultColumnDivs model =
             , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
             ]
         ] (Components.Navigation.view model)
-    , div [ id "main-timeline" ]
+    , div 
+        [ id "main-timeline"
+        , classList 
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == TimelineView )
+            , ( "animated", model.viewInMobile == TimelineView )
+            , ( "fadeIn", model.viewInMobile == TimelineView )
+            ] 
+        ]
         [ Html.map TimelineMsg 
             (Components.Timeline.View.view 
                 model.cotoSelection
@@ -97,12 +105,10 @@ defaultColumnDivs model =
     , div 
         [ id "main-stock"
         , classList 
-            [ ( "neverToggled", not model.stockToggled )
-            , ( "empty", isStockEmpty model )
-            , ( "notEmpty", not (isStockEmpty model) )
-            , ( "animated", model.stockToggled )
-            , ( "fadeIn", model.stockToggled && model.stockOpen )
-            , ( "fadeOut", model.stockToggled && not model.stockOpen )
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == PinnedView )
+            , ( "animated", model.viewInMobile == PinnedView )
+            , ( "fadeIn", model.viewInMobile == PinnedView )
             ]
         ] 
         [ Components.Pinned.View.view 
@@ -162,63 +168,43 @@ viewSwitchContainerDiv model =
             "Switch to timeline" 
             (model.viewInMobile == TimelineView) 
             False
+            (SwitchViewInMobile TimelineView)
         , viewSwitchDiv 
             "switch-to-pinned" 
             "fa-thumb-tack" 
             "Switch to pinned cotos" 
             (model.viewInMobile == PinnedView) 
             (isStockEmpty model)
+            (SwitchViewInMobile PinnedView)
         , viewSwitchDiv 
             "switch-to-traversals" 
             "fa-share-alt" 
             "Switch to traversals" 
             (model.viewInMobile == TraversalsView) 
             (Components.Traversals.Model.isEmpty model.traversals)
+            (SwitchViewInMobile TraversalsView)
         ]
     
     
-viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Html Msg
-viewSwitchDiv divId iconName buttonTitle selected empty =
-    div
-        [ id divId
-        ,  classList 
-            [ ( "view-switch", True )
-            , ( "selected", selected )
-            , ( "empty", empty )
-            ]
-        ]
-        [ a 
-            [ class "tool-button"
-            , title buttonTitle
-            ] 
-            [ i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] [] ] 
-        ]
-        
-
-flowStockSwitch : Model -> Html Msg
-flowStockSwitch model =
-    if isStockEmpty model then
-        div [] []
-    else
-        let
-            ( divId, linkTitle, icon ) =
-                if model.stockOpen then
-                    ( "open-flow"
-                    , "Show timeline"
-                    , i [ class "fa fa-comments", (attribute "aria-hidden" "true") ] []
-                    )
-                else
-                    ( "open-stock"
-                    , "Show connections"
-                    , i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                    )
-        in
-            div
-                [ id divId, class "flow-stock-switch" ]
-                [ a 
-                    [ class "tool-button"
-                    , title linkTitle
-                    , onClick StockToggle 
-                    ] 
-                    [ icon ] 
+viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
+viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
+    let
+        icon = i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] []
+    in
+        div
+            [ id divId
+            ,  classList 
+                [ ( "view-switch", True )
+                , ( "selected", selected )
+                , ( "empty", empty )
                 ]
+            ]
+            [ if selected || empty then
+                span [ class "tool-button" ] [ icon ]
+              else
+                a [ class "tool-button"
+                  , title buttonTitle
+                  , onClick onClickMsg
+                  ] 
+                  [ icon ] 
+            ]

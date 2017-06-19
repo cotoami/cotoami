@@ -92,12 +92,11 @@ update msg model =
             , navigationOpen = (not model.navigationOpen) 
             } ! []
             
-        StockToggle ->
+        SwitchViewInMobile view ->
             { model 
-            | stockToggled = True
-            , stockOpen = (not model.stockOpen) 
+            | viewInMobile = view
             } ! []
-            
+                        
         HomeClick ->
             changeLocationToHome model
             

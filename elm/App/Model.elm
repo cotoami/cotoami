@@ -39,8 +39,6 @@ type alias Model =
     , connectingTo : Maybe Int
     , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
-    , stockToggled : Bool
-    , stockOpen : Bool
     , graph : Graph
     , traversals : Components.Traversals.Model.Model
     }
@@ -74,8 +72,6 @@ initModel seed route =
         , connectingTo = Nothing
         , connectModalOpen = False
         , cotonomaModal = Components.CotonomaModal.Model.initModel
-        , stockToggled = False
-        , stockOpen = False
         , graph = initGraph
         , traversals = Components.Traversals.Model.initModel
         }
