@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
+import App.Types exposing (ViewInMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import Components.AppHeader
@@ -16,6 +17,7 @@ import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
 import Components.ConnectModal
+import Components.Traversals.Model
 import Components.Traversals.View
 
 
@@ -43,7 +45,7 @@ view model =
                           model.graph 
                           model.traversals
                       )
-                  , [ flowStockSwitch model ]
+                  , [ viewSwitchContainerDiv model ]
                   ]
               )
           , cotoSelectionTools model
@@ -99,8 +101,8 @@ defaultColumnDivs model =
             , ( "empty", isStockEmpty model )
             , ( "notEmpty", not (isStockEmpty model) )
             , ( "animated", model.stockToggled )
-            , ( "slideInRight", model.stockToggled && model.stockOpen )
-            , ( "slideOutRight", model.stockToggled && not model.stockOpen )
+            , ( "fadeIn", model.stockToggled && model.stockOpen )
+            , ( "fadeOut", model.stockToggled && not model.stockOpen )
             ]
         ] 
         [ Components.Pinned.View.view 
@@ -148,7 +150,50 @@ cotoSelectionTools model =
                         ]
                     ]
             ]
-
+            
+            
+viewSwitchContainerDiv : Model -> Html Msg
+viewSwitchContainerDiv model =
+    div
+        [ id "view-switch-container" ]
+        [ viewSwitchDiv 
+            "switch-to-timeline" 
+            "fa-comments" 
+            "Switch to timeline" 
+            (model.viewInMobile == TimelineView) 
+            False
+        , viewSwitchDiv 
+            "switch-to-pinned" 
+            "fa-thumb-tack" 
+            "Switch to pinned cotos" 
+            (model.viewInMobile == PinnedView) 
+            (isStockEmpty model)
+        , viewSwitchDiv 
+            "switch-to-traversals" 
+            "fa-share-alt" 
+            "Switch to traversals" 
+            (model.viewInMobile == TraversalsView) 
+            (Components.Traversals.Model.isEmpty model.traversals)
+        ]
+    
+    
+viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Html Msg
+viewSwitchDiv divId iconName buttonTitle selected empty =
+    div
+        [ id divId
+        ,  classList 
+            [ ( "view-switch", True )
+            , ( "selected", selected )
+            , ( "empty", empty )
+            ]
+        ]
+        [ a 
+            [ class "tool-button"
+            , title buttonTitle
+            ] 
+            [ i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] [] ] 
+        ]
+        
 
 flowStockSwitch : Model -> Html Msg
 flowStockSwitch model =
@@ -161,7 +206,6 @@ flowStockSwitch model =
                     ( "open-flow"
                     , "Show timeline"
                     , i [ class "fa fa-comments", (attribute "aria-hidden" "true") ] []
-                    
                     )
                 else
                     ( "open-stock"

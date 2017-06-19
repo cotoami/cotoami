@@ -9,6 +9,12 @@ type Route
     = HomeRoute
     | CotonomaRoute CotonomaKey
     | NotFoundRoute
+    
+    
+type ViewInMobile
+    = TimelineView
+    | PinnedView
+    | TraversalsView
             
 
 type alias Amishi =

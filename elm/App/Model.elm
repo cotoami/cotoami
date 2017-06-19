@@ -18,6 +18,7 @@ import Components.Traversals.Model
 type alias Model =
     { clientId : String
     , route : Route
+    , viewInMobile : ViewInMobile
     , ctrlDown : Bool
     , navigationToggled : Bool
     , navigationOpen : Bool
@@ -52,6 +53,7 @@ initModel seed route =
     in
         { clientId = Uuid.toString newUuid
         , route = route
+        , viewInMobile = TimelineView
         , ctrlDown = False
         , navigationToggled = False
         , navigationOpen = False

@@ -136,35 +136,43 @@ div.main-traversal {
   -webkit-overflow-scrolling: touch;
 }
 
-div.flow-stock-switch {
+#view-switch-container {
   z-index: 4;
   display: inline-block;
   position: absolute;
   top: 0;
   bottom: 0;
-  margin: auto;
-  height: 60px;
-  border: solid 1px #ddd;
-  background-color: #fff;
-  
-  i {
-    width: 24px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 60px;
-  }
-}
-
-#open-flow {
-  left: 0;
-  border-radius: 0 6px 6px 0;
-  border-left-style: none;
-}
-
-#open-stock {
   right: 0;
-  border-radius: 6px 0 0 6px;
-  border-right-style: none;
+  margin: auto;
+  height: 210px;
+  
+  div.view-switch {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 60px;
+    border: solid 1px #ddd;
+    border-radius: 6px 0 0 6px;
+    border-right-style: none;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    &.selected {
+      opacity: 0.5;
+      box-shadow: none;
+    }
+    
+    i {
+      width: 24px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 60px;
+    }
+    
+    &.empty i {
+      color: gray;
+      opacity: 0.3;
+    }
+  }
 }
 
 @media (#{$wide-viewport}) {

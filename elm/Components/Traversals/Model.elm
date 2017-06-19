@@ -66,6 +66,11 @@ initModel =
     }
     
     
+isEmpty : Model -> Bool
+isEmpty model =
+    Dict.isEmpty model.traversals
+    
+    
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     if Dict.member cotoId model.traversals then
