@@ -70,6 +70,11 @@ isEmpty : Model -> Bool
 isEmpty model =
     Dict.isEmpty model.traversals
     
+
+size : Model -> Int
+size model =
+    Dict.size model.traversals
+    
     
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =

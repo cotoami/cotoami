@@ -10,7 +10,7 @@ import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (..)
+import Components.Traversals.Model exposing (Model, Traversal, Traverse, traversed)
 
 
 view : Bool -> CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
@@ -35,6 +35,7 @@ view activeOnMobile selection maybeCotonoma graph model =
                 ] 
                 [ traversalDiv ] 
         )
+    |> (::) (traversalsPaginationDivInMobile activeOnMobile model)
 
 
 maybeTraversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> Maybe (Html Msg)
@@ -161,6 +162,23 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
             , traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
+
+
+traversalsPaginationDivInMobile : Bool -> Model -> Html Msg
+traversalsPaginationDivInMobile activeOnMobile model =
+    if activeOnMobile && (Components.Traversals.Model.size model) > 1 then
+        model.order
+        |> List.indexedMap
+            (\index cotoId ->
+                div [ class "button-container" ]
+                    [ button 
+                        [ class "button", disabled False ]
+                        [ text (toString (index + 1)) ]
+                    ]
+            )
+        |> div [ id "traversals-pagination-in-mobile"]
+      else
+        div [] []
 
 
 traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg

@@ -22,7 +22,7 @@ div.traversal {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 5px;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
     
     div.coto {
       div.coto-header {
@@ -71,6 +71,33 @@ div.traversal {
         text-align: center;
         opacity: 0.4;
       }
+    }
+  }
+}
+
+#traversals-pagination-in-mobile {
+  z-index: 3;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  padding: 0 5px;
+  background-color: #fff;
+  
+  display: flex;
+  
+  @media (#{$wide-viewport}) {
+    display: none;
+  }
+  
+  div.button-container {
+    flex: 1;
+    padding: 5px;
+    text-align: center;
+    
+    button {
+      width: 100%;
     }
   }
 }
