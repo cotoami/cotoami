@@ -10,7 +10,7 @@ import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (..)
+import Components.Traversals.Model exposing (Model, Traversal, Traverse, traversed, inActivePage)
 
 
 view : Bool -> CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
@@ -23,18 +23,23 @@ view activeOnMobile selection maybeCotonoma graph model =
                 Just traversal ->
                     traversal |> maybeTraversalDiv selection maybeCotonoma graph
         )
-    |> List.map 
-        (\traversalDiv -> 
-            div [ classList 
-                    [ ( "main-column", True )
-                    , ( "main-traversal", True )
-                    , ( "activeOnMobile", activeOnMobile )
-                    , ( "animated", activeOnMobile )
-                    , ( "fadeIn", activeOnMobile )
-                    ]
-                ] 
-                [ traversalDiv ] 
+    |> List.indexedMap 
+        (\index traversalDiv -> 
+            let
+                visibleOnMobile = activeOnMobile && (inActivePage index model)
+            in
+                div [ classList 
+                        [ ( "main-column", True )
+                        , ( "main-traversal", True )
+                        , ( "activeOnMobile", visibleOnMobile )
+                        , ( "animated", visibleOnMobile )
+                        , ( "fadeIn", visibleOnMobile )
+                        , ( "not-in-active-page", not (inActivePage index model) )
+                        ]
+                    ] 
+                    [ traversalDiv ] 
         )
+    |> (::) (traversalsPaginationDiv model)
 
 
 maybeTraversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> Maybe (Html Msg)
@@ -161,6 +166,26 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
             , traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
+
+
+traversalsPaginationDiv : Model -> Html Msg
+traversalsPaginationDiv model =
+    if (Components.Traversals.Model.countPages model) > 1 then
+        model.order
+        |> List.indexedMap
+            (\index cotoId ->
+                div [ class "button-container" ]
+                    [ button 
+                        [ class "button"
+                        , disabled (model.activePageIndex == index)
+                        , onClickWithoutPropagation (ChangePage index)
+                        ]
+                        [ text (toString (index + 1)) ]
+                    ]
+            )
+        |> div [ id "traversals-pagination"]
+      else
+        div [] []
 
 
 traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg

@@ -22,7 +22,7 @@ div.traversal {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 5px;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
     
     div.coto {
       div.coto-header {
@@ -74,4 +74,40 @@ div.traversal {
     }
   }
 }
+
+#traversals-pagination {
+  display: none;
+  z-index: 3;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  padding: 0 5px;
+  background-color: #fff;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
   
+  @media (#{$wide-viewport}) {
+    display: block;
+    left: auto;
+    box-shadow: -1px -1px 3px rgba(0, 0, 0, 0.1);
+    padding-right: 26px;
+  }
+  
+  div.button-container {
+    flex: 1;
+    padding: 5px;
+    text-align: center;
+    
+    @media (#{$wide-viewport}) {
+      display: inline-block;
+    }
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+.traversals-view-in-mobile #traversals-pagination {
+  display: flex;
+}

@@ -28,4 +28,7 @@ update msg model =
             ( model |> removeTraversal cotoId
             , Cmd.none 
             )
+            
+        ChangePage pageIndex ->
+            { model | activePageIndex = pageIndex } ! []
         
