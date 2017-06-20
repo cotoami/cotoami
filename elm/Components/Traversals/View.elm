@@ -177,7 +177,8 @@ traversalsPaginationDiv model =
                 div [ class "button-container" ]
                     [ button 
                         [ class "button"
-                        , disabled (model.activePageIndex == index) 
+                        , disabled (model.activePageIndex == index)
+                        , onClickWithoutPropagation (ChangePage index)
                         ]
                         [ text (toString (index + 1)) ]
                     ]

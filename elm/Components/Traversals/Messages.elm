@@ -11,3 +11,4 @@ type Msg
     | TraverseClick Traverse
     | OpenTraversal CotoId
     | CloseTraversal CotoId
+    | ChangePage Int
