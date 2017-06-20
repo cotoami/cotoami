@@ -76,6 +76,7 @@ div.traversal {
 }
 
 #traversals-pagination {
+  display: none;
   z-index: 3;
   position: absolute;
   left: 0;
@@ -85,8 +86,6 @@ div.traversal {
   padding: 0 5px;
   background-color: #fff;
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
-  
-  display: flex;
   
   @media (#{$wide-viewport}) {
     display: block;
@@ -109,4 +108,6 @@ div.traversal {
     }
   }
 }
-  
+.traversals-view-in-mobile #traversals-pagination {
+  display: flex;
+}
