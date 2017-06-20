@@ -88,6 +88,7 @@ openTraversal cotoId model =
         { model
         | traversals = Dict.insert cotoId (initTraversal cotoId) model.traversals
         , order = cotoId :: model.order
+        , activePageIndex = 0
         }
   
 
