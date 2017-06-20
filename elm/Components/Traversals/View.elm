@@ -35,7 +35,7 @@ view activeOnMobile selection maybeCotonoma graph model =
                 ] 
                 [ traversalDiv ] 
         )
-    |> (::) (traversalsPaginationDivInMobile activeOnMobile model)
+    |> (::) (traversalsPaginationDiv model)
 
 
 maybeTraversalDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Traversal -> Maybe (Html Msg)
@@ -164,9 +164,9 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
         ]
 
 
-traversalsPaginationDivInMobile : Bool -> Model -> Html Msg
-traversalsPaginationDivInMobile activeOnMobile model =
-    if activeOnMobile && (Components.Traversals.Model.size model) > 1 then
+traversalsPaginationDiv : Model -> Html Msg
+traversalsPaginationDiv model =
+    if (Components.Traversals.Model.size model) > 1 then
         model.order
         |> List.indexedMap
             (\index cotoId ->
@@ -176,7 +176,7 @@ traversalsPaginationDivInMobile activeOnMobile model =
                         [ text (toString (index + 1)) ]
                     ]
             )
-        |> div [ id "traversals-pagination-in-mobile"]
+        |> div [ id "traversals-pagination"]
       else
         div [] []
 
