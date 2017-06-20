@@ -166,15 +166,20 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
 
 traversalsPaginationDiv : Model -> Html Msg
 traversalsPaginationDiv model =
-    if (Components.Traversals.Model.size model) > 1 then
+    if (Components.Traversals.Model.countPages model) > 1 then
         model.order
         |> List.indexedMap
             (\index cotoId ->
-                div [ class "button-container" ]
-                    [ button 
-                        [ class "button", disabled False ]
-                        [ text (toString (index + 1)) ]
-                    ]
+                let
+                    pageNumber = index + 1
+                in
+                    div [ class "button-container" ]
+                        [ button 
+                            [ class "button"
+                            , disabled (model.activePage == pageNumber) 
+                            ]
+                            [ text (toString pageNumber) ]
+                        ]
             )
         |> div [ id "traversals-pagination"]
       else
