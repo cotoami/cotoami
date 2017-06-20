@@ -57,7 +57,7 @@ type alias Model =
     { traversals : Dict.Dict CotoId Traversal
     , order : List CotoId
     , pageSize : Int
-    , activePage : Int
+    , activePageIndex : Int
     }
       
 
@@ -66,7 +66,7 @@ initModel =
     { traversals = Dict.empty
     , order = []
     , pageSize = 1
-    , activePage = 1
+    , activePageIndex = 0
     }
     
     
@@ -109,4 +109,14 @@ updateTraversal traversal model =
 countPages : Model -> Int
 countPages model =
     ((size model) + model.pageSize - 1) // model.pageSize
+    
+    
+inActivePage : Int -> Model -> Bool
+inActivePage traversalIndex model =
+    let
+        startIndex = model.activePageIndex * model.pageSize
+    in
+        startIndex <= traversalIndex 
+            && traversalIndex < startIndex + model.pageSize
+    
         

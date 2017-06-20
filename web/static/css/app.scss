@@ -258,6 +258,10 @@ div.main-traversal {
     flex: 1;
     margin: 0;
     padding: 0;
+    
+    &.not-in-active-page {
+      display: none !important;
+    }
   }
   
   #view-switch-container {

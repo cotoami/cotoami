@@ -10,7 +10,7 @@ import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (Model, Traversal, Traverse, traversed)
+import Components.Traversals.Model exposing (Model, Traversal, Traverse, traversed, inActivePage)
 
 
 view : Bool -> CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
@@ -23,17 +23,21 @@ view activeOnMobile selection maybeCotonoma graph model =
                 Just traversal ->
                     traversal |> maybeTraversalDiv selection maybeCotonoma graph
         )
-    |> List.map 
-        (\traversalDiv -> 
-            div [ classList 
-                    [ ( "main-column", True )
-                    , ( "main-traversal", True )
-                    , ( "activeOnMobile", activeOnMobile )
-                    , ( "animated", activeOnMobile )
-                    , ( "fadeIn", activeOnMobile )
-                    ]
-                ] 
-                [ traversalDiv ] 
+    |> List.indexedMap 
+        (\index traversalDiv -> 
+            let
+                visibleOnMobile = activeOnMobile && (inActivePage index model)
+            in
+                div [ classList 
+                        [ ( "main-column", True )
+                        , ( "main-traversal", True )
+                        , ( "activeOnMobile", visibleOnMobile )
+                        , ( "animated", visibleOnMobile )
+                        , ( "fadeIn", visibleOnMobile )
+                        , ( "not-in-active-page", not (inActivePage index model) )
+                        ]
+                    ] 
+                    [ traversalDiv ] 
         )
     |> (::) (traversalsPaginationDiv model)
 
@@ -170,16 +174,13 @@ traversalsPaginationDiv model =
         model.order
         |> List.indexedMap
             (\index cotoId ->
-                let
-                    pageNumber = index + 1
-                in
-                    div [ class "button-container" ]
-                        [ button 
-                            [ class "button"
-                            , disabled (model.activePage == pageNumber) 
-                            ]
-                            [ text (toString pageNumber) ]
+                div [ class "button-container" ]
+                    [ button 
+                        [ class "button"
+                        , disabled (model.activePageIndex == index) 
                         ]
+                        [ text (toString (index + 1)) ]
+                    ]
             )
         |> div [ id "traversals-pagination"]
       else
