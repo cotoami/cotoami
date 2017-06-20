@@ -61,10 +61,6 @@ $tool-button-color: #3572A5 !default;
 #app-body {
   width: 100%;
 }
-.traversals-view-in-mobile #app-body {
-  overflow-x: auto;
-  background-color: #e8e8e8;
-}
 
 #app-layout {
   z-index: 1;
@@ -80,9 +76,6 @@ $tool-button-color: #3572A5 !default;
       display: flex;
     }
   }
-}
-.traversals-view-in-mobile #app-layout {
-  margin-left: 5px;
 }
 
 #main-nav {
@@ -148,9 +141,9 @@ $tool-button-color: #3572A5 !default;
 }
 
 div.main-traversal {
-  min-width: 95vw;
-  width: 95vw;
+  flex: 1;
   display: flex;
+  padding: 0 5px;
   background-color: #e8e8e8;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -264,6 +257,7 @@ div.main-traversal {
     width: auto;
     flex: 1;
     margin: 0;
+    padding: 0;
   }
   
   #view-switch-container {
