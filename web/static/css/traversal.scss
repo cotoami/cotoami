@@ -87,21 +87,10 @@ div.traversal {
   background-color: #fff;
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
   
-  @media (#{$wide-viewport}) {
-    display: block;
-    left: auto;
-    box-shadow: -1px -1px 3px rgba(0, 0, 0, 0.1);
-    padding-right: 26px;
-  }
-  
   div.button-container {
     flex: 1;
     padding: 5px;
     text-align: center;
-    
-    @media (#{$wide-viewport}) {
-      display: inline-block;
-    }
     
     button {
       width: 100%;
@@ -110,4 +99,8 @@ div.traversal {
 }
 .traversals-view-in-mobile #traversals-pagination {
   display: flex;
+  
+  @media (#{$wide-viewport}) {
+    display: none;
+  }
 }

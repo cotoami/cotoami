@@ -77,6 +77,9 @@ $tool-button-color: #3572A5 !default;
     }
   }
 }
+.traversals-view-in-mobile #app-layout {
+  background-color: #e8e8e8;
+}
 
 #main-nav {
   position: absolute;
@@ -258,10 +261,6 @@ div.main-traversal {
     flex: 1;
     margin: 0;
     padding: 0;
-    
-    &.not-in-active-page {
-      display: none !important;
-    }
   }
   
   #view-switch-container {
