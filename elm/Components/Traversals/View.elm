@@ -31,6 +31,7 @@ view activeOnMobile selection maybeCotonoma graph model =
                 div [ classList 
                         [ ( "main-column", True )
                         , ( "main-traversal", True )
+                        , ( "main-traversal-" ++ (toString index), True )
                         , ( "activeOnMobile", visibleOnMobile )
                         , ( "animated", visibleOnMobile )
                         , ( "fadeIn", visibleOnMobile )
