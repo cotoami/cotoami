@@ -82,14 +82,14 @@ size model =
     
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
-    if Dict.member cotoId model.traversals then
-        model
-    else
-        { model
-        | traversals = Dict.insert cotoId (initTraversal cotoId) model.traversals
-        , order = cotoId :: model.order
-        , activePageIndex = 0
-        }
+    { model
+    | traversals = Dict.insert cotoId (initTraversal cotoId) model.traversals
+    , order = 
+        model.order
+        |> List.filter (\id -> id /= cotoId)
+        |> (::) cotoId
+    , activePageIndex = 0
+    }
   
 
 removeTraversal : CotoId -> Model -> Model
