@@ -34,7 +34,50 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
           else
               span [] []
         ]
+      
+      
+type alias BodyConfig msg =
+    { openCoto : msg
+    , openTraversal : Maybe (CotoId -> msg)
+    , cotonomaClick : CotonomaKey -> msg
+    , markdown : String -> Html msg
+    }
+        
 
+bodyDiv : Graph -> BodyConfig msg -> Coto -> Html msg
+bodyDiv graph config coto = 
+    div [ class "coto-body" ]
+        [ span [ class "coto-tools" ]
+            [ case config.openTraversal of
+                Nothing -> span [] []
+                Just openTraversal ->
+                    if App.Graph.member coto.id graph then
+                        a [ class "tool-button traverse-coto"
+                          , title "Open coto traversal"
+                          , onClickWithoutPropagation (openTraversal coto.id)
+                          ] 
+                          [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                    else
+                        span [] []
+             , a [ class "tool-button open-coto"
+                 , title "Open coto view"
+                 , onClickWithoutPropagation config.openCoto
+                 ] 
+                 [ i [ class "material-icons" ] [ text "settings" ] ]
+             ]
+        , if coto.asCotonoma then
+            div [ class "coto-as-cotonoma" ]
+                [ a [ href ("/cotonomas/" ++ coto.cotonomaKey)
+                    , onClickWithoutPropagation (config.cotonomaClick coto.cotonomaKey)
+                    ]
+                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                    , span [ class "cotonoma-name" ] [ text coto.content ]
+                    ]
+                ]
+          else 
+              config.markdown coto.content 
+        ]
+        
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
 openTraversalButtonDiv buttonClick maybeCotoId graph =

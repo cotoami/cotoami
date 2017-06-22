@@ -2,7 +2,7 @@ module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing (Coto, Amishi, Cotonoma, decodeAmishi, decodeCotonoma)
+import App.Types exposing (Coto, Amishi, Cotonoma, CotonomaKey, decodeAmishi, decodeCotonoma)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
@@ -13,7 +13,7 @@ type alias Post =
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
-    , cotonomaKey : String
+    , cotonomaKey : CotonomaKey
     , beingDeleted : Bool
     }
 
