@@ -75,7 +75,7 @@ bodyDiv graph config coto =
                     ]
                 ]
           else 
-              config.markdown coto.content 
+            config.markdown coto.content 
         ]
         
 
