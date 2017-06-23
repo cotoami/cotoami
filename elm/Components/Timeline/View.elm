@@ -153,39 +153,19 @@ authorDiv maybeSession post =
     
 bodyDiv : Graph -> Post -> Html Msg
 bodyDiv graph post =
-    div [ class "coto-body" ]
-        [ (case post.cotoId of
-            Nothing -> span [] []
-            Just cotoId ->
-                span [ class "coto-tools" ]
-                     [ if App.Graph.member cotoId graph then
-                        a [ class "tool-button traverse-coto"
-                            , title "Open coto traversal"
-                            , onClickWithoutPropagation (OpenTraversal cotoId)
-                            ] 
-                            [ i [ class "material-icons" ] [ text "open_in_new" ] ]
-                       else
-                         span [] []
-                     , a [ class "tool-button open-coto"
-                         , title "Open coto view"
-                         , onClickWithoutPropagation (PostOpen post)
-                         ] 
-                         [ i [ class "material-icons" ] [ text "settings" ] ]
-                     ]
-          )
-        , if post.asCotonoma then
-            div [ class "coto-as-cotonoma" ]
-                [ a [ href ("/cotonomas/" ++ post.cotonomaKey)
-                    , onClickWithoutPropagation (CotonomaClick post.cotonomaKey)
-                    ]
-                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                    , span [ class "cotonoma-name" ] [ text post.content ]
-                    ]
-                ]
-          else 
-              markdown post.content 
-        ]
-        
+    Components.Coto.bodyDiv 
+        graph 
+        { openCoto = PostOpen post
+        , openTraversal = Just OpenTraversal
+        , cotonomaClick = CotonomaClick
+        , markdown = markdown
+        }
+        { cotoId = post.cotoId
+        , content = post.content 
+        , asCotonoma = post.asCotonoma
+        , cotonomaKey = post.cotonomaKey
+        }
+
         
 markdown : String -> Html Msg
 markdown markdownText =
