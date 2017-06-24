@@ -1,38 +1,47 @@
+@import "variables.scss";
+
 #connect-modal {
-  div.coto {
-    border: 1px solid #ddd;
-    padding: 10px;
-  }
-  
-  div.start-coto {
-    max-height: 15vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  div.end-cotos {
-    max-height: 40vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+  .modal-content {
+    
+    @media (#{$narrow-viewport}) {
+      width: 80vw;
+    }
     
     div.coto {
-      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      padding: 10px;
     }
-  }
-  
-  div.connect-buttons {
-    padding-top: 15px;
-    padding-bottom: 5px;
-    text-align: center;
     
-    button {
-      padding-top: 6px;
+    div.start-coto {
+      max-height: 15vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    div.end-cotos {
+      max-height: 40vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       
-      &.connect-downward {
-        margin-right: 20px;
+      div.coto {
+        margin-bottom: 10px;
       }
-      &.connect-upward {
-        margin-left: 20px;
+    }
+    
+    div.connect-buttons {
+      padding-top: 15px;
+      padding-bottom: 5px;
+      text-align: center;
+      
+      button {
+        padding-top: 6px;
+        
+        &.connect-downward {
+          margin-right: 20px;
+        }
+        &.connect-upward {
+          margin-left: 20px;
+        }
       }
     }
   }
