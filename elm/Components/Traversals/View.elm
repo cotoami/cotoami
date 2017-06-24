@@ -112,6 +112,7 @@ traversalStepCotoDiv selection maybeCotonoma graph traversalStep connections cot
             , ( "selectable", True )
             , ( "active", List.member coto.id selection )
             ]
+        , onClickWithoutPropagation (CotoClick coto.id)
         ]
         [ div [ class "coto-inner" ]
               [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
