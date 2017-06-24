@@ -63,7 +63,7 @@ div.coto.selectable {
     &:hover > div.coto-inner {
       border: 2px solid #ffdd33 !important;
       
-      span.coto-tools {
+      & > div.coto-body > span.coto-tools {
         display: inline !important;
       }
     }
