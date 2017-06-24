@@ -366,7 +366,11 @@ update msg model =
             in
                 case subMsg of
                     Components.Traversals.Messages.CotoClick cotoId ->
-                        (clickCoto cotoId newModel) ! [ Cmd.map TraversalMsg cmd ]
+                        clickCoto cotoId newModel ! [ Cmd.map TraversalMsg cmd ]
+                        
+                    Components.Traversals.Messages.OpenCoto coto ->
+                        openCoto (Just coto) model ! [ Cmd.map TraversalMsg cmd ]
+                      
                     _ -> 
                         newModel ! [ Cmd.map TraversalMsg cmd ]
       

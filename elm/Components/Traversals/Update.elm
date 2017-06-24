@@ -13,6 +13,9 @@ update msg model =
         CotoClick cotoId ->
             model ! []
             
+        OpenCoto coto ->
+            model ! []
+            
         CotonomaClick key ->
             model ! []
             

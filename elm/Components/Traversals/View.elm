@@ -115,7 +115,7 @@ traversalStepCotoDiv selection maybeCotonoma graph traversalStep connections cot
         ]
         [ div [ class "coto-inner" ]
               [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-              , App.Markdown.markdown coto.content
+              , bodyDiv graph coto
               , div [ class "main-sub-border" ] []
               , connectionsDiv traversalStep "sub-cotos" connections selection maybeCotonoma graph
               ]
@@ -163,11 +163,27 @@ cotoDiv ( traversal, index ) selection maybeCotonoma graph coto =
         [ div 
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-            , App.Markdown.markdown coto.content
+            , bodyDiv graph coto
             , traverseButtonDiv TraverseClick index coto.id traversal graph
             ]
         ]
 
+
+bodyDiv : Graph -> Coto -> Html Msg
+bodyDiv graph coto =
+    Components.Coto.bodyDiv 
+        graph 
+        { openCoto = OpenCoto coto
+        , openTraversal = Just OpenTraversal
+        , cotonomaClick = CotonomaClick
+        , markdown = App.Markdown.markdown
+        }
+        { cotoId = Just coto.id
+        , content = coto.content 
+        , asCotonoma = coto.asCotonoma
+        , cotonomaKey = coto.cotonomaKey
+        }
+        
 
 traversalsPaginationDiv : Model -> Html Msg
 traversalsPaginationDiv model =
