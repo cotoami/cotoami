@@ -39,6 +39,7 @@ type Msg
     | OpenCotonomaModal
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
     | CotoClick CotoId
+    | OpenCoto Coto
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value

@@ -72,7 +72,23 @@ cotoDiv selection maybeCotonoma graph coto =
         [ div 
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-            , App.Markdown.markdown coto.content
+            , bodyDiv graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]
         ]
+
+
+bodyDiv : Graph -> Coto -> Html Msg
+bodyDiv graph coto =
+    Components.Coto.bodyDiv 
+        graph 
+        { openCoto = OpenCoto coto
+        , openTraversal = Just OpenTraversal
+        , cotonomaClick = CotonomaClick
+        , markdown = App.Markdown.markdown
+        }
+        { cotoId = Just coto.id
+        , content = coto.content 
+        , asCotonoma = coto.asCotonoma
+        , cotonomaKey = coto.cotonomaKey
+        }

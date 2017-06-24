@@ -225,13 +225,7 @@ update msg model =
                         (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.PostOpen post ->
-                        { newModel 
-                        | cotoModal = 
-                            { cotoModal 
-                            | open = True
-                            , coto = toCoto post
-                            }
-                        } ! [ Cmd.map TimelineMsg cmd ]
+                        openCoto (toCoto post) model ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key newModel
@@ -316,7 +310,10 @@ update msg model =
                                 newModel ! commands
         
         CotoClick cotoId ->
-            (clickCoto cotoId model) ! []
+            clickCoto cotoId model ! []
+            
+        OpenCoto coto ->
+            openCoto (Just coto) model ! []
             
         OpenTraversal cotoId ->
             openTraversal cotoId model ! []
@@ -388,7 +385,21 @@ clickCoto cotoId model =
         { model 
         | cotoSelection = updateCotoSelection cotoId model.cotoSelection
         }
-                      
+          
+
+openCoto : Maybe Coto -> Model -> Model
+openCoto maybeCoto model =
+    let
+        cotoModal = model.cotoModal
+    in 
+        { model 
+        | cotoModal = 
+            { cotoModal 
+            | open = True
+            , coto =  maybeCoto
+            }
+        }
+
 
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
