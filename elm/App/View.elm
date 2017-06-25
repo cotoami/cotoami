@@ -13,7 +13,7 @@ import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
-import Components.CotoSelection.View exposing (cotoSelectionTools)
+import Components.CotoSelection.View exposing (cotoSelectionColumnDiv, cotoSelectionTools)
 import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
@@ -43,6 +43,7 @@ view model =
                 [ div [ id "app-layout" ]
                     (List.concat
                         [ defaultColumnDivs model
+                        , [ cotoSelectionColumnDiv model ]
                         , List.map
                             (\div -> Html.map TraversalMsg div)
                             (Components.Traversals.View.view

@@ -124,7 +124,8 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-#main-stock {
+#main-stock,
+#main-selection {
   display: flex;
   position: absolute;
   z-index: 3;
@@ -141,6 +142,10 @@ $tool-button-color: #3572A5 !default;
   &.empty {
     display: none;
   }
+}
+
+#main-selection {
+  background-color: #eee;
 }
 
 div.main-traversal {
@@ -245,7 +250,8 @@ div.main-traversal {
     padding: 0;
   }
 
-  #main-stock {
+  #main-stock,
+  #main-selection {
     flex: 1;
     display: flex !important;
     position: relative;

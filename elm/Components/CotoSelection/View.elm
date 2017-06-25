@@ -7,6 +7,18 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 
 
+cotoSelectionColumnDiv : Model -> Html Msg
+cotoSelectionColumnDiv model =
+    div 
+        [ id "main-selection" 
+        , classList
+            [ ( "main-column", True )
+            , ( "empty", List.isEmpty model.cotoSelection )
+            ]
+        ] 
+        []
+
+
 cotoSelectionTools : Model -> Html Msg
 cotoSelectionTools model =
     if List.isEmpty model.cotoSelection then
