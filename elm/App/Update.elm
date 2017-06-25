@@ -172,18 +172,14 @@ update msg model =
             in
                 case subMsg of
                     Components.CotoModal.ConfirmDelete ->
-                        { newModel 
-                        | confirmModal =
-                            { confirmModal
-                            | open = True
-                            , message = "Are you sure you want to delete this coto?"
-                            , msgOnConfirm = 
-                                (case cotoModal.coto of
-                                    Nothing -> App.Messages.NoOp
-                                    Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
-                                )
-                            }
-                        } ! [ Cmd.map CotoModalMsg cmd ]
+                        confirm 
+                            "Are you sure you want to delete this coto?" 
+                            (case cotoModal.coto of
+                                Nothing -> App.Messages.NoOp
+                                Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
+                            ) 
+                            newModel
+                        ! [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
                         { newModel 
@@ -337,17 +333,8 @@ update msg model =
                 { model | memberPresences = newMemberPresences } ! []
             
         ConfirmPin ->
-            let
-                confirmModal = model.confirmModal
-            in
-                { model 
-                | confirmModal =
-                    { confirmModal
-                    | open = True
-                    , message = "Are you sure you want to pin the selected cotos?"
-                    , msgOnConfirm = Pin
-                    }
-                } ! []
+            confirm "Are you sure you want to pin the selected cotos?" Pin model
+                ! []
           
         Pin ->
             pinSelectedCotos model ! []
@@ -397,6 +384,21 @@ update msg model =
                     _ -> 
                         newModel ! [ Cmd.map TraversalMsg cmd ]
       
+      
+confirm : String -> Msg -> Model -> Model
+confirm message msgOnConfirm model =
+    let
+        confirmModal = model.confirmModal
+    in
+        { model 
+        | confirmModal =
+            { confirmModal
+            | open = True
+            , message = message
+            , msgOnConfirm = msgOnConfirm
+            }
+        }
+        
       
 clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
