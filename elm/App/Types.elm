@@ -109,7 +109,7 @@ isPostedInCotonoma maybeCotonoma coto =
                 Just postedIn -> postedIn.id == cotonoma.id
                 
                 
-type alias CotoSelection = List Int
+type alias CotoSelection = List CotoId
 
 
 updateCotoSelection : CotoId -> CotoSelection -> CotoSelection
