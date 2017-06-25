@@ -4,8 +4,14 @@ import Dict
 import App.Types exposing (..)
 
 
+type Description
+    = Connected
+    | Opened
+    
+
 type alias Traversal =
-    { start : CotoId
+    { description : Description
+    , start : CotoId
     , steps : List CotoId
     }
 
@@ -17,9 +23,10 @@ type alias Traverse =
     }                
 
 
-initTraversal : CotoId -> Traversal
-initTraversal start =
-    { start = start
+initTraversal : Description -> CotoId -> Traversal
+initTraversal description start =
+    { description = description
+    , start = start
     , steps = []
     }
 
@@ -80,10 +87,10 @@ size model =
     Dict.size model.traversals
     
     
-openTraversal : CotoId -> Model -> Model
-openTraversal cotoId model =
+openTraversal : Description -> CotoId -> Model -> Model
+openTraversal description cotoId model =
     { model
-    | traversals = Dict.insert cotoId (initTraversal cotoId) model.traversals
+    | traversals = Dict.insert cotoId (initTraversal description cotoId) model.traversals
     , order = 
         model.order
         |> List.filter (\id -> id /= cotoId)

@@ -32,7 +32,7 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model
+import Components.Traversals.Model exposing (Description)
 import Components.Traversals.Update
 
 
@@ -238,7 +238,8 @@ update msg model =
                             ]
                             
                     Components.Timeline.Messages.OpenTraversal cotoId ->
-                        openTraversal cotoId model ! [ Cmd.map TimelineMsg cmd ]
+                        openTraversal Components.Traversals.Model.Opened cotoId model 
+                            ! [ Cmd.map TimelineMsg cmd ]
 
                     _ -> 
                         newModel ! [ Cmd.map TimelineMsg cmd ]
@@ -318,7 +319,7 @@ update msg model =
             openCoto (Just coto) model ! []
             
         OpenTraversal cotoId ->
-            openTraversal cotoId model ! []
+            openTraversal Components.Traversals.Model.Opened cotoId model ! []
                 
         CotonomaClick key ->
             changeLocationToCotonoma key model
@@ -351,14 +352,17 @@ update msg model =
             { model | connectModalOpen = False } ! []
             
         Connect startCoto endCotos ->
-            { model 
-            | graph = model.graph |> addConnections startCoto endCotos
-            , traversals = Components.Traversals.Model.openTraversal startCoto.id model.traversals
-            , cotoSelection = []
-            , connectMode = False 
-            , connectModalOpen = False
-            , viewInMobile = TraversalsView
-            } ! []
+            let
+                newModel = 
+                    { model 
+                    | graph = model.graph |> addConnections startCoto endCotos
+                    , cotoSelection = []
+                    , connectMode = False 
+                    , connectModalOpen = False
+                    }
+            in
+                openTraversal Components.Traversals.Model.Connected startCoto.id newModel
+                    ! []
             
         TraversalMsg subMsg ->
             let
@@ -499,9 +503,13 @@ loadCotonoma key model =
         ]
 
 
-openTraversal : CotoId -> Model -> Model
-openTraversal cotoId model =
+openTraversal : Description -> CotoId -> Model -> Model
+openTraversal description cotoId model =
     { model 
-    | traversals = Components.Traversals.Model.openTraversal cotoId model.traversals
+    | traversals = 
+          Components.Traversals.Model.openTraversal 
+              description 
+              cotoId 
+              model.traversals
     , viewInMobile = TraversalsView
     }

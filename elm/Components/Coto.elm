@@ -84,7 +84,7 @@ cotoToolsSpan graph config cotoId =
                         , title "Open coto traversal"
                         , onClickWithoutPropagation (openTraversal cotoId)
                         ] 
-                        [ i [ class "material-icons" ] [ text "open_in_new" ] ]
+                        [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
                    else
                      span [] []
          , a [ class "tool-button open-coto"

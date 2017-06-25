@@ -10,7 +10,7 @@ import App.Graph exposing (..)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (Model, Traversal, Traverse, traversed, inActivePage)
+import Components.Traversals.Model exposing (..)
 
 
 view : Bool -> CotoSelection -> Maybe Cotonoma -> Graph -> Model -> List (Html Msg)
@@ -67,9 +67,16 @@ traversalDiv selection maybeCotonoma graph traversal connections startCoto  =
             [ class "column-header" ] 
             [ span 
                 [ class "description" ]
-                [ i [ class "material-icons" ] [ text "link" ]
-                , span [ class "text" ] [ text "Connected by me" ]
-                ]
+                (case traversal.description of
+                    Connected ->
+                        [ i [ class "material-icons" ] [ text "add_circle" ]
+                        , span [ class "text" ] [ text "Connected by me" ]
+                        ]
+                    Opened ->
+                        [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                        , span [ class "text" ] [ text "Opened by me" ]
+                        ]
+                )
             , a [ class "tool-button close-traversal"
                 , href "/"
                 , onClickWithoutPropagation (CloseTraversal traversal.start)
