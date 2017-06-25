@@ -171,12 +171,12 @@ update msg model =
                 posts = timeline.posts
             in
                 case subMsg of
-                    Components.CotoModal.ConfirmDelete message ->
+                    Components.CotoModal.ConfirmDelete ->
                         { newModel 
                         | confirmModal =
                             { confirmModal
                             | open = True
-                            , message = message
+                            , message = "Are you sure you want to delete this coto?"
                             , msgOnConfirm = 
                                 (case cotoModal.coto of
                                     Nothing -> App.Messages.NoOp
