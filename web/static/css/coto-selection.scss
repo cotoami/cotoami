@@ -10,6 +10,7 @@
     padding-top: 5px;
     
     button {
+      margin-right: 8px;
       padding: 0 15px;
       background-color: #fff;
       vertical-align: top;
@@ -20,7 +21,6 @@
     }
     
     span.group-title {
-      margin-left: 20px;
       white-space: nowrap;
       
       input {
@@ -28,6 +28,7 @@
       }
       
       button {
+        margin-right: 0;
         border-radius: 0 4px 4px 0;
       }
     }

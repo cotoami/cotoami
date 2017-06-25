@@ -15,8 +15,11 @@ cotoSelectionColumnDiv model =
             [ button 
                 [ class "button" ] 
                 [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                , text "Pin All" 
+                , text "Pin" 
                 ]
+            , button 
+                [ class "button" ] 
+                [ text "Connect" ]
             , span 
                 [ class "group-title" ]
                 [ input 
@@ -24,7 +27,9 @@ cotoSelectionColumnDiv model =
                     , name "title"
                     , placeholder "Title for this group"
                     ] []
-                , button [ class "button", disabled True ] [ text "Save" ]
+                , button 
+                    [ class "button", disabled True ] 
+                    [ text "Save" ]
                 ]
             ]
         , div 
