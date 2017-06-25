@@ -336,6 +336,19 @@ update msg model =
             in
                 { model | memberPresences = newMemberPresences } ! []
             
+        ConfirmPin ->
+            let
+                confirmModal = model.confirmModal
+            in
+                { model 
+                | confirmModal =
+                    { confirmModal
+                    | open = True
+                    , message = "Are you sure you want to pin the selected cotos?"
+                    , msgOnConfirm = Pin
+                    }
+                } ! []
+          
         Pin ->
             pinSelectedCotos model ! []
             

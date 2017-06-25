@@ -44,6 +44,7 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | ConfirmPin
     | Pin
     | ClearSelection
     | SetConnectMode Bool
