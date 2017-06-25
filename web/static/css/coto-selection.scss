@@ -46,4 +46,22 @@
       }
     }
   }
+  
+  div.column-body {
+    position: absolute;
+    top: 80px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    padding-bottom: 50px;
+    
+    div.coto {
+      margin-bottom: 10px;
+    }
+  }
 }

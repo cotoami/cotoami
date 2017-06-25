@@ -1,6 +1,7 @@
 module Components.CotoSelection.View exposing (..)
 
 import Html exposing (..)
+import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
@@ -21,7 +22,7 @@ cotoSelectionColumnDiv model =
             ]
         , div 
             [ class "column-body" ]
-            []
+            [ selectedCotosDiv model ]
         ]
 
 
@@ -60,8 +61,26 @@ cotoSelectionToolsDiv =
       ]
 
 
-cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv selection maybeCotonoma graph coto =
+selectedCotosDiv : Model -> Html Msg
+selectedCotosDiv model =
+    Html.Keyed.node
+        "div"
+        [ id "selected-cotos" ]
+        (List.filterMap 
+            (\cotoId -> 
+                case getCoto cotoId model of
+                    Nothing -> Nothing
+                    Just coto -> Just 
+                        ( toString cotoId
+                        , cotoDiv model.cotonoma model.graph coto
+                        )
+            ) 
+            (List.reverse model.cotoSelection)
+        )
+
+
+cotoDiv : Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv maybeCotonoma graph coto =
     div 
         [ class "coto" ]
         [ div 
