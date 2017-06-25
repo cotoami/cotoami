@@ -16,30 +16,48 @@ cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div 
             [ class "column-header" ] 
-            [ button 
-                [ class "button" ] 
-                [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                , text "Pin" 
-                ]
-            , button 
-                [ class "button" ] 
-                [ text "Connect" ]
-            , span 
-                [ class "group-title" ]
-                [ input 
-                    [ type_ "text"
-                    , name "title"
-                    , placeholder "Title for this group"
-                    ] []
-                , button 
-                    [ class "button", disabled True ] 
-                    [ text "Save" ]
-                ]
+            [ selectionInfoDiv model
+            , cotoSelectionToolsDiv
             ]
         , div 
             [ class "column-body" ]
             []
         ]
+
+
+selectionInfoDiv : Model -> Html Msg
+selectionInfoDiv model =
+    div [ class "selection-info" ]
+        [ span 
+            [ class "selection-count" ] 
+            [ text (model.cotoSelection |> List.length |> toString) ]
+        , text " cotos selected"
+        ]
+        
+  
+cotoSelectionToolsDiv : Html Msg
+cotoSelectionToolsDiv =
+    div [ class "selection-tools" ]
+      [ button 
+          [ class "button" ] 
+          [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+          , text "Pin" 
+          ]
+      , button 
+          [ class "button" ] 
+          [ text "Connect" ]
+      , span 
+          [ class "group-title" ]
+          [ input 
+              [ type_ "text"
+              , name "title"
+              , placeholder "Title for this group"
+              ] []
+          , button 
+              [ class "button", disabled True ] 
+              [ text "Save" ]
+          ]
+      ]
 
 
 cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
@@ -90,12 +108,7 @@ cotoSelectionTools model =
                     ]
               else
                 div [ class "default" ]
-                    [ div [ class "selection-info" ]
-                        [ span 
-                            [ class "selection-count" ] 
-                            [ text (model.cotoSelection |> List.length |> toString) ]
-                        , text " cotos selected"
-                        ]
+                    [ selectionInfoDiv model
                     , div [ class "buttons" ]
                         [ button 
                            [ class "button", onClick Pin ] 
