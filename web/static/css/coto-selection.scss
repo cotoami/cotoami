@@ -1,0 +1,35 @@
+@import "variables.scss";
+
+#coto-selection {
+  flex: 1;
+  position: relative;
+  
+  div.column-header {
+    text-align: center;
+    margin-bottom: 5px;
+    padding-top: 5px;
+    
+    button {
+      padding: 0 15px;
+      background-color: #fff;
+      vertical-align: top;
+      
+      i {
+        margin-right: 5px;
+      }
+    }
+    
+    span.group-title {
+      margin-left: 20px;
+      white-space: nowrap;
+      
+      input {
+        border-radius: 4px 0 0 4px;
+      }
+      
+      button {
+        border-radius: 0 4px 4px 0;
+      }
+    }
+  }
+}

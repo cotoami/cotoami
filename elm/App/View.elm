@@ -43,7 +43,6 @@ view model =
                 [ div [ id "app-layout" ]
                     (List.concat
                         [ defaultColumnDivs model
-                        , [ cotoSelectionColumnDiv model ]
                         , List.map
                             (\div -> Html.map TraversalMsg div)
                             (Components.Traversals.View.view
@@ -125,6 +124,14 @@ defaultColumnDivs model =
             model.cotonoma
             model.graph
         ]
+    , div 
+        [ id "main-selection" 
+        , classList
+            [ ( "main-column", True )
+            , ( "empty", List.isEmpty model.cotoSelection )
+            ]
+        ] 
+        [ cotoSelectionColumnDiv model ]
     ]
             
             

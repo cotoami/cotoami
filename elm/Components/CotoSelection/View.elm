@@ -9,14 +9,28 @@ import App.Messages exposing (..)
 
 cotoSelectionColumnDiv : Model -> Html Msg
 cotoSelectionColumnDiv model =
-    div 
-        [ id "main-selection" 
-        , classList
-            [ ( "main-column", True )
-            , ( "empty", List.isEmpty model.cotoSelection )
+    div [ id "coto-selection" ]
+        [ div 
+            [ class "column-header" ] 
+            [ button 
+                [ class "button" ] 
+                [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+                , text "Pin All" 
+                ]
+            , span 
+                [ class "group-title" ]
+                [ input 
+                    [ type_ "text"
+                    , name "title"
+                    , placeholder "Title for this group"
+                    ] []
+                , button [ class "button", disabled True ] [ text "Save" ]
+                ]
             ]
-        ] 
-        []
+        , div 
+            [ class "column-body" ]
+            []
+        ]
 
 
 cotoSelectionTools : Model -> Html Msg
