@@ -247,6 +247,7 @@ update msg model =
             let
                 timeline = model.timeline
                 posts = timeline.posts
+                ( graph, _ ) = removeCoto coto.id model.graph
             in
                 { model 
                 | timeline =
@@ -254,6 +255,7 @@ update msg model =
                     | posts = posts |> 
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
+                , graph = graph
                 } ! 
                     (if coto.asCotonoma then 
                         [ fetchRecentCotonomas 
