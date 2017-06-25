@@ -5,10 +5,27 @@ div.traversal {
   position: relative;
   
   div.column-header {
+    position: relative;
     margin-bottom: 5px;
     padding-top: 8px;
-    padding-right: 4px;
-    text-align: right;
+    padding-left: 6px;
+    
+    span.description {
+      i {
+        opacity: 0.5;
+      }
+      
+      span.text {
+        opacity: 0.3;
+        margin-left: 5px;
+        vertical-align: top;
+      }
+    }
+    
+    a.close-traversal {
+      position: absolute;
+      right: 4px;
+    }
   }
   
   div.column-body {
