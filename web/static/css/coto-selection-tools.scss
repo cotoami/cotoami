@@ -15,6 +15,7 @@
   text-align: center;
   
   @media (#{$wide-viewport}) {
+    display: none;
     width: 450px;
   }
   

@@ -40,7 +40,7 @@ cotoSelectionToolsDiv : Html Msg
 cotoSelectionToolsDiv =
     div [ class "selection-tools" ]
       [ button 
-          [ class "button" ] 
+          [ class "button", onClick ConfirmPin ] 
           [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
           , text "Pin" 
           ]
