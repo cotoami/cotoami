@@ -32,7 +32,7 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model exposing (Description)
+import Components.Traversals.Model exposing (Description, removeTraversal)
 import Components.Traversals.Update
 
 
@@ -257,6 +257,7 @@ update msg model =
                         List.filter (\post -> not (isSelfOrPostedIn coto post))
                     }
                 , graph = graph
+                , traversals = removeTraversal coto.id model.traversals
                 } ! 
                     (if coto.asCotonoma then 
                         [ fetchRecentCotonomas 
