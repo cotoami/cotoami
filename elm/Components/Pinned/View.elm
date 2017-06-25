@@ -66,6 +66,8 @@ cotoDiv selection maybeCotonoma graph coto =
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "active", List.member coto.id selection )
+            , ( "animated", True )
+            , ( "fadeIn", True )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
         ]
