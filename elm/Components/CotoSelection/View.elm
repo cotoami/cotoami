@@ -18,7 +18,10 @@ cotoSelectionColumnDiv model =
         [ div 
             [ class "column-header" ] 
             [ selectionInfoDiv model
-            , cotoSelectionToolsDiv
+            , if model.connectMode then
+                div [] []
+              else
+                cotoSelectionToolsDiv
             ]
         , div 
             [ class "column-body" ]
