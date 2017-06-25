@@ -14,9 +14,17 @@
   color: #eee;
   text-align: center;
   
+  &.empty {
+    display: none;
+  }
+  
   @media (#{$wide-viewport}) {
     display: none;
     width: 450px;
+    
+    &.in-connect-mode {
+      display: block;
+    }
   }
   
   a.close {
