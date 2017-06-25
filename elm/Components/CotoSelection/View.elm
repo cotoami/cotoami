@@ -3,8 +3,12 @@ module Components.CotoSelection.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
+import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Markdown
+import Components.Coto
 
 
 cotoSelectionColumnDiv : Model -> Html Msg
@@ -37,6 +41,35 @@ cotoSelectionColumnDiv model =
             []
         ]
 
+
+cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv selection maybeCotonoma graph coto =
+    div 
+        [ class "coto" ]
+        [ div 
+            [ class "coto-inner" ]
+            [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+            , bodyDiv graph coto
+            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
+            ]
+        ]
+
+
+bodyDiv : Graph -> Coto -> Html Msg
+bodyDiv graph coto =
+    Components.Coto.bodyDiv 
+        graph 
+        { openCoto = OpenCoto coto
+        , openTraversal = Just OpenTraversal
+        , cotonomaClick = CotonomaClick
+        , markdown = App.Markdown.markdown
+        }
+        { cotoId = Just coto.id
+        , content = coto.content 
+        , asCotonoma = coto.asCotonoma
+        , cotonomaKey = coto.cotonomaKey
+        }
+        
 
 cotoSelectionTools : Model -> Html Msg
 cotoSelectionTools model =
