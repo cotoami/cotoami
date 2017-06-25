@@ -49,7 +49,7 @@ connectionsDiv divClass connections selection maybeCotonoma graph =
                         , connectionDiv selection maybeCotonoma graph coto
                         ) 
             ) 
-            (List.reverse connections)
+            connections
         )
         
         
