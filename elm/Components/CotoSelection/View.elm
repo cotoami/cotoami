@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onClickWithoutPropagation, isBlank)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Model exposing (..)
@@ -19,10 +19,7 @@ cotoSelectionColumnDiv model =
         [ div 
             [ class "column-header" ] 
             [ selectionInfoDiv model
-            , if model.connectMode then
-                div [] []
-              else
-                cotoSelectionToolsDiv
+            , cotoSelectionToolsDiv model
             , a [ class "tool-button close-selection"
                 , href "/"
                 , onClickWithoutPropagation ClearSelection
@@ -45,31 +42,46 @@ selectionInfoDiv model =
         ]
         
   
-cotoSelectionToolsDiv : Html Msg
-cotoSelectionToolsDiv =
-    div [ class "selection-tools" ]
-      [ button 
-          [ class "button", onClick ConfirmPin ] 
-          [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-          , text "Pin" 
-          ]
-      , button 
-          [ class "button", onClick (SetConnectMode True) ] 
-          [ text "Connect" ]
-      , span 
-          [ class "group-title" ]
-          [ input 
-              [ type_ "text"
-              , name "title"
-              , placeholder "Title for this group"
-              , onInput CotoSelectionTitleInput
-              ] []
+cotoSelectionToolsDiv : Model -> Html Msg
+cotoSelectionToolsDiv model =
+    if model.connectMode then
+        div [] []
+    else
+        div [ class "selection-tools" ]
+          [ button 
+              [ class "button", onClick ConfirmPin ] 
+              [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+              , text "Pin" 
+              ]
           , button 
-              [ class "button", disabled True ] 
-              [ text "Save" ]
+              [ class "button", onClick (SetConnectMode True) ] 
+              [ text "Connect" ]
+          , span 
+              [ class "selection-title" ]
+              [ input 
+                  [ type_ "text"
+                  , name "title"
+                  , placeholder "Title for this group"
+                  , maxlength titleMaxlength
+                  , onInput CotoSelectionTitleInput
+                  ] []
+              , button 
+                  [ class "button"
+                  , disabled (not (validateTitle model.cotoSelectionTitle))
+                  ] 
+                  [ text "Save" ]
+              ]
           ]
-      ]
 
+
+titleMaxlength : Int
+titleMaxlength = 30
+
+
+validateTitle : String -> Bool
+validateTitle title =
+    not (isBlank title) && (String.length title) <= titleMaxlength
+    
 
 selectedCotosDiv : Model -> Html Msg
 selectedCotosDiv model =
