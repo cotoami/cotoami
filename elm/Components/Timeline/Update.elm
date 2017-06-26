@@ -89,7 +89,8 @@ handlePushedPost clientId payload model =
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
     let
-        ( newModel, newPost ) = postContent clientId maybeCotonoma model.newContent model
+        ( newModel, newPost ) = 
+            postContent clientId maybeCotonoma False model.newContent model
     in
         newModel !
             [ scrollToBottom NoOp
@@ -97,14 +98,15 @@ post clientId maybeCotonoma model =
             ]
     
 
-postContent : String -> Maybe Cotonoma -> String -> Model -> ( Model, Post )
-postContent clientId maybeCotonoma content model =
+postContent : String -> Maybe Cotonoma -> Bool -> String -> Model -> ( Model, Post )
+postContent clientId maybeCotonoma asCotonoma content model =
     let
         postId = model.postIdCounter + 1
         newPost = 
             { defaultPost
             | postId = Just postId
             , content = content
+            , asCotonoma = asCotonoma
             , postedIn = maybeCotonoma
             }
     in

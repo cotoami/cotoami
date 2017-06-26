@@ -5,7 +5,7 @@ import App.Types exposing (Session, Cotonoma)
 import App.Commands exposing (fetchAmishi)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages
-import Components.Timeline.Update
+import Components.Timeline.Update exposing (postContent)
 import Components.Timeline.Commands exposing (scrollToBottom)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
@@ -59,27 +59,17 @@ update clientId session maybeCotonoma msg timeline model =
             
         Post ->
             let
-                postId = timeline.postIdCounter + 1
-                defaultPost = Timeline.defaultPost
-                newPost = 
-                    { defaultPost
-                    | postId = Just postId
-                    , content = model.name
-                    , postedIn = maybeCotonoma
-                    , asCotonoma = True
-                    }
+                ( newTimeline, _ ) = 
+                    postContent clientId maybeCotonoma True model.name timeline
             in
                 ( initModel
-                , { timeline 
-                  | posts = newPost :: timeline.posts
-                  , postIdCounter = postId
-                  }
+                , newTimeline
                 , Cmd.batch
                     [ scrollToBottom NoOp
                     , postCotonoma 
                         clientId 
                         maybeCotonoma 
-                        postId 
+                        newTimeline.postIdCounter 
                         model.members 
                         model.name 
                     ]
