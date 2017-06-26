@@ -128,6 +128,7 @@ defaultColumnDivs model =
         [ id "main-selection" 
         , classList
             [ ( "main-column", True )
+            , ( "fadeIn", not (List.isEmpty model.cotoSelection) )
             , ( "empty", List.isEmpty model.cotoSelection )
             ]
         ] 

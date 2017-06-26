@@ -68,6 +68,7 @@ $tool-button-color: #3572A5 !default;
   flex-direction: row;
   padding-top: 35px;
   box-sizing: border-box;
+  background-color: #e8e8e8;
   
   div.main-column {
     display: none;
@@ -76,9 +77,6 @@ $tool-button-color: #3572A5 !default;
       display: flex;
     }
   }
-}
-.traversals-view-in-mobile #app-layout {
-  background-color: #e8e8e8;
 }
 
 #main-nav {
@@ -250,13 +248,20 @@ div.main-traversal {
     padding: 0;
   }
 
-  #main-stock,
-  #main-selection {
+  #main-stock {
     flex: 1;
     display: flex !important;
     position: relative;
     top: auto;
     animation-name: none;
+    overflow-y: hidden;
+  }
+  
+  #main-selection {
+    flex: 1;
+    display: flex !important;
+    position: relative;
+    top: auto;
     overflow-y: hidden;
   }
   
