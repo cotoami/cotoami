@@ -51,5 +51,7 @@ type Msg
     | CloseConnectModal
     | Connect Coto (List Coto)
     | CotoSelectionTitleInput String
+    | ConfirmCreateGroupingCoto
+    | CreateGroupingCoto
     | TraversalMsg Components.Traversals.Messages.Msg
     

@@ -68,6 +68,7 @@ cotoSelectionToolsDiv model =
               , button 
                   [ class "button"
                   , disabled (not (validateTitle model.cotoSelectionTitle))
+                  , onClick ConfirmCreateGroupingCoto
                   ] 
                   [ text "Save" ]
               ]

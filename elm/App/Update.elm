@@ -368,6 +368,16 @@ update msg model =
         CotoSelectionTitleInput title ->
             { model | cotoSelectionTitle = title } ! []
             
+        ConfirmCreateGroupingCoto ->
+            confirm 
+                ("You are about to create a grouping coto: \"" ++ model.cotoSelectionTitle ++ "\"")
+                CreateGroupingCoto 
+                model
+            ! []
+                
+        CreateGroupingCoto ->
+            model ! []
+            
         TraversalMsg subMsg ->
             let
                 ( traversals, cmd ) = 
