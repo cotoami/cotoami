@@ -31,7 +31,7 @@ modalConfig startCotoId model =
         endCotos = 
             List.filterMap 
                 (\cotoId -> getCoto cotoId model) 
-                model.cotoSelection
+                model.context.selection
     in
         case maybeStartCoto of
             Nothing ->

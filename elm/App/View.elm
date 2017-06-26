@@ -25,7 +25,9 @@ import Components.Traversals.View
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
+        anyAnonymousCotos = 
+            (isNothing model.context.session) 
+                && not (List.isEmpty model.timeline.posts)
         viewInMobile =
             case model.viewInMobile of
                 TimelineView -> "timeline"
@@ -47,8 +49,7 @@ view model =
                             (\div -> Html.map TraversalMsg div)
                             (Components.Traversals.View.view
                                 (model.viewInMobile == TraversalsView)
-                                model.cotoSelection 
-                                model.cotonoma 
+                                model.context 
                                 model.graph 
                                 model.traversals
                             )
@@ -62,11 +63,11 @@ view model =
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
-              (Components.ProfileModal.view model.session model.profileModal)
+              (Components.ProfileModal.view model.context.session model.profileModal)
           , Html.map CotoModalMsg 
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg 
-              (Components.CotonomaModal.View.view model.session model.cotonomaModal)
+              (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
           , Components.ConnectModal.view model
           , a 
               [ class "tool-button info-button"
@@ -103,9 +104,7 @@ defaultColumnDivs model =
         ]
         [ Html.map TimelineMsg 
             (Components.Timeline.View.view 
-                model.cotoSelection
-                model.cotonoma
-                model.session
+                model.context
                 model.graph
                 model.timeline 
             )
@@ -119,17 +118,14 @@ defaultColumnDivs model =
             , ( "fadeIn", model.viewInMobile == PinnedView )
             ]
         ] 
-        [ Components.Pinned.View.view 
-            model.cotoSelection
-            model.cotonoma
-            model.graph
+        [ Components.Pinned.View.view model.context model.graph
         ]
     , div 
         [ id "main-selection" 
         , classList
             [ ( "main-column", True )
-            , ( "fadeIn", not (List.isEmpty model.cotoSelection) )
-            , ( "empty", List.isEmpty model.cotoSelection )
+            , ( "fadeIn", not (List.isEmpty model.context.selection) )
+            , ( "empty", List.isEmpty model.context.selection )
             ]
         ] 
         [ cotoSelectionColumnDiv model ]

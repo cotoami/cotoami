@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Modal
 import App.Types exposing (Session)
 
+
 type alias Model =
     { open : Bool
     }

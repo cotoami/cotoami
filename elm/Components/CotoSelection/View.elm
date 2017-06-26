@@ -37,7 +37,7 @@ selectionInfoDiv model =
     div [ class "selection-info" ]
         [ span 
             [ class "selection-count" ] 
-            [ text (model.cotoSelection |> List.length |> toString) ]
+            [ text (model.context.selection |> List.length |> toString) ]
         , text " cotos selected"
         ]
         
@@ -95,10 +95,10 @@ selectedCotosDiv model =
                     Nothing -> Nothing
                     Just coto -> Just 
                         ( toString cotoId
-                        , cotoDiv model.cotonoma model.graph coto
+                        , cotoDiv model.context.cotonoma model.graph coto
                         )
             ) 
-            (List.reverse model.cotoSelection)
+            (List.reverse model.context.selection)
         )
 
 
@@ -135,7 +135,7 @@ cotoSelectionTools : Model -> Html Msg
 cotoSelectionTools model =
     div [ id "coto-selection-tools"
         , classList
-            [ ( "empty", List.isEmpty model.cotoSelection )
+            [ ( "empty", List.isEmpty model.context.selection )
             , ( "in-connect-mode", model.connectMode )
             ]
         ] 

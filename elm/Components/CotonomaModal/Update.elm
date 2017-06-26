@@ -1,7 +1,7 @@
 module Components.CotonomaModal.Update exposing (..)
 
 import Utils exposing (validateEmail)
-import App.Types exposing (Session, Cotonoma)
+import App.Types exposing (Context, Session, Cotonoma)
 import App.Commands exposing (fetchAmishi)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages
@@ -12,8 +12,8 @@ import Components.CotonomaModal.Messages exposing (..)
 import Components.CotonomaModal.Commands exposing (..)
 
 
-update : String -> Session -> Maybe Cotonoma-> Msg -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
-update clientId session maybeCotonoma msg timeline model =
+update : Msg -> Session -> Context -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
+update msg session context timeline model =
     case msg of
         NoOp ->
             ( model, timeline, Cmd.none )
@@ -60,15 +60,15 @@ update clientId session maybeCotonoma msg timeline model =
         Post ->
             let
                 ( newTimeline, _ ) = 
-                    postContent clientId maybeCotonoma True model.name timeline
+                    postContent context.clientId context.cotonoma True model.name timeline
             in
                 ( initModel
                 , newTimeline
                 , Cmd.batch
                     [ scrollToBottom NoOp
                     , postCotonoma 
-                        clientId 
-                        maybeCotonoma 
+                        context.clientId 
+                        context.cotonoma 
                         newTimeline.postIdCounter 
                         model.members 
                         model.name 
@@ -79,9 +79,7 @@ update clientId session maybeCotonoma msg timeline model =
             let
                 ( newTimeline, _ ) =
                     Components.Timeline.Update.update 
-                        clientId
-                        maybeCotonoma 
-                        False
+                        context
                         (Components.Timeline.Messages.Posted (Ok response)) 
                         timeline
             in

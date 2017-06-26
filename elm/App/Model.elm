@@ -13,17 +13,14 @@ import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
 import Components.Traversals.Model
-
+  
 
 type alias Model =
-    { clientId : String
-    , route : Route
+    { route : Route
+    , context : Context
     , viewInMobile : ViewInMobile
-    , ctrlDown : Bool
     , navigationToggled : Bool
     , navigationOpen : Bool
-    , session : Maybe Session
-    , cotonoma : Maybe Cotonoma
     , members : List Amishi
     , memberPresences : MemberConnCounts
     , confirmModal : Components.ConfirmModal.Model.Model
@@ -34,7 +31,6 @@ type alias Model =
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
     , timeline : Components.Timeline.Model.Model
-    , cotoSelection : CotoSelection
     , cotoSelectionTitle : String
     , connectMode : Bool
     , connectingTo : Maybe Int
@@ -50,14 +46,17 @@ initModel seed route =
     let
         ( newUuid, newSeed ) = step Uuid.uuidGenerator (initialSeed seed)
     in
-        { clientId = Uuid.toString newUuid
-        , route = route
+        { route = route
+        , context =
+            { clientId = Uuid.toString newUuid
+            , session = Nothing
+            , cotonoma = Nothing
+            , selection = []
+            , ctrlDown = False
+            }
         , viewInMobile = TimelineView
-        , ctrlDown = False
         , navigationToggled = False
         , navigationOpen = False
-        , session = Nothing
-        , cotonoma = Nothing
         , members = []
         , memberPresences = Dict.empty
         , confirmModal = Components.ConfirmModal.Model.initModel
@@ -68,7 +67,6 @@ initModel seed route =
         , cotonomasLoading = False
         , subCotonomas = []
         , timeline = Components.Timeline.Model.initModel
-        , cotoSelection = []
         , cotoSelectionTitle = ""
         , connectMode = False
         , connectingTo = Nothing
@@ -103,7 +101,7 @@ isPresent amishiId memberPresences =
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
-    (isNothing model.cotonoma)
+    (isNothing model.context.cotonoma)
         && (List.isEmpty model.recentCotonomas) 
         && (List.isEmpty model.subCotonomas)
         
@@ -115,7 +113,7 @@ isStockEmpty model =
         
 getOwnerAndMembers : Model -> List Amishi
 getOwnerAndMembers model =
-    case model.cotonoma of
+    case model.context.cotonoma of
         Nothing -> []
         Just cotonoma ->
             case cotonoma.owner of

@@ -16,10 +16,10 @@ socket token websocketUrl =
 
 phoenixChannels : Model -> Sub Msg
 phoenixChannels model =
-    case model.session of
+    case model.context.session of
         Nothing -> Sub.none
         Just session ->
-            case model.cotonoma of
+            case model.context.cotonoma of
                 Nothing -> Sub.none
                 Just cotonoma ->
                     Phoenix.connect 

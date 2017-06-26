@@ -59,7 +59,12 @@ update msg model =
                 
             
         SessionFetched (Ok session) ->
-            { model | session = Just session } ! []
+            let
+                context = model.context
+            in
+                { model 
+                | context = { context | session = Just session } 
+                } ! []
             
         SessionFetched (Err error) ->
             case error of
@@ -102,16 +107,15 @@ update msg model =
             
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
             let
+                context = model.context
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
-                      model.clientId
-                      model.cotonoma
-                      model.ctrlDown
+                      context
                       (Components.Timeline.Messages.PostsFetched (Ok posts))
                       model.timeline
             in
                 { model 
-                | cotonoma = Just cotonoma
+                | context = { context | cotonoma = Just cotonoma }
                 , members = members
                 , navigationOpen = False
                 , timeline = timeline
@@ -125,13 +129,13 @@ update msg model =
         
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                { model | ctrlDown = True } ! []
+                { model | context = ctrlDown True model.context } ! []
             else
                 model ! []
 
         KeyUp key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                { model | ctrlDown = False } ! []
+                { model | context = ctrlDown False model.context } ! []
             else
                 model ! []
                 
@@ -207,12 +211,7 @@ update msg model =
         TimelineMsg subMsg ->
             let
                 ( timeline, cmd ) = 
-                    Components.Timeline.Update.update 
-                        model.clientId
-                        model.cotonoma
-                        model.ctrlDown
-                        subMsg 
-                        model.timeline
+                    Components.Timeline.Update.update model.context subMsg model.timeline
                 newModel = { model | timeline = timeline }
                 cotoModal = newModel.cotoModal
             in
@@ -230,7 +229,7 @@ update msg model =
                         newModel ! 
                             [ Cmd.map TimelineMsg cmd
                             , fetchRecentCotonomas
-                            , fetchSubCotonomas model.cotonoma
+                            , fetchSubCotonomas model.context.cotonoma
                             ]
                             
                     Components.Timeline.Messages.OpenTraversal cotoId ->
@@ -257,7 +256,7 @@ update msg model =
                 } ! 
                     (if coto.asCotonoma then 
                         [ fetchRecentCotonomas 
-                        , fetchSubCotonomas model.cotonoma 
+                        , fetchSubCotonomas model.context.cotonoma 
                         ] 
                      else []) 
                 
@@ -267,7 +266,7 @@ update msg model =
         OpenCotonomaModal ->
             let
                 cotonomaModal = 
-                    case model.session of
+                    case model.context.session of
                         Nothing -> 
                             model.cotonomaModal
                         Just session -> 
@@ -279,16 +278,15 @@ update msg model =
                 { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
         CotonomaModalMsg subMsg ->
-            case model.session of
+            case model.context.session of
                 Nothing -> model ! []
                 Just session -> 
                     let
                         ( cotonomaModal, timeline, cmd ) = 
                             Components.CotonomaModal.Update.update
-                                model.clientId
-                                session
-                                model.cotonoma
                                 subMsg
+                                session
+                                model.context
                                 model.timeline
                                 model.cotonomaModal
                         newModel = 
@@ -303,7 +301,7 @@ update msg model =
                                 { newModel | cotonomasLoading = True } 
                                     ! List.append
                                         [ fetchRecentCotonomas
-                                        , fetchSubCotonomas model.cotonoma
+                                        , fetchSubCotonomas model.context.cotonoma
                                         ]
                                         commands
                             _ -> 
@@ -339,12 +337,14 @@ update msg model =
         Pin ->
             pinSelectedCotos model ! []
             
+            
         ClearSelection ->
             { model 
-            | cotoSelection = []
+            | context = clearSelection model.context
             , connectMode = False 
             , connectModalOpen = False
             } ! []
+                
             
         SetConnectMode enabled ->
             { model | connectMode = enabled } ! []
@@ -354,10 +354,11 @@ update msg model =
             
         Connect startCoto endCotos ->
             let
+                context = model.context
                 newModel = 
                     { model 
                     | graph = model.graph |> addConnections startCoto endCotos
-                    , cotoSelection = []
+                    , context = { context | selection = [] }
                     , connectMode = False 
                     , connectModalOpen = False
                     }
@@ -416,18 +417,18 @@ confirm message msgOnConfirm model =
 clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
     if model.connectMode then
-        if model.cotoSelection |> List.member cotoId then
+        if model.context.selection |> List.member cotoId then
             model
         else
             { model
             | connectModalOpen = True
             , connectingTo = Just cotoId
             }
-    else 
-        { model 
-        | cotoSelection = updateCotoSelection cotoId model.cotoSelection
+    else
+        { model
+        | context = updateSelection cotoId model.context
         }
-          
+            
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =
@@ -446,12 +447,12 @@ openCoto maybeCoto model =
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
     let
-        cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        graph = model.graph |> addRootConnections cotos 
+        cotos = model.context.selection |> List.filterMap (\cotoId -> getCoto cotoId model)
+        graph = model.graph |> addRootConnections cotos
     in
         { model 
         | graph = graph
-        , cotoSelection = [] 
+        , context = clearSelection model.context
         }
         
 
@@ -496,12 +497,14 @@ changeLocationToHome model =
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model 
-    | cotonoma = Nothing
+    | context = 
+        model.context
+        |> clearCotonoma
+        |> clearSelection
     , members = []
     , cotonomasLoading = True
     , subCotonomas = []
     , timeline = setLoading model.timeline
-    , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
@@ -520,11 +523,13 @@ changeLocationToCotonoma key model =
 loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
     { model 
-    | cotonoma = Nothing
+    | context = 
+        model.context
+        |> clearCotonoma
+        |> clearSelection
     , members = []
     , cotonomasLoading = True
     , timeline = setLoading model.timeline
-    , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph

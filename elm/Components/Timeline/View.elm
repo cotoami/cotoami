@@ -6,13 +6,13 @@ import Html.Attributes exposing (..)
 import Html.Events
 import Html.Events exposing 
     (on, onWithOptions, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
-import Html.Lazy exposing (lazy3)
+import Html.Lazy exposing (lazy2)
 import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
-import App.Types exposing (Session, Cotonoma, CotoSelection)
+import App.Types exposing (Session, Cotonoma, CotoSelection, Context)
 import App.Graph exposing (Graph, member)
 import App.Markdown
 import Components.Timeline.Model exposing (Post, Model, toCoto)
@@ -20,19 +20,19 @@ import Components.Timeline.Messages exposing (..)
 import Components.Coto
 
 
-view : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
-view  selection maybeCotonoma maybeSession graph model =
+view : Context -> Graph -> Model -> Html Msg
+view context graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
-        [ timelineDiv selection maybeCotonoma maybeSession graph model
-        , lazy3 newPostEditor maybeCotonoma maybeSession model
+        [ timelineDiv context graph model
+        , lazy2 newPostEditor context model
         ]
 
 
-newPostEditor : Maybe Cotonoma ->  Maybe Session -> Model -> Html Msg
-newPostEditor maybeCotonoma maybeSession model =
+newPostEditor : Context -> Model -> Html Msg
+newPostEditor context model =
     div [ id "new-coto" ]
         [ div [ class "toolbar", hidden (not model.editingNew) ]
-            [ (case maybeSession of
+            [ (case context.session of
                   Nothing -> 
                       span [ class "user anonymous" ]
                           [ i [ class "material-icons" ] [ text "perm_identity" ]
@@ -68,15 +68,15 @@ newPostEditor maybeCotonoma maybeSession model =
         ]
   
 
-timelineDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Model -> Html Msg
-timelineDiv selection maybeCotonoma maybeSession graph model =
+timelineDiv : Context -> Graph -> Model -> Html Msg
+timelineDiv context graph model =
     Html.Keyed.node
         "div"
         [ id "timeline", classList [ ( "loading", model.loading ) ] ]
         (List.map 
             (\post -> 
                 ( getKey post
-                , postDiv selection maybeCotonoma maybeSession graph post
+                , postDiv context graph post
                 )
             ) 
             (List.reverse model.posts)
@@ -93,14 +93,14 @@ getKey post =
                 Nothing -> ""
     
     
-postDiv : CotoSelection -> Maybe Cotonoma -> Maybe Session -> Graph -> Post -> Html Msg
-postDiv selection maybeCotonoma maybeSession graph post =
+postDiv : Context -> Graph -> Post -> Html Msg
+postDiv context graph post =
     div
         [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", isActive selection post )
-            , ( "posting", (isJust maybeSession) && (isNothing post.cotoId) )
+            , ( "active", isActive context.selection post )
+            , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
             , ( "being-hidden", post.beingDeleted )
             ]
         , (case post.cotoId of
@@ -110,8 +110,8 @@ postDiv selection maybeCotonoma maybeSession graph post =
         ] 
         [ div 
             [ class "coto-inner" ]
-            [ headerDiv maybeCotonoma graph post
-            , authorDiv maybeSession post
+            [ headerDiv context.cotonoma graph post
+            , authorDiv context.session post
             , bodyDiv graph post
             , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
             ]
