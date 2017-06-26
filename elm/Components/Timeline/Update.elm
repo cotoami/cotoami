@@ -1,7 +1,6 @@
 module Components.Timeline.Update exposing (..)
 
 import Json.Decode as Decode
-import Task
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank, send)
 import App.Types exposing (Cotonoma)
