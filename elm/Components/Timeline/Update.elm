@@ -88,10 +88,16 @@ handlePushedPost clientId payload model =
 
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
-    postContent clientId maybeCotonoma model.newContent model
+    let
+        ( newModel, newPost ) = postContent clientId maybeCotonoma model.newContent model
+    in
+        newModel !
+            [ scrollToBottom NoOp
+            , Components.Timeline.Commands.post clientId maybeCotonoma newPost
+            ]
     
 
-postContent : String -> Maybe Cotonoma -> String -> Model -> ( Model, Cmd Msg )
+postContent : String -> Maybe Cotonoma -> String -> Model -> ( Model, Post )
 postContent clientId maybeCotonoma content model =
     let
         postId = model.postIdCounter + 1
@@ -102,14 +108,13 @@ postContent clientId maybeCotonoma content model =
             , postedIn = maybeCotonoma
             }
     in
-        { model 
-        | posts = newPost :: model.posts
-        , postIdCounter = postId
-        , newContent = ""
-        } ! 
-            [ scrollToBottom NoOp
-            , Components.Timeline.Commands.post clientId maybeCotonoma newPost
-            ]
+        ( { model 
+          | posts = newPost :: model.posts
+          , postIdCounter = postId
+          , newContent = ""
+          } 
+        , newPost
+        )
 
 
 setCotoSaved : Post -> Post -> Post
