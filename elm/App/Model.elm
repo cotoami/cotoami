@@ -12,7 +12,7 @@ import Components.ProfileModal
 import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
-import Components.Traversals.Model
+import Components.Traversals.Model exposing (Description)
   
 
 type alias Model =
@@ -119,3 +119,15 @@ getOwnerAndMembers model =
             case cotonoma.owner of
                 Nothing -> model.members
                 Just owner -> owner :: model.members
+
+
+openTraversal : Description -> CotoId -> Model -> Model
+openTraversal description cotoId model =
+    { model 
+    | traversals = 
+          Components.Traversals.Model.openTraversal 
+              description 
+              cotoId 
+              model.traversals
+    , viewInMobile = TraversalsView
+    }

@@ -8,9 +8,9 @@ import Utils exposing (onClickWithoutPropagation, isBlank)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Model exposing (..)
-import App.Messages exposing (..)
 import App.Markdown
 import Components.Coto
+import Components.CotoSelection.Messages exposing (..)
 
 
 cotoSelectionColumnDiv : Model -> Html Msg

@@ -32,8 +32,10 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model exposing (Description, removeTraversal)
+import Components.Traversals.Model exposing (removeTraversal)
 import Components.Traversals.Update
+import Components.CotoSelection.Messages
+import Components.CotoSelection.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -329,26 +331,40 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
-            
-        ConfirmPin ->
-            confirm "Are you sure you want to pin the selected cotos?" Pin model
-                ! []
-          
-        Pin ->
-            pinSelectedCotos model ! []
-            
-            
-        ClearSelection ->
-            { model 
-            | context = clearSelection model.context
-            , connectMode = False 
-            , connectModalOpen = False
-            } ! []
                 
+        CotoSelectionMsg subMsg ->
+            let
+                ( newModel, cmd ) = 
+                    Components.CotoSelection.Update.update subMsg model
+            in
+                case subMsg of
+                    Components.CotoSelection.Messages.OpenCoto coto ->
+                        openCoto (Just coto) model ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.CotonomaClick key ->
+                        changeLocationToCotonoma key newModel
+                        
+                    Components.CotoSelection.Messages.OpenTraversal cotoId ->
+                        openTraversal Components.Traversals.Model.Opened cotoId model 
+                            ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.ConfirmPin ->
+                        confirm 
+                            "Are you sure you want to pin the selected cotos?" 
+                            (CotoSelectionMsg Components.CotoSelection.Messages.Pin)
+                            newModel
+                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.ConfirmCreateGroupingCoto ->
+                        confirm 
+                            ("You are about to create a grouping coto: \"" ++ newModel.cotoSelectionTitle ++ "\"")
+                            (CotoSelectionMsg Components.CotoSelection.Messages.CreateGroupingCoto)
+                            newModel
+                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    _ -> 
+                        newModel ! [ Cmd.map CotoSelectionMsg cmd ]
             
-        SetConnectMode enabled ->
-            { model | connectMode = enabled } ! []
-                
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
             
@@ -365,20 +381,7 @@ update msg model =
             in
                 openTraversal Components.Traversals.Model.Connected startCoto.id newModel
                     ! []
-                    
-        CotoSelectionTitleInput title ->
-            { model | cotoSelectionTitle = title } ! []
-            
-        ConfirmCreateGroupingCoto ->
-            confirm 
-                ("You are about to create a grouping coto: \"" ++ model.cotoSelectionTitle ++ "\"")
-                CreateGroupingCoto 
-                model
-            ! []
-                
-        CreateGroupingCoto ->
-            model ! []
-            
+                                
         TraversalMsg subMsg ->
             let
                 ( traversals, cmd ) = 
@@ -441,18 +444,6 @@ openCoto maybeCoto model =
             | open = True
             , coto =  maybeCoto
             }
-        }
-
-
-pinSelectedCotos : Model -> Model
-pinSelectedCotos model =
-    let
-        cotos = model.context.selection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        graph = model.graph |> addRootConnections cotos
-    in
-        { model 
-        | graph = graph
-        , context = clearSelection model.context
         }
         
 
@@ -538,15 +529,3 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
-
-
-openTraversal : Description -> CotoId -> Model -> Model
-openTraversal description cotoId model =
-    { model 
-    | traversals = 
-          Components.Traversals.Model.openTraversal 
-              description 
-              cotoId 
-              model.traversals
-    , viewInMobile = TraversalsView
-    }

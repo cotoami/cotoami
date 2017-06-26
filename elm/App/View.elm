@@ -13,7 +13,7 @@ import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
-import Components.CotoSelection.View exposing (cotoSelectionColumnDiv, cotoSelectionTools)
+import Components.CotoSelection.View
 import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
@@ -57,7 +57,8 @@ view model =
                         ]
                     )
                 ]
-          , cotoSelectionTools model
+          , Html.map CotoSelectionMsg
+              (Components.CotoSelection.View.cotoSelectionTools model)
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
@@ -128,7 +129,9 @@ defaultColumnDivs model =
             , ( "empty", List.isEmpty model.context.selection )
             ]
         ] 
-        [ cotoSelectionColumnDiv model ]
+        [ Html.map CotoSelectionMsg
+            (Components.CotoSelection.View.cotoSelectionColumnDiv model)
+        ]
     ]
             
             

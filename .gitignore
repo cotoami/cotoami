@@ -29,3 +29,5 @@ erl_crash.dump
 
 # ctags index file
 tags
+
+npm-debug.log*
