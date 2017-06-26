@@ -84,16 +84,21 @@ handlePushedPost clientId payload model =
                 [ scrollToBottom NoOp ]
     else
         model ! []
-        
+
 
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
+    postContent clientId maybeCotonoma model.newContent model
+    
+
+postContent : String -> Maybe Cotonoma -> String -> Model -> ( Model, Cmd Msg )
+postContent clientId maybeCotonoma content model =
     let
         postId = model.postIdCounter + 1
         newPost = 
             { defaultPost
             | postId = Just postId
-            , content = model.newContent
+            , content = content
             , postedIn = maybeCotonoma
             }
     in
