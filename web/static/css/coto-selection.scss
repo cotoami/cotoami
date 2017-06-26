@@ -14,7 +14,8 @@
     padding-top: 5px;
     
     div.selection-info {
-      padding: 3px;
+      padding-top: 3px;
+      padding-bottom: 6px;
       opacity: 0.5;
       
       span.selection-count {
@@ -47,6 +48,12 @@
           border-radius: 0 4px 4px 0;
         }
       }
+    }
+    
+    a.close-selection {
+      position: absolute;
+      top: 10px;
+      right: 6px;
     }
   }
   

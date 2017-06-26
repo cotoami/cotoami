@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
 import App.Model exposing (..)
@@ -22,6 +23,11 @@ cotoSelectionColumnDiv model =
                 div [] []
               else
                 cotoSelectionToolsDiv
+            , a [ class "tool-button close-selection"
+                , href "/"
+                , onClickWithoutPropagation ClearSelection
+                ]
+                [ i [ class "material-icons" ] [ text "close" ] ]
             ]
         , div 
             [ class "column-body" ]
