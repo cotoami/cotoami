@@ -364,6 +364,9 @@ update msg model =
             in
                 openTraversal Components.Traversals.Model.Connected startCoto.id newModel
                     ! []
+                    
+        CotoSelectionTitleInput title ->
+            { model | cotoSelectionTitle = title } ! []
             
         TraversalMsg subMsg ->
             let

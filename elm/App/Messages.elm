@@ -50,5 +50,6 @@ type Msg
     | SetConnectMode Bool
     | CloseConnectModal
     | Connect Coto (List Coto)
+    | CotoSelectionTitleInput String
     | TraversalMsg Components.Traversals.Messages.Msg
     

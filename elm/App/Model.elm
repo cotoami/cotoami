@@ -35,6 +35,7 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , timeline : Components.Timeline.Model.Model
     , cotoSelection : CotoSelection
+    , cotoSelectionTitle : String
     , connectMode : Bool
     , connectingTo : Maybe Int
     , connectModalOpen : Bool
@@ -68,6 +69,7 @@ initModel seed route =
         , subCotonomas = []
         , timeline = Components.Timeline.Model.initModel
         , cotoSelection = []
+        , cotoSelectionTitle = ""
         , connectMode = False
         , connectingTo = Nothing
         , connectModalOpen = False

@@ -3,7 +3,7 @@ module Components.CotoSelection.View exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Graph exposing (..)
@@ -62,6 +62,7 @@ cotoSelectionToolsDiv =
               [ type_ "text"
               , name "title"
               , placeholder "Title for this group"
+              , onInput CotoSelectionTitleInput
               ] []
           , button 
               [ class "button", disabled True ] 
