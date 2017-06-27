@@ -8,6 +8,7 @@
   overflow-x: hidden;
   
   div.column-header {
+    z-index: 3;   // workaround for iOS bug where the header disappears when the input has focus
     min-height: 30px;
     text-align: center;
     margin-bottom: 5px;
