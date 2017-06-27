@@ -1,13 +1,15 @@
 module Components.CotoSelection.Update exposing (..)
 
-import App.Types exposing (clearSelection)
+import App.Types exposing (Context, clearSelection)
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
+import Components.Timeline.Update exposing (postContent)
+import Components.Timeline.Commands exposing (scrollToBottom)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> Context -> Model -> ( Model, Cmd Msg )
+update msg context model =
     case msg of
         NoOp ->
             model ! []
@@ -44,7 +46,18 @@ update msg model =
             model ! []
                 
         CreateGroupingCoto ->
-            model ! []
+            let
+                ( newTimeline, _ ) = 
+                      postContent 
+                          context.clientId 
+                          context.cotonoma 
+                          False 
+                          model.cotoSelectionTitle 
+                          model.timeline
+            in
+                { model | timeline = newTimeline } ! 
+                    [ scrollToBottom NoOp
+                    ]
 
 
 pinSelectedCotos : Model -> Model
@@ -57,3 +70,4 @@ pinSelectedCotos model =
         | graph = graph
         , context = clearSelection model.context
         }
+    

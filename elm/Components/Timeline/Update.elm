@@ -94,7 +94,7 @@ post clientId maybeCotonoma model =
     in
         newModel !
             [ scrollToBottom NoOp
-            , Components.Timeline.Commands.post clientId maybeCotonoma newPost
+            , Components.Timeline.Commands.post clientId maybeCotonoma Posted newPost
             ]
     
 
