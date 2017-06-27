@@ -77,13 +77,20 @@ initModel seed route =
         }
 
 
-getCoto : Int ->  Model -> Maybe Coto
+getCoto : Int -> Model -> Maybe Coto
 getCoto cotoId model =
     case Dict.get cotoId model.graph.cotos of
         Nothing ->
             Components.Timeline.Model.getCoto cotoId model.timeline
         Just coto ->
             Just coto
+            
+            
+getSelectedCoto : Model -> List Coto
+getSelectedCoto model =
+    List.filterMap 
+        (\cotoId -> getCoto cotoId model) 
+        model.context.selection
 
 
 openSigninModal : Model -> Model
