@@ -518,18 +518,3 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
-        
-        
-connect : Coto -> List Coto -> Model -> Model
-connect startCoto endCotos model =
-    let
-        context = model.context
-        newModel = 
-            { model 
-            | graph = model.graph |> addConnections startCoto endCotos
-            , context = { context | selection = [] }
-            , connectMode = False 
-            , connectModalOpen = False
-            }
-    in
-        openTraversal Components.Traversals.Model.Connected startCoto.id newModel

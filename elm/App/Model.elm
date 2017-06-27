@@ -5,7 +5,7 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
-import App.Graph exposing (Graph, initGraph)
+import App.Graph exposing (Graph, initGraph, addConnections)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
@@ -138,3 +138,18 @@ openTraversal description cotoId model =
               model.traversals
     , viewInMobile = TraversalsView
     }
+        
+        
+connect : Coto -> List Coto -> Model -> Model
+connect startCoto endCotos model =
+    let
+        context = model.context
+        newModel = 
+            { model 
+            | graph = model.graph |> addConnections startCoto endCotos
+            , context = { context | selection = [] }
+            , connectMode = False 
+            , connectModalOpen = False
+            }
+    in
+        openTraversal Components.Traversals.Model.Connected startCoto.id newModel

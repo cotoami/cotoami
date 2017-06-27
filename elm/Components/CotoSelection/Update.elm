@@ -67,10 +67,20 @@ update msg model =
         GroupingCotoPosted (Ok response) ->
             let
                 timeline = model.timeline
+                newModel = 
+                    { model 
+                    | timeline = { timeline | posts = setCotoSaved response timeline.posts }
+                    }
+                maybeStartCoto = 
+                    case response.cotoId of
+                        Nothing -> Nothing
+                        Just cotoId -> getCoto cotoId newModel
+                endCotos = getSelectedCoto newModel
             in
-              { model 
-              | timeline = { timeline | posts = setCotoSaved response timeline.posts }
-              } ! []
+                case maybeStartCoto of
+                    Nothing -> newModel ! []
+                    Just startCoto ->
+                        connect startCoto endCotos newModel ! []
           
         GroupingCotoPosted (Err _) ->
             model ! []
