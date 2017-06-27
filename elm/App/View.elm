@@ -39,6 +39,7 @@ view model =
           , classList 
               [ ( "cotonomas-loading", model.cotonomasLoading )
               , ( viewInMobile ++ "-view-in-mobile", True )
+              , ( "in-connect-mode", model.connectMode )
               ] 
           ]
           [ Components.AppHeader.view model

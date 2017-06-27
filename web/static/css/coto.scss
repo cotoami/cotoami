@@ -93,3 +93,25 @@ div.coto-as-cotonoma {
     }
   }
 }
+
+@keyframes animateBorder {
+  to {
+    outline-color: #eee;
+    box-shadow: 0 0 0 2px #ccc;
+  }
+}
+
+.in-connect-mode {
+  div.coto.selectable {
+    &:not(.active) > div.coto-inner {
+      outline: 2px dashed #ccc;
+      box-shadow: 0 0 0 2px #eee;
+      animation: 1s animateBorder infinite;
+    }
+    
+    &:hover > div.coto-inner {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}
