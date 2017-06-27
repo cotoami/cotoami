@@ -47,9 +47,7 @@ update context msg model =
             post context.clientId context.cotonoma model
                 
         Posted (Ok response) ->
-            { model 
-            | posts = List.map (\post -> setCotoSaved response post) model.posts 
-            } ! []
+            { model | posts = setCotoSaved response model.posts } ! []
           
         Posted (Err _) ->
             model ! []
@@ -119,12 +117,17 @@ postContent clientId maybeCotonoma asCotonoma content model =
         )
 
 
-setCotoSaved : Post -> Post -> Post
-setCotoSaved response post =
-    if post.postId == response.postId then
-        { post
-        | cotoId = response.cotoId
-        , cotonomaKey = response.cotonomaKey
-        }
-    else 
-        post
+setCotoSaved : Post -> List Post -> List Post
+setCotoSaved apiResponse posts =
+    List.map 
+        (\post ->
+            if post.postId == apiResponse.postId then
+                { post
+                | cotoId = apiResponse.cotoId
+                , cotonomaKey = apiResponse.cotonomaKey
+                }
+            else 
+                post
+        ) 
+        posts
+    

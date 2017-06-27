@@ -8,8 +8,8 @@ import Components.Timeline.Update exposing (postContent)
 import Components.Timeline.Commands exposing (scrollToBottom)
 
 
-update : Msg -> Context -> Model -> ( Model, Cmd Msg )
-update msg context model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         NoOp ->
             model ! []
@@ -49,8 +49,8 @@ update msg context model =
             let
                 ( newTimeline, _ ) = 
                       postContent 
-                          context.clientId 
-                          context.cotonoma 
+                          model.context.clientId 
+                          model.context.cotonoma 
                           False 
                           model.cotoSelectionTitle 
                           model.timeline
