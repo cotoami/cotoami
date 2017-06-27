@@ -519,6 +519,7 @@ loadCotonoma key model =
         , fetchCotonoma key 
         ]
         
+        
 connect : Coto -> List Coto -> Model -> Model
 connect startCoto endCotos model =
     let
