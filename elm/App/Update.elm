@@ -248,11 +248,7 @@ update msg model =
                 ( graph, _ ) = removeCoto coto.id model.graph
             in
                 { model 
-                | timeline =
-                    { timeline
-                    | posts = posts |> 
-                        List.filter (\post -> not (isSelfOrPostedIn coto post))
-                    }
+                | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
                 , graph = graph
                 , traversals = removeTraversal coto.id model.traversals
                 } ! 
