@@ -32,7 +32,7 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model exposing (removeTraversal)
+import Components.Traversals.Model exposing (closeTraversal)
 import Components.Traversals.Update
 import Components.CotoSelection.Messages
 import Components.CotoSelection.Update
@@ -250,7 +250,8 @@ update msg model =
                 { model 
                 | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
                 , graph = graph
-                , traversals = removeTraversal coto.id model.traversals
+                , traversals = closeTraversal coto.id model.traversals
+                , context = deleteSelection coto.id model.context
                 } ! 
                     (if coto.asCotonoma then 
                         [ fetchRecentCotonomas 

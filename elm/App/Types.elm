@@ -142,6 +142,11 @@ clearSelection : Context -> Context
 clearSelection context =
     { context | selection = [] }
     
+
+deleteSelection : CotoId -> Context -> Context
+deleteSelection cotoId context =
+    { context | selection = List.filter (\id -> cotoId /= id) context.selection }
+    
     
 ctrlDown : Bool -> Context -> Context
 ctrlDown down context =
