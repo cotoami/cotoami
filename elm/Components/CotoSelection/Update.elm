@@ -4,8 +4,8 @@ import App.Types exposing (Context, clearSelection)
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
-import Components.Timeline.Update exposing (postContent)
-import Components.Timeline.Commands exposing (scrollToBottom)
+import Components.Timeline.Update exposing (postContent, setCotoSaved)
+import Components.Timeline.Commands exposing (scrollToBottom, post)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -45,9 +45,9 @@ update msg model =
         ConfirmCreateGroupingCoto ->
             model ! []
                 
-        CreateGroupingCoto ->
+        PostGroupingCoto ->
             let
-                ( newTimeline, _ ) = 
+                ( newTimeline, newPost ) = 
                       postContent 
                           model.context.clientId 
                           model.context.cotonoma 
@@ -57,7 +57,23 @@ update msg model =
             in
                 { model | timeline = newTimeline } ! 
                     [ scrollToBottom NoOp
+                    , post 
+                        model.context.clientId 
+                        model.context.cotonoma  
+                        GroupingCotoPosted 
+                        newPost
                     ]
+                    
+        GroupingCotoPosted (Ok response) ->
+            let
+                timeline = model.timeline
+            in
+              { model 
+              | timeline = { timeline | posts = setCotoSaved response timeline.posts }
+              } ! []
+          
+        GroupingCotoPosted (Err _) ->
+            model ! []
 
 
 pinSelectedCotos : Model -> Model

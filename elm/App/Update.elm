@@ -358,7 +358,7 @@ update msg model =
                     Components.CotoSelection.Messages.ConfirmCreateGroupingCoto ->
                         confirm 
                             ("You are about to create a grouping coto: \"" ++ newModel.cotoSelectionTitle ++ "\"")
-                            (CotoSelectionMsg Components.CotoSelection.Messages.CreateGroupingCoto)
+                            (CotoSelectionMsg Components.CotoSelection.Messages.PostGroupingCoto)
                             newModel
                         ! [ Cmd.map CotoSelectionMsg cmd ]
                         
@@ -369,18 +369,7 @@ update msg model =
             { model | connectModalOpen = False } ! []
             
         Connect startCoto endCotos ->
-            let
-                context = model.context
-                newModel = 
-                    { model 
-                    | graph = model.graph |> addConnections startCoto endCotos
-                    , context = { context | selection = [] }
-                    , connectMode = False 
-                    , connectModalOpen = False
-                    }
-            in
-                openTraversal Components.Traversals.Model.Connected startCoto.id newModel
-                    ! []
+            connect startCoto endCotos model ! []
                                 
         TraversalMsg subMsg ->
             let
@@ -529,3 +518,17 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
+        
+connect : Coto -> List Coto -> Model -> Model
+connect startCoto endCotos model =
+    let
+        context = model.context
+        newModel = 
+            { model 
+            | graph = model.graph |> addConnections startCoto endCotos
+            , context = { context | selection = [] }
+            , connectMode = False 
+            , connectModalOpen = False
+            }
+    in
+        openTraversal Components.Traversals.Model.Connected startCoto.id newModel
