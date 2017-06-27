@@ -41,7 +41,16 @@ update msg model =
             model ! []
             
         SetConnectMode enabled ->
-            { model | connectMode = enabled } ! []
+            { model 
+            | connectMode = enabled
+            , viewInMobile =
+                if enabled then
+                    case model.viewInMobile of
+                        SelectionView -> TimelineView
+                        anotherView -> anotherView
+                else
+                    model.viewInMobile
+            } ! []
                 
         CotoSelectionTitleInput title ->
             { model | cotoSelectionTitle = title } ! []
