@@ -12,7 +12,7 @@ import Components.Cotonomas
 view : Model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
-        [ case model.cotonoma of
+        [ case model.context.cotonoma of
             Nothing -> div [] []
             Just cotonoma -> cotonomaNav model.memberPresences model.members cotonoma
         , if not (List.isEmpty model.subCotonomas) then

@@ -32,8 +32,10 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model exposing (Description, removeTraversal)
+import Components.Traversals.Model exposing (closeTraversal)
 import Components.Traversals.Update
+import Components.CotoSelection.Messages
+import Components.CotoSelection.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,7 +61,12 @@ update msg model =
                 
             
         SessionFetched (Ok session) ->
-            { model | session = Just session } ! []
+            let
+                context = model.context
+            in
+                { model 
+                | context = { context | session = Just session } 
+                } ! []
             
         SessionFetched (Err error) ->
             case error of
@@ -102,16 +109,15 @@ update msg model =
             
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
             let
+                context = model.context
                 ( timeline, cmd ) = 
                     Components.Timeline.Update.update 
-                      model.clientId
-                      model.cotonoma
-                      model.ctrlDown
+                      context
                       (Components.Timeline.Messages.PostsFetched (Ok posts))
                       model.timeline
             in
                 { model 
-                | cotonoma = Just cotonoma
+                | context = { context | cotonoma = Just cotonoma }
                 , members = members
                 , navigationOpen = False
                 , timeline = timeline
@@ -125,13 +131,13 @@ update msg model =
         
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                { model | ctrlDown = True } ! []
+                { model | context = ctrlDown True model.context } ! []
             else
                 model ! []
 
         KeyUp key ->
             if key == ctrl.keyCode || key == meta.keyCode then
-                { model | ctrlDown = False } ! []
+                { model | context = ctrlDown False model.context } ! []
             else
                 model ! []
                 
@@ -171,19 +177,15 @@ update msg model =
                 posts = timeline.posts
             in
                 case subMsg of
-                    Components.CotoModal.ConfirmDelete message ->
-                        { newModel 
-                        | confirmModal =
-                            { confirmModal
-                            | open = True
-                            , message = message
-                            , msgOnConfirm = 
-                                (case cotoModal.coto of
-                                    Nothing -> App.Messages.NoOp
-                                    Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
-                                )
-                            }
-                        } ! [ Cmd.map CotoModalMsg cmd ]
+                    Components.CotoModal.ConfirmDelete ->
+                        confirm 
+                            "Are you sure you want to delete this coto?" 
+                            (case cotoModal.coto of
+                                Nothing -> App.Messages.NoOp
+                                Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
+                            ) 
+                            newModel
+                        ! [ Cmd.map CotoModalMsg cmd ]
                         
                     Components.CotoModal.Delete coto  -> 
                         { newModel 
@@ -211,12 +213,7 @@ update msg model =
         TimelineMsg subMsg ->
             let
                 ( timeline, cmd ) = 
-                    Components.Timeline.Update.update 
-                        model.clientId
-                        model.cotonoma
-                        model.ctrlDown
-                        subMsg 
-                        model.timeline
+                    Components.Timeline.Update.update model.context subMsg model.timeline
                 newModel = { model | timeline = timeline }
                 cotoModal = newModel.cotoModal
             in
@@ -234,7 +231,7 @@ update msg model =
                         newModel ! 
                             [ Cmd.map TimelineMsg cmd
                             , fetchRecentCotonomas
-                            , fetchSubCotonomas model.cotonoma
+                            , fetchSubCotonomas model.context.cotonoma
                             ]
                             
                     Components.Timeline.Messages.OpenTraversal cotoId ->
@@ -251,17 +248,14 @@ update msg model =
                 ( graph, _ ) = removeCoto coto.id model.graph
             in
                 { model 
-                | timeline =
-                    { timeline
-                    | posts = posts |> 
-                        List.filter (\post -> not (isSelfOrPostedIn coto post))
-                    }
+                | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
                 , graph = graph
-                , traversals = removeTraversal coto.id model.traversals
+                , traversals = closeTraversal coto.id model.traversals
+                , context = deleteSelection coto.id model.context
                 } ! 
                     (if coto.asCotonoma then 
                         [ fetchRecentCotonomas 
-                        , fetchSubCotonomas model.cotonoma 
+                        , fetchSubCotonomas model.context.cotonoma 
                         ] 
                      else []) 
                 
@@ -271,7 +265,7 @@ update msg model =
         OpenCotonomaModal ->
             let
                 cotonomaModal = 
-                    case model.session of
+                    case model.context.session of
                         Nothing -> 
                             model.cotonomaModal
                         Just session -> 
@@ -283,16 +277,15 @@ update msg model =
                 { model | cotonomaModal = { cotonomaModal | open = True } } ! []
                 
         CotonomaModalMsg subMsg ->
-            case model.session of
+            case model.context.session of
                 Nothing -> model ! []
                 Just session -> 
                     let
                         ( cotonomaModal, timeline, cmd ) = 
                             Components.CotonomaModal.Update.update
-                                model.clientId
-                                session
-                                model.cotonoma
                                 subMsg
+                                session
+                                model.context
                                 model.timeline
                                 model.cotonomaModal
                         newModel = 
@@ -307,7 +300,7 @@ update msg model =
                                 { newModel | cotonomasLoading = True } 
                                     ! List.append
                                         [ fetchRecentCotonomas
-                                        , fetchSubCotonomas model.cotonoma
+                                        , fetchSubCotonomas model.context.cotonoma
                                         ]
                                         commands
                             _ -> 
@@ -335,36 +328,46 @@ update msg model =
                     applyPresenceDiff presenceDiff model.memberPresences
             in
                 { model | memberPresences = newMemberPresences } ! []
-            
-        Pin ->
-            pinSelectedCotos model ! []
-            
-        ClearSelection ->
-            { model 
-            | cotoSelection = []
-            , connectMode = False 
-            , connectModalOpen = False
-            } ! []
-            
-        SetConnectMode enabled ->
-            { model | connectMode = enabled } ! []
                 
+        CotoSelectionMsg subMsg ->
+            let
+                ( newModel, cmd ) = 
+                    Components.CotoSelection.Update.update subMsg model
+            in
+                case subMsg of
+                    Components.CotoSelection.Messages.OpenCoto coto ->
+                        openCoto (Just coto) model ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.CotonomaClick key ->
+                        changeLocationToCotonoma key newModel
+                        
+                    Components.CotoSelection.Messages.OpenTraversal cotoId ->
+                        openTraversal Components.Traversals.Model.Opened cotoId model 
+                            ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.ConfirmPin ->
+                        confirm 
+                            "Are you sure you want to pin the selected cotos?" 
+                            (CotoSelectionMsg Components.CotoSelection.Messages.Pin)
+                            newModel
+                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    Components.CotoSelection.Messages.ConfirmCreateGroupingCoto ->
+                        confirm 
+                            ("You are about to create a grouping coto: \"" ++ newModel.cotoSelectionTitle ++ "\"")
+                            (CotoSelectionMsg Components.CotoSelection.Messages.PostGroupingCoto)
+                            newModel
+                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        
+                    _ -> 
+                        newModel ! [ Cmd.map CotoSelectionMsg cmd ]
+            
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
             
         Connect startCoto endCotos ->
-            let
-                newModel = 
-                    { model 
-                    | graph = model.graph |> addConnections startCoto endCotos
-                    , cotoSelection = []
-                    , connectMode = False 
-                    , connectModalOpen = False
-                    }
-            in
-                openTraversal Components.Traversals.Model.Connected startCoto.id newModel
-                    ! []
-            
+            connect startCoto endCotos model ! []
+                                
         TraversalMsg subMsg ->
             let
                 ( traversals, cmd ) = 
@@ -385,21 +388,36 @@ update msg model =
                         newModel ! [ Cmd.map TraversalMsg cmd ]
       
       
+confirm : String -> Msg -> Model -> Model
+confirm message msgOnConfirm model =
+    let
+        confirmModal = model.confirmModal
+    in
+        { model 
+        | confirmModal =
+            { confirmModal
+            | open = True
+            , message = message
+            , msgOnConfirm = msgOnConfirm
+            }
+        }
+        
+      
 clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
     if model.connectMode then
-        if model.cotoSelection |> List.member cotoId then
+        if model.context.selection |> List.member cotoId then
             model
         else
             { model
             | connectModalOpen = True
             , connectingTo = Just cotoId
             }
-    else 
-        { model 
-        | cotoSelection = updateCotoSelection cotoId model.cotoSelection
+    else
+        { model
+        | context = updateSelection cotoId model.context
         }
-          
+            
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =
@@ -412,18 +430,6 @@ openCoto maybeCoto model =
             | open = True
             , coto =  maybeCoto
             }
-        }
-
-
-pinSelectedCotos : Model -> Model
-pinSelectedCotos model =
-    let
-        cotos = model.cotoSelection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        graph = model.graph |> addRootConnections cotos 
-    in
-        { model 
-        | graph = graph
-        , cotoSelection = [] 
         }
         
 
@@ -468,12 +474,14 @@ changeLocationToHome model =
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model 
-    | cotonoma = Nothing
+    | context = 
+        model.context
+        |> clearCotonoma
+        |> clearSelection
     , members = []
     , cotonomasLoading = True
     , subCotonomas = []
     , timeline = setLoading model.timeline
-    , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
@@ -492,11 +500,13 @@ changeLocationToCotonoma key model =
 loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
     { model 
-    | cotonoma = Nothing
+    | context = 
+        model.context
+        |> clearCotonoma
+        |> clearSelection
     , members = []
     , cotonomasLoading = True
     , timeline = setLoading model.timeline
-    , cotoSelection = []
     , connectMode = False
     , connectingTo = Nothing
     , graph = initGraph
@@ -505,15 +515,3 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key 
         ]
-
-
-openTraversal : Description -> CotoId -> Model -> Model
-openTraversal description cotoId model =
-    { model 
-    | traversals = 
-          Components.Traversals.Model.openTraversal 
-              description 
-              cotoId 
-              model.traversals
-    , viewInMobile = TraversalsView
-    }

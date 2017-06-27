@@ -99,8 +99,8 @@ openTraversal description cotoId model =
     }
   
 
-removeTraversal : CotoId -> Model -> Model
-removeTraversal cotoId model =   
+closeTraversal : CotoId -> Model -> Model
+closeTraversal cotoId model =   
     { model
     | traversals = Dict.remove cotoId model.traversals
     , order = List.filter (\id -> id /= cotoId) model.order

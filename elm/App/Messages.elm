@@ -12,6 +12,7 @@ import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
+import Components.CotoSelection.Messages
 import Components.Traversals.Messages
 
 
@@ -44,9 +45,7 @@ type Msg
     | CotonomaClick CotonomaKey
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
-    | Pin
-    | ClearSelection
-    | SetConnectMode Bool
+    | CotoSelectionMsg Components.CotoSelection.Messages.Msg
     | CloseConnectModal
     | Connect Coto (List Coto)
     | TraversalMsg Components.Traversals.Messages.Msg

@@ -13,6 +13,7 @@ import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
+import Components.CotoSelection.View
 import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.Pinned.View
@@ -24,12 +25,15 @@ import Components.Traversals.View
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos = (isNothing model.session) && not (List.isEmpty model.timeline.posts)
+        anyAnonymousCotos = 
+            (isNothing model.context.session) 
+                && not (List.isEmpty model.timeline.posts)
         viewInMobile =
             case model.viewInMobile of
                 TimelineView -> "timeline"
                 PinnedView -> "pinned"
                 TraversalsView -> "traversals"
+                SelectionView -> "selection"
     in
       div [ id "app" 
           , classList 
@@ -46,8 +50,7 @@ view model =
                             (\div -> Html.map TraversalMsg div)
                             (Components.Traversals.View.view
                                 (model.viewInMobile == TraversalsView)
-                                model.cotoSelection 
-                                model.cotonoma 
+                                model.context 
                                 model.graph 
                                 model.traversals
                             )
@@ -55,17 +58,18 @@ view model =
                         ]
                     )
                 ]
-          , cotoSelectionTools model
+          , Html.map CotoSelectionMsg
+              (Components.CotoSelection.View.cotoSelectionTools model)
           , Html.map ConfirmModalMsg 
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg 
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
           , Html.map ProfileModalMsg 
-              (Components.ProfileModal.view model.session model.profileModal)
+              (Components.ProfileModal.view model.context.session model.profileModal)
           , Html.map CotoModalMsg 
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg 
-              (Components.CotonomaModal.View.view model.session model.cotonomaModal)
+              (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
           , Components.ConnectModal.view model
           , a 
               [ class "tool-button info-button"
@@ -102,9 +106,7 @@ defaultColumnDivs model =
         ]
         [ Html.map TimelineMsg 
             (Components.Timeline.View.view 
-                model.cotoSelection
-                model.cotonoma
-                model.session
+                model.context
                 model.graph
                 model.timeline 
             )
@@ -118,51 +120,22 @@ defaultColumnDivs model =
             , ( "fadeIn", model.viewInMobile == PinnedView )
             ]
         ] 
-        [ Components.Pinned.View.view 
-            model.cotoSelection
-            model.cotonoma
-            model.graph
+        [ Components.Pinned.View.view model.context model.graph
+        ]
+    , div 
+        [ id "main-selection" 
+        , classList
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == SelectionView )
+            , ( "animated", True )
+            , ( "fadeIn", not (List.isEmpty model.context.selection) )
+            , ( "empty", List.isEmpty model.context.selection )
+            ]
+        ] 
+        [ Html.map CotoSelectionMsg
+            (Components.CotoSelection.View.cotoSelectionColumnDiv model)
         ]
     ]
-    
-
-cotoSelectionTools : Model -> Html Msg
-cotoSelectionTools model =
-    if List.isEmpty model.cotoSelection then
-        div [] []
-    else
-        div [ id "coto-selection-tools" ] 
-            [ a [ class "close", onClick ClearSelection ] 
-                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
-            , if model.connectMode then
-                div [ class "connect-mode" ]
-                    [ span 
-                        [ class "connect-mode-message" ] 
-                        [ text "Select a target coto..." ]
-                    , button 
-                        [ class "button", onClick (SetConnectMode False) ] 
-                        [ text "Cancel" ]
-                    ]
-              else
-                div [ class "default" ]
-                    [ div [ class "selection-info" ]
-                        [ span 
-                            [ class "selection-count" ] 
-                            [ text (model.cotoSelection |> List.length |> toString) ]
-                        , text " cotos selected"
-                        ]
-                    , div [ class "buttons" ]
-                        [ button 
-                           [ class "button", onClick Pin ] 
-                           [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                           , text "Pin" 
-                           ]
-                        , button 
-                           [ class "button", onClick (SetConnectMode True) ] 
-                           [ text "Connect" ]
-                        ]
-                    ]
-            ]
             
             
 viewSwitchContainerDiv : Model -> Html Msg
@@ -190,6 +163,13 @@ viewSwitchContainerDiv model =
             (model.viewInMobile == TraversalsView) 
             (Components.Traversals.Model.isEmpty model.traversals)
             (SwitchViewInMobile TraversalsView)
+        , viewSwitchDiv 
+            "switch-to-selection" 
+            "fa-check-square-o" 
+            "Switch to coto selection" 
+            (model.viewInMobile == SelectionView) 
+            (List.isEmpty model.context.selection)
+            (SwitchViewInMobile SelectionView)
         ]
     
     

@@ -28,10 +28,7 @@ modalConfig : Int -> Model -> Modal.Config Msg
 modalConfig startCotoId model =
     let
         maybeStartCoto = getCoto startCotoId model
-        endCotos = 
-            List.filterMap 
-                (\cotoId -> getCoto cotoId model) 
-                model.cotoSelection
+        endCotos = getSelectedCoto model
     in
         case maybeStartCoto of
             Nothing ->

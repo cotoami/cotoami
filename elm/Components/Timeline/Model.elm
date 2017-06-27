@@ -2,7 +2,15 @@ module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing (Coto, Amishi, Cotonoma, CotonomaKey, decodeAmishi, decodeCotonoma)
+import App.Types exposing 
+    ( Coto
+    , CotoId
+    , Amishi
+    , Cotonoma
+    , CotonomaKey
+    , decodeAmishi
+    , decodeCotonoma
+    )
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
@@ -104,7 +112,7 @@ initModel =
     }
     
     
-getCoto : Int ->  Model -> Maybe Coto
+getCoto : CotoId ->  Model -> Maybe Coto
 getCoto cotoId model =
     let
         maybePost = 
@@ -115,6 +123,14 @@ getCoto cotoId model =
         case maybePost of
             Nothing -> Nothing
             Just post -> toCoto post
+            
+            
+deleteCoto : Coto -> Model -> Model
+deleteCoto coto model =
+    { model
+    | posts = model.posts |> 
+        List.filter (\post -> not (isSelfOrPostedIn coto post))
+    }
 
 
 setLoading : Model -> Model

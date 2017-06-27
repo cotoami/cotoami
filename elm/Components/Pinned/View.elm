@@ -5,15 +5,15 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
+import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context)
 import App.Graph exposing (..)
 import App.Markdown
 import App.Messages exposing (..)
 import Components.Coto
 
 
-view : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-view selection maybeCotonoma graph =
+view : Context -> Graph -> Html Msg
+view context graph =
     div [ id "pinned-cotos" ]
         [ div 
             [ class "column-header" ] 
@@ -21,22 +21,17 @@ view selection maybeCotonoma graph =
             ]
         , div 
             [ class "column-body" ]
-            [ pinnedCotos selection maybeCotonoma graph ]
+            [ pinnedCotos context graph ]
         ]
 
 
-pinnedCotos : CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-pinnedCotos selection maybeCotonoma graph =
-    connectionsDiv
-        "root-connections" 
-        graph.rootConnections 
-        selection 
-        maybeCotonoma 
-        graph
+pinnedCotos : Context -> Graph -> Html Msg
+pinnedCotos context graph =
+    connectionsDiv "root-connections" graph.rootConnections context graph
 
 
-connectionsDiv : String -> List Connection -> CotoSelection -> Maybe Cotonoma -> Graph -> Html Msg
-connectionsDiv divClass connections selection maybeCotonoma graph =
+connectionsDiv : String -> List Connection -> Context -> Graph -> Html Msg
+connectionsDiv divClass connections context graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
@@ -46,32 +41,34 @@ connectionsDiv divClass connections selection maybeCotonoma graph =
                     Nothing -> Nothing  -- Missing the end node
                     Just coto -> Just 
                         ( conn.key
-                        , connectionDiv selection maybeCotonoma graph coto
+                        , connectionDiv context graph coto
                         ) 
             ) 
             connections
         )
         
         
-connectionDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-connectionDiv selection maybeCotonoma graph coto =
+connectionDiv : Context -> Graph -> Coto -> Html Msg
+connectionDiv context graph coto =
     div [ class "outbound-conn" ]
-        [ cotoDiv selection maybeCotonoma graph coto ]
+        [ cotoDiv context graph coto ]
         
   
-cotoDiv : CotoSelection -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv selection maybeCotonoma graph coto =
+cotoDiv : Context -> Graph -> Coto -> Html Msg
+cotoDiv context graph coto =
     div 
         [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", List.member coto.id selection )
+            , ( "active", List.member coto.id context.selection )
+            , ( "animated", True )
+            , ( "fadeIn", True )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
         ]
         [ div 
             [ class "coto-inner" ]
-            [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+            [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]

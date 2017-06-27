@@ -13,7 +13,7 @@ view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
-            (case model.cotonoma of
+            (case model.context.cotonoma of
                 Nothing -> 
                   [ i [ class "at-home material-icons" ] [ text "home" ]
                   , navigationToggle model
@@ -26,7 +26,7 @@ view model =
                   , navigationToggle model
                   ]
             )
-        , (case model.session of
+        , (case model.context.session of
             Nothing -> 
                 span [] []
             Just session -> 
@@ -38,7 +38,7 @@ view model =
                     [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
           )
         , div [ class "user" ]
-            (case model.session of
+            (case model.context.session of
                 Nothing -> 
                     [ a [ class "tool-button"
                         , title "Sign in"

@@ -28,7 +28,7 @@ update msg model =
             model ! []
             
         CloseTraversal cotoId ->
-            ( model |> removeTraversal cotoId
+            ( model |> closeTraversal cotoId
             , Cmd.none 
             )
             

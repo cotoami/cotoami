@@ -6,7 +6,7 @@ import Dom.Scroll
 import Task
 import Process
 import Time
-import Http
+import Http exposing (Request)
 import Utils
 import App.Types exposing (Cotonoma)
 import Components.Timeline.Model exposing (Post, decodePost)
@@ -25,13 +25,18 @@ fetchPosts =
     Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
 
 
-post : String -> Maybe Cotonoma -> Post -> Cmd Msg
-post clientId maybeCotonoma post =
-    Http.send Posted 
-        <| Utils.post 
-            "/api/cotos" 
-            (Http.jsonBody (encodePost clientId maybeCotonoma post)) 
-            decodePost
+postRequest : String -> Maybe Cotonoma -> Post -> Request Post
+postRequest clientId maybeCotonoma post =
+    Utils.post 
+        "/api/cotos" 
+        (Http.jsonBody (encodePost clientId maybeCotonoma post)) 
+        decodePost
+        
+
+post : String -> Maybe Cotonoma -> ((Result Http.Error Post) -> msg) -> Post -> Cmd msg
+post clientId maybeCotonoma msgAfterPosted post =
+    postRequest clientId maybeCotonoma post
+    |> Http.send msgAfterPosted 
         
 
 encodePost : String -> Maybe Cotonoma -> Post -> Encode.Value

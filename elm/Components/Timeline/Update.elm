@@ -1,18 +1,17 @@
 module Components.Timeline.Update exposing (..)
 
 import Json.Decode as Decode
-import Task
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank, send)
-import App.Types exposing (Cotonoma)
+import App.Types exposing (Cotonoma, Context)
 import App.Channels exposing (Payload, decodePayload)
 import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
 import Components.Timeline.Messages exposing (..)
 import Components.Timeline.Commands exposing (..)
 
 
-update : String -> Maybe Cotonoma -> Bool -> Msg -> Model -> ( Model, Cmd Msg )
-update clientId maybeCotonoma ctrlDown msg model =
+update : Context -> Msg -> Model -> ( Model, Cmd Msg )
+update context msg model =
     case msg of
         NoOp ->
             model ! []
@@ -39,18 +38,16 @@ update clientId maybeCotonoma ctrlDown msg model =
             { model | newContent = content } ! []
 
         EditorKeyDown key ->
-            if key == enter.keyCode && ctrlDown && (not (isBlank model.newContent)) then
-                post clientId maybeCotonoma model
+            if key == enter.keyCode && context.ctrlDown && (not (isBlank model.newContent)) then
+                post context.clientId context.cotonoma model
             else
                 model ! []
                 
         Post ->
-            post clientId maybeCotonoma model
+            post context.clientId context.cotonoma model
                 
         Posted (Ok response) ->
-            { model 
-            | posts = List.map (\post -> setCotoSaved response post) model.posts 
-            } ! []
+            { model | posts = setCotoSaved response model.posts } ! []
           
         Posted (Err _) ->
             model ! []
@@ -64,7 +61,7 @@ update clientId maybeCotonoma ctrlDown msg model =
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
                 Ok decodedPayload ->
-                    handlePushedPost clientId decodedPayload model
+                    handlePushedPost context.clientId decodedPayload model
                 Err err ->
                     model ! []
                     
@@ -85,35 +82,52 @@ handlePushedPost clientId payload model =
                 [ scrollToBottom NoOp ]
     else
         model ! []
-        
+
 
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
+    let
+        ( newModel, newPost ) = 
+            postContent clientId maybeCotonoma False model.newContent model
+    in
+        newModel !
+            [ scrollToBottom NoOp
+            , Components.Timeline.Commands.post clientId maybeCotonoma Posted newPost
+            ]
+    
+
+postContent : String -> Maybe Cotonoma -> Bool -> String -> Model -> ( Model, Post )
+postContent clientId maybeCotonoma asCotonoma content model =
     let
         postId = model.postIdCounter + 1
         newPost = 
             { defaultPost
             | postId = Just postId
-            , content = model.newContent
+            , content = content
+            , asCotonoma = asCotonoma
             , postedIn = maybeCotonoma
             }
     in
-        { model 
-        | posts = newPost :: model.posts
-        , postIdCounter = postId
-        , newContent = ""
-        } ! 
-            [ scrollToBottom NoOp
-            , Components.Timeline.Commands.post clientId maybeCotonoma newPost
-            ]
+        ( { model 
+          | posts = newPost :: model.posts
+          , postIdCounter = postId
+          , newContent = ""
+          } 
+        , newPost
+        )
 
 
-setCotoSaved : Post -> Post -> Post
-setCotoSaved response post =
-    if post.postId == response.postId then
-        { post
-        | cotoId = response.cotoId
-        , cotonomaKey = response.cotonomaKey
-        }
-    else 
-        post
+setCotoSaved : Post -> List Post -> List Post
+setCotoSaved apiResponse posts =
+    List.map 
+        (\post ->
+            if post.postId == apiResponse.postId then
+                { post
+                | cotoId = apiResponse.cotoId
+                , cotonomaKey = apiResponse.cotonomaKey
+                }
+            else 
+                post
+        ) 
+        posts
+    
