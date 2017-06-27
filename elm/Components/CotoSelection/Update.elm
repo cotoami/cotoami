@@ -99,5 +99,6 @@ pinSelectedCotos model =
         { model 
         | graph = graph
         , context = clearSelection model.context
+        , viewInMobile = PinnedView
         }
     
