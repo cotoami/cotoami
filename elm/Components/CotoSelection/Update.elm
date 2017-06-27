@@ -25,7 +25,10 @@ update msg model =
             | context = clearSelection model.context
             , connectMode = False 
             , connectModalOpen = False
-            , viewInMobile = TimelineView
+            , viewInMobile = 
+                case model.viewInMobile of
+                    SelectionView -> TimelineView
+                    anotherView -> anotherView
             } ! []
             
         OpenCoto coto ->
