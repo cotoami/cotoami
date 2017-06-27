@@ -1,6 +1,6 @@
 module Components.CotoSelection.Update exposing (..)
 
-import App.Types exposing (Context, clearSelection)
+import App.Types exposing (Context, clearSelection, ViewInMobile(..))
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
@@ -25,6 +25,7 @@ update msg model =
             | context = clearSelection model.context
             , connectMode = False 
             , connectModalOpen = False
+            , viewInMobile = TimelineView
             } ! []
             
         OpenCoto coto ->
