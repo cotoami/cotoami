@@ -63,6 +63,7 @@ cotoSelectionToolsDiv model =
                   , name "title"
                   , placeholder "Title for this group"
                   , maxlength titleMaxlength
+                  , value model.cotoSelectionTitle
                   , onInput CotoSelectionTitleInput
                   ] []
               , button 

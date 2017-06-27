@@ -55,7 +55,10 @@ update msg model =
                           model.cotoSelectionTitle 
                           model.timeline
             in
-                { model | timeline = newTimeline } ! 
+                { model 
+                | timeline = newTimeline
+                , cotoSelectionTitle = ""
+                } ! 
                     [ scrollToBottom NoOp
                     , post 
                         model.context.clientId 
