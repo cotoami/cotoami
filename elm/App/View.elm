@@ -33,6 +33,7 @@ view model =
                 TimelineView -> "timeline"
                 PinnedView -> "pinned"
                 TraversalsView -> "traversals"
+                SelectionView -> "selection"
     in
       div [ id "app" 
           , classList 
@@ -160,6 +161,13 @@ viewSwitchContainerDiv model =
             (model.viewInMobile == TraversalsView) 
             (Components.Traversals.Model.isEmpty model.traversals)
             (SwitchViewInMobile TraversalsView)
+        , viewSwitchDiv 
+            "switch-to-selection" 
+            "fa-check-square-o" 
+            "Switch to coto selection" 
+            (model.viewInMobile == SelectionView) 
+            (List.isEmpty model.context.selection)
+            (SwitchViewInMobile SelectionView)
         ]
     
     

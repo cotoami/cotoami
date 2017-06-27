@@ -15,6 +15,7 @@ type ViewInMobile
     = TimelineView
     | PinnedView
     | TraversalsView
+    | SelectionView
             
 
 type alias Amishi =
