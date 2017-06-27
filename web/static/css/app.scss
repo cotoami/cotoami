@@ -185,10 +185,6 @@ div.main-traversal {
     &.selected {
       opacity: 0.5;
       box-shadow: none;
-      
-      i {
-        opacity: 0.5;
-      }
     }
     
     &.empty i {
