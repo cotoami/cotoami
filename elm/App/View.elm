@@ -126,6 +126,8 @@ defaultColumnDivs model =
         [ id "main-selection" 
         , classList
             [ ( "main-column", True )
+            , ( "activeOnMobile", model.viewInMobile == SelectionView )
+            , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.context.selection) )
             , ( "empty", List.isEmpty model.context.selection )
             ]
