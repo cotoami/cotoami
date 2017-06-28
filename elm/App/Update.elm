@@ -383,6 +383,10 @@ update msg model =
                         
                     Components.Traversals.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key newModel
+                        
+                    Components.Traversals.Messages.OpenTraversal cotoId ->
+                        openTraversal Components.Traversals.Model.Opened cotoId model 
+                            ! [ Cmd.map TraversalMsg cmd ]
                       
                     _ -> 
                         newModel ! [ Cmd.map TraversalMsg cmd ]
