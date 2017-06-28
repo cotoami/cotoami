@@ -39,7 +39,9 @@ selectionInfoDiv model =
         , span 
             [ class "selection-count" ] 
             [ text (model.context.selection |> List.length |> toString) ]
-        , text " cotos selected"
+        , span 
+            [ class "text" ]
+            [ text " cotos selected" ]
         ]
         
   
