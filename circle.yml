@@ -7,6 +7,10 @@ machine:
     version: 5.5.0
 
 dependencies:
+  pre:
+    # workaround for ENOSPC error
+    # https://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc
+    - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   cache_directories:
     - ~/docker
     - ~/.kube
@@ -44,10 +48,6 @@ dependencies:
         chmod +x $(npm bin)/elm-make
       fi
       
-    # workaround for ENOSPC error
-    # https://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc
-    - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-    
     # compile assets
     - npm run deploy
     - npm run deploy # https://github.com/madsflensted/elm-brunch/issues/26
