@@ -46,9 +46,7 @@ dependencies:
       
     # workaround for ENOSPC error
     # https://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc
-    # https://discuss.circleci.com/t/changing-fs-inotify-max-user-watches/11550/2
-    - sudo sysctl fs.inotify.max_user_watches=524288
-    - sudo sysctl -p
+    - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
     
     # compile assets
     - npm run deploy
