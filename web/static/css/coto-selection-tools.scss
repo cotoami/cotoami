@@ -52,9 +52,19 @@
   
   div.default {
     div.selection-info {
+      i {
+        margin-right: 6px;
+        font-size: 16px;
+        vertical-align: middle;
+      }
+      
       span.selection-count {
         font-weight: bold;
         font-family: arial, sans-serif;
+      }
+      
+      span.text {
+        opacity: 0.8;
       }
     }
   }
@@ -63,7 +73,7 @@
     padding-top: 10px;
     
     span.connect-mode-message {
-      font-size: 18px;
+      font-size: 16px;
     }
     
     button {
