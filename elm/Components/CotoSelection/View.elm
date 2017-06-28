@@ -35,7 +35,8 @@ cotoSelectionColumnDiv model =
 selectionInfoDiv : Model -> Html Msg
 selectionInfoDiv model =
     div [ class "selection-info" ]
-        [ span 
+        [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
+        , span 
             [ class "selection-count" ] 
             [ text (model.context.selection |> List.length |> toString) ]
         , text " cotos selected"
