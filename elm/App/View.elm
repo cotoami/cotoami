@@ -55,7 +55,9 @@ view model =
                                 model.graph 
                                 model.traversals
                             )
-                        , [ viewSwitchContainerDiv model ]
+                        , [ selectionColumnDiv model
+                          , viewSwitchContainerDiv model 
+                          ]
                         ]
                     )
                 ]
@@ -123,7 +125,12 @@ defaultColumnDivs model =
         ] 
         [ Components.Pinned.View.view model.context model.graph
         ]
-    , div 
+    ]
+      
+      
+selectionColumnDiv : Model -> Html Msg
+selectionColumnDiv model =
+    div 
         [ id "main-selection" 
         , classList
             [ ( "main-column", True )
@@ -136,8 +143,7 @@ defaultColumnDivs model =
         [ Html.map CotoSelectionMsg
             (Components.CotoSelection.View.cotoSelectionColumnDiv model)
         ]
-    ]
-            
+        
             
 viewSwitchContainerDiv : Model -> Html Msg
 viewSwitchContainerDiv model =

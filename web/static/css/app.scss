@@ -143,14 +143,14 @@ $tool-button-color: #3572A5 !default;
 }
 
 #main-selection {
-  background-color: #eee;
+  background-color: #e8e8e8;
 }
 
 div.main-traversal {
   flex: 1;
   display: flex;
   padding: 0 5px;
-  background-color: #e8e8e8;
+  background-color: #eee;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
