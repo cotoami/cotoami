@@ -335,9 +335,6 @@ update msg model =
                     Components.CotoSelection.Update.update subMsg model
             in
                 case subMsg of
-                    Components.CotoSelection.Messages.OpenCoto coto ->
-                        openCoto (Just coto) model ! [ Cmd.map CotoSelectionMsg cmd ]
-                        
                     Components.CotoSelection.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key newModel
                         

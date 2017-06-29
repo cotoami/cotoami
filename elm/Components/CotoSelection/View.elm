@@ -123,8 +123,8 @@ bodyDiv : Graph -> Coto -> Html Msg
 bodyDiv graph coto =
     Components.Coto.bodyDiv 
         graph 
-        { openCoto = OpenCoto coto
-        , openTraversal = Just OpenTraversal
+        { openCoto = Nothing
+        , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
         , markdown = App.Markdown.markdown
         }

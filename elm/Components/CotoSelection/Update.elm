@@ -31,9 +31,6 @@ update msg model =
                     anotherView -> anotherView
             } ! []
             
-        OpenCoto coto ->
-            model ! []
-            
         CotonomaClick key ->
             model ! []
             
