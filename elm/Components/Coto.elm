@@ -45,7 +45,7 @@ type alias BodyModel =
     
     
 type alias BodyConfig msg =
-    { openCoto : msg
+    { openCoto : Maybe msg
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
     , markdown : String -> Html msg
@@ -87,12 +87,15 @@ cotoToolsSpan graph config cotoId =
                         [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
                    else
                      span [] []
-         , a [ class "tool-button open-coto"
-             , title "Open coto view"
-             , onClickWithoutPropagation config.openCoto
-             ] 
-             [ i [ class "material-icons" ] [ text "settings" ] ]
-         ]
+         , case config.openCoto of
+             Nothing -> span [] []
+             Just openCoto ->
+                 a [ class "tool-button open-coto"
+                     , title "Open coto view"
+                     , onClickWithoutPropagation openCoto
+                     ] 
+                     [ i [ class "material-icons" ] [ text "settings" ] ]
+                 ]
          
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg

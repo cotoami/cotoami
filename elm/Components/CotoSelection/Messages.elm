@@ -10,7 +10,6 @@ type Msg
     | ConfirmPin
     | Pin
     | ClearSelection
-    | OpenCoto Coto
     | CotonomaClick CotonomaKey
     | OpenTraversal CotoId
     | SetConnectMode Bool
