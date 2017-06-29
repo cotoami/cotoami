@@ -318,6 +318,9 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
             
+        RemovePinnedCoto cotoId ->
+            model ! []
+            
         CotonomaPresenceState payload ->
             { model | memberPresences = decodePresenceState payload } ! []
             

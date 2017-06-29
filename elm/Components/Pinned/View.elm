@@ -77,11 +77,12 @@ cotoDiv context graph coto =
 
 bodyDiv : Graph -> Coto -> Html Msg
 bodyDiv graph coto =
-    Components.Coto.bodyDiv 
+    Components.Coto.bodyDiv
         graph 
         { openCoto = Just (OpenCoto coto)
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
+        , deleteConnection = Just (RemovePinnedCoto coto.id)
         , markdown = App.Markdown.markdown
         }
         { cotoId = Just coto.id
