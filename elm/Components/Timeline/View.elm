@@ -153,11 +153,12 @@ authorDiv maybeSession post =
     
 bodyDiv : Graph -> Post -> Html Msg
 bodyDiv graph post =
-    Components.Coto.bodyDiv 
+    Components.Coto.bodyDiv
         graph 
         { openCoto = Just (PostOpen post)
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
+        , deleteConnection = Nothing
         , markdown = markdown
         }
         { cotoId = post.cotoId

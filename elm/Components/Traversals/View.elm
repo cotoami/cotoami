@@ -187,6 +187,7 @@ bodyDiv graph coto =
         { openCoto = Just (OpenCoto coto)
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
+        , deleteConnection = Nothing
         , markdown = App.Markdown.markdown
         }
         { cotoId = Just coto.id

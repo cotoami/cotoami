@@ -48,6 +48,7 @@ type alias BodyConfig msg =
     { openCoto : Maybe msg
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
+    , deleteConnection : Maybe msg
     , markdown : String -> Html msg
     }
 
@@ -81,21 +82,31 @@ cotoToolsSpan graph config cotoId =
              Just openTraversal ->
                  if App.Graph.member cotoId graph then
                     a [ class "tool-button traverse-coto"
-                        , title "Open coto traversal"
-                        , onClickWithoutPropagation (openTraversal cotoId)
-                        ] 
-                        [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
-                   else
-                     span [] []
+                      , title "Open coto traversal"
+                      , onClickWithoutPropagation (openTraversal cotoId)
+                      ] 
+                      [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
+                 else
+                   span [] []
+                   
          , case config.openCoto of
              Nothing -> span [] []
              Just openCoto ->
                  a [ class "tool-button open-coto"
-                     , title "Open coto view"
-                     , onClickWithoutPropagation openCoto
-                     ] 
-                     [ i [ class "material-icons" ] [ text "settings" ] ]
-                 ]
+                   , title "Open coto view"
+                   , onClickWithoutPropagation openCoto
+                   ] 
+                   [ i [ class "material-icons" ] [ text "settings" ] ]
+                   
+         , case config.deleteConnection of
+             Nothing -> span [] []
+             Just deleteConnection ->
+                 a [ class "tool-button delete-connection"
+                   , title "Delete connection"
+                   , onClickWithoutPropagation deleteConnection
+                   ] 
+                   [ i [ class "material-icons" ] [ text "close" ] ]
+         ]
          
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
@@ -107,8 +118,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onClickWithoutPropagation (buttonClick cotoId) ]
-                        [ i [ class "material-icons" ] [ text "more_horiz" ]
-                        ]
+                        [ i [ class "material-icons" ] [ text "more_horiz" ] ]
                     ]
             else
                 div [] []
