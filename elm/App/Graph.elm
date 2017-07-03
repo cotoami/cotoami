@@ -83,6 +83,15 @@ addRootConnection coto graph =
         }
 
 
+deleteRootConnection : CotoId -> Graph -> Graph
+deleteRootConnection cotoId graph =
+    { graph
+    | rootConnections =
+        graph.rootConnections
+        |> List.filter (\conn -> conn.end /= cotoId) 
+    }
+
+
 addConnection : Coto -> Coto -> Graph -> Graph
 addConnection start end graph =
     let

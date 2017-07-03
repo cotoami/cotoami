@@ -318,8 +318,15 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
             
-        RemovePinnedCoto cotoId ->
-            model ! []
+        ConfirmUnpinCoto cotoId ->
+            confirm 
+                "Are you sure you want to unpin this coto?" 
+                (UnpinCoto cotoId)
+                model
+            ! []
+            
+        UnpinCoto cotoId ->
+            { model | graph = model.graph |> deleteRootConnection cotoId } ! []
             
         CotonomaPresenceState payload ->
             { model | memberPresences = decodePresenceState payload } ! []
