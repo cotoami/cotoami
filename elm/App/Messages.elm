@@ -43,7 +43,8 @@ type Msg
     | OpenCoto Coto
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
-    | RemovePinnedCoto CotoId
+    | ConfirmUnpinCoto CotoId
+    | UnpinCoto CotoId
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | CotoSelectionMsg Components.CotoSelection.Messages.Msg

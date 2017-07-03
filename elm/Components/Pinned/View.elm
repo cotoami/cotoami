@@ -82,7 +82,7 @@ bodyDiv graph coto =
         { openCoto = Just (OpenCoto coto)
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
-        , deleteConnection = Just (RemovePinnedCoto coto.id)
+        , deleteConnection = Just (ConfirmUnpinCoto coto.id)
         , markdown = App.Markdown.markdown
         }
         { cotoId = Just coto.id
