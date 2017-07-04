@@ -106,7 +106,7 @@ postDiv context graph post =
             ]
         , (case post.cotoId of
             Nothing -> onClick NoOp
-            Just cotoId -> onClick (FocusPost cotoId)
+            Just cotoId -> onClick (PostClick cotoId)
           )
         ] 
         [ div 

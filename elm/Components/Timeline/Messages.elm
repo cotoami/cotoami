@@ -11,7 +11,7 @@ type Msg
     = NoOp
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
-    | FocusPost CotoId
+    | PostClick CotoId
     | EditorFocus
     | EditorBlur
     | EditorInput String

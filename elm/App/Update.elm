@@ -218,7 +218,7 @@ update msg model =
                 cotoModal = newModel.cotoModal
             in
                 case subMsg of
-                    Components.Timeline.Messages.FocusPost cotoId ->
+                    Components.Timeline.Messages.PostClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.OpenPost post ->
