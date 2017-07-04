@@ -117,6 +117,7 @@ type alias Context =
     { clientId : String
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
+    , focus : Maybe CotoId
     , selection : CotoSelection
     , ctrlDown : Bool
     }
