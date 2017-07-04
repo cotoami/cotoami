@@ -25,7 +25,7 @@ update context msg model =
         ImageLoaded ->
             model ! [ scrollToBottom NoOp ]
             
-        PostClick cotoId ->
+        FocusPost cotoId ->
             model ! []
 
         EditorFocus ->
@@ -52,7 +52,7 @@ update context msg model =
         Posted (Err _) ->
             model ! []
             
-        PostOpen post ->
+        OpenPost post ->
             model ! []
             
         CotonomaClick key ->

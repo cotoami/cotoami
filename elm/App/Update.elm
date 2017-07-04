@@ -218,10 +218,10 @@ update msg model =
                 cotoModal = newModel.cotoModal
             in
                 case subMsg of
-                    Components.Timeline.Messages.PostClick cotoId ->
+                    Components.Timeline.Messages.FocusPost cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
-                    Components.Timeline.Messages.PostOpen post ->
+                    Components.Timeline.Messages.OpenPost post ->
                         openCoto (toCoto post) model ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->

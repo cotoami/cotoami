@@ -11,14 +11,14 @@ type Msg
     = NoOp
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
-    | PostClick Int
+    | FocusPost CotoId
     | EditorFocus
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
     | Post
     | Posted (Result Http.Error Post)
-    | PostOpen Post
+    | OpenPost Post
     | CotonomaClick CotonomaKey
     | PostPushed Value
     | CotonomaPushed Post
