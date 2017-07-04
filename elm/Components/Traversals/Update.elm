@@ -34,4 +34,10 @@ update msg model =
             
         ChangePage pageIndex ->
             { model | activePageIndex = pageIndex } ! []
+            
+        ConfirmDeleteConnection ( fromId, toId ) ->
+            model ! []
+            
+        DeleteConnection ( fromId, toId ) ->
+            model ! []
         
