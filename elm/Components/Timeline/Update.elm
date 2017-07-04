@@ -27,6 +27,12 @@ update context msg model =
             
         PostClick cotoId ->
             model ! []
+            
+        PostMouseEnter cotoId ->
+            model ! []
+            
+        PostMouseLeave cotoId ->
+            model ! []
 
         EditorFocus ->
             { model | editingNew = True } ! []

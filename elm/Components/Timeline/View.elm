@@ -4,8 +4,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events
-import Html.Events exposing 
-    (on, onWithOptions, onClick, onMouseDown, onFocus, onBlur, onInput, keyCode)
+import Html.Events exposing (..)
 import Html.Lazy exposing (lazy2)
 import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
@@ -96,19 +95,23 @@ getKey post =
 postDiv : Context -> Graph -> Post -> Html Msg
 postDiv context graph post =
     div
-        [ classList 
+        (classList 
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "focus", post.cotoId == context.focus )
             , ( "selected", isActive context.selection post )
             , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
             , ( "being-hidden", post.beingDeleted )
-            ]
-        , (case post.cotoId of
-            Nothing -> onClick NoOp
-            Just cotoId -> onClick (PostClick cotoId)
-          )
-        ] 
+            ] :: 
+                (case post.cotoId of
+                    Nothing -> []
+                    Just cotoId ->
+                        [ onClick (PostClick cotoId)
+                        , onMouseEnter (PostMouseEnter cotoId)
+                        , onMouseLeave (PostMouseLeave cotoId)
+                        ]
+                )
+        )
         [ div 
             [ class "coto-inner" ]
             [ headerDiv context.cotonoma graph post
