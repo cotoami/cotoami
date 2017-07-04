@@ -437,10 +437,8 @@ clickCoto cotoId model =
             , connectingTo = Just cotoId
             }
     else
-        { model
-        | context = updateSelection cotoId model.context
-        }
-            
+        { model | context = updateFocus cotoId model.context }
+
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =

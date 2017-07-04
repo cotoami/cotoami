@@ -123,6 +123,20 @@ type alias Context =
     }
 
 
+updateFocus : CotoId -> Context -> Context
+updateFocus cotoId context =
+    { context
+    | focus =
+        case context.focus of
+            Nothing -> Just cotoId
+            Just focus ->
+                if focus == cotoId then
+                    Nothing
+                else
+                    Just cotoId
+    }
+
+
 updateSelection : CotoId -> Context -> Context
 updateSelection cotoId context =
     { context
