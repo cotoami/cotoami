@@ -317,6 +317,11 @@ update msg model =
         OpenCoto coto ->
             openCoto (Just coto) model ! []
             
+        SelectCoto cotoId ->
+            { model
+            | context = updateSelection cotoId model.context
+            } ! []
+            
         OpenTraversal cotoId ->
             openTraversal Components.Traversals.Model.Opened cotoId model ! []
                 

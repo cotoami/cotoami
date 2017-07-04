@@ -82,7 +82,7 @@ bodyDiv context graph coto =
         context
         graph 
         { openCoto = Just (OpenCoto coto)
-        , selectCoto = Nothing
+        , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
         , deleteConnection = Just (ConfirmUnpinCoto coto.id)
