@@ -4,6 +4,7 @@ import Dict
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context, isSelected)
 import App.Graph exposing (..)
@@ -66,6 +67,8 @@ cotoDiv context graph coto =
             , ( "fadeIn", True )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
+        , onMouseEnter (CotoMouseEnter coto.id)
+        , onMouseLeave (CotoMouseLeave coto.id)
         ]
         [ div 
             [ class "coto-inner" ]
