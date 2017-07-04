@@ -394,6 +394,18 @@ update msg model =
                     Components.Traversals.Messages.OpenTraversal cotoId ->
                         openTraversal Components.Traversals.Model.Opened cotoId model 
                             ! [ Cmd.map TraversalMsg cmd ]
+                            
+                    Components.Traversals.Messages.ConfirmDeleteConnection conn ->
+                        confirm 
+                            ("Are you sure you want to delete this connection?")
+                            (TraversalMsg (Components.Traversals.Messages.DeleteConnection conn))
+                            newModel
+                        ! [ Cmd.map TraversalMsg cmd ]
+                        
+                    Components.Traversals.Messages.DeleteConnection conn ->
+                        { model
+                        | graph = deleteConnection conn model.graph
+                        } ! [ Cmd.map TraversalMsg cmd ]
                       
                     _ -> 
                         newModel ! [ Cmd.map TraversalMsg cmd ]
