@@ -42,14 +42,19 @@ send msg =
 
 onClickWithoutPropagation : msg -> Attribute msg
 onClickWithoutPropagation message =
+    onWithoutPropagation "click" message 
+    
+
+onWithoutPropagation : String -> msg -> Attribute msg
+onWithoutPropagation eventName message =
     let
         defaultOptions = Html.Events.defaultOptions
     in
         onWithOptions 
-            "click"
+            eventName
             { defaultOptions | stopPropagation = True, preventDefault = True }
             (Decode.succeed message)
-
+            
 
 commonRequestHeaders : List Http.Header
 commonRequestHeaders =
