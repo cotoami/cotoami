@@ -101,7 +101,7 @@ selectedCotosDiv model =
                     Just coto -> Just 
                         ( toString cotoId
                         , cotoDiv 
-                            (model.deselecting |> Set.member cotoId)
+                            (model.context.deselecting |> Set.member cotoId)
                             model.context 
                             model.graph 
                             coto

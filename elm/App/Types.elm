@@ -1,5 +1,6 @@
 module App.Types exposing (..)
 
+import Set
 import Dict
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
@@ -119,6 +120,7 @@ type alias Context =
     , cotonoma : Maybe Cotonoma
     , focus : Maybe CotoId
     , selection : CotoSelection
+    , deselecting : Set.Set CotoId
     , ctrlDown : Bool
     }
 
@@ -167,6 +169,14 @@ deleteSelection : CotoId -> Context -> Context
 deleteSelection cotoId context =
     { context | selection = List.filter (\id -> cotoId /= id) context.selection }
     
+    
+setBeingDeselected : CotoId -> Context -> Context
+setBeingDeselected cotoId context =
+    { context
+    | deselecting =
+        context.deselecting |> Set.insert cotoId
+    }
+
     
 ctrlDown : Bool -> Context -> Context
 ctrlDown down context =

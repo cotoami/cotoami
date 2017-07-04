@@ -9,6 +9,7 @@ import App.Types exposing
     , Context
     , clearSelection
     , deleteSelection
+    , setBeingDeselected
     , ViewInMobile(..)
     )
 import App.Graph exposing (addConnections, addRootConnections)
@@ -25,7 +26,7 @@ update msg model =
             model ! []
             
         DeselectingCoto cotoId ->
-            setBeingDeselected cotoId model ! 
+            { model | context = setBeingDeselected cotoId model.context } ! 
                 [ Process.sleep (1 * Time.second)
                   |> Task.andThen (\_ -> Task.succeed ())
                   |> Task.perform (\_ -> DeselectCoto)
@@ -132,27 +133,20 @@ pinSelectedCotos model =
         }
     
     
-setBeingDeselected : CotoId -> Model -> Model
-setBeingDeselected cotoId model =
-    { model
-    | deselecting =
-        model.deselecting |> Set.insert cotoId
-    }
-    
-    
 doDeselect : Model -> Model
 doDeselect model =
     let
         context = model.context
-        deselecting = model.deselecting
+        deselecting = context.deselecting
     in
         { model
         | context = 
-            { context | selection = 
+            { context 
+            | selection = 
                 List.filter 
                     (\id -> not(Set.member id deselecting)) 
                     context.selection
+            , deselecting = Set.empty      
             }
-        , deselecting = Set.empty
         }
     
