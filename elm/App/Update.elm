@@ -322,6 +322,12 @@ update msg model =
         CotoClick cotoId ->
             clickCoto cotoId model ! []
             
+        CotoMouseEnter cotoId ->
+            { model | context = setFocus (Just cotoId) model.context } ! []
+            
+        CotoMouseLeave cotoId ->
+            { model | context = setFocus Nothing model.context } ! []
+            
         OpenCoto coto ->
             openCoto (Just coto) model ! []
             
