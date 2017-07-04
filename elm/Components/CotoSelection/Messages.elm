@@ -7,7 +7,8 @@ import Components.Timeline.Model exposing (Post)
 
 type Msg
     = NoOp
-    | DeselectCoto CotoId
+    | DeselectingCoto CotoId
+    | DeselectCoto
     | ConfirmPin
     | Pin
     | ClearSelection

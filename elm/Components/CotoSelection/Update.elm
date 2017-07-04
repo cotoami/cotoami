@@ -1,6 +1,16 @@
 module Components.CotoSelection.Update exposing (..)
 
-import App.Types exposing (Context, clearSelection, deleteSelection, ViewInMobile(..))
+import Set
+import Task
+import Process
+import Time
+import App.Types exposing 
+    ( CotoId
+    , Context
+    , clearSelection
+    , deleteSelection
+    , ViewInMobile(..)
+    )
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
@@ -14,10 +24,15 @@ update msg model =
         NoOp ->
             model ! []
             
-        DeselectCoto cotoId ->
-            { model 
-            | context = deleteSelection cotoId model.context
-            } ! []
+        DeselectingCoto cotoId ->
+            setBeingDeselected cotoId model ! 
+                [ Process.sleep (1 * Time.second)
+                  |> Task.andThen (\_ -> Task.succeed ())
+                  |> Task.perform (\_ -> DeselectCoto)
+                ]
+            
+        DeselectCoto ->
+            doDeselect model ! []
             
         ConfirmPin ->
             model ! []
@@ -114,5 +129,30 @@ pinSelectedCotos model =
         | graph = graph
         , context = clearSelection model.context
         , viewInMobile = PinnedView
+        }
+    
+    
+setBeingDeselected : CotoId -> Model -> Model
+setBeingDeselected cotoId model =
+    { model
+    | deselecting =
+        model.deselecting |> Set.insert cotoId
+    }
+    
+    
+doDeselect : Model -> Model
+doDeselect model =
+    let
+        context = model.context
+        deselecting = model.deselecting
+    in
+        { model
+        | context = 
+            { context | selection = 
+                List.filter 
+                    (\id -> not(Set.member id deselecting)) 
+                    context.selection
+            }
+        , deselecting = Set.empty
         }
     

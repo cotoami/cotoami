@@ -1,5 +1,6 @@
 module Components.CotoSelection.View exposing (..)
 
+import Set
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
@@ -99,24 +100,39 @@ selectedCotosDiv model =
                     Nothing -> Nothing
                     Just coto -> Just 
                         ( toString cotoId
-                        , cotoDiv model.context.cotonoma model.graph coto
+                        , cotoDiv 
+                            (model.deselecting |> Set.member cotoId)
+                            model.context.cotonoma 
+                            model.graph 
+                            coto
                         )
             ) 
             (List.reverse model.context.selection)
         )
 
 
-cotoDiv : Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv maybeCotonoma graph coto =
+cotoDiv : Bool -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
+cotoDiv beingDeselected maybeCotonoma graph coto =
     div 
-        [ class "coto" ]
+        [ classList
+            [ ( "coto", True )
+            , ( "animated", True )
+            , ( "fadeOut", beingDeselected )
+            ]
+        ]
         [ div 
             [ class "coto-inner" ]
             [ a [ class "tool-button deselect-coto"
                 , title "Deselect coto"
-                , onClickWithoutPropagation (DeselectCoto coto.id) 
+                , onClickWithoutPropagation (DeselectingCoto coto.id) 
                 ] 
-                [ i [ class "material-icons" ] [ text "check_box" ] ]
+                [ i [ class "material-icons" ] 
+                    [ if beingDeselected then
+                        text "check_box_outline_blank"
+                      else
+                        text "check_box"
+                    ] 
+                ]
             , Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
             , bodyDiv graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 

@@ -1,6 +1,7 @@
 module App.Model exposing (..)
 
 import Dict
+import Set
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
@@ -38,6 +39,7 @@ type alias Model =
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Components.Traversals.Model.Model
+    , deselecting : Set.Set CotoId
     }
 
 
@@ -74,6 +76,7 @@ initModel seed route =
         , cotonomaModal = Components.CotonomaModal.Model.initModel
         , graph = initGraph
         , traversals = Components.Traversals.Model.initModel
+        , deselecting = Set.empty
         }
 
 
