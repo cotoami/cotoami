@@ -85,6 +85,20 @@
     div.coto {
       margin-bottom: 10px;
       border: 1px dashed #ddd;
+      
+      div.coto-inner {
+        position: relative;
+        
+        a.deselect-coto {
+          position: absolute;
+          top: 3px;
+          left: 3px;
+        }
+        
+        div.coto-header {
+          min-height: 35px;
+        }
+      }
     }
   }
 }
