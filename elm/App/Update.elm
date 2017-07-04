@@ -409,6 +409,14 @@ update msg model =
                     Components.Traversals.Messages.CotoClick cotoId ->
                         clickCoto cotoId newModel ! [ Cmd.map TraversalMsg cmd ]
                         
+                    Components.Traversals.Messages.CotoMouseEnter cotoId ->
+                        { newModel | context = setFocus (Just cotoId) newModel.context } 
+                            ! [ Cmd.map TraversalMsg cmd ]
+                            
+                    Components.Traversals.Messages.CotoMouseLeave cotoId ->
+                        { newModel | context = setFocus Nothing newModel.context } 
+                            ! [ Cmd.map TraversalMsg cmd ]
+                        
                     Components.Traversals.Messages.OpenCoto coto ->
                         openCoto (Just coto) model ! [ Cmd.map TraversalMsg cmd ]
                         
