@@ -74,7 +74,7 @@ div.coto.selectable {
     }
   }
   
-  &.active > div.coto-inner {
+  &.selected > div.coto-inner {
     border: 2px solid #ffa500 !important;
     
     & > div.coto-body > span.coto-tools {
