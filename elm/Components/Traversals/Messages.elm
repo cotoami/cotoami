@@ -8,6 +8,7 @@ type Msg
     = NoOp
     | CotoClick CotoId
     | OpenCoto Coto
+    | SelectCoto CotoId
     | CotonomaClick CotonomaKey
     | TraverseClick Traverse
     | OpenTraversal CotoId
