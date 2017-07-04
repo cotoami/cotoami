@@ -53,6 +53,7 @@ initModel seed route =
             { clientId = Uuid.toString newUuid
             , session = Nothing
             , cotonoma = Nothing
+            , focus = Nothing
             , selection = []
             , ctrlDown = False
             }
