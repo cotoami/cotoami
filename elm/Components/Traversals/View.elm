@@ -120,7 +120,7 @@ traversalStepCotoDiv context graph traversalStep connections coto =
     div [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", List.member coto.id context.selection )
+            , ( "selected", List.member coto.id context.selection )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
         ]
@@ -167,7 +167,7 @@ cotoDiv ( traversal, index ) context graph parentId coto =
         [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", List.member coto.id context.selection )
+            , ( "selected", List.member coto.id context.selection )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
         ]

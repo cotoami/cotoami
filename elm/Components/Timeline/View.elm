@@ -99,7 +99,7 @@ postDiv context graph post =
         [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", isActive context.selection post )
+            , ( "selected", isActive context.selection post )
             , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
             , ( "being-hidden", post.beingDeleted )
             ]
