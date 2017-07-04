@@ -106,7 +106,7 @@ postDiv context graph post =
             ]
         , (case post.cotoId of
             Nothing -> onClick NoOp
-            Just cotoId -> onClick (PostClick cotoId)
+            Just cotoId -> onClick (FocusPost cotoId)
           )
         ] 
         [ div 
@@ -157,7 +157,7 @@ bodyDiv context graph post =
     Components.Coto.bodyDiv
         context
         graph 
-        { openCoto = Just (PostOpen post)
+        { openCoto = Just (OpenPost post)
         , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
