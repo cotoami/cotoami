@@ -135,7 +135,12 @@ updateFocus cotoId context =
                 else
                     Just cotoId
     }
-
+    
+    
+isSelected : CotoId -> Context -> Bool
+isSelected cotoId context =
+    List.member cotoId context.selection
+    
 
 updateSelection : CotoId -> Context -> Context
 updateSelection cotoId context =

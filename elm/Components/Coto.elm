@@ -3,7 +3,15 @@ module Components.Coto exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Types exposing 
+    ( Coto
+    , CotoId
+    , Cotonoma
+    , CotonomaKey
+    , Context
+    , isPostedInCotonoma
+    , isSelected
+    )
 import App.Graph exposing (Graph, pinned, hasChildren)
 
 
@@ -54,12 +62,12 @@ type alias BodyConfig msg =
     }
 
 
-bodyDiv : Graph -> BodyConfig msg -> BodyModel -> Html msg
-bodyDiv graph config model = 
+bodyDiv : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
+bodyDiv context graph config model = 
     div [ class "coto-body" ]
         [ (case model.cotoId of
             Nothing -> span [] []
-            Just cotoId -> cotoToolsSpan graph config cotoId
+            Just cotoId -> cotoToolsSpan context graph config cotoId
           )
         , if model.asCotonoma then
             div [ class "coto-as-cotonoma" ]
@@ -75,8 +83,8 @@ bodyDiv graph config model =
         ]
         
         
-cotoToolsSpan : Graph -> BodyConfig msg -> CotoId -> Html msg
-cotoToolsSpan graph config cotoId = 
+cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
+cotoToolsSpan context graph config cotoId = 
     span [ class "coto-tools" ]
          [ case config.selectCoto of
              Nothing -> span [] []
@@ -85,7 +93,13 @@ cotoToolsSpan graph config cotoId =
                   , title "Select coto"
                   , onClickWithoutPropagation (selectCoto cotoId)
                   ] 
-                  [ i [ class "material-icons" ] [ text "check_box_outline_blank" ] ]
+                  [ i [ class "material-icons" ] 
+                      [ if isSelected cotoId context then
+                            text "check_box" 
+                        else
+                            text "check_box_outline_blank" 
+                      ] 
+                  ]
                
          , case config.openTraversal of
              Nothing -> span [] []
