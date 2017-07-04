@@ -46,6 +46,7 @@ type alias BodyModel =
     
 type alias BodyConfig msg =
     { openCoto : Maybe msg
+    , selectCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
     , deleteConnection : Maybe msg
@@ -77,7 +78,16 @@ bodyDiv graph config model =
 cotoToolsSpan : Graph -> BodyConfig msg -> CotoId -> Html msg
 cotoToolsSpan graph config cotoId = 
     span [ class "coto-tools" ]
-         [ case config.openTraversal of
+         [ case config.selectCoto of
+             Nothing -> span [] []
+             Just selectCoto ->
+                a [ class "tool-button select-coto"
+                  , title "Select coto"
+                  , onClickWithoutPropagation (selectCoto cotoId)
+                  ] 
+                  [ i [ class "material-icons" ] [ text "check_box_outline_blank" ] ]
+               
+         , case config.openTraversal of
              Nothing -> span [] []
              Just openTraversal ->
                  if App.Graph.member cotoId graph then

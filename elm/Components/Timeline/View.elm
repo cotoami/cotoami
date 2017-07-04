@@ -157,6 +157,7 @@ bodyDiv graph post =
     Components.Coto.bodyDiv
         graph 
         { openCoto = Just (PostOpen post)
+        , selectCoto = Nothing
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
         , deleteConnection = Nothing

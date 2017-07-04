@@ -185,6 +185,7 @@ bodyDiv maybeConnection graph coto =
     Components.Coto.bodyDiv 
         graph 
         { openCoto = Just (OpenCoto coto)
+        , selectCoto = Nothing
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
         , deleteConnection =

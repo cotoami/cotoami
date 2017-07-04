@@ -145,6 +145,7 @@ bodyDiv graph coto =
     Components.Coto.bodyDiv 
         graph 
         { openCoto = Nothing
+        , selectCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
         , deleteConnection = Nothing
