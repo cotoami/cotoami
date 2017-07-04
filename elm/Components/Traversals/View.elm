@@ -3,6 +3,7 @@ module Components.Traversals.View exposing (..)
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Html.Keyed
 import Utils exposing (onClickWithoutPropagation)
 import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context)
@@ -124,6 +125,8 @@ traversalStepCotoDiv context graph traversalStep connections coto =
             , ( "selected", List.member coto.id context.selection )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
+        , onMouseEnter (CotoMouseEnter coto.id)
+        , onMouseLeave (CotoMouseLeave coto.id)
         ]
         [ div [ class "coto-inner" ]
               [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
@@ -172,6 +175,8 @@ cotoDiv ( traversal, index ) context graph parentId coto =
             , ( "selected", List.member coto.id context.selection )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
+        , onMouseEnter (CotoMouseEnter coto.id)
+        , onMouseLeave (CotoMouseLeave coto.id)
         ]
         [ div 
             [ class "coto-inner" ]
