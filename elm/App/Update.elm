@@ -236,7 +236,7 @@ update msg model =
                             
                     Components.Timeline.Messages.SelectCoto cotoId ->
                         { newModel
-                        | context = updateSelection cotoId model.context
+                        | context = updateSelection cotoId newModel.context
                         } ! [ Cmd.map TimelineMsg cmd ]
                             
                     Components.Timeline.Messages.OpenTraversal cotoId ->
@@ -397,6 +397,11 @@ update msg model =
                         
                     Components.Traversals.Messages.OpenCoto coto ->
                         openCoto (Just coto) model ! [ Cmd.map TraversalMsg cmd ]
+                        
+                    Components.Traversals.Messages.SelectCoto cotoId ->
+                        { newModel
+                        | context = updateSelection cotoId newModel.context
+                        } ! [ Cmd.map TraversalMsg cmd ]
                         
                     Components.Traversals.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key newModel

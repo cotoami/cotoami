@@ -16,6 +16,9 @@ update msg model =
         OpenCoto coto ->
             model ! []
             
+        SelectCoto cotoId ->
+            model ! []
+            
         CotonomaClick key ->
             model ! []
             
