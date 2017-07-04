@@ -234,6 +234,11 @@ update msg model =
                             , fetchSubCotonomas model.context.cotonoma
                             ]
                             
+                    Components.Timeline.Messages.SelectCoto cotoId ->
+                        { newModel
+                        | context = updateSelection cotoId model.context
+                        } ! [ Cmd.map TimelineMsg cmd ]
+                            
                     Components.Timeline.Messages.OpenTraversal cotoId ->
                         openTraversal Components.Traversals.Model.Opened cotoId model 
                             ! [ Cmd.map TimelineMsg cmd ]

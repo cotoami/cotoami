@@ -22,4 +22,5 @@ type Msg
     | CotonomaClick CotonomaKey
     | PostPushed Value
     | CotonomaPushed Post
+    | SelectCoto CotoId
     | OpenTraversal CotoId

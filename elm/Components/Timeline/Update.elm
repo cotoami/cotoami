@@ -68,6 +68,9 @@ update context msg model =
         CotonomaPushed post ->
             model ! []
             
+        SelectCoto cotoId ->
+            model ! []
+            
         OpenTraversal cotoId ->
             model ! []
     
