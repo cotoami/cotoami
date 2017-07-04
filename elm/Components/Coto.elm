@@ -1,5 +1,6 @@
 module Components.Coto exposing (..)
 
+import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
@@ -94,7 +95,7 @@ cotoToolsSpan context graph config cotoId =
                   , onClickWithoutPropagation (selectCoto cotoId)
                   ] 
                   [ i [ class "material-icons" ] 
-                      [ if isSelected cotoId context then
+                      [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
                             text "check_box" 
                         else
                             text "check_box_outline_blank" 
