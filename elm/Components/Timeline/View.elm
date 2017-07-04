@@ -113,7 +113,7 @@ postDiv context graph post =
             [ class "coto-inner" ]
             [ headerDiv context.cotonoma graph post
             , authorDiv context.session post
-            , bodyDiv graph post
+            , bodyDiv context graph post
             , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
             ]
         ]
@@ -152,9 +152,10 @@ authorDiv maybeSession post =
                             ]
             
     
-bodyDiv : Graph -> Post -> Html Msg
-bodyDiv graph post =
+bodyDiv : Context -> Graph -> Post -> Html Msg
+bodyDiv context graph post =
     Components.Coto.bodyDiv
+        context
         graph 
         { openCoto = Just (PostOpen post)
         , selectCoto = Just SelectCoto
