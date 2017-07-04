@@ -49,12 +49,24 @@ member cotoId graph =
     graph.cotos |> Dict.member cotoId
     
     
-connected : CotoId -> CotoId -> Graph -> Bool
-connected startId endId graph =
+hasConnection : CotoId -> CotoId -> Graph -> Bool
+hasConnection startId endId graph =
     case Dict.get startId graph.connections of
         Nothing -> False
         Just conns -> List.any (\conn -> conn.end == endId) conns
-        
+    
+    
+connected : CotoId -> Graph -> Bool
+connected cotoId graph =
+    (graph.rootConnections |> List.any (\conn -> conn.end == cotoId))
+        || (graph.connections |> Dict.member cotoId)
+        || (graph.connections 
+            |> Dict.values 
+            |> List.any (\conns ->
+                conns |> List.any (\conn -> conn.end == cotoId)
+            )
+           )
+  
     
 hasChildren : CotoId -> Graph -> Bool
 hasChildren cotoId graph =
@@ -107,7 +119,7 @@ addConnection start end graph =
                 (initConnection Nothing start.id) :: graph.rootConnections
                 
         connections =
-            if connected start.id end.id graph then
+            if hasConnection start.id end.id graph then
                 graph.connections
             else
                 Dict.update
@@ -140,25 +152,41 @@ addConnections startCoto endCotos graph =
         
 deleteConnection : ( CotoId, CotoId ) -> Graph -> Graph
 deleteConnection ( fromId, toId ) graph =
-    { graph
-    | connections = 
-        graph.connections
-        |> Dict.update
-            fromId
-            (\maybeChildren ->
-                case maybeChildren of
-                    Nothing -> Nothing
-                    Just children ->
-                        let
-                            newChildren = List.filter (\conn -> conn.end /= toId) children
-                        in
-                            if List.isEmpty newChildren then
-                                Nothing
-                            else
-                                Just newChildren
-            )
-    }
-        
+    let
+        newGraph =
+          { graph
+          | connections = 
+               graph.connections |> doDeleteConnection ( fromId, toId )
+          }
+    in
+        { newGraph
+        | cotos =
+            -- remove the coto (toId) if it's an orphan
+            if connected toId newGraph then
+                newGraph.cotos
+            else
+                newGraph.cotos |> Dict.remove toId
+        }
+    
+    
+doDeleteConnection : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection) 
+doDeleteConnection ( fromId, toId ) connections =
+    connections
+    |> Dict.update
+        fromId
+        (\maybeChildren ->
+            case maybeChildren of
+                Nothing -> Nothing
+                Just children ->
+                    let
+                        newChildren = List.filter (\conn -> conn.end /= toId) children
+                    in
+                        if List.isEmpty newChildren then
+                            Nothing
+                        else
+                            Just newChildren
+        )
+    
     
 removeCoto : CotoId -> Graph -> ( Graph, List Connection )
 removeCoto cotoId graph =
