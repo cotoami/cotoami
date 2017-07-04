@@ -25,7 +25,7 @@ update context msg model =
         ImageLoaded ->
             model ! [ scrollToBottom NoOp ]
             
-        FocusPost cotoId ->
+        PostClick cotoId ->
             model ! []
 
         EditorFocus ->
