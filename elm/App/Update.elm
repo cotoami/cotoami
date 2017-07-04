@@ -474,7 +474,7 @@ clickCoto cotoId model =
             , connectingTo = Just cotoId
             }
     else
-        { model | context = updateFocus cotoId model.context }
+        { model | context = setFocus (Just cotoId) model.context }
 
 
 openCoto : Maybe Coto -> Model -> Model
