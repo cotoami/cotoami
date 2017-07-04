@@ -12,6 +12,8 @@ type Msg
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
     | PostClick CotoId
+    | PostMouseEnter CotoId
+    | PostMouseLeave CotoId
     | EditorFocus
     | EditorBlur
     | EditorInput String

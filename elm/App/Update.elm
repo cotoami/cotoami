@@ -221,6 +221,14 @@ update msg model =
                     Components.Timeline.Messages.PostClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
+                    Components.Timeline.Messages.PostMouseEnter cotoId ->
+                        { newModel | context = setFocus (Just cotoId) newModel.context } 
+                            ! [ Cmd.map TimelineMsg cmd ]
+                            
+                    Components.Timeline.Messages.PostMouseLeave cotoId ->
+                        { newModel | context = setFocus Nothing newModel.context } 
+                            ! [ Cmd.map TimelineMsg cmd ]
+                        
                     Components.Timeline.Messages.OpenPost post ->
                         openCoto (toCoto post) model ! [ Cmd.map TimelineMsg cmd ]
                         

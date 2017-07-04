@@ -125,6 +125,11 @@ type alias Context =
     }
 
 
+setFocus : Maybe CotoId -> Context -> Context
+setFocus maybeCotoId context =
+    { context | focus = maybeCotoId }
+    
+    
 updateFocus : CotoId -> Context -> Context
 updateFocus cotoId context =
     { context
