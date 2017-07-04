@@ -6,7 +6,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Utils exposing (onClickWithoutPropagation, isBlank)
-import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection)
+import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context)
 import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Markdown
@@ -101,8 +101,8 @@ selectedCotosDiv model =
                     Just coto -> Just 
                         ( toString cotoId
                         , cotoDiv 
-                            (model.deselecting |> Set.member cotoId)
-                            model.context.cotonoma 
+                            (model.context.deselecting |> Set.member cotoId)
+                            model.context 
                             model.graph 
                             coto
                         )
@@ -111,8 +111,8 @@ selectedCotosDiv model =
         )
 
 
-cotoDiv : Bool -> Maybe Cotonoma -> Graph -> Coto -> Html Msg
-cotoDiv beingDeselected maybeCotonoma graph coto =
+cotoDiv : Bool -> Context -> Graph -> Coto -> Html Msg
+cotoDiv beingDeselected context graph coto =
     div 
         [ classList
             [ ( "coto", True )
@@ -133,18 +133,20 @@ cotoDiv beingDeselected maybeCotonoma graph coto =
                         text "check_box"
                     ] 
                 ]
-            , Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
-            , bodyDiv graph coto
+            , Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+            , bodyDiv context graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]
         ]
 
 
-bodyDiv : Graph -> Coto -> Html Msg
-bodyDiv graph coto =
+bodyDiv : Context -> Graph -> Coto -> Html Msg
+bodyDiv context graph coto =
     Components.Coto.bodyDiv 
-        graph 
+        context
+        graph
         { openCoto = Nothing
+        , selectCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
         , deleteConnection = Nothing

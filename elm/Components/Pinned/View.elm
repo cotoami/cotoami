@@ -4,8 +4,9 @@ import Dict
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context)
+import App.Types exposing (Coto, CotoId, Cotonoma, CotoSelection, Context, isSelected)
 import App.Graph exposing (..)
 import App.Markdown
 import App.Messages exposing (..)
@@ -60,26 +61,31 @@ cotoDiv context graph coto =
         [ classList 
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "active", List.member coto.id context.selection )
+            , ( "focus", Just coto.id == context.focus )
+            , ( "selected", isSelected coto.id context )
             , ( "animated", True )
             , ( "fadeIn", True )
             ]
         , onClickWithoutPropagation (CotoClick coto.id)
+        , onMouseEnter (CotoMouseEnter coto.id)
+        , onMouseLeave (CotoMouseLeave coto.id)
         ]
         [ div 
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-            , bodyDiv graph coto
+            , bodyDiv context graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]
         ]
 
 
-bodyDiv : Graph -> Coto -> Html Msg
-bodyDiv graph coto =
+bodyDiv : Context -> Graph -> Coto -> Html Msg
+bodyDiv context graph coto =
     Components.Coto.bodyDiv
+        context
         graph 
         { openCoto = Just (OpenCoto coto)
+        , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
         , deleteConnection = Just (ConfirmUnpinCoto coto.id)

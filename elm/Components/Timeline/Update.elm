@@ -27,6 +27,12 @@ update context msg model =
             
         PostClick cotoId ->
             model ! []
+            
+        PostMouseEnter cotoId ->
+            model ! []
+            
+        PostMouseLeave cotoId ->
+            model ! []
 
         EditorFocus ->
             { model | editingNew = True } ! []
@@ -52,7 +58,7 @@ update context msg model =
         Posted (Err _) ->
             model ! []
             
-        PostOpen post ->
+        OpenPost post ->
             model ! []
             
         CotonomaClick key ->
@@ -66,6 +72,9 @@ update context msg model =
                     model ! []
                     
         CotonomaPushed post ->
+            model ! []
+            
+        SelectCoto cotoId ->
             model ! []
             
         OpenTraversal cotoId ->

@@ -13,7 +13,16 @@ update msg model =
         CotoClick cotoId ->
             model ! []
             
+        CotoMouseEnter cotoId ->
+            model ! []
+
+        CotoMouseLeave cotoId ->
+            model ! []
+            
         OpenCoto coto ->
+            model ! []
+            
+        SelectCoto cotoId ->
             model ! []
             
         CotonomaClick key ->

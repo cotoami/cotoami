@@ -7,7 +7,10 @@ import Components.Traversals.Model exposing (Traverse)
 type Msg
     = NoOp
     | CotoClick CotoId
+    | CotoMouseEnter CotoId
+    | CotoMouseLeave CotoId
     | OpenCoto Coto
+    | SelectCoto CotoId
     | CotonomaClick CotonomaKey
     | TraverseClick Traverse
     | OpenTraversal CotoId

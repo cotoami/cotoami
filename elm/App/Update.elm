@@ -221,7 +221,15 @@ update msg model =
                     Components.Timeline.Messages.PostClick cotoId ->
                         (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
                         
-                    Components.Timeline.Messages.PostOpen post ->
+                    Components.Timeline.Messages.PostMouseEnter cotoId ->
+                        { newModel | context = setFocus (Just cotoId) newModel.context } 
+                            ! [ Cmd.map TimelineMsg cmd ]
+                            
+                    Components.Timeline.Messages.PostMouseLeave cotoId ->
+                        { newModel | context = setFocus Nothing newModel.context } 
+                            ! [ Cmd.map TimelineMsg cmd ]
+                        
+                    Components.Timeline.Messages.OpenPost post ->
                         openCoto (toCoto post) model ! [ Cmd.map TimelineMsg cmd ]
                         
                     Components.Timeline.Messages.CotonomaClick key ->
@@ -233,6 +241,11 @@ update msg model =
                             , fetchRecentCotonomas
                             , fetchSubCotonomas model.context.cotonoma
                             ]
+                            
+                    Components.Timeline.Messages.SelectCoto cotoId ->
+                        { newModel
+                        | context = updateSelection cotoId newModel.context
+                        } ! [ Cmd.map TimelineMsg cmd ]
                             
                     Components.Timeline.Messages.OpenTraversal cotoId ->
                         openTraversal Components.Traversals.Model.Opened cotoId model 
@@ -309,8 +322,19 @@ update msg model =
         CotoClick cotoId ->
             clickCoto cotoId model ! []
             
+        CotoMouseEnter cotoId ->
+            { model | context = setFocus (Just cotoId) model.context } ! []
+            
+        CotoMouseLeave cotoId ->
+            { model | context = setFocus Nothing model.context } ! []
+            
         OpenCoto coto ->
             openCoto (Just coto) model ! []
+            
+        SelectCoto cotoId ->
+            { model
+            | context = updateSelection cotoId model.context
+            } ! []
             
         OpenTraversal cotoId ->
             openTraversal Components.Traversals.Model.Opened cotoId model ! []
@@ -385,8 +409,21 @@ update msg model =
                     Components.Traversals.Messages.CotoClick cotoId ->
                         clickCoto cotoId newModel ! [ Cmd.map TraversalMsg cmd ]
                         
+                    Components.Traversals.Messages.CotoMouseEnter cotoId ->
+                        { newModel | context = setFocus (Just cotoId) newModel.context } 
+                            ! [ Cmd.map TraversalMsg cmd ]
+                            
+                    Components.Traversals.Messages.CotoMouseLeave cotoId ->
+                        { newModel | context = setFocus Nothing newModel.context } 
+                            ! [ Cmd.map TraversalMsg cmd ]
+                        
                     Components.Traversals.Messages.OpenCoto coto ->
                         openCoto (Just coto) model ! [ Cmd.map TraversalMsg cmd ]
+                        
+                    Components.Traversals.Messages.SelectCoto cotoId ->
+                        { newModel
+                        | context = updateSelection cotoId newModel.context
+                        } ! [ Cmd.map TraversalMsg cmd ]
                         
                     Components.Traversals.Messages.CotonomaClick key ->
                         changeLocationToCotonoma key newModel
@@ -437,10 +474,8 @@ clickCoto cotoId model =
             , connectingTo = Just cotoId
             }
     else
-        { model
-        | context = updateSelection cotoId model.context
-        }
-            
+        { model | context = updateFocus cotoId model.context }
+
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =

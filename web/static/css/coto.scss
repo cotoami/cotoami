@@ -64,18 +64,12 @@ div.coto {
 }    
 
 div.coto.selectable {
-  @media (min-device-width: 1200px) {
-    &:hover > div.coto-inner {
-      border: 2px solid #ffdd33 !important;
-      
-      & > div.coto-body > span.coto-tools {
-        display: inline-block !important;
-      }
-    }
+  &.selected > div.coto-inner {
+    border: 2px solid #ffa500 !important;
   }
   
-  &.active > div.coto-inner {
-    border: 2px solid #ffa500 !important;
+  &.focus > div.coto-inner {
+    border: 2px solid #ffdd33 !important;
     
     & > div.coto-body > span.coto-tools {
       display: inline-block !important;

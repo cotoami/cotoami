@@ -1,9 +1,18 @@
 module Components.Coto exposing (..)
 
+import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Types exposing 
+    ( Coto
+    , CotoId
+    , Cotonoma
+    , CotonomaKey
+    , Context
+    , isPostedInCotonoma
+    , isSelected
+    )
 import App.Graph exposing (Graph, pinned, hasChildren)
 
 
@@ -46,6 +55,7 @@ type alias BodyModel =
     
 type alias BodyConfig msg =
     { openCoto : Maybe msg
+    , selectCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
     , deleteConnection : Maybe msg
@@ -53,12 +63,12 @@ type alias BodyConfig msg =
     }
 
 
-bodyDiv : Graph -> BodyConfig msg -> BodyModel -> Html msg
-bodyDiv graph config model = 
+bodyDiv : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
+bodyDiv context graph config model = 
     div [ class "coto-body" ]
         [ (case model.cotoId of
             Nothing -> span [] []
-            Just cotoId -> cotoToolsSpan graph config cotoId
+            Just cotoId -> cotoToolsSpan context graph config cotoId
           )
         , if model.asCotonoma then
             div [ class "coto-as-cotonoma" ]
@@ -74,10 +84,25 @@ bodyDiv graph config model =
         ]
         
         
-cotoToolsSpan : Graph -> BodyConfig msg -> CotoId -> Html msg
-cotoToolsSpan graph config cotoId = 
+cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
+cotoToolsSpan context graph config cotoId = 
     span [ class "coto-tools" ]
-         [ case config.openTraversal of
+         [ case config.selectCoto of
+             Nothing -> span [] []
+             Just selectCoto ->
+                a [ class "tool-button select-coto"
+                  , title "Select coto"
+                  , onClickWithoutPropagation (selectCoto cotoId)
+                  ] 
+                  [ i [ class "material-icons" ] 
+                      [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
+                            text "check_box" 
+                        else
+                            text "check_box_outline_blank" 
+                      ] 
+                  ]
+               
+         , case config.openTraversal of
              Nothing -> span [] []
              Just openTraversal ->
                  if App.Graph.member cotoId graph then
