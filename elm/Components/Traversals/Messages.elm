@@ -13,3 +13,5 @@ type Msg
     | OpenTraversal CotoId
     | CloseTraversal CotoId
     | ChangePage Int
+    | ConfirmDeleteConnection ( CotoId, CotoId )
+    | DeleteConnection ( CotoId, CotoId )
