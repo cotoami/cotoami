@@ -142,15 +142,21 @@ deleteConnection : ( CotoId, CotoId ) -> Graph -> Graph
 deleteConnection ( fromId, toId ) graph =
     { graph
     | connections = 
-        Dict.update
+        graph.connections
+        |> Dict.update
             fromId
             (\maybeChildren ->
                 case maybeChildren of
                     Nothing -> Nothing
                     Just children ->
-                        Just (List.filter (\conn -> conn.end /= toId) children)
+                        let
+                            newChildren = List.filter (\conn -> conn.end /= toId) children
+                        in
+                            if List.isEmpty newChildren then
+                                Nothing
+                            else
+                                Just newChildren
             )
-            graph.connections
     }
         
     
