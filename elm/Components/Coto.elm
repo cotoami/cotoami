@@ -70,7 +70,7 @@ bodyDiv graph config model =
                     ]
                 ]
           else 
-              config.markdown model.content 
+            config.markdown model.content 
         ]
         
         

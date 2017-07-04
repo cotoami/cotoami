@@ -112,7 +112,11 @@ cotoDiv maybeCotonoma graph coto =
         [ class "coto" ]
         [ div 
             [ class "coto-inner" ]
-            [ Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+            [ a [ class "tool-button deselect-coto"
+                , title "Deselect coto"
+                ] 
+                [ i [ class "material-icons" ] [ text "check_box" ] ]
+            , Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
             , bodyDiv graph coto
             , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
             ]
