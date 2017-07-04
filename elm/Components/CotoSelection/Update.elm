@@ -1,6 +1,6 @@
 module Components.CotoSelection.Update exposing (..)
 
-import App.Types exposing (Context, clearSelection, ViewInMobile(..))
+import App.Types exposing (Context, clearSelection, deleteSelection, ViewInMobile(..))
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
@@ -13,6 +13,11 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
+            
+        DeselectCoto cotoId ->
+            { model 
+            | context = deleteSelection cotoId model.context
+            } ! []
             
         ConfirmPin ->
             model ! []
