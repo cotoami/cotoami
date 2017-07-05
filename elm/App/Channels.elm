@@ -37,17 +37,22 @@ decodePayload bodyName bodyDecoder =
 
 -- https://hexdocs.pm/phoenix/Phoenix.Presence.html
 -- {3: {metas: [{phx_ref: "5OaVq4AmYbU=", online_at: 1490350876053}]}}
-type alias PresenceEntry = ( String, List ( String, List ( String, Int ) ) )
+type alias PresenceEntry =
+    ( String, List ( String, List ( String, Int ) ) )
 
 
 decodePresenceEntries : Decode.Decoder (List PresenceEntry)
 decodePresenceEntries =
-    Decode.keyValuePairs          -- Amishi ID
-        <| Decode.keyValuePairs   -- "metas"
-        <| Decode.list
-        <| Decode.map2 (,)
-            (Decode.field "phx_ref" Decode.string)
-            (Decode.field "online_at" Decode.int)
+    Decode.keyValuePairs
+    -- Amishi ID
+    <|
+        Decode.keyValuePairs
+        -- "metas"
+        <|
+            Decode.list <|
+                Decode.map2 (,)
+                    (Decode.field "phx_ref" Decode.string)
+                    (Decode.field "online_at" Decode.int)
 
 
 convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberConnCounts
@@ -59,7 +64,8 @@ convertPresenceEntriesToConnCounts entries =
             )
         )
         entries
-    ) |> Dict.fromList
+    )
+        |> Dict.fromList
 
 
 decodePresenceState : Value -> MemberConnCounts
@@ -67,6 +73,7 @@ decodePresenceState payload =
     case Decode.decodeValue decodePresenceEntries payload of
         Ok decodedPayload ->
             convertPresenceEntriesToConnCounts decodedPayload
+
         Err err ->
             Dict.empty
 
@@ -83,8 +90,9 @@ decodePresenceDiff payload =
     in
         case Decode.decodeValue decoder payload of
             Ok decodedPayload ->
-                ( decodedPayload |> Tuple.first  |> convertPresenceEntriesToConnCounts
-                , decodedPayload |> Tuple.second  |> convertPresenceEntriesToConnCounts
+                ( decodedPayload |> Tuple.first |> convertPresenceEntriesToConnCounts
+                , decodedPayload |> Tuple.second |> convertPresenceEntriesToConnCounts
                 )
+
             Err err ->
                 ( Dict.empty, Dict.empty )
