@@ -30,12 +30,12 @@ initModel =
 setDefaultMembers : Session -> List Amishi -> Model -> Model
 setDefaultMembers session amishis model =
     List.foldl
-        (\amishi model -> 
+        (\amishi model ->
           addMember session (SignedUp amishi) model
         )
         { model | members = [] }
         amishis
-    
+
 
 addMember : Session -> Member -> Model -> Model
 addMember session member model =
@@ -43,46 +43,46 @@ addMember session member model =
         email = case member of
             SignedUp amishi -> amishi.email
             NotYetSignedUp email -> email
-            
-        members = 
+
+        members =
             if (containsMember session model email) then
                 model.members
             else
                 member :: model.members
     in
-        { model 
+        { model
         | members = members
         , membersLoading = False
         , memberEmail = ""
         , memberEmailValid = False
         }
-    
+
 
 removeMember : String -> Model -> Model
 removeMember email model =
-    { model 
-    | members = 
+    { model
+    | members =
         List.filter
             (\member -> case member of
                 SignedUp amishi ->
                     amishi.email /= email
                 NotYetSignedUp memberEmail ->
                     memberEmail /= email
-            ) 
+            )
             model.members
     }
-    
-    
+
+
 containsMember : Session -> Model -> String -> Bool
 containsMember session model email =
     if (session.email == email) then
         True
     else
-        List.any 
+        List.any
             (\member -> case member of
                 SignedUp amishi ->
                     amishi.email == email
                 NotYetSignedUp memberEmail ->
                     memberEmail == email
-            ) 
+            )
             model.members

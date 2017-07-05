@@ -12,13 +12,13 @@ import Components.Timeline.Messages
 cotonomaChannel : CotonomaKey -> Channel Msg
 cotonomaChannel key =
     Channel.init ("cotonomas:" ++ key)
-        |> Channel.on "post" 
-            (\payload -> 
+        |> Channel.on "post"
+            (\payload ->
                 TimelineMsg (Components.Timeline.Messages.PostPushed payload)
             )
-        |> Channel.on "presence_state" 
+        |> Channel.on "presence_state"
             (\payload -> CotonomaPresenceState payload)
-        |> Channel.on "presence_diff" 
+        |> Channel.on "presence_diff"
             (\payload -> CotonomaPresenceDiff payload)
 
 
@@ -44,7 +44,7 @@ decodePresenceEntries : Decode.Decoder (List PresenceEntry)
 decodePresenceEntries =
     Decode.keyValuePairs          -- Amishi ID
         <| Decode.keyValuePairs   -- "metas"
-        <| Decode.list            
+        <| Decode.list
         <| Decode.map2 (,)
             (Decode.field "phx_ref" Decode.string)
             (Decode.field "online_at" Decode.int)
@@ -52,12 +52,12 @@ decodePresenceEntries =
 
 convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberConnCounts
 convertPresenceEntriesToConnCounts entries =
-    (List.map 
-        (\entry -> 
+    (List.map
+        (\entry ->
             ( Tuple.first entry |> String.toInt |> Result.withDefault 0
             , Tuple.second entry |> List.length
             )
-        ) 
+        )
         entries
     ) |> Dict.fromList
 
@@ -69,7 +69,7 @@ decodePresenceState payload =
             convertPresenceEntriesToConnCounts decodedPayload
         Err err ->
             Dict.empty
-        
+
 
 -- https://hexdocs.pm/phoenix/Phoenix.Presence.html
 -- {leaves: {3: {metas: [{phx_ref: "7h9YpxuqCmM=", online_at: 1490350421829}]}}, joins: {}}

@@ -17,7 +17,7 @@ scrollToBottom : msg -> Cmd msg
 scrollToBottom msg =
     Process.sleep (1 * Time.millisecond)
     |> Task.andThen (\_ -> (Dom.Scroll.toBottom "timeline"))
-    |> Task.attempt (\_ -> msg) 
+    |> Task.attempt (\_ -> msg)
 
 
 fetchPosts : Cmd Msg
@@ -27,32 +27,32 @@ fetchPosts =
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
 postRequest clientId maybeCotonoma post =
-    Utils.post 
-        "/api/cotos" 
-        (Http.jsonBody (encodePost clientId maybeCotonoma post)) 
+    Utils.post
+        "/api/cotos"
+        (Http.jsonBody (encodePost clientId maybeCotonoma post))
         decodePost
-        
+
 
 post : String -> Maybe Cotonoma -> ((Result Http.Error Post) -> msg) -> Post -> Cmd msg
 post clientId maybeCotonoma msgAfterPosted post =
     postRequest clientId maybeCotonoma post
-    |> Http.send msgAfterPosted 
-        
+    |> Http.send msgAfterPosted
+
 
 encodePost : String -> Maybe Cotonoma -> Post -> Encode.Value
 encodePost clientId maybeCotonoma post =
-    Encode.object 
+    Encode.object
         [ ( "clientId", Encode.string clientId )
         , ( "coto"
-          , (Encode.object 
+          , (Encode.object
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
-                        Nothing -> Encode.null 
+                        Nothing -> Encode.null
                         Just cotonoma -> Encode.int cotonoma.id
                   )
                 , ( "postId"
                   , case post.postId of
-                        Nothing -> Encode.null 
+                        Nothing -> Encode.null
                         Just postId -> Encode.int postId
                   )
                 , ( "content", Encode.string post.content )

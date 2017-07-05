@@ -17,15 +17,15 @@ view model =
          else
             Nothing
         )
-      
+
 
 modalConfig : Model -> Modal.Config Msg
 modalConfig model =
     { closeMessage = Close
     , title = "Confirm"
     , content = div [] [ text model.message ]
-    , buttons = 
-        [ button [ class "button", onClick Close ] [ text "Cancel" ] 
-        , button [ class "button button-primary", onClick Confirm ] [ text "OK" ] 
+    , buttons =
+        [ button [ class "button", onClick Close ] [ text "Cancel" ]
+        , button [ class "button button-primary", onClick Confirm ] [ text "OK" ]
         ]
     }

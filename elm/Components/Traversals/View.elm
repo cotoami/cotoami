@@ -24,12 +24,12 @@ view activeOnMobile context graph model =
                 Just traversal ->
                     traversal |> maybeTraversalDiv context graph
         )
-    |> List.indexedMap 
-        (\index traversalDiv -> 
+    |> List.indexedMap
+        (\index traversalDiv ->
             let
                 visibleOnMobile = activeOnMobile && (inActivePage index model)
             in
-                div [ classList 
+                div [ classList
                         [ ( "main-column", True )
                         , ( "main-traversal", True )
                         , ( "main-traversal-" ++ (toString index), True )
@@ -38,8 +38,8 @@ view activeOnMobile context graph model =
                         , ( "fadeIn", visibleOnMobile )
                         , ( "not-in-active-page", not (inActivePage index model) )
                         ]
-                    ] 
-                    [ traversalDiv ] 
+                    ]
+                    [ traversalDiv ]
         )
     |> (::) (traversalsPaginationDiv model)
 
@@ -50,22 +50,22 @@ maybeTraversalDiv context graph traversal =
         Nothing -> Nothing
         Just startCoto ->
             Just <|
-              traversalDiv 
+              traversalDiv
                   context
                   graph
-                  traversal 
+                  traversal
                   (Dict.get startCoto.id graph.connections
                    |> Maybe.withDefault []
                   )
-                  startCoto 
-  
+                  startCoto
+
 
 traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
 traversalDiv context graph traversal connections startCoto  =
     div [ class "traversal" ]
-        [ div 
-            [ class "column-header" ] 
-            [ span 
+        [ div
+            [ class "column-header" ]
+            [ span
                 [ class "description" ]
                 (case traversal.description of
                     Connected ->
@@ -83,16 +83,16 @@ traversalDiv context graph traversal connections startCoto  =
                 ]
                 [ i [ class "material-icons" ] [ text "close" ] ]
             ]
-        , div 
+        , div
             [ class "column-body" ]
             [ traversalStepCotoDiv context graph ( traversal, -1 ) connections startCoto
             , div [ class "steps" ]
                 (List.reverse traversal.steps
-                |> List.indexedMap (\index step -> traversalStepDiv context graph step  ( traversal, index )) 
+                |> List.indexedMap (\index step -> traversalStepDiv context graph step  ( traversal, index ))
                 |> List.filterMap identity)
             ]
         ]
-        
+
 
 traversalStepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
 traversalStepDiv context graph cotoId traversalStep =
@@ -103,7 +103,7 @@ traversalStepDiv context graph cotoId traversalStep =
                 [ div [ class "arrow" ]
                     [ i [ class "material-icons" ] [ text "arrow_downward" ]
                     ]
-                , traversalStepCotoDiv 
+                , traversalStepCotoDiv
                     context
                     graph
                     traversalStep
@@ -111,14 +111,14 @@ traversalStepDiv context graph cotoId traversalStep =
                         Nothing -> []
                         Just connections -> connections
                     )
-                    coto 
+                    coto
                 ]
             )
 
 
 traversalStepCotoDiv : Context -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
 traversalStepCotoDiv context graph traversalStep connections coto =
-    div [ classList 
+    div [ classList
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "focus", Just coto.id == context.focus )
@@ -142,33 +142,33 @@ connectionsDiv traversalStep divClass parentId connections context graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
-        (List.filterMap 
+        (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
                     Nothing -> Nothing  -- Missing the end node
-                    Just coto -> Just 
+                    Just coto -> Just
                         ( conn.key
                         , connectionDiv traversalStep context graph parentId coto
-                        ) 
-            ) 
+                        )
+            )
             (List.reverse connections)
         )
-        
-        
+
+
 connectionDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
 connectionDiv ( traversal, index ) context graph parentId coto =
-    div [ classList 
+    div [ classList
             [ ( "outbound-conn", True )
             , ( "traversed", traversed index coto.id traversal )
             ]
         ]
         [ cotoDiv ( traversal, index ) context graph parentId coto ]
-        
-  
+
+
 cotoDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
 cotoDiv ( traversal, index ) context graph parentId coto =
-    div 
-        [ classList 
+    div
+        [ classList
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "focus", Just coto.id == context.focus )
@@ -178,7 +178,7 @@ cotoDiv ( traversal, index ) context graph parentId coto =
         , onMouseEnter (CotoMouseEnter coto.id)
         , onMouseLeave (CotoMouseLeave coto.id)
         ]
-        [ div 
+        [ div
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv (Just ( parentId, coto.id )) context graph coto
@@ -191,7 +191,7 @@ bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
 bodyDiv maybeConnection context graph coto =
     Components.Coto.bodyDiv
         context
-        graph 
+        graph
         { openCoto = Just (OpenCoto coto)
         , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
@@ -203,11 +203,11 @@ bodyDiv maybeConnection context graph coto =
         , markdown = App.Markdown.markdown
         }
         { cotoId = Just coto.id
-        , content = coto.content 
+        , content = coto.content
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }
-        
+
 
 traversalsPaginationDiv : Model -> Html Msg
 traversalsPaginationDiv model =
@@ -216,7 +216,7 @@ traversalsPaginationDiv model =
         |> List.indexedMap
             (\index cotoId ->
                 div [ class "button-container" ]
-                    [ button 
+                    [ button
                         [ class "button"
                         , disabled (model.activePageIndex == index)
                         , onClickWithoutPropagation (ChangePage index)

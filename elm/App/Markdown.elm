@@ -30,9 +30,9 @@ customHtmlBlock inlineTransformer block =
             Block.defaultHtml
                 (Just (customHtmlBlock inlineTransformer))
                 (Just inlineTransformer)
-                block    
-        
-        
+                block
+
+
 customHtmlInline : Inline i -> Html msg
 customHtmlInline inline =
     case inline of

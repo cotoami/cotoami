@@ -5,19 +5,19 @@ import Dict
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
 
-        
+
 type Route
     = HomeRoute
     | CotonomaRoute CotonomaKey
     | NotFoundRoute
-    
-    
+
+
 type ViewInMobile
     = TimelineView
     | PinnedView
     | TraversalsView
     | SelectionView
-            
+
 
 type alias Amishi =
     { id : Int
@@ -103,16 +103,16 @@ decodeCotonoma =
 isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool
 isPostedInCotonoma maybeCotonoma coto =
     case maybeCotonoma of
-        Nothing -> 
+        Nothing ->
             isNothing coto.postedIn
-        Just cotonoma -> 
+        Just cotonoma ->
             case coto.postedIn of
                 Nothing -> False
                 Just postedIn -> postedIn.id == cotonoma.id
-                
-                
+
+
 type alias CotoSelection = List CotoId
-        
+
 
 type alias Context =
     { clientId : String
@@ -128,8 +128,8 @@ type alias Context =
 setFocus : Maybe CotoId -> Context -> Context
 setFocus maybeCotoId context =
     { context | focus = maybeCotoId }
-    
-    
+
+
 updateFocus : CotoId -> Context -> Context
 updateFocus cotoId context =
     { context
@@ -142,12 +142,12 @@ updateFocus cotoId context =
                 else
                     Just cotoId
     }
-    
-    
+
+
 isSelected : CotoId -> Context -> Bool
 isSelected cotoId context =
     List.member cotoId context.selection
-    
+
 
 updateSelection : CotoId -> Context -> Context
 updateSelection cotoId context =
@@ -163,18 +163,18 @@ updateSelection cotoId context =
 clearCotonoma : Context -> Context
 clearCotonoma context =
     { context | cotonoma = Nothing }
-    
+
 
 clearSelection : Context -> Context
 clearSelection context =
     { context | selection = [] }
-    
+
 
 deleteSelection : CotoId -> Context -> Context
 deleteSelection cotoId context =
     { context | selection = List.filter (\id -> cotoId /= id) context.selection }
-    
-    
+
+
 setBeingDeselected : CotoId -> Context -> Context
 setBeingDeselected cotoId context =
     { context
@@ -182,7 +182,7 @@ setBeingDeselected cotoId context =
         context.deselecting |> Set.insert cotoId
     }
 
-    
+
 ctrlDown : Bool -> Context -> Context
 ctrlDown down context =
     { context | ctrlDown = down }

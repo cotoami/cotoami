@@ -16,7 +16,7 @@ view model =
     Modal.view
         "connect-modal"
         (if model.connectModalOpen then
-            case model.connectingTo of 
+            case model.connectingTo of
                 Nothing -> Nothing
                 Just startCotoId -> Just (modalConfig startCotoId model)
          else
@@ -37,16 +37,16 @@ modalConfig startCotoId model =
                 , content = div [] [ text "Selected coto has been deleted." ]
                 , buttons = []
                 }
-                
+
             Just startCoto ->
                 { closeMessage = CloseConnectModal
                 , title = "Connect Preview"
                 , content = modalContent startCoto endCotos
-                , buttons = 
+                , buttons =
                     [ button
                         [ class "button button-primary"
                         , onClick (Connect startCoto endCotos)
-                        ] 
+                        ]
                         [ text "Connect" ]
                     ]
                 }
@@ -55,22 +55,22 @@ modalConfig startCotoId model =
 modalContent : Coto -> List Coto -> Html Msg
 modalContent startCoto endCotos =
     div []
-        [ div 
+        [ div
             [ class "start-coto coto" ]
             [ App.Markdown.markdown startCoto.content ]
-        , div 
+        , div
             [ class "connect-buttons" ]
             [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
         , Html.Keyed.node
             "div"
             [ class "end-cotos" ]
-            (List.map 
+            (List.map
                 (\coto ->
                     ( toString coto.id
-                    , div [ class "coto" ] 
+                    , div [ class "coto" ]
                         [ App.Markdown.markdown coto.content ]
                     )
-                ) 
+                )
                 (List.reverse endCotos)
             )
         ]

@@ -12,15 +12,15 @@ type alias Config msg =
     , content : Html msg
     , buttons : List (Html msg)
     }
-    
-    
+
+
 view : String -> Maybe (Config msg) -> Html msg
-view modalId maybeConfig = 
+view modalId maybeConfig =
     div [ id modalId
-        , classList 
+        , classList
             [ ( "modal", True )
-            , ( "modal-open", isJust maybeConfig ) 
-            ] 
+            , ( "modal-open", isJust maybeConfig )
+            ]
         ]
         [ div [ class "modal-inner" ]
             [ (case maybeConfig of
@@ -35,12 +35,12 @@ modalContent : Config msg -> Html msg
 modalContent config =
     div [ class "modal-content" ]
         [ div [ class "modal-close-icon" ]
-            [ a [ class "close-modal", onClick config.closeMessage ] 
-                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+            [ a [ class "close-modal", onClick config.closeMessage ]
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
             ]
         , div [ class "modal-content-inner" ]
             [ h4 [] [ text config.title ]
-            , config.content 
+            , config.content
             ]
         , hr [ class "modal-buttons-seperator" ] []
         , div [ class "modal-buttons" ] config.buttons

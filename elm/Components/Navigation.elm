@@ -26,12 +26,12 @@ view model =
 
 cotonomaNav : MemberConnCounts -> List Amishi -> Cotonoma -> Html Msg
 cotonomaNav memberPresences members cotonoma =
-    div [ class "members" ] 
+    div [ class "members" ]
         [ div [ class "navigation-title" ] [ text "Members" ]
         , case cotonoma.owner of
             Nothing -> div [] []
             Just owner ->
-                div 
+                div
                     [ classList
                         [ ( "member", True )
                         , ( "owner", True )
@@ -44,10 +44,10 @@ cotonomaNav memberPresences members cotonoma =
         , Html.Keyed.node
             "div"
             [ class "members" ]
-            (List.map 
-                (\member -> 
+            (List.map
+                (\member ->
                     ( toString member.id
-                    , div 
+                    , div
                         [ classList
                             [ ( "member", True )
                             , ( "online", isPresent member.id memberPresences )
@@ -57,11 +57,11 @@ cotonomaNav memberPresences members cotonoma =
                         , span [ class "name" ] [ text member.displayName ]
                         ]
                     )
-                ) 
+                )
                 members
             )
         ]
-    
+
 
 subCotonomasNav : List Cotonoma -> Html Msg
 subCotonomasNav cotonomas =

@@ -32,22 +32,22 @@ newPostEditor context model =
     div [ id "new-coto" ]
         [ div [ class "toolbar", hidden (not model.editingNew) ]
             [ (case context.session of
-                  Nothing -> 
+                  Nothing ->
                       span [ class "user anonymous" ]
                           [ i [ class "material-icons" ] [ text "perm_identity" ]
                           , text "Anonymous"
                           ]
-                  Just session -> 
+                  Just session ->
                       span [ class "user session" ]
                           [ img [ class "avatar", src session.avatarUrl ] []
                           , span [ class "name" ] [ text session.displayName ]
                           ]
               )
             , div [ class "tool-buttons" ]
-                [ button 
+                [ button
                     [ class "button-primary"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown Components.Timeline.Messages.Post 
+                    , onMouseDown Components.Timeline.Messages.Post
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -65,19 +65,19 @@ newPostEditor context model =
             ]
             []
         ]
-  
+
 
 timelineDiv : Context -> Graph -> Model -> Html Msg
 timelineDiv context graph model =
     Html.Keyed.node
         "div"
         [ id "timeline", classList [ ( "loading", model.loading ) ] ]
-        (List.map 
-            (\post -> 
+        (List.map
+            (\post ->
                 ( getKey post
                 , postDiv context graph post
                 )
-            ) 
+            )
             (List.reverse model.posts)
         )
 
@@ -86,23 +86,23 @@ getKey : Post -> String
 getKey post =
     case post.cotoId of
         Just cotoId -> toString cotoId
-        Nothing -> 
+        Nothing ->
             case post.postId of
                 Just postId -> toString postId
                 Nothing -> ""
-    
-    
+
+
 postDiv : Context -> Graph -> Post -> Html Msg
 postDiv context graph post =
     div
-        (classList 
+        (classList
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "focus", post.cotoId == context.focus )
             , ( "selected", isActive context.selection post )
             , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
             , ( "being-hidden", post.beingDeleted )
-            ] :: 
+            ] ::
                 (case post.cotoId of
                     Nothing -> []
                     Just cotoId ->
@@ -112,7 +112,7 @@ postDiv context graph post =
                         ]
                 )
         )
-        [ div 
+        [ div
             [ class "coto-inner" ]
             [ headerDiv context.cotonoma graph post
             , authorDiv context.session post
@@ -120,7 +120,7 @@ postDiv context graph post =
             , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
             ]
         ]
-        
+
 
 isActive : CotoSelection -> Post -> Bool
 isActive selection post =
@@ -132,9 +132,9 @@ isActive selection post =
 headerDiv : Maybe Cotonoma -> Graph -> Post -> Html Msg
 headerDiv maybeCotonoma graph post =
     case toCoto post of
-        Nothing -> 
+        Nothing ->
             div [ class "coto-header" ] []
-        Just coto -> 
+        Just coto ->
             Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
 
 
@@ -142,7 +142,7 @@ authorDiv : Maybe Session -> Post -> Html Msg
 authorDiv maybeSession post =
     case maybeSession of
         Nothing -> span [] []
-        Just session -> 
+        Just session ->
             case post.amishi of
                 Nothing -> span [] []
                 Just author ->
@@ -153,13 +153,13 @@ authorDiv maybeSession post =
                             [ img [ class "avatar", src author.avatarUrl ] []
                             , span [ class "name" ] [ text author.displayName ]
                             ]
-            
-    
+
+
 bodyDiv : Context -> Graph -> Post -> Html Msg
 bodyDiv context graph post =
     Components.Coto.bodyDiv
         context
-        graph 
+        graph
         { openCoto = Just (OpenPost post)
         , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
@@ -168,12 +168,12 @@ bodyDiv context graph post =
         , markdown = markdown
         }
         { cotoId = post.cotoId
-        , content = post.content 
+        , content = post.content
         , asCotonoma = post.asCotonoma
         , cotonomaKey = post.cotonomaKey
         }
 
-        
+
 markdown : String -> Html Msg
 markdown markdownText =
     markdownText
@@ -181,7 +181,7 @@ markdown markdownText =
     |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
     |> List.concat
     |> div [ class "content" ]
-  
+
 
 customHtmlInline : Inline i -> Html Msg
 customHtmlInline inline =
@@ -212,5 +212,3 @@ onKeyDown tagger =
 onLoad : msg -> Attribute msg
 onLoad message =
     on "load" (Decode.succeed message)
-  
-  
