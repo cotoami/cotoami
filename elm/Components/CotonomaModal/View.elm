@@ -16,7 +16,7 @@ view maybeSession model =
         "cotonoma-modal"
         (case maybeSession of
             Nothing -> Nothing
-            Just session -> 
+            Just session ->
                 (if model.open then
                     Just (modalConfig session model)
                  else
@@ -32,7 +32,7 @@ modalConfig session model =
     , content = div []
         [ div []
             [ label [] [ text "Name" ]
-            , input 
+            , input
                 [ type_ "text"
                 , class "u-full-width"
                 , name "name"
@@ -43,32 +43,32 @@ modalConfig session model =
                 ] []
             ]
         , memberInputDiv model
-        , div 
-            [ classList 
+        , div
+            [ classList
                 [ ( "members", True )
                 , ( "loading", model.membersLoading )
                 ]
             ]
             [ ul [ class "members" ]
-                ((memberAsAmishi True (toAmishi session)) :: 
-                    (List.map 
+                ((memberAsAmishi True (toAmishi session)) ::
+                    (List.map
                         (\member -> case member of
                             SignedUp amishi ->
                                 memberAsAmishi False amishi
                             NotYetSignedUp email ->
                                 memberAsNotAmishi email
-                        ) 
+                        )
                         model.members
                     )
                 )
             ]
         ]
-    , buttons = 
+    , buttons =
         [ button
             [ class "button button-primary"
             , disabled (not (validateName model.name))
-            , onClick Post 
-            ] 
+            , onClick Post
+            ]
             [ text "Create" ]
         ]
     }
@@ -78,7 +78,7 @@ memberInputDiv : Model -> Html Msg
 memberInputDiv model =
     div [ class "member-input" ]
         [ label [] [ text "Members" ]
-        , input 
+        , input
             [ type_ "text"
             , class "u-full-width"
             , name "member"
@@ -86,37 +86,37 @@ memberInputDiv model =
             , value model.memberEmail
             , onInput MemberEmailInput
             ] []
-        , a 
+        , a
             [ classList
                 [ ( "add-member", True )
                 , ( "disabled", not model.memberEmailValid )
                 ]
             , title "Add member"
-            , if model.memberEmailValid then 
-                onClick AddMember 
+            , if model.memberEmailValid then
+                onClick AddMember
               else
                 onClick NoOp
-            ] 
-            [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
+            ]
+            [ i [ class "material-icons" ] [ text "add_circle_outline" ] ]
         ]
-        
+
 
 memberAsNotAmishi : String -> Html Msg
 memberAsNotAmishi email =
     li [ class "not-amishi" ]
         [ i [ class "material-icons" ] [ text "perm_identity" ]
         , span [ class "email" ] [ text email ]
-        , a 
+        , a
             [ class "remove-member"
             , onClick (RemoveMember email)
-            ] 
-            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
+            ]
+            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
         ]
-        
-    
+
+
 memberAsAmishi : Bool -> Amishi -> Html Msg
 memberAsAmishi isOwner amishi =
-    li 
+    li
         [ classList
             [ ( "amishi", True )
             , ( "owner", isOwner )
@@ -130,9 +130,9 @@ memberAsAmishi isOwner amishi =
             a
                 [ class "remove-member"
                 , onClick (RemoveMember amishi.email)
-                ] 
-                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ] 
-        ] 
+                ]
+                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+        ]
 
 
 nameMaxlength : Int
@@ -142,4 +142,3 @@ nameMaxlength = 30
 validateName : String -> Bool
 validateName string =
     not (isBlank string) && (String.length string) <= nameMaxlength
-    

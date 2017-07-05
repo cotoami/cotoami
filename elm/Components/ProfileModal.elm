@@ -34,7 +34,7 @@ view maybeSession model =
         "profile-modal"
         (case maybeSession of
             Nothing -> Nothing
-            Just session -> 
+            Just session ->
                 (if model.open then
                     Just (modalConfig session model)
                  else
@@ -56,24 +56,24 @@ modalConfig session model =
                     ]
                 , div [ class "profile-info nine columns" ]
                     [ label [] [ text "Name" ]
-                    , input 
+                    , input
                         [ type_ "text"
                         , class "u-full-width"
                         , value session.displayName
                         , disabled True
-                        ] [] 
+                        ] []
                     , label [] [ text "Email Address" ]
-                    , input 
+                    , input
                         [ type_ "text"
                         , class "u-full-width"
                         , value session.email
                         , disabled True
-                        ] [] 
+                        ] []
                     ]
                 ]
             ]
         ]
-    , buttons = 
+    , buttons =
         [ a [ class "button", href "/signout" ] [ text "Sign out" ]
         ]
     }

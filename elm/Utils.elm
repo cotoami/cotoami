@@ -1,4 +1,4 @@
-module Utils exposing 
+module Utils exposing
     ( isBlank
     , validateEmail
     , send
@@ -38,29 +38,29 @@ send : msg -> Cmd msg
 send msg =
     Task.succeed msg
     |> Task.perform identity
-    
+
 
 onClickWithoutPropagation : msg -> Attribute msg
 onClickWithoutPropagation message =
-    onWithoutPropagation "click" message 
-    
+    onWithoutPropagation "click" message
+
 
 onWithoutPropagation : String -> msg -> Attribute msg
 onWithoutPropagation eventName message =
     let
         defaultOptions = Html.Events.defaultOptions
     in
-        onWithOptions 
+        onWithOptions
             eventName
             { defaultOptions | stopPropagation = True, preventDefault = True }
             (Decode.succeed message)
-            
+
 
 commonRequestHeaders : List Http.Header
 commonRequestHeaders =
     [ Http.header "X-Requested-With" "XMLHttpRequest"
     ]
-    
+
 
 post : String -> Http.Body -> Decode.Decoder a -> Http.Request a
 post url body decoder =
@@ -73,8 +73,8 @@ post url body decoder =
         , timeout = Nothing
         , withCredentials = False
         }
-        
-        
+
+
 delete : String -> Http.Request String
 delete url =
     Http.request
@@ -82,7 +82,7 @@ delete url =
         , headers = commonRequestHeaders
         , url = url
         , body = Http.emptyBody
-        , expect = Http.expectString 
+        , expect = Http.expectString
         , timeout = Nothing
         , withCredentials = False
         }

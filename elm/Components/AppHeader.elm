@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils exposing (onClickWithoutPropagation)
 import App.Model exposing (Model, isNavigationEmpty)
-import App.Messages exposing 
+import App.Messages exposing
     (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
 
@@ -14,7 +14,7 @@ view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
             (case model.context.cotonoma of
-                Nothing -> 
+                Nothing ->
                   [ i [ class "at-home material-icons" ] [ text "home" ]
                   , navigationToggle model
                   ]
@@ -27,28 +27,28 @@ view model =
                   ]
             )
         , (case model.context.session of
-            Nothing -> 
+            Nothing ->
                 span [] []
-            Just session -> 
-                a 
+            Just session ->
+                a
                     [ class "tool-button add-cotonoma"
                     , title "Add Cotonoma"
-                    , onClick OpenCotonomaModal 
-                    ] 
-                    [ i [ class "material-icons" ] [ text "add_circle_outline" ] ] 
+                    , onClick OpenCotonomaModal
+                    ]
+                    [ i [ class "material-icons" ] [ text "add_circle_outline" ] ]
           )
         , div [ class "user" ]
             (case model.context.session of
-                Nothing -> 
+                Nothing ->
                     [ a [ class "tool-button"
                         , title "Sign in"
-                        , onClick OpenSigninModal 
-                        ] 
-                        [ i [ class "material-icons" ] [ text "perm_identity" ] ] 
+                        , onClick OpenSigninModal
+                        ]
+                        [ i [ class "material-icons" ] [ text "perm_identity" ] ]
                     ]
-                Just session -> 
-                    [ a [ title "Profile", onClick OpenProfileModal ] 
-                        [ img [ class "avatar", src session.avatarUrl ] [] ] 
+                Just session ->
+                    [ a [ title "Profile", onClick OpenProfileModal ]
+                        [ img [ class "avatar", src session.avatarUrl ] [] ]
                     ]
             )
         ]
@@ -56,20 +56,20 @@ view model =
 
 navigationToggle : Model -> Html Msg
 navigationToggle model =
-    a 
-        [ classList 
+    a
+        [ classList
             [ ( "tool-button", True )
             , ( "toggle-navigation", True )
-            , ( "hidden", isNavigationEmpty model ) 
+            , ( "hidden", isNavigationEmpty model )
             ]
         , onClick NavigationToggle
-        ] 
-        [ i [ class "material-icons" ] 
-            [ text 
-                (if model.navigationOpen then 
-                  "arrow_drop_up" 
-                else 
-                  "arrow_drop_down" 
+        ]
+        [ i [ class "material-icons" ]
+            [ text
+                (if model.navigationOpen then
+                  "arrow_drop_up"
+                else
+                  "arrow_drop_down"
                 )
-            ] 
+            ]
         ]

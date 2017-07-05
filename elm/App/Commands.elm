@@ -3,8 +3,8 @@ module App.Commands exposing (..)
 import Http
 import Json.Decode as Decode
 import Utils
-import App.Types 
-    exposing 
+import App.Types
+    exposing
         ( Amishi
         , Cotonoma
         , CotonomaKey
@@ -23,17 +23,17 @@ fetchSession =
 
 fetchRecentCotonomas : Cmd Msg
 fetchRecentCotonomas =
-    Http.send RecentCotonomasFetched 
+    Http.send RecentCotonomasFetched
         <| Http.get "/api/cotonomas"
         <| Decode.list decodeCotonoma
-        
+
 
 fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
 fetchSubCotonomas maybeCotonoma =
     case maybeCotonoma of
         Nothing -> Cmd.none
-        Just cotonoma -> 
-            Http.send SubCotonomasFetched 
+        Just cotonoma ->
+            Http.send SubCotonomasFetched
                 <| Http.get ("/api/cotonomas?cotonoma_id=" ++ (toString cotonoma.id))
                 <| Decode.list decodeCotonoma
 
@@ -43,8 +43,8 @@ fetchAmishi msg email =
     Http.send msg
         <| Http.get ("/api/amishis/email/" ++ email)
         <| decodeAmishi
-    
-  
+
+
 fetchCotonoma : CotonomaKey -> Cmd Msg
 fetchCotonoma key =
     let
@@ -60,7 +60,6 @@ fetchCotonoma key =
 
 deleteCoto : Int -> Cmd Msg
 deleteCoto cotoId =
-    Http.send 
+    Http.send
         CotoDeleted
         ("/api/cotos/" ++ toString(cotoId) |> Utils.delete)
-          

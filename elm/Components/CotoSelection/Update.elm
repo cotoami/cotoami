@@ -4,7 +4,7 @@ import Set
 import Task
 import Process
 import Time
-import App.Types exposing 
+import App.Types exposing
     ( CotoId
     , Context
     , clearSelection
@@ -24,42 +24,42 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
-            
+
         DeselectingCoto cotoId ->
-            { model | context = setBeingDeselected cotoId model.context } ! 
+            { model | context = setBeingDeselected cotoId model.context } !
                 [ Process.sleep (1 * Time.second)
                   |> Task.andThen (\_ -> Task.succeed ())
                   |> Task.perform (\_ -> DeselectCoto)
                 ]
-            
+
         DeselectCoto ->
             doDeselect model ! []
-            
+
         ConfirmPin ->
             model ! []
 
         Pin ->
             pinSelectedCotos model ! []
-            
+
         ClearSelection ->
-            { model 
+            { model
             | context = clearSelection model.context
-            , connectMode = False 
+            , connectMode = False
             , connectModalOpen = False
-            , viewInMobile = 
+            , viewInMobile =
                 case model.viewInMobile of
                     SelectionView -> TimelineView
                     anotherView -> anotherView
             } ! []
-            
+
         CotonomaClick key ->
             model ! []
-            
+
         OpenTraversal cotoId ->
             model ! []
-            
+
         SetConnectMode enabled ->
-            { model 
+            { model
             | connectMode = enabled
             , viewInMobile =
                 if enabled then
@@ -69,43 +69,43 @@ update msg model =
                 else
                     model.viewInMobile
             } ! []
-                
+
         CotoSelectionTitleInput title ->
             { model | cotoSelectionTitle = title } ! []
-            
+
         ConfirmCreateGroupingCoto ->
             model ! []
-                
+
         PostGroupingCoto ->
             let
-                ( newTimeline, newPost ) = 
-                      postContent 
-                          model.context.clientId 
-                          model.context.cotonoma 
-                          False 
-                          model.cotoSelectionTitle 
+                ( newTimeline, newPost ) =
+                      postContent
+                          model.context.clientId
+                          model.context.cotonoma
+                          False
+                          model.cotoSelectionTitle
                           model.timeline
             in
-                { model 
+                { model
                 | timeline = newTimeline
                 , cotoSelectionTitle = ""
-                } ! 
+                } !
                     [ scrollToBottom NoOp
-                    , post 
-                        model.context.clientId 
-                        model.context.cotonoma  
-                        GroupingCotoPosted 
+                    , post
+                        model.context.clientId
+                        model.context.cotonoma
+                        GroupingCotoPosted
                         newPost
                     ]
-                    
+
         GroupingCotoPosted (Ok response) ->
             let
                 timeline = model.timeline
-                newModel = 
-                    { model 
+                newModel =
+                    { model
                     | timeline = { timeline | posts = setCotoSaved response timeline.posts }
                     }
-                maybeStartCoto = 
+                maybeStartCoto =
                     case response.cotoId of
                         Nothing -> Nothing
                         Just cotoId -> getCoto cotoId newModel
@@ -115,7 +115,7 @@ update msg model =
                     Nothing -> newModel ! []
                     Just startCoto ->
                         connect startCoto endCotos newModel ! []
-          
+
         GroupingCotoPosted (Err _) ->
             model ! []
 
@@ -126,13 +126,13 @@ pinSelectedCotos model =
         cotos = model.context.selection |> List.filterMap (\cotoId -> getCoto cotoId model)
         graph = model.graph |> addRootConnections cotos
     in
-        { model 
+        { model
         | graph = graph
         , context = clearSelection model.context
         , viewInMobile = PinnedView
         }
-    
-    
+
+
 doDeselect : Model -> Model
 doDeselect model =
     let
@@ -140,13 +140,12 @@ doDeselect model =
         deselecting = context.deselecting
     in
         { model
-        | context = 
-            { context 
-            | selection = 
-                List.filter 
-                    (\id -> not(Set.member id deselecting)) 
+        | context =
+            { context
+            | selection =
+                List.filter
+                    (\id -> not(Set.member id deselecting))
                     context.selection
-            , deselecting = Set.empty      
+            , deselecting = Set.empty
             }
         }
-    

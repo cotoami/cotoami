@@ -14,7 +14,7 @@ import App.Subscriptions exposing (subscriptions)
 type alias Flags =
     { seed : Int
     }
-  
+
 
 main : Program Flags Model Msg
 main =

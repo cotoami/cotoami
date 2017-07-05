@@ -15,22 +15,22 @@ update context msg model =
     case msg of
         NoOp ->
             model ! []
-            
+
         PostsFetched (Ok posts) ->
             ( { model | posts = posts, loading = False }, scrollToBottom NoOp )
-            
+
         PostsFetched (Err _) ->
             model ! []
-  
+
         ImageLoaded ->
             model ! [ scrollToBottom NoOp ]
-            
+
         PostClick cotoId ->
             model ! []
-            
+
         PostMouseEnter cotoId ->
             model ! []
-            
+
         PostMouseLeave cotoId ->
             model ! []
 
@@ -48,43 +48,43 @@ update context msg model =
                 post context.clientId context.cotonoma model
             else
                 model ! []
-                
+
         Post ->
             post context.clientId context.cotonoma model
-                
+
         Posted (Ok response) ->
             { model | posts = setCotoSaved response model.posts } ! []
-          
+
         Posted (Err _) ->
             model ! []
-            
+
         OpenPost post ->
             model ! []
-            
+
         CotonomaClick key ->
             model ! []
-            
+
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
                 Ok decodedPayload ->
                     handlePushedPost context.clientId decodedPayload model
                 Err err ->
                     model ! []
-                    
+
         CotonomaPushed post ->
             model ! []
-            
+
         SelectCoto cotoId ->
             model ! []
-            
+
         OpenTraversal cotoId ->
             model ! []
-    
+
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
-        { model | posts = payload.body :: model.posts } ! 
+        { model | posts = payload.body :: model.posts } !
             if payload.body.asCotonoma then
                 [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
             else
@@ -96,20 +96,20 @@ handlePushedPost clientId payload model =
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
     let
-        ( newModel, newPost ) = 
+        ( newModel, newPost ) =
             postContent clientId maybeCotonoma False model.newContent model
     in
         newModel !
             [ scrollToBottom NoOp
             , Components.Timeline.Commands.post clientId maybeCotonoma Posted newPost
             ]
-    
+
 
 postContent : String -> Maybe Cotonoma -> Bool -> String -> Model -> ( Model, Post )
 postContent clientId maybeCotonoma asCotonoma content model =
     let
         postId = model.postIdCounter + 1
-        newPost = 
+        newPost =
             { defaultPost
             | postId = Just postId
             , content = content
@@ -117,26 +117,25 @@ postContent clientId maybeCotonoma asCotonoma content model =
             , postedIn = maybeCotonoma
             }
     in
-        ( { model 
+        ( { model
           | posts = newPost :: model.posts
           , postIdCounter = postId
           , newContent = ""
-          } 
+          }
         , newPost
         )
 
 
 setCotoSaved : Post -> List Post -> List Post
 setCotoSaved apiResponse posts =
-    List.map 
+    List.map
         (\post ->
             if post.postId == apiResponse.postId then
                 { post
                 | cotoId = apiResponse.cotoId
                 , cotonomaKey = apiResponse.cotonomaKey
                 }
-            else 
+            else
                 post
-        ) 
+        )
         posts
-    

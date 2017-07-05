@@ -19,23 +19,23 @@ initModel =
     { open = False
     , coto = Nothing
     }
-    
+
 
 type Msg
     = Close
     | ConfirmDelete
     | Delete Coto
-    
-    
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
             ( { model | open = False }, Cmd.none )
-            
+
         ConfirmDelete ->
             ( model, Cmd.none )
-            
+
         Delete coto ->
             ( { model | open = False }, Cmd.none )
 
@@ -51,7 +51,7 @@ view model =
          else
             Nothing
         )
-      
+
 
 modalConfig : Coto -> Model -> Modal.Config Msg
 modalConfig coto model =
@@ -62,11 +62,11 @@ modalConfig coto model =
             [ App.Markdown.markdown coto.content
             ]
         ]
-    , buttons = 
-        [ button 
+    , buttons =
+        [ button
             [ class "button"
             , onClick ConfirmDelete
-            ] 
+            ]
             [ text "Delete" ]
         ]
     }

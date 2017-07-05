@@ -54,4 +54,3 @@ type Msg
     | CloseConnectModal
     | Connect Coto (List Coto)
     | TraversalMsg Components.Traversals.Messages.Msg
-    

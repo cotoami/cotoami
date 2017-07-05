@@ -25,8 +25,8 @@ import Components.Traversals.View
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos = 
-            (isNothing model.context.session) 
+        anyAnonymousCotos =
+            (isNothing model.context.session)
                 && not (List.isEmpty model.timeline.posts)
         viewInMobile =
             case model.viewInMobile of
@@ -35,12 +35,12 @@ view model =
                 TraversalsView -> "traversals"
                 SelectionView -> "selection"
     in
-      div [ id "app" 
-          , classList 
+      div [ id "app"
+          , classList
               [ ( "cotonomas-loading", model.cotonomasLoading )
               , ( viewInMobile ++ "-view-in-mobile", True )
               , ( "in-connect-mode", model.connectMode )
-              ] 
+              ]
           ]
           [ Components.AppHeader.view model
           , div [ id "app-body" ]
@@ -51,45 +51,45 @@ view model =
                             (\div -> Html.map TraversalMsg div)
                             (Components.Traversals.View.view
                                 (model.viewInMobile == TraversalsView)
-                                model.context 
-                                model.graph 
+                                model.context
+                                model.graph
                                 model.traversals
                             )
                         , [ selectionColumnDiv model
-                          , viewSwitchContainerDiv model 
+                          , viewSwitchContainerDiv model
                           ]
                         ]
                     )
                 ]
           , Html.map CotoSelectionMsg
               (Components.CotoSelection.View.cotoSelectionTools model)
-          , Html.map ConfirmModalMsg 
+          , Html.map ConfirmModalMsg
               (Components.ConfirmModal.View.view model.confirmModal)
-          , Html.map SigninModalMsg 
+          , Html.map SigninModalMsg
               (Components.SigninModal.view model.signinModal anyAnonymousCotos)
-          , Html.map ProfileModalMsg 
+          , Html.map ProfileModalMsg
               (Components.ProfileModal.view model.context.session model.profileModal)
-          , Html.map CotoModalMsg 
+          , Html.map CotoModalMsg
               (Components.CotoModal.view model.cotoModal)
-          , Html.map CotonomaModalMsg 
+          , Html.map CotonomaModalMsg
               (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
           , Components.ConnectModal.view model
-          , a 
+          , a
               [ class "tool-button info-button"
               , title "News and Feedback"
               , href "https://twitter.com/cotoami"
               , target "_blank"
-              , hidden (model.timeline.editingNew)  
-              ] 
+              , hidden (model.timeline.editingNew)
+              ]
               [ i [ class "material-icons" ] [ text "info" ] ]
           ]
 
 
 defaultColumnDivs : Model -> List (Html Msg)
 defaultColumnDivs model =
-    [ div 
-        [ id "main-nav" 
-        , classList 
+    [ div
+        [ id "main-nav"
+        , classList
             [ ( "neverToggled", not model.navigationToggled )
             , ( "empty", isNavigationEmpty model )
             , ( "notEmpty", not (isNavigationEmpty model) )
@@ -98,40 +98,40 @@ defaultColumnDivs model =
             , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
             ]
         ] (Components.Navigation.view model)
-    , div 
+    , div
         [ id "main-timeline"
-        , classList 
+        , classList
             [ ( "main-column", True )
             , ( "activeOnMobile", model.viewInMobile == TimelineView )
             , ( "animated", model.viewInMobile == TimelineView )
             , ( "fadeIn", model.viewInMobile == TimelineView )
-            ] 
+            ]
         ]
-        [ Html.map TimelineMsg 
-            (Components.Timeline.View.view 
+        [ Html.map TimelineMsg
+            (Components.Timeline.View.view
                 model.context
                 model.graph
-                model.timeline 
+                model.timeline
             )
         ]
-    , div 
+    , div
         [ id "main-stock"
-        , classList 
+        , classList
             [ ( "main-column", True )
             , ( "activeOnMobile", model.viewInMobile == PinnedView )
             , ( "animated", model.viewInMobile == PinnedView )
             , ( "fadeIn", model.viewInMobile == PinnedView )
             ]
-        ] 
+        ]
         [ Components.Pinned.View.view model.context model.graph
         ]
     ]
-      
-      
+
+
 selectionColumnDiv : Model -> Html Msg
 selectionColumnDiv model =
-    div 
-        [ id "main-selection" 
+    div
+        [ id "main-selection"
         , classList
             [ ( "main-column", True )
             , ( "activeOnMobile", model.viewInMobile == SelectionView )
@@ -139,47 +139,47 @@ selectionColumnDiv model =
             , ( "fadeIn", not (List.isEmpty model.context.selection) )
             , ( "empty", List.isEmpty model.context.selection )
             ]
-        ] 
+        ]
         [ Html.map CotoSelectionMsg
             (Components.CotoSelection.View.cotoSelectionColumnDiv model)
         ]
-        
-            
+
+
 viewSwitchContainerDiv : Model -> Html Msg
 viewSwitchContainerDiv model =
     div
         [ id "view-switch-container" ]
-        [ viewSwitchDiv 
-            "switch-to-timeline" 
-            "fa-comments" 
-            "Switch to timeline" 
-            (model.viewInMobile == TimelineView) 
+        [ viewSwitchDiv
+            "switch-to-timeline"
+            "fa-comments"
+            "Switch to timeline"
+            (model.viewInMobile == TimelineView)
             False
             (SwitchViewInMobile TimelineView)
-        , viewSwitchDiv 
-            "switch-to-pinned" 
-            "fa-thumb-tack" 
-            "Switch to pinned cotos" 
-            (model.viewInMobile == PinnedView) 
+        , viewSwitchDiv
+            "switch-to-pinned"
+            "fa-thumb-tack"
+            "Switch to pinned cotos"
+            (model.viewInMobile == PinnedView)
             (isStockEmpty model)
             (SwitchViewInMobile PinnedView)
-        , viewSwitchDiv 
-            "switch-to-traversals" 
-            "fa-share-alt" 
-            "Switch to traversals" 
-            (model.viewInMobile == TraversalsView) 
+        , viewSwitchDiv
+            "switch-to-traversals"
+            "fa-share-alt"
+            "Switch to traversals"
+            (model.viewInMobile == TraversalsView)
             (Components.Traversals.Model.isEmpty model.traversals)
             (SwitchViewInMobile TraversalsView)
-        , viewSwitchDiv 
-            "switch-to-selection" 
-            "fa-check-square-o" 
-            "Switch to coto selection" 
-            (model.viewInMobile == SelectionView) 
+        , viewSwitchDiv
+            "switch-to-selection"
+            "fa-check-square-o"
+            "Switch to coto selection"
+            (model.viewInMobile == SelectionView)
             (List.isEmpty model.context.selection)
             (SwitchViewInMobile SelectionView)
         ]
-    
-    
+
+
 viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
 viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
     let
@@ -187,7 +187,7 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
     in
         div
             [ id divId
-            ,  classList 
+            ,  classList
                 [ ( "view-switch", True )
                 , ( "selected", selected )
                 , ( "empty", empty )
@@ -199,6 +199,6 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
                 a [ class "tool-button"
                   , title buttonTitle
                   , onClick onClickMsg
-                  ] 
-                  [ icon ] 
+                  ]
+                  [ icon ]
             ]

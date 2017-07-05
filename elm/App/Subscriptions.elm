@@ -22,8 +22,8 @@ phoenixChannels model =
             case model.context.cotonoma of
                 Nothing -> Sub.none
                 Just cotonoma ->
-                    Phoenix.connect 
-                      (socket session.token session.websocketUrl) 
+                    Phoenix.connect
+                      (socket session.token session.websocketUrl)
                       [cotonomaChannel cotonoma.key]
 
 

@@ -2,7 +2,7 @@ module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing 
+import App.Types exposing
     ( Coto
     , CotoId
     , Amishi
@@ -28,7 +28,7 @@ type alias Post =
 
 defaultPost : Post
 defaultPost =
-    { postId = Nothing 
+    { postId = Nothing
     , cotoId = Nothing
     , content = ""
     , amishi = Nothing
@@ -55,15 +55,15 @@ decodePost =
 toCoto : Post -> Maybe Coto
 toCoto post =
     case post.cotoId of
-        Nothing -> 
+        Nothing ->
             Nothing
-        Just cotoId -> 
-            Just 
-                (Coto 
-                    cotoId 
-                    post.content 
-                    post.postedIn 
-                    post.asCotonoma 
+        Just cotoId ->
+            Just
+                (Coto
+                    cotoId
+                    post.content
+                    post.postedIn
+                    post.asCotonoma
                     post.cotonomaKey
                 )
 
@@ -72,7 +72,7 @@ isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
 isPostedInCotonoma maybeCotonoma post =
     case maybeCotonoma of
         Nothing -> isNothing post.postedIn
-        Just cotonoma -> 
+        Just cotonoma ->
             case post.postedIn of
                 Nothing -> False
                 Just postedIn -> postedIn.id == cotonoma.id
@@ -86,12 +86,12 @@ isPostedInCoto coto post =
             Just postedIn -> postedIn.key == coto.cotonomaKey
     else
         False
-        
+
 
 isSelfOrPostedIn : Coto -> Post -> Bool
 isSelfOrPostedIn coto post =
-    post.cotoId == Just coto.id || (isPostedInCoto coto post) 
-    
+    post.cotoId == Just coto.id || (isPostedInCoto coto post)
+
 
 type alias Model =
     { editingNew : Bool
@@ -110,41 +110,41 @@ initModel =
     , posts = []
     , loading = True
     }
-    
-    
+
+
 getCoto : CotoId ->  Model -> Maybe Coto
 getCoto cotoId model =
     let
-        maybePost = 
+        maybePost =
             model.posts
-            |> List.filter (\post -> post.cotoId == Just cotoId) 
+            |> List.filter (\post -> post.cotoId == Just cotoId)
             |> List.head
     in
         case maybePost of
             Nothing -> Nothing
             Just post -> toCoto post
-            
-            
+
+
 deleteCoto : Coto -> Model -> Model
 deleteCoto coto model =
     { model
-    | posts = model.posts |> 
+    | posts = model.posts |>
         List.filter (\post -> not (isSelfOrPostedIn coto post))
     }
 
 
 setLoading : Model -> Model
 setLoading model =
-    { model | posts = [], loading = True } 
-    
+    { model | posts = [], loading = True }
+
 
 updatePost : (Post -> Post) -> Int -> List Post -> List Post
 updatePost update cotoId posts =
-     List.map 
-         (\post -> 
+     List.map
+         (\post ->
              if post.cotoId == Just cotoId then
                  update post
              else
                  post
          )
-         posts        
+         posts

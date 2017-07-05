@@ -16,11 +16,11 @@ import Components.Coto
 view : Context -> Graph -> Html Msg
 view context graph =
     div [ id "pinned-cotos" ]
-        [ div 
-            [ class "column-header" ] 
+        [ div
+            [ class "column-header" ]
             [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
             ]
-        , div 
+        , div
             [ class "column-body" ]
             [ pinnedCotos context graph ]
         ]
@@ -36,29 +36,29 @@ connectionsDiv divClass connections context graph =
     Html.Keyed.node
         "div"
         [ class divClass ]
-        (List.filterMap 
+        (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
                     Nothing -> Nothing  -- Missing the end node
-                    Just coto -> Just 
+                    Just coto -> Just
                         ( conn.key
                         , connectionDiv context graph coto
-                        ) 
-            ) 
+                        )
+            )
             connections
         )
-        
-        
+
+
 connectionDiv : Context -> Graph -> Coto -> Html Msg
 connectionDiv context graph coto =
     div [ class "outbound-conn" ]
         [ cotoDiv context graph coto ]
-        
-  
+
+
 cotoDiv : Context -> Graph -> Coto -> Html Msg
 cotoDiv context graph coto =
-    div 
-        [ classList 
+    div
+        [ classList
             [ ( "coto", True )
             , ( "selectable", True )
             , ( "focus", Just coto.id == context.focus )
@@ -70,11 +70,11 @@ cotoDiv context graph coto =
         , onMouseEnter (CotoMouseEnter coto.id)
         , onMouseLeave (CotoMouseLeave coto.id)
         ]
-        [ div 
+        [ div
             [ class "coto-inner" ]
             [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv context graph coto
-            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph 
+            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
             ]
         ]
 
@@ -83,7 +83,7 @@ bodyDiv : Context -> Graph -> Coto -> Html Msg
 bodyDiv context graph coto =
     Components.Coto.bodyDiv
         context
-        graph 
+        graph
         { openCoto = Just (OpenCoto coto)
         , selectCoto = Just SelectCoto
         , openTraversal = Just OpenTraversal
@@ -92,7 +92,7 @@ bodyDiv context graph coto =
         , markdown = App.Markdown.markdown
         }
         { cotoId = Just coto.id
-        , content = coto.content 
+        , content = coto.content
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }

@@ -14,8 +14,8 @@ view cotonomas =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
-        (List.map 
-            (\cotonoma -> 
+        (List.map
+            (\cotonoma ->
                 ( toString cotonoma.id
                 , div [ class "coto-as-cotonoma" ]
                     [ a [ href ("/cotonomas/" ++ cotonoma.key)
@@ -25,6 +25,6 @@ view cotonomas =
                         ]
                     ]
                 )
-            ) 
+            )
             (List.reverse cotonomas)
         )

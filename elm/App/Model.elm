@@ -14,7 +14,7 @@ import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
 import Components.Traversals.Model exposing (Description)
-  
+
 
 type alias Model =
     { route : Route
@@ -87,12 +87,12 @@ getCoto cotoId model =
             Components.Timeline.Model.getCoto cotoId model.timeline
         Just coto ->
             Just coto
-            
-            
+
+
 getSelectedCoto : Model -> List Coto
 getSelectedCoto model =
-    List.filterMap 
-        (\cotoId -> getCoto cotoId model) 
+    List.filterMap
+        (\cotoId -> getCoto cotoId model)
         model.context.selection
 
 
@@ -102,25 +102,25 @@ openSigninModal model =
         signinModal = model.signinModal
     in
         { model | signinModal = { signinModal | open = True } }
-        
+
 
 isPresent : Int -> MemberConnCounts -> Bool
 isPresent amishiId memberPresences =
     (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0
-    
+
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
     (isNothing model.context.cotonoma)
-        && (List.isEmpty model.recentCotonomas) 
+        && (List.isEmpty model.recentCotonomas)
         && (List.isEmpty model.subCotonomas)
-        
-        
+
+
 isStockEmpty : Model -> Bool
 isStockEmpty model =
       List.isEmpty model.graph.rootConnections
-        
-        
+
+
 getOwnerAndMembers : Model -> List Amishi
 getOwnerAndMembers model =
     case model.context.cotonoma of
@@ -133,25 +133,25 @@ getOwnerAndMembers model =
 
 openTraversal : Description -> CotoId -> Model -> Model
 openTraversal description cotoId model =
-    { model 
-    | traversals = 
-          Components.Traversals.Model.openTraversal 
-              description 
-              cotoId 
+    { model
+    | traversals =
+          Components.Traversals.Model.openTraversal
+              description
+              cotoId
               model.traversals
     , viewInMobile = TraversalsView
     }
-        
-        
+
+
 connect : Coto -> List Coto -> Model -> Model
 connect startCoto endCotos model =
     let
         context = model.context
-        newModel = 
-            { model 
+        newModel =
+            { model
             | graph = model.graph |> addConnections startCoto endCotos
             , context = { context | selection = [] }
-            , connectMode = False 
+            , connectMode = False
             , connectModalOpen = False
             }
     in
