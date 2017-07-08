@@ -240,22 +240,18 @@ update msg model =
                 )
 
         DeleteCoto coto ->
-            let
-                timeline = model.timeline
-                posts = timeline.posts
-                ( graph, _ ) = removeCoto coto.id model.graph
-            in
-                { model
-                | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
-                , graph = graph
-                , traversals = closeTraversal coto.id model.traversals
-                , context = deleteSelection coto.id model.context
-                } !
-                    (if coto.asCotonoma then
-                        [ fetchRecentCotonomas
-                        , fetchSubCotonomas model.context.cotonoma
-                        ]
-                     else [])
+            { model
+            | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
+            , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
+            , traversals = closeTraversal coto.id model.traversals
+            , context = deleteSelection coto.id model.context
+            } !
+                (if coto.asCotonoma then
+                    [ fetchRecentCotonomas
+                    , fetchSubCotonomas model.context.cotonoma
+                    ]
+                 else []
+                )
 
         CotoDeleted _ ->
             model ! []
