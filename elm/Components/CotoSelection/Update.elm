@@ -130,17 +130,14 @@ pinSelectedCotos model =
 
 doDeselect : Model -> Model
 doDeselect model =
-    let
-        context = model.context
-        deselecting = context.deselecting
-    in
-        { model
-        | context =
+    { model
+    | context = model.context
+        |> \context ->
             { context
             | selection =
                 List.filter
-                    (\id -> not(Set.member id deselecting))
+                    (\id -> not(Set.member id context.deselecting))
                     context.selection
             , deselecting = Set.empty
             }
-        }
+    }
