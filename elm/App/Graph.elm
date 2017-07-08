@@ -152,22 +152,18 @@ addConnections startCoto endCotos graph =
 
 deleteConnection : ( CotoId, CotoId ) -> Graph -> Graph
 deleteConnection ( fromId, toId ) graph =
-    let
-        newGraph =
-          { graph
-          | connections =
-               graph.connections |> doDeleteConnection ( fromId, toId )
-          }
-    in
-        { newGraph
-        | cotos =
-            -- remove the coto (toId) if it's an orphan
-            if connected toId newGraph then
-                newGraph.cotos
-            else
-                newGraph.cotos |> Dict.remove toId
-        }
-
+    { graph
+    | connections = graph.connections |> doDeleteConnection ( fromId, toId )
+    }
+        |> \graph ->
+            { graph
+            | cotos =
+                -- remove the coto (toId) if it's an orphan
+                if connected toId graph then
+                    graph.cotos
+                else
+                    graph.cotos |> Dict.remove toId
+            }
 
 doDeleteConnection : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
 doDeleteConnection ( fromId, toId ) connections =
