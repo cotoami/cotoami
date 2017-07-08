@@ -75,14 +75,12 @@ update msg session context timeline model =
                     )
 
         Posted (Ok response) ->
-            let
-                ( newTimeline, _ ) =
-                    Components.Timeline.Update.update
-                        context
-                        (Components.Timeline.Messages.Posted (Ok response))
-                        timeline
-            in
-                ( model, newTimeline, Cmd.none )
+            (Components.Timeline.Update.update
+                context
+                (Components.Timeline.Messages.Posted (Ok response))
+                timeline
+            )
+                |> \( timeline, _ ) -> ( model, timeline, Cmd.none )
 
         Posted (Err _) ->
             ( model, timeline, Cmd.none )
