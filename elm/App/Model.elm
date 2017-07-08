@@ -44,40 +44,40 @@ type alias Model =
 
 initModel : Int -> Route -> Model
 initModel seed route =
-    let
-        ( newUuid, newSeed ) = step Uuid.uuidGenerator (initialSeed seed)
-    in
-        { route = route
-        , context =
-            { clientId = Uuid.toString newUuid
-            , session = Nothing
-            , cotonoma = Nothing
-            , focus = Nothing
-            , selection = []
-            , deselecting = Set.empty
-            , ctrlDown = False
-            }
-        , viewInMobile = TimelineView
-        , navigationToggled = False
-        , navigationOpen = False
-        , members = []
-        , memberPresences = Dict.empty
-        , confirmModal = Components.ConfirmModal.Model.initModel
-        , signinModal = Components.SigninModal.initModel
-        , profileModal = Components.ProfileModal.initModel
-        , cotoModal = Components.CotoModal.initModel
-        , recentCotonomas = []
-        , cotonomasLoading = False
-        , subCotonomas = []
-        , timeline = Components.Timeline.Model.initModel
-        , cotoSelectionTitle = ""
-        , connectMode = False
-        , connectingTo = Nothing
-        , connectModalOpen = False
-        , cotonomaModal = Components.CotonomaModal.Model.initModel
-        , graph = initGraph
-        , traversals = Components.Traversals.Model.initModel
+    { route = route
+    , context =
+        { clientId =
+            initialSeed seed
+                |> step Uuid.uuidGenerator
+                |> \( uuid, _ ) -> Uuid.toString uuid
+        , session = Nothing
+        , cotonoma = Nothing
+        , focus = Nothing
+        , selection = []
+        , deselecting = Set.empty
+        , ctrlDown = False
         }
+    , viewInMobile = TimelineView
+    , navigationToggled = False
+    , navigationOpen = False
+    , members = []
+    , memberPresences = Dict.empty
+    , confirmModal = Components.ConfirmModal.Model.initModel
+    , signinModal = Components.SigninModal.initModel
+    , profileModal = Components.ProfileModal.initModel
+    , cotoModal = Components.CotoModal.initModel
+    , recentCotonomas = []
+    , cotonomasLoading = False
+    , subCotonomas = []
+    , timeline = Components.Timeline.Model.initModel
+    , cotoSelectionTitle = ""
+    , connectMode = False
+    , connectingTo = Nothing
+    , connectModalOpen = False
+    , cotonomaModal = Components.CotonomaModal.Model.initModel
+    , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
+    }
 
 
 getCoto : Int -> Model -> Maybe Coto
