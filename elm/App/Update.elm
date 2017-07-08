@@ -142,31 +142,25 @@ update msg model =
                 model ! []
 
         ConfirmModalMsg subMsg ->
-            let
-                ( confirmModal, cmd ) = Components.ConfirmModal.Update.update subMsg model.confirmModal
-            in
-                { model | confirmModal = confirmModal } ! [ cmd ]
+            Components.ConfirmModal.Update.update subMsg model.confirmModal
+                |> \( modal, cmd ) -> { model | confirmModal = modal } ! [ cmd ]
 
         OpenSigninModal ->
             openSigninModal model ! []
 
         SigninModalMsg subMsg ->
-            let
-                ( signinModal, cmd ) = Components.SigninModal.update subMsg model.signinModal
-            in
-                { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg cmd ]
+            Components.SigninModal.update subMsg model.signinModal
+                |> \( modal, cmd ) ->
+                    { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
 
         OpenProfileModal ->
-            let
-                profileModal = model.profileModal
-            in
-                { model | profileModal = { profileModal | open = True } } ! []
+            model.profileModal
+                |> \modal -> { model | profileModal = { modal | open = True } } ! []
 
         ProfileModalMsg subMsg ->
-            let
-                ( profileModal, cmd ) = Components.ProfileModal.update subMsg model.profileModal
-            in
-                { model | profileModal = profileModal } ! [ Cmd.map ProfileModalMsg cmd ]
+            Components.ProfileModal.update subMsg model.profileModal
+                |> \( modal, cmd ) ->
+                    { model | profileModal = modal } ! [ Cmd.map ProfileModalMsg cmd ]
 
         CotoModalMsg subMsg ->
             let
