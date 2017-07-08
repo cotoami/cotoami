@@ -334,12 +334,9 @@ update msg model =
             { model | memberPresences = decodePresenceState payload } ! []
 
         CotonomaPresenceDiff payload ->
-            let
-                presenceDiff = decodePresenceDiff payload
-                newMemberPresences =
-                    applyPresenceDiff presenceDiff model.memberPresences
-            in
-                { model | memberPresences = newMemberPresences } ! []
+            decodePresenceDiff payload
+                |> \diff -> applyPresenceDiff diff model.memberPresences
+                |> \presences -> { model | memberPresences = presences } ! []
 
         CotoSelectionMsg subMsg ->
             let
