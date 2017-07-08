@@ -77,26 +77,24 @@ update msg model =
             model ! []
 
         PostGroupingCoto ->
-            let
-                ( newTimeline, newPost ) =
-                      postContent
-                          model.context.clientId
-                          model.context.cotonoma
-                          False
-                          model.cotoSelectionTitle
-                          model.timeline
-            in
-                { model
-                | timeline = newTimeline
-                , cotoSelectionTitle = ""
-                } !
-                    [ scrollToBottom NoOp
-                    , post
-                        model.context.clientId
-                        model.context.cotonoma
-                        GroupingCotoPosted
-                        newPost
-                    ]
+            model.timeline
+                |> postContent
+                    model.context.clientId
+                    model.context.cotonoma
+                    False
+                    model.cotoSelectionTitle
+                |> \( timeline, newPost ) ->
+                    { model
+                    | timeline = timeline
+                    , cotoSelectionTitle = ""
+                    } !
+                        [ scrollToBottom NoOp
+                        , post
+                            model.context.clientId
+                            model.context.cotonoma
+                            GroupingCotoPosted
+                            newPost
+                        ]
 
         GroupingCotoPosted (Ok response) ->
             let
