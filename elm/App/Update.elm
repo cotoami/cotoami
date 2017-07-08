@@ -443,37 +443,37 @@ openCoto maybeCoto model =
     }
 
 applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
-applyPresenceDiff diff presences =
-    let
-        presencesJoined =
-          Dict.foldl
-              (\amishiId count presences ->
-                  Dict.update
-                      amishiId
-                      (\maybeValue ->
-                          case maybeValue of
-                              Nothing -> Just count
-                              Just value -> Just (value + count)
-                      )
-                      presences
-              )
-              presences
-              (Tuple.first diff)
-    in
-        Dict.foldl
-            (\amishiId count presences ->
-                Dict.update
-                    amishiId
-                    (\maybeValue ->
-                        case maybeValue of
-                            Nothing -> Nothing
-                            Just value -> Just (value - count)
-                    )
-                    presences
-            )
-            presencesJoined
-            (Tuple.second diff)
-
+applyPresenceDiff ( joins, leaves ) presences =
+    -- Join
+    (Dict.foldl
+        (\amishiId count presences ->
+            Dict.update
+                amishiId
+                (\maybeValue ->
+                    case maybeValue of
+                        Nothing -> Just count
+                        Just value -> Just (value + count)
+                )
+                presences
+        )
+        presences
+        joins
+    )
+        |> \presences ->
+            -- Leave
+            Dict.foldl
+                (\amishiId count presences ->
+                    Dict.update
+                        amishiId
+                        (\maybeValue ->
+                            case maybeValue of
+                                Nothing -> Nothing
+                                Just value -> Just (value - count)
+                        )
+                        presences
+                )
+                presences
+                leaves
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
