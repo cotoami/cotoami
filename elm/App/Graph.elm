@@ -189,7 +189,7 @@ removeCoto cotoId graph =
     let
         ( remainedRoots, removedRoots ) =
             graph.rootConnections
-            |> List.partition (\conn -> conn.end /= cotoId)
+                |> List.partition (\conn -> conn.end /= cotoId)
 
         ( connectionDict1, startMissingConns ) =
             case graph.connections |> Dict.get cotoId of
@@ -201,11 +201,10 @@ removeCoto cotoId graph =
         ( connectionDict2, endMissingConns ) =
             Dict.foldl
                 (\startId children ( connDict, removedConns ) ->
-                  let
-                      ( remained, removed ) =
-                          children |> List.partition (\conn -> conn.end /= cotoId)
-                  in
-                      ( connDict |> Dict.insert startId remained, removedConns ++ removed )
+                    children
+                        |> List.partition (\conn -> conn.end /= cotoId)
+                        |> \( remained, removed ) ->
+                            ( connDict |> Dict.insert startId remained, removedConns ++ removed )
                 )
                 ( Dict.empty, [] )
                 connectionDict1
