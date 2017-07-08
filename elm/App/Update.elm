@@ -105,23 +105,21 @@ update msg model =
             changeLocationToHome model
 
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
-            let
-                context = model.context
-                ( timeline, cmd ) =
-                    Components.Timeline.Update.update
-                      context
-                      (Components.Timeline.Messages.PostsFetched (Ok posts))
-                      model.timeline
-            in
-                { model
-                | context = { context | cotonoma = Just cotonoma }
-                , members = members
-                , navigationOpen = False
-                , timeline = timeline
-                } !
-                    [ Cmd.map TimelineMsg cmd
-                    , fetchSubCotonomas (Just cotonoma)
-                    ]
+            Components.Timeline.Update.update
+                model.context
+                (Components.Timeline.Messages.PostsFetched (Ok posts))
+                model.timeline
+                    |> \( timeline, cmd ) ->
+                        { model
+                        | context = model.context
+                            |> \context -> { context | cotonoma = Just cotonoma }
+                        , members = members
+                        , navigationOpen = False
+                        , timeline = timeline
+                        } !
+                            [ Cmd.map TimelineMsg cmd
+                            , fetchSubCotonomas (Just cotonoma)
+                            ]
 
         CotonomaFetched (Err _) ->
             model ! []
