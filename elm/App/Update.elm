@@ -47,7 +47,7 @@ update msg model =
         OnLocationChange location ->
             parseLocation location
                 |> \route -> ( route, { model | route = route } )
-                |> (\( route, model ) ->
+                |> \( route, model ) ->
                     case route of
                         HomeRoute ->
                             loadHome model
@@ -57,7 +57,6 @@ update msg model =
 
                         NotFoundRoute ->
                             ( model, Cmd.none )
-                )
 
         SessionFetched (Ok session) ->
             { model
@@ -161,7 +160,7 @@ update msg model =
         CotoModalMsg subMsg ->
             Components.CotoModal.update subMsg model.cotoModal
                 |> \( modal, cmd ) -> { model | cotoModal = modal } ! [ Cmd.map CotoModalMsg cmd ]
-                |> (\( model, cmd ) ->
+                |> \( model, cmd ) ->
                     case subMsg of
                         Components.CotoModal.ConfirmDelete ->
                             confirm
@@ -199,12 +198,11 @@ update msg model =
 
                         _ ->
                             ( model, cmd )
-                )
 
         TimelineMsg subMsg ->
             Components.Timeline.Update.update model.context subMsg model.timeline
                 |> \( timeline, cmd ) -> { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
-                |> (\( model, cmd ) ->
+                |> \( model, cmd ) ->
                     case subMsg of
                         Components.Timeline.Messages.PostClick cotoId ->
                             (clickCoto cotoId model) ! [ cmd ]
@@ -238,7 +236,6 @@ update msg model =
 
                         _ ->
                             ( model, cmd )
-                )
 
         DeleteCoto coto ->
             { model
@@ -285,7 +282,7 @@ update msg model =
                             | cotonomaModal = modal
                             , timeline = timeline
                             } ! [ Cmd.map CotonomaModalMsg cmd ]
-                        |> (\( model, cmd ) ->
+                        |> \( model, cmd ) ->
                             case subMsg of
                                 Components.CotonomaModal.Messages.Posted (Ok _) ->
                                     { model | cotonomasLoading = True } !
@@ -295,7 +292,6 @@ update msg model =
                                         ]
                                 _ ->
                                     ( model, cmd )
-                        )
 
         CotoClick cotoId ->
             clickCoto cotoId model ! []
@@ -339,34 +335,32 @@ update msg model =
                 |> \presences -> { model | memberPresences = presences } ! []
 
         CotoSelectionMsg subMsg ->
-            let
-                ( newModel, cmd ) =
-                    Components.CotoSelection.Update.update subMsg model
-            in
-                case subMsg of
-                    Components.CotoSelection.Messages.CotonomaClick key ->
-                        changeLocationToCotonoma key newModel
+            Components.CotoSelection.Update.update subMsg model
+                |> \( model, cmd ) -> model ! [ Cmd.map CotoSelectionMsg cmd ]
+                |> \( model, cmd ) ->
+                    case subMsg of
+                        Components.CotoSelection.Messages.CotonomaClick key ->
+                            changeLocationToCotonoma key model
 
-                    Components.CotoSelection.Messages.OpenTraversal cotoId ->
-                        openTraversal Components.Traversals.Model.Opened cotoId model
-                            ! [ Cmd.map CotoSelectionMsg cmd ]
+                        Components.CotoSelection.Messages.OpenTraversal cotoId ->
+                            openTraversal Components.Traversals.Model.Opened cotoId model ! [ cmd ]
 
-                    Components.CotoSelection.Messages.ConfirmPin ->
-                        confirm
-                            "Are you sure you want to pin the selected cotos?"
-                            (CotoSelectionMsg Components.CotoSelection.Messages.Pin)
-                            newModel
-                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        Components.CotoSelection.Messages.ConfirmPin ->
+                            confirm
+                                "Are you sure you want to pin the selected cotos?"
+                                (CotoSelectionMsg Components.CotoSelection.Messages.Pin)
+                                model
+                            ! [ cmd ]
 
-                    Components.CotoSelection.Messages.ConfirmCreateGroupingCoto ->
-                        confirm
-                            ("You are about to create a grouping coto: \"" ++ newModel.cotoSelectionTitle ++ "\"")
-                            (CotoSelectionMsg Components.CotoSelection.Messages.PostGroupingCoto)
-                            newModel
-                        ! [ Cmd.map CotoSelectionMsg cmd ]
+                        Components.CotoSelection.Messages.ConfirmCreateGroupingCoto ->
+                            confirm
+                                ("You are about to create a grouping coto: \"" ++ model.cotoSelectionTitle ++ "\"")
+                                (CotoSelectionMsg Components.CotoSelection.Messages.PostGroupingCoto)
+                                model
+                            ! [ cmd ]
 
-                    _ ->
-                        newModel ! [ Cmd.map CotoSelectionMsg cmd ]
+                        _ ->
+                            ( model, cmd )
 
         CloseConnectModal ->
             { model | connectModalOpen = False } ! []
