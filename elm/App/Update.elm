@@ -201,48 +201,43 @@ update msg model =
                 )
 
         TimelineMsg subMsg ->
-            let
-                ( timeline, cmd ) =
-                    Components.Timeline.Update.update model.context subMsg model.timeline
-                newModel = { model | timeline = timeline }
-                cotoModal = newModel.cotoModal
-            in
-                case subMsg of
-                    Components.Timeline.Messages.PostClick cotoId ->
-                        (clickCoto cotoId newModel) ! [ Cmd.map TimelineMsg cmd ]
+            Components.Timeline.Update.update model.context subMsg model.timeline
+                |> \( timeline, cmd ) -> { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
+                |> (\( model, cmd ) ->
+                    case subMsg of
+                        Components.Timeline.Messages.PostClick cotoId ->
+                            (clickCoto cotoId model) ! [ cmd ]
 
-                    Components.Timeline.Messages.PostMouseEnter cotoId ->
-                        { newModel | context = setFocus (Just cotoId) newModel.context }
-                            ! [ Cmd.map TimelineMsg cmd ]
+                        Components.Timeline.Messages.PostMouseEnter cotoId ->
+                            { model | context = setFocus (Just cotoId) model.context } ! [ cmd ]
 
-                    Components.Timeline.Messages.PostMouseLeave cotoId ->
-                        { newModel | context = setFocus Nothing newModel.context }
-                            ! [ Cmd.map TimelineMsg cmd ]
+                        Components.Timeline.Messages.PostMouseLeave cotoId ->
+                            { model | context = setFocus Nothing model.context } ! [ cmd ]
 
-                    Components.Timeline.Messages.OpenPost post ->
-                        openCoto (toCoto post) model ! [ Cmd.map TimelineMsg cmd ]
+                        Components.Timeline.Messages.OpenPost post ->
+                            openCoto (toCoto post) model ! [ cmd ]
 
-                    Components.Timeline.Messages.CotonomaClick key ->
-                        changeLocationToCotonoma key newModel
+                        Components.Timeline.Messages.CotonomaClick key ->
+                            changeLocationToCotonoma key model
 
-                    Components.Timeline.Messages.CotonomaPushed post ->
-                        newModel !
-                            [ Cmd.map TimelineMsg cmd
-                            , fetchRecentCotonomas
-                            , fetchSubCotonomas model.context.cotonoma
-                            ]
+                        Components.Timeline.Messages.CotonomaPushed post ->
+                            model !
+                                [ cmd
+                                , fetchRecentCotonomas
+                                , fetchSubCotonomas model.context.cotonoma
+                                ]
 
-                    Components.Timeline.Messages.SelectCoto cotoId ->
-                        { newModel
-                        | context = updateSelection cotoId newModel.context
-                        } ! [ Cmd.map TimelineMsg cmd ]
+                        Components.Timeline.Messages.SelectCoto cotoId ->
+                            { model
+                            | context = updateSelection cotoId model.context
+                            } ! [ cmd ]
 
-                    Components.Timeline.Messages.OpenTraversal cotoId ->
-                        openTraversal Components.Traversals.Model.Opened cotoId model
-                            ! [ Cmd.map TimelineMsg cmd ]
+                        Components.Timeline.Messages.OpenTraversal cotoId ->
+                            openTraversal Components.Traversals.Model.Opened cotoId model ! [ cmd ]
 
-                    _ ->
-                        newModel ! [ Cmd.map TimelineMsg cmd ]
+                        _ ->
+                            ( model, cmd )
+                )
 
         DeleteCoto coto ->
             let
