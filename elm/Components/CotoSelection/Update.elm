@@ -4,6 +4,7 @@ import Set
 import Task
 import Process
 import Time
+import Maybe exposing (andThen, withDefault)
 import App.Types exposing
     ( CotoId
     , Context
@@ -77,44 +78,38 @@ update msg model =
             model ! []
 
         PostGroupingCoto ->
-            let
-                ( newTimeline, newPost ) =
-                      postContent
-                          model.context.clientId
-                          model.context.cotonoma
-                          False
-                          model.cotoSelectionTitle
-                          model.timeline
-            in
-                { model
-                | timeline = newTimeline
-                , cotoSelectionTitle = ""
-                } !
-                    [ scrollToBottom NoOp
-                    , post
-                        model.context.clientId
-                        model.context.cotonoma
-                        GroupingCotoPosted
-                        newPost
-                    ]
+            model.timeline
+                |> postContent
+                    model.context.clientId
+                    model.context.cotonoma
+                    False
+                    model.cotoSelectionTitle
+                |> \( timeline, newPost ) ->
+                    { model
+                    | timeline = timeline
+                    , cotoSelectionTitle = ""
+                    } !
+                        [ scrollToBottom NoOp
+                        , post
+                            model.context.clientId
+                            model.context.cotonoma
+                            GroupingCotoPosted
+                            newPost
+                        ]
 
         GroupingCotoPosted (Ok response) ->
-            let
-                timeline = model.timeline
-                newModel =
-                    { model
-                    | timeline = { timeline | posts = setCotoSaved response timeline.posts }
-                    }
-                maybeStartCoto =
-                    case response.cotoId of
-                        Nothing -> Nothing
-                        Just cotoId -> getCoto cotoId newModel
-                endCotos = getSelectedCoto newModel
-            in
-                case maybeStartCoto of
-                    Nothing -> newModel ! []
-                    Just startCoto ->
-                        connect startCoto endCotos newModel ! []
+            { model
+            | timeline = model.timeline
+                |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
+            }
+                |> (\model ->
+                    response.cotoId
+                        |> andThen (\cotoId -> getCoto cotoId model)
+                        |> andThen (\groupingCoto ->
+                            Just <| connect groupingCoto (getSelectedCoto model) model
+                        )
+                        |> \maybeModel -> withDefault model maybeModel ! []
+                )
 
         GroupingCotoPosted (Err _) ->
             model ! []
@@ -122,30 +117,27 @@ update msg model =
 
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
-    let
-        cotos = model.context.selection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        graph = model.graph |> addRootConnections cotos
-    in
-        { model
-        | graph = graph
-        , context = clearSelection model.context
-        , viewInMobile = PinnedView
-        }
+    model.context.selection
+        |> List.filterMap (\cotoId -> getCoto cotoId model)
+        |> \cotos -> model.graph |> addRootConnections cotos
+        |> \graph ->
+            { model
+            | graph = graph
+            , context = clearSelection model.context
+            , viewInMobile = PinnedView
+            }
 
 
 doDeselect : Model -> Model
 doDeselect model =
-    let
-        context = model.context
-        deselecting = context.deselecting
-    in
-        { model
-        | context =
+    { model
+    | context = model.context
+        |> \context ->
             { context
             | selection =
                 List.filter
-                    (\id -> not(Set.member id deselecting))
+                    (\id -> not(Set.member id context.deselecting))
                     context.selection
             , deselecting = Set.empty
             }
-        }
+    }

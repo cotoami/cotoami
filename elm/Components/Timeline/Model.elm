@@ -1,6 +1,7 @@
 module Components.Timeline.Model exposing (..)
 
 import Json.Decode as Decode
+import Maybe exposing (andThen)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing
     ( Coto
@@ -112,17 +113,12 @@ initModel =
     }
 
 
-getCoto : CotoId ->  Model -> Maybe Coto
+getCoto : CotoId -> Model -> Maybe Coto
 getCoto cotoId model =
-    let
-        maybePost =
-            model.posts
-            |> List.filter (\post -> post.cotoId == Just cotoId)
-            |> List.head
-    in
-        case maybePost of
-            Nothing -> Nothing
-            Just post -> toCoto post
+    model.posts
+        |> List.filter (\post -> post.cotoId == Just cotoId)
+        |> List.head
+        |> andThen toCoto
 
 
 deleteCoto : Coto -> Model -> Model

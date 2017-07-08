@@ -82,17 +82,16 @@ decodePresenceState payload =
 -- {leaves: {3: {metas: [{phx_ref: "7h9YpxuqCmM=", online_at: 1490350421829}]}}, joins: {}}
 decodePresenceDiff : Value -> ( MemberConnCounts, MemberConnCounts )
 decodePresenceDiff payload =
-    let
-        decoder =
-            Decode.map2 (,)
-                (Decode.field "joins" decodePresenceEntries)
-                (Decode.field "leaves" decodePresenceEntries)
-    in
-        case Decode.decodeValue decoder payload of
-            Ok decodedPayload ->
-                ( decodedPayload |> Tuple.first |> convertPresenceEntriesToConnCounts
-                , decodedPayload |> Tuple.second |> convertPresenceEntriesToConnCounts
-                )
+    (Decode.map2 (,)
+        (Decode.field "joins" decodePresenceEntries)
+        (Decode.field "leaves" decodePresenceEntries)
+    )
+        |> \decoder ->
+            case Decode.decodeValue decoder payload of
+                Ok decodedPayload ->
+                    ( decodedPayload |> Tuple.first |> convertPresenceEntriesToConnCounts
+                    , decodedPayload |> Tuple.second |> convertPresenceEntriesToConnCounts
+                    )
 
-            Err err ->
-                ( Dict.empty, Dict.empty )
+                Err err ->
+                    ( Dict.empty, Dict.empty )

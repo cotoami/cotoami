@@ -58,32 +58,29 @@ update msg session context timeline model =
             )
 
         Post ->
-            let
-                ( newTimeline, _ ) =
-                    postContent context.clientId context.cotonoma True model.name timeline
-            in
-                ( initModel
-                , newTimeline
-                , Cmd.batch
-                    [ scrollToBottom NoOp
-                    , postCotonoma
-                        context.clientId
-                        context.cotonoma
-                        newTimeline.postIdCounter
-                        model.members
-                        model.name
-                    ]
-                )
+            timeline
+                |> postContent context.clientId context.cotonoma True model.name
+                |> \( timeline, _ ) ->
+                    ( initModel
+                    , timeline
+                    , Cmd.batch
+                        [ scrollToBottom NoOp
+                        , postCotonoma
+                            context.clientId
+                            context.cotonoma
+                            timeline.postIdCounter
+                            model.members
+                            model.name
+                        ]
+                    )
 
         Posted (Ok response) ->
-            let
-                ( newTimeline, _ ) =
-                    Components.Timeline.Update.update
-                        context
-                        (Components.Timeline.Messages.Posted (Ok response))
-                        timeline
-            in
-                ( model, newTimeline, Cmd.none )
+            (Components.Timeline.Update.update
+                context
+                (Components.Timeline.Messages.Posted (Ok response))
+                timeline
+            )
+                |> \( timeline, _ ) -> ( model, timeline, Cmd.none )
 
         Posted (Err _) ->
             ( model, timeline, Cmd.none )

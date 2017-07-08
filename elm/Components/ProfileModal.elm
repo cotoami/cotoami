@@ -33,7 +33,9 @@ view maybeSession model =
     Modal.view
         "profile-modal"
         (case maybeSession of
-            Nothing -> Nothing
+            Nothing ->
+                Nothing
+
             Just session ->
                 (if model.open then
                     Just (modalConfig session model)
@@ -47,32 +49,35 @@ modalConfig : Session -> Model -> Modal.Config Msg
 modalConfig session model =
     { closeMessage = Close
     , title = "Amishi Profile"
-    , content = div []
-        [ div [ class "profile container" ]
-            [ div [ class "row" ]
-                [ div [ class "avatar-box three columns" ]
-                    [ a [ href "https://gravatar.com/", target "_blank" ]
-                        [ img [ class "avatar", src session.avatarUrl ] [] ]
-                    ]
-                , div [ class "profile-info nine columns" ]
-                    [ label [] [ text "Name" ]
-                    , input
-                        [ type_ "text"
-                        , class "u-full-width"
-                        , value session.displayName
-                        , disabled True
-                        ] []
-                    , label [] [ text "Email Address" ]
-                    , input
-                        [ type_ "text"
-                        , class "u-full-width"
-                        , value session.email
-                        , disabled True
-                        ] []
+    , content =
+        div []
+            [ div [ class "profile container" ]
+                [ div [ class "row" ]
+                    [ div [ class "avatar-box three columns" ]
+                        [ a [ href "https://gravatar.com/", target "_blank" ]
+                            [ img [ class "avatar", src session.avatarUrl ] [] ]
+                        ]
+                    , div [ class "profile-info nine columns" ]
+                        [ label [] [ text "Name" ]
+                        , input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , value session.displayName
+                            , disabled True
+                            ]
+                            []
+                        , label [] [ text "Email Address" ]
+                        , input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , value session.email
+                            , disabled True
+                            ]
+                            []
+                        ]
                     ]
                 ]
             ]
-        ]
     , buttons =
         [ a [ class "button", href "/signout" ] [ text "Sign out" ]
         ]

@@ -152,22 +152,18 @@ addConnections startCoto endCotos graph =
 
 deleteConnection : ( CotoId, CotoId ) -> Graph -> Graph
 deleteConnection ( fromId, toId ) graph =
-    let
-        newGraph =
-          { graph
-          | connections =
-               graph.connections |> doDeleteConnection ( fromId, toId )
-          }
-    in
-        { newGraph
-        | cotos =
-            -- remove the coto (toId) if it's an orphan
-            if connected toId newGraph then
-                newGraph.cotos
-            else
-                newGraph.cotos |> Dict.remove toId
-        }
-
+    { graph
+    | connections = graph.connections |> doDeleteConnection ( fromId, toId )
+    }
+        |> \graph ->
+            { graph
+            | cotos =
+                -- remove the coto (toId) if it's an orphan
+                if connected toId graph then
+                    graph.cotos
+                else
+                    graph.cotos |> Dict.remove toId
+            }
 
 doDeleteConnection : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
 doDeleteConnection ( fromId, toId ) connections =
@@ -178,13 +174,13 @@ doDeleteConnection ( fromId, toId ) connections =
             case maybeChildren of
                 Nothing -> Nothing
                 Just children ->
-                    let
-                        newChildren = List.filter (\conn -> conn.end /= toId) children
-                    in
-                        if List.isEmpty newChildren then
-                            Nothing
-                        else
-                            Just newChildren
+                    children
+                        |> List.filter (\conn -> conn.end /= toId)
+                        |> \children ->
+                            if List.isEmpty children then
+                                Nothing
+                            else
+                                Just children
         )
 
 
@@ -193,7 +189,7 @@ removeCoto cotoId graph =
     let
         ( remainedRoots, removedRoots ) =
             graph.rootConnections
-            |> List.partition (\conn -> conn.end /= cotoId)
+                |> List.partition (\conn -> conn.end /= cotoId)
 
         ( connectionDict1, startMissingConns ) =
             case graph.connections |> Dict.get cotoId of
@@ -205,11 +201,10 @@ removeCoto cotoId graph =
         ( connectionDict2, endMissingConns ) =
             Dict.foldl
                 (\startId children ( connDict, removedConns ) ->
-                  let
-                      ( remained, removed ) =
-                          children |> List.partition (\conn -> conn.end /= cotoId)
-                  in
-                      ( connDict |> Dict.insert startId remained, removedConns ++ removed )
+                    children
+                        |> List.partition (\conn -> conn.end /= cotoId)
+                        |> \( remained, removed ) ->
+                            ( connDict |> Dict.insert startId remained, removedConns ++ removed )
                 )
                 ( Dict.empty, [] )
                 connectionDict1

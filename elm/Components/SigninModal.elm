@@ -62,8 +62,14 @@ update msg model =
 requestSignin : String -> Bool -> Cmd Msg
 requestSignin email saveAnonymous =
     let
-        url = "/api/signin/request/" ++ email ++
-            (if saveAnonymous then "/yes" else "/no")
+        url =
+            "/api/signin/request/"
+                ++ email
+                ++ (if saveAnonymous then
+                        "/yes"
+                    else
+                        "/no"
+                   )
     in
         Http.send RequestDone (Http.get url Decode.string)
 
@@ -78,47 +84,50 @@ view model showAnonymousOption =
             Nothing
         )
 
+
 signinModalConfig : Model -> Bool -> Modal.Config Msg
 signinModalConfig model showAnonymousOption =
     (if model.requestDone then
         { closeMessage = Close
         , title = "Check your inbox!"
-        , content = div [ id "signin-modal-content" ]
-            [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
+        , content =
+            div [ id "signin-modal-content" ]
+                [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
         , buttons =
             [ button [ class "button", onClick Close ] [ text "OK" ] ]
         }
-    else
+     else
         { closeMessage = Close
         , title = "Sign in/up with your email"
-        , content = div []
-            [ p [] [ text "Welcome to Cotoami!" ]
-            , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-            , Html.form [ name "signin" ]
-                [ div []
-                    [ input
-                      [ type_ "email"
-                      , class "u-full-width"
-                      , name "email"
-                      , placeholder "you@example.com"
-                      , value model.email
-                      , onInput EmailInput
-                      ]
-                      []
-                    ]
-                , (if showAnonymousOption then
-                    div [ class "save-anonymous-cotos-option" ]
-                        [ label []
-                            [ input [ type_ "checkbox", onCheck SaveAnonymousCotosCheck ] []
-                            , span [ class "label-body" ]
-                                [ text "Save the anonymous cotos (posts) into your account" ]
+        , content =
+            div []
+                [ p [] [ text "Welcome to Cotoami!" ]
+                , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+                , Html.form [ name "signin" ]
+                    [ div []
+                        [ input
+                            [ type_ "email"
+                            , class "u-full-width"
+                            , name "email"
+                            , placeholder "you@example.com"
+                            , value model.email
+                            , onInput EmailInput
                             ]
+                            []
                         ]
-                  else
-                    div [] []
-                  )
+                    , (if showAnonymousOption then
+                        div [ class "save-anonymous-cotos-option" ]
+                            [ label []
+                                [ input [ type_ "checkbox", onCheck SaveAnonymousCotosCheck ] []
+                                , span [ class "label-body" ]
+                                    [ text "Save the anonymous cotos (posts) into your account" ]
+                                ]
+                            ]
+                       else
+                        div [] []
+                      )
+                    ]
                 ]
-            ]
         , buttons =
             [ button
                 [ class "button close", onClick Close ]
@@ -128,7 +137,11 @@ signinModalConfig model showAnonymousOption =
                 , disabled (not (validateEmail model.email) || model.requestProcessing)
                 , onClick RequestClick
                 ]
-                [ if model.requestProcessing then text "Sending..." else text "OK" ]
+                [ if model.requestProcessing then
+                    text "Sending..."
+                  else
+                    text "OK"
+                ]
             ]
         }
     )
