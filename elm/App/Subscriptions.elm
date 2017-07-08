@@ -17,14 +17,18 @@ socket token websocketUrl =
 phoenixChannels : Model -> Sub Msg
 phoenixChannels model =
     case model.context.session of
-        Nothing -> Sub.none
+        Nothing ->
+            Sub.none
+
         Just session ->
             case model.context.cotonoma of
-                Nothing -> Sub.none
+                Nothing ->
+                    Sub.none
+
                 Just cotonoma ->
                     Phoenix.connect
-                      (socket session.token session.websocketUrl)
-                      [cotonomaChannel cotonoma.key]
+                        (socket session.token session.websocketUrl)
+                        [ cotonomaChannel cotonoma.key ]
 
 
 subscriptions : Model -> Sub Msg
