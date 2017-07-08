@@ -369,52 +369,44 @@ update msg model =
             connect startCoto endCotos model ! []
 
         TraversalMsg subMsg ->
-            let
-                ( traversals, cmd ) =
-                    Components.Traversals.Update.update subMsg model.traversals
-                newModel = { model | traversals = traversals }
-            in
-                case subMsg of
-                    Components.Traversals.Messages.CotoClick cotoId ->
-                        clickCoto cotoId newModel ! [ Cmd.map TraversalMsg cmd ]
+            Components.Traversals.Update.update subMsg model.traversals
+                |> \( traversals, cmd ) ->
+                    { model | traversals = traversals } ! [ Cmd.map TraversalMsg cmd ]
+                |> \( model, cmd ) ->
+                    case subMsg of
+                        Components.Traversals.Messages.CotoClick cotoId ->
+                            clickCoto cotoId model ! [ cmd ]
 
-                    Components.Traversals.Messages.CotoMouseEnter cotoId ->
-                        { newModel | context = setFocus (Just cotoId) newModel.context }
-                            ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.CotoMouseEnter cotoId ->
+                            { model | context = setFocus (Just cotoId) model.context } ! [ cmd ]
 
-                    Components.Traversals.Messages.CotoMouseLeave cotoId ->
-                        { newModel | context = setFocus Nothing newModel.context }
-                            ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.CotoMouseLeave cotoId ->
+                            { model | context = setFocus Nothing model.context } ! [ cmd ]
 
-                    Components.Traversals.Messages.OpenCoto coto ->
-                        openCoto (Just coto) model ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.OpenCoto coto ->
+                            openCoto (Just coto) model ! [ cmd ]
 
-                    Components.Traversals.Messages.SelectCoto cotoId ->
-                        { newModel
-                        | context = updateSelection cotoId newModel.context
-                        } ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.SelectCoto cotoId ->
+                            { model | context = updateSelection cotoId model.context } ! [ cmd ]
 
-                    Components.Traversals.Messages.CotonomaClick key ->
-                        changeLocationToCotonoma key newModel
+                        Components.Traversals.Messages.CotonomaClick key ->
+                            changeLocationToCotonoma key model
 
-                    Components.Traversals.Messages.OpenTraversal cotoId ->
-                        openTraversal Components.Traversals.Model.Opened cotoId model
-                            ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.OpenTraversal cotoId ->
+                            openTraversal Components.Traversals.Model.Opened cotoId model ! [ cmd ]
 
-                    Components.Traversals.Messages.ConfirmDeleteConnection conn ->
-                        confirm
-                            ("Are you sure you want to delete this connection?")
-                            (TraversalMsg (Components.Traversals.Messages.DeleteConnection conn))
-                            newModel
-                        ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.ConfirmDeleteConnection conn ->
+                            confirm
+                                ("Are you sure you want to delete this connection?")
+                                (TraversalMsg (Components.Traversals.Messages.DeleteConnection conn))
+                                model
+                            ! [ cmd ]
 
-                    Components.Traversals.Messages.DeleteConnection conn ->
-                        { model
-                        | graph = deleteConnection conn model.graph
-                        } ! [ Cmd.map TraversalMsg cmd ]
+                        Components.Traversals.Messages.DeleteConnection conn ->
+                            { model | graph = deleteConnection conn model.graph } ! [ cmd ]
 
-                    _ ->
-                        newModel ! [ Cmd.map TraversalMsg cmd ]
+                        _ ->
+                            ( model, cmd )
 
 
 confirm : String -> Msg -> Model -> Model
