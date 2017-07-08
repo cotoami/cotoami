@@ -4,15 +4,16 @@ import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing
-    ( Coto
-    , CotoId
-    , Cotonoma
-    , CotonomaKey
-    , Context
-    , isPostedInCotonoma
-    , isSelected
-    )
+import App.Types
+    exposing
+        ( Coto
+        , CotoId
+        , Cotonoma
+        , CotonomaKey
+        , Context
+        , isPostedInCotonoma
+        , isSelected
+        )
 import App.Graph exposing (Graph, pinned, hasChildren)
 
 
@@ -21,7 +22,9 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
     div
         [ class "coto-header" ]
         [ case coto.postedIn of
-            Nothing -> span [] []
+            Nothing ->
+                span [] []
+
             Just postedIn ->
                 if not (isPostedInCotonoma maybeCotonoma coto) then
                     a
@@ -33,15 +36,19 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
                 else
                     span [] []
         , if pinned coto.id graph then
-            i [ class "pinned fa fa-thumb-tack"
-              , (attribute "aria-hidden" "true")
-              ] []
+            i
+                [ class "pinned fa fa-thumb-tack"
+                , (attribute "aria-hidden" "true")
+                ]
+                []
           else if App.Graph.member coto.id graph then
-            i [ class "connected fa fa-share-alt"
-              , (attribute "aria-hidden" "true")
-              ] []
+            i
+                [ class "connected fa fa-share-alt"
+                , (attribute "aria-hidden" "true")
+                ]
+                []
           else
-              span [] []
+            span [] []
         ]
 
 
@@ -67,12 +74,16 @@ bodyDiv : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
 bodyDiv context graph config model =
     div [ class "coto-body" ]
         [ (case model.cotoId of
-            Nothing -> span [] []
-            Just cotoId -> cotoToolsSpan context graph config cotoId
+            Nothing ->
+                span [] []
+
+            Just cotoId ->
+                cotoToolsSpan context graph config cotoId
           )
         , if model.asCotonoma then
             div [ class "coto-as-cotonoma" ]
-                [ a [ href ("/cotonomas/" ++ model.cotonomaKey)
+                [ a
+                    [ href ("/cotonomas/" ++ model.cotonomaKey)
                     , onClickWithoutPropagation (config.cotonomaClick model.cotonomaKey)
                     ]
                     [ i [ class "material-icons" ] [ text "exit_to_app" ]
@@ -87,51 +98,60 @@ bodyDiv context graph config model =
 cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
 cotoToolsSpan context graph config cotoId =
     span [ class "coto-tools" ]
-         [ case config.selectCoto of
-             Nothing -> span [] []
-             Just selectCoto ->
-                a [ class "tool-button select-coto"
-                  , title "Select coto"
-                  , onClickWithoutPropagation (selectCoto cotoId)
-                  ]
-                  [ i [ class "material-icons" ]
-                      [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
+        [ case config.selectCoto of
+            Nothing ->
+                span [] []
+
+            Just selectCoto ->
+                a
+                    [ class "tool-button select-coto"
+                    , title "Select coto"
+                    , onClickWithoutPropagation (selectCoto cotoId)
+                    ]
+                    [ i [ class "material-icons" ]
+                        [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
                             text "check_box"
-                        else
+                          else
                             text "check_box_outline_blank"
-                      ]
-                  ]
+                        ]
+                    ]
+        , case config.openTraversal of
+            Nothing ->
+                span [] []
 
-         , case config.openTraversal of
-             Nothing -> span [] []
-             Just openTraversal ->
-                 if App.Graph.member cotoId graph then
-                    a [ class "tool-button traverse-coto"
-                      , title "Open coto traversal"
-                      , onClickWithoutPropagation (openTraversal cotoId)
-                      ]
-                      [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
-                 else
-                   span [] []
+            Just openTraversal ->
+                if App.Graph.member cotoId graph then
+                    a
+                        [ class "tool-button traverse-coto"
+                        , title "Open coto traversal"
+                        , onClickWithoutPropagation (openTraversal cotoId)
+                        ]
+                        [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
+                else
+                    span [] []
+        , case config.openCoto of
+            Nothing ->
+                span [] []
 
-         , case config.openCoto of
-             Nothing -> span [] []
-             Just openCoto ->
-                 a [ class "tool-button open-coto"
-                   , title "Open coto view"
-                   , onClickWithoutPropagation openCoto
-                   ]
-                   [ i [ class "material-icons" ] [ text "settings" ] ]
+            Just openCoto ->
+                a
+                    [ class "tool-button open-coto"
+                    , title "Open coto view"
+                    , onClickWithoutPropagation openCoto
+                    ]
+                    [ i [ class "material-icons" ] [ text "settings" ] ]
+        , case config.deleteConnection of
+            Nothing ->
+                span [] []
 
-         , case config.deleteConnection of
-             Nothing -> span [] []
-             Just deleteConnection ->
-                 a [ class "tool-button delete-connection"
-                   , title "Delete connection"
-                   , onClickWithoutPropagation deleteConnection
-                   ]
-                   [ i [ class "material-icons" ] [ text "close" ] ]
-         ]
+            Just deleteConnection ->
+                a
+                    [ class "tool-button delete-connection"
+                    , title "Delete connection"
+                    , onClickWithoutPropagation deleteConnection
+                    ]
+                    [ i [ class "material-icons" ] [ text "close" ] ]
+        ]
 
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
@@ -139,6 +159,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
     case maybeCotoId of
         Nothing ->
             div [] []
+
         Just cotoId ->
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
