@@ -109,21 +109,21 @@ postContent : String -> Maybe Cotonoma -> Bool -> String -> Model -> ( Model, Po
 postContent clientId maybeCotonoma asCotonoma content model =
     let
         postId = model.postIdCounter + 1
-        newPost =
-            { defaultPost
-            | postId = Just postId
-            , content = content
-            , asCotonoma = asCotonoma
-            , postedIn = maybeCotonoma
-            }
     in
-        ( { model
-          | posts = newPost :: model.posts
-          , postIdCounter = postId
-          , newContent = ""
-          }
-        , newPost
-        )
+        { defaultPost
+        | postId = Just postId
+        , content = content
+        , asCotonoma = asCotonoma
+        , postedIn = maybeCotonoma
+        }
+            |> \newPost ->
+                ( { model
+                  | posts = newPost :: model.posts
+                  , postIdCounter = postId
+                  , newContent = ""
+                  }
+                , newPost
+                )
 
 
 setCotoSaved : Post -> List Post -> List Post
