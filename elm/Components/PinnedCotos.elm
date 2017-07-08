@@ -1,4 +1,4 @@
-module Components.Pinned.View exposing (..)
+module Components.PinnedCotos exposing (..)
 
 import Dict
 import Html exposing (..)

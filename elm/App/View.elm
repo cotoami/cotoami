@@ -16,7 +16,7 @@ import Components.CotoModal
 import Components.CotoSelection.View
 import Components.Timeline.View
 import Components.CotonomaModal.View
-import Components.Pinned.View
+import Components.PinnedCotos
 import Components.ConnectModal
 import Components.Traversals.Model
 import Components.Traversals.View
@@ -123,7 +123,7 @@ defaultColumnDivs model =
             , ( "fadeIn", model.viewInMobile == PinnedView )
             ]
         ]
-        [ Components.Pinned.View.view model.context model.graph
+        [ Components.PinnedCotos.view model.context model.graph
         ]
     ]
 
