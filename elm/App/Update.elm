@@ -257,18 +257,16 @@ update msg model =
             model ! []
 
         OpenCotonomaModal ->
-            let
-                cotonomaModal =
-                    case model.context.session of
-                        Nothing ->
-                            model.cotonomaModal
-                        Just session ->
-                            setDefaultMembers
-                                session
-                                (getOwnerAndMembers model)
-                                model.cotonomaModal
-            in
-                { model | cotonomaModal = { cotonomaModal | open = True } } ! []
+            (case model.context.session of
+                Nothing ->
+                    model.cotonomaModal
+                Just session ->
+                    setDefaultMembers
+                        session
+                        (getOwnerAndMembers model)
+                        model.cotonomaModal
+            )
+                |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
