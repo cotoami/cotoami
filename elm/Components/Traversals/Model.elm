@@ -118,8 +118,7 @@ countPages model =
 
 inActivePage : Int -> Model -> Bool
 inActivePage traversalIndex model =
-    let
-        startIndex = model.activePageIndex * model.pageSize
-    in
-        startIndex <= traversalIndex
-            && traversalIndex < startIndex + model.pageSize
+    model.activePageIndex * model.pageSize
+        |> \startIndex ->
+            startIndex <= traversalIndex &&
+                traversalIndex < startIndex + model.pageSize
