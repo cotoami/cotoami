@@ -60,12 +60,10 @@ update msg model =
                 )
 
         SessionFetched (Ok session) ->
-            let
-                context = model.context
-            in
-                { model
-                | context = { context | session = Just session }
-                } ! []
+            { model
+            | context = model.context
+                |> \context -> { context | session = Just session }
+            } ! []
 
         SessionFetched (Err error) ->
             case error of
