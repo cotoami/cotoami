@@ -411,18 +411,15 @@ update msg model =
 
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =
-    let
-        confirmModal = model.confirmModal
-    in
-        { model
-        | confirmModal =
-            { confirmModal
+    { model
+    | confirmModal = model.confirmModal
+        |> \modal ->
+            { modal
             | open = True
             , message = message
             , msgOnConfirm = msgOnConfirm
             }
-        }
-
+    }
 
 clickCoto : CotoId -> Model -> Model
 clickCoto cotoId model =
