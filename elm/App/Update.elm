@@ -163,46 +163,47 @@ update msg model =
                     { model | profileModal = modal } ! [ Cmd.map ProfileModalMsg cmd ]
 
         CotoModalMsg subMsg ->
-            let
-                ( cotoModal, cmd ) = Components.CotoModal.update subMsg model.cotoModal
-                newModel = { model | cotoModal = cotoModal }
-                confirmModal = newModel.confirmModal
-                timeline = newModel.timeline
-                posts = timeline.posts
-            in
-                case subMsg of
-                    Components.CotoModal.ConfirmDelete ->
-                        confirm
-                            "Are you sure you want to delete this coto?"
-                            (case cotoModal.coto of
-                                Nothing -> App.Messages.NoOp
-                                Just coto -> CotoModalMsg (Components.CotoModal.Delete coto)
-                            )
-                            newModel
-                        ! [ Cmd.map CotoModalMsg cmd ]
-
-                    Components.CotoModal.Delete coto  ->
-                        { newModel
-                        | timeline =
-                            { timeline
-                            | posts = posts |> List.map
-                                (\post ->
-                                    if isSelfOrPostedIn coto post then
-                                        { post | beingDeleted = True }
-                                    else
-                                        post
+            Components.CotoModal.update subMsg model.cotoModal
+                |> \( modal, cmd ) -> { model | cotoModal = modal } ! [ Cmd.map CotoModalMsg cmd ]
+                |> (\( model, cmd ) ->
+                    case subMsg of
+                        Components.CotoModal.ConfirmDelete ->
+                            confirm
+                                "Are you sure you want to delete this coto?"
+                                (case model.cotoModal.coto of
+                                    Nothing ->
+                                        App.Messages.NoOp
+                                    Just coto ->
+                                        CotoModalMsg (Components.CotoModal.Delete coto)
                                 )
-                            }
-                        } !
-                            [ Cmd.map CotoModalMsg cmd
-                            , deleteCoto coto.id
-                            , Process.sleep (1 * Time.second)
-                              |> Task.andThen (\_ -> Task.succeed ())
-                              |> Task.perform (\_ -> DeleteCoto coto)
-                            ]
+                                model
+                            ! [ cmd ]
 
-                    _ ->
-                        newModel ! [ Cmd.map CotoModalMsg cmd ]
+                        Components.CotoModal.Delete coto  ->
+                            { model
+                            | timeline = model.timeline
+                                |> (\timeline ->
+                                    { timeline
+                                    | posts = timeline.posts |> List.map
+                                        (\post ->
+                                            if isSelfOrPostedIn coto post then
+                                                { post | beingDeleted = True }
+                                            else
+                                                post
+                                        )
+                                    }
+                                )
+                            } !
+                                [ cmd
+                                , deleteCoto coto.id
+                                , Process.sleep (1 * Time.second)
+                                  |> Task.andThen (\_ -> Task.succeed ())
+                                  |> Task.perform (\_ -> DeleteCoto coto)
+                                ]
+
+                        _ ->
+                            ( model, cmd )
+                )
 
         TimelineMsg subMsg ->
             let
