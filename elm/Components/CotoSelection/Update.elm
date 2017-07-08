@@ -117,15 +117,15 @@ update msg model =
 
 pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
-    let
-        cotos = model.context.selection |> List.filterMap (\cotoId -> getCoto cotoId model)
-        graph = model.graph |> addRootConnections cotos
-    in
-        { model
-        | graph = graph
-        , context = clearSelection model.context
-        , viewInMobile = PinnedView
-        }
+    model.context.selection
+        |> List.filterMap (\cotoId -> getCoto cotoId model)
+        |> \cotos -> model.graph |> addRootConnections cotos
+        |> \graph ->
+            { model
+            | graph = graph
+            , context = clearSelection model.context
+            , viewInMobile = PinnedView
+            }
 
 
 doDeselect : Model -> Model
