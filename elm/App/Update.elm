@@ -437,17 +437,10 @@ clickCoto cotoId model =
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =
-    let
-        cotoModal = model.cotoModal
-    in
-        { model
-        | cotoModal =
-            { cotoModal
-            | open = True
-            , coto =  maybeCoto
-            }
-        }
-
+    { model
+    | cotoModal = model.cotoModal
+        |> \modal -> { modal | open = True , coto =  maybeCoto }
+    }
 
 applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
 applyPresenceDiff diff presences =
