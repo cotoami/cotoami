@@ -45,20 +45,19 @@ update msg model =
             model ! []
 
         OnLocationChange location ->
-            let
-                newRoute = parseLocation location
-                newModel = { model | route = newRoute }
-            in
-                case newRoute of
-                    HomeRoute ->
-                        loadHome model
+            parseLocation location
+                |> \route -> ( route, { model | route = route } )
+                |> (\( route, model ) ->
+                    case route of
+                        HomeRoute ->
+                            loadHome model
 
-                    CotonomaRoute key ->
-                        loadCotonoma key newModel
+                        CotonomaRoute key ->
+                            loadCotonoma key model
 
-                    NotFoundRoute ->
-                        ( newModel, Cmd.none )
-
+                        NotFoundRoute ->
+                            ( model, Cmd.none )
+                )
 
         SessionFetched (Ok session) ->
             let
