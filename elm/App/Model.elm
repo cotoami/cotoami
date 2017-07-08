@@ -98,10 +98,11 @@ getSelectedCoto model =
 
 openSigninModal : Model -> Model
 openSigninModal model =
-    let
-        signinModal = model.signinModal
-    in
-        { model | signinModal = { signinModal | open = True } }
+    { model
+    | signinModal =
+        model.signinModal
+            |> \modal -> { modal | open = True }
+    }
 
 
 isPresent : Int -> MemberConnCounts -> Bool
@@ -145,14 +146,10 @@ openTraversal description cotoId model =
 
 connect : Coto -> List Coto -> Model -> Model
 connect startCoto endCotos model =
-    let
-        context = model.context
-        newModel =
-            { model
-            | graph = model.graph |> addConnections startCoto endCotos
-            , context = { context | selection = [] }
-            , connectMode = False
-            , connectModalOpen = False
-            }
-    in
-        openTraversal Components.Traversals.Model.Connected startCoto.id newModel
+    { model
+    | graph = model.graph |> addConnections startCoto endCotos
+    , context = model.context |> \context -> { context | selection = [] }
+    , connectMode = False
+    , connectModalOpen = False
+    }
+        |> openTraversal Components.Traversals.Model.Connected startCoto.id
