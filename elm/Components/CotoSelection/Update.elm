@@ -4,6 +4,7 @@ import Set
 import Task
 import Process
 import Time
+import Maybe exposing (andThen, withDefault)
 import App.Types exposing
     ( CotoId
     , Context
@@ -97,22 +98,18 @@ update msg model =
                         ]
 
         GroupingCotoPosted (Ok response) ->
-            let
-                timeline = model.timeline
-                newModel =
-                    { model
-                    | timeline = { timeline | posts = setCotoSaved response timeline.posts }
-                    }
-                maybeStartCoto =
-                    case response.cotoId of
-                        Nothing -> Nothing
-                        Just cotoId -> getCoto cotoId newModel
-                endCotos = getSelectedCoto newModel
-            in
-                case maybeStartCoto of
-                    Nothing -> newModel ! []
-                    Just startCoto ->
-                        connect startCoto endCotos newModel ! []
+            { model
+            | timeline = model.timeline
+                |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
+            }
+                |> (\model ->
+                    response.cotoId
+                        |> andThen (\cotoId -> getCoto cotoId model)
+                        |> andThen (\groupingCoto ->
+                            Just <| connect groupingCoto (getSelectedCoto model) model
+                        )
+                        |> \maybeModel -> withDefault model maybeModel ! []
+                )
 
         GroupingCotoPosted (Err _) ->
             model ! []
