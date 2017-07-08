@@ -47,15 +47,12 @@ fetchAmishi msg email =
 
 fetchCotonoma : CotonomaKey -> Cmd Msg
 fetchCotonoma key =
-    let
-        url = "/api/cotonomas/" ++ key ++ "/cotos"
-    in
-        Http.send CotonomaFetched
-            <| Http.get url
-            <| Decode.map3 (,,)
-                (Decode.field "cotonoma" decodeCotonoma)
-                (Decode.field "members" (Decode.list decodeAmishi))
-                (Decode.field "cotos" (Decode.list decodePost))
+    Http.send CotonomaFetched
+        <| Http.get ("/api/cotonomas/" ++ key ++ "/cotos")
+        <| Decode.map3 (,,)
+            (Decode.field "cotonoma" decodeCotonoma)
+            (Decode.field "members" (Decode.list decodeAmishi))
+            (Decode.field "cotos" (Decode.list decodePost))
 
 
 deleteCoto : Int -> Cmd Msg
