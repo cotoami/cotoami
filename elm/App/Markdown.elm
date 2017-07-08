@@ -10,17 +10,15 @@ import Markdown.Inline as Inline exposing (Inline(..))
 markdown : String -> Html msg
 markdown markdownText =
     markdownText
-    |> Block.parse (Just markdownOptions)
-    |> List.map (customHtmlBlock customHtmlInline)
-    |> List.concat
-    |> div [ class "content" ]
+        |> Block.parse (Just markdownOptions)
+        |> List.map (customHtmlBlock customHtmlInline)
+        |> List.concat
+        |> div [ class "content" ]
 
 
 markdownOptions : Markdown.Config.Options
 markdownOptions =
-    { defaultOptions
-    | softAsHardLineBreak = True
-    }
+    { defaultOptions | softAsHardLineBreak = True }
 
 
 customHtmlBlock : (Inline i -> Html msg) -> Block b i -> List (Html msg)
@@ -37,11 +35,13 @@ customHtmlInline : Inline i -> Html msg
 customHtmlInline inline =
     case inline of
         Link url maybeTitle inlines ->
-            a [ href url
-              , title (Maybe.withDefault "" maybeTitle)
-              , target "_blank"
-              , rel "noopener noreferrer"
-              ] (List.map customHtmlInline inlines)
+            a
+                [ href url
+                , title (Maybe.withDefault "" maybeTitle)
+                , target "_blank"
+                , rel "noopener noreferrer"
+                ]
+                (List.map customHtmlInline inlines)
 
         _ ->
             Inline.defaultHtml (Just customHtmlInline) inline

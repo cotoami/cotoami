@@ -13,8 +13,11 @@ view : Model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
         [ case model.context.cotonoma of
-            Nothing -> div [] []
-            Just cotonoma -> cotonomaNav model.memberPresences model.members cotonoma
+            Nothing ->
+                div [] []
+
+            Just cotonoma ->
+                cotonomaNav model.memberPresences model.members cotonoma
         , if not (List.isEmpty model.subCotonomas) then
             subCotonomasNav model.subCotonomas
           else
@@ -29,7 +32,9 @@ cotonomaNav memberPresences members cotonoma =
     div [ class "members" ]
         [ div [ class "navigation-title" ] [ text "Members" ]
         , case cotonoma.owner of
-            Nothing -> div [] []
+            Nothing ->
+                div [] []
+
             Just owner ->
                 div
                     [ classList

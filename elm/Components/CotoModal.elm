@@ -46,8 +46,11 @@ view model =
         "coto-modal"
         (if model.open then
             case model.coto of
-                Nothing -> Nothing
-                Just coto -> Just (modalConfig coto model)
+                Nothing ->
+                    Nothing
+
+                Just coto ->
+                    Just (modalConfig coto model)
          else
             Nothing
         )
@@ -56,12 +59,17 @@ view model =
 modalConfig : Coto -> Model -> Modal.Config Msg
 modalConfig coto model =
     { closeMessage = Close
-    , title = if coto.asCotonoma then "Cotonoma" else "Coto"
-    , content = div []
-        [ div [ class "coto-content" ]
-            [ App.Markdown.markdown coto.content
+    , title =
+        if coto.asCotonoma then
+            "Cotonoma"
+        else
+            "Coto"
+    , content =
+        div []
+            [ div [ class "coto-content" ]
+                [ App.Markdown.markdown coto.content
+                ]
             ]
-        ]
     , buttons =
         [ button
             [ class "button"

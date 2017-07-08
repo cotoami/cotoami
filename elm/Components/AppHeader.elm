@@ -5,8 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils exposing (onClickWithoutPropagation)
 import App.Model exposing (Model, isNavigationEmpty)
-import App.Messages exposing
-    (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
+import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
 
 view : Model -> Html Msg
@@ -15,20 +14,22 @@ view model =
         [ div [ class "location" ]
             (case model.context.cotonoma of
                 Nothing ->
-                  [ i [ class "at-home material-icons" ] [ text "home" ]
-                  , navigationToggle model
-                  ]
+                    [ i [ class "at-home material-icons" ] [ text "home" ]
+                    , navigationToggle model
+                    ]
+
                 Just cotonoma ->
-                  [ a [ class "to-home", onClickWithoutPropagation HomeClick, href "/" ]
-                      [ i [ class "material-icons" ] [ text "home" ] ]
-                  , i [ class "arrow material-icons" ] [ text "navigate_next" ]
-                  , span [ class "cotonoma-name" ] [ text cotonoma.name ]
-                  , navigationToggle model
-                  ]
+                    [ a [ class "to-home", onClickWithoutPropagation HomeClick, href "/" ]
+                        [ i [ class "material-icons" ] [ text "home" ] ]
+                    , i [ class "arrow material-icons" ] [ text "navigate_next" ]
+                    , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+                    , navigationToggle model
+                    ]
             )
         , (case model.context.session of
             Nothing ->
                 span [] []
+
             Just session ->
                 a
                     [ class "tool-button add-cotonoma"
@@ -40,12 +41,14 @@ view model =
         , div [ class "user" ]
             (case model.context.session of
                 Nothing ->
-                    [ a [ class "tool-button"
+                    [ a
+                        [ class "tool-button"
                         , title "Sign in"
                         , onClick OpenSigninModal
                         ]
                         [ i [ class "material-icons" ] [ text "perm_identity" ] ]
                     ]
+
                 Just session ->
                     [ a [ title "Profile", onClick OpenProfileModal ]
                         [ img [ class "avatar", src session.avatarUrl ] [] ]
@@ -67,9 +70,9 @@ navigationToggle model =
         [ i [ class "material-icons" ]
             [ text
                 (if model.navigationOpen then
-                  "arrow_drop_up"
-                else
-                  "arrow_drop_down"
+                    "arrow_drop_up"
+                 else
+                    "arrow_drop_down"
                 )
             ]
         ]

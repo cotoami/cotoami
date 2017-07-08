@@ -17,31 +17,31 @@ import Components.Traversals.Model exposing (..)
 view : Bool -> Context -> Graph -> Model -> List (Html Msg)
 view activeOnMobile context graph model =
     model.order
-    |> List.filterMap
-        (\cotoId ->
-            case Dict.get cotoId model.traversals of
-                Nothing -> Nothing
-                Just traversal ->
-                    traversal |> maybeTraversalDiv context graph
-        )
-    |> List.indexedMap
-        (\index traversalDiv ->
-            let
-                visibleOnMobile = activeOnMobile && (inActivePage index model)
-            in
-                div [ classList
-                        [ ( "main-column", True )
-                        , ( "main-traversal", True )
-                        , ( "main-traversal-" ++ (toString index), True )
-                        , ( "activeOnMobile", visibleOnMobile )
-                        , ( "animated", visibleOnMobile )
-                        , ( "fadeIn", visibleOnMobile )
-                        , ( "not-in-active-page", not (inActivePage index model) )
+        |> List.filterMap
+            (\cotoId ->
+                case Dict.get cotoId model.traversals of
+                    Nothing -> Nothing
+                    Just traversal ->
+                        traversal |> maybeTraversalDiv context graph
+            )
+        |> List.indexedMap
+            (\index traversalDiv ->
+                let
+                    visibleOnMobile = activeOnMobile && (inActivePage index model)
+                in
+                    div [ classList
+                            [ ( "main-column", True )
+                            , ( "main-traversal", True )
+                            , ( "main-traversal-" ++ (toString index), True )
+                            , ( "activeOnMobile", visibleOnMobile )
+                            , ( "animated", visibleOnMobile )
+                            , ( "fadeIn", visibleOnMobile )
+                            , ( "not-in-active-page", not (inActivePage index model) )
+                            ]
                         ]
-                    ]
-                    [ traversalDiv ]
-        )
-    |> (::) (traversalsPaginationDiv model)
+                        [ traversalDiv ]
+            )
+        |> (::) (traversalsPaginationDiv model)
 
 
 maybeTraversalDiv : Context -> Graph -> Traversal -> Maybe (Html Msg)
@@ -213,19 +213,19 @@ traversalsPaginationDiv : Model -> Html Msg
 traversalsPaginationDiv model =
     if (Components.Traversals.Model.countPages model) > 1 then
         model.order
-        |> List.indexedMap
-            (\index cotoId ->
-                div [ class "button-container" ]
-                    [ button
-                        [ class "button"
-                        , disabled (model.activePageIndex == index)
-                        , onClickWithoutPropagation (ChangePage index)
+            |> List.indexedMap
+                (\index cotoId ->
+                    div [ class "button-container" ]
+                        [ button
+                            [ class "button"
+                            , disabled (model.activePageIndex == index)
+                            , onClickWithoutPropagation (ChangePage index)
+                            ]
+                            [ text (toString (index + 1)) ]
                         ]
-                        [ text (toString (index + 1)) ]
-                    ]
-            )
-        |> div [ id "traversals-pagination"]
-      else
+                )
+            |> div [ id "traversals-pagination"]
+    else
         div [] []
 
 

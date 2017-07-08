@@ -33,16 +33,13 @@ initTraversal description start =
 
 doTraverse : Traverse -> Traversal
 doTraverse traverse =
-    let
-        traversal = traverse.traversal
-        stepsCount = List.length traversal.steps
-    in
-        { traversal
-        | steps =
-            traversal.steps
-            |> List.drop (stepsCount - (traverse.startIndex + 1))
-            |> (::) traverse.endCotoId
-        }
+    traverse.traversal
+        |> \traversal ->
+            { traversal
+            | steps = traversal.steps
+                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
+                |> (::) traverse.endCotoId
+            }
 
 
 traversed : Int -> CotoId -> Traversal -> Bool
@@ -121,8 +118,7 @@ countPages model =
 
 inActivePage : Int -> Model -> Bool
 inActivePage traversalIndex model =
-    let
-        startIndex = model.activePageIndex * model.pageSize
-    in
-        startIndex <= traversalIndex
-            && traversalIndex < startIndex + model.pageSize
+    model.activePageIndex * model.pageSize
+        |> \startIndex ->
+            startIndex <= traversalIndex &&
+                traversalIndex < startIndex + model.pageSize

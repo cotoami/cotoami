@@ -44,40 +44,40 @@ type alias Model =
 
 initModel : Int -> Route -> Model
 initModel seed route =
-    let
-        ( newUuid, newSeed ) = step Uuid.uuidGenerator (initialSeed seed)
-    in
-        { route = route
-        , context =
-            { clientId = Uuid.toString newUuid
-            , session = Nothing
-            , cotonoma = Nothing
-            , focus = Nothing
-            , selection = []
-            , deselecting = Set.empty
-            , ctrlDown = False
-            }
-        , viewInMobile = TimelineView
-        , navigationToggled = False
-        , navigationOpen = False
-        , members = []
-        , memberPresences = Dict.empty
-        , confirmModal = Components.ConfirmModal.Model.initModel
-        , signinModal = Components.SigninModal.initModel
-        , profileModal = Components.ProfileModal.initModel
-        , cotoModal = Components.CotoModal.initModel
-        , recentCotonomas = []
-        , cotonomasLoading = False
-        , subCotonomas = []
-        , timeline = Components.Timeline.Model.initModel
-        , cotoSelectionTitle = ""
-        , connectMode = False
-        , connectingTo = Nothing
-        , connectModalOpen = False
-        , cotonomaModal = Components.CotonomaModal.Model.initModel
-        , graph = initGraph
-        , traversals = Components.Traversals.Model.initModel
+    { route = route
+    , context =
+        { clientId =
+            initialSeed seed
+                |> step Uuid.uuidGenerator
+                |> \( uuid, _ ) -> Uuid.toString uuid
+        , session = Nothing
+        , cotonoma = Nothing
+        , focus = Nothing
+        , selection = []
+        , deselecting = Set.empty
+        , ctrlDown = False
         }
+    , viewInMobile = TimelineView
+    , navigationToggled = False
+    , navigationOpen = False
+    , members = []
+    , memberPresences = Dict.empty
+    , confirmModal = Components.ConfirmModal.Model.initModel
+    , signinModal = Components.SigninModal.initModel
+    , profileModal = Components.ProfileModal.initModel
+    , cotoModal = Components.CotoModal.initModel
+    , recentCotonomas = []
+    , cotonomasLoading = False
+    , subCotonomas = []
+    , timeline = Components.Timeline.Model.initModel
+    , cotoSelectionTitle = ""
+    , connectMode = False
+    , connectingTo = Nothing
+    , connectModalOpen = False
+    , cotonomaModal = Components.CotonomaModal.Model.initModel
+    , graph = initGraph
+    , traversals = Components.Traversals.Model.initModel
+    }
 
 
 getCoto : Int -> Model -> Maybe Coto
@@ -98,10 +98,11 @@ getSelectedCoto model =
 
 openSigninModal : Model -> Model
 openSigninModal model =
-    let
-        signinModal = model.signinModal
-    in
-        { model | signinModal = { signinModal | open = True } }
+    { model
+    | signinModal =
+        model.signinModal
+            |> \modal -> { modal | open = True }
+    }
 
 
 isPresent : Int -> MemberConnCounts -> Bool
@@ -145,14 +146,10 @@ openTraversal description cotoId model =
 
 connect : Coto -> List Coto -> Model -> Model
 connect startCoto endCotos model =
-    let
-        context = model.context
-        newModel =
-            { model
-            | graph = model.graph |> addConnections startCoto endCotos
-            , context = { context | selection = [] }
-            , connectMode = False
-            , connectModalOpen = False
-            }
-    in
-        openTraversal Components.Traversals.Model.Connected startCoto.id newModel
+    { model
+    | graph = model.graph |> addConnections startCoto endCotos
+    , context = model.context |> \context -> { context | selection = [] }
+    , connectMode = False
+    , connectModalOpen = False
+    }
+        |> openTraversal Components.Traversals.Model.Connected startCoto.id
