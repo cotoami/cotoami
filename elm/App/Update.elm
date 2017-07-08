@@ -105,21 +105,22 @@ update msg model =
             changeLocationToHome model
 
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
-            Components.Timeline.Update.update
+            (Components.Timeline.Update.update
                 model.context
                 (Components.Timeline.Messages.PostsFetched (Ok posts))
                 model.timeline
-                    |> \( timeline, cmd ) ->
-                        { model
-                        | context = model.context
-                            |> \context -> { context | cotonoma = Just cotonoma }
-                        , members = members
-                        , navigationOpen = False
-                        , timeline = timeline
-                        } !
-                            [ Cmd.map TimelineMsg cmd
-                            , fetchSubCotonomas (Just cotonoma)
-                            ]
+            )
+                |> \( timeline, cmd ) ->
+                    { model
+                    | context = model.context
+                        |> \context -> { context | cotonoma = Just cotonoma }
+                    , members = members
+                    , navigationOpen = False
+                    , timeline = timeline
+                    } !
+                        [ Cmd.map TimelineMsg cmd
+                        , fetchSubCotonomas (Just cotonoma)
+                        ]
 
         CotonomaFetched (Err _) ->
             model ! []
@@ -272,31 +273,29 @@ update msg model =
             case model.context.session of
                 Nothing -> model ! []
                 Just session ->
-                    let
-                        ( cotonomaModal, timeline, cmd ) =
-                            Components.CotonomaModal.Update.update
-                                subMsg
-                                session
-                                model.context
-                                model.timeline
-                                model.cotonomaModal
-                        newModel =
+                    (Components.CotonomaModal.Update.update
+                        subMsg
+                        session
+                        model.context
+                        model.timeline
+                        model.cotonomaModal
+                    )
+                        |> \( modal, timeline, cmd ) ->
                             { model
-                            | cotonomaModal = cotonomaModal
+                            | cotonomaModal = modal
                             , timeline = timeline
-                            }
-                        commands = [ Cmd.map CotonomaModalMsg cmd ]
-                    in
-                        case subMsg of
-                            Components.CotonomaModal.Messages.Posted (Ok _) ->
-                                { newModel | cotonomasLoading = True }
-                                    ! List.append
-                                        [ fetchRecentCotonomas
+                            } ! [ Cmd.map CotonomaModalMsg cmd ]
+                        |> (\( model, cmd ) ->
+                            case subMsg of
+                                Components.CotonomaModal.Messages.Posted (Ok _) ->
+                                    { model | cotonomasLoading = True } !
+                                        [ cmd
+                                        , fetchRecentCotonomas
                                         , fetchSubCotonomas model.context.cotonoma
                                         ]
-                                        commands
-                            _ ->
-                                newModel ! commands
+                                _ ->
+                                    ( model, cmd )
+                        )
 
         CotoClick cotoId ->
             clickCoto cotoId model ! []
