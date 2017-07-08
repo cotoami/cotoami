@@ -39,11 +39,15 @@ connectionsDiv divClass connections context graph =
         (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
-                    Nothing -> Nothing  -- Missing the end node
-                    Just coto -> Just
-                        ( conn.key
-                        , connectionDiv context graph coto
-                        )
+                    Nothing ->
+                        Nothing
+
+                    -- Missing the end node
+                    Just coto ->
+                        Just
+                            ( conn.key
+                            , connectionDiv context graph coto
+                            )
             )
             connections
         )
