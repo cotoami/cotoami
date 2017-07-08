@@ -95,14 +95,12 @@ handlePushedPost clientId payload model =
 
 post : String -> Maybe Cotonoma -> Model -> ( Model, Cmd Msg )
 post clientId maybeCotonoma model =
-    let
-        ( newModel, newPost ) =
-            postContent clientId maybeCotonoma False model.newContent model
-    in
-        newModel !
-            [ scrollToBottom NoOp
-            , Components.Timeline.Commands.post clientId maybeCotonoma Posted newPost
-            ]
+    postContent clientId maybeCotonoma False model.newContent model
+        |> \( model, newPost ) ->
+            model !
+                [ scrollToBottom NoOp
+                , Components.Timeline.Commands.post clientId maybeCotonoma Posted newPost
+                ]
 
 
 postContent : String -> Maybe Cotonoma -> Bool -> String -> Model -> ( Model, Post )
