@@ -178,13 +178,13 @@ doDeleteConnection ( fromId, toId ) connections =
             case maybeChildren of
                 Nothing -> Nothing
                 Just children ->
-                    let
-                        newChildren = List.filter (\conn -> conn.end /= toId) children
-                    in
-                        if List.isEmpty newChildren then
-                            Nothing
-                        else
-                            Just newChildren
+                    children
+                        |> List.filter (\conn -> conn.end /= toId)
+                        |> \children ->
+                            if List.isEmpty children then
+                                Nothing
+                            else
+                                Just children
         )
 
 
