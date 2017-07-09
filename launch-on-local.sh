@@ -22,6 +22,15 @@ echo "# Running postgres..."
 docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=cotoami_dev postgres:alpine
 export COTOAMI_DEV_REPO_HOST=$DOCKER_HOST_IP
 
+# Mail server
+echo
+echo "# Running maildev..."
+docker run -d -p 25:25 -p 8080:80 djfarrelly/maildev:latest
+export COTOAMI_SMTP_SERVER=$DOCKER_HOST_IP
+export COTOAMI_SMTP_PORT=25
+echo
+echo "You can check sign-up/in mails at http://$DOCKER_HOST_IP:8080"
+
 #
 # Get dependencies
 #
