@@ -37,8 +37,9 @@ config :phoenix, :stacktrace_depth, 20
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
   loggers: [Cotoami.Repo.Instrumenter, Ecto.LogEntry],
-  username: "postgres",
-  password: "postgres",
-  database: "cotoami_dev",
-  hostname: "localhost",
+  username: System.get_env("COTOAMI_DEV_REPO_USER") || "postgres",
+  password: System.get_env("COTOAMI_DEV_REPO_PASSWORD") || "postgres",
+  database: System.get_env("COTOAMI_DEV_REPO_DATABASE") || "cotoami_dev",
+  hostname: System.get_env("COTOAMI_DEV_REPO_HOST")  || "localhost",
+  port: (System.get_env("COTOAMI_DEV_REPO_PORT") || "5432") |> String.to_integer,
   pool_size: 10
