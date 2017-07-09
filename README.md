@@ -31,7 +31,9 @@ Cotoami's concept of knowledge generation:
 
 * Node.js 5.0.0 or greater
 * Elixir 1.3.x
+    * https://elixir-lang.org/install.html
 * Phoenix 1.2.x
+    * http://www.phoenixframework.org/docs/installation#section-phoenix
 
 
 ## Run application on localhost
