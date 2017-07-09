@@ -33,7 +33,7 @@ Cotoami's concept of knowledge generation:
 * Elixir 1.3.x
     * https://elixir-lang.org/install.html
 * Phoenix 1.2.x
-    * http://www.phoenixframework.org/docs/installation#section-phoenix
+    * http://www.phoenixframework.org/docs/installation
 
 
 ## Run application on localhost
