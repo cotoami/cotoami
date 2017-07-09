@@ -13,13 +13,16 @@ POSTGRES_ID=$(docker run -d -p 15432:5432 -e POSTGRES_PASSWORD=postgres postgres
 export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
 export COTOAMI_TEST_REPO_PORT=15432
 
+# Make sure to tear down containers
+function tear_down_containers() {
+  echo
+  echo "# Tearing down containers..."
+  docker stop $POSTGRES_ID && docker rm $POSTGRES_ID
+}
+trap tear_down_containers 0 1 2 3 15
+
 # Run tests
 echo
 echo "# Running tests..."
 export MIX_ENV="test"
 mix do deps.get, deps.compile, compile, test
-
-# Stop and remove containers
-echo
-echo "# Tearing down containers..."
-docker stop $POSTGRES_ID && docker rm $POSTGRES_ID
