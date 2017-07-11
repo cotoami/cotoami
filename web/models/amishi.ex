@@ -8,7 +8,7 @@ defmodule Cotoami.Amishi do
   schema "amishis" do
     field :email, :string
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, params \\ %{}) do
