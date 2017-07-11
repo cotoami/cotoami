@@ -28,6 +28,7 @@ defmodule Cotoami.Auth do
   def get_amishi_from_session(conn) do
     case get_session(conn, @session_key_amishi_id) do
       nil -> nil
+      old_id when is_integer(old_id) -> nil
       amishi_id -> AmishiService.get(amishi_id)
     end
   end
