@@ -5,7 +5,7 @@ defmodule Cotoami.Mixfile do
     [
       app: :cotoami,
       version: "0.0.1",
-      elixir: "~> 1.3",
+      elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       build_embedded: Mix.env == :prod,
@@ -21,23 +21,8 @@ defmodule Cotoami.Mixfile do
   def application do
     [
       mod: {Cotoami, []},
-      applications: apps_from_deps ++ [
-        :logger,
-        :poison
-      ]
+      extra_applications: [:logger, :poison]
     ]
-  end
-  
-  defp apps_from_deps do
-    Enum.filter(deps, fn
-      {_, _}       -> true
-      {_, _, opts} ->
-        case opts[:only] do
-          nil -> true
-          env -> env |> List.wrap |> Enum.member?(:prod)
-        end
-    end)
-    |> Enum.map(&(elem(&1, 0)))
   end
 
   # Specifies which paths to compile per environment.
