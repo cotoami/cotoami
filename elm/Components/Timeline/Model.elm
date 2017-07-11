@@ -17,7 +17,7 @@ import App.Types exposing
 -- https://twitter.com/marubinotto/status/827743441090072577
 type alias Post =
     { postId : Maybe Int
-    , cotoId : Maybe Int
+    , cotoId : Maybe CotoId
     , content : String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
@@ -44,7 +44,7 @@ decodePost : Decode.Decoder Post
 decodePost =
     Decode.map8 Post
         (Decode.maybe (Decode.field "postId" Decode.int))
-        (Decode.maybe (Decode.field "id" Decode.int))
+        (Decode.maybe (Decode.field "id" Decode.string))
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
@@ -134,7 +134,7 @@ setLoading model =
     { model | posts = [], loading = True }
 
 
-updatePost : (Post -> Post) -> Int -> List Post -> List Post
+updatePost : (Post -> Post) -> CotoId -> List Post -> List Post
 updatePost update cotoId posts =
      List.map
          (\post ->

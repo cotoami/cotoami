@@ -27,7 +27,7 @@ encodeCotonoma clientId maybeCotonoma postId members name =
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
                         Nothing -> Encode.null
-                        Just cotonoma -> Encode.int cotonoma.id
+                        Just cotonoma -> Encode.string cotonoma.id
                   )
                 , ( "postId", Encode.int postId )
                 , ( "name", Encode.string name )
@@ -45,7 +45,7 @@ encodeMember member =
     Encode.object
         [ case member of
             SignedUp amishi ->
-                ( "amishi_id", Encode.int amishi.id )
+                ( "amishi_id", Encode.string amishi.id )
             NotYetSignedUp email ->
                 ( "email", Encode.string email )
         ]

@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Modal
-import App.Types exposing (Coto)
+import App.Types exposing (Coto, CotoId)
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Markdown
@@ -24,7 +24,7 @@ view model =
         )
 
 
-modalConfig : Int -> Model -> Modal.Config Msg
+modalConfig : CotoId -> Model -> Modal.Config Msg
 modalConfig startCotoId model =
     let
         maybeStartCoto = getCoto startCotoId model
