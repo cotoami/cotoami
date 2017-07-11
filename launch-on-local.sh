@@ -1,14 +1,24 @@
 #!/bin/bash
 
+#
+# Get dependencies
+#
+
+echo
+echo "# Getting dependencies..."
+mix do deps.get, deps.compile
+npm install
+
+
+#
+# Run backend services as docker containers
+#
+
 if [ -n "$DOCKER_HOST" ]; then
   DOCKER_HOST_IP=$(echo $DOCKER_HOST | sed 's/^.*\/\/\(.*\):[0-9][0-9]*$/\1/g')
 else
   DOCKER_HOST_IP="127.0.0.1"
 fi
-
-#
-# Run backend services as docker containers
-#
 
 # Redis
 echo
@@ -31,14 +41,6 @@ export COTOAMI_SMTP_PORT=25
 echo
 echo "You can check sign-up/in mails at http://$DOCKER_HOST_IP:8080"
 
-#
-# Get dependencies
-#
-
-echo
-echo "# Getting dependencies..."
-mix deps.get
-npm install
 
 #
 # Launch app
