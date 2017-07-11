@@ -3,16 +3,16 @@ defmodule Cotoami.CotoView do
   alias Cotoami.Cotonoma
   alias Cotoami.CotonomaView
   alias Cotoami.AmishiView
-  
+
   def render("index.json", %{rows: rows}) do
     render_many(rows, __MODULE__, "coto.json")
   end
-  
+
   def render("created.json", %{coto: coto, postId: postId}) do
     render_one(coto, __MODULE__, "coto.json")
     |> Map.put("postId", postId)
   end
-  
+
   def render("coto.json", %{coto: coto}) do
     amishi_as_json =
       case coto.amishi do
@@ -23,10 +23,10 @@ defmodule Cotoami.CotoView do
     posted_in_as_json =
       case coto.posted_in do
         %Ecto.Association.NotLoaded{} -> nil
-        posted_in -> 
+        posted_in ->
           render_one(posted_in, CotonomaView, "cotonoma.json")
       end
-    cotonoma_key = 
+    cotonoma_key =
       case coto.cotonoma do
         %Cotonoma{key: key} -> key
         _ -> ""
@@ -38,8 +38,8 @@ defmodule Cotoami.CotoView do
       posted_in: posted_in_as_json,
       as_cotonoma: coto.as_cotonoma,
       cotonoma_key: cotonoma_key,
-      inserted_at: coto.inserted_at |> Ecto.DateTime.to_string(),
-      updated_at: coto.updated_at |> Ecto.DateTime.to_string()
+      inserted_at: coto.inserted_at |> DateTime.to_unix(:microsecond),
+      updated_at: coto.updated_at |> DateTime.to_unix(:microsecond)
     }
   end
 end

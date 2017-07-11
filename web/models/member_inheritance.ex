@@ -5,7 +5,7 @@ defmodule Cotoami.MemberInheritance do
     belongs_to :from, Cotoami.Cotonoma
     belongs_to :to, Cotoami.Cotonoma
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, params \\ %{}) do

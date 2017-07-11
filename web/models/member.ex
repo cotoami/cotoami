@@ -6,7 +6,7 @@ defmodule Cotoami.Member do
     belongs_to :cotonoma, Cotoami.Cotonoma
     belongs_to :amishi, Cotoami.Amishi
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, params \\ %{}) do
@@ -14,9 +14,9 @@ defmodule Cotoami.Member do
     |> cast(params, [:email, :cotonoma_id, :amishi_id])
     |> validate_required([:email, :cotonoma_id])
   end
-  
+
   def for_cotonoma(query, cotonoma_id) do
-    from m in query, 
+    from m in query,
       where: m.cotonoma_id == ^cotonoma_id,
       order_by: [desc: m.inserted_at]
   end
