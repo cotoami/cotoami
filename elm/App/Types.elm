@@ -19,8 +19,11 @@ type ViewInMobile
     | SelectionView
 
 
+type alias AmishiId = String
+
+
 type alias Amishi =
-    { id : Int
+    { id : AmishiId
     , email : String
     , avatarUrl : String
     , displayName : String
@@ -30,7 +33,7 @@ type alias Amishi =
 decodeAmishi : Decode.Decoder Amishi
 decodeAmishi =
     Decode.map4 Amishi
-        (Decode.field "id" Decode.int)
+        (Decode.field "id" Decode.string)
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
@@ -39,7 +42,7 @@ decodeAmishi =
 type alias Session =
     { token : String
     , websocketUrl : String
-    , id : Int
+    , id : AmishiId
     , email : String
     , avatarUrl : String
     , displayName : String
@@ -51,7 +54,7 @@ decodeSession =
     Decode.map6 Session
         (Decode.field "token" Decode.string)
         (Decode.field "websocket_url" Decode.string)
-        (Decode.field "id" Decode.int)
+        (Decode.field "id" Decode.string)
         (Decode.field "email" Decode.string)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
@@ -66,7 +69,7 @@ toAmishi session =
         session.displayName
 
 
-type alias CotoId = Int
+type alias CotoId = String
 
 
 type alias CotonomaKey = String
@@ -82,7 +85,7 @@ type alias Coto =
 
 
 type alias Cotonoma =
-    { id : Int
+    { id : String
     , key : CotonomaKey
     , name : String
     , cotoId : CotoId
@@ -93,10 +96,10 @@ type alias Cotonoma =
 decodeCotonoma : Decode.Decoder Cotonoma
 decodeCotonoma =
     Decode.map5 Cotonoma
-        (Decode.field "id" Decode.int)
+        (Decode.field "id" Decode.string)
         (Decode.field "key" Decode.string)
         (Decode.field "name" Decode.string)
-        (Decode.field "coto_id" Decode.int)
+        (Decode.field "coto_id" Decode.string)
         (Decode.maybe (Decode.field "owner" decodeAmishi))
 
 
@@ -188,4 +191,4 @@ ctrlDown down context =
     { context | ctrlDown = down }
 
 
-type alias MemberConnCounts = Dict.Dict Int Int
+type alias MemberConnCounts = Dict.Dict AmishiId Int

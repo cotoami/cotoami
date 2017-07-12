@@ -48,7 +48,7 @@ encodePost clientId maybeCotonoma post =
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
                         Nothing -> Encode.null
-                        Just cotonoma -> Encode.int cotonoma.id
+                        Just cotonoma -> Encode.string cotonoma.id
                   )
                 , ( "postId"
                   , case post.postId of

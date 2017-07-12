@@ -28,7 +28,7 @@ defmodule Cotoami.CotonomaView do
       name: cotonoma.name,
       coto_id:
         case cotonoma.coto do
-          %Ecto.Association.NotLoaded{} -> -1
+          %Ecto.Association.NotLoaded{} -> ""
           coto -> coto.id
         end,
       owner: owner_as_json,

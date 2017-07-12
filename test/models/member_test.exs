@@ -3,7 +3,7 @@ defmodule Cotoami.MemberTest do
 
   alias Cotoami.Member
 
-  @valid_attrs %{email: "some content", cotonoma_id: 1}
+  @valid_attrs %{email: "some content", cotonoma_id: "uuid"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

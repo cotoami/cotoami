@@ -6,6 +6,7 @@ import Utils
 import App.Types
     exposing
         ( Amishi
+        , CotoId
         , Cotonoma
         , CotonomaKey
         , decodeSession
@@ -34,7 +35,7 @@ fetchSubCotonomas maybeCotonoma =
         Nothing -> Cmd.none
         Just cotonoma ->
             Http.send SubCotonomasFetched
-                <| Http.get ("/api/cotonomas?cotonoma_id=" ++ (toString cotonoma.id))
+                <| Http.get ("/api/cotonomas?cotonoma_id=" ++ cotonoma.id)
                 <| Decode.list decodeCotonoma
 
 
@@ -55,8 +56,8 @@ fetchCotonoma key =
             (Decode.field "cotos" (Decode.list decodePost))
 
 
-deleteCoto : Int -> Cmd Msg
+deleteCoto : CotoId -> Cmd Msg
 deleteCoto cotoId =
     Http.send
         CotoDeleted
-        ("/api/cotos/" ++ toString(cotoId) |> Utils.delete)
+        ("/api/cotos/" ++ cotoId |> Utils.delete)

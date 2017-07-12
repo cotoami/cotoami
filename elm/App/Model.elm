@@ -34,7 +34,7 @@ type alias Model =
     , timeline : Components.Timeline.Model.Model
     , cotoSelectionTitle : String
     , connectMode : Bool
-    , connectingTo : Maybe Int
+    , connectingTo : Maybe CotoId
     , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
@@ -80,7 +80,7 @@ initModel seed route =
     }
 
 
-getCoto : Int -> Model -> Maybe Coto
+getCoto : CotoId -> Model -> Maybe Coto
 getCoto cotoId model =
     case Dict.get cotoId model.graph.cotos of
         Nothing ->
@@ -105,7 +105,7 @@ openSigninModal model =
     }
 
 
-isPresent : Int -> MemberConnCounts -> Bool
+isPresent : AmishiId -> MemberConnCounts -> Bool
 isPresent amishiId memberPresences =
     (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0
 

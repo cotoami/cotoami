@@ -36,7 +36,7 @@ decodePayload bodyName bodyDecoder =
 
 
 -- https://hexdocs.pm/phoenix/Phoenix.Presence.html
--- {3: {metas: [{phx_ref: "5OaVq4AmYbU=", online_at: 1490350876053}]}}
+-- {<amishi-uuid>: {metas: [{phx_ref: "5OaVq4AmYbU=", online_at: 1490350876053}]}}
 type alias PresenceEntry =
     ( String, List ( String, List ( String, Int ) ) )
 
@@ -59,7 +59,7 @@ convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberConnCounts
 convertPresenceEntriesToConnCounts entries =
     (List.map
         (\entry ->
-            ( Tuple.first entry |> String.toInt |> Result.withDefault 0
+            ( Tuple.first entry
             , Tuple.second entry |> List.length
             )
         )
