@@ -7,7 +7,7 @@ defmodule Cotoami.Repo.Migrations.CreateCoto do
       add :content, :text, null: false
       add :amishi_id, references(:amishis, on_delete: :delete_all, type: :uuid), null: false
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create index(:cotos, [:amishi_id])

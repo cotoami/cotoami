@@ -6,7 +6,7 @@ defmodule Cotoami.Repo.Migrations.CreateAmishi do
       add :id, :uuid, primary_key: true
       add :email, :string, null: false
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create unique_index(:amishis, [:email])

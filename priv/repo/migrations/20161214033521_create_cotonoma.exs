@@ -9,7 +9,7 @@ defmodule Cotoami.Repo.Migrations.CreateCotonoma do
       add :coto_id, references(:cotos, on_delete: :delete_all, type: :uuid), null: false
       add :owner_id, references(:amishis, on_delete: :delete_all, type: :uuid), null: false
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create unique_index(:cotonomas, [:key])

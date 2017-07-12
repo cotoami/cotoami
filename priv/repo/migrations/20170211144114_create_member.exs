@@ -8,7 +8,7 @@ defmodule Cotoami.Repo.Migrations.CreateMember do
       add :cotonoma_id, references(:cotonomas, on_delete: :delete_all, type: :uuid), null: false
       add :amishi_id, references(:amishis, on_delete: :delete_all, type: :uuid), null: true
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create index(:members, [:cotonoma_id])
