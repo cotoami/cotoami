@@ -30,3 +30,6 @@ export COTOAMI_SMTP_SERVER=$DOCKER_HOST_IP
 export COTOAMI_SMTP_PORT=25
 echo
 echo "You can check sign-up/in mails at http://$DOCKER_HOST_IP:8080"
+
+# Mail sender
+export COTOAMI_EMAIL_FROM="no-reply@cotoa.me"
