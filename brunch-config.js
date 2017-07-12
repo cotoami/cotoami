@@ -50,7 +50,7 @@ exports.config = {
     watched: [
       "web/static",
       "test/static",
-      "elm"
+      "elm/src"
     ],
 
     // Where to compile files to
@@ -62,7 +62,7 @@ exports.config = {
     elmBrunch: {
       executablePath: process.env.NPM_BIN,
       elmFolder: "elm",
-      mainModules: ["Main.elm"],
+      mainModules: ["src/Main.elm"],
       outputFolder: "../web/static/vendor",
       outputFile: "elm.js",
       makeParameters: ['--debug']
