@@ -6,14 +6,6 @@ else
   DOCKER_HOST_IP="127.0.0.1"
 fi
 
-# Neo4j
-echo
-echo "# Running neo4j..."
-export DOCKER_NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none neo4j:3.2.2)
-export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
-export COTOAMI_NEO4J_PORT=17687
-# Deleted the code to wait for neo4j to be launched because it sometimes stuck on circleci
-
 # Redis
 echo
 echo "# Running redis..."
@@ -29,5 +21,16 @@ export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
 export COTOAMI_TEST_REPO_PORT=15432
 echo "  waiting for postgres to be launched..."
 while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
+  sleep 1s
+done
+
+# Neo4j
+echo
+echo "# Running neo4j..."
+export DOCKER_NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none neo4j:3.2.2)
+export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
+export COTOAMI_NEO4J_PORT=17687
+echo "  waiting for neo4j to be launched..."
+while ! nc -z $DOCKER_HOST_IP $COTOAMI_NEO4J_PORT; do
   sleep 1s
 done
