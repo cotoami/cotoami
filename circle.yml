@@ -51,10 +51,10 @@ dependencies:
     - ./ci/ensure-kubectl.sh
 
     # setup test env
-    - ./ci/load_backend_images.sh
+    - ./ci/load-backend-images.sh
     - ./ci/setup-test-on-circleci.sh:
         timeout: 1800
-    - ./ci/cache_backend_images.sh
+    - ./ci/cache-backend-images.sh
 
 test:
   override:
