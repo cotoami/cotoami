@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 source "${BASH_SOURCE%/*}/setup-test.sh"
 
 docker run --net=host -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t \

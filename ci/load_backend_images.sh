@@ -2,6 +2,8 @@
 
 set -ex
 
+ls -l ~/docker/
+
 function load_image() {
   if [[ -e ~/docker/$1.tar ]]; then
     docker load -i ~/docker/$1.tar;
