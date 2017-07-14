@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 mkdir -p ~/docker
 
 function cache_image() {

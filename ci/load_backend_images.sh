@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 function load_image() {
   if [[ -e ~/docker/$1.tar ]]; then
     docker load -i ~/docker/$1.tar;
