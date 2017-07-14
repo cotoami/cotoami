@@ -54,7 +54,8 @@ dependencies:
 
 test:
   override:
-    - docker run --net=host -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t elixir /bin/sh -c 'cd /build && ./test-app.sh'
+    - ./ci/setup-test.sh
+    - docker run --net=host -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t elixir /bin/sh -c 'cd /build && ./ci/test.sh'
 
 deployment:
   release:
