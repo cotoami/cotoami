@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 source "${BASH_SOURCE%/*}/setup-test.sh" --circleci
 
 # write env vars to file
