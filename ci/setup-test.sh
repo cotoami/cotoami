@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -n "$DOCKER_HOST" ]; then
   DOCKER_HOST_IP=$(echo $DOCKER_HOST | sed 's/^.*\/\/\(.*\):[0-9][0-9]*$/\1/g')
 else
