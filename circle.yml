@@ -63,8 +63,9 @@ test:
         -e COTOAMI_TEST_REPO_PORT \
         -e COTOAMI_NEO4J_HOST \
         -e COTOAMI_NEO4J_PORT \
-        elixir /bin/sh -c 'cd /build && ./ci/test.sh':
-          timeout: 1800
+        elixir /bin/sh -c 'cd /build && ./ci/test.sh'
+      :
+        timeout: 1800
 
 deployment:
   release:
