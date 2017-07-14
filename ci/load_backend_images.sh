@@ -13,3 +13,5 @@ function load_image() {
 load_image "redis"
 load_image "postgres"
 load_image "neo4j"
+
+docker images
