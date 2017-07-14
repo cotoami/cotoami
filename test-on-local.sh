@@ -19,6 +19,9 @@ echo "# Running postgres..."
 POSTGRES_ID=$(docker run -d -p 15432:5432 -e POSTGRES_PASSWORD=postgres postgres:alpine)
 export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
 export COTOAMI_TEST_REPO_PORT=15432
+while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
+  sleep 0.1
+done
 
 # Neo4j
 echo
@@ -26,6 +29,9 @@ echo "# Running neo4j..."
 NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none neo4j:3.2.2)
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
+while ! nc -z $DOCKER_HOST_IP $COTOAMI_NEO4J_PORT; do
+  sleep 0.1
+done
 
 # Make sure to tear down containers
 function tear_down_containers() {
@@ -41,4 +47,9 @@ trap tear_down_containers 0 1 2 3 15
 echo
 echo "# Running tests..."
 export MIX_ENV="test"
-mix do deps.get, deps.compile, compile, test
+if [[ $* == *-s* ]]; then
+  echo "skip getting dependencies..."
+  mix do compile, test
+else
+  mix do deps.get, deps.compile, compile, test
+fi
