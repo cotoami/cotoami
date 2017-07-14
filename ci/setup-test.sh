@@ -34,7 +34,12 @@ fi
 # Neo4j
 echo
 echo "# Running neo4j..."
-export DOCKER_NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none -e NEO4J_dbms_jvm_additional="-XX:ParallelGCThreads=2" -e NEO4J_dbms_threads_worker__count=1 --ulimit=nofile=40000:40000 neo4j:3.2.2)
+export DOCKER_NEO4J_ID=$(docker run -d -p 17687:7687 \
+  -e NEO4J_AUTH=none \
+  -e NEO4J_dbms_jvm_additional="-XX:ParallelGCThreads=2" \
+  -e NEO4J_dbms_threads_worker__count="1" \
+  --ulimit=nofile=40000:40000 \
+  neo4j:3.2.2)
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
 echo "  waiting for neo4j to be launched..."
