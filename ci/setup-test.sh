@@ -11,6 +11,7 @@ export COTOAMI_REDIS_PORT=16379
 
 # PostgreSQL
 if [[ $* == *--circleci* ]]; then
+  echo
   echo "# Use CircleCI's postgres"
 else
   echo
@@ -27,7 +28,6 @@ fi
 # Neo4j
 echo
 echo "# Running neo4j..."
-docker run neo4j:3.2.2 bash -c 'echo Soft limit: $(ulimit -Sn); echo Hard limit: $(ulimit -Hn)'
 export DOCKER_NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none --ulimit=nofile=40000:40000 neo4j:3.2.2)
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
