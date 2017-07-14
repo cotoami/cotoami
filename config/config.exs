@@ -56,6 +56,12 @@ config :cotoami, Cotoami.Mailer,
 config :cotoami, Cotoami.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
 
+config :bolt_sips, Bolt,
+  hostname: System.get_env("COTOAMI_NEO4J_HOST"),
+  port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
+  pool_size: 5,
+  max_overflow: 1
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

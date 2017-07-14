@@ -23,7 +23,7 @@ export COTOAMI_TEST_REPO_PORT=15432
 # Neo4j
 echo
 echo "# Running neo4j..."
-NEO4J_ID=$(docker run -d -p 17687:7687 neo4j:3.2.2)
+NEO4J_ID=$(docker run -d -p 17687:7687 -e NEO4J_AUTH=none neo4j:3.2.2)
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
 
