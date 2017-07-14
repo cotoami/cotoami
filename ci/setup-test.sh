@@ -32,5 +32,13 @@ export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
 echo "  waiting for neo4j to be launched..."
 while ! nc -z $DOCKER_HOST_IP $COTOAMI_NEO4J_PORT; do
-  sleep 1s
+  if [[ $* == *--circleci* ]]; then
+    sleep 10s
+    echo
+    echo "neo4j log {"
+    docker logs $DOCKER_NEO4J_ID
+    echo "}"
+  else
+    sleep 1s
+  fi
 done
