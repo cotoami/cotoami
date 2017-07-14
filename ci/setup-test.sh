@@ -1,6 +1,10 @@
 #!/bin/bash
 
-DOCKER_HOST_IP=$(docker-machine ip default)
+if [ -n "$DOCKER_HOST" ]; then
+  DOCKER_HOST_IP=$(echo $DOCKER_HOST | sed 's/^.*\/\/\(.*\):[0-9][0-9]*$/\1/g')
+else
+  DOCKER_HOST_IP="127.0.0.1"
+fi
 
 # Redis
 echo
