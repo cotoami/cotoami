@@ -50,12 +50,15 @@ dependencies:
     # k8s
     - ./ci/ensure-kubectl.sh
 
-test:
-  override:
+    # setup test env
     - ./ci/load_backend_images.sh
-    - ./ci/test.sh:
+    - ./ci/setup-test-on-circleci.sh:
         timeout: 1800
     - ./ci/cache_backend_images.sh
+
+test:
+  override:
+    - ./ci/test.sh
 
 deployment:
   release:
