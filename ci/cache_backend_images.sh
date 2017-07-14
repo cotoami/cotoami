@@ -13,7 +13,6 @@ function cache_image() {
 docker images
 
 cache_image "redis:alpine" "redis"
-cache_image "postgres:alpine" "postgres"
 cache_image "neo4j:3.2.2" "neo4j"
 
 ls -l ~/docker/

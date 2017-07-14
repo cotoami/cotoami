@@ -14,15 +14,19 @@ export COTOAMI_REDIS_HOST=$DOCKER_HOST_IP
 export COTOAMI_REDIS_PORT=16379
 
 # PostgreSQL
-echo
-echo "# Running postgres..."
-export DOCKER_POSTGRES_ID=$(docker run -d -p 15432:5432 -e POSTGRES_PASSWORD=postgres postgres:alpine)
-export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
-export COTOAMI_TEST_REPO_PORT=15432
-echo "  waiting for postgres to be launched..."
-while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
-  sleep 1s
-done
+if [[ $* == *--circleci* ]]; then
+  echo "# Use CircleCI's postgres"
+else
+  echo
+  echo "# Running postgres..."
+  export DOCKER_POSTGRES_ID=$(docker run -d -p 15432:5432 -e POSTGRES_PASSWORD=postgres postgres:alpine)
+  export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
+  export COTOAMI_TEST_REPO_PORT=15432
+  echo "  waiting for postgres to be launched..."
+  while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
+    sleep 1s
+  done
+fi
 
 # Neo4j
 echo
