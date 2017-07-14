@@ -17,21 +17,21 @@ dependencies:
     # elixir container
     - if [[ -e ~/docker/elixir.tar ]]; then docker load -i ~/docker/elixir.tar; else cd ci && docker build -t elixir .; fi
     - if [[ ! -e ~/docker/elixir.tar ]]; then mkdir -p ~/docker; docker save elixir > ~/docker/elixir.tar; fi
-    
+
     # compile elixir
     - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && mix deps.get --only prod && MIX_ENV=prod mix compile'
-    
+
     # https://github.com/elm-lang/elm-compiler/issues/1473#issuecomment-245704142
     - |
       if [ ! -d ~/sysconfcpus/bin ];
       then
-        git clone https://github.com/obmarg/libsysconfcpus.git; 
+        git clone https://github.com/obmarg/libsysconfcpus.git;
         cd libsysconfcpus;
         ./configure --prefix=$HOME/sysconfcpus;
         make && make install;
         cd ..;
       fi
-      
+
     # install frontend dependencies
     - npm install
 
@@ -43,18 +43,18 @@ dependencies:
         printf "#\041/bin/bash\n\necho \"Running elm-make with sysconfcpus -n 2\"\n\n$HOME/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old \"\$@\"" > $(npm bin)/elm-make
         chmod +x $(npm bin)/elm-make
       fi
-    
+
     # compile assets
     - npm run deploy
     - npm run deploy # https://github.com/madsflensted/elm-brunch/issues/26
     - docker run -v `pwd`:/build -i -t elixir /bin/sh -c 'cd /build && MIX_ENV=prod mix phoenix.digest'
-    
+
     # k8s
     - ./ci/ensure-kubectl.sh
 
 test:
   override:
-    - docker run --net=host -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t elixir /bin/sh -c 'cd /build && ./ci/test.sh'
+    - docker run --net=host -v `pwd`:/build -v /etc/localtime:/etc/localtime:ro -i -t elixir /bin/sh -c 'cd /build && ./test-app.sh'
 
 deployment:
   release:
