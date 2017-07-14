@@ -38,9 +38,8 @@ NEO4J_CONF_DIR=$(cd ${BASH_SOURCE%/*}/neo4j; pwd)
 export DOCKER_NEO4J_ID=$(docker run -d \
   -p 17687:7687 \
   -e NEO4J_AUTH=none \
-  -v $NEO4J_CONF_DIR:/conf \
   --ulimit=nofile=40000:40000 \
-  neo4j:3.2.2)
+  neo4j:3.1.5)
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
 echo "  waiting for neo4j to be launched..."
