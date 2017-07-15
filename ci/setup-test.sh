@@ -11,9 +11,10 @@ fi
 # Redis
 echo
 echo "# Running redis..."
-export DOCKER_REDIS_ID=$(docker run -d -p 16379:6379 redis:alpine)
 export COTOAMI_REDIS_HOST=$DOCKER_HOST_IP
 export COTOAMI_REDIS_PORT=16379
+export DOCKER_REDIS_ID=$(docker run -d -p $COTOAMI_REDIS_PORT:6379 redis:alpine)
+
 
 # PostgreSQL
 if [[ $* == *--circleci* ]]; then
@@ -22,9 +23,12 @@ if [[ $* == *--circleci* ]]; then
 else
   echo
   echo "# Running postgres..."
-  export DOCKER_POSTGRES_ID=$(docker run -d -p 15432:5432 -e POSTGRES_PASSWORD=postgres postgres:alpine)
   export COTOAMI_TEST_REPO_HOST=$DOCKER_HOST_IP
   export COTOAMI_TEST_REPO_PORT=15432
+  export DOCKER_POSTGRES_ID=$(docker run -d \
+    -p $COTOAMI_TEST_REPO_PORT:5432 \
+    -e POSTGRES_PASSWORD=postgres \
+    postgres:alpine)
   echo "  waiting for postgres to be launched..."
   while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
     sleep 1s
@@ -34,15 +38,43 @@ fi
 # Neo4j
 echo
 echo "# Running neo4j..."
-NEO4J_CONF_DIR=$(cd ${BASH_SOURCE%/*}/neo4j; pwd)
-export DOCKER_NEO4J_ID=$(docker run -d \
-  -p 17687:7687 \
-  -e NEO4J_AUTH=none \
-  -v $NEO4J_CONF_DIR:/var/lib/neo4j/conf \
-  --ulimit=nofile=40000:40000 \
-  neo4j:3.2.2)
+NEO4J_VERSION=3.2.2
 export COTOAMI_NEO4J_HOST=$DOCKER_HOST_IP
 export COTOAMI_NEO4J_PORT=17687
+if [[ $* == *--circleci* ]]; then
+  #
+  # For some reason, neo4j:3.2.2 won't run on circleci with the default settings.
+  # The following errors occurred during starting up:
+  #
+  # 1) Error occurred during initialization of VM
+  #    The flag -XX:+UseG1GC can not be combined with -XX:ParallelGCThreads=0
+  #
+  # Fixed this by setting "-XX:ParallelGCThreads=2" and then,
+  #
+  # 2) org.neo4j.graphdb.config.InvalidSettingException:
+  #    Bad value '0' for setting 'dbms.threads.worker_count': minimum allowed value is: 1
+  #    at org.neo4j.kernel.configuration.Settings$DefaultSetting.apply(Settings.java:1304)
+  #
+  # This seems to be caused by the default /var/lib/neo4j/conf/neo4j.conf
+  # in which 'dbms.threads.worker_count' is commented out. Setting this
+  # by NEO4J_xxx env var or a /conf volume won't work. Instead, directly
+  # mounting on the default conf file solves the error.
+  #
+  # ref. http://neo4j.com/docs/operations-manual/current/installation/docker/
+  # ref. https://github.com/neo4j/docker-neo4j/blob/master/src/3.2/docker-entrypoint.sh
+  #
+  NEO4J_CONF="$(cd ${BASH_SOURCE%/*}; pwd)/neo4j.conf"
+  export DOCKER_NEO4J_ID=$(docker run -d \
+    -p $COTOAMI_NEO4J_PORT:7687 \
+    -e NEO4J_AUTH=none \
+    -v $NEO4J_CONF:/var/lib/neo4j/conf/neo4j.conf \
+    neo4j:$NEO4J_VERSION)
+else
+  export DOCKER_NEO4J_ID=$(docker run -d \
+    -p $COTOAMI_NEO4J_PORT:7687 \
+    -e NEO4J_AUTH=none \
+    neo4j:$NEO4J_VERSION)
+fi
 echo "  waiting for neo4j to be launched..."
 while ! nc -z $DOCKER_HOST_IP $COTOAMI_NEO4J_PORT; do
   if [[ $* == *--circleci* ]]; then
