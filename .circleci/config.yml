@@ -17,7 +17,7 @@ jobs:
             MIX_ENV: prod
       - run:
           name: Install node modules
-          command: npm install
+          command: npm install --unsafe-perm
       - run:
           name: Fix elm-make
           command: ./ci/fix-elm-make.sh
