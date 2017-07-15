@@ -59,13 +59,13 @@ jobs:
             - work-dir-{{ .Revision }}
       - run:
           name: Build docker image
-          command: docker build -t cotoami/cotoami:$CIRCLE_BUILD_NUM .
+          command: docker build -t cotoami/cotoami:$CIRCLE_SHA1 .
       - run:
           name: Release docker images
           command: |
             docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-            docker push cotoami/cotoami:$CIRCLE_BUILD_NUM
-            docker tag cotoami/cotoami:$CIRCLE_BUILD_NUM cotoami/cotoami:latest
+            docker push cotoami/cotoami:$CIRCLE_SHA1
+            docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
 workflows:
