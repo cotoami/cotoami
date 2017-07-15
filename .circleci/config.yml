@@ -71,7 +71,7 @@ jobs:
 
   deploy:
     docker:
-      - image: ubuntu:trusty
+      - image: python:3.6
     steps:
       - checkout
       - run:

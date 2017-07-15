@@ -3,11 +3,9 @@
 set -ex
 
 apt-get -y -qq update
-apt-get -y -qq install sudo curl jq gettext python3.4-dev
+apt-get -y -qq install curl jq gettext
 
 # awscli
-curl -O https://bootstrap.pypa.io/get-pip.py
-python3.4 get-pip.py --user
 pip install awscli --upgrade --user
 
 # install kubectl
