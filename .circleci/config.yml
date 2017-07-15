@@ -58,11 +58,18 @@ jobs:
           keys:
             - work-dir-{{ .Revision }}
       - run:
-          name: Test
+          name: Install kubectl
+          command: ./ci/ensure-kubectl.sh
+      - run:
+          name: Build docker image
+          command: docker build -t cotoami/cotoami:$CIRCLE_BUILD_NUM .
+      - run:
+          name: Release docker images
           command: |
-            pwd
-            ls -l
-            docker info
+            docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+            docker push cotoami/cotoami:$CIRCLE_BUILD_NUM
+            docker tag cotoami/cotoami:$CIRCLE_BUILD_NUM cotoami/cotoami:latest
+            docker push cotoami/cotoami:latest
 
 workflows:
   version: 2
