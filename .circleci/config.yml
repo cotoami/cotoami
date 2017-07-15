@@ -8,6 +8,7 @@ jobs:
       - image: neo4j:3.2.2
         environment:
         - NEO4J_AUTH=none
+    working_directory: ~/cotoami
     steps:
       - checkout
       - run:
@@ -42,3 +43,35 @@ jobs:
           command: mix do compile, test
           environment:
             MIX_ENV: test
+      - save_cache:
+          key: work-dir-{{ .BuildNum }}
+          paths:
+            - ~/cotoami
+
+  deploy:
+    docker:
+      - image: docker:17.06
+    working_directory: ~/cotoami
+    steps:
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - work-dir-{{ .BuildNum }}
+      - run:
+          name: Test
+          command: |
+            pwd
+            ls -l
+            docker info
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: neo4j_test_base
