@@ -13,7 +13,7 @@ if [ ! -e ~/.kube ]; then
   mkdir -p ~/.kube;
 fi
 if [ ! -e ~/.kube/kubectl ]; then
-  curl Ss -L https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -o ~/.kube/kubectl
+  curl -Ss -L https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -o ~/.kube/kubectl
   chmod +x ~/.kube/kubectl
 fi
 
