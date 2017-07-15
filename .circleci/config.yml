@@ -18,15 +18,16 @@ jobs:
       - run:
           name: Install node modules
           command: npm install --unsafe-perm
+          # ref. https://github.com/npm/npm/issues/3497
       - run:
           name: Fix elm-make
           command: ./ci/fix-elm-make.sh
       - run:
           name: Compile assets
-          # https://github.com/madsflensted/elm-brunch/issues/26
           command: npm run deploy && npm run deploy && mix phoenix.digest
           environment:
             MIX_ENV: prod
+          # ref. https://github.com/madsflensted/elm-brunch/issues/26
       - run:
           name: Install dockerize
           command: ./ci/install-dockerize.sh
