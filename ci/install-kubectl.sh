@@ -7,6 +7,7 @@ apt-get -y -qq install curl jq gettext
 
 # awscli
 pip install awscli --upgrade --user
+export PATH=~/.local/bin:$PATH
 
 # install kubectl
 if [ ! -e ~/.kube ]; then
