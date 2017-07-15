@@ -28,6 +28,7 @@ jobs:
           command: npm run deploy && npm run deploy && mix phoenix.digest
           environment:
             MIX_ENV: prod
+            LOGGY_STACKS: "1"
           # ref. https://github.com/madsflensted/elm-brunch/issues/26
       - run:
           name: Install dockerize
