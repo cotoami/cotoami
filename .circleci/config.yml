@@ -76,7 +76,9 @@ jobs:
       - checkout
       - run:
           name: Install kubectl
-          command: ./ci/ensure-kubectl.sh
+          command: ./ci/install-kubectl.sh
+          environment:
+            KUBE_VERSION: 1.4.6
       # - deploy:
       #     command: |
       #       ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
