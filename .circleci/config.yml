@@ -69,6 +69,19 @@ jobs:
             docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
+  deploy:
+    docker:
+      - image: ubuntu:trusty
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl
+          command: ./ci/ensure-kubectl.sh
+      # - deploy:
+      #     command: |
+      #       ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
+      #       ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+
 workflows:
   version: 2
   build-and-deploy:
@@ -77,6 +90,12 @@ workflows:
       - release:
           requires:
             - build
+          filters:
+            branches:
+              only: neo4j_test_base
+      - deploy:
+          requires:
+            - release
           filters:
             branches:
               only: neo4j_test_base
