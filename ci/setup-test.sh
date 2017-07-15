@@ -63,11 +63,11 @@ if [[ $* == *--circleci* ]]; then
   # ref. http://neo4j.com/docs/operations-manual/current/installation/docker/
   # ref. https://github.com/neo4j/docker-neo4j/blob/master/src/3.2/docker-entrypoint.sh
   #
-  NEO4J_CONF="$(cd ${BASH_SOURCE%/*}; pwd)/neo4j.conf"
+  NEO4J_CONF_DIR=$(cd ${BASH_SOURCE%/*}/neo4j; pwd)
   export DOCKER_NEO4J_ID=$(docker run -d \
     -p $COTOAMI_NEO4J_PORT:7687 \
     -e NEO4J_AUTH=none \
-    -v $NEO4J_CONF:/var/lib/neo4j/conf/neo4j.conf \
+    -v $NEO4J_CONF_DIR:/var/lib/neo4j/conf \
     neo4j:$NEO4J_VERSION)
 else
   export DOCKER_NEO4J_ID=$(docker run -d \
