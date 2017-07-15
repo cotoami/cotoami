@@ -15,6 +15,6 @@ config :cotoami, Cotoami.Repo,
   username: System.get_env("COTOAMI_TEST_REPO_USER") || "postgres",
   password: System.get_env("COTOAMI_TEST_REPO_PASSWORD") || "postgres",
   database: System.get_env("COTOAMI_TEST_REPO_DATABASE") || "cotoami_test",
-  hostname: System.get_env("COTOAMI_TEST_REPO_HOST")  || "localhost",
+  hostname: System.get_env("COTOAMI_TEST_REPO_HOST") || "localhost",
   port: (System.get_env("COTOAMI_TEST_REPO_PORT") || "5432") |> String.to_integer,
   pool: Ecto.Adapters.SQL.Sandbox

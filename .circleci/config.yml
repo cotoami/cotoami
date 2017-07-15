@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    docker:
+       - image: cotoami/cotoami-elixir:1.4.5
+    steps:
+      - checkout
+      - run:
+          name: Hello
+          command: echo "hello"
+
+  test:
+    docker:
+      - image: cotoami/cotoami-elixir:1.4.5
+      - image: circleci/postgres:9.5-alpine
+      - image: redis:alpine
+      - image: neo4j:3.2.2
+        environment:
+        - NEO4J_AUTH=none
+    steps:
+      - checkout
+      - run:
+          name: Install dockerize
+          command: ./ci/install-dockerize.sh
+      - run:
+          name: Wait for postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Wait for neo4j to be ready
+          command: dockerize -wait tcp://localhost:7687 -timeout 1m
+      - run:
+          name: Test app
+          command: mix do deps.get, deps.compile, compile, test
+          environment:
+            MIX_ENV: test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

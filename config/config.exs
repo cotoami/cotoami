@@ -40,12 +40,12 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
   duration_unit: :microseconds
 
 config :cotoami, Cotoami.Redix,
-  host: System.get_env("COTOAMI_REDIS_HOST"),
+  host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
   port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer
 
 config :cotoami, Cotoami.Mailer,
   adapter: Bamboo.SMTPAdapter,
-  server: System.get_env("COTOAMI_SMTP_SERVER"),
+  server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
   port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer,
   username: System.get_env("COTOAMI_SMTP_USER"),
   password: System.get_env("COTOAMI_SMTP_PASSWORD"),
@@ -57,7 +57,7 @@ config :cotoami, Cotoami.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
 
 config :bolt_sips, Bolt,
-  hostname: System.get_env("COTOAMI_NEO4J_HOST"),
+  hostname: System.get_env("COTOAMI_NEO4J_HOST") || "localhost",
   port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
   pool_size: 5,
   max_overflow: 1
