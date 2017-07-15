@@ -48,7 +48,7 @@ jobs:
           paths:
             - ~/cotoami
 
-  deploy:
+  release:
     docker:
       - image: docker:17.06
     working_directory: ~/cotoami
@@ -57,9 +57,6 @@ jobs:
       - restore_cache:
           keys:
             - work-dir-{{ .Revision }}
-      - run:
-          name: Install kubectl
-          command: ./ci/ensure-kubectl.sh
       - run:
           name: Build docker image
           command: docker build -t cotoami/cotoami:$CIRCLE_BUILD_NUM .
@@ -76,7 +73,7 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - deploy:
+      - release:
           requires:
             - build
           filters:
