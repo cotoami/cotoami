@@ -94,10 +94,10 @@ workflows:
             - build
           filters:
             branches:
-              only: neo4j_test_base
+              only: master
       - deploy:
           requires:
             - release
           filters:
             branches:
-              only: neo4j_test_base
+              only: master
