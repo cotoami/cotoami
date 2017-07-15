@@ -44,7 +44,7 @@ jobs:
           environment:
             MIX_ENV: test
       - save_cache:
-          key: work-dir-{{ .BuildNum }}
+          key: work-dir-{{ .Revision }}
           paths:
             - ~/cotoami
 
@@ -56,7 +56,7 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-            - work-dir-{{ .BuildNum }}
+            - work-dir-{{ .Revision }}
       - run:
           name: Test
           command: |
