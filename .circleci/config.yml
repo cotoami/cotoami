@@ -1,0 +1,103 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cotoami/cotoami-elixir:1.4.5
+      - image: circleci/postgres:9.5-alpine
+      - image: redis:alpine
+      - image: neo4j:3.2.2
+        environment:
+        - NEO4J_AUTH=none
+    working_directory: ~/cotoami
+    steps:
+      - checkout
+      - run:
+          name: Compile app
+          command: mix do deps.get, deps.compile, compile
+          environment:
+            MIX_ENV: prod
+      - run:
+          name: Install node modules
+          command: npm install --unsafe-perm
+          # ref. https://github.com/npm/npm/issues/3497
+      - run:
+          name: Fix elm-make
+          command: ./ci/fix-elm-make.sh
+      - run:
+          name: Compile assets
+          command: npm run deploy && npm run deploy && mix phoenix.digest
+          environment:
+            MIX_ENV: prod
+            LOGGY_STACKS: "1"
+          # ref. https://github.com/madsflensted/elm-brunch/issues/26
+      - run:
+          name: Install dockerize
+          command: ./ci/install-dockerize.sh
+      - run:
+          name: Wait for postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Wait for neo4j to be ready
+          command: dockerize -wait tcp://localhost:7687 -timeout 1m
+      - run:
+          name: Test app
+          command: mix do compile, test
+          environment:
+            MIX_ENV: test
+      - save_cache:
+          key: work-dir-{{ .Revision }}
+          paths:
+            - ~/cotoami
+
+  release:
+    docker:
+      - image: docker:17.06
+    working_directory: ~/cotoami
+    steps:
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - work-dir-{{ .Revision }}
+      - run:
+          name: Build docker image
+          command: docker build -t cotoami/cotoami:$CIRCLE_SHA1 .
+      - run:
+          name: Release docker images
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push cotoami/cotoami:$CIRCLE_SHA1
+            docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
+            docker push cotoami/cotoami:latest
+
+  deploy:
+    docker:
+      - image: python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl
+          command: ./ci/install-kubectl.sh
+          environment:
+            KUBE_VERSION: 1.4.6
+      - deploy:
+          command: |
+            ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
+            ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - release
+          filters:
+            branches:
+              only: master

@@ -50,7 +50,8 @@ defmodule Cotoami.Mixfile do
       {:prometheus_process_collector, "~> 1.0"},
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
-      {:httpotion, "~> 3.0.2"}
+      {:httpotion, "~> 3.0.2"},
+      {:bolt_sips, "~> 0.3"}
     ]
   end
 
