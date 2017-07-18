@@ -5,7 +5,7 @@ import Task
 import Process
 import Time
 import Http exposing (Error(..))
-import Keys exposing (ctrl, meta, enter)
+import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
 import App.Types exposing (..)
 import App.Graph exposing (..)
@@ -127,6 +127,8 @@ update msg model =
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
                 { model | context = ctrlDown True model.context } ! []
+            else if key == escape.keyCode then
+                (closeModal model) ! []
             else
                 model ! []
 
@@ -526,3 +528,24 @@ loadCotonoma key model =
         [ fetchRecentCotonomas
         , fetchCotonoma key
         ]
+
+closeOpenable openable =
+    { openable | open = False }
+
+closeModal : Model -> Model
+closeModal model =
+    if model.confirmModal.open then
+       { model | confirmModal = model.confirmModal |> closeOpenable }
+    else if model.signinModal.open && not model.signinModal.requestDone then
+       { model | signinModal = model.signinModal |> closeOpenable }
+    else if model.profileModal.open then
+       { model | profileModal = model.profileModal |> closeOpenable }
+    else if model.cotoModal.open then
+       { model | cotoModal = model.cotoModal |> closeOpenable }
+    else if model.cotonomaModal.open then
+       { model | cotonomaModal = model.cotonomaModal |> closeOpenable }
+    else if model.connectMode then
+       { model | connectModalOpen = False, connectMode = False }
+    else
+        model
+
