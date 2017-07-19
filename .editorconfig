@@ -1,7 +1,7 @@
 [*]
 indent_stype = space
 
-[*.{json,js,ex}]
+[*.{json,js,ex,scss}]
 indent_size = 2
 
 [*.elm]
