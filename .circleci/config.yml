@@ -81,8 +81,8 @@ jobs:
             KUBE_VERSION: 1.4.6
       - deploy:
           command: |
-            ~/.kube/kubectl config use-context tokyo.k8s.cotoa.me
-            ~/.kube/kubectl set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+            ~/.kube/kubectl config use-context $KUBE_CONTEXT
+            ~/.kube/kubectl --namespace='prod-app' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
 
 workflows:
   version: 2
