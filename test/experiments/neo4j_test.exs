@@ -14,4 +14,30 @@ defmodule Cotoami.Neo4jTest do
     assert %{stats: %{"nodes-deleted" => 1}, type: "w"} =
       Bolt.Sips.query!(conn, "MATCH (a:Person {name:'Bob'}) DELETE a")
   end
+
+  test "get or create a node" do
+    node_properties = %{"name" => "Charlie Sheen", "age" => 10}
+    query = ~s"""
+      MERGE (node:Person { name: $props.name })
+      ON CREATE SET node=$props
+      RETURN node
+    """
+    conn = Bolt.Sips.conn
+
+    # Create a node
+    [%{"node" => node}] = Bolt.Sips.query!(conn, query, %{"props" => node_properties})
+    assert %Bolt.Sips.Types.Node{labels: ["Person"], properties: node_properties } = node
+
+    # Get the node
+    existing_node_id = node.id
+    assert [
+      %{"node" =>
+        %Bolt.Sips.Types.Node{
+          id: existing_node_id,
+          labels: ["Person"],
+          properties: node_properties
+        }
+      }
+    ] = Bolt.Sips.query!(conn, query, %{"props" => node_properties})
+  end
 end
