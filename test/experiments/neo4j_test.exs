@@ -16,7 +16,7 @@ defmodule Cotoami.Neo4jTest do
   end
 
   test "get or create a node" do
-    node_properties = %{"name" => "Charlie Sheen", "age" => 10}
+    node_properties = %{name: "Charlie Sheen", age: 10}
     query = ~s"""
       MERGE (node:Person { name: $props.name })
       ON CREATE SET node=$props
@@ -39,5 +39,26 @@ defmodule Cotoami.Neo4jTest do
         }
       }
     ] = Bolt.Sips.query!(conn, query, %{"props" => node_properties})
+  end
+
+  test "merge against mutiple labels" do
+    conn = Bolt.Sips.conn
+
+    [%{"node" => node}] =
+      Bolt.Sips.query!(conn, "CREATE (node:Label1:Label2 { name: 'test' }) RETURN node")
+
+    existing_node_id = node.id
+    assert [
+      %{"node" =>
+        %Bolt.Sips.Types.Node{
+          id: existing_node_id,
+          labels: ["Label2", "Label1"],
+          properties: %{"name" => "test"}
+        }
+      }
+    ] = Bolt.Sips.query!(conn, ~s"""
+      MERGE (node:Label1 { name: 'test' })
+      RETURN node
+    """)
   end
 end
