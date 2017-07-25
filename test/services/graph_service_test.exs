@@ -52,5 +52,12 @@ defmodule Cotoami.GraphServiceTest do
     |> and_then(fn(node) ->
       assert node2.id != node.id
     end)
+
+    # properties will be ignored if the node already exists
+    GraphService.get_or_create_node(uuid2, ["A"], %{c: "bye"})
+    |> and_then(fn(node) ->
+      assert node2.id == node.id
+      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
+    end)
   end
 end
