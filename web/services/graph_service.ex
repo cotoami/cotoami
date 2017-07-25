@@ -27,7 +27,7 @@ defmodule Cotoami.GraphService do
     node
   end
 
-  def create_relationship(source_uuid, target_uuid, type)
+  def get_or_create_relationship(source_uuid, target_uuid, type)
   when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })

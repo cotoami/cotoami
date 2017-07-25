@@ -63,6 +63,30 @@ defmodule Cotoami.GraphServiceTest do
 
   test "get or create a relationship" do
     assert nil ==
-      GraphService.create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
+      GraphService.get_or_create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
+
+    uuid1 = "094c861f-40a4-4a96-ac1c-cbeff666b9b9"
+    %Bolt.Sips.Types.Node{id: node1_id} = GraphService.get_or_create_node(uuid1)
+
+    uuid2 = "a67cad88-f4ea-4791-895f-a14838462bc6"
+    %Bolt.Sips.Types.Node{id: node2_id} = GraphService.get_or_create_node(uuid2)
+
+    # create a relationship
+    assert %Bolt.Sips.Types.Relationship{
+      id: relationship1_id,
+      start: ^node1_id,
+      end: ^node2_id,
+      properties: %{},
+      type: "HOGE"
+    } = GraphService.get_or_create_relationship(uuid1, uuid2, "HOGE")
+
+    # get the relationship
+    assert %Bolt.Sips.Types.Relationship{id: ^relationship1_id} =
+      GraphService.get_or_create_relationship(uuid1, uuid2, "HOGE")
+
+    # create a relationship of another type
+    %Bolt.Sips.Types.Relationship{id: relationship2_id} =
+      GraphService.get_or_create_relationship(uuid1, uuid2, "HUGA")
+    assert relationship1_id != relationship2_id
   end
 end
