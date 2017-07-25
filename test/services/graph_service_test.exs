@@ -26,20 +26,31 @@ defmodule Cotoami.GraphServiceTest do
         node
       end)
 
-    # get the node with uuid
+    # get node1 and node2 with uuid
     GraphService.get_or_create_node(uuid1)
     |> and_then(fn(node) ->
       assert node1.id == node.id
       assert [] = node.labels
       assert %{"uuid" => ^uuid1} = node.properties
-      node
     end)
     GraphService.get_or_create_node(uuid2)
     |> and_then(fn(node) ->
       assert node2.id == node.id
       assert ^labels = Enum.sort(node.labels)
       assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
-      node
+    end)
+
+    # get node2 with one label
+    GraphService.get_or_create_node(uuid2, ["B"])
+    |> and_then(fn(node) ->
+      assert node2.id == node.id
+      assert ^labels = Enum.sort(node.labels)
+    end)
+
+    # create a new node when the labels does not match
+    GraphService.get_or_create_node(uuid2, ["C"])
+    |> and_then(fn(node) ->
+      assert node2.id != node.id
     end)
   end
 end
