@@ -1,8 +1,5 @@
-defmodule Cotoami.GraphService do
+defmodule Cotoami.Neo4jService do
   require Logger
-  alias Cotoami.Coto
-  alias Cotoami.Amishi
-  alias Cotoami.Cotonoma
 
   def get_or_create_node(uuid, labels \\ [], props \\ %{})
   when is_binary(uuid) and is_list(labels) and is_map(props) do
