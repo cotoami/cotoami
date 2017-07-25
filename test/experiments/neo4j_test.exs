@@ -16,7 +16,7 @@ defmodule Cotoami.Neo4jTest do
   end
 
   test "get or create a node" do
-    node_properties = %{name: "Charlie Sheen", age: 10}
+    node_properties = %{name: "Taro Yamada", age: 17}
     query = ~s"""
       MERGE (node:Person { name: $props.name })
       ON CREATE SET node=$props
@@ -35,7 +35,7 @@ defmodule Cotoami.Neo4jTest do
         %Bolt.Sips.Types.Node{
           id: ^existing_node_id,
           labels: ["Person"],
-          properties: node_properties
+          properties: %{"name" => "Taro Yamada", "age" => 17}
         }
       }
     ] = Bolt.Sips.query!(conn, query, %{"props" => node_properties})
