@@ -13,13 +13,9 @@ defmodule Cotoami.GraphService do
   end
 
   def get_or_create_node(uuid, labels \\ [], props \\ %{})
-  when is_list(labels) and is_binary(uuid) and is_map(props) do
-    labelsString =
-      if length(labels) > 0,
-        do: ":" <> Enum.join(labels, ":"),
-        else: ""
+  when is_binary(uuid) and is_list(labels) and is_map(props) do
     query = ~s"""
-      MERGE (node#{labelsString} { uuid: $uuid })
+      MERGE (node#{labels_in_query(labels)} { uuid: $uuid })
       ON CREATE SET node=$props
       RETURN node
     """
@@ -30,5 +26,15 @@ defmodule Cotoami.GraphService do
         props: Map.put(props, :uuid, uuid)
       })
     node
+  end
+
+  def create_relationship(from_uuid, to_uuid, labels \\ [])
+  when is_binary(from_uuid) and is_binary(to_uuid) and is_list(labels) do
+
+
+  end
+
+  defp labels_in_query(labels) do
+    if length(labels) > 0, do: ":" <> Enum.join(labels, ":"), else: ""
   end
 end
