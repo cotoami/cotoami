@@ -112,7 +112,8 @@ defmodule Cotoami.Neo4jServiceTest do
     end
 
     test "delete the relationship", %{uuid1: uuid1, uuid2: uuid2, rel: rel} do
-      Neo4jService.delete_relationship(uuid1, uuid2, "A")
+      assert %{stats: %{"relationships-deleted" => 1}, type: "w"} =
+        Neo4jService.delete_relationship(uuid1, uuid2, "A")
       assert nil == Neo4jService.get_relationship(uuid1, uuid2, "A")
     end
   end
