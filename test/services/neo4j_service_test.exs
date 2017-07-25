@@ -57,10 +57,11 @@ defmodule Cotoami.Neo4jServiceTest do
       assert ^labels = Enum.sort(result.labels)
     end
 
-    test "create another node when the labels do not match",
+    test "only uuid decides which node to select",
         %{uuid: uuid, node: node, labels: labels, props: props} do
-      result = Neo4jService.get_or_create_node(uuid, ["C"])
-      assert node.id != result.id
+      result = Neo4jService.get_or_create_node(uuid, ["C"], %{c: "bye"})
+      assert node.id == result.id
+      assert ^labels = Enum.sort(result.labels)
     end
   end
 

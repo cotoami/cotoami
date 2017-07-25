@@ -3,9 +3,13 @@ defmodule Cotoami.Neo4jService do
 
   def get_or_create_node(uuid, labels \\ [], props \\ %{})
   when is_binary(uuid) and is_list(labels) and is_map(props) do
+    set_labels =
+      if length(labels) > 0,
+        do: ", n :" <> Enum.join(labels, ":"),
+        else: ""
     query = ~s"""
-      MERGE (n#{labels_in_query(labels)} { uuid: $uuid })
-      ON CREATE SET n=$props
+      MERGE (n { uuid: $uuid })
+      ON CREATE SET n = $props #{set_labels}
       RETURN n
     """
     [%{"n" => node}] =
@@ -61,9 +65,5 @@ defmodule Cotoami.Neo4jService do
       source_uuid: source_uuid,
       target_uuid: target_uuid
     })
-  end
-
-  defp labels_in_query(labels) do
-    if length(labels) > 0, do: ":" <> Enum.join(labels, ":"), else: ""
   end
 end
