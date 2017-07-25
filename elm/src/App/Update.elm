@@ -529,8 +529,11 @@ loadCotonoma key model =
         , fetchCotonoma key
         ]
 
+
+closeOpenable : { a | open : Bool } -> { a | open : Bool }
 closeOpenable openable =
     { openable | open = False }
+
 
 closeModal : Model -> Model
 closeModal model =
@@ -548,4 +551,3 @@ closeModal model =
        { model | connectModalOpen = False, connectMode = False }
     else
         model
-
