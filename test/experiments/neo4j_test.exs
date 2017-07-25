@@ -44,21 +44,14 @@ defmodule Cotoami.Neo4jTest do
   test "merge against mutiple labels" do
     conn = Bolt.Sips.conn
 
-    [%{"node" => node}] =
+    [%{"node" => node1}] =
       Bolt.Sips.query!(conn, "CREATE (node:Label1:Label2 { name: 'test' }) RETURN node")
 
-    existing_node_id = node.id
-    assert [
-      %{"node" =>
-        %Bolt.Sips.Types.Node{
-          id: existing_node_id,
-          labels: ["Label2", "Label1"],
-          properties: %{"name" => "test"}
-        }
-      }
-    ] = Bolt.Sips.query!(conn, ~s"""
-      MERGE (node:Label1 { name: 'test' })
-      RETURN node
-    """)
+    [%{"node" => node2}] =
+      Bolt.Sips.query!(conn, "MERGE (node:Label1 { name: 'test' }) RETURN node")
+
+    assert node1.id == node2.id
+    assert ["Label1", "Label2"] = Enum.sort(node2.labels)
+    assert %{"name" => "test"} = node2.properties
   end
 end
