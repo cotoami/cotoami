@@ -5,113 +5,115 @@ defmodule Cotoami.Neo4jServiceTest do
   alias Bolt.Sips.Types.Node
   alias Bolt.Sips.Types.Relationship
 
-  test "get or create a node" do
-    # create a simple node
-    uuid1 = UUID.uuid4()
-    node1 =
-      Neo4jService.get_or_create_node(uuid1)
-      |> and_then(fn(node) ->
-        assert [] = node.labels
-        assert %{"uuid" => ^uuid1} = node.properties
-        node
-      end)
+  describe "a basic node" do
+    setup do
+      uuid = UUID.uuid4()
+      node = Neo4jService.get_or_create_node(uuid)
+      %{uuid: uuid, node: node}
+    end
 
-    # create a node with labels and properties
-    uuid2 = UUID.uuid4()
-    labels = ["A", "B"]
-    props = %{a: "hello", b: 1}
-    node2 =
-      Neo4jService.get_or_create_node(uuid2, labels, props)
-      |> and_then(fn(node) ->
-        assert ^labels = Enum.sort(node.labels)
-        assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
-        node
-      end)
-
-    # get node1 and node2 with uuid
-    Neo4jService.get_or_create_node(uuid1)
-    |> and_then(fn(node) ->
-      assert node1.id == node.id
+    test "create a node", %{uuid: uuid, node: node} do
       assert [] = node.labels
-      assert %{"uuid" => ^uuid1} = node.properties
-    end)
-    Neo4jService.get_or_create_node(uuid2)
-    |> and_then(fn(node) ->
-      assert node2.id == node.id
-      assert ^labels = Enum.sort(node.labels)
-      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
-    end)
+      assert %{"uuid" => ^uuid} = node.properties
+    end
 
-    # get node2 with one label
-    Neo4jService.get_or_create_node(uuid2, ["B"])
-    |> and_then(fn(node) ->
-      assert node2.id == node.id
-      assert ^labels = Enum.sort(node.labels)
-    end)
-
-    # create a new node when the labels does not match
-    Neo4jService.get_or_create_node(uuid2, ["C"])
-    |> and_then(fn(node) ->
-      assert node2.id != node.id
-    end)
-
-    # properties will be ignored if the node already exists
-    Neo4jService.get_or_create_node(uuid2, ["A"], %{c: "bye"})
-    |> and_then(fn(node) ->
-      assert node2.id == node.id
-      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
-    end)
+    test "get the node", %{uuid: uuid, node: node} do
+      existing_node_id = node.id
+      assert %Node{
+        id: ^existing_node_id,
+        labels: [],
+        properties:  %{"uuid" => ^uuid}
+      } = Neo4jService.get_or_create_node(uuid)
+    end
   end
 
-  test "get or create a relationship" do
-    assert nil ==
-      Neo4jService.get_or_create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
+  describe "a node with labels and properties" do
+    setup do
+      uuid = UUID.uuid4()
+      labels = ["A", "B"]
+      props = %{a: "hello", b: 1}
+      node = Neo4jService.get_or_create_node(uuid, labels, props)
+      %{uuid: uuid, node: node, labels: labels, props: props}
+    end
 
-    uuid1 = UUID.uuid4()
-    %Node{id: node1_id} = Neo4jService.get_or_create_node(uuid1)
+    test "create a node",
+        %{uuid: uuid, node: node, labels: labels, props: props} do
+      assert ^labels = Enum.sort(node.labels)
+      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid} = node.properties
+    end
 
-    uuid2 = UUID.uuid4()
-    %Node{id: node2_id} = Neo4jService.get_or_create_node(uuid2)
+    test "get the node with uuid",
+        %{uuid: uuid, node: node, labels: labels, props: props} do
+      result = Neo4jService.get_or_create_node(uuid)
+      assert node.id == result.id
+      assert ^labels = Enum.sort(result.labels)
+      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid} = result.properties
+    end
 
-    # create a relationship
-    assert %Relationship{
-      id: relationship1_id,
-      start: ^node1_id,
-      end: ^node2_id,
-      properties: %{},
-      type: "A"
-    } = Neo4jService.get_or_create_relationship(uuid1, uuid2, "A")
+    test "get the node with uuid and one label",
+        %{uuid: uuid, node: node, labels: labels, props: props} do
+      result = Neo4jService.get_or_create_node(uuid, ["B"])
+      assert node.id == result.id
+      assert ^labels = Enum.sort(result.labels)
+    end
 
-    # get the relationship
-    assert %Relationship{id: ^relationship1_id} =
-      Neo4jService.get_or_create_relationship(uuid1, uuid2, "A")
-    assert %Relationship{id: ^relationship1_id} =
-      Neo4jService.get_relationship(uuid1, uuid2, "A")
+    test "create a new node when the labels does not match",
+        %{uuid: uuid, node: node, labels: labels, props: props} do
+      result = Neo4jService.get_or_create_node(uuid, ["C"])
+      assert node.id != result.id
+    end
 
-    # create a relationship of another type
-    %Relationship{id: relationship2_id} =
-      Neo4jService.get_or_create_relationship(uuid1, uuid2, "B")
-    assert relationship1_id != relationship2_id
-
-    # try to get an non-existing relationship
-    assert nil == Neo4jService.get_relationship(uuid1, uuid2, "C")
+    test "props should be ignored if the node already exists",
+        %{uuid: uuid, node: node, labels: labels, props: props} do
+      result = Neo4jService.get_or_create_node(uuid, ["A"], %{c: "bye"})
+      assert node.id == result.id
+      assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid} = result.properties
+    end
   end
 
-  test "delete a relationship" do
-    uuid1 = UUID.uuid4()
-    %Node{id: node1_id} = Neo4jService.get_or_create_node(uuid1)
+  describe "a relationship" do
+    setup do
+      uuid1 = UUID.uuid4()
+      %Node{id: node1_id} = Neo4jService.get_or_create_node(uuid1)
+      uuid2 = UUID.uuid4()
+      %Node{id: node2_id} = Neo4jService.get_or_create_node(uuid2)
+      rel = Neo4jService.get_or_create_relationship(uuid1, uuid2, "A")
+      %{uuid1: uuid1, node1_id: node1_id, uuid2: uuid2, node2_id: node2_id, rel: rel}
+    end
 
-    uuid2 = UUID.uuid4()
-    %Node{id: node2_id} = Neo4jService.get_or_create_node(uuid2)
+    test "should be nil when the nodes are not found", _params do
+      assert nil ==
+        Neo4jService.get_or_create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
+    end
 
-    %Relationship{id: relationship_id} =
-      Neo4jService.get_or_create_relationship(uuid1, uuid2, "A")
+    test "create a relationship", %{node1_id: node1_id, node2_id: node2_id, rel: rel} do
+      assert node1_id == rel.start
+      assert node2_id == rel.end
+      assert %{} == rel.properties
+      assert "A" == rel.type
+    end
 
-    assert %Relationship{id: ^relationship_id} =
-      Neo4jService.get_relationship(uuid1, uuid2, "A")
+    test "get the relationship", %{uuid1: uuid1, uuid2: uuid2, rel: rel} do
+      relationship_id = rel.id
+      assert %Relationship{id: ^relationship_id} =
+        Neo4jService.get_or_create_relationship(uuid1, uuid2, "A")
+      assert %Relationship{id: ^relationship_id} =
+        Neo4jService.get_relationship(uuid1, uuid2, "A")
+    end
 
-    IO.puts inspect Neo4jService.delete_relationship(uuid1, uuid2, "A")
+    test "create a relationship of another type", %{uuid1: uuid1, uuid2: uuid2, rel: rel} do
+      %Relationship{id: relationship_id} =
+        Neo4jService.get_or_create_relationship(uuid1, uuid2, "B")
+      assert rel.id != relationship_id
+    end
 
-    assert nil == Neo4jService.get_relationship(uuid1, uuid2, "A")
+    test "try to get an non-existing relationship", %{uuid1: uuid1, uuid2: uuid2} do
+      assert nil == Neo4jService.get_relationship(uuid1, uuid2, "C")
+    end
+
+    test "delete the relationship", %{uuid1: uuid1, uuid2: uuid2, rel: rel} do
+      Neo4jService.delete_relationship(uuid1, uuid2, "A")
+      assert nil == Neo4jService.get_relationship(uuid1, uuid2, "A")
+    end
   end
 end

@@ -33,7 +33,7 @@ defmodule Cotoami.Neo4jTest do
     assert [
       %{"node" =>
         %Bolt.Sips.Types.Node{
-          id: existing_node_id,
+          id: ^existing_node_id,
           labels: ["Person"],
           properties: node_properties
         }
