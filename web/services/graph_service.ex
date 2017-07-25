@@ -20,22 +20,29 @@ defmodule Cotoami.GraphService do
       RETURN node
     """
     [%{"node" => node}] =
-      Bolt.Sips.conn
-      |> Bolt.Sips.query!(query, %{
+      Bolt.Sips.query!(Bolt.Sips.conn, query, %{
         uuid: uuid,
         props: Map.put(props, :uuid, uuid)
       })
     node
   end
 
-  def create_relationship(from_uuid, to_uuid, labels \\ [])
-  when is_binary(from_uuid) and is_binary(to_uuid) and is_list(labels) do
+  def create_relationship(source_uuid, target_uuid, type)
+  when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
     query = ~s"""
-      MATCH (from { uuid: $from_uuid }),(to { uuid: $to_uuid })
-      MERGE (from)-[r#{labels_in_query(labels)}]->(to)
-      RETURN r
+      MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })
+      MERGE (source)-[relationship:#{type}]->(target)
+      RETURN relationship
     """
-
+    result =
+      Bolt.Sips.query!(Bolt.Sips.conn, query, %{
+        source_uuid: source_uuid,
+        target_uuid: target_uuid
+      })
+    case result do
+      [%{"relationship" => relationship}] -> relationship
+      _ -> nil
+    end
   end
 
   defp labels_in_query(labels) do

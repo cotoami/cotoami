@@ -60,4 +60,9 @@ defmodule Cotoami.GraphServiceTest do
       assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid2} = node.properties
     end)
   end
+
+  test "get or create a relationship" do
+    assert nil ==
+      GraphService.create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
+  end
 end
