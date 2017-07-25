@@ -51,7 +51,8 @@ defmodule Cotoami.Mixfile do
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
       {:httpotion, "~> 3.0.2"},
-      {:bolt_sips, "~> 0.3"}
+      {:bolt_sips, "~> 0.3"},
+      {:uuid, "~> 1.1"}
     ]
   end
 

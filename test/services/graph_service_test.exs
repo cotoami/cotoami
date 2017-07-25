@@ -1,11 +1,13 @@
 defmodule Cotoami.GraphServiceTest do
-  use Cotoami.ModelCase
+  use ExUnit.Case
   import Cotoami.Helpers
   alias Cotoami.GraphService
+  alias Bolt.Sips.Types.Node
+  alias Bolt.Sips.Types.Relationship
 
   test "get or create a node" do
     # create a simple node
-    uuid1 = "9108c2b8-87bb-4321-99ec-e5ce2e581702"
+    uuid1 = UUID.uuid4()
     node1 =
       GraphService.get_or_create_node(uuid1)
       |> and_then(fn(node) ->
@@ -15,7 +17,7 @@ defmodule Cotoami.GraphServiceTest do
       end)
 
     # create a node with labels and properties
-    uuid2 = "71d1a0f1-d760-4b5a-a7e8-f975b44bb16"
+    uuid2 = UUID.uuid4()
     labels = ["A", "B"]
     props = %{a: "hello", b: 1}
     node2 =
@@ -65,14 +67,14 @@ defmodule Cotoami.GraphServiceTest do
     assert nil ==
       GraphService.get_or_create_relationship("no-such-uuid", "no-such-uuid", "RELTYPE")
 
-    uuid1 = "094c861f-40a4-4a96-ac1c-cbeff666b9b9"
-    %Bolt.Sips.Types.Node{id: node1_id} = GraphService.get_or_create_node(uuid1)
+    uuid1 = UUID.uuid4()
+    %Node{id: node1_id} = GraphService.get_or_create_node(uuid1)
 
-    uuid2 = "a67cad88-f4ea-4791-895f-a14838462bc6"
-    %Bolt.Sips.Types.Node{id: node2_id} = GraphService.get_or_create_node(uuid2)
+    uuid2 = UUID.uuid4()
+    %Node{id: node2_id} = GraphService.get_or_create_node(uuid2)
 
     # create a relationship
-    assert %Bolt.Sips.Types.Relationship{
+    assert %Relationship{
       id: relationship1_id,
       start: ^node1_id,
       end: ^node2_id,
@@ -81,17 +83,35 @@ defmodule Cotoami.GraphServiceTest do
     } = GraphService.get_or_create_relationship(uuid1, uuid2, "A")
 
     # get the relationship
-    assert %Bolt.Sips.Types.Relationship{id: ^relationship1_id} =
+    assert %Relationship{id: ^relationship1_id} =
       GraphService.get_or_create_relationship(uuid1, uuid2, "A")
-    assert %Bolt.Sips.Types.Relationship{id: ^relationship1_id} =
+    assert %Relationship{id: ^relationship1_id} =
       GraphService.get_relationship(uuid1, uuid2, "A")
 
     # create a relationship of another type
-    %Bolt.Sips.Types.Relationship{id: relationship2_id} =
+    %Relationship{id: relationship2_id} =
       GraphService.get_or_create_relationship(uuid1, uuid2, "B")
     assert relationship1_id != relationship2_id
 
     # try to get an non-existing relationship
     assert nil == GraphService.get_relationship(uuid1, uuid2, "C")
+  end
+
+  test "delete a relationship" do
+    uuid1 = UUID.uuid4()
+    %Node{id: node1_id} = GraphService.get_or_create_node(uuid1)
+
+    uuid2 = UUID.uuid4()
+    %Node{id: node2_id} = GraphService.get_or_create_node(uuid2)
+
+    %Relationship{id: relationship_id} =
+      GraphService.get_or_create_relationship(uuid1, uuid2, "A")
+
+    assert %Relationship{id: ^relationship_id} =
+      GraphService.get_relationship(uuid1, uuid2, "A")
+
+    IO.puts inspect GraphService.delete_relationship(uuid1, uuid2, "A")
+
+    assert nil == GraphService.get_relationship(uuid1, uuid2, "A")
   end
 end
