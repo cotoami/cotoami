@@ -30,7 +30,11 @@ defmodule Cotoami.GraphService do
 
   def create_relationship(from_uuid, to_uuid, labels \\ [])
   when is_binary(from_uuid) and is_binary(to_uuid) and is_list(labels) do
-
+    query = ~s"""
+      MATCH (from { uuid: $from_uuid }),(to { uuid: $to_uuid })
+      MERGE (from)-[r#{labels_in_query(labels)}]->(to)
+      RETURN r
+    """
 
   end
 
