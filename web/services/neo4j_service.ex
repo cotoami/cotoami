@@ -69,7 +69,7 @@ defmodule Cotoami.Neo4jService do
     })
   end
 
-  def get_ordered_relationships(conn, source_uuid, type) do
+  def get_ordered_relationships!(conn, source_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target)
       RETURN r
@@ -77,5 +77,19 @@ defmodule Cotoami.Neo4jService do
     """
     Bolt.Sips.query!(conn, query, %{source_uuid: source_uuid})
     |> Enum.map(&(&1["r"]))
+  end
+
+  def get_or_create_ordered_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do
+    next_order =
+      case get_ordered_relationships!(conn, source_uuid, type) do
+        [] -> 1
+        rels ->
+          case List.last(rels).properties[@rel_prop_order] do
+            nil -> length(rels) + 1
+            last_order -> last_order + 1
+          end
+      end
+    get_or_create_relationship!(conn, source_uuid, target_uuid, type,
+      props |> Map.put(@rel_prop_order, next_order))
   end
 end

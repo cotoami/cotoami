@@ -123,4 +123,26 @@ defmodule Cotoami.Neo4jServiceTest do
       assert "A" == rel.type
     end
   end
+
+  describe "ordered relationships" do
+    setup do
+      conn = Bolt.Sips.conn
+
+      uuid1 = UUID.uuid4()
+      Neo4jService.get_or_create_node!(conn, uuid1)
+      uuid2 = UUID.uuid4()
+      Neo4jService.get_or_create_node!(conn, uuid2)
+      uuid3 = UUID.uuid4()
+      Neo4jService.get_or_create_node!(conn, uuid3)
+
+      rel1 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid2, "A")
+      rel2 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid3, "A")
+      %{conn: conn, uuid1: uuid1, uuid2: uuid2, uuid3: uuid3, rel1: rel1, rel2: rel2}
+    end
+
+    test "create", %{rel1: rel1, rel2: rel2} do
+      assert %Relationship{properties: %{"order" => 1}} = rel1
+      assert %Relationship{properties: %{"order" => 2}} = rel2
+    end
+  end
 end
