@@ -1,7 +1,7 @@
 defmodule Cotoami.Neo4jService do
   require Logger
 
-  def get_or_create_node(uuid, labels \\ [], props \\ %{})
+  def get_or_create_node!(uuid, labels \\ [], props \\ %{})
   when is_binary(uuid) and is_list(labels) and is_map(props) do
     set_labels =
       if length(labels) > 0,
@@ -20,17 +20,19 @@ defmodule Cotoami.Neo4jService do
     node
   end
 
-  def get_or_create_relationship(source_uuid, target_uuid, type)
+  def get_or_create_relationship!(source_uuid, target_uuid, type, props \\ %{})
   when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })
       MERGE (source)-[r:#{type}]->(target)
+      ON CREATE SET r = $props
       RETURN r
     """
     result =
       Bolt.Sips.query!(Bolt.Sips.conn, query, %{
         source_uuid: source_uuid,
-        target_uuid: target_uuid
+        target_uuid: target_uuid,
+        props: props
       })
     case result do
       [%{"r" => relationship}] -> relationship
@@ -38,7 +40,7 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def get_relationship(source_uuid, target_uuid, type)
+  def get_relationship!(source_uuid, target_uuid, type)
   when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
@@ -55,7 +57,7 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def delete_relationship(source_uuid, target_uuid, type)
+  def delete_relationship!(source_uuid, target_uuid, type)
   when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
