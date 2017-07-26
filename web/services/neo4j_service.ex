@@ -1,8 +1,11 @@
 defmodule Cotoami.Neo4jService do
   require Logger
+  alias Bolt.Sips.Types.Node
+  alias Bolt.Sips.Types.Relationship
 
-  def get_or_create_node!(uuid, labels \\ [], props \\ %{})
-  when is_binary(uuid) and is_list(labels) and is_map(props) do
+  @rel_prop_order "order"
+
+  def get_or_create_node!(conn, uuid, labels \\ [], props \\ %{}) do
     set_labels =
       if length(labels) > 0,
         do: ", n :" <> Enum.join(labels, ":"),
@@ -13,15 +16,14 @@ defmodule Cotoami.Neo4jService do
       RETURN n
     """
     [%{"n" => node}] =
-      Bolt.Sips.query!(Bolt.Sips.conn, query, %{
+      Bolt.Sips.query!(conn, query, %{
         uuid: uuid,
         props: Map.put(props, :uuid, uuid)
       })
     node
   end
 
-  def get_or_create_relationship!(source_uuid, target_uuid, type, props \\ %{})
-  when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
+  def get_or_create_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })
       MERGE (source)-[r:#{type}]->(target)
@@ -29,7 +31,7 @@ defmodule Cotoami.Neo4jService do
       RETURN r
     """
     result =
-      Bolt.Sips.query!(Bolt.Sips.conn, query, %{
+      Bolt.Sips.query!(conn, query, %{
         source_uuid: source_uuid,
         target_uuid: target_uuid,
         props: props
@@ -40,14 +42,13 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def get_relationship!(source_uuid, target_uuid, type)
-  when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
+  def get_relationship!(conn, source_uuid, target_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
       RETURN r
     """
     result =
-      Bolt.Sips.query!(Bolt.Sips.conn, query, %{
+      Bolt.Sips.query!(conn, query, %{
         source_uuid: source_uuid,
         target_uuid: target_uuid
       })
@@ -57,15 +58,24 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def delete_relationship!(source_uuid, target_uuid, type)
-  when is_binary(source_uuid) and is_binary(target_uuid) and is_binary(type) do
+  def delete_relationship!(conn, source_uuid, target_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
       DELETE r
     """
-    Bolt.Sips.query!(Bolt.Sips.conn, query, %{
+    Bolt.Sips.query!(conn, query, %{
       source_uuid: source_uuid,
       target_uuid: target_uuid
     })
+  end
+
+  def get_ordered_relationships(conn, source_uuid, type) do
+    query = ~s"""
+      MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target)
+      RETURN r
+      ORDER BY r.#{@rel_prop_order}
+    """
+    Bolt.Sips.query!(conn, query, %{source_uuid: source_uuid})
+    |> Enum.map(&(&1["r"]))
   end
 end

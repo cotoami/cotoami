@@ -20,18 +20,18 @@ defmodule Cotoami.CotoGraphService do
     case cotonoma do
       nil ->
         # calculate order
-        Neo4jService.get_or_create_relationship!(amishi_id, coto_id, @rel_type_has)
+        Neo4jService.get_or_create_relationship!(amishi_id, coto_id, @rel_type_has_a)
       cotonoma ->
         "bar"
     end
   end
 
   defp register_coto(%Coto{id: coto_id}) do
-    Neo4jService.get_or_create_node(coto_id, [@label_coto])
+    Neo4jService.get_or_create_node!(coto_id, [@label_coto])
   end
 
   defp register_amishi(%Amishi{id: amishi_id}) do
-    Neo4jService.get_or_create_node(amishi_id, [@label_amishi])
+    Neo4jService.get_or_create_node!(amishi_id, [@label_amishi])
   end
 
   defp common_rel_props(amishi_id) do
