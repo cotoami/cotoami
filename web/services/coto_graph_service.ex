@@ -8,7 +8,7 @@ defmodule Cotoami.CotoGraphService do
   @label_coto "Coto"
   @label_amishi "Amishi"
 
-  @rel_type_has "HAS"
+  @rel_type_has_a "HAS_A"
 
   def pin(
     %Coto{id: coto_id} = coto,
