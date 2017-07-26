@@ -144,5 +144,13 @@ defmodule Cotoami.Neo4jServiceTest do
       assert %Relationship{properties: %{"order" => 1}} = rel1
       assert %Relationship{properties: %{"order" => 2}} = rel2
     end
+
+    test "get", %{conn: conn, uuid1: uuid1, rel1: rel1, rel2: rel2} do
+      {rel1_id, rel2_id} = {rel1.id, rel2.id}
+      assert [
+        %Relationship{id: ^rel1_id, properties: %{"order" => 1}},
+        %Relationship{id: ^rel2_id, properties: %{"order" => 2}}
+      ] = Neo4jService.get_ordered_relationships!(conn, uuid1, "A")
+    end
   end
 end
