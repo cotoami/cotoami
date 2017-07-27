@@ -7,7 +7,7 @@ defmodule Cotoami.CotonomaService do
   alias Cotoami.Member
   alias Cotoami.AmishiService
 
-  def create!(cotonoma_id_nillable, amishi_id, name, member_params) do
+  def create!(cotonoma_id_nillable, amishi_id, name, member_params \\ []) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
@@ -25,6 +25,8 @@ defmodule Cotoami.CotonomaService do
             coto_id: coto.id,
             owner_id: amishi_id
           }) |> Repo.insert!
+        cotonoma = %{cotonoma | coto: coto}
+        coto = %{coto | cotonoma: cotonoma}
 
         members =
           member_params

@@ -4,6 +4,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   alias Cotoami.Neo4jService
   alias Cotoami.AmishiService
   alias Cotoami.CotoService
+  alias Cotoami.CotonomaService
   alias Bolt.Sips.Types.Relationship
 
   describe "an amishi has cotos" do
@@ -52,6 +53,49 @@ defmodule Cotoami.CotoGraphServiceTest do
     test "unpin", %{conn: conn, amishi: amishi, coto: coto} do
       CotoGraphService.unpin(coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
+    end
+  end
+
+  describe "a cotonoma has cotos" do
+    setup do
+      conn = Bolt.Sips.conn
+      amishi = AmishiService.create!("amishi@example.com")
+      {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
+      {coto, _} = CotoService.create!(nil, amishi.id, "hello")
+      CotoGraphService.pin(coto, cotonoma, amishi)
+      %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma}
+    end
+
+    test "pin", %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      amishi_id = amishi.id
+      cotonoma_coto_id = cotonoma.coto.id
+
+      coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
+      coto_node_id = coto_node.id
+
+      cotonoma_node = Neo4jService.get_or_create_node!(conn, cotonoma.coto.id)
+      cotonoma_node_id = cotonoma_node.id
+      assert ["Coto", "Cotonoma"] == Enum.sort(cotonoma_node.labels)
+      assert %{
+        "uuid" => ^cotonoma_coto_id,
+        "content" => "test",
+        "amishi_id" => ^amishi_id,
+        "inserted_at" => _inserted_at,
+        "updated_at" => _updated_at
+      } = cotonoma_node.properties
+
+      assert [
+        %Relationship{
+          start: ^cotonoma_node_id,
+          end: ^coto_node_id,
+          properties: %{
+            "created_at" => _created_at,
+            "created_by" => ^amishi_id,
+            "order" => 1
+          },
+          type: "HAS_A"
+        }
+      ] = Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
 end

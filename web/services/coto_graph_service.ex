@@ -25,7 +25,7 @@ defmodule Cotoami.CotoGraphService do
     |> register_coto(coto)
     |> register_cotonoma(cotonoma)
     |> Neo4jService.get_or_create_ordered_relationship!(
-      cotonoma.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id))
+      cotonoma.coto.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id))
   end
 
   def unpin(%Coto{id: coto_id}, %Amishi{id: amishi_id}) do
