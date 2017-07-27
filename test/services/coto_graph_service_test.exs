@@ -15,7 +15,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       %{conn: conn, amishi: amishi, coto: coto}
     end
 
-    test "create", %{conn: conn, amishi: amishi, coto: coto} do
+    test "pin", %{conn: conn, amishi: amishi, coto: coto} do
       amishi_id = amishi.id
       coto_id = coto.id
 
@@ -28,9 +28,9 @@ defmodule Cotoami.CotoGraphServiceTest do
       coto_node_id = coto_node.id
       assert ["Coto"] == coto_node.labels
       assert %{
-        "uuid" => coto_id,
+        "uuid" => ^coto_id,
         "content" => "hello",
-        "amishi_id" => amishi_id,
+        "amishi_id" => ^amishi_id,
         "inserted_at" => _inserted_at,
         "updated_at" => _updated_at
       } = coto_node.properties
