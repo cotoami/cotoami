@@ -5,6 +5,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   alias Cotoami.AmishiService
   alias Cotoami.CotoService
   alias Cotoami.CotonomaService
+  alias Cotoami.CotoGraph
   alias Bolt.Sips.Types.Relationship
 
   describe "cotos pinned to an amishi" do
@@ -55,8 +56,29 @@ defmodule Cotoami.CotoGraphServiceTest do
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
 
-    test "graph", %{amishi: amishi} do
-      assert "" = CotoGraphService.get_graph(amishi)
+    test "graph", %{amishi: amishi, coto: coto} do
+      coto_id = coto.id
+      amishi_id = amishi.id
+      assert %CotoGraph{
+        cotos: %{
+          ^coto_id => %{
+            "uuid" => ^coto_id,
+            "amishi_id" => ^amishi_id,
+            "content" => "hello",
+            "inserted_at" => _inserted_at,
+            "updated_at" => _updated_at
+          }
+        },
+        root_connections: [
+          %{
+            "id" => _rel_id,
+            "order" => 1,
+            "created_at" => _created_at,
+            "created_by" => ^amishi_id
+          }
+        ],
+        connections: %{}
+      } = CotoGraphService.get_graph(amishi)
     end
   end
 

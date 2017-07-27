@@ -27,7 +27,8 @@ defmodule Cotoami.CotoGraphService do
     Bolt.Sips.query!(conn, query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
       cotos = graph.cotos |> Map.put(node.properties["uuid"], node.properties)
-      root_connections = [rel.properties | graph.root_connections]
+      connection = rel.properties |> Map.put("id", rel.id)
+      root_connections = [connection | graph.root_connections]
       %{graph | cotos: cotos, root_connections: root_connections}
     end)
   end
