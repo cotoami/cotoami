@@ -17,6 +17,10 @@ defmodule Cotoami.CotoGraphService do
     get_graph_from_uuid(amishi_id)
   end
 
+  def get_graph(%Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid(cotonoma_coto_id)
+  end
+
   defp get_graph_from_uuid(uuid) do
     conn = Bolt.Sips.conn
     query = ~s"""
