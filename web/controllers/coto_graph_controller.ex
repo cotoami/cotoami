@@ -20,4 +20,24 @@ defmodule Cotoami.CotoGraphController do
         json conn, CotoGraphService.get_graph(cotonoma)
     end
   end
+
+  def pin(conn, %{"coto_id" => coto_id}, amishi) do
+    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    case coto do
+      nil ->
+        send_resp(conn, :not_found, "coto not found: #{coto_id}")
+      coto ->
+        json conn, CotoGraphService.pin(coto, amishi)
+    end
+  end
+
+  def pin_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
+    cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
+    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    if cotonoma && coto do
+      json conn, CotoGraphService.pin(coto, cotonoma, amishi)
+    else
+      send_resp(conn, :not_found, "cotonoma or coto not found")
+    end
+  end
 end
