@@ -47,7 +47,7 @@ defmodule Cotoami.CotoGraphService do
     props = %{
       content: coto.content,
       amishi_id: coto.amishi_id,
-      cotonoma_key: if coto.as_cotonoma, do: coto.cotonoma.key, else: nil,
+      cotonoma_key: (if coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
       posted_in: coto.posted_in_id,
       inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
