@@ -61,8 +61,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       {coto_id, coto2_id} = {coto.id, coto2.id}
       assert %{
         "cotos" => %{
-          ^coto_id => %{"uuid" => ^coto_id},
-          ^coto2_id => %{"uuid" => ^coto2_id}
+          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
         },
         "root_connections" => [
           %{"end" => ^coto_id, "order" => 1},
@@ -107,6 +107,34 @@ defmodule Cotoami.CotoGraphControllerTest do
             "created_at" => _created_at,
             "created_by" => ^amishi_id
           }
+        ],
+        "connections" => %{}
+      } = json_response(conn, 200)
+    end
+
+    test "GET /api/pin/:cotonoma_key/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+
+      build_conn()
+      |> put_req_header("host", "localhost")
+      |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> assign(:amishi, amishi)
+      |> put("/api/pin/#{cotonoma.key}/#{coto2.id}")
+
+      conn =
+        build_conn()
+        |> assign(:amishi, amishi)
+        |> get("/api/graph/#{cotonoma.key}")
+
+      {coto_id, coto2_id} = {coto.id, coto2.id}
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
+        },
+        "root_connections" => [
+          %{"end" => ^coto_id, "order" => 1},
+          %{"end" => ^coto2_id, "order" => 2}
         ],
         "connections" => %{}
       } = json_response(conn, 200)
