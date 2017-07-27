@@ -72,6 +72,7 @@ defmodule Cotoami.CotoGraphServiceTest do
         root_connections: [
           %{
             "id" => _rel_id,
+            "end" => ^coto_id,
             "order" => 1,
             "created_at" => _created_at,
             "created_by" => ^amishi_id

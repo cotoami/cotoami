@@ -3,6 +3,7 @@ defmodule Cotoami.CotoGraphController do
   require Logger
   alias Cotoami.CotoGraphService
   alias Cotoami.CotonomaService
+  alias Cotoami.Coto
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
