@@ -5,12 +5,32 @@ defmodule Cotoami.CotoGraphService do
   alias Cotoami.Amishi
   alias Cotoami.Cotonoma
   alias Cotoami.Neo4jService
+  alias Cotoami.CotoGraph
 
   @label_amishi "Amishi"
   @label_coto "Coto"
   @label_cotonoma "Cotonoma"
 
   @rel_type_has_a "HAS_A"
+
+  def get_graph(%Amishi{id: amishi_id}) do
+    get_graph_from_uuid(amishi_id)
+  end
+
+  defp get_graph_from_uuid(uuid) do
+    conn = Bolt.Sips.conn
+    query = ~s"""
+      MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(pinned:#{@label_coto})
+      RETURN has, pinned
+      ORDER BY has.#{Neo4jService.rel_prop_order()} DESC
+    """
+    Bolt.Sips.query!(conn, query, %{uuid: uuid})
+    |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
+      cotos = graph.cotos |> Map.put(node.properties["uuid"], node.properties)
+      root_connections = [rel.properties | graph.root_connections]
+      %{graph | cotos: cotos, root_connections: root_connections}
+    end)
+  end
 
   def pin(%Coto{} = coto, %Amishi{} = amishi) do
     Bolt.Sips.conn
@@ -25,7 +45,7 @@ defmodule Cotoami.CotoGraphService do
     |> register_coto(coto)
     |> register_cotonoma(cotonoma)
     |> Neo4jService.get_or_create_ordered_relationship!(
-      cotonoma.coto.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id))
+      cotonoma.coto.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id, cotonoma.id))
   end
 
   def unpin(%Coto{id: coto_id}, %Amishi{id: amishi_id}) do

@@ -5,6 +5,8 @@ defmodule Cotoami.Neo4jService do
 
   @rel_prop_order "order"
 
+  def rel_prop_order, do: @rel_prop_order
+
   def get_or_create_node!(conn, uuid, labels \\ [], props \\ %{}) do
     set_labels =
       if length(labels) > 0,

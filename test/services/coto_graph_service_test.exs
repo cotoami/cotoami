@@ -54,6 +54,10 @@ defmodule Cotoami.CotoGraphServiceTest do
       CotoGraphService.unpin(coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
+
+    test "graph", %{amishi: amishi} do
+      assert "" = CotoGraphService.get_graph(amishi)
+    end
   end
 
   describe "cotos pinned to a cotonoma" do
@@ -68,6 +72,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "pin", %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       amishi_id = amishi.id
+      cotonoma_id = cotonoma.id
       cotonoma_coto_id = cotonoma.coto.id
 
       coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
@@ -91,6 +96,7 @@ defmodule Cotoami.CotoGraphServiceTest do
           properties: %{
             "created_at" => _created_at,
             "created_by" => ^amishi_id,
+            "created_in" => ^cotonoma_id,
             "order" => 1
           },
           type: "HAS_A"
