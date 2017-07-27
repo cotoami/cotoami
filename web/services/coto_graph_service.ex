@@ -32,9 +32,9 @@ defmodule Cotoami.CotoGraphService do
     Bolt.Sips.conn
     |> Neo4jService.delete_relationship!(amishi_id, coto_id, @rel_type_has_a)
   end
-  def unpin(%Coto{id: coto_id}, %Cotonoma{id: cotonoma_id}) do
+  def unpin(%Coto{id: coto_id}, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
     Bolt.Sips.conn
-    |> Neo4jService.delete_relationship!(cotonoma_id, coto_id, @rel_type_has_a)
+    |> Neo4jService.delete_relationship!(cotonoma_coto_id, coto_id, @rel_type_has_a)
   end
 
   defp register_amishi(conn, %Amishi{id: amishi_id}) do

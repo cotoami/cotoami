@@ -7,7 +7,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   alias Cotoami.CotonomaService
   alias Bolt.Sips.Types.Relationship
 
-  describe "an amishi has cotos" do
+  describe "cotos pinned to an amishi" do
     setup do
       conn = Bolt.Sips.conn
       amishi = AmishiService.create!("amishi@example.com")
@@ -56,7 +56,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
-  describe "a cotonoma has cotos" do
+  describe "cotos pinned to a cotonoma" do
     setup do
       conn = Bolt.Sips.conn
       amishi = AmishiService.create!("amishi@example.com")
@@ -96,6 +96,11 @@ defmodule Cotoami.CotoGraphServiceTest do
           type: "HAS_A"
         }
       ] = Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
+    end
+
+    test "unpin", %{conn: conn, coto: coto, cotonoma: cotonoma} do
+      CotoGraphService.unpin(coto, cotonoma)
+      assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
 end
