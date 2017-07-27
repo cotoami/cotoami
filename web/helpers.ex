@@ -1,5 +1,7 @@
 defmodule Cotoami.Helpers do
-  def and_then(value, function) when is_function(function) do
-    function.(value)
+  def drop_nil(map) when is_map(map) do
+    map
+    |> Enum.filter(fn {_, v} -> v != nil end)
+    |> Enum.into(%{})
   end
 end
