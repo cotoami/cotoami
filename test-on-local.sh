@@ -21,7 +21,7 @@ export COTOAMI_TEST_REPO_PORT=15432
 export DOCKER_POSTGRES_ID=$(docker run -d \
   -p $COTOAMI_TEST_REPO_PORT:5432 \
   -e POSTGRES_PASSWORD=postgres \
-  postgres:alpine)
+  postgres:9.5-alpine)
 echo "  waiting for postgres to be launched..."
 while ! nc -z $DOCKER_HOST_IP $COTOAMI_TEST_REPO_PORT; do
   sleep 1s
