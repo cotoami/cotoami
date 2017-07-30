@@ -6,7 +6,7 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Route exposing (Route)
-import App.Types exposing (..)
+import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
@@ -26,7 +26,7 @@ type alias MemberConnCounts = Dict.Dict AmishiId Int
 type alias Model =
     { route : Route
     , context : Context
-    , viewInMobile : ViewInMobile
+    , activeViewOnMobile : ActiveViewOnMobile
     , navigationToggled : Bool
     , navigationOpen : Bool
     , members : List Amishi
@@ -64,7 +64,7 @@ initModel seed route =
         , deselecting = Set.empty
         , ctrlDown = False
         }
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
     , members = []
@@ -147,7 +147,7 @@ openTraversal description cotoId model =
               description
               cotoId
               model.traversals
-    , viewInMobile = TraversalsView
+    , activeViewOnMobile = TraversalsView
     }
 
 

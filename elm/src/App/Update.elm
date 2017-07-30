@@ -7,7 +7,7 @@ import Time
 import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
-import App.Types exposing (..)
+import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 import App.Graph exposing (..)
@@ -98,9 +98,9 @@ update msg model =
             , navigationOpen = (not model.navigationOpen)
             } ! []
 
-        SwitchViewInMobile view ->
+        SwitchViewOnMobile view ->
             { model
-            | viewInMobile = view
+            | activeViewOnMobile = view
             } ! []
 
         HomeClick ->
@@ -500,7 +500,7 @@ loadHome model =
     , connectingTo = Nothing
     , graph = initGraph
     , traversals = Components.Traversals.Model.initModel
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     } !
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -526,7 +526,7 @@ loadCotonoma key model =
     , connectingTo = Nothing
     , graph = initGraph
     , traversals = Components.Traversals.Model.initModel
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     } !
         [ fetchRecentCotonomas
         , fetchCotonoma key

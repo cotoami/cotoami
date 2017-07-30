@@ -1,6 +1,7 @@
-module App.Types exposing (..)
+module App.ActiveViewOnMobile exposing (..)
 
-type ViewInMobile
+
+type ActiveViewOnMobile
     = TimelineView
     | PinnedView
     | TraversalsView
