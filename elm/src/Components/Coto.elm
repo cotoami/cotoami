@@ -4,7 +4,7 @@ import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Context, isSelected)
+import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Graph exposing (Graph, pinned, hasChildren)
 

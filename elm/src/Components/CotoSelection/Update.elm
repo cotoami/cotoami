@@ -5,13 +5,8 @@ import Task
 import Process
 import Time
 import Maybe exposing (andThen, withDefault)
-import App.Types exposing
-    ( Context
-    , clearSelection
-    , deleteSelection
-    , setBeingDeselected
-    , ViewInMobile(..)
-    )
+import App.Types exposing (ViewInMobile(..))
+import App.Types.Context exposing (Context, clearSelection, deleteSelection, setBeingDeselected)
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)

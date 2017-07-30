@@ -3,7 +3,7 @@ module Components.Timeline.Update exposing (..)
 import Json.Decode as Decode
 import Keys exposing (ctrl, meta, enter)
 import Utils exposing (isBlank, send)
-import App.Types exposing (Context)
+import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Channels exposing (Payload, decodePayload)
 import Components.Timeline.Model exposing (Post, defaultPost, Model, decodePost)
