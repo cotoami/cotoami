@@ -10,13 +10,15 @@ defmodule Cotoami.Redix do
   @redix_pool_size 10
 
   def host() do
-    Application.get_env(:cotoami, __MODULE__, [])
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
     |> Keyword.get(:host)
     || @default_host
   end
 
   def port() do
-    Application.get_env(:cotoami, __MODULE__, [])
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
     |> Keyword.get(:port)
     || @default_port
   end

@@ -18,6 +18,8 @@ defmodule Cotoami.Email do
   end
 
   defp from do
-    Application.get_env(:cotoami, __MODULE__, []) |> Keyword.get(:from)
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:from)
   end
 end

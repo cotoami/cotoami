@@ -28,7 +28,7 @@ defmodule Cotoami.CotoGraphService do
       ORDER BY has.#{Neo4jService.rel_prop_order()} DESC
     """
     Bolt.Sips.conn
-    |>Bolt.Sips.query!(query, %{uuid: uuid})
+    |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
       coto_id = node.properties["uuid"]
       cotos = graph.cotos |> Map.put(coto_id, node.properties)
