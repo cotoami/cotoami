@@ -3,15 +3,8 @@ module Components.Timeline.Model exposing (..)
 import Json.Decode as Decode
 import Maybe exposing (andThen)
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing
-    ( Coto
-    , CotoId
-    , Amishi
-    , Cotonoma
-    , CotonomaKey
-    , decodeAmishi
-    , decodeCotonoma
-    )
+import App.Types.Amishi exposing (Amishi, decodeAmishi)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, decodeCotonoma)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577

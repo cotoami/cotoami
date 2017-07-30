@@ -3,8 +3,10 @@ module Components.Navigation exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
-import App.Types exposing (Cotonoma, Amishi, MemberConnCounts)
-import App.Model exposing (Model, isPresent)
+import App.Types.Coto exposing (Cotonoma)
+import App.Types.Amishi exposing (Amishi)
+import App.Types.MemberPresences exposing (MemberPresences, isPresent)
+import App.Model exposing (Model)
 import App.Messages exposing (Msg)
 import Components.Cotonomas
 
@@ -27,7 +29,7 @@ view model =
     ]
 
 
-cotonomaNav : MemberConnCounts -> List Amishi -> Cotonoma -> Html Msg
+cotonomaNav : MemberPresences -> List Amishi -> Cotonoma -> Html Msg
 cotonomaNav memberPresences members cotonoma =
     div [ class "members" ]
         [ div [ class "navigation-title" ] [ text "Members" ]

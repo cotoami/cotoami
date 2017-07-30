@@ -8,7 +8,7 @@ import Process
 import Time
 import Http exposing (Request)
 import Utils
-import App.Types exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma)
 import Components.Timeline.Model exposing (Post, decodePost)
 import Components.Timeline.Messages exposing (..)
 

@@ -5,14 +5,8 @@ import Task
 import Process
 import Time
 import Maybe exposing (andThen, withDefault)
-import App.Types exposing
-    ( CotoId
-    , Context
-    , clearSelection
-    , deleteSelection
-    , setBeingDeselected
-    , ViewInMobile(..)
-    )
+import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
+import App.Types.Context exposing (Context, clearSelection, deleteSelection, setBeingDeselected)
 import App.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
@@ -47,8 +41,8 @@ update msg model =
             | context = clearSelection model.context
             , connectMode = False
             , connectModalOpen = False
-            , viewInMobile =
-                case model.viewInMobile of
+            , activeViewOnMobile =
+                case model.activeViewOnMobile of
                     SelectionView -> TimelineView
                     anotherView -> anotherView
             } ! []
@@ -62,13 +56,13 @@ update msg model =
         SetConnectMode enabled ->
             { model
             | connectMode = enabled
-            , viewInMobile =
+            , activeViewOnMobile =
                 if enabled then
-                    case model.viewInMobile of
+                    case model.activeViewOnMobile of
                         SelectionView -> TimelineView
                         anotherView -> anotherView
                 else
-                    model.viewInMobile
+                    model.activeViewOnMobile
             } ! []
 
         CotoSelectionTitleInput title ->
@@ -124,7 +118,7 @@ pinSelectedCotos model =
             { model
             | graph = graph
             , context = clearSelection model.context
-            , viewInMobile = PinnedView
+            , activeViewOnMobile = PinnedView
             }
 
 

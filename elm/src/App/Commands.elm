@@ -3,16 +3,9 @@ module App.Commands exposing (..)
 import Http
 import Json.Decode as Decode
 import Utils
-import App.Types
-    exposing
-        ( Amishi
-        , CotoId
-        , Cotonoma
-        , CotonomaKey
-        , decodeSession
-        , decodeAmishi
-        , decodeCotonoma
-        )
+import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey, decodeCotonoma)
+import App.Types.Amishi exposing (Amishi, decodeAmishi)
+import App.Types.Session exposing (decodeSession)
 import App.Messages exposing (..)
 import Components.Timeline.Model exposing (decodePost)
 

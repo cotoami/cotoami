@@ -1,7 +1,7 @@
 module Components.CotonomaModal.Messages exposing (..)
 
 import Http
-import App.Types exposing (Amishi)
+import App.Types.Amishi exposing (Amishi)
 import Components.Timeline.Model exposing (Post)
 
 

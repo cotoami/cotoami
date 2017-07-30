@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Modal
-import App.Types exposing (Coto, CotoId)
+import App.Types.Coto exposing (Coto, CotoId)
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Markdown

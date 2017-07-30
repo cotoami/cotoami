@@ -3,7 +3,7 @@ module Components.CotonomaModal.Commands exposing (..)
 import Json.Encode as Encode
 import Http
 import Utils
-import App.Types exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma)
 import Components.Timeline.Model exposing (decodePost)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)

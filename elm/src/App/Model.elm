@@ -5,7 +5,12 @@ import Dict
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
-import App.Types exposing (..)
+import App.Route exposing (Route)
+import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
+import App.Types.Context exposing (Context)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Amishi exposing (Amishi, AmishiId)
+import App.Types.MemberPresences exposing (MemberPresences)
 import App.Graph exposing (Graph, initGraph, addConnections)
 import Components.ConfirmModal.Model
 import Components.SigninModal
@@ -19,11 +24,11 @@ import Components.Traversals.Model exposing (Description)
 type alias Model =
     { route : Route
     , context : Context
-    , viewInMobile : ViewInMobile
+    , activeViewOnMobile : ActiveViewOnMobile
     , navigationToggled : Bool
     , navigationOpen : Bool
     , members : List Amishi
-    , memberPresences : MemberConnCounts
+    , memberPresences : MemberPresences
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -57,7 +62,7 @@ initModel seed route =
         , deselecting = Set.empty
         , ctrlDown = False
         }
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
     , members = []
@@ -105,11 +110,6 @@ openSigninModal model =
     }
 
 
-isPresent : AmishiId -> MemberConnCounts -> Bool
-isPresent amishiId memberPresences =
-    (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0
-
-
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
     (isNothing model.context.cotonoma)
@@ -140,7 +140,7 @@ openTraversal description cotoId model =
               description
               cotoId
               model.traversals
-    , viewInMobile = TraversalsView
+    , activeViewOnMobile = TraversalsView
     }
 
 

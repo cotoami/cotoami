@@ -3,16 +3,16 @@
 div.traversal {
   flex: 1;
   position: relative;
-  
+
   div.column-header {
     position: relative;
     margin-bottom: 5px;
     padding-top: 8px;
     text-align: center;
-    
+
     span.description {
       color: gray;
-      
+
       span.text {
         margin-left: 5px;
         vertical-align: top;
@@ -21,26 +21,26 @@ div.traversal {
         opacity: 0.8;
       }
     }
-    
+
     a.close-traversal {
       position: absolute;
       right: 4px;
     }
   }
-  
+
   div.column-body {
     position: absolute;
     top: 32px;
     bottom: 0;
     left: 0;
     right: 0;
-    
+
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 5px;
     padding-bottom: 60px;
-    
+
     div.coto {
       div.coto-header {
         i.connected {
@@ -48,30 +48,30 @@ div.traversal {
         }
       }
     }
-    
+
     div.main-sub-border {
       padding-top: 3px;
       border-bottom: 1px solid #eee;
     }
-    
+
     div.sub-cotos {
       div.outbound-conn {
         margin-top: 8px;
         border-left: 3px solid #ddd;
         border-radius: 4px 4px 4px 4px;
-        
+
         div.coto {
           padding-bottom: 0;
           border-style: none;
           box-shadow: none;
-          
+
           div.coto-inner {
             padding: 6px 12px;
-            
+
             div.coto-header {
               min-height: auto;
             }
-            
+
             div.coto-body {
               span.coto-tools {
                 right: -10px;
@@ -79,17 +79,17 @@ div.traversal {
             }
           }
         }
-        
+
         &.traversed {
           border: 1px dashed #ffdd33 !important;
-          
+
           div.coto {
             background-color: #ffffdd;
           }
         }
       }
     }
-    
+
     div.step {
       div.arrow {
         margin-top: 10px;
@@ -112,20 +112,20 @@ div.traversal {
   padding: 0 5px;
   background-color: #fff;
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
-  
+
   div.button-container {
     flex: 1;
     padding: 5px;
     text-align: center;
-    
+
     button {
       width: 100%;
     }
   }
 }
-.traversals-view-in-mobile #traversals-pagination {
+.traversals-view-on-mobile #traversals-pagination {
   display: flex;
-  
+
   @media (#{$wide-viewport}) {
     display: none;
   }

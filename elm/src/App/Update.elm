@@ -7,11 +7,14 @@ import Time
 import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
-import App.Types exposing (..)
+import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
+import App.Types.Context exposing (..)
+import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.MemberPresences exposing (MemberPresences)
 import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Routing exposing (parseLocation)
+import App.Route exposing (parseLocation, Route(..))
 import App.Commands exposing
     ( fetchRecentCotonomas
     , fetchSubCotonomas
@@ -60,8 +63,9 @@ update msg model =
 
         SessionFetched (Ok session) ->
             { model
-            | context = model.context
-                |> \context -> { context | session = Just session }
+            | context =
+                model.context
+                    |> \context -> { context | session = Just session }
             } ! []
 
         SessionFetched (Err error) ->
@@ -95,9 +99,9 @@ update msg model =
             , navigationOpen = (not model.navigationOpen)
             } ! []
 
-        SwitchViewInMobile view ->
+        SwitchViewOnMobile view ->
             { model
-            | viewInMobile = view
+            | activeViewOnMobile = view
             } ! []
 
         HomeClick ->
@@ -444,7 +448,7 @@ openCoto maybeCoto model =
         |> \modal -> { modal | open = True , coto =  maybeCoto }
     }
 
-applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
+applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
     (Dict.foldl
@@ -497,7 +501,7 @@ loadHome model =
     , connectingTo = Nothing
     , graph = initGraph
     , traversals = Components.Traversals.Model.initModel
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     } !
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
@@ -523,7 +527,7 @@ loadCotonoma key model =
     , connectingTo = Nothing
     , graph = initGraph
     , traversals = Components.Traversals.Model.initModel
-    , viewInMobile = TimelineView
+    , activeViewOnMobile = TimelineView
     } !
         [ fetchRecentCotonomas
         , fetchCotonoma key

@@ -1,8 +1,14 @@
-module App.Routing exposing (..)
+module App.Route exposing (..)
 
 import Navigation exposing (Location)
-import App.Types exposing (Route(..))
 import UrlParser exposing (..)
+import App.Types.Coto exposing (CotonomaKey)
+
+
+type Route
+    = HomeRoute
+    | CotonomaRoute CotonomaKey
+    | NotFoundRoute
 
 
 matchers : Parser (Route -> a) a

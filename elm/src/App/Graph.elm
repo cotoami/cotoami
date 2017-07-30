@@ -1,11 +1,14 @@
 module App.Graph exposing (..)
 
 import Dict
-import App.Types exposing (..)
+import Maybe exposing (withDefault)
+import Json.Decode as Decode
+import App.Types.Coto exposing (Coto, CotoId)
 
 
 type alias Connection =
     { key : String
+    , start : Maybe CotoId
     , end : CotoId
     }
 
@@ -13,15 +16,16 @@ type alias Connection =
 initConnection : Maybe CotoId -> CotoId -> Connection
 initConnection maybeStart end =
     let
-        startLabel =
-            case maybeStart of
-                Nothing -> "root"
-                Just start -> toString start
-        endLabel = toString end
+        key = (withDefault "root" maybeStart) ++ " -> " ++ end
     in
-        Connection
-            ("connection-" ++ startLabel ++ "-" ++ endLabel)
-            end
+        Connection key maybeStart end
+
+
+decodeConnection : Decode.Decoder Connection
+decodeConnection =
+    Decode.map2 initConnection
+        (Decode.maybe (Decode.field "start" Decode.string))
+        (Decode.field "end" Decode.string)
 
 
 type alias Graph =
