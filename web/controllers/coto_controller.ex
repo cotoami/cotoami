@@ -1,11 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.Repo
-  alias Cotoami.Coto
-  alias Cotoami.RedisService
-  alias Cotoami.CotoService
-  alias Cotoami.AmishiService
+  alias Cotoami.{Repo, Coto, RedisService, CotoService, AmishiService}
 
   plug :scrub_params, "coto" when action in [:create]
 

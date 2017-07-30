@@ -1,9 +1,7 @@
 defmodule Cotoami.SigninController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.RedisService
-  alias Cotoami.AmishiService
-  alias Cotoami.CotoService
+  alias Cotoami.{RedisService, AmishiService, CotoService}
 
   def request(conn, %{"email" => email, "save_anonymous" => save_anonymous}) do
     token = RedisService.generate_signin_token(email)
