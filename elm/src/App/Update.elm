@@ -60,8 +60,9 @@ update msg model =
 
         SessionFetched (Ok session) ->
             { model
-            | context = model.context
-                |> \context -> { context | session = Just session }
+            | context =
+                model.context
+                    |> \context -> { context | session = Just session }
             } ! []
 
         SessionFetched (Err error) ->
