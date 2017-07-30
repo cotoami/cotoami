@@ -5,7 +5,7 @@ import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
 import App.Types.Coto exposing (CotonomaKey)
-import App.Model exposing (MemberConnCounts)
+import App.Types.MemberPresences exposing (MemberPresences)
 import App.Messages exposing (..)
 import Components.Timeline.Messages
 
@@ -56,7 +56,7 @@ decodePresenceEntries =
                     (Decode.field "online_at" Decode.int)
 
 
-convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberConnCounts
+convertPresenceEntriesToConnCounts : List PresenceEntry -> MemberPresences
 convertPresenceEntriesToConnCounts entries =
     (List.map
         (\entry ->
@@ -69,7 +69,7 @@ convertPresenceEntriesToConnCounts entries =
         |> Dict.fromList
 
 
-decodePresenceState : Value -> MemberConnCounts
+decodePresenceState : Value -> MemberPresences
 decodePresenceState payload =
     case Decode.decodeValue decodePresenceEntries payload of
         Ok decodedPayload ->
@@ -81,7 +81,7 @@ decodePresenceState payload =
 
 -- https://hexdocs.pm/phoenix/Phoenix.Presence.html
 -- {leaves: {3: {metas: [{phx_ref: "7h9YpxuqCmM=", online_at: 1490350421829}]}}, joins: {}}
-decodePresenceDiff : Value -> ( MemberConnCounts, MemberConnCounts )
+decodePresenceDiff : Value -> ( MemberPresences, MemberPresences )
 decodePresenceDiff payload =
     (Decode.map2 (,)
         (Decode.field "joins" decodePresenceEntries)

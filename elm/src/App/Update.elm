@@ -10,6 +10,7 @@ import Navigation
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.MemberPresences exposing (MemberPresences)
 import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -447,7 +448,7 @@ openCoto maybeCoto model =
         |> \modal -> { modal | open = True , coto =  maybeCoto }
     }
 
-applyPresenceDiff : ( MemberConnCounts, MemberConnCounts ) -> MemberConnCounts -> MemberConnCounts
+applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
     (Dict.foldl

@@ -5,7 +5,8 @@ import Html.Attributes exposing (..)
 import Html.Keyed
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Amishi exposing (Amishi)
-import App.Model exposing (Model, isPresent, MemberConnCounts)
+import App.Types.MemberPresences exposing (MemberPresences, isPresent)
+import App.Model exposing (Model)
 import App.Messages exposing (Msg)
 import Components.Cotonomas
 
@@ -28,7 +29,7 @@ view model =
     ]
 
 
-cotonomaNav : MemberConnCounts -> List Amishi -> Cotonoma -> Html Msg
+cotonomaNav : MemberPresences -> List Amishi -> Cotonoma -> Html Msg
 cotonomaNav memberPresences members cotonoma =
     div [ class "members" ]
         [ div [ class "navigation-title" ] [ text "Members" ]

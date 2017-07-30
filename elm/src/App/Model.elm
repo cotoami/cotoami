@@ -10,6 +10,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
+import App.Types.MemberPresences exposing (MemberPresences)
 import App.Graph exposing (Graph, initGraph, addConnections)
 import Components.ConfirmModal.Model
 import Components.SigninModal
@@ -20,9 +21,6 @@ import Components.CotonomaModal.Model
 import Components.Traversals.Model exposing (Description)
 
 
-type alias MemberConnCounts = Dict.Dict AmishiId Int
-
-
 type alias Model =
     { route : Route
     , context : Context
@@ -30,7 +28,7 @@ type alias Model =
     , navigationToggled : Bool
     , navigationOpen : Bool
     , members : List Amishi
-    , memberPresences : MemberConnCounts
+    , memberPresences : MemberPresences
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModal : Components.ProfileModal.Model
@@ -110,11 +108,6 @@ openSigninModal model =
         model.signinModal
             |> \modal -> { modal | open = True }
     }
-
-
-isPresent : AmishiId -> MemberConnCounts -> Bool
-isPresent amishiId memberPresences =
-    (Dict.get amishiId memberPresences |> Maybe.withDefault 0) > 0
 
 
 isNavigationEmpty : Model -> Bool
