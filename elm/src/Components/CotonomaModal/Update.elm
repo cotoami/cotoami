@@ -1,7 +1,8 @@
 module Components.CotonomaModal.Update exposing (..)
 
 import Utils exposing (validateEmail)
-import App.Types exposing (Context, Session, Cotonoma)
+import App.Types exposing (Context, Cotonoma)
+import App.Types.Session exposing (Session)
 import App.Commands exposing (fetchAmishi)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages

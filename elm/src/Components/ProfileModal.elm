@@ -3,7 +3,7 @@ module Components.ProfileModal exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Modal
-import App.Types exposing (Session)
+import App.Types.Session exposing (Session)
 
 
 type alias Model =

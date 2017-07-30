@@ -1,7 +1,8 @@
 module Components.CotonomaModal.Model exposing (..)
 
-import App.Types exposing (Session)
 import App.Types.Amishi exposing (Amishi)
+import App.Types.Session exposing (Session)
+
 
 type Member = SignedUp Amishi | NotYetSignedUp String
 

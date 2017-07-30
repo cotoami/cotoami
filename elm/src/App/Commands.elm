@@ -8,10 +8,10 @@ import App.Types
         ( CotoId
         , Cotonoma
         , CotonomaKey
-        , decodeSession
         , decodeCotonoma
         )
 import App.Types.Amishi exposing (Amishi, decodeAmishi)
+import App.Types.Session exposing (decodeSession)
 import App.Messages exposing (..)
 import Components.Timeline.Model exposing (decodePost)
 

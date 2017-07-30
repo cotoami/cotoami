@@ -5,8 +5,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Utils exposing (isBlank)
 import Modal
-import App.Types exposing (Session, toAmishi)
 import App.Types.Amishi exposing (Amishi)
+import App.Types.Session exposing (Session, toAmishi)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 
