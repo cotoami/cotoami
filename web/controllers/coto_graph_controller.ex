@@ -38,7 +38,7 @@ defmodule Cotoami.CotoGraphController do
 
   def pin_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
     cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
-    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
     if cotonoma && coto do
       json conn, CotoGraphService.pin(coto, cotonoma, amishi)
     else
@@ -48,7 +48,7 @@ defmodule Cotoami.CotoGraphController do
 
   def unpin_from_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
     cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
-    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
     if cotonoma && coto do
       json conn, CotoGraphService.unpin(coto, cotonoma)
     else

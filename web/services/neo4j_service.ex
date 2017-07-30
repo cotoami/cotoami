@@ -1,7 +1,9 @@
 defmodule Cotoami.Neo4jService do
+  @moduledoc """
+  Provides basic functions for Neo4j graph database
+  """
+
   require Logger
-  alias Bolt.Sips.Types.Node
-  alias Bolt.Sips.Types.Relationship
 
   @rel_prop_order "order"
 
@@ -77,7 +79,8 @@ defmodule Cotoami.Neo4jService do
       RETURN r
       ORDER BY r.#{@rel_prop_order}
     """
-    Bolt.Sips.query!(conn, query, %{source_uuid: source_uuid})
+    conn
+    |> Bolt.Sips.query!(query, %{source_uuid: source_uuid})
     |> Enum.map(&(&1["r"]))
   end
 

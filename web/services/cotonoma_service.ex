@@ -12,19 +12,23 @@ defmodule Cotoami.CotonomaService do
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
         coto =
-          Coto.changeset(%Coto{}, %{
-            posted_in_id: cotonoma_id_nillable,
-            amishi_id: amishi_id,
-            content: name,
-            as_cotonoma: true
-          }) |> Repo.insert!
+          %Coto{}
+          |> Coto.changeset(%{
+              posted_in_id: cotonoma_id_nillable,
+              amishi_id: amishi_id,
+              content: name,
+              as_cotonoma: true
+            })
+          |> Repo.insert!
 
         cotonoma =
-          Cotonoma.changeset_new(%Cotonoma{}, %{
-            name: name,
-            coto_id: coto.id,
-            owner_id: amishi_id
-          }) |> Repo.insert!
+          %Cotonoma{}
+          |> Cotonoma.changeset_new(%{
+              name: name,
+              coto_id: coto.id,
+              owner_id: amishi_id
+            })
+          |> Repo.insert!
         cotonoma = %{cotonoma | coto: coto}
         coto = %{coto | cotonoma: cotonoma}
 
@@ -137,8 +141,8 @@ defmodule Cotoami.CotonomaService do
             |> Repo.all
             |> Enum.map(fn(coto) ->
               if coto.amishi.id != amishi_id do
-                anotherAmishi = AmishiService.append_gravatar_profile(coto.amishi)
-                %{coto | :amishi => anotherAmishi}
+                another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
+                %{coto | :amishi => another_amishi}
               else
                 coto
               end
