@@ -46,7 +46,6 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["DEL", anonymous_key(anonymous_id)])
   end
 
-
   #
   # Sign-in keys
   #
@@ -76,7 +75,6 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["DEL", signin_key(token)])
     email
   end
-
 
   #
   # Gravatar profile cache
