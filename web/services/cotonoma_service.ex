@@ -1,30 +1,34 @@
 defmodule Cotoami.CotonomaService do
+  @moduledoc """
+  Provides Cotonoma related functions.
+  """
+
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
-  alias Cotoami.Repo
-  alias Cotoami.Coto
-  alias Cotoami.Cotonoma
-  alias Cotoami.Member
-  alias Cotoami.AmishiService
+  alias Cotoami.{Repo, Coto, Cotonoma, Member, AmishiService}
 
   def create!(cotonoma_id_nillable, amishi_id, name, member_params \\ []) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
         coto =
-          Coto.changeset(%Coto{}, %{
-            posted_in_id: cotonoma_id_nillable,
-            amishi_id: amishi_id,
-            content: name,
-            as_cotonoma: true
-          }) |> Repo.insert!
+          %Coto{}
+          |> Coto.changeset(%{
+              posted_in_id: cotonoma_id_nillable,
+              amishi_id: amishi_id,
+              content: name,
+              as_cotonoma: true
+            })
+          |> Repo.insert!
 
         cotonoma =
-          Cotonoma.changeset_new(%Cotonoma{}, %{
-            name: name,
-            coto_id: coto.id,
-            owner_id: amishi_id
-          }) |> Repo.insert!
+          %Cotonoma{}
+          |> Cotonoma.changeset_new(%{
+              name: name,
+              coto_id: coto.id,
+              owner_id: amishi_id
+            })
+          |> Repo.insert!
         cotonoma = %{cotonoma | coto: coto}
         coto = %{coto | cotonoma: cotonoma}
 
@@ -46,18 +50,22 @@ defmodule Cotoami.CotonomaService do
           nil ->
             nil
           amishi ->
-            Member.changeset(%Member{}, %{
-              cotonoma_id: cotonoma.id,
-              amishi_id: amishi.id,
-              email: amishi.email
-            }) |> Repo.insert!
+            %Member{}
+            |> Member.changeset(%{
+                cotonoma_id: cotonoma.id,
+                amishi_id: amishi.id,
+                email: amishi.email
+              })
+            |> Repo.insert!
         end
 
       %{"email" => email} ->
-        Member.changeset(%Member{}, %{
-          cotonoma_id: cotonoma.id,
-          email: email
-        }) |> Repo.insert!
+        %Member{}
+        |> Member.changeset(%{
+            cotonoma_id: cotonoma.id,
+            email: email
+          })
+        |> Repo.insert!
 
       _ ->
         nil
@@ -79,13 +87,15 @@ defmodule Cotoami.CotonomaService do
   end
 
   def get(id, amishi_id) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Repo.get(id)
     |> append_gravatar_profile_to_owner()
   end
 
   def get_by_key(key, amishi_id) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Repo.get_by(key: key)
     |> append_gravatar_profile_to_owner()
   end
@@ -108,7 +118,8 @@ defmodule Cotoami.CotonomaService do
   end
 
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
     |> limit(100)
     |> Repo.all()
@@ -137,8 +148,8 @@ defmodule Cotoami.CotonomaService do
             |> Repo.all
             |> Enum.map(fn(coto) ->
               if coto.amishi.id != amishi_id do
-                anotherAmishi = AmishiService.append_gravatar_profile(coto.amishi)
-                %{coto | :amishi => anotherAmishi}
+                another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
+                %{coto | :amishi => another_amishi}
               else
                 coto
               end

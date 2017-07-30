@@ -1,7 +1,10 @@
 defmodule Cotoami.CotonomaChannel do
+  @moduledoc """
+  Realtime communication in a cotonoma.
+  """
+
   use Cotoami.Web, :channel
-  alias Cotoami.Presence
-  alias Cotoami.CotonomaService
+  alias Cotoami.{Presence, CotonomaService}
 
   def join("cotonomas:" <> cotonoma_key, _params, socket) do
     amishi_id = socket.assigns.amishi.id

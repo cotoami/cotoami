@@ -1,7 +1,6 @@
 defmodule Cotoami.CotonomaView do
   use Cotoami.Web, :view
-  alias Cotoami.CotoView
-  alias Cotoami.AmishiView
+  alias Cotoami.{CotoView, AmishiView}
 
   def render("index.json", %{rows: rows}) do
     render_many(rows, __MODULE__, "cotonoma.json")

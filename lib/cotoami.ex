@@ -1,4 +1,8 @@
 defmodule Cotoami do
+  @moduledoc """
+  The entrypoint of Cotoami app
+  """
+
   use Application
   require Logger
   require Prometheus.Registry

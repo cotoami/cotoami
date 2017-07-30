@@ -1,4 +1,8 @@
 defmodule Cotoami.Auth do
+  @moduledoc """
+  Provides authentication as a plug
+  """
+
   import Plug.Conn
   require Logger
   alias Cotoami.AmishiService
@@ -44,7 +48,7 @@ defmodule Cotoami.Auth do
   end
 
   defp generate_anonymous_id do
-    :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
+    30 |> :crypto.strong_rand_bytes() |> Base.hex_encode32(case: :lower)
   end
 
   defp assign_anonymous_id(conn, anonymous_id) do

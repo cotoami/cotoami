@@ -1,15 +1,13 @@
 defmodule Cotoami.SigninController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.RedisService
-  alias Cotoami.AmishiService
-  alias Cotoami.CotoService
-  
+  alias Cotoami.{RedisService, AmishiService, CotoService}
+
   def request(conn, %{"email" => email, "save_anonymous" => save_anonymous}) do
     token = RedisService.generate_signin_token(email)
-    anonymous_id = 
-      if save_anonymous == "yes", 
-        do: conn.assigns.anonymous_id, 
+    anonymous_id =
+      if save_anonymous == "yes",
+        do: conn.assigns.anonymous_id,
         else: "none"
     host_url = Cotoami.Router.Helpers.url(conn)
     email
@@ -17,13 +15,13 @@ defmodule Cotoami.SigninController do
     |> Cotoami.Mailer.deliver_now
     json conn, "ok"
   end
-  
+
   def signin(conn, %{"token" => token, "anonymous_id" => anonymous_id}) do
     case RedisService.get_signin_email(token) do
       nil ->
         text conn, "Invalid token: #{token}"
       email ->
-        amishi = 
+        amishi =
           case AmishiService.get_by_email(email) do
             nil -> AmishiService.create!(email)
             amishi -> amishi
@@ -35,13 +33,14 @@ defmodule Cotoami.SigninController do
         |> halt()
     end
   end
-  
+
   defp save_anonymous_cotos(anonymous_id, amishi_id) do
-    RedisService.get_cotos(anonymous_id)
+    anonymous_id
+    |> RedisService.get_cotos()
     |> Enum.each(fn(coto) ->
-      content = Map.get(coto, "content")
-      CotoService.create!(nil, amishi_id, content)
-    end)
+        content = Map.get(coto, "content")
+        CotoService.create!(nil, amishi_id, content)
+      end)
     RedisService.clear_cotos(anonymous_id)
   end
 end

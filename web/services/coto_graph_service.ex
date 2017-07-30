@@ -1,11 +1,11 @@
 defmodule Cotoami.CotoGraphService do
+  @moduledoc """
+  Provides Coto-graph related functions based on Cotoami.Neo4jService.
+  """
+
   require Logger
   import Cotoami.Helpers
-  alias Cotoami.Coto
-  alias Cotoami.Amishi
-  alias Cotoami.Cotonoma
-  alias Cotoami.Neo4jService
-  alias Cotoami.CotoGraph
+  alias Cotoami.{Coto, Amishi, Cotonoma, Neo4jService, CotoGraph}
 
   @label_amishi "Amishi"
   @label_coto "Coto"
@@ -22,13 +22,13 @@ defmodule Cotoami.CotoGraphService do
   end
 
   defp get_graph_from_uuid(uuid) do
-    conn = Bolt.Sips.conn
     query = ~s"""
       MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(pinned:#{@label_coto})
       RETURN has, pinned
       ORDER BY has.#{Neo4jService.rel_prop_order()} DESC
     """
-    Bolt.Sips.query!(conn, query, %{uuid: uuid})
+    Bolt.Sips.conn
+    |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
       coto_id = node.properties["uuid"]
       cotos = graph.cotos |> Map.put(coto_id, node.properties)
@@ -106,7 +106,8 @@ defmodule Cotoami.CotoGraphService do
     }
   end
   defp common_rel_props(amishi_id, cotonoma_id) do
-    common_rel_props(amishi_id)
+    amishi_id
+    |> common_rel_props()
     |> Map.put(:created_in, cotonoma_id)
   end
 end

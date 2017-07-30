@@ -35,6 +35,7 @@ defmodule Cotoami.Mixfile do
   defp deps do
     [
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:phoenix, "~> 1.2.1"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.0"},

@@ -1,14 +1,10 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.Repo
-  alias Cotoami.Coto
-  alias Cotoami.RedisService
-  alias Cotoami.CotoService
-  alias Cotoami.AmishiService
-  
+  alias Cotoami.{Repo, Coto, RedisService, CotoService, AmishiService}
+
   plug :scrub_params, "coto" when action in [:create]
-    
+
   def index(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
@@ -24,25 +20,25 @@ defmodule Cotoami.CotoController do
       %{amishi: amishi} ->
         cotonoma_id = coto_params["cotonoma_id"]
         content = coto_params["content"]
-        postId = coto_params["postId"]
-        
+        post_id = coto_params["postId"]
+
         {coto, posted_in} = CotoService.create!(cotonoma_id, amishi.id, content)
-        
+
         if posted_in do
-          %{coto | 
+          %{coto |
             :posted_in => posted_in,
             :amishi => AmishiService.append_gravatar_profile(amishi)
           } |> broadcast_post(posted_in.key, clientId)
         end
-        
-        render(conn, "created.json", coto: coto, postId: postId)
-        
+
+        render(conn, "created.json", coto: coto, postId: post_id)
+
       _ ->
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
     end
   end
-  
+
   def delete(conn, %{"id" => id}) do
     case conn.assigns do
       %{amishi: amishi} ->

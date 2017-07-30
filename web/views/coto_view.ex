@@ -1,15 +1,14 @@
 defmodule Cotoami.CotoView do
   use Cotoami.Web, :view
-  alias Cotoami.Cotonoma
-  alias Cotoami.CotonomaView
-  alias Cotoami.AmishiView
+  alias Cotoami.{Cotonoma, CotonomaView, AmishiView}
 
   def render("index.json", %{rows: rows}) do
     render_many(rows, __MODULE__, "coto.json")
   end
 
   def render("created.json", %{coto: coto, postId: postId}) do
-    render_one(coto, __MODULE__, "coto.json")
+    coto
+    |> render_one(__MODULE__, "coto.json")
     |> Map.put("postId", postId)
   end
 

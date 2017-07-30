@@ -1,4 +1,8 @@
 defmodule Cotoami.Email do
+  @moduledoc """
+  Emails sent by Cotoami app
+  """
+
   use Bamboo.Phoenix, view: Cotoami.EmailView
 
   def signin_link(email_address, token, anonymous_id, host_url) do
@@ -14,6 +18,8 @@ defmodule Cotoami.Email do
   end
 
   defp from do
-    Application.get_env(:cotoami, __MODULE__, []) |> Keyword.get(:from)
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:from)
   end
 end
