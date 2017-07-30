@@ -106,7 +106,8 @@ defmodule Cotoami.CotoGraphService do
     }
   end
   defp common_rel_props(amishi_id, cotonoma_id) do
-    common_rel_props(amishi_id)
+    amishi_id
+    |> common_rel_props()
     |> Map.put(:created_in, cotonoma_id)
   end
 end

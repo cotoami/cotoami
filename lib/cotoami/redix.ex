@@ -1,4 +1,8 @@
 defmodule Cotoami.Redix do
+  @moduledoc """
+  Provides Redix related functions hiding the connection pool handling
+  """
+
   require Logger
 
   @default_host "localhost"

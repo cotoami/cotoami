@@ -50,18 +50,22 @@ defmodule Cotoami.CotonomaService do
           nil ->
             nil
           amishi ->
-            Member.changeset(%Member{}, %{
-              cotonoma_id: cotonoma.id,
-              amishi_id: amishi.id,
-              email: amishi.email
-            }) |> Repo.insert!
+            %Member{}
+            |> Member.changeset(%{
+                cotonoma_id: cotonoma.id,
+                amishi_id: amishi.id,
+                email: amishi.email
+              })
+            |> Repo.insert!
         end
 
       %{"email" => email} ->
-        Member.changeset(%Member{}, %{
-          cotonoma_id: cotonoma.id,
-          email: email
-        }) |> Repo.insert!
+        %Member{}
+        |> Member.changeset(%{
+            cotonoma_id: cotonoma.id,
+            email: email
+          })
+        |> Repo.insert!
 
       _ ->
         nil

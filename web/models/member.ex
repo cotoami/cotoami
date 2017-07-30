@@ -1,4 +1,8 @@
 defmodule Cotoami.Member do
+  @moduledoc """
+  A member of a cotonoma has permission to view and post cotos in it.
+  """
+
   use Cotoami.Web, :model
 
   schema "members" do
