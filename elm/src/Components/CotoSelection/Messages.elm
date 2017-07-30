@@ -1,7 +1,7 @@
 module Components.CotoSelection.Messages exposing (..)
 
 import Http
-import App.Types exposing (Coto, CotoId, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 import Components.Timeline.Model exposing (Post)
 
 

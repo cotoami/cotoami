@@ -3,7 +3,7 @@ module App.Graph exposing (..)
 import Dict
 import Maybe exposing (withDefault)
 import Json.Decode as Decode
-import App.Types exposing (..)
+import App.Types.Coto exposing (Coto, CotoId)
 
 
 type alias Connection =

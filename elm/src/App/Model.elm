@@ -6,6 +6,7 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Types exposing (..)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Graph exposing (Graph, initGraph, addConnections)
 import Components.ConfirmModal.Model

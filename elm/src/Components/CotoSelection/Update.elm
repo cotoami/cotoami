@@ -6,8 +6,7 @@ import Process
 import Time
 import Maybe exposing (andThen, withDefault)
 import App.Types exposing
-    ( CotoId
-    , Context
+    ( Context
     , clearSelection
     , deleteSelection
     , setBeingDeselected

@@ -1,7 +1,7 @@
 module Components.Traversals.Model exposing (..)
 
 import Dict
-import App.Types exposing (..)
+import App.Types.Coto exposing (CotoId)
 
 
 type Description

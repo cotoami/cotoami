@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
-import App.Types exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma)
 import App.Messages exposing (Msg(CotonomaClick))
 
 

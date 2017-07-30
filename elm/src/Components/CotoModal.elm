@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Modal
-import App.Types exposing (Coto)
+import App.Types.Coto exposing (Coto)
 import App.Markdown
 
 

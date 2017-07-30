@@ -8,6 +8,7 @@ import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
 import App.Types exposing (..)
+import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
