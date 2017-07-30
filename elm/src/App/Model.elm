@@ -20,6 +20,9 @@ import Components.CotonomaModal.Model
 import Components.Traversals.Model exposing (Description)
 
 
+type alias MemberConnCounts = Dict.Dict AmishiId Int
+
+
 type alias Model =
     { route : Route
     , context : Context

@@ -4,8 +4,8 @@ import Dict
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
-import App.Types exposing (MemberConnCounts)
 import App.Types.Coto exposing (CotonomaKey)
+import App.Model exposing (MemberConnCounts)
 import App.Messages exposing (..)
 import Components.Timeline.Messages
 

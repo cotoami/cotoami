@@ -3,10 +3,9 @@ module Components.Navigation exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
-import App.Types exposing (MemberConnCounts)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Amishi exposing (Amishi)
-import App.Model exposing (Model, isPresent)
+import App.Model exposing (Model, isPresent, MemberConnCounts)
 import App.Messages exposing (Msg)
 import Components.Cotonomas
 
