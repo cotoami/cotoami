@@ -4,6 +4,7 @@ import Set
 import Dict
 import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
+import App.Types.Amishi exposing (..)
 
 
 type Route
@@ -17,26 +18,6 @@ type ViewInMobile
     | PinnedView
     | TraversalsView
     | SelectionView
-
-
-type alias AmishiId = String
-
-
-type alias Amishi =
-    { id : AmishiId
-    , email : String
-    , avatarUrl : String
-    , displayName : String
-    }
-
-
-decodeAmishi : Decode.Decoder Amishi
-decodeAmishi =
-    Decode.map4 Amishi
-        (Decode.field "id" Decode.string)
-        (Decode.field "email" Decode.string)
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "display_name" Decode.string)
 
 
 type alias Session =

@@ -6,12 +6,11 @@ import Exts.Maybe exposing (isNothing)
 import App.Types exposing
     ( Coto
     , CotoId
-    , Amishi
     , Cotonoma
     , CotonomaKey
-    , decodeAmishi
     , decodeCotonoma
     )
+import App.Types.Amishi exposing (Amishi, decodeAmishi)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577

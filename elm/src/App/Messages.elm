@@ -4,7 +4,8 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.Types exposing (Session, Amishi, Coto, CotoId, Cotonoma, CotonomaKey, ViewInMobile)
+import App.Types exposing (Session, Coto, CotoId, Cotonoma, CotonomaKey, ViewInMobile)
+import App.Types.Amishi exposing (Amishi)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal

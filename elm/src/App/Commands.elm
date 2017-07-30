@@ -5,14 +5,13 @@ import Json.Decode as Decode
 import Utils
 import App.Types
     exposing
-        ( Amishi
-        , CotoId
+        ( CotoId
         , Cotonoma
         , CotonomaKey
         , decodeSession
-        , decodeAmishi
         , decodeCotonoma
         )
+import App.Types.Amishi exposing (Amishi, decodeAmishi)
 import App.Messages exposing (..)
 import Components.Timeline.Model exposing (decodePost)
 
