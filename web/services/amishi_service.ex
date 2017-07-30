@@ -31,11 +31,12 @@ defmodule Cotoami.AmishiService do
   end
 
   def get_default_display_name(amishi) do
-    String.split(amishi.email, "@") |> List.first()
+    amishi.email |> String.split("@") |> List.first()
   end
 
   def create!(email) do
-    Amishi.changeset(%Amishi{}, %{email: email})
+    %Amishi{}
+    |> Amishi.changeset(%{email: email})
     |> Repo.insert!
   end
 
@@ -54,7 +55,8 @@ defmodule Cotoami.AmishiService do
   end
 
   defp decode_gravatar_profile_json(json) do
-    Poison.decode!(json)
+    json
+    |> Poison.decode!()
     |> Map.get("entry")
     |> List.first
   end
@@ -75,6 +77,6 @@ defmodule Cotoami.AmishiService do
   end
 
   defp email_hash(email) do
-    :crypto.hash(:md5, email) |> Base.encode16(case: :lower)
+    :md5 |> :crypto.hash(email) |> Base.encode16(case: :lower)
   end
 end

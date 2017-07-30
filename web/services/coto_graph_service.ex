@@ -22,13 +22,13 @@ defmodule Cotoami.CotoGraphService do
   end
 
   defp get_graph_from_uuid(uuid) do
-    conn = Bolt.Sips.conn
     query = ~s"""
       MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(pinned:#{@label_coto})
       RETURN has, pinned
       ORDER BY has.#{Neo4jService.rel_prop_order()} DESC
     """
-    Bolt.Sips.query!(conn, query, %{uuid: uuid})
+    Bolt.Sips.conn
+    |>Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
       coto_id = node.properties["uuid"]
       cotos = graph.cotos |> Map.put(coto_id, node.properties)
