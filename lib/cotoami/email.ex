@@ -1,4 +1,8 @@
 defmodule Cotoami.Email do
+  @moduledoc """
+  Emails sent by Cotoami app
+  """
+
   use Bamboo.Phoenix, view: Cotoami.EmailView
 
   def signin_link(email_address, token, anonymous_id, host_url) do

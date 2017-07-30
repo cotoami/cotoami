@@ -18,11 +18,10 @@ defmodule Cotoami.ApiCsrfProtection do
   end
 
   def call(conn, _opts) do
-    cond do
-      verified_request?(conn) ->
-        conn
-      true ->
-        raise InvalidApiRequestError
+    if verified_request?(conn) do
+      conn
+    else
+      raise InvalidApiRequestError
     end
   end
 

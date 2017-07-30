@@ -28,7 +28,10 @@ defmodule Cotoami.Cotonoma do
   end
 
   defp generate_key(changeset) do
-    key = :crypto.strong_rand_bytes(@key_length) |> Base.hex_encode32(case: :lower)
+    key =
+      @key_length
+      |> :crypto.strong_rand_bytes()
+      |> Base.hex_encode32(case: :lower)
     changeset |> put_change(:key, key)
   end
 
