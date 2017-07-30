@@ -1,8 +1,7 @@
 module Main exposing (..)
 
 import Navigation exposing (Location)
-import App.Types exposing (..)
-import App.Routing exposing (parseLocation)
+import App.Route exposing (parseLocation, Route(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Update exposing (update, loadHome, loadCotonoma)

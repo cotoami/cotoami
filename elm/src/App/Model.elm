@@ -5,6 +5,7 @@ import Dict
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
+import App.Route exposing (Route)
 import App.Types exposing (..)
 import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)

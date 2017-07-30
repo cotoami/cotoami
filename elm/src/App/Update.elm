@@ -13,7 +13,7 @@ import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 import App.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Routing exposing (parseLocation)
+import App.Route exposing (parseLocation, Route(..))
 import App.Commands exposing
     ( fetchRecentCotonomas
     , fetchSubCotonomas
