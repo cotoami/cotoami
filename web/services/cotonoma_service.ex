@@ -1,11 +1,11 @@
 defmodule Cotoami.CotonomaService do
+  @moduledoc """
+  Provides Cotonoma related functions.
+  """
+
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
-  alias Cotoami.Repo
-  alias Cotoami.Coto
-  alias Cotoami.Cotonoma
-  alias Cotoami.Member
-  alias Cotoami.AmishiService
+  alias Cotoami.{Repo, Coto, Cotonoma, Member, AmishiService}
 
   def create!(cotonoma_id_nillable, amishi_id, name, member_params \\ []) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
@@ -83,13 +83,15 @@ defmodule Cotoami.CotonomaService do
   end
 
   def get(id, amishi_id) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Repo.get(id)
     |> append_gravatar_profile_to_owner()
   end
 
   def get_by_key(key, amishi_id) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Repo.get_by(key: key)
     |> append_gravatar_profile_to_owner()
   end
@@ -112,7 +114,8 @@ defmodule Cotoami.CotonomaService do
   end
 
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
-    base_query_for_amishi(amishi_id)
+    amishi_id
+    |> base_query_for_amishi()
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
     |> limit(100)
     |> Repo.all()

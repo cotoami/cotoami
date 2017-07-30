@@ -64,7 +64,7 @@ defmodule Cotoami.RedisService do
 
   # Ensure the newly generated signin token is unique
   defp put_signin_token(email) do
-    token = :crypto.strong_rand_bytes(30) |> Base.hex_encode32(case: :lower)
+    token = 30 |> :crypto.strong_rand_bytes() |> Base.hex_encode32(case: :lower)
     case Cotoami.Redix.command!(["SETNX", signin_key(token), email]) do
       1 -> token
       0 -> put_signin_token(email)

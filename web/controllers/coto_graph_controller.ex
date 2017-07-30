@@ -1,9 +1,7 @@
 defmodule Cotoami.CotoGraphController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.CotoGraphService
-  alias Cotoami.CotonomaService
-  alias Cotoami.Coto
+  alias Cotoami.{CotoGraphService, CotonomaService, Coto}
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
@@ -21,7 +19,7 @@ defmodule Cotoami.CotoGraphController do
   end
 
   def pin(conn, %{"coto_id" => coto_id}, amishi) do
-    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
     case coto do
       nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")
       coto -> json conn, CotoGraphService.pin(coto, amishi)
@@ -29,7 +27,7 @@ defmodule Cotoami.CotoGraphController do
   end
 
   def unpin(conn, %{"coto_id" => coto_id}, amishi) do
-    coto = Coto.for_amishi(Coto, amishi.id) |> Repo.get!(coto_id)
+    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
     case coto do
       nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")
       coto -> json conn, CotoGraphService.unpin(coto, amishi)

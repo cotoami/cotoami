@@ -1,11 +1,11 @@
 defmodule Cotoami.CotoGraphService do
+  @moduledoc """
+  Provides Coto-graph related functions based on Cotoami.Neo4jService.
+  """
+
   require Logger
   import Cotoami.Helpers
-  alias Cotoami.Coto
-  alias Cotoami.Amishi
-  alias Cotoami.Cotonoma
-  alias Cotoami.Neo4jService
-  alias Cotoami.CotoGraph
+  alias Cotoami.{Coto, Amishi, Cotonoma, Neo4jService, CotoGraph}
 
   @label_amishi "Amishi"
   @label_coto "Coto"

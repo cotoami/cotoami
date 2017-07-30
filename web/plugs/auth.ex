@@ -1,4 +1,8 @@
 defmodule Cotoami.Auth do
+  @moduledoc """
+  Provides authentication as a plug
+  """
+
   import Plug.Conn
   require Logger
   alias Cotoami.AmishiService
