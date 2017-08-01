@@ -22,8 +22,8 @@ decodePost =
         (Decode.succeed False)
 
 
-fetchCotonoma : CotonomaKey -> Cmd Msg
-fetchCotonoma key =
+fetchCotonomaPosts : CotonomaKey -> Cmd Msg
+fetchCotonomaPosts key =
     Http.send CotonomaFetched
         <| Http.get ("/api/cotonomas/" ++ key ++ "/cotos")
         <| Decode.map3 (,,)
