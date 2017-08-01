@@ -11,7 +11,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
-import App.Graph exposing (Graph, initGraph, addConnections)
+import App.Types.Graph exposing (Graph, initGraph, addConnections)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal

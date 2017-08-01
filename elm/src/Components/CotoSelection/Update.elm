@@ -7,7 +7,7 @@ import Time
 import Maybe exposing (andThen, withDefault)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context, clearSelection, deleteSelection, setBeingDeselected)
-import App.Graph exposing (addConnections, addRootConnections)
+import App.Types.Graph exposing (addConnections, addRootConnections)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
 import Components.Timeline.Update exposing (postContent, setCotoSaved)

@@ -8,7 +8,7 @@ import Html.Keyed
 import Utils exposing (onClickWithoutPropagation)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Graph exposing (..)
+import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
