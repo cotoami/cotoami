@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Utils exposing (onClickWithoutPropagation)
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Graph exposing (Graph, pinned, hasChildren)
+import App.Types.Graph exposing (Graph, pinned, hasChildren)
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -33,7 +33,7 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
                 , (attribute "aria-hidden" "true")
                 ]
                 []
-          else if App.Graph.member coto.id graph then
+          else if App.Types.Graph.member coto.id graph then
             i
                 [ class "connected fa fa-share-alt"
                 , (attribute "aria-hidden" "true")
@@ -112,7 +112,7 @@ cotoToolsSpan context graph config cotoId =
                 span [] []
 
             Just openTraversal ->
-                if App.Graph.member cotoId graph then
+                if App.Types.Graph.member cotoId graph then
                     a
                         [ class "tool-button traverse-coto"
                         , title "Open coto traversal"

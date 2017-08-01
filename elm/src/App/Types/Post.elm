@@ -1,0 +1,72 @@
+module App.Types.Post exposing (..)
+
+import Exts.Maybe exposing (isNothing)
+import App.Types.Amishi exposing (Amishi)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+
+
+-- https://twitter.com/marubinotto/status/827743441090072577
+type alias Post =
+    { postId : Maybe Int
+    , cotoId : Maybe CotoId
+    , content : String
+    , amishi : Maybe Amishi
+    , postedIn : Maybe Cotonoma
+    , asCotonoma : Bool
+    , cotonomaKey : CotonomaKey
+    , beingDeleted : Bool
+    }
+
+
+defaultPost : Post
+defaultPost =
+    { postId = Nothing
+    , cotoId = Nothing
+    , content = ""
+    , amishi = Nothing
+    , postedIn = Nothing
+    , asCotonoma = False
+    , cotonomaKey = ""
+    , beingDeleted = False
+    }
+
+
+toCoto : Post -> Maybe Coto
+toCoto post =
+    case post.cotoId of
+        Nothing ->
+            Nothing
+        Just cotoId ->
+            Just
+                (Coto
+                    cotoId
+                    post.content
+                    post.postedIn
+                    post.asCotonoma
+                    post.cotonomaKey
+                )
+
+
+isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
+isPostedInCotonoma maybeCotonoma post =
+    case maybeCotonoma of
+        Nothing -> isNothing post.postedIn
+        Just cotonoma ->
+            case post.postedIn of
+                Nothing -> False
+                Just postedIn -> postedIn.id == cotonoma.id
+
+
+isPostedInCoto : Coto -> Post -> Bool
+isPostedInCoto coto post =
+    if coto.asCotonoma then
+        case post.postedIn of
+            Nothing -> False
+            Just postedIn -> postedIn.key == coto.cotonomaKey
+    else
+        False
+
+
+isSelfOrPostedIn : Coto -> Post -> Bool
+isSelfOrPostedIn coto post =
+    post.cotoId == Just coto.id || (isPostedInCoto coto post)

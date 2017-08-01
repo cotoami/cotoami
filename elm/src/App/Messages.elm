@@ -6,12 +6,12 @@ import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (Post)
 import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages

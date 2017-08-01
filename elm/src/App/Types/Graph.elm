@@ -1,4 +1,4 @@
-module App.Graph exposing (..)
+module App.Types.Graph exposing (..)
 
 import Dict
 import Maybe exposing (withDefault)

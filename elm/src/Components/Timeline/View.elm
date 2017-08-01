@@ -13,10 +13,11 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Utils exposing (isBlank, onClickWithoutPropagation)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
+import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Graph exposing (Graph, member)
+import App.Types.Graph exposing (Graph, member)
 import App.Markdown
-import Components.Timeline.Model exposing (Post, Model, toCoto)
+import Components.Timeline.Model exposing (Model)
 import Components.Timeline.Messages exposing (..)
 import Components.Coto
 
