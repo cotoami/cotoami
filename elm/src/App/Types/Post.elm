@@ -41,6 +41,7 @@ toCoto post =
                 (Coto
                     cotoId
                     post.content
+                    post.amishi
                     post.postedIn
                     post.asCotonoma
                     post.cotonomaKey

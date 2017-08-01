@@ -13,16 +13,18 @@ type alias CotonomaKey = String
 type alias Coto =
     { id : CotoId
     , content : String
+    , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     }
 
 
-initCoto : CotoId -> String -> Maybe Cotonoma -> Maybe CotonomaKey -> Coto
-initCoto id content maybePostedIn maybeCotonomaKey =
+initCoto : CotoId -> String -> Maybe Amishi -> Maybe Cotonoma -> Maybe CotonomaKey -> Coto
+initCoto id content maybeAmishi maybePostedIn maybeCotonomaKey =
     { id = id
     , content = content
+    , amishi = maybeAmishi
     , postedIn = maybePostedIn
     , asCotonoma = isJust maybeCotonomaKey
     , cotonomaKey = maybeCotonomaKey
