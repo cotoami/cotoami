@@ -1,6 +1,6 @@
 module App.Types.Coto exposing (..)
 
-import Exts.Maybe exposing (isNothing)
+import Exts.Maybe exposing (isJust, isNothing)
 import App.Types.Amishi exposing (Amishi)
 
 
@@ -16,6 +16,16 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
+    }
+
+
+initCoto : CotoId -> String -> Maybe Cotonoma -> Maybe CotonomaKey -> Coto
+initCoto id content maybePostedIn maybeCotonomaKey =
+    { id = id
+    , content = content
+    , postedIn = maybePostedIn
+    , asCotonoma = isJust maybeCotonomaKey
+    , cotonomaKey = maybeCotonomaKey
     }
 
 
