@@ -3,6 +3,7 @@ module App.Types.MemberPresences exposing (..)
 import Dict
 import App.Types.Amishi exposing (AmishiId)
 
+
 type alias MemberPresences = Dict.Dict AmishiId Int
 
 
