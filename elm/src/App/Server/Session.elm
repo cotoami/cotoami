@@ -2,8 +2,8 @@ module App.Server.Session exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types.Session exposing(Session)
 import App.Messages exposing (Msg(..))
+import App.Types.Session exposing(Session)
 
 
 decodeSession : Decode.Decoder Session

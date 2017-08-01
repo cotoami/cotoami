@@ -1,8 +1,7 @@
 module App.Types.Coto exposing (..)
 
-import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
-import App.Types.Amishi exposing (Amishi, decodeAmishi)
+import App.Types.Amishi exposing (Amishi)
 
 
 type alias CotoId = String
@@ -27,17 +26,6 @@ type alias Cotonoma =
     , cotoId : CotoId
     , owner : Maybe Amishi
     }
-
-
-decodeCotonoma : Decode.Decoder Cotonoma
-decodeCotonoma =
-    Decode.map5 Cotonoma
-        (Decode.field "id" Decode.string)
-        (Decode.field "key" Decode.string)
-        (Decode.field "name" Decode.string)
-        (Decode.field "coto_id" Decode.string)
-        (Decode.maybe (Decode.field "owner" decodeAmishi))
-
 
 
 isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool

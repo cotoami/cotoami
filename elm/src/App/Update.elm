@@ -10,23 +10,20 @@ import Navigation
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
-import App.Commands exposing
-    ( fetchRecentCotonomas
-    , fetchSubCotonomas
-    , fetchCotonoma
-    , deleteCoto
-    )
+import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
+import App.Server.Post exposing (fetchCotonoma)
+import App.Commands exposing (deleteCoto)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model
-    exposing (updatePost, toCoto, isPostedInCoto, isSelfOrPostedIn, setLoading)
+import Components.Timeline.Model exposing (updatePost, setLoading)
 import Components.Timeline.Messages
 import Components.Timeline.Update
 import Components.Timeline.Commands exposing (fetchPosts)

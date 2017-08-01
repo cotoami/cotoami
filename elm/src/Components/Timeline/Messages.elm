@@ -4,7 +4,7 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import App.Types.Coto exposing (CotoId, CotonomaKey)
-import Components.Timeline.Model exposing (Post)
+import App.Types.Post exposing (Post)
 
 
 type Msg

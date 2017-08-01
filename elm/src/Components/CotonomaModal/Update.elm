@@ -3,7 +3,7 @@ module Components.CotonomaModal.Update exposing (..)
 import Utils exposing (validateEmail)
 import App.Types.Context exposing (Context)
 import App.Types.Session exposing (Session)
-import App.Commands exposing (fetchAmishi)
+import App.Server.Amishi exposing (fetchAmishi)
 import Components.Timeline.Model as Timeline
 import Components.Timeline.Messages
 import Components.Timeline.Update exposing (postContent)
