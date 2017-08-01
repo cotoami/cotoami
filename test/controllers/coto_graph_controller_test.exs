@@ -44,14 +44,14 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/pin/:coto_id", %{amishi: amishi, coto: coto} do
+    test "PUT /api/graph/pin/:coto_id", %{amishi: amishi, coto: coto} do
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
 
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> assign(:amishi, amishi)
-      |> put("/api/pin/#{coto2.id}")
+      |> put("/api/graph/pin/#{coto2.id}")
 
       conn =
         build_conn()
@@ -72,12 +72,12 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/unpin/:coto_id", %{amishi: amishi, coto: coto} do
+    test "DELETE /api/graph/pin/:coto_id", %{amishi: amishi, coto: coto} do
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> assign(:amishi, amishi)
-      |> put("/api/unpin/#{coto.id}")
+      |> delete("/api/graph/pin/#{coto.id}")
 
       conn =
         build_conn()
@@ -131,14 +131,14 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/pin/:cotonoma_key/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+    test "PUT /api/graph/:cotonoma_key/pin/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
 
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> assign(:amishi, amishi)
-      |> put("/api/pin/#{cotonoma.key}/#{coto2.id}")
+      |> put("/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
 
       conn =
         build_conn()
@@ -159,12 +159,12 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/unpin/:cotonoma_key/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+    test "DELETE /api/graph/:cotonoma_key/pin/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> assign(:amishi, amishi)
-      |> put("/api/unpin/#{cotonoma.key}/#{coto.id}")
+      |> delete("/api/graph/#{cotonoma.key}/pin/#{coto.id}")
 
       conn =
         build_conn()
