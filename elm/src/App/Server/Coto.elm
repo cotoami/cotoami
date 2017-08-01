@@ -19,7 +19,7 @@ decodePost =
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.field "cotonoma_key" Decode.string)
+        (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
         (Decode.succeed False)
 
 

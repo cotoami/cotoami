@@ -15,7 +15,7 @@ type alias Coto =
     , content : String
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
-    , cotonomaKey : CotonomaKey
+    , cotonomaKey : Maybe CotonomaKey
     }
 
 
