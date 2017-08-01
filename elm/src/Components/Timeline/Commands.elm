@@ -10,7 +10,7 @@ import Http exposing (Request)
 import Utils
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post)
-import App.Server.Post exposing (decodePost)
+import App.Server.Coto exposing (decodePost)
 import Components.Timeline.Messages exposing (..)
 
 

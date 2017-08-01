@@ -1,10 +1,11 @@
-module App.Server.Post exposing (..)
+module App.Server.Coto exposing (..)
 
 import Http
 import Json.Decode as Decode
+import Utils
 import App.Messages exposing (Msg(..))
 import App.Types.Post exposing (Post)
-import App.Types.Coto exposing (CotonomaKey)
+import App.Types.Coto exposing (CotoId, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
@@ -30,3 +31,10 @@ fetchCotonomaPosts key =
             (Decode.field "cotonoma" decodeCotonoma)
             (Decode.field "members" (Decode.list decodeAmishi))
             (Decode.field "cotos" (Decode.list decodePost))
+
+
+deleteCoto : CotoId -> Cmd Msg
+deleteCoto cotoId =
+    Http.send
+        CotoDeleted
+        ("/api/cotos/" ++ cotoId |> Utils.delete)

@@ -4,7 +4,7 @@ import Json.Encode as Encode
 import Http
 import Utils
 import App.Types.Coto exposing (Cotonoma)
-import App.Server.Post exposing (decodePost)
+import App.Server.Coto exposing (decodePost)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 

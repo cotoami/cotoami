@@ -17,8 +17,7 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Post exposing (fetchCotonomaPosts)
-import App.Commands exposing (deleteCoto)
+import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
