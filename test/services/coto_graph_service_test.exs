@@ -8,7 +8,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   alias Cotoami.CotoGraph
   alias Bolt.Sips.Types.Relationship
 
-  describe "cotos pinned to an amishi" do
+  describe "a coto pinned to an amishi" do
     setup do
       conn = Bolt.Sips.conn
       amishi = AmishiService.create!("amishi@example.com")
@@ -87,7 +87,33 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
-  describe "cotos pinned to a cotonoma" do
+  describe "a cotonoma pinned to an amishi" do
+    setup do
+      conn = Bolt.Sips.conn
+      amishi = AmishiService.create!("amishi@example.com")
+      {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
+      CotoGraphService.pin(coto, amishi)
+      %{conn: conn, amishi: amishi, coto: coto}
+    end
+
+    test "pin", %{conn: conn, amishi: amishi, coto: coto} do
+      amishi_node = Neo4jService.get_or_create_node!(conn, amishi.id)
+      amishi_node_id = amishi_node.id
+
+      coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
+      coto_node_id = coto_node.id
+      assert ["Coto", "Cotonoma"] == Enum.sort(coto_node.labels)
+
+      assert [
+        %Relationship{
+          start: ^amishi_node_id,
+          end: ^coto_node_id
+        }
+      ] = Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
+    end
+  end
+
+  describe "a coto pinned to a cotonoma" do
     setup do
       conn = Bolt.Sips.conn
       amishi = AmishiService.create!("amishi@example.com")
