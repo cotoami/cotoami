@@ -64,6 +64,10 @@ defmodule Cotoami.CotoGraphServiceTest do
           ^coto_id => %{
             "uuid" => ^coto_id,
             "amishi_id" => ^amishi_id,
+            "amishi" => %{
+              id: ^amishi_id,
+              email: "amishi@example.com"
+            },
             "content" => "hello",
             "inserted_at" => _inserted_at,
             "updated_at" => _updated_at

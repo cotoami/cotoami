@@ -5,7 +5,12 @@ defmodule Cotoami.CotoGraphService do
 
   require Logger
   import Cotoami.Helpers
-  alias Cotoami.{Coto, Amishi, Cotonoma, Neo4jService, CotoGraph}
+  import Ecto.Query, only: [from: 2]
+  alias Phoenix.View
+  alias Cotoami.{
+    Repo, Coto, Amishi, Cotonoma, Neo4jService, CotoGraph, AmishiService,
+    CotonomaService, AmishiView, CotonomaView
+  }
 
   @label_amishi "Amishi"
   @label_coto "Coto"
@@ -31,7 +36,6 @@ defmodule Cotoami.CotoGraphService do
     |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
         coto_id = node.properties["uuid"]
-        # get coto deps
         cotos = graph.cotos |> Map.put(coto_id, node.properties)
         connection =
           rel.properties
@@ -40,6 +44,39 @@ defmodule Cotoami.CotoGraphService do
         root_connections = [connection | graph.root_connections]
         %{graph | cotos: cotos, root_connections: root_connections}
       end)
+    |> (fn(graph) -> %{graph | cotos: set_relations(graph.cotos)} end).()
+  end
+
+  defp set_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
+    amishis =
+      id_to_coto_nodes
+      |> Map.values()
+      |> Enum.map(&(&1["amishi_id"]))
+      |> to_id_model_map(Amishi, &(View.render_one &1, AmishiView, "amishi.json"))
+    cotonomas =
+      id_to_coto_nodes
+      |> Map.values()
+      |> Enum.map(&(&1["posted_in_id"]))
+      |> to_id_model_map(Cotonoma, &(View.render_one &1, CotonomaView, "cotonoma.json"))
+    id_to_coto_nodes
+    |> Enum.map(fn({id, node}) ->
+        {id,
+          node
+          |> Map.put("amishi", amishis[node["amishi_id"]])
+          |> Map.put("posted_in", cotonomas[node["posted_in_id"]])
+        }
+      end)
+    |> Map.new()
+  end
+
+  defp to_id_model_map(ids, queryable, to_json) do
+    ids
+    |> Enum.filter(&(&1))
+    |> Enum.uniq()
+    |> (fn(ids) -> (from q in queryable, where: q.id in ^ids) |> Repo.all() end).()
+    |> Enum.filter(&(&1))
+    |> Enum.map(&({&1.id, to_json.(&1)}))
+    |> Map.new()
   end
 
   def pin(%Coto{} = coto, %Amishi{} = amishi) do
@@ -78,7 +115,7 @@ defmodule Cotoami.CotoGraphService do
       content: coto.content,
       amishi_id: coto.amishi_id,
       cotonoma_key: (if coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
-      posted_in: coto.posted_in_id,
+      posted_in_id: coto.posted_in_id,
       inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
     } |> drop_nil
@@ -92,7 +129,7 @@ defmodule Cotoami.CotoGraphService do
       content: cotonoma.name,
       amishi_id: cotonoma.coto.amishi_id,
       cotonoma_key: cotonoma.key,
-      posted_in: cotonoma.coto.posted_in_id,
+      posted_in_id: cotonoma.coto.posted_in_id,
       inserted_at: cotonoma.coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
     } |> drop_nil

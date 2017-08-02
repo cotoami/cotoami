@@ -26,6 +26,10 @@ defmodule Cotoami.CotoGraphControllerTest do
           ^coto_id => %{
             "uuid" => ^coto_id,
             "amishi_id" => ^amishi_id,
+            "amishi" => %{
+              "id" => ^amishi_id,
+              "email" => "amishi@example.com"
+            },
             "content" => "hello",
             "inserted_at" => _inserted_at,
             "updated_at" => _updated_at
@@ -96,7 +100,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     setup do
       amishi = AmishiService.create!("amishi@example.com")
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
-      {coto, _} = CotoService.create!(nil, amishi.id, "hello")
+      {coto, _} = CotoService.create!(cotonoma.id, amishi.id, "hello")
       CotoGraphService.pin(coto, cotonoma, amishi)
       %{amishi: amishi, coto: coto, cotonoma: cotonoma}
     end
@@ -109,12 +113,23 @@ defmodule Cotoami.CotoGraphControllerTest do
 
       amishi_id = amishi.id
       coto_id = coto.id
+      cotonoma_id = cotonoma.id
+      cotonoma_key = cotonoma.key
       assert %{
         "cotos" => %{
           ^coto_id => %{
             "uuid" => ^coto_id,
             "amishi_id" => ^amishi_id,
+            "amishi" => %{
+              "id" => ^amishi_id,
+              "email" => "amishi@example.com"
+            },
             "content" => "hello",
+            "posted_in_id" => ^cotonoma_id,
+            "posted_in" => %{
+              "id" => ^cotonoma_id,
+              "key" => ^cotonoma_key
+            },
             "inserted_at" => _inserted_at,
             "updated_at" => _updated_at
           }
