@@ -77,8 +77,8 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "PUT /api/graph/pin (multiple cotos)", %{amishi: amishi, coto: coto} do
-      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "coto2")
-      {coto3, _posted_in} = CotoService.create!(nil, amishi.id, "coto3")
+      {coto2, _} = CotoService.create!(nil, amishi.id, "plain coto")
+      {{coto3, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
 
       build_conn()
       |> put_req_header("host", "localhost")
@@ -95,8 +95,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       assert %{
         "cotos" => %{
           ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
-          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "coto2"},
-          ^coto3_id => %{"uuid" => ^coto3_id, "content" => "coto3"}
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "plain coto"},
+          ^coto3_id => %{"uuid" => ^coto3_id, "content" => "cotonoma coto"}
         },
         "root_connections" => [
           %{"end" => ^coto3_id, "order" => 3},
