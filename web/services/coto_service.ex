@@ -4,7 +4,7 @@ defmodule Cotoami.CotoService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, limit: 2]
+  import Ecto.Query, only: [from: 2, preload: 2, limit: 2]
   alias Cotoami.{Repo, Coto, CotonomaService}
 
   def create!(cotonoma_id_nillable, amishi_id, content) do
@@ -29,5 +29,9 @@ defmodule Cotoami.CotoService do
     |> preload([:amishi, :posted_in, :cotonoma])
     |> limit(100)
     |> Repo.all
+  end
+
+  def get_by_ids(coto_ids) do
+    (from c in Coto, where: c.id in ^coto_ids) |> Repo.all()
   end
 end

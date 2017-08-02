@@ -76,6 +76,37 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
+    test "PUT /api/graph/pin", %{amishi: amishi, coto: coto} do
+      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "coto2")
+      {coto3, _posted_in} = CotoService.create!(nil, amishi.id, "coto3")
+
+      build_conn()
+      |> put_req_header("host", "localhost")
+      |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> assign(:amishi, amishi)
+      |> put("/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+
+      conn =
+        build_conn()
+        |> assign(:amishi, amishi)
+        |> get("/api/graph")
+
+      {coto_id, coto2_id, coto3_id} = {coto.id, coto2.id, coto3.id}
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "coto2"},
+          ^coto3_id => %{"uuid" => ^coto3_id, "content" => "coto3"}
+        },
+        "root_connections" => [
+          %{"end" => ^coto_id, "order" => 1},
+          %{"end" => ^coto2_id, "order" => 2},
+          %{"end" => ^coto3_id, "order" => 3}
+        ],
+        "connections" => %{}
+      } = json_response(conn, 200)
+    end
+
     test "DELETE /api/graph/pin/:coto_id", %{amishi: amishi, coto: coto} do
       build_conn()
       |> put_req_header("host", "localhost")
