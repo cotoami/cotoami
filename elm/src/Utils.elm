@@ -7,6 +7,7 @@ module Utils exposing
     , httpRequestWithBody
     , httpDelete
     , httpPost
+    , httpPutWithoutBody
     )
 
 import String
@@ -96,3 +97,7 @@ httpDelete = httpRequest "DELETE"
 
 httpPost : String -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPost = httpRequestWithBody "POST"
+
+
+httpPutWithoutBody : String -> Http.Request String
+httpPutWithoutBody = httpRequest "PUT"

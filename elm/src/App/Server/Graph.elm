@@ -2,9 +2,10 @@ module App.Server.Graph exposing (..)
 
 import Http
 import Json.Decode as Decode
+import Utils exposing (httpPutWithoutBody)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph)
-import App.Types.Coto exposing (Coto, initCoto, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, initCoto, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
@@ -43,3 +44,14 @@ fetchGraph maybeCotonomaKey =
                 Just cotonomaKey -> "/api/graph/" ++ cotonomaKey
     in
         Http.send GraphFetched (Http.get url decodeGraph)
+
+
+pinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
+pinCoto tag maybeCotonomaKey cotoId =
+    let
+        url =
+            case maybeCotonomaKey of
+                Nothing -> "/graph/pin/" ++ cotoId
+                Just cotonomaKey -> "/graph/" ++ cotonomaKey ++ "/pin/" ++ cotoId
+    in
+        Http.send tag (httpPutWithoutBody url)
