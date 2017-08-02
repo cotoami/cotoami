@@ -69,8 +69,8 @@ defmodule Cotoami.CotoGraphControllerTest do
           ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
         },
         "root_connections" => [
-          %{"end" => ^coto_id, "order" => 1},
-          %{"end" => ^coto2_id, "order" => 2}
+          %{"end" => ^coto2_id, "order" => 2},
+          %{"end" => ^coto_id, "order" => 1}
         ],
         "connections" => %{}
       } = json_response(conn, 200)
@@ -99,9 +99,9 @@ defmodule Cotoami.CotoGraphControllerTest do
           ^coto3_id => %{"uuid" => ^coto3_id, "content" => "coto3"}
         },
         "root_connections" => [
-          %{"end" => ^coto_id, "order" => 1},
+          %{"end" => ^coto3_id, "order" => 3},
           %{"end" => ^coto2_id, "order" => 2},
-          %{"end" => ^coto3_id, "order" => 3}
+          %{"end" => ^coto_id, "order" => 1}
         ],
         "connections" => %{}
       } = json_response(conn, 200)
@@ -200,8 +200,8 @@ defmodule Cotoami.CotoGraphControllerTest do
           ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
         },
         "root_connections" => [
-          %{"end" => ^coto_id, "order" => 1},
-          %{"end" => ^coto2_id, "order" => 2}
+          %{"end" => ^coto2_id, "order" => 2},
+          %{"end" => ^coto_id, "order" => 1}
         ],
         "connections" => %{}
       } = json_response(conn, 200)
@@ -231,9 +231,9 @@ defmodule Cotoami.CotoGraphControllerTest do
           ^coto3_id => %{"uuid" => ^coto3_id, "content" => "Luigi"}
         },
         "root_connections" => [
-          %{"end" => ^coto_id, "order" => 1},
+          %{"end" => ^coto3_id, "order" => 3},
           %{"end" => ^coto2_id, "order" => 2},
-          %{"end" => ^coto3_id, "order" => 3}
+          %{"end" => ^coto_id, "order" => 1}
         ],
         "connections" => %{}
       } = json_response(conn, 200)

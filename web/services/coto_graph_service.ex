@@ -30,7 +30,7 @@ defmodule Cotoami.CotoGraphService do
     query = ~s"""
       MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(pinned:#{@label_coto})
       RETURN has, pinned
-      ORDER BY has.#{Neo4jService.rel_prop_order()} DESC
+      ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
     Bolt.Sips.conn
     |> Bolt.Sips.query!(query, %{uuid: uuid})

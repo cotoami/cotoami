@@ -43,7 +43,6 @@ connectionsDiv divClass connections context graph =
                     Nothing ->
                         Nothing
 
-                    -- Missing the end node
                     Just coto ->
                         Just
                             ( conn.key
