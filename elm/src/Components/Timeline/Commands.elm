@@ -7,7 +7,7 @@ import Task
 import Process
 import Time
 import Http exposing (Request)
-import Utils
+import Utils exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Server.Coto exposing (decodePost)
@@ -28,7 +28,7 @@ fetchPosts =
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
 postRequest clientId maybeCotonoma post =
-    Utils.post
+    httpPost
         "/api/cotos"
         (Http.jsonBody (encodePost clientId maybeCotonoma post))
         decodePost
