@@ -2,7 +2,8 @@ module App.Server.Graph exposing (..)
 
 import Http
 import Json.Decode as Decode
-import Utils exposing (httpPutWithoutBody)
+import Json.Encode as Encode
+import Utils exposing (httpPut)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, CotonomaKey)
@@ -54,4 +55,22 @@ pinCoto tag maybeCotonomaKey cotoId =
                 Nothing -> "/graph/pin/" ++ cotoId
                 Just cotonomaKey -> "/graph/" ++ cotonomaKey ++ "/pin/" ++ cotoId
     in
-        Http.send tag (httpPutWithoutBody url)
+        Http.send tag (httpPut url Http.emptyBody Decode.string)
+
+
+pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
+pinCotos tag maybeCotonomaKey cotoIds =
+    let
+        url =
+            case maybeCotonomaKey of
+                Nothing -> "/graph/pin"
+                Just cotonomaKey -> "/graph/" ++ cotonomaKey ++ "/pin"
+        body =
+            Http.jsonBody
+                <| Encode.object
+                    [ ( "coto_ids"
+                      , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
+                      )
+                    ]
+    in
+        Http.send tag (httpPut url body Decode.string)
