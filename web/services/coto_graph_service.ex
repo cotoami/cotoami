@@ -30,16 +30,16 @@ defmodule Cotoami.CotoGraphService do
     Bolt.Sips.conn
     |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
-      coto_id = node.properties["uuid"]
-      # get coto deps
-      cotos = graph.cotos |> Map.put(coto_id, node.properties)
-      connection =
-        rel.properties
-        |> Map.put("id", rel.id)
-        |> Map.put("end", coto_id)
-      root_connections = [connection | graph.root_connections]
-      %{graph | cotos: cotos, root_connections: root_connections}
-    end)
+        coto_id = node.properties["uuid"]
+        # get coto deps
+        cotos = graph.cotos |> Map.put(coto_id, node.properties)
+        connection =
+          rel.properties
+          |> Map.put("id", rel.id)
+          |> Map.put("end", coto_id)
+        root_connections = [connection | graph.root_connections]
+        %{graph | cotos: cotos, root_connections: root_connections}
+      end)
   end
 
   def pin(%Coto{} = coto, %Amishi{} = amishi) do
