@@ -4,7 +4,7 @@ import Http
 import Json.Decode as Decode
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph)
-import App.Types.Coto exposing (Coto, initCoto, Cotonoma)
+import App.Types.Coto exposing (Coto, initCoto, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
@@ -34,12 +34,12 @@ decodeGraph =
         (Decode.field "connections" (Decode.dict <| Decode.list decodeConnection))
 
 
-fetchGraph : Maybe Cotonoma -> Cmd Msg
-fetchGraph maybeCotonoma =
+fetchGraph : Maybe CotonomaKey -> Cmd Msg
+fetchGraph maybeCotonomaKey =
     let
         url =
-            case maybeCotonoma of
+            case maybeCotonomaKey of
                 Nothing -> "/api/graph"
-                Just cotonoma -> "/api/graph/" ++ cotonoma.key
+                Just cotonomaKey -> "/api/graph/" ++ cotonomaKey
     in
         Http.send GraphFetched (Http.get url decodeGraph)

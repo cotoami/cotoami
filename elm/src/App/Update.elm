@@ -18,6 +18,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
+import App.Server.Graph exposing (fetchGraph)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -507,6 +508,7 @@ loadHome model =
     } !
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
+        , fetchGraph Nothing
         ]
 
 
@@ -533,6 +535,7 @@ loadCotonoma key model =
     } !
         [ fetchRecentCotonomas
         , fetchCotonomaPosts key
+        , fetchGraph (Just key)
         ]
 
 
