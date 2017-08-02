@@ -100,9 +100,16 @@ defmodule Cotoami.CotoGraphServiceTest do
       amishi_node = Neo4jService.get_or_create_node!(conn, amishi.id)
       amishi_node_id = amishi_node.id
 
+      coto_id = coto.id
+      cotonoma_key = coto.cotonoma.key
       coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
       coto_node_id = coto_node.id
       assert ["Coto", "Cotonoma"] == Enum.sort(coto_node.labels)
+      assert %{
+        "uuid" => ^coto_id,
+        "content" => "cotonoma coto",
+        "cotonoma_key" => ^cotonoma_key
+      } = coto_node.properties
 
       assert [
         %Relationship{

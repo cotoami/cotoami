@@ -127,6 +127,40 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
   end
 
+  describe "a cotonoma pinned to an amishi" do
+    setup do
+      amishi = AmishiService.create!("amishi@example.com")
+      {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
+      CotoGraphService.pin(coto, amishi)
+      %{amishi: amishi, coto: coto}
+    end
+
+    test "GET /api/graph", %{amishi: amishi, coto: coto} do
+      conn =
+        build_conn()
+        |> assign(:amishi, amishi)
+        |> get("/api/graph")
+
+      coto_id = coto.id
+      cotonoma_key = coto.cotonoma.key
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{
+            "uuid" => ^coto_id,
+            "cotonoma_key" => ^cotonoma_key
+          }
+        },
+        "root_connections" => [
+          %{
+            "end" => ^coto_id,
+            "order" => 1
+          }
+        ],
+        "connections" => %{}
+      } = json_response(conn, 200)
+    end
+  end
+
   describe "a coto pinned to a cotonoma" do
     setup do
       amishi = AmishiService.create!("amishi@example.com")
