@@ -49,7 +49,7 @@ connectionsDiv divClass connections context graph =
                             , connectionDiv context graph coto
                             )
             )
-            connections
+            (List.reverse connections)
         )
 
 
