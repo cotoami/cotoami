@@ -27,8 +27,8 @@ type alias Graph =
     }
 
 
-initGraph : Graph
-initGraph =
+defaultGraph : Graph
+defaultGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty
