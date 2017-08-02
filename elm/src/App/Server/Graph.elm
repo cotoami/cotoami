@@ -47,13 +47,17 @@ fetchGraph maybeCotonomaKey =
         Http.send GraphFetched (Http.get url decodeGraph)
 
 
+pinUrl : Maybe CotonomaKey -> String
+pinUrl maybeCotonomaKey =
+    case maybeCotonomaKey of
+        Nothing -> "/api/graph/pin"
+        Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/pin"
+
+
 pinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
 pinCoto tag maybeCotonomaKey cotoId =
     let
-        url =
-            case maybeCotonomaKey of
-                Nothing -> "/graph/pin/" ++ cotoId
-                Just cotonomaKey -> "/graph/" ++ cotonomaKey ++ "/pin/" ++ cotoId
+        url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
         Http.send tag (httpPut url Http.emptyBody Decode.string)
 
@@ -61,10 +65,7 @@ pinCoto tag maybeCotonomaKey cotoId =
 pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
 pinCotos tag maybeCotonomaKey cotoIds =
     let
-        url =
-            case maybeCotonomaKey of
-                Nothing -> "/graph/pin"
-                Just cotonomaKey -> "/graph/" ++ cotonomaKey ++ "/pin"
+        url = pinUrl maybeCotonomaKey
         body =
             Http.jsonBody
                 <| Encode.object
