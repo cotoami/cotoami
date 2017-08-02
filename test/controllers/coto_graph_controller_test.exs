@@ -76,7 +76,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/pin", %{amishi: amishi, coto: coto} do
+    test "PUT /api/graph/pin (multiple cotos)", %{amishi: amishi, coto: coto} do
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "coto2")
       {coto3, _posted_in} = CotoService.create!(nil, amishi.id, "coto3")
 
@@ -136,7 +136,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       %{amishi: amishi, coto: coto, cotonoma: cotonoma}
     end
 
-    test "GET /api/graph/:cotonoma_key", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+    test "GET /api/graph/:cotonoma_key",
+        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
       conn =
         build_conn()
         |> assign(:amishi, amishi)
@@ -177,8 +178,9 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/:cotonoma_key/pin/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+    test "PUT /api/graph/:cotonoma_key/pin/:coto_id",
+        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "bye")
 
       build_conn()
       |> put_req_header("host", "localhost")
@@ -205,7 +207,40 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "DELETE /api/graph/:cotonoma_key/pin/:coto_id", %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+    test "PUT /api/graph/:cotonoma_key/pin (multiple cotos)",
+        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Mario")
+      {coto3, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Luigi")
+
+      build_conn()
+      |> put_req_header("host", "localhost")
+      |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> assign(:amishi, amishi)
+      |> put("/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+
+      conn =
+        build_conn()
+        |> assign(:amishi, amishi)
+        |> get("/api/graph/#{cotonoma.key}")
+
+      {coto_id, coto2_id, coto3_id} = {coto.id, coto2.id, coto3.id}
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "Mario"},
+          ^coto3_id => %{"uuid" => ^coto3_id, "content" => "Luigi"}
+        },
+        "root_connections" => [
+          %{"end" => ^coto_id, "order" => 1},
+          %{"end" => ^coto2_id, "order" => 2},
+          %{"end" => ^coto3_id, "order" => 3}
+        ],
+        "connections" => %{}
+      } = json_response(conn, 200)
+    end
+
+    test "DELETE /api/graph/:cotonoma_key/pin/:coto_id",
+        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")

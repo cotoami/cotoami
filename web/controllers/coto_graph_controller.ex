@@ -53,6 +53,20 @@ defmodule Cotoami.CotoGraphController do
     end
   end
 
+  def pin_all_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_ids" => coto_ids}, amishi) do
+    cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
+    if cotonoma do
+      results =
+        coto_ids
+        |> CotoService.get_by_ids()
+        |> Enum.filter(&(&1))
+        |> Enum.map(&(CotoGraphService.pin(&1, cotonoma, amishi)))
+      json conn, results
+    else
+      send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
+    end
+  end
+
   def unpin_from_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
     cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
     coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
