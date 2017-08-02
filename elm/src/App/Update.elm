@@ -124,6 +124,12 @@ update msg model =
         CotonomaFetched (Err _) ->
             model ! []
 
+        GraphFetched (Ok graph) ->
+            { model | graph = graph } ! []
+
+        GraphFetched (Err _) ->
+            model ! []
+
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
                 { model | context = ctrlDown True model.context } ! []
@@ -495,7 +501,7 @@ loadHome model =
     , timeline = setLoading model.timeline
     , connectMode = False
     , connectingTo = Nothing
-    , graph = initGraph
+    , graph = defaultGraph
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !
@@ -521,7 +527,7 @@ loadCotonoma key model =
     , timeline = setLoading model.timeline
     , connectMode = False
     , connectingTo = Nothing
-    , graph = initGraph
+    , graph = defaultGraph
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !

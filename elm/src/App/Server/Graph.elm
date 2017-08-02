@@ -1,8 +1,10 @@
 module App.Server.Graph exposing (..)
 
+import Http
 import Json.Decode as Decode
+import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph)
-import App.Types.Coto exposing (Coto, initCoto)
+import App.Types.Coto exposing (Coto, initCoto, Cotonoma)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
@@ -30,3 +32,14 @@ decodeGraph =
         (Decode.field "cotos" (Decode.dict decodeCoto))
         (Decode.field "root_connections" (Decode.list decodeConnection))
         (Decode.field "connections" (Decode.dict <| Decode.list decodeConnection))
+
+
+fetchGraph : Maybe Cotonoma -> Cmd Msg
+fetchGraph maybeCotonoma =
+    let
+        url =
+            case maybeCotonoma of
+                Nothing -> "/api/graph"
+                Just cotonoma -> "/api/graph/" ++ cotonoma.key
+    in
+        Http.send GraphFetched (Http.get url decodeGraph)

@@ -9,6 +9,7 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
+import App.Types.Graph exposing (Graph)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
@@ -29,6 +30,7 @@ type Msg
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
+    | GraphFetched (Result Http.Error Graph)
     | KeyDown KeyCode
     | KeyUp KeyCode
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
