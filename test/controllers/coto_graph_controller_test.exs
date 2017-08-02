@@ -5,7 +5,7 @@ defmodule Cotoami.CotoGraphControllerTest do
   alias Cotoami.CotonomaService
   alias Cotoami.CotoGraphService
 
-  describe "cotos pinned to home" do
+  describe "a coto pinned to home" do
     setup do
       amishi = AmishiService.create!("amishi@example.com")
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
@@ -127,7 +127,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
   end
 
-  describe "cotos pinned to a cotonoma" do
+  describe "a coto pinned to a cotonoma" do
     setup do
       amishi = AmishiService.create!("amishi@example.com")
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
