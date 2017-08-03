@@ -7,6 +7,26 @@ defmodule Cotoami.CotoService do
   import Ecto.Query, only: [from: 2, preload: 2, limit: 2]
   alias Cotoami.{Repo, Coto, CotonomaService}
 
+  def get(id) do
+    Coto
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.get(id)
+  end
+
+  def get_by_ids(coto_ids) do
+    (from c in Coto, where: c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
+  end
+
+  def get_cotos_by_amishi(amishi_id) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> limit(100)
+    |> Repo.all
+  end
+
   def create!(cotonoma_id_nillable, amishi_id, content) do
     posted_in =
       CotonomaService.check_permission!(
@@ -21,19 +41,5 @@ defmodule Cotoami.CotoService do
         })
       |> Repo.insert!
     {coto, posted_in}
-  end
-
-  def get_cotos_by_amishi(amishi_id) do
-    Coto
-    |> Coto.for_amishi(amishi_id)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> limit(100)
-    |> Repo.all
-  end
-
-  def get_by_ids(coto_ids) do
-    (from c in Coto, where: c.id in ^coto_ids)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> Repo.all()
   end
 end

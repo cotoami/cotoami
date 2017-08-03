@@ -5,19 +5,25 @@ defmodule Cotoami.CotoGraphControllerTest do
   alias Cotoami.CotonomaService
   alias Cotoami.CotoGraphService
 
+  setup do
+    amishi = AmishiService.create!("amishi@example.com")
+    conn =
+      build_conn()
+      |> put_req_header("host", "localhost")
+      |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> assign(:amishi, amishi)
+    %{conn: conn, amishi: amishi}
+  end
+
   describe "a coto pinned to home" do
-    setup do
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       CotoGraphService.pin(coto, amishi)
-      %{amishi: amishi, coto: coto}
+      %{coto: coto}
     end
 
-    test "GET /api/graph", %{amishi: amishi, coto: coto} do
-      conn =
-        build_conn()
-        |> assign(:amishi, amishi)
-        |> get("/api/graph")
+    test "GET /api/graph", %{conn: conn, amishi: amishi, coto: coto} do
+      conn = get(conn, "/api/graph")
 
       amishi_id = amishi.id
       coto_id = coto.id
@@ -48,14 +54,10 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/pin/:coto_id", %{amishi: amishi, coto: coto} do
+    test "PUT /api/graph/pin/:coto_id", %{conn: conn, amishi: amishi, coto: coto} do
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
 
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> put("/api/graph/pin/#{coto2.id}")
+      put(conn, "/api/graph/pin/#{coto2.id}")
 
       conn =
         build_conn()
@@ -76,15 +78,11 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/pin (multiple cotos)", %{amishi: amishi, coto: coto} do
+    test "PUT /api/graph/pin (multiple cotos)", %{conn: conn, amishi: amishi, coto: coto} do
       {coto2, _} = CotoService.create!(nil, amishi.id, "plain coto")
       {{coto3, cotonoma3}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
 
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> put("/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+      put(conn, "/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
       conn =
         build_conn()
@@ -112,12 +110,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "DELETE /api/graph/pin/:coto_id", %{amishi: amishi, coto: coto} do
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> delete("/api/graph/pin/#{coto.id}")
+    test "DELETE /api/graph/pin/:coto_id", %{conn: conn, amishi: amishi, coto: coto} do
+      delete(conn, "/api/graph/pin/#{coto.id}")
 
       conn =
         build_conn()
@@ -133,18 +127,14 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a cotonoma pinned to an amishi" do
-    setup do
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
       CotoGraphService.pin(coto, amishi)
-      %{amishi: amishi, coto: coto}
+      %{coto: coto}
     end
 
-    test "GET /api/graph", %{amishi: amishi, coto: coto} do
-      conn =
-        build_conn()
-        |> assign(:amishi, amishi)
-        |> get("/api/graph")
+    test "GET /api/graph", %{conn: conn, coto: coto} do
+      conn = get(conn, "/api/graph")
 
       coto_id = coto.id
       cotonoma_key = coto.cotonoma.key
@@ -167,20 +157,16 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a coto pinned to a cotonoma" do
-    setup do
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(cotonoma.id, amishi.id, "hello")
       CotoGraphService.pin(coto, cotonoma, amishi)
-      %{amishi: amishi, coto: coto, cotonoma: cotonoma}
+      %{coto: coto, cotonoma: cotonoma}
     end
 
     test "GET /api/graph/:cotonoma_key",
-        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      conn =
-        build_conn()
-        |> assign(:amishi, amishi)
-        |> get("/api/graph/#{cotonoma.key}")
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      conn = get(conn, "/api/graph/#{cotonoma.key}")
 
       amishi_id = amishi.id
       coto_id = coto.id
@@ -218,14 +204,10 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "PUT /api/graph/:cotonoma_key/pin/:coto_id",
-        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "bye")
 
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> put("/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
+      put(conn, "/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
 
       conn =
         build_conn()
@@ -247,15 +229,11 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "PUT /api/graph/:cotonoma_key/pin (multiple cotos)",
-        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Mario")
       {coto3, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Luigi")
 
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> put("/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+      put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
       conn =
         build_conn()
@@ -279,12 +257,8 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "DELETE /api/graph/:cotonoma_key/pin/:coto_id",
-        %{amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      build_conn()
-      |> put_req_header("host", "localhost")
-      |> put_req_header("x-requested-with", "XMLHttpRequest")
-      |> assign(:amishi, amishi)
-      |> delete("/api/graph/#{cotonoma.key}/pin/#{coto.id}")
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      delete(conn, "/api/graph/#{cotonoma.key}/pin/#{coto.id}")
 
       conn =
         build_conn()
