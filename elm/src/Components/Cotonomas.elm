@@ -27,5 +27,5 @@ view cotonomas =
                     ]
                 )
             )
-            (List.reverse cotonomas)
+            cotonomas
         )

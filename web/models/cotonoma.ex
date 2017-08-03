@@ -37,7 +37,7 @@ defmodule Cotoami.Cotonoma do
 
   def for_amishi(query, amishi_id) do
     from c in query,
-      distinct: c.id,
+      distinct: true,
       left_join: m in assoc(c, :members),
       where: c.owner_id == ^amishi_id or m.amishi_id == ^amishi_id,
       order_by: [desc: c.updated_at]
