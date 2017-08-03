@@ -25,8 +25,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     test "GET /api/graph", %{conn: conn, amishi: amishi, coto: coto} do
       conn = get(conn, "/api/graph")
 
-      amishi_id = amishi.id
-      coto_id = coto.id
+      {amishi_id, coto_id} = {amishi.id, coto.id}
       assert %{
         "cotos" => %{
           ^coto_id => %{
@@ -136,8 +135,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     test "GET /api/graph", %{conn: conn, coto: coto} do
       conn = get(conn, "/api/graph")
 
-      coto_id = coto.id
-      cotonoma_key = coto.cotonoma.key
+      {coto_id, cotonoma_key} = {coto.id, coto.cotonoma.key}
       assert %{
         "cotos" => %{
           ^coto_id => %{
@@ -168,10 +166,8 @@ defmodule Cotoami.CotoGraphControllerTest do
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       conn = get(conn, "/api/graph/#{cotonoma.key}")
 
-      amishi_id = amishi.id
-      coto_id = coto.id
-      cotonoma_id = cotonoma.id
-      cotonoma_key = cotonoma.key
+      {amishi_id, coto_id, cotonoma_id, cotonoma_key} =
+        {amishi.id, coto.id, cotonoma.id, cotonoma.key}
       assert %{
         "cotos" => %{
           ^coto_id => %{
