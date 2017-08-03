@@ -22,11 +22,24 @@ defmodule Cotoami.Neo4jServiceTest do
 
     test "get with uuid", %{conn: conn, uuid: uuid, node: node} do
       existing_node_id = node.id
+
+      assert %Node{
+        id: ^existing_node_id,
+        labels: [],
+        properties:  %{"uuid" => ^uuid}
+      } = Neo4jService.get_node!(conn, uuid)
+
       assert %Node{
         id: ^existing_node_id,
         labels: [],
         properties:  %{"uuid" => ^uuid}
       } = Neo4jService.get_or_create_node!(conn, uuid)
+    end
+
+    test "delete", %{conn: conn, uuid: uuid} do
+      assert %{stats: %{"nodes-deleted" => 1}, type: "w"} =
+        Neo4jService.delete_node_with_relationships!(conn, uuid)
+      assert nil == Neo4jService.get_node!(conn, uuid)
     end
   end
 

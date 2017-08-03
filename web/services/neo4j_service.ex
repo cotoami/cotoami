@@ -9,6 +9,17 @@ defmodule Cotoami.Neo4jService do
 
   def rel_prop_order, do: @rel_prop_order
 
+  def get_node!(conn, uuid) do
+    query = ~s"""
+      MATCH (n { uuid: $uuid })
+      RETURN n
+    """
+    case Bolt.Sips.query!(conn, query, %{uuid: uuid}) do
+      [%{"n" => node}] -> node
+      _ -> nil
+    end
+  end
+
   def get_or_create_node!(conn, uuid, labels \\ [], props \\ %{}) do
     set_labels =
       if length(labels) > 0,
