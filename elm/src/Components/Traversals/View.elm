@@ -42,6 +42,7 @@ view activeOnMobile context graph model =
                         ]
                         [ traversalDiv ]
             )
+        |> List.reverse
         |> (::) (traversalsPaginationDiv model)
 
 
