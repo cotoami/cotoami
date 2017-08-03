@@ -4,8 +4,30 @@ defmodule Cotoami.CotoService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, limit: 2]
-  alias Cotoami.{Repo, Coto, CotonomaService}
+  import Ecto.Query
+  alias Cotoami.{Repo, Coto, Amishi, CotonomaService, CotoGraphService}
+  alias Cotoami.Exceptions.InvalidOperation
+
+  def get(id) do
+    Coto
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.get(id)
+  end
+
+  def get_by_ids(coto_ids) do
+    Coto
+    |> where([c], c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
+  end
+
+  def get_cotos_by_amishi(amishi_id) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> limit(100)
+    |> Repo.all
+  end
 
   def create!(cotonoma_id_nillable, amishi_id, content) do
     posted_in =
@@ -23,11 +45,23 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def get_cotos_by_amishi(amishi_id) do
-    Coto
-    |> Coto.for_amishi(amishi_id)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> limit(100)
-    |> Repo.all
+  def delete!(id, %Amishi{id: amishi_id}) do
+    Repo.transaction(fn ->
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> Repo.get!(id)
+      |> ensure_not_to_be_cotonoma()
+      |> Repo.delete!()
+
+      CotoGraphService.delete_coto(id)
+    end)
+  end
+
+  defp ensure_not_to_be_cotonoma(coto) do
+    if coto.as_cotonoma do
+      raise InvalidOperation
+    else
+      coto
+    end
   end
 end

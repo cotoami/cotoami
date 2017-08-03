@@ -1,7 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{Repo, Coto, RedisService, CotoService, AmishiService}
+  alias Cotoami.{RedisService, CotoService, AmishiService}
 
   plug :scrub_params, "coto" when action in [:create]
 
@@ -42,10 +42,7 @@ defmodule Cotoami.CotoController do
   def delete(conn, %{"id" => id}) do
     case conn.assigns do
       %{amishi: amishi} ->
-        Coto
-        |> Coto.for_amishi(amishi.id)
-        |> Repo.get!(id)
-        |> Repo.delete!()
+        CotoService.delete!(id, amishi)
         send_resp(conn, :no_content, "")
       _ ->
         send_resp(conn, :no_content, "")

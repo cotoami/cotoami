@@ -48,7 +48,7 @@ type alias BodyModel =
     { cotoId : Maybe CotoId
     , content : String
     , asCotonoma : Bool
-    , cotonomaKey : CotonomaKey
+    , cotonomaKey : Maybe CotonomaKey
     }
 
 
@@ -73,15 +73,21 @@ bodyDiv context graph config model =
                 cotoToolsSpan context graph config cotoId
           )
         , if model.asCotonoma then
-            div [ class "coto-as-cotonoma" ]
-                [ a
-                    [ href ("/cotonomas/" ++ model.cotonomaKey)
-                    , onClickWithoutPropagation (config.cotonomaClick model.cotonomaKey)
-                    ]
+            let
+                content =
                     [ i [ class "material-icons" ] [ text "exit_to_app" ]
                     , span [ class "cotonoma-name" ] [ text model.content ]
                     ]
-                ]
+            in
+                div [ class "coto-as-cotonoma" ]
+                    [ case model.cotonomaKey of
+                        Nothing -> span [] content
+                        Just cotonomaKey ->
+                            a [ href ("/cotonomas/" ++ cotonomaKey)
+                              , onClickWithoutPropagation (config.cotonomaClick cotonomaKey)
+                              ]
+                              content
+                    ]
           else
             config.markdown model.content
         ]

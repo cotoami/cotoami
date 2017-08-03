@@ -18,6 +18,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
+import App.Server.Graph exposing (fetchGraph, unpinCoto)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -122,6 +123,12 @@ update msg model =
                         ]
 
         CotonomaFetched (Err _) ->
+            model ! []
+
+        GraphFetched (Ok graph) ->
+            { model | graph = graph } ! []
+
+        GraphFetched (Err _) ->
             model ! []
 
         KeyDown key ->
@@ -326,7 +333,18 @@ update msg model =
             ! []
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> deleteRootConnection cotoId } ! []
+            { model | graph = model.graph |> deleteRootConnection cotoId } !
+                [ unpinCoto
+                    CotoUnpinned
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    cotoId
+                ]
+
+        CotoUnpinned (Ok _) ->
+            model ! []
+
+        CotoUnpinned (Err _) ->
+            model ! []
 
         CotonomaPresenceState payload ->
             { model | memberPresences = decodePresenceState payload } ! []
@@ -495,12 +513,13 @@ loadHome model =
     , timeline = setLoading model.timeline
     , connectMode = False
     , connectingTo = Nothing
-    , graph = initGraph
+    , graph = defaultGraph
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !
         [ Cmd.map TimelineMsg fetchPosts
         , fetchRecentCotonomas
+        , fetchGraph Nothing
         ]
 
 
@@ -521,12 +540,13 @@ loadCotonoma key model =
     , timeline = setLoading model.timeline
     , connectMode = False
     , connectingTo = Nothing
-    , graph = initGraph
+    , graph = defaultGraph
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !
         [ fetchRecentCotonomas
         , fetchCotonomaPosts key
+        , fetchGraph (Just key)
         ]
 
 

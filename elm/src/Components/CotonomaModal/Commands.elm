@@ -2,7 +2,7 @@ module Components.CotonomaModal.Commands exposing (..)
 
 import Json.Encode as Encode
 import Http
-import Utils
+import Utils exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Server.Coto exposing (decodePost)
 import Components.CotonomaModal.Model exposing (..)
@@ -12,7 +12,7 @@ import Components.CotonomaModal.Messages exposing (..)
 postCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Cmd Msg
 postCotonoma clientId maybeCotonoma postId members name =
     Http.send Posted
-        <| Utils.post
+        <| httpPost
             "/api/cotonomas"
             (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId members name))
             decodePost

@@ -43,14 +43,13 @@ connectionsDiv divClass connections context graph =
                     Nothing ->
                         Nothing
 
-                    -- Missing the end node
                     Just coto ->
                         Just
                             ( conn.key
                             , connectionDiv context graph coto
                             )
             )
-            connections
+            (List.reverse connections)
         )
 
 

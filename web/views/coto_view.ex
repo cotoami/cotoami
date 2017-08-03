@@ -28,7 +28,7 @@ defmodule Cotoami.CotoView do
     cotonoma_key =
       case coto.cotonoma do
         %Cotonoma{key: key} -> key
-        _ -> ""
+        _ -> nil
       end
     %{
       id: coto.id,

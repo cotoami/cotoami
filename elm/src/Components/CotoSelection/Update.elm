@@ -8,6 +8,7 @@ import Maybe exposing (andThen, withDefault)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context, clearSelection, deleteSelection, setBeingDeselected)
 import App.Types.Graph exposing (addConnections, addRootConnections)
+import App.Server.Graph exposing (pinCotos)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
 import Components.Timeline.Update exposing (postContent, setCotoSaved)
@@ -34,7 +35,18 @@ update msg model =
             model ! []
 
         Pin ->
-            pinSelectedCotos model ! []
+            pinSelectedCotos model !
+                [ pinCotos
+                    Pinned
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    model.context.selection
+                ]
+
+        Pinned (Ok _) ->
+            model ! []
+
+        Pinned (Err _) ->
+            model ! []
 
         ClearSelection ->
             { model

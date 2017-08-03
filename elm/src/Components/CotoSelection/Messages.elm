@@ -11,6 +11,7 @@ type Msg
     | DeselectCoto
     | ConfirmPin
     | Pin
+    | Pinned (Result Http.Error String)
     | ClearSelection
     | CotonomaClick CotonomaKey
     | OpenTraversal CotoId

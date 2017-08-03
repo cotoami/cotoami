@@ -3,8 +3,10 @@ module Utils exposing
     , validateEmail
     , send
     , onClickWithoutPropagation
-    , post
-    , delete
+    , httpRequestWithBody
+    , httpDelete
+    , httpPost
+    , httpPut
     )
 
 import String
@@ -62,10 +64,10 @@ commonRequestHeaders =
     ]
 
 
-post : String -> Http.Body -> Decode.Decoder a -> Http.Request a
-post url body decoder =
+httpRequestWithBody : String -> String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpRequestWithBody method url body decoder =
     Http.request
-        { method = "POST"
+        { method = method
         , headers = commonRequestHeaders
         , url = url
         , body = body
@@ -75,8 +77,8 @@ post url body decoder =
         }
 
 
-delete : String -> Http.Request String
-delete url =
+httpDelete : String -> Http.Request String
+httpDelete url =
     Http.request
         { method = "DELETE"
         , headers = commonRequestHeaders
@@ -86,3 +88,11 @@ delete url =
         , timeout = Nothing
         , withCredentials = False
         }
+
+
+httpPost : String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPost = httpRequestWithBody "POST"
+
+
+httpPut : String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPut = httpRequestWithBody "PUT"

@@ -2,7 +2,7 @@ module App.Server.Coto exposing (..)
 
 import Http
 import Json.Decode as Decode
-import Utils
+import Utils exposing (httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Post exposing (Post)
 import App.Types.Coto exposing (CotoId, CotonomaKey)
@@ -19,7 +19,7 @@ decodePost =
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.field "cotonoma_key" Decode.string)
+        (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
         (Decode.succeed False)
 
 
@@ -37,4 +37,4 @@ deleteCoto : CotoId -> Cmd Msg
 deleteCoto cotoId =
     Http.send
         CotoDeleted
-        ("/api/cotos/" ++ cotoId |> Utils.delete)
+        ("/api/cotos/" ++ cotoId |> httpDelete)

@@ -4,12 +4,15 @@ defmodule Cotoami.Neo4jServiceTest do
   alias Bolt.Sips.Types.Node
   alias Bolt.Sips.Types.Relationship
 
+  setup do
+    %{conn: Bolt.Sips.conn}
+  end
+
   describe "a basic node" do
-    setup do
-      conn = Bolt.Sips.conn
+    setup %{conn: conn} do
       uuid = UUID.uuid4()
       node = Neo4jService.get_or_create_node!(conn, uuid)
-      %{conn: conn, uuid: uuid, node: node}
+      %{uuid: uuid, node: node}
     end
 
     test "create", %{uuid: uuid, node: node} do
@@ -19,22 +22,34 @@ defmodule Cotoami.Neo4jServiceTest do
 
     test "get with uuid", %{conn: conn, uuid: uuid, node: node} do
       existing_node_id = node.id
+
+      assert %Node{
+        id: ^existing_node_id,
+        labels: [],
+        properties:  %{"uuid" => ^uuid}
+      } = Neo4jService.get_node!(conn, uuid)
+
       assert %Node{
         id: ^existing_node_id,
         labels: [],
         properties:  %{"uuid" => ^uuid}
       } = Neo4jService.get_or_create_node!(conn, uuid)
     end
+
+    test "delete", %{conn: conn, uuid: uuid} do
+      assert %{stats: %{"nodes-deleted" => 1}, type: "w"} =
+        Neo4jService.delete_node_with_relationships!(conn, uuid)
+      assert nil == Neo4jService.get_node!(conn, uuid)
+    end
   end
 
   describe "a node with labels and properties" do
-    setup do
-      conn = Bolt.Sips.conn
+    setup %{conn: conn} do
       uuid = UUID.uuid4()
       labels = ["A", "B"]
       props = %{a: "hello", b: 1}
       node = Neo4jService.get_or_create_node!(conn, uuid, labels, props)
-      %{conn: conn, uuid: uuid, node: node, labels: labels, props: props}
+      %{uuid: uuid, node: node, labels: labels, props: props}
     end
 
     test "create", %{uuid: uuid, node: node, labels: labels} do
@@ -58,14 +73,13 @@ defmodule Cotoami.Neo4jServiceTest do
   end
 
   describe "a relationship" do
-    setup do
-      conn = Bolt.Sips.conn
+    setup %{conn: conn} do
       uuid1 = UUID.uuid4()
       %Node{id: node1_id} = Neo4jService.get_or_create_node!(conn, uuid1)
       uuid2 = UUID.uuid4()
       %Node{id: node2_id} = Neo4jService.get_or_create_node!(conn, uuid2)
       rel = Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "A")
-      %{conn: conn, uuid1: uuid1, node1_id: node1_id, uuid2: uuid2, node2_id: node2_id, rel: rel}
+      %{uuid1: uuid1, node1_id: node1_id, uuid2: uuid2, node2_id: node2_id, rel: rel}
     end
 
     test "get nil when the nodes are not found", %{conn: conn} do
@@ -106,14 +120,13 @@ defmodule Cotoami.Neo4jServiceTest do
   end
 
   describe "a relationship with properties" do
-    setup do
-      conn = Bolt.Sips.conn
+    setup %{conn: conn} do
       uuid1 = UUID.uuid4()
       %Node{id: node1_id} = Neo4jService.get_or_create_node!(conn, uuid1)
       uuid2 = UUID.uuid4()
       %Node{id: node2_id} = Neo4jService.get_or_create_node!(conn, uuid2)
       rel = Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "A", %{a: "hello", b: 1})
-      %{conn: conn, uuid1: uuid1, node1_id: node1_id, uuid2: uuid2, node2_id: node2_id, rel: rel}
+      %{uuid1: uuid1, node1_id: node1_id, uuid2: uuid2, node2_id: node2_id, rel: rel}
     end
 
     test "create", %{node1_id: node1_id, node2_id: node2_id, rel: rel} do
@@ -125,9 +138,7 @@ defmodule Cotoami.Neo4jServiceTest do
   end
 
   describe "ordered relationships" do
-    setup do
-      conn = Bolt.Sips.conn
-
+    setup %{conn: conn} do
       uuid1 = UUID.uuid4()
       Neo4jService.get_or_create_node!(conn, uuid1)
       uuid2 = UUID.uuid4()
@@ -137,7 +148,7 @@ defmodule Cotoami.Neo4jServiceTest do
 
       rel1 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid2, "A")
       rel2 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid3, "A")
-      %{conn: conn, uuid1: uuid1, uuid2: uuid2, uuid3: uuid3, rel1: rel1, rel2: rel2}
+      %{uuid1: uuid1, uuid2: uuid2, uuid3: uuid3, rel1: rel1, rel2: rel2}
     end
 
     test "create", %{rel1: rel1, rel2: rel2} do

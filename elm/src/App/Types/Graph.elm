@@ -2,7 +2,6 @@ module App.Types.Graph exposing (..)
 
 import Dict
 import Maybe exposing (withDefault)
-import Json.Decode as Decode
 import App.Types.Coto exposing (Coto, CotoId)
 
 
@@ -21,13 +20,6 @@ initConnection maybeStart end =
         Connection key maybeStart end
 
 
-decodeConnection : Decode.Decoder Connection
-decodeConnection =
-    Decode.map2 initConnection
-        (Decode.maybe (Decode.field "start" Decode.string))
-        (Decode.field "end" Decode.string)
-
-
 type alias Graph =
     { cotos : Dict.Dict CotoId Coto
     , rootConnections : List Connection
@@ -35,8 +27,8 @@ type alias Graph =
     }
 
 
-initGraph : Graph
-initGraph =
+defaultGraph : Graph
+defaultGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty

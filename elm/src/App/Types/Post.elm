@@ -13,7 +13,7 @@ type alias Post =
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
-    , cotonomaKey : CotonomaKey
+    , cotonomaKey : Maybe CotonomaKey
     , beingDeleted : Bool
     }
 
@@ -26,7 +26,7 @@ defaultPost =
     , amishi = Nothing
     , postedIn = Nothing
     , asCotonoma = False
-    , cotonomaKey = ""
+    , cotonomaKey = Nothing
     , beingDeleted = False
     }
 
@@ -41,6 +41,7 @@ toCoto post =
                 (Coto
                     cotoId
                     post.content
+                    post.amishi
                     post.postedIn
                     post.asCotonoma
                     post.cotonomaKey
@@ -62,7 +63,7 @@ isPostedInCoto coto post =
     if coto.asCotonoma then
         case post.postedIn of
             Nothing -> False
-            Just postedIn -> postedIn.key == coto.cotonomaKey
+            Just postedIn -> (Just postedIn.key) == coto.cotonomaKey
     else
         False
 
