@@ -71,10 +71,9 @@ modalConfig coto model =
                 ]
             ]
     , buttons =
-        [ button
-            [ class "button"
-            , onClick ConfirmDelete
-            ]
-            [ text "Delete" ]
+        [ if coto.asCotonoma then
+            span [] []
+          else
+            button [ class "button", onClick ConfirmDelete ] [ text "Delete" ]
         ]
     }
