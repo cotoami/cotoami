@@ -32,6 +32,8 @@ defmodule Cotoami.CotoService do
   end
 
   def get_by_ids(coto_ids) do
-    (from c in Coto, where: c.id in ^coto_ids) |> Repo.all()
+    (from c in Coto, where: c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
   end
 end
