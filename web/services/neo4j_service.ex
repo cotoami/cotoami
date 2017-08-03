@@ -97,4 +97,12 @@ defmodule Cotoami.Neo4jService do
     get_or_create_relationship!(conn, source_uuid, target_uuid, type,
       props |> Map.put(@rel_prop_order, next_order))
   end
+
+  def delete_node_with_relationships!(conn, uuid) do
+    query = ~s"""
+      MATCH (n { uuid: $uuid })
+      DETACH DELETE n
+    """
+    Bolt.Sips.query!(conn, query, %{uuid: uuid})
+  end
 end
