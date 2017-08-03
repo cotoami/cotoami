@@ -72,11 +72,9 @@ traversalDiv context graph traversal connections startCoto  =
                 (case traversal.description of
                     Connected ->
                         [ i [ class "material-icons" ] [ text "add_circle" ]
-                        , span [ class "text" ] [ text "Connected by me" ]
                         ]
                     Opened ->
                         [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                        , span [ class "text" ] [ text "Opened by me" ]
                         ]
                 )
             , a [ class "tool-button close-traversal"
