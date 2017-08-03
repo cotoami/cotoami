@@ -18,7 +18,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
-import App.Server.Graph exposing (fetchGraph)
+import App.Server.Graph exposing (fetchGraph, unpinCoto)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -333,7 +333,18 @@ update msg model =
             ! []
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> deleteRootConnection cotoId } ! []
+            { model | graph = model.graph |> deleteRootConnection cotoId } !
+                [ unpinCoto
+                    CotoUnpinned
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    cotoId
+                ]
+
+        CotoUnpinned (Ok _) ->
+            model ! []
+
+        CotoUnpinned (Err _) ->
+            model ! []
 
         CotonomaPresenceState payload ->
             { model | memberPresences = decodePresenceState payload } ! []

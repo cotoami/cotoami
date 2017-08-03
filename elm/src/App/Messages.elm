@@ -53,6 +53,7 @@ type Msg
     | CotonomaClick CotonomaKey
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
+    | CotoUnpinned (Result Http.Error String)
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | CotoSelectionMsg Components.CotoSelection.Messages.Msg

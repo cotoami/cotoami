@@ -3,7 +3,7 @@ module App.Server.Graph exposing (..)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Utils exposing (httpPut)
+import Utils exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, CotonomaKey)
@@ -75,3 +75,11 @@ pinCotos tag maybeCotonomaKey cotoIds =
                     ]
     in
         Http.send tag (httpPut url body Decode.string)
+
+
+unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
+unpinCoto tag maybeCotonomaKey cotoId =
+    let
+        url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+    in
+        Http.send tag (httpDelete url)
