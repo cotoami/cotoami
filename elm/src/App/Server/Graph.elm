@@ -59,7 +59,7 @@ pinCoto tag maybeCotonomaKey cotoId =
     let
         url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
-        Http.send tag (httpPut url Http.emptyBody Decode.string)
+        Http.send tag (httpPut url Http.emptyBody (Decode.succeed "done"))
 
 
 pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
@@ -74,7 +74,7 @@ pinCotos tag maybeCotonomaKey cotoIds =
                       )
                     ]
     in
-        Http.send tag (httpPut url body Decode.string)
+        Http.send tag (httpPut url body (Decode.succeed "done"))
 
 
 unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
