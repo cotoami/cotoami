@@ -45,10 +45,17 @@ defmodule Cotoami.CotoController do
         Coto
         |> Coto.for_amishi(amishi.id)
         |> Repo.get!(id)
+        |> ensure_not_to_be_cotonoma()
         |> Repo.delete!()
         send_resp(conn, :no_content, "")
       _ ->
         send_resp(conn, :no_content, "")
     end
+  end
+
+  defp ensure_not_to_be_cotonoma(coto) do
+    if coto.as_cotonoma,
+      do: raise Cotoami.Exceptions.UnsupportedOperation,
+      else: coto
   end
 end
