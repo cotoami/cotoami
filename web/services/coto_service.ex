@@ -4,9 +4,9 @@ defmodule Cotoami.CotoService do
   """
 
   require Logger
-  import Ecto.Query, only: [from: 2, preload: 2, limit: 2]
+  import Ecto.Query
   alias Cotoami.{Repo, Coto, Amishi, CotonomaService, CotoGraphService}
-  alias Cotoami.Exceptions.UnsupportedOperation
+  alias Cotoami.Exceptions.InvalidOperation
 
   def get(id) do
     Coto
@@ -15,7 +15,8 @@ defmodule Cotoami.CotoService do
   end
 
   def get_by_ids(coto_ids) do
-    (from c in Coto, where: c.id in ^coto_ids)
+    Coto
+    |> where([c], c.id in ^coto_ids)
     |> preload([:amishi, :posted_in, :cotonoma])
     |> Repo.all()
   end
@@ -58,7 +59,7 @@ defmodule Cotoami.CotoService do
 
   defp ensure_not_to_be_cotonoma(coto) do
     if coto.as_cotonoma do
-      raise UnsupportedOperation
+      raise InvalidOperation
     else
       coto
     end

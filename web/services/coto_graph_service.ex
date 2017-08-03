@@ -36,7 +36,7 @@ defmodule Cotoami.CotoGraphService do
     |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
         coto_id = node.properties["uuid"]
-        cotos = graph.cotos |> Map.put(coto_id, node.properties)
+        cotos = Map.put(graph.cotos, coto_id, node.properties)
         connection =
           rel.properties
           |> Map.put("id", rel.id)
@@ -73,7 +73,7 @@ defmodule Cotoami.CotoGraphService do
     ids
     |> Enum.filter(&(&1))
     |> Enum.uniq()
-    |> (fn(ids) -> (from q in queryable, where: q.id in ^ids) |> Repo.all() end).()
+    |> (fn(ids) -> Repo.all(from q in queryable, where: q.id in ^ids) end).()
     |> Enum.filter(&(&1))
     |> Enum.map(&({&1.id, to_json.(&1)}))
     |> Map.new()
@@ -105,8 +105,7 @@ defmodule Cotoami.CotoGraphService do
   end
 
   def delete_coto(coto_id) do
-    Bolt.Sips.conn
-    |> Neo4jService.delete_node_with_relationships!(coto_id)
+    Neo4jService.delete_node_with_relationships!(Bolt.Sips.conn, coto_id)
   end
 
   defp register_amishi(conn, %Amishi{id: amishi_id}) do

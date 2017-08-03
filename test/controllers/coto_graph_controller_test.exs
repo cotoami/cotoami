@@ -81,7 +81,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       {coto2, _} = CotoService.create!(nil, amishi.id, "plain coto")
       {{coto3, cotonoma3}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
 
-      conn |> put("/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+      put(conn, "/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
       conn = http_get("/api/graph", amishi)
 
@@ -107,7 +107,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "DELETE /api/graph/pin/:coto_id", %{conn: conn, amishi: amishi, coto: coto} do
-      conn |> delete("/api/graph/pin/#{coto.id}")
+      delete(conn, "/api/graph/pin/#{coto.id}")
 
       conn = http_get("/api/graph", amishi)
 
@@ -127,7 +127,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "GET /api/graph", %{conn: conn, coto: coto} do
-      conn = conn |> get("/api/graph")
+      conn = get(conn, "/api/graph")
 
       {coto_id, cotonoma_key} = {coto.id, coto.cotonoma.key}
       assert %{
@@ -197,7 +197,7 @@ defmodule Cotoami.CotoGraphControllerTest do
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "bye")
 
-      conn |> put("/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
+      put(conn, "/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
 
       conn = http_get("/api/graph/#{cotonoma.key}", amishi)
 
@@ -221,7 +221,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       CotonomaService.add_member(cotonoma, %{"amishi_id" => amishi2.id})
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi2.id, "bye")
 
-      conn |> put("/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
+      put(conn, "/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
 
       conn = http_get("/api/graph/#{cotonoma.key}", amishi)
 
@@ -244,7 +244,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Mario")
       {coto3, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Luigi")
 
-      conn |> put("/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
+      put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
       conn = http_get("/api/graph/#{cotonoma.key}", amishi)
 
@@ -266,7 +266,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
     test "DELETE /api/graph/:cotonoma_key/pin/:coto_id",
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      conn |> delete("/api/graph/#{cotonoma.key}/pin/#{coto.id}")
+      delete(conn, "/api/graph/#{cotonoma.key}/pin/#{coto.id}")
 
       conn = http_get("/api/graph/#{cotonoma.key}", amishi)
 
