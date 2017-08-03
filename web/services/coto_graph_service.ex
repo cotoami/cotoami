@@ -8,8 +8,8 @@ defmodule Cotoami.CotoGraphService do
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
   alias Cotoami.{
-    Repo, Coto, Amishi, Cotonoma, Neo4jService, CotoGraph, AmishiService,
-    CotonomaService, AmishiView, CotonomaView
+    Repo, Coto, Amishi, Cotonoma, Neo4jService, CotoGraph, AmishiView,
+    CotonomaView
   }
 
   @label_amishi "Amishi"
@@ -102,6 +102,11 @@ defmodule Cotoami.CotoGraphService do
   def unpin(%Coto{id: coto_id}, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
     Bolt.Sips.conn
     |> Neo4jService.delete_relationship!(cotonoma_coto_id, coto_id, @rel_type_has_a)
+  end
+
+  def delete_coto(coto_id) do
+    Bolt.Sips.conn
+    |> Neo4jService.delete_node_with_relationships!(coto_id)
   end
 
   defp register_amishi(conn, %Amishi{id: amishi_id}) do

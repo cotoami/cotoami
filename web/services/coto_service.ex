@@ -5,7 +5,8 @@ defmodule Cotoami.CotoService do
 
   require Logger
   import Ecto.Query, only: [from: 2, preload: 2, limit: 2]
-  alias Cotoami.{Repo, Coto, CotonomaService}
+  alias Cotoami.{Repo, Coto, Amishi, CotonomaService, CotoGraphService}
+  alias Cotoami.Exceptions.UnsupportedOperation
 
   def get(id) do
     Coto
@@ -41,5 +42,25 @@ defmodule Cotoami.CotoService do
         })
       |> Repo.insert!
     {coto, posted_in}
+  end
+
+  def delete!(id, %Amishi{id: amishi_id}) do
+    Repo.transaction(fn ->
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> Repo.get!(id)
+      |> ensure_not_to_be_cotonoma()
+      |> Repo.delete!()
+
+      CotoGraphService.delete_coto(id)
+    end)
+  end
+
+  defp ensure_not_to_be_cotonoma(coto) do
+    if coto.as_cotonoma do
+      raise UnsupportedOperation
+    else
+      coto
+    end
   end
 end
