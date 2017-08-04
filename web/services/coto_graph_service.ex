@@ -126,6 +126,23 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.delete_relationship!(cotonoma_coto_id, coto_id, @rel_type_has_a)
   end
 
+  def connect(%Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}) do
+    do_connect(source, target, amishi_id, nil)
+  end
+  def connect(%Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
+    do_connect(source, target, amishi_id, cotonoma_id)
+  end
+  defp do_connect(%Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
+    rel_props = if cotonoma_id,
+      do: common_rel_props(amishi_id, cotonoma_id),
+      else: common_rel_props(amishi_id)
+    Bolt.Sips.conn
+    |> register_coto(source)
+    |> register_coto(target)
+    |> Neo4jService.get_or_create_ordered_relationship!(
+      source.id, target.id, @rel_type_has_a, rel_props)
+  end
+
   def delete_coto(coto_id) do
     Neo4jService.delete_node_with_relationships!(Bolt.Sips.conn, coto_id)
   end
