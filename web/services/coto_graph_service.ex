@@ -60,7 +60,10 @@ defmodule Cotoami.CotoGraphService do
         if from_root && parent_id == uuid do
           %{graph | root_connections: [connection | graph.root_connections]}
         else
-          %{graph | connections: [connection | graph.connections]}
+          parent_connections =
+            [connection | Map.get(graph.connections, parent_id, [])]
+          connections = Map.put(graph.connections, parent_id, parent_connections)
+          %{graph | connections: connections}
         end
       end)
     |> (fn(graph) -> %{graph | cotos: set_relations(graph.cotos)} end).()
