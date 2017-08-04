@@ -143,6 +143,11 @@ defmodule Cotoami.CotoGraphService do
       source.id, target.id, @rel_type_has_a, rel_props)
   end
 
+  # TODO: should check the permission?
+  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}) do
+    Neo4jService.delete_relationship!(Bolt.Sips.conn, source_id, target_id, @rel_type_has_a)
+  end
+
   def delete_coto(coto_id) do
     Neo4jService.delete_node_with_relationships!(Bolt.Sips.conn, coto_id)
   end
