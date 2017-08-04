@@ -35,6 +35,14 @@ defaultGraph =
     }
 
 
+mergeSubgraph : Graph -> Graph -> Graph
+mergeSubgraph subgraph graph =
+    { graph
+    | cotos = Dict.union subgraph.cotos graph.cotos
+    , connections = Dict.union subgraph.connections graph.connections
+    }
+
+
 pinned : CotoId -> Graph -> Bool
 pinned cotoId graph =
     List.any (\conn -> conn.end == cotoId) graph.rootConnections
@@ -42,7 +50,12 @@ pinned cotoId graph =
 
 member : CotoId -> Graph -> Bool
 member cotoId graph =
-    graph.cotos |> Dict.member cotoId
+    Dict.member cotoId graph.cotos
+
+
+getCoto : CotoId -> Graph -> Maybe Coto
+getCoto cotoId graph =
+    Dict.get cotoId graph.cotos
 
 
 hasConnection : CotoId -> CotoId -> Graph -> Bool

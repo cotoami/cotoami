@@ -18,6 +18,13 @@ defmodule Cotoami.CotoGraphController do
     end
   end
 
+  def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
+    case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
+      nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
+      cotonoma -> json conn, CotoGraphService.get_subgraph(cotonoma)
+    end
+  end
+
   def pin(conn, %{"coto_id" => coto_id}, amishi) do
     case CotoService.get(coto_id) do
       nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")

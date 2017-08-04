@@ -31,6 +31,7 @@ type Msg
     | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
     | GraphFetched (Result Http.Error Graph)
+    | SubgraphFetched (Result Http.Error Graph)
     | KeyDown KeyCode
     | KeyUp KeyCode
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
