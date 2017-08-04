@@ -26,23 +26,38 @@ defmodule Cotoami.CotoGraphService do
     get_graph_from_uuid(cotonoma_coto_id)
   end
 
+  # start with the uuid node and traverse HAS_A relationships
+  # until finding the end edge or a cotonoma
   defp get_graph_from_uuid(uuid) do
     query = ~s"""
-      MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(pinned:#{@label_coto})
-      RETURN has, pinned
+      MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
+        (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
+      WITH size(filter(n IN tail(nodes(path)) WHERE n:#{@label_cotonoma}))
+        AS subcotonomas, parent, has, child
+      WHERE (child:#{@label_cotonoma} AND subcotonomas = 1) OR
+        ((NOT child:#{@label_cotonoma}) AND subcotonomas = 0)
+      RETURN parent, has, child
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
     Bolt.Sips.conn
     |> Bolt.Sips.query!(query, %{uuid: uuid})
-    |> Enum.reduce(%CotoGraph{}, fn(%{"has" => rel, "pinned" => node}, graph) ->
-        coto_id = node.properties["uuid"]
-        cotos = Map.put(graph.cotos, coto_id, node.properties)
+    |> Enum.reduce(%CotoGraph{}, fn(%{"parent" => parent, "has" => has, "child" => child}, graph) ->
+        parent_id = parent.properties["uuid"]
+        child_id = child.properties["uuid"]
+
+        graph = %{graph | cotos: Map.put(graph.cotos, child_id, child.properties)}
+
         connection =
-          rel.properties
-          |> Map.put("id", rel.id)
-          |> Map.put("end", coto_id)
-        root_connections = [connection | graph.root_connections]
-        %{graph | cotos: cotos, root_connections: root_connections}
+          has.properties
+          |> Map.put("id", has.id)
+          |> Map.put("start", parent_id)
+          |> Map.put("end", child_id)
+
+        if parent_id == uuid do
+          %{graph | root_connections: [connection | graph.root_connections]}
+        else
+          %{graph | connections: [connection | graph.connections]}
+        end
       end)
     |> (fn(graph) -> %{graph | cotos: set_relations(graph.cotos)} end).()
   end
