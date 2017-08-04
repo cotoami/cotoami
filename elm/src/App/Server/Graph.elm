@@ -47,6 +47,13 @@ fetchGraph maybeCotonomaKey =
         Http.send GraphFetched (Http.get url decodeGraph)
 
 
+fetchSubgraph : CotonomaKey -> Cmd Msg
+fetchSubgraph cotonomaKey =
+    Http.send
+        SubgraphFetched
+        (Http.get ("/api/graph/subgraph/" ++ cotonomaKey) decodeGraph)
+
+
 pinUrl : Maybe CotonomaKey -> String
 pinUrl maybeCotonomaKey =
     case maybeCotonomaKey of

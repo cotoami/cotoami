@@ -131,6 +131,12 @@ update msg model =
         GraphFetched (Err _) ->
             model ! []
 
+        SubgraphFetched (Ok graph) ->
+            model ! []
+
+        SubgraphFetched (Err _) ->
+            model ! []
+
         KeyDown key ->
             if key == ctrl.keyCode || key == meta.keyCode then
                 { model | context = ctrlDown True model.context } ! []
