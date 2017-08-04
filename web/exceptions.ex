@@ -12,4 +12,16 @@ defmodule Cotoami.Exceptions do
       plug_status: 405
     ]
   end
+
+  defmodule NotFound do
+    @moduledoc """
+    raised when the requested entity is not found.
+    """
+
+    defexception [:message, plug_status: 404]
+
+    def exception(target) do
+      %NotFound{message: "Not found: #{target}"}
+    end
+  end
 end
