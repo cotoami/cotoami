@@ -168,4 +168,36 @@ defmodule Cotoami.CotoGraphServiceTest do
       assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
+
+  describe "two cotos with a connection" do
+    setup %{amishi: amishi} do
+      {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
+      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+      CotoGraphService.connect(coto1, coto2, amishi)
+      %{coto1: coto1, coto2: coto2}
+    end
+
+    test "connection", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
+      amishi_id = amishi.id
+
+      coto1_node = Neo4jService.get_or_create_node!(conn, coto1.id)
+      coto1_node_id = coto1_node.id
+
+      coto2_node = Neo4jService.get_or_create_node!(conn, coto2.id)
+      coto2_node_id = coto2_node.id
+
+      assert [
+        %Relationship{
+          start: ^coto1_node_id,
+          end: ^coto2_node_id,
+          properties: %{
+            "created_at" => _created_at,
+            "created_by" => ^amishi_id,
+            "order" => 1
+          },
+          type: "HAS_A"
+        }
+      ] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
+    end
+  end
 end
