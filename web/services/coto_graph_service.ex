@@ -26,9 +26,13 @@ defmodule Cotoami.CotoGraphService do
     get_graph_from_uuid(cotonoma_coto_id)
   end
 
+  def get_subgraph(%Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid(cotonoma_coto_id, false)
+  end
+
   # start with the uuid node and traverse HAS_A relationships
   # until finding the end edge or a cotonoma
-  defp get_graph_from_uuid(uuid) do
+  defp get_graph_from_uuid(uuid, from_root \\ true) do
     query = ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
         (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
@@ -53,7 +57,7 @@ defmodule Cotoami.CotoGraphService do
           |> Map.put("start", parent_id)
           |> Map.put("end", child_id)
 
-        if parent_id == uuid do
+        if from_root && parent_id == uuid do
           %{graph | root_connections: [connection | graph.root_connections]}
         else
           %{graph | connections: [connection | graph.connections]}
