@@ -35,11 +35,15 @@ defmodule Cotoami.CotoGraphController do
     json conn, results
   end
 
-  def unpin(conn, %{"coto_id" => coto_id}, amishi) do
-    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
-    case coto do
+  def unpin(conn, %{"coto_id" => coto_id} = params, amishi) do
+    cotonoma = get_cotonoma_if_specified(params, amishi)
+    case CotoService.get(coto_id) do
       nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")
-      coto -> json conn, CotoGraphService.unpin(coto, amishi)
+      coto ->
+        case cotonoma do
+          nil -> json conn, CotoGraphService.unpin(coto, amishi)
+          cotonoma -> json conn, CotoGraphService.unpin(coto, cotonoma)
+        end
     end
   end
 
@@ -53,16 +57,6 @@ defmodule Cotoami.CotoGraphController do
           |> Enum.filter(&(&1))
           |> Enum.map(&(CotoGraphService.pin(&1, cotonoma, amishi)))
         json conn, results
-    end
-  end
-
-  def unpin_from_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
-    cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
-    coto = Coto |> Coto.for_amishi(amishi.id) |> Repo.get!(coto_id)
-    if cotonoma && coto do
-      json conn, CotoGraphService.unpin(coto, cotonoma)
-    else
-      send_resp(conn, :not_found, "cotonoma or coto not found")
     end
   end
 
