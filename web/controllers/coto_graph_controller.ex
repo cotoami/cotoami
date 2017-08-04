@@ -25,14 +25,7 @@ defmodule Cotoami.CotoGraphController do
     end
   end
 
-  def pin(conn, %{"coto_id" => coto_id}, amishi) do
-    case CotoService.get(coto_id) do
-      nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")
-      coto -> json conn, CotoGraphService.pin(coto, amishi)
-    end
-  end
-
-  def pin_all(conn, %{"coto_ids" => coto_ids}, amishi) do
+  def pin(conn, %{"coto_ids" => coto_ids}, amishi) do
     results =
       coto_ids
       |> CotoService.get_by_ids()
@@ -49,17 +42,7 @@ defmodule Cotoami.CotoGraphController do
     end
   end
 
-  def pin_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_id" => coto_id}, amishi) do
-    cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
-    coto = CotoService.get(coto_id)
-    if cotonoma && coto do
-      json conn, CotoGraphService.pin(coto, cotonoma, amishi)
-    else
-      send_resp(conn, :not_found, "cotonoma or coto not found")
-    end
-  end
-
-  def pin_all_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_ids" => coto_ids}, amishi) do
+  def pin_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_ids" => coto_ids}, amishi) do
     case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
       nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
       cotonoma ->

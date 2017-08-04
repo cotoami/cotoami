@@ -56,28 +56,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/pin/:coto_id", %{conn: conn, amishi: amishi, coto: coto} do
-      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
-
-      conn |> put("/api/graph/pin/#{coto2.id}")
-
-      conn = http_get("/api/graph", amishi)
-
-      {coto_id, coto2_id} = {coto.id, coto2.id}
-      assert %{
-        "cotos" => %{
-          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
-          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
-        },
-        "root_connections" => [
-          %{"end" => ^coto2_id, "order" => 2},
-          %{"end" => ^coto_id, "order" => 1}
-        ],
-        "connections" => %{}
-      } = json_response(conn, 200)
-    end
-
-    test "PUT /api/graph/pin (multiple cotos)", %{conn: conn, amishi: amishi, coto: coto} do
+    test "PUT /api/graph/pin", %{conn: conn, amishi: amishi, coto: coto} do
       {coto2, _} = CotoService.create!(nil, amishi.id, "plain coto")
       {{coto3, cotonoma3}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
 
@@ -193,53 +172,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       } = json_response(conn, 200)
     end
 
-    test "PUT /api/graph/:cotonoma_key/pin/:coto_id",
-        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "bye")
-
-      put(conn, "/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
-
-      conn = http_get("/api/graph/#{cotonoma.key}", amishi)
-
-      {coto_id, coto2_id} = {coto.id, coto2.id}
-      assert %{
-        "cotos" => %{
-          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
-          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
-        },
-        "root_connections" => [
-          %{"end" => ^coto2_id, "order" => 2},
-          %{"end" => ^coto_id, "order" => 1}
-        ],
-        "connections" => %{}
-      } = json_response(conn, 200)
-    end
-
-    test "PUT /api/graph/:cotonoma_key/pin/:coto_id (pin a coto by another amishi)",
-        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      amishi2 = AmishiService.create!("amishi2@example.com")
-      CotonomaService.add_member(cotonoma, %{"amishi_id" => amishi2.id})
-      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi2.id, "bye")
-
-      put(conn, "/api/graph/#{cotonoma.key}/pin/#{coto2.id}")
-
-      conn = http_get("/api/graph/#{cotonoma.key}", amishi)
-
-      {coto_id, coto2_id, amishi_id, amishi2_id} =
-        {coto.id, coto2.id, amishi.id, amishi2.id}
-      assert %{
-        "cotos" => %{
-          ^coto_id => %{"uuid" => ^coto_id, "amishi_id" => ^amishi_id},
-          ^coto2_id => %{"uuid" => ^coto2_id, "amishi_id" => ^amishi2_id}
-        },
-        "root_connections" => [
-          %{"end" => ^coto2_id, "created_by" => ^amishi_id, "order" => 2},
-          %{"end" => ^coto_id, "created_by" => ^amishi_id, "order" => 1}
-        ]
-      } = json_response(conn, 200)
-    end
-
-    test "PUT /api/graph/:cotonoma_key/pin (multiple cotos)",
+    test "PUT /api/graph/:cotonoma_key/pin",
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Mario")
       {coto3, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "Luigi")
@@ -261,6 +194,30 @@ defmodule Cotoami.CotoGraphControllerTest do
           %{"end" => ^coto_id, "order" => 1}
         ],
         "connections" => %{}
+      } = json_response(conn, 200)
+    end
+
+    test "PUT /api/graph/:cotonoma_key/pin (a coto by another amishi)",
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      amishi2 = AmishiService.create!("amishi2@example.com")
+      CotonomaService.add_member(cotonoma, %{"amishi_id" => amishi2.id})
+      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi2.id, "bye")
+
+      put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id]})
+
+      conn = http_get("/api/graph/#{cotonoma.key}", amishi)
+
+      {coto_id, coto2_id, amishi_id, amishi2_id} =
+        {coto.id, coto2.id, amishi.id, amishi2.id}
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{"uuid" => ^coto_id, "amishi_id" => ^amishi_id},
+          ^coto2_id => %{"uuid" => ^coto2_id, "amishi_id" => ^amishi2_id}
+        },
+        "root_connections" => [
+          %{"end" => ^coto2_id, "created_by" => ^amishi_id, "order" => 2},
+          %{"end" => ^coto_id, "created_by" => ^amishi_id, "order" => 1}
+        ]
       } = json_response(conn, 200)
     end
 
