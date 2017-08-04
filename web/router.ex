@@ -60,5 +60,6 @@ defmodule Cotoami.Router do
     put "/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :pin_to_cotonoma
     put "/graph/:cotonoma_key/pin", CotoGraphController, :pin_all_to_cotonoma
     delete "/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :unpin_from_cotonoma
+    put "/graph/:start_id", CotoGraphController, :connect
   end
 end

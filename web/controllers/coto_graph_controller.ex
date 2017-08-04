@@ -60,16 +60,15 @@ defmodule Cotoami.CotoGraphController do
   end
 
   def pin_all_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_ids" => coto_ids}, amishi) do
-    cotonoma = CotonomaService.get_by_key(cotonoma_key, amishi.id)
-    if cotonoma do
-      results =
-        coto_ids
-        |> CotoService.get_by_ids()
-        |> Enum.filter(&(&1))
-        |> Enum.map(&(CotoGraphService.pin(&1, cotonoma, amishi)))
-      json conn, results
-    else
-      send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
+    case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
+      nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
+      cotonoma ->
+        results =
+          coto_ids
+          |> CotoService.get_by_ids()
+          |> Enum.filter(&(&1))
+          |> Enum.map(&(CotoGraphService.pin(&1, cotonoma, amishi)))
+        json conn, results
     end
   end
 
@@ -80,6 +79,19 @@ defmodule Cotoami.CotoGraphController do
       json conn, CotoGraphService.unpin(coto, cotonoma)
     else
       send_resp(conn, :not_found, "cotonoma or coto not found")
+    end
+  end
+
+  def connect(conn, %{"start_id" => start_id, "end_ids" => end_ids}, amishi) do
+    case CotoService.get(start_id) do
+      nil -> send_resp(conn, :not_found, "start coto not found: #{start_id}")
+      start_coto ->
+        results =
+          end_ids
+          |> CotoService.get_by_ids()
+          |> Enum.filter(&(&1))
+          |> Enum.map(&(CotoGraphService.connect(start_coto, &1, amishi)))
+      json conn, results
     end
   end
 end
