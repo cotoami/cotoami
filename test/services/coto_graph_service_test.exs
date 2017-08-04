@@ -8,13 +8,16 @@ defmodule Cotoami.CotoGraphServiceTest do
   alias Cotoami.CotoGraph
   alias Bolt.Sips.Types.Relationship
 
+  setup do
+    amishi = AmishiService.create!("amishi@example.com")
+    %{conn: Bolt.Sips.conn, amishi: amishi}
+  end
+
   describe "a coto pinned to an amishi" do
-    setup do
-      conn = Bolt.Sips.conn
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       CotoGraphService.pin(coto, amishi)
-      %{conn: conn, amishi: amishi, coto: coto}
+      %{coto: coto}
     end
 
     test "pin", %{conn: conn, amishi: amishi, coto: coto} do
@@ -88,12 +91,10 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a cotonoma pinned to an amishi" do
-    setup do
-      conn = Bolt.Sips.conn
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
       CotoGraphService.pin(coto, amishi)
-      %{conn: conn, amishi: amishi, coto: coto}
+      %{coto: coto}
     end
 
     test "pin", %{conn: conn, amishi: amishi, coto: coto} do
@@ -121,13 +122,11 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a coto pinned to a cotonoma" do
-    setup do
-      conn = Bolt.Sips.conn
-      amishi = AmishiService.create!("amishi@example.com")
+    setup %{amishi: amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(nil, amishi.id, "hello")
       CotoGraphService.pin(coto, cotonoma, amishi)
-      %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma}
+      %{coto: coto, cotonoma: cotonoma}
     end
 
     test "pin", %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
