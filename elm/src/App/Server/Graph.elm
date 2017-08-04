@@ -5,7 +5,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
-import App.Types.Graph exposing (Connection, initConnection, Graph)
+import App.Types.Graph exposing (Connection, initConnection, Graph, getCoto)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
@@ -52,6 +52,16 @@ fetchSubgraph cotonomaKey =
     Http.send
         SubgraphFetched
         (Http.get ("/api/graph/subgraph/" ++ cotonomaKey) decodeGraph)
+
+
+fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
+fetchSubgraphIfCotonoma graph cotoId =
+    case getCoto cotoId graph of
+        Nothing -> Cmd.none
+        Just coto ->
+            case coto.cotonomaKey of
+                Nothing -> Cmd.none
+                Just cotonomaKey -> fetchSubgraph cotonomaKey
 
 
 pinUrl : Maybe CotonomaKey -> String
