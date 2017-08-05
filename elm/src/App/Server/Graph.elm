@@ -95,11 +95,8 @@ cotoIdsAsJsonBody key cotoIds =
 pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
 pinCotos tag maybeCotonomaKey cotoIds =
     let
-        url =
-            pinUrl maybeCotonomaKey
-
-        body =
-            cotoIdsAsJsonBody "coto_ids" cotoIds
+        url = pinUrl maybeCotonomaKey
+        body = cotoIdsAsJsonBody "coto_ids" cotoIds
     in
         Http.send tag (httpPut url body (Decode.succeed "done"))
 
@@ -107,8 +104,7 @@ pinCotos tag maybeCotonomaKey cotoIds =
 unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
 unpinCoto tag maybeCotonomaKey cotoId =
     let
-        url =
-            (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+        url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
         Http.send tag (httpDelete url)
 
@@ -126,11 +122,8 @@ connectUrl maybeCotonomaKey startId =
 connect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> List CotoId -> Cmd msg
 connect tag maybeCotonomaKey startId endIds =
     let
-        url =
-            connectUrl maybeCotonomaKey startId
-
-        body =
-            cotoIdsAsJsonBody "end_ids" endIds
+        url = connectUrl maybeCotonomaKey startId
+        body = cotoIdsAsJsonBody "end_ids" endIds
     in
         Http.send tag (httpPut url body (Decode.succeed "done"))
 
@@ -138,7 +131,6 @@ connect tag maybeCotonomaKey startId endIds =
 disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg
 disconnect tag maybeCotonomaKey startId endId =
     let
-        url =
-            (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
+        url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send tag (httpDelete url)
