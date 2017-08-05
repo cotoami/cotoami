@@ -26,12 +26,20 @@ defmodule Cotoami.CotoGraphController do
     end
   end
 
-  def pin(conn, %{"coto_ids" => coto_ids}, amishi) do
+  def pin(conn, %{"coto_ids" => coto_ids} = params, amishi) do
+    cotonoma = get_cotonoma_if_specified(params, amishi)
     results =
       coto_ids
       |> CotoService.get_by_ids()
       |> Enum.filter(&(&1))
-      |> Enum.map(&(CotoGraphService.pin(&1, amishi)))
+      |> Enum.map(fn(coto) ->
+          case cotonoma do
+            nil ->
+              CotoGraphService.pin(coto, amishi)
+            cotonoma ->
+              CotoGraphService.pin(coto, cotonoma, amishi)
+          end
+        end)
     json conn, results
   end
 
@@ -44,19 +52,6 @@ defmodule Cotoami.CotoGraphController do
           nil -> json conn, CotoGraphService.unpin(coto, amishi)
           cotonoma -> json conn, CotoGraphService.unpin(coto, cotonoma)
         end
-    end
-  end
-
-  def pin_to_cotonoma(conn, %{"cotonoma_key" => cotonoma_key, "coto_ids" => coto_ids}, amishi) do
-    case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
-      nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
-      cotonoma ->
-        results =
-          coto_ids
-          |> CotoService.get_by_ids()
-          |> Enum.filter(&(&1))
-          |> Enum.map(&(CotoGraphService.pin(&1, cotonoma, amishi)))
-        json conn, results
     end
   end
 
