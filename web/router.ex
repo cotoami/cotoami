@@ -52,7 +52,7 @@ defmodule Cotoami.Router do
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
     get "/signin/request/:email/:save_anonymous", SigninController, :request
     get "/graph", CotoGraphController, :index
-    get "/graph/:cotonoma_key", CotoGraphController, :cotonoma
+    get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph
     put "/graph/pin", CotoGraphController, :pin
     delete "/graph/pin/:coto_id", CotoGraphController, :unpin

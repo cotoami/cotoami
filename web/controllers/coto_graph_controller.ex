@@ -8,14 +8,12 @@ defmodule Cotoami.CotoGraphController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, _params, amishi) do
-    json conn, CotoGraphService.get_graph(amishi)
-  end
-
-  def cotonoma(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
-    case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
-      nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
-      cotonoma -> json conn, CotoGraphService.get_graph(cotonoma)
+  def index(conn, params, amishi) do
+    case get_cotonoma_if_specified(params, amishi) do
+      nil ->
+        json conn, CotoGraphService.get_graph(amishi)
+      cotonoma ->
+        json conn, CotoGraphService.get_graph(cotonoma)
     end
   end
 
@@ -45,52 +43,49 @@ defmodule Cotoami.CotoGraphController do
 
   def unpin(conn, %{"coto_id" => coto_id} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params, amishi)
-    case CotoService.get(coto_id) do
-      nil -> send_resp(conn, :not_found, "coto not found: #{coto_id}")
-      coto ->
-        case cotonoma do
-          nil -> json conn, CotoGraphService.unpin(coto, amishi)
-          cotonoma -> json conn, CotoGraphService.unpin(coto, cotonoma)
-        end
+    coto = ensure_to_get_coto(coto_id)
+    case cotonoma do
+      nil -> json conn, CotoGraphService.unpin(coto, amishi)
+      cotonoma -> json conn, CotoGraphService.unpin(coto, cotonoma)
     end
   end
 
   def connect(conn, %{"start_id" => start_id, "end_ids" => end_ids} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params, amishi)
-    case CotoService.get(start_id) do
-      nil -> send_resp(conn, :not_found, "start coto not found: #{start_id}")
-      start_coto ->
-        results =
-          end_ids
-          |> CotoService.get_by_ids()
-          |> Enum.filter(&(&1))
-          |> Enum.map(fn(end_coto) ->
-              case cotonoma do
-                nil ->
-                  CotoGraphService.connect(start_coto, end_coto, amishi)
-                cotonoma ->
-                  CotoGraphService.connect(start_coto, end_coto, amishi, cotonoma)
-              end
-            end)
-      json conn, results
-    end
+    start_coto = ensure_to_get_coto(start_id)
+    result =
+      end_ids
+      |> CotoService.get_by_ids()
+      |> Enum.filter(&(&1))
+      |> Enum.map(fn(end_coto) ->
+          case cotonoma do
+            nil ->
+              CotoGraphService.connect(start_coto, end_coto, amishi)
+            cotonoma ->
+              CotoGraphService.connect(start_coto, end_coto, amishi, cotonoma)
+          end
+        end)
+    json conn, result
   end
 
   def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params, amishi)
-    start_coto = CotoService.get(start_id)
-    end_coto = CotoService.get(end_id)
-    if start_coto && end_coto do
-      result =
-        case cotonoma do
-          nil ->
-            CotoGraphService.disconnect(start_coto, end_coto, amishi)
-          cotonoma ->
-            CotoGraphService.disconnect(start_coto, end_coto, amishi, cotonoma)
-        end
-      json conn, result
-    else
-      send_resp(conn, :not_found, "start and/or end cotos not found")
+    start_coto = ensure_to_get_coto(start_id)
+    end_coto = ensure_to_get_coto(end_id)
+    result =
+      case cotonoma do
+        nil ->
+          CotoGraphService.disconnect(start_coto, end_coto, amishi)
+        cotonoma ->
+          CotoGraphService.disconnect(start_coto, end_coto, amishi, cotonoma)
+      end
+    json conn, result
+  end
+
+  defp ensure_to_get_coto(coto_id) do
+    case CotoService.get(coto_id) do
+      nil -> raise NotFound, "coto: #{coto_id}"
+      coto -> coto
     end
   end
 

@@ -13,16 +13,6 @@ defmodule Cotoami.Exceptions do
     ]
   end
 
-  defmodule InvalidOperation do
-    @moduledoc """
-    raised when an invalid operation has been requested.
-    """
-    defexception [
-      message: "This operation is not supported.",
-      plug_status: 405
-    ]
-  end
-
   defmodule NotFound do
     @moduledoc """
     raised when the requested entity is not found.
@@ -32,5 +22,15 @@ defmodule Cotoami.Exceptions do
     def exception(target) do
       %NotFound{message: "Not found: #{target}"}
     end
+  end
+
+  defmodule InvalidOperation do
+    @moduledoc """
+    raised when an invalid operation has been requested.
+    """
+    defexception [
+      message: "This operation is not supported.",
+      plug_status: 405
+    ]
   end
 end
