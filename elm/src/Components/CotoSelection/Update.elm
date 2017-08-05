@@ -112,13 +112,29 @@ update msg model =
                 |> (\model ->
                     response.cotoId
                         |> andThen (\cotoId -> getCoto cotoId model)
-                        |> andThen (\groupingCoto ->
-                            Just <| connect groupingCoto (getSelectedCotos model) model
+                        |> andThen (\startCoto ->
+                            let
+                                endCotos = getSelectedCotos model
+                            in
+                                Just
+                                    ( connect startCoto endCotos model
+                                    , App.Server.Graph.connect
+                                        Connected
+                                        (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                                        (List.map (\coto -> coto.id) endCotos)
+                                        startCoto.id
+                                    )
                         )
-                        |> \maybeModel -> withDefault model maybeModel ! []
+                        |> \maybeModelAndCmd -> withDefault (model ! []) maybeModelAndCmd
                 )
 
         GroupingCotoPosted (Err _) ->
+            model ! []
+
+        Connected (Ok _) ->
+            model ! []
+
+        Connected (Err _) ->
             model ! []
 
 

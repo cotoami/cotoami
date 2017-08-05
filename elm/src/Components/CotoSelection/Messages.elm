@@ -20,3 +20,4 @@ type Msg
     | ConfirmCreateGroupingCoto
     | PostGroupingCoto
     | GroupingCotoPosted (Result Http.Error Post)
+    | Connected (Result Http.Error String)
