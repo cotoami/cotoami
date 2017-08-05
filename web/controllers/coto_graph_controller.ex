@@ -1,7 +1,7 @@
 defmodule Cotoami.CotoGraphController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotoGraphService, CotonomaService, CotoService, Coto, Amishi}
+  alias Cotoami.{CotoGraphService, CotonomaService, CotoService, Amishi}
   alias Cotoami.Exceptions.NotFound
 
   def action(conn, _) do
@@ -73,6 +73,24 @@ defmodule Cotoami.CotoGraphController do
               end
             end)
       json conn, results
+    end
+  end
+
+  def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id} = params, amishi) do
+    cotonoma = get_cotonoma_if_specified(params, amishi)
+    start_coto = CotoService.get(start_id)
+    end_coto = CotoService.get(end_id)
+    if start_coto && end_coto do
+      result =
+        case cotonoma do
+          nil ->
+            CotoGraphService.disconnect(start_coto, end_coto, amishi)
+          cotonoma ->
+            CotoGraphService.disconnect(start_coto, end_coto, amishi, cotonoma)
+        end
+      json conn, result
+    else
+      send_resp(conn, :not_found, "start and/or end cotos not found")
     end
   end
 
