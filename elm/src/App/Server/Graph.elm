@@ -71,17 +71,21 @@ pinUrl maybeCotonomaKey =
         Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/pin"
 
 
+cotoIdsAsJsonBody : String -> List CotoId -> Http.Body
+cotoIdsAsJsonBody key cotoIds =
+    Http.jsonBody
+        <| Encode.object
+            [ ( key
+              , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
+              )
+            ]
+
+
 pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
 pinCotos tag maybeCotonomaKey cotoIds =
     let
         url = pinUrl maybeCotonomaKey
-        body =
-            Http.jsonBody
-                <| Encode.object
-                    [ ( "coto_ids"
-                      , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
-                      )
-                    ]
+        body = cotoIdsAsJsonBody "coto_ids" cotoIds
     in
         Http.send tag (httpPut url body (Decode.succeed "done"))
 
@@ -90,5 +94,29 @@ unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> 
 unpinCoto tag maybeCotonomaKey cotoId =
     let
         url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+    in
+        Http.send tag (httpDelete url)
+
+
+connectUrl : Maybe CotonomaKey -> CotoId -> String
+connectUrl maybeCotonomaKey startId =
+    case maybeCotonomaKey of
+        Nothing -> "/graph/connection/" ++ startId
+        Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
+
+
+connect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> CotoId -> Cmd msg
+connect tag maybeCotonomaKey endIds startId =
+    let
+        url = connectUrl maybeCotonomaKey startId
+        body = cotoIdsAsJsonBody "end_ids" endIds
+    in
+        Http.send tag (httpPut url body (Decode.succeed "done"))
+
+
+disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg
+disconnect tag maybeCotonomaKey endId startId =
+    let
+        url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send tag (httpDelete url)
