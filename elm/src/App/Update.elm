@@ -399,8 +399,8 @@ update msg model =
                 [ App.Server.Graph.connect
                     Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    (List.map (\coto -> coto.id) endCotos)
                     startCoto.id
+                    (List.map (\coto -> coto.id) endCotos)
                 ]
 
         Connected (Ok _) ->

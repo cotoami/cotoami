@@ -105,8 +105,8 @@ connectUrl maybeCotonomaKey startId =
         Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> CotoId -> Cmd msg
-connect tag maybeCotonomaKey endIds startId =
+connect : (Result Http.Error String -> msg) -> Maybe CotonomaKey ->  CotoId -> List CotoId ->Cmd msg
+connect tag maybeCotonomaKey startId endIds  =
     let
         url = connectUrl maybeCotonomaKey startId
         body = cotoIdsAsJsonBody "end_ids" endIds
@@ -115,7 +115,7 @@ connect tag maybeCotonomaKey endIds startId =
 
 
 disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg
-disconnect tag maybeCotonomaKey endId startId =
+disconnect tag maybeCotonomaKey startId endId  =
     let
         url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
