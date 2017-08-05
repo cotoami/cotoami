@@ -152,4 +152,3 @@ connect startCoto endCotos model =
     , connectMode = False
     , connectModalOpen = False
     }
-        |> openTraversal Components.Traversals.Model.Connected startCoto.id

@@ -105,8 +105,9 @@ update msg model =
 
         GroupingCotoPosted (Ok response) ->
             { model
-            | timeline = model.timeline
-                |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
+            | timeline =
+                model.timeline
+                    |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
             }
                 |> (\model ->
                     response.cotoId
