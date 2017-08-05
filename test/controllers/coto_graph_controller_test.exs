@@ -1,6 +1,10 @@
 defmodule Cotoami.CotoGraphControllerTest do
   use Cotoami.ConnCase
-  alias Cotoami.{AmishiService, CotoService, CotonomaService, CotoGraphService}
+  alias Cotoami.{
+    AmishiService, CotoService, CotonomaService, CotoGraphService,
+    Neo4jService
+  }
+  alias Bolt.Sips.Types.Relationship
 
   setup do
     amishi = AmishiService.create!("amishi@example.com")
@@ -9,7 +13,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> assign(:amishi, amishi)
-    %{conn: conn, amishi: amishi}
+    bolt_conn = Bolt.Sips.conn
+    %{amishi: amishi, conn: conn, bolt_conn: bolt_conn}
   end
 
   def http_get(path, amishi) do
@@ -26,7 +31,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     end
 
     test "GET /api/graph", %{conn: conn, amishi: amishi, coto: coto} do
-      conn = conn |> get("/api/graph")
+      conn = get(conn, "/api/graph")
 
       {amishi_id, coto_id} = {amishi.id, coto.id}
       assert %{
@@ -97,25 +102,54 @@ defmodule Cotoami.CotoGraphControllerTest do
       } == json_response(conn, 200)
     end
 
-    test "PUT /graph/connection/:start_id", %{conn: conn, amishi: amishi, coto: coto} do
+    test "PUT /graph/connection/:start_id",
+        %{conn: conn, amishi: amishi, coto: coto, bolt_conn: bolt_conn} do
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
 
       put(conn, "/api/graph/connection/#{coto.id}", %{"end_ids" => [coto2.id]})
 
-      conn = http_get("/api/graph", amishi)
+      amishi_id = amishi.id
+      coto_node_id = Neo4jService.get_node!(bolt_conn, coto.id).id
+      coto2_node_id = Neo4jService.get_node!(bolt_conn, coto2.id).id
+      assert [
+        %Relationship{
+          start: ^coto_node_id,
+          end: ^coto2_node_id,
+          properties: %{
+            "created_at" => _created_at,
+            "created_by" => ^amishi_id,
+            "order" => 1
+          },
+          type: "HAS_A"
+        }
+      ] = Neo4jService.get_ordered_relationships!(bolt_conn, coto.id, "HAS_A")
+    end
+  end
 
-      {coto_id, coto2_id} = {coto.id, coto2.id}
+  describe "a coto pinned to home with one connection" do
+    setup %{amishi: amishi} do
+      {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
+      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+      CotoGraphService.pin(coto1, amishi)
+      CotoGraphService.connect(coto1, coto2, amishi)
+      %{coto1: coto1, coto2: coto2}
+    end
+
+    test "GET /api/graph", %{conn: conn, coto1: coto1, coto2: coto2} do
+      conn = get(conn, "/api/graph")
+
+      {coto1_id, coto2_id} = {coto1.id, coto2.id}
       assert %{
         "cotos" => %{
-          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto1_id => %{"uuid" => ^coto1_id, "content" => "hello"},
           ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
         },
         "root_connections" => [
-          %{"end" => ^coto_id, "order" => 1}
+          %{"end" => ^coto1_id, "order" => 1}
         ],
         "connections" => %{
-          ^coto_id => [
-            %{"start" => ^coto_id, "end" => ^coto2_id, "order" => 1}
+          ^coto1_id => [
+            %{"start" => ^coto1_id, "end" => ^coto2_id, "order" => 1}
           ]
         }
       } = json_response(conn, 200)

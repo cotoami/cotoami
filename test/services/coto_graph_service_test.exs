@@ -179,13 +179,8 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "connection", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
       amishi_id = amishi.id
-
-      coto1_node = Neo4jService.get_or_create_node!(conn, coto1.id)
-      coto1_node_id = coto1_node.id
-
-      coto2_node = Neo4jService.get_or_create_node!(conn, coto2.id)
-      coto2_node_id = coto2_node.id
-
+      coto1_node_id = Neo4jService.get_or_create_node!(conn, coto1.id).id
+      coto2_node_id = Neo4jService.get_or_create_node!(conn, coto2.id).id
       assert [
         %Relationship{
           start: ^coto1_node_id,
