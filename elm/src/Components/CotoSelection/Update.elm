@@ -113,7 +113,7 @@ update msg model =
                     response.cotoId
                         |> andThen (\cotoId -> getCoto cotoId model)
                         |> andThen (\groupingCoto ->
-                            Just <| connect groupingCoto (getSelectedCoto model) model
+                            Just <| connect groupingCoto (getSelectedCotos model) model
                         )
                         |> \maybeModel -> withDefault model maybeModel ! []
                 )
