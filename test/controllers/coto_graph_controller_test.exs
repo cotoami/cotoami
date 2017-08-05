@@ -154,6 +154,13 @@ defmodule Cotoami.CotoGraphControllerTest do
         }
       } = json_response(conn, 200)
     end
+
+    test "DELETE /graph/connection/:start_id/:end_id",
+        %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
+      delete(conn, "/api/graph/connection/#{coto1.id}/#{coto2.id}")
+      graph = "/api/graph" |> http_get(amishi) |> json_response(200)
+      assert Enum.empty?(graph["connections"])
+    end
   end
 
   describe "a cotonoma pinned to an amishi" do
