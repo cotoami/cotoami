@@ -101,7 +101,7 @@ unpinCoto tag maybeCotonomaKey cotoId =
 connectUrl : Maybe CotonomaKey -> CotoId -> String
 connectUrl maybeCotonomaKey startId =
     case maybeCotonomaKey of
-        Nothing -> "/graph/connection/" ++ startId
+        Nothing -> "/api/graph/connection/" ++ startId
         Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 

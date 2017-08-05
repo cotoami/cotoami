@@ -395,7 +395,19 @@ update msg model =
             { model | connectModalOpen = False } ! []
 
         Connect startCoto endCotos ->
-            connect startCoto endCotos model ! []
+            connect startCoto endCotos model !
+                [ App.Server.Graph.connect
+                    Connected
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    (List.map (\coto -> coto.id) endCotos)
+                    startCoto.id
+                ]
+
+        Connected (Ok _) ->
+            model ! []
+
+        Connected (Err _) ->
+            model ! []
 
         TraversalMsg subMsg ->
             Components.Traversals.Update.update subMsg model.traversals

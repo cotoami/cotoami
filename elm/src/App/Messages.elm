@@ -60,4 +60,5 @@ type Msg
     | CotoSelectionMsg Components.CotoSelection.Messages.Msg
     | CloseConnectModal
     | Connect Coto (List Coto)
+    | Connected (Result Http.Error String)
     | TraversalMsg Components.Traversals.Messages.Msg
