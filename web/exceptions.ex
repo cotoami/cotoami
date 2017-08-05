@@ -3,6 +3,16 @@ defmodule Cotoami.Exceptions do
   Exceptions
   """
 
+  defmodule NoPermission do
+    @moduledoc """
+    raised when the amishi has no permission for the operation
+    """
+    defexception [
+      message: "You have no permission to do this operation.",
+      plug_status: 403
+    ]
+  end
+
   defmodule InvalidOperation do
     @moduledoc """
     raised when an invalid operation has been requested.
@@ -17,7 +27,6 @@ defmodule Cotoami.Exceptions do
     @moduledoc """
     raised when the requested entity is not found.
     """
-
     defexception [:message, plug_status: 404]
 
     def exception(target) do

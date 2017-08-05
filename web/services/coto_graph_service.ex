@@ -143,9 +143,37 @@ defmodule Cotoami.CotoGraphService do
       source.id, target.id, @rel_type_has_a, rel_props)
   end
 
-  # TODO: should check the permission?
-  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}) do
-    Neo4jService.delete_relationship!(Bolt.Sips.conn, source_id, target_id, @rel_type_has_a)
+  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do
+    Bolt.Sips.conn
+    |> ensure_disconnectable(source_id, target_id, amishi_id)
+    |> Neo4jService.delete_relationship!(source_id, target_id, @rel_type_has_a)
+  end
+  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
+    Bolt.Sips.conn
+    |> ensure_disconnectable(source_id, target_id, amishi_id, cotonoma_id)
+    |> Neo4jService.delete_relationship!(source_id, target_id, @rel_type_has_a)
+  end
+
+  defp ensure_disconnectable(conn, source_id, target_id, amishi_id, cotonoma_id \\ nil) do
+    if disconnectable?(conn, source_id, target_id, amishi_id, cotonoma_id) do
+      conn
+    else
+      raise Cotoami.Exceptions.NoPermission
+    end
+  end
+
+  defp disconnectable?(conn, source_id, target_id, amishi_id, cotonoma_id) do
+    case Neo4jService.get_relationship!(conn, source_id, target_id, @rel_type_has_a) do
+      nil -> true
+      rel ->
+        case cotonoma_id do
+          nil ->
+            rel.properties["created_by"] == amishi_id
+          cotonoma_id ->
+            rel.properties["created_by"] == amishi_id or
+              rel.properties["created_in"] == cotonoma_id
+        end
+    end
   end
 
   def delete_coto(coto_id) do
