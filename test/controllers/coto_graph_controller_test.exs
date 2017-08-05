@@ -257,5 +257,32 @@ defmodule Cotoami.CotoGraphControllerTest do
         "connections" => %{}
       } == json_response(conn, 200)
     end
+
+    test "PUT /graph/:cotonoma_key/connection/:start_id",
+        %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+      {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi.id, "bye")
+
+      put(conn,
+        "/api/graph/#{cotonoma.key}/connection/#{coto.id}",
+        %{"end_ids" => [coto2.id]})
+
+      conn = http_get("/api/graph/#{cotonoma.key}", amishi)
+
+      {coto_id, coto2_id} = {coto.id, coto2.id}
+      assert %{
+        "cotos" => %{
+          ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
+          ^coto2_id => %{"uuid" => ^coto2_id, "content" => "bye"}
+        },
+        "root_connections" => [
+          %{"end" => ^coto_id, "order" => 1}
+        ],
+        "connections" => %{
+          ^coto_id => [
+            %{"start" => ^coto_id, "end" => ^coto2_id, "order" => 1}
+          ]
+        }
+      } = json_response(conn, 200)
+    end
   end
 end
