@@ -1,6 +1,7 @@
 defmodule Cotoami.CotoGraphController do
   use Cotoami.Web, :controller
   require Logger
+  alias Bolt.Sips
   alias Cotoami.{CotoGraphService, CotonomaService, CotoService, Amishi}
   alias Cotoami.Exceptions.NotFound
 
@@ -11,16 +12,16 @@ defmodule Cotoami.CotoGraphController do
   def index(conn, params, amishi) do
     case get_cotonoma_if_specified(params, amishi) do
       nil ->
-        json conn, CotoGraphService.get_graph(amishi)
+        json conn, CotoGraphService.get_graph(Sips.conn, amishi)
       cotonoma ->
-        json conn, CotoGraphService.get_graph(cotonoma)
+        json conn, CotoGraphService.get_graph(Sips.conn, cotonoma)
     end
   end
 
   def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
     case CotonomaService.get_by_key(cotonoma_key, amishi.id) do
       nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
-      cotonoma -> json conn, CotoGraphService.get_subgraph(cotonoma)
+      cotonoma -> json conn, CotoGraphService.get_subgraph(Sips.conn, cotonoma)
     end
   end
 
@@ -33,9 +34,9 @@ defmodule Cotoami.CotoGraphController do
       |> Enum.map(fn(coto) ->
           case cotonoma do
             nil ->
-              CotoGraphService.pin(coto, amishi)
+              CotoGraphService.pin(Sips.conn, coto, amishi)
             cotonoma ->
-              CotoGraphService.pin(coto, cotonoma, amishi)
+              CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
           end
         end)
     json conn, results
@@ -45,8 +46,8 @@ defmodule Cotoami.CotoGraphController do
     cotonoma = get_cotonoma_if_specified(params, amishi)
     coto = ensure_to_get_coto(coto_id)
     case cotonoma do
-      nil -> json conn, CotoGraphService.unpin(coto, amishi)
-      cotonoma -> json conn, CotoGraphService.unpin(coto, cotonoma)
+      nil -> json conn, CotoGraphService.unpin(Sips.conn, coto, amishi)
+      cotonoma -> json conn, CotoGraphService.unpin(Sips.conn, coto, cotonoma)
     end
   end
 
@@ -60,9 +61,9 @@ defmodule Cotoami.CotoGraphController do
       |> Enum.map(fn(end_coto) ->
           case cotonoma do
             nil ->
-              CotoGraphService.connect(start_coto, end_coto, amishi)
+              CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi)
             cotonoma ->
-              CotoGraphService.connect(start_coto, end_coto, amishi, cotonoma)
+              CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
           end
         end)
     json conn, result
@@ -75,9 +76,9 @@ defmodule Cotoami.CotoGraphController do
     result =
       case cotonoma do
         nil ->
-          CotoGraphService.disconnect(start_coto, end_coto, amishi)
+          CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
         cotonoma ->
-          CotoGraphService.disconnect(start_coto, end_coto, amishi, cotonoma)
+          CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
       end
     json conn, result
   end

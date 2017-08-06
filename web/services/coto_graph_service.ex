@@ -18,21 +18,21 @@ defmodule Cotoami.CotoGraphService do
 
   @rel_type_has_a "HAS_A"
 
-  def get_graph(%Amishi{id: amishi_id}) do
-    get_graph_from_uuid(amishi_id)
+  def get_graph(bolt_conn, %Amishi{id: amishi_id}) do
+    get_graph_from_uuid(bolt_conn, amishi_id)
   end
 
-  def get_graph(%Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(cotonoma_coto_id)
+  def get_graph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
   end
 
-  def get_subgraph(%Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(cotonoma_coto_id, false)
+  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid(bolt_conn, cotonoma_coto_id, false)
   end
 
   # start with the uuid node and traverse HAS_A relationships
   # until finding the end edge or a cotonoma
-  defp get_graph_from_uuid(uuid, from_root \\ true) do
+  defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
     query = ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
         (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
@@ -43,7 +43,7 @@ defmodule Cotoami.CotoGraphService do
       RETURN parent, has, child
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
-    Bolt.Sips.conn
+    bolt_conn
     |> Bolt.Sips.query!(query, %{uuid: uuid})
     |> Enum.reduce(%CotoGraph{}, fn(%{"parent" => parent, "has" => has, "child" => child}, graph) ->
         parent_id = parent.properties["uuid"]
@@ -101,15 +101,15 @@ defmodule Cotoami.CotoGraphService do
     |> Map.new()
   end
 
-  def pin(%Coto{} = coto, %Amishi{} = amishi) do
-    Bolt.Sips.conn
+  def pin(bolt_conn, %Coto{} = coto, %Amishi{} = amishi) do
+    bolt_conn
     |> register_amishi(amishi)
     |> register_coto(coto)
     |> Neo4jService.get_or_create_ordered_relationship!(
       amishi.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id))
   end
-  def pin(%Coto{} = coto, %Cotonoma{} = cotonoma, %Amishi{} = amishi) do
-    Bolt.Sips.conn
+  def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, %Amishi{} = amishi) do
+    bolt_conn
     |> register_amishi(amishi)
     |> register_coto(coto)
     |> register_cotonoma(cotonoma)
@@ -117,53 +117,53 @@ defmodule Cotoami.CotoGraphService do
       cotonoma.coto.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id, cotonoma.id))
   end
 
-  def unpin(%Coto{id: coto_id}, %Amishi{id: amishi_id}) do
-    Bolt.Sips.conn
+  def unpin(bolt_conn, %Coto{id: coto_id}, %Amishi{id: amishi_id}) do
+    bolt_conn
     |> Neo4jService.delete_relationship!(amishi_id, coto_id, @rel_type_has_a)
   end
-  def unpin(%Coto{id: coto_id}, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    Bolt.Sips.conn
+  def unpin(bolt_conn, %Coto{id: coto_id}, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    bolt_conn
     |> Neo4jService.delete_relationship!(cotonoma_coto_id, coto_id, @rel_type_has_a)
   end
 
-  def connect(%Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}) do
-    do_connect(source, target, amishi_id, nil)
+  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}) do
+    do_connect(bolt_conn, source, target, amishi_id, nil)
   end
-  def connect(%Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
-    do_connect(source, target, amishi_id, cotonoma_id)
+  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
+    do_connect(bolt_conn, source, target, amishi_id, cotonoma_id)
   end
-  defp do_connect(%Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
+  defp do_connect(bolt_conn, %Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
     rel_props = if cotonoma_id,
       do: common_rel_props(amishi_id, cotonoma_id),
       else: common_rel_props(amishi_id)
-    Bolt.Sips.conn
+    bolt_conn
     |> register_coto(source)
     |> register_coto(target)
     |> Neo4jService.get_or_create_ordered_relationship!(
       source.id, target.id, @rel_type_has_a, rel_props)
   end
 
-  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do
-    Bolt.Sips.conn
+  def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do
+    bolt_conn
     |> ensure_disconnectable(source_id, target_id, amishi_id)
     |> Neo4jService.delete_relationship!(source_id, target_id, @rel_type_has_a)
   end
-  def disconnect(%Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
-    Bolt.Sips.conn
+  def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
+    bolt_conn
     |> ensure_disconnectable(source_id, target_id, amishi_id, cotonoma_id)
     |> Neo4jService.delete_relationship!(source_id, target_id, @rel_type_has_a)
   end
 
-  defp ensure_disconnectable(conn, source_id, target_id, amishi_id, cotonoma_id \\ nil) do
-    if disconnectable?(conn, source_id, target_id, amishi_id, cotonoma_id) do
-      conn
+  defp ensure_disconnectable(bolt_conn, source_id, target_id, amishi_id, cotonoma_id \\ nil) do
+    if disconnectable?(bolt_conn, source_id, target_id, amishi_id, cotonoma_id) do
+      bolt_conn
     else
       raise Cotoami.Exceptions.NoPermission
     end
   end
 
-  defp disconnectable?(conn, source_id, target_id, amishi_id, cotonoma_id) do
-    case Neo4jService.get_relationship!(conn, source_id, target_id, @rel_type_has_a) do
+  defp disconnectable?(bolt_conn, source_id, target_id, amishi_id, cotonoma_id) do
+    case Neo4jService.get_relationship!(bolt_conn, source_id, target_id, @rel_type_has_a) do
       nil -> true
       rel ->
         case cotonoma_id do
@@ -176,16 +176,16 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  def delete_coto(coto_id) do
-    Neo4jService.delete_node_with_relationships!(Bolt.Sips.conn, coto_id)
+  def delete_coto(bolt_conn, coto_id) do
+    Neo4jService.delete_node_with_relationships!(bolt_conn, coto_id)
   end
 
-  defp register_amishi(conn, %Amishi{id: amishi_id}) do
-    Neo4jService.get_or_create_node!(conn, amishi_id, [@label_amishi])
-    conn
+  defp register_amishi(bolt_conn, %Amishi{id: amishi_id}) do
+    Neo4jService.get_or_create_node!(bolt_conn, amishi_id, [@label_amishi])
+    bolt_conn
   end
 
-  defp register_coto(conn, coto) do
+  defp register_coto(bolt_conn, coto) do
     labels = if coto.as_cotonoma, do: [@label_coto, @label_cotonoma], else: [@label_coto]
     props = %{
       content: coto.content,
@@ -195,11 +195,11 @@ defmodule Cotoami.CotoGraphService do
       inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
     } |> drop_nil
-    Neo4jService.get_or_create_node!(conn, coto.id, labels, props)
-    conn
+    Neo4jService.get_or_create_node!(bolt_conn, coto.id, labels, props)
+    bolt_conn
   end
 
-  defp register_cotonoma(conn, cotonoma) do
+  defp register_cotonoma(bolt_conn, cotonoma) do
     labels = [@label_coto, @label_cotonoma]
     props = %{
       content: cotonoma.name,
@@ -209,8 +209,8 @@ defmodule Cotoami.CotoGraphService do
       inserted_at: cotonoma.coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
     } |> drop_nil
-    Neo4jService.get_or_create_node!(conn, cotonoma.coto.id, labels, props)
-    conn
+    Neo4jService.get_or_create_node!(bolt_conn, cotonoma.coto.id, labels, props)
+    bolt_conn
   end
 
   defp common_rel_props(amishi_id) do

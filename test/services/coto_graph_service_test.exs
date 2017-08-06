@@ -1,11 +1,10 @@
 defmodule Cotoami.CotoGraphServiceTest do
   use Cotoami.ModelCase
-  alias Cotoami.CotoGraphService
-  alias Cotoami.Neo4jService
-  alias Cotoami.AmishiService
-  alias Cotoami.CotoService
-  alias Cotoami.CotonomaService
-  alias Cotoami.CotoGraph
+  alias Bolt.Sips
+  alias Cotoami.{
+    CotoGraphService, Neo4jService, AmishiService, CotoService,
+    CotonomaService, CotoGraph
+  }
   alias Bolt.Sips.Types.Relationship
 
   setup do
@@ -16,7 +15,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   describe "a coto pinned to an amishi" do
     setup %{amishi: amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(coto, amishi)
+      CotoGraphService.pin(Sips.conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -55,7 +54,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "unpin", %{conn: conn, amishi: amishi, coto: coto} do
-      CotoGraphService.unpin(coto, amishi)
+      CotoGraphService.unpin(Sips.conn, coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
 
@@ -86,14 +85,14 @@ defmodule Cotoami.CotoGraphServiceTest do
           }
         ],
         connections: %{}
-      } = CotoGraphService.get_graph(amishi)
+      } = CotoGraphService.get_graph(Sips.conn, amishi)
     end
   end
 
   describe "a cotonoma pinned to an amishi" do
     setup %{amishi: amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
-      CotoGraphService.pin(coto, amishi)
+      CotoGraphService.pin(Sips.conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -125,7 +124,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     setup %{amishi: amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(coto, cotonoma, amishi)
+      CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
       %{coto: coto, cotonoma: cotonoma}
     end
 
@@ -164,7 +163,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "unpin", %{conn: conn, coto: coto, cotonoma: cotonoma} do
-      CotoGraphService.unpin(coto, cotonoma)
+      CotoGraphService.unpin(Sips.conn, coto, cotonoma)
       assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
@@ -173,7 +172,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     setup %{amishi: amishi} do
       {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
-      CotoGraphService.connect(coto1, coto2, amishi)
+      CotoGraphService.connect(Sips.conn, coto1, coto2, amishi)
       %{coto1: coto1, coto2: coto2}
     end
 
@@ -196,7 +195,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "disconnect", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
-      CotoGraphService.disconnect(coto1, coto2, amishi)
+      CotoGraphService.disconnect(Sips.conn, coto1, coto2, amishi)
       assert [] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
     end
   end

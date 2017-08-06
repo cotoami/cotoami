@@ -1,10 +1,10 @@
 defmodule Cotoami.CotoGraphControllerTest do
   use Cotoami.ConnCase
+  alias Bolt.Sips.Types.Relationship
   alias Cotoami.{
     AmishiService, CotoService, CotonomaService, CotoGraphService,
     Neo4jService
   }
-  alias Bolt.Sips.Types.Relationship
 
   setup do
     amishi = AmishiService.create!("amishi@example.com")
@@ -24,9 +24,9 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a coto pinned to home" do
-    setup %{amishi: amishi} do
+    setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(coto, amishi)
+      CotoGraphService.pin(bolt_conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -127,11 +127,11 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a coto pinned to home with one connection" do
-    setup %{amishi: amishi} do
+    setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
-      CotoGraphService.pin(coto1, amishi)
-      CotoGraphService.connect(coto1, coto2, amishi)
+      CotoGraphService.pin(bolt_conn, coto1, amishi)
+      CotoGraphService.connect(bolt_conn, coto1, coto2, amishi)
       %{coto1: coto1, coto2: coto2}
     end
 
@@ -164,9 +164,9 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a cotonoma pinned to an amishi" do
-    setup %{amishi: amishi} do
+    setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
-      CotoGraphService.pin(coto, amishi)
+      CotoGraphService.pin(bolt_conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -193,10 +193,10 @@ defmodule Cotoami.CotoGraphControllerTest do
   end
 
   describe "a coto pinned to a cotonoma" do
-    setup %{amishi: amishi} do
+    setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(cotonoma.id, amishi.id, "hello")
-      CotoGraphService.pin(coto, cotonoma, amishi)
+      CotoGraphService.pin(bolt_conn, coto, cotonoma, amishi)
       %{coto: coto, cotonoma: cotonoma}
     end
 
