@@ -178,8 +178,10 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "connection", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
       amishi_id = amishi.id
+      amishi_node_id = Neo4jService.get_or_create_node!(conn, amishi.id).id
       coto1_node_id = Neo4jService.get_or_create_node!(conn, coto1.id).id
       coto2_node_id = Neo4jService.get_or_create_node!(conn, coto2.id).id
+
       assert [
         %Relationship{
           start: ^coto1_node_id,
@@ -192,6 +194,19 @@ defmodule Cotoami.CotoGraphServiceTest do
           type: "HAS_A"
         }
       ] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
+
+      # the source node should be pinned
+      assert [
+        %Relationship{
+          start: ^amishi_node_id,
+          end: ^coto1_node_id,
+          properties: %{
+            "created_by" => ^amishi_id,
+            "order" => 1
+          },
+          type: "HAS_A"
+        }
+      ] = Neo4jService.get_ordered_relationships!(conn, amishi_id, "HAS_A")
     end
 
     test "disconnect", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
