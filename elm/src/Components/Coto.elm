@@ -103,7 +103,7 @@ cotoToolsSpan context graph config cotoId =
             Just selectCoto ->
                 a
                     [ class "tool-button select-coto"
-                    , title "Select coto"
+                    , title "Select this coto"
                     , onClickWithoutPropagation (selectCoto cotoId)
                     ]
                     [ i [ class "material-icons" ]
@@ -121,10 +121,10 @@ cotoToolsSpan context graph config cotoId =
                 if App.Types.Graph.member cotoId graph then
                     a
                         [ class "tool-button traverse-coto"
-                        , title "Open coto traversal"
+                        , title "Traverse from this coto"
                         , onClickWithoutPropagation (openTraversal cotoId)
                         ]
-                        [ i [ class "material-icons" ] [ text "exit_to_app" ] ]
+                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
                 else
                     span [] []
         , case config.openCoto of
