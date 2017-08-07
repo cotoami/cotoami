@@ -67,16 +67,7 @@ traversalDiv context graph traversal connections startCoto  =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span
-                [ class "description" ]
-                (case traversal.description of
-                    Connected ->
-                        [ i [ class "material-icons" ] [ text "add_circle" ]
-                        ]
-                    Opened ->
-                        [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                        ]
-                )
+            [ span [ class "description" ] []
             , a [ class "tool-button close-traversal"
                 , href "/"
                 , onClickWithoutPropagation (CloseTraversal traversal.start)
