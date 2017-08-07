@@ -18,7 +18,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, unpinCoto)
+import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, unpinCoto, disconnect)
 import App.Channels exposing (decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -444,11 +444,26 @@ update msg model =
                                 model
                             ! [ cmd ]
 
-                        Components.Traversals.Messages.DeleteConnection conn ->
-                            { model | graph = deleteConnection conn model.graph } ! [ cmd ]
+                        Components.Traversals.Messages.DeleteConnection (startId, endId) ->
+                            { model
+                            | graph = deleteConnection (startId, endId) model.graph
+                            } !
+                                [ cmd
+                                , disconnect
+                                    ConnectionDeleted
+                                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                                    startId
+                                    endId
+                                ]
 
                         _ ->
                             ( model, cmd )
+
+        ConnectionDeleted (Ok _) ->
+            model ! []
+
+        ConnectionDeleted (Err _) ->
+            model ! []
 
 
 confirm : String -> Msg -> Model -> Model

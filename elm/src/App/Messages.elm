@@ -62,3 +62,4 @@ type Msg
     | Connect Coto (List Coto)
     | Connected (Result Http.Error String)
     | TraversalMsg Components.Traversals.Messages.Msg
+    | ConnectionDeleted (Result Http.Error String)
