@@ -126,11 +126,17 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.delete_relationship!(cotonoma_coto_id, coto_id, @rel_type_has_a)
   end
 
-  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}) do
-    do_connect(bolt_conn, source, target, amishi_id, nil)
+  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
+    if Enum.empty? Neo4jService.get_paths!(bolt_conn, amishi.id, source.id) do
+      pin(bolt_conn, source, amishi)
+    end
+    do_connect(bolt_conn, source, target, amishi.id, nil)
   end
-  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
-    do_connect(bolt_conn, source, target, amishi_id, cotonoma_id)
+  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi, %Cotonoma{} = cotonoma) do
+    if Enum.empty? Neo4jService.get_paths!(bolt_conn, cotonoma.id, source.id) do
+      pin(bolt_conn, source, cotonoma, amishi)
+    end
+    do_connect(bolt_conn, source, target, amishi.id, cotonoma.id)
   end
   defp do_connect(bolt_conn, %Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
     rel_props = if cotonoma_id,
