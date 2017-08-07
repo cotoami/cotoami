@@ -164,4 +164,53 @@ defmodule Cotoami.Neo4jServiceTest do
       ] = Neo4jService.get_ordered_relationships!(conn, uuid1, "A")
     end
   end
+
+  describe "A -> B -> C, and D as an orphan" do
+    setup %{conn: conn} do
+      [uuidA, uuidB, uuidC, uuidD] =
+        1..4 |> Enum.to_list |> Enum.map fn(_) ->
+          uuid = UUID.uuid4()
+          Neo4jService.get_or_create_node!(conn, uuid)
+          uuid
+        end
+      rel1 = Neo4jService.get_or_create_ordered_relationship!(conn, uuidA, uuidB, "A")
+      rel2 = Neo4jService.get_or_create_ordered_relationship!(conn, uuidB, uuidC, "A")
+      %{uuidA: uuidA, uuidB: uuidB, uuidC: uuidC, uuidD: uuidD, rel1: rel1, rel2: rel2}
+    end
+
+    test "get paths from A to B", %{conn: conn, uuidA: uuidA, uuidB: uuidB, rel1: rel1} do
+      rel1_id = rel1.id
+      assert [
+        %{"path" => %Bolt.Sips.Types.Path{
+          nodes: [
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidA}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidB}}
+          ],
+          relationships: [%Bolt.Sips.Types.UnboundRelationship{id: ^rel1_id}]
+        }}
+      ] = Neo4jService.get_paths!(conn, uuidA, uuidB)
+    end
+
+    test "get paths from A to C",
+        %{conn: conn, uuidA: uuidA, uuidB: uuidB, uuidC: uuidC, rel1: rel1, rel2: rel2} do
+      {rel1_id, rel2_id} = {rel1.id, rel2.id}
+      assert [
+        %{"path" => %Bolt.Sips.Types.Path{
+          nodes: [
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidA}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidB}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidC}}
+          ],
+          relationships: [
+            %Bolt.Sips.Types.UnboundRelationship{id: ^rel1_id},
+            %Bolt.Sips.Types.UnboundRelationship{id: ^rel2_id}
+          ]
+        }}
+      ] = Neo4jService.get_paths!(conn, uuidA, uuidC)
+    end
+
+    test "get paths from A to D", %{conn: conn, uuidA: uuidA, uuidD: uuidD} do
+      assert [] == Neo4jService.get_paths!(conn, uuidA, uuidD)
+    end
+  end
 end
