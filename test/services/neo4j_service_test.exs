@@ -167,50 +167,50 @@ defmodule Cotoami.Neo4jServiceTest do
 
   describe "A -> B -> C, and D as an orphan" do
     setup %{conn: conn} do
-      [uuidA, uuidB, uuidC, uuidD] =
+      [uuid_a, uuid_b, uuid_c, uuid_d] =
         1..4 |> Enum.to_list |> Enum.map fn(_) ->
           uuid = UUID.uuid4()
           Neo4jService.get_or_create_node!(conn, uuid)
           uuid
         end
-      rel1 = Neo4jService.get_or_create_ordered_relationship!(conn, uuidA, uuidB, "A")
-      rel2 = Neo4jService.get_or_create_ordered_relationship!(conn, uuidB, uuidC, "A")
-      %{uuidA: uuidA, uuidB: uuidB, uuidC: uuidC, uuidD: uuidD, rel1: rel1, rel2: rel2}
+      rel_a_b = Neo4jService.get_or_create_ordered_relationship!(conn, uuid_a, uuid_b, "A")
+      rel_b_c = Neo4jService.get_or_create_ordered_relationship!(conn, uuid_b, uuid_c, "A")
+      %{uuid_a: uuid_a, uuid_b: uuid_b, uuid_c: uuid_c, uuid_d: uuid_d, rel_a_b: rel_a_b, rel_b_c: rel_b_c}
     end
 
-    test "get paths from A to B", %{conn: conn, uuidA: uuidA, uuidB: uuidB, rel1: rel1} do
-      rel1_id = rel1.id
+    test "get paths from A to B", %{conn: conn, uuid_a: uuid_a, uuid_b: uuid_b, rel_a_b: rel_a_b} do
+      rel_a_b_id = rel_a_b.id
       assert [
         %{"path" => %Bolt.Sips.Types.Path{
           nodes: [
-            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidA}},
-            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidB}}
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuid_a}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuid_b}}
           ],
-          relationships: [%Bolt.Sips.Types.UnboundRelationship{id: ^rel1_id}]
+          relationships: [%Bolt.Sips.Types.UnboundRelationship{id: ^rel_a_b_id}]
         }}
-      ] = Neo4jService.get_paths!(conn, uuidA, uuidB)
+      ] = Neo4jService.get_paths!(conn, uuid_a, uuid_b)
     end
 
     test "get paths from A to C",
-        %{conn: conn, uuidA: uuidA, uuidB: uuidB, uuidC: uuidC, rel1: rel1, rel2: rel2} do
-      {rel1_id, rel2_id} = {rel1.id, rel2.id}
+        %{conn: conn, uuid_a: uuid_a, uuid_b: uuid_b, uuid_c: uuid_c, rel_a_b: rel_a_b, rel_b_c: rel_b_c} do
+      {rel_a_b_id, rel_b_c_id} = {rel_a_b.id, rel_b_c.id}
       assert [
         %{"path" => %Bolt.Sips.Types.Path{
           nodes: [
-            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidA}},
-            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidB}},
-            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuidC}}
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuid_a}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuid_b}},
+            %Bolt.Sips.Types.Node{properties: %{"uuid" => ^uuid_c}}
           ],
           relationships: [
-            %Bolt.Sips.Types.UnboundRelationship{id: ^rel1_id},
-            %Bolt.Sips.Types.UnboundRelationship{id: ^rel2_id}
+            %Bolt.Sips.Types.UnboundRelationship{id: ^rel_a_b_id},
+            %Bolt.Sips.Types.UnboundRelationship{id: ^rel_b_c_id}
           ]
         }}
-      ] = Neo4jService.get_paths!(conn, uuidA, uuidC)
+      ] = Neo4jService.get_paths!(conn, uuid_a, uuid_c)
     end
 
-    test "get paths from A to D", %{conn: conn, uuidA: uuidA, uuidD: uuidD} do
-      assert [] == Neo4jService.get_paths!(conn, uuidA, uuidD)
+    test "get paths from A to D", %{conn: conn, uuid_a: uuid_a, uuid_d: uuid_d} do
+      assert [] == Neo4jService.get_paths!(conn, uuid_a, uuid_d)
     end
   end
 end
