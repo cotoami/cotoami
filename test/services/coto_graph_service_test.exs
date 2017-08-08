@@ -1,5 +1,6 @@
 defmodule Cotoami.CotoGraphServiceTest do
   use Cotoami.ModelCase
+  import ShorterMaps
   alias Bolt.Sips
   alias Cotoami.{
     CotoGraphService, Neo4jService, AmishiService, CotoService,
@@ -13,13 +14,13 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a coto pinned to an amishi" do
-    setup %{amishi: amishi} do
+    setup ~M{amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       CotoGraphService.pin(Sips.conn, coto, amishi)
-      %{coto: coto}
+      ~M{coto}
     end
 
-    test "pin", %{conn: conn, amishi: amishi, coto: coto} do
+    test "pin", ~M{conn, amishi, coto} do
       amishi_id = amishi.id
       coto_id = coto.id
 
@@ -53,12 +54,12 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
 
-    test "unpin", %{conn: conn, amishi: amishi, coto: coto} do
+    test "unpin", ~M{conn, amishi, coto} do
       CotoGraphService.unpin(Sips.conn, coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
 
-    test "graph", %{amishi: amishi, coto: coto} do
+    test "graph", ~M{amishi, coto} do
       coto_id = coto.id
       amishi_id = amishi.id
       assert %CotoGraph{
@@ -90,13 +91,13 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a cotonoma pinned to an amishi" do
-    setup %{amishi: amishi} do
+    setup ~M{amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
       CotoGraphService.pin(Sips.conn, coto, amishi)
-      %{coto: coto}
+      ~M{coto}
     end
 
-    test "pin", %{conn: conn, amishi: amishi, coto: coto} do
+    test "pin", ~M{conn, amishi, coto} do
       amishi_node = Neo4jService.get_or_create_node!(conn, amishi.id)
       amishi_node_id = amishi_node.id
 
@@ -121,14 +122,14 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a coto pinned to a cotonoma" do
-    setup %{amishi: amishi} do
+    setup ~M{amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(nil, amishi.id, "hello")
       CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
-      %{coto: coto, cotonoma: cotonoma}
+      ~M{coto, cotonoma}
     end
 
-    test "pin", %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
+    test "pin", ~M{conn, amishi, coto, cotonoma} do
       amishi_id = amishi.id
       cotonoma_id = cotonoma.id
       cotonoma_coto_id = cotonoma.coto.id
@@ -162,21 +163,21 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
 
-    test "unpin", %{conn: conn, coto: coto, cotonoma: cotonoma} do
+    test "unpin", ~M{conn, coto, cotonoma} do
       CotoGraphService.unpin(Sips.conn, coto, cotonoma)
       assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
 
   describe "two cotos with a connection" do
-    setup %{amishi: amishi} do
+    setup ~M{amishi} do
       {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
       CotoGraphService.connect(Sips.conn, coto1, coto2, amishi)
-      %{coto1: coto1, coto2: coto2}
+      ~M{coto1, coto2}
     end
 
-    test "connection", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
+    test "connection", ~M{conn, amishi, coto1, coto2} do
       amishi_id = amishi.id
       amishi_node_id = Neo4jService.get_or_create_node!(conn, amishi.id).id
       coto1_node_id = Neo4jService.get_or_create_node!(conn, coto1.id).id
@@ -209,7 +210,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships!(conn, amishi_id, "HAS_A")
     end
 
-    test "disconnect", %{conn: conn, amishi: amishi, coto1: coto1, coto2: coto2} do
+    test "disconnect", ~M{conn, amishi, coto1, coto2} do
       CotoGraphService.disconnect(Sips.conn, coto1, coto2, amishi)
       assert [] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
     end
