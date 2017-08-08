@@ -94,8 +94,8 @@ getCoto cotoId model =
             Just coto
 
 
-getSelectedCoto : Model -> List Coto
-getSelectedCoto model =
+getSelectedCotos : Model -> List Coto
+getSelectedCotos model =
     List.filterMap
         (\cotoId -> getCoto cotoId model)
         model.context.selection
@@ -152,4 +152,3 @@ connect startCoto endCotos model =
     , connectMode = False
     , connectModalOpen = False
     }
-        |> openTraversal Components.Traversals.Model.Connected startCoto.id

@@ -52,13 +52,15 @@ defmodule Cotoami.Router do
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
     get "/signin/request/:email/:save_anonymous", SigninController, :request
     get "/graph", CotoGraphController, :index
-    get "/graph/:cotonoma_key", CotoGraphController, :cotonoma
+    get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph
-    put "/graph/pin/:coto_id", CotoGraphController, :pin
-    put "/graph/pin", CotoGraphController, :pin_all
+    put "/graph/pin", CotoGraphController, :pin
     delete "/graph/pin/:coto_id", CotoGraphController, :unpin
-    put "/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :pin_to_cotonoma
-    put "/graph/:cotonoma_key/pin", CotoGraphController, :pin_all_to_cotonoma
-    delete "/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :unpin_from_cotonoma
+    put "/graph/:cotonoma_key/pin", CotoGraphController, :pin
+    delete "/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :unpin
+    put "/graph/connection/:start_id", CotoGraphController, :connect
+    put "/graph/:cotonoma_key/connection/:start_id", CotoGraphController, :connect
+    delete "/graph/connection/:start_id/:end_id", CotoGraphController, :disconnect
+    delete "/graph/:cotonoma_key/connection/:start_id/:end_id", CotoGraphController, :disconnect
   end
 end

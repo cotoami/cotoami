@@ -53,7 +53,7 @@ defmodule Cotoami.CotoService do
       |> ensure_not_to_be_cotonoma()
       |> Repo.delete!()
 
-      CotoGraphService.delete_coto(id)
+      CotoGraphService.delete_coto(Bolt.Sips.conn, id)
     end)
   end
 

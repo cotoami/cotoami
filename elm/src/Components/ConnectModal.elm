@@ -28,7 +28,7 @@ modalConfig : CotoId -> Model -> Modal.Config Msg
 modalConfig startCotoId model =
     let
         maybeStartCoto = getCoto startCotoId model
-        endCotos = getSelectedCoto model
+        endCotos = getSelectedCotos model
     in
         case maybeStartCoto of
             Nothing ->

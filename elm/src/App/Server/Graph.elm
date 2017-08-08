@@ -41,8 +41,11 @@ fetchGraph maybeCotonomaKey =
     let
         url =
             case maybeCotonomaKey of
-                Nothing -> "/api/graph"
-                Just cotonomaKey -> "/api/graph/" ++ cotonomaKey
+                Nothing ->
+                    "/api/graph"
+
+                Just cotonomaKey ->
+                    "/api/graph/" ++ cotonomaKey
     in
         Http.send GraphFetched (Http.get url decodeGraph)
 
@@ -57,39 +60,43 @@ fetchSubgraph cotonomaKey =
 fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
 fetchSubgraphIfCotonoma graph cotoId =
     case getCoto cotoId graph of
-        Nothing -> Cmd.none
+        Nothing ->
+            Cmd.none
+
         Just coto ->
             case coto.cotonomaKey of
-                Nothing -> Cmd.none
-                Just cotonomaKey -> fetchSubgraph cotonomaKey
+                Nothing ->
+                    Cmd.none
+
+                Just cotonomaKey ->
+                    fetchSubgraph cotonomaKey
 
 
 pinUrl : Maybe CotonomaKey -> String
 pinUrl maybeCotonomaKey =
     case maybeCotonomaKey of
-        Nothing -> "/api/graph/pin"
-        Just cotonomaKey -> "/api/graph/" ++ cotonomaKey ++ "/pin"
+        Nothing ->
+            "/api/graph/pin"
+
+        Just cotonomaKey ->
+            "/api/graph/" ++ cotonomaKey ++ "/pin"
 
 
-pinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
-pinCoto tag maybeCotonomaKey cotoId =
-    let
-        url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
-    in
-        Http.send tag (httpPut url Http.emptyBody (Decode.succeed "done"))
+cotoIdsAsJsonBody : String -> List CotoId -> Http.Body
+cotoIdsAsJsonBody key cotoIds =
+    Http.jsonBody <|
+        Encode.object
+            [ ( key
+              , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
+              )
+            ]
 
 
 pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
 pinCotos tag maybeCotonomaKey cotoIds =
     let
         url = pinUrl maybeCotonomaKey
-        body =
-            Http.jsonBody
-                <| Encode.object
-                    [ ( "coto_ids"
-                      , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
-                      )
-                    ]
+        body = cotoIdsAsJsonBody "coto_ids" cotoIds
     in
         Http.send tag (httpPut url body (Decode.succeed "done"))
 
@@ -98,5 +105,32 @@ unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> 
 unpinCoto tag maybeCotonomaKey cotoId =
     let
         url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+    in
+        Http.send tag (httpDelete url)
+
+
+connectUrl : Maybe CotonomaKey -> CotoId -> String
+connectUrl maybeCotonomaKey startId =
+    case maybeCotonomaKey of
+        Nothing ->
+            "/api/graph/connection/" ++ startId
+
+        Just cotonomaKey ->
+            "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
+
+
+connect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> List CotoId -> Cmd msg
+connect tag maybeCotonomaKey startId endIds =
+    let
+        url = connectUrl maybeCotonomaKey startId
+        body = cotoIdsAsJsonBody "end_ids" endIds
+    in
+        Http.send tag (httpPut url body (Decode.succeed "done"))
+
+
+disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg
+disconnect tag maybeCotonomaKey startId endId =
+    let
+        url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send tag (httpDelete url)

@@ -116,4 +116,12 @@ defmodule Cotoami.Neo4jService do
     """
     Bolt.Sips.query!(conn, query, %{uuid: uuid})
   end
+
+  def get_paths!(conn, start_uuid, end_uuid) do
+    query = ~s"""
+      MATCH path = ({ uuid: $start_uuid })-[*]->({ uuid: $end_uuid })
+      RETURN path
+    """
+    Bolt.Sips.query!(conn, query, %{start_uuid: start_uuid, end_uuid: end_uuid})
+  end
 end
