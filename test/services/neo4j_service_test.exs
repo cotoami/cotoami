@@ -129,7 +129,7 @@ defmodule Cotoami.Neo4jServiceTest do
       ~M{uuid1, node1_id, uuid2, node2_id, rel}
     end
 
-    test "create", %{node1_id: node1_id, node2_id: node2_id, rel: rel} do
+    test "create", ~M{node1_id, node2_id, rel} do
       assert node1_id == rel.start
       assert node2_id == rel.end
       assert %{"a" => "hello", "b" => 1} == rel.properties
