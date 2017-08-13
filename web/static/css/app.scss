@@ -66,8 +66,9 @@ $tool-button-color: #3572A5 !default;
   display: flex;
   flex-direction: row;
   padding-top: 35px;
+  padding-right: 5px;   // for view-switch on mobile
   box-sizing: border-box;
-  background-color: #e8e8e8;
+  background-color: #f8f8f8;
 
   div.main-column {
     display: none;
@@ -111,7 +112,6 @@ $tool-button-color: #3572A5 !default;
   flex: 1;
   display: flex;
   padding: 0 10px;
-  background-color: #f8f8f8;
 }
 
 .cotonomas-loading {
@@ -130,7 +130,6 @@ $tool-button-color: #3572A5 !default;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #f2f2f2;
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -141,15 +140,10 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
-#main-selection {
-  background-color: #e8e8e8;
-}
-
 div.main-traversal {
   flex: 1;
   display: flex;
   padding: 0 5px;
-  background-color: #eee;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -202,6 +196,7 @@ div.main-traversal {
     flex-direction: row;
     width: 100%;
     margin: 0 auto !important;
+    padding-right: 0;
 
     div.main-column {
       display: flex;
@@ -241,6 +236,7 @@ div.main-traversal {
     flex: 1;
     height: 100%;
     padding: 0;
+    background-color: #f8f8f8;
   }
 
   #main-stock {
@@ -250,18 +246,7 @@ div.main-traversal {
     top: auto;
     animation-name: none;
     overflow-y: hidden;
-  }
-
-  #main-selection {
-    flex: 1;
-    display: flex !important;
-    position: relative;
-    top: auto;
-    overflow-y: hidden;
-  }
-
-  #main-selection.empty {
-    display: none !important;
+    background-color: #f2f2f2;
   }
 
   div.main-traversal {
@@ -270,6 +255,20 @@ div.main-traversal {
     flex: 1;
     margin: 0;
     padding: 0;
+    background-color: #eee;
+  }
+
+  #main-selection {
+    flex: 1;
+    display: flex !important;
+    position: relative;
+    top: auto;
+    overflow-y: hidden;
+    background-color: #e8e8e8;
+  }
+
+  #main-selection.empty {
+    display: none !important;
   }
 
   #view-switch-container {
