@@ -14,32 +14,32 @@
   bottom: 58px;
   left: 0;
   right: 0;
-  
+
   @media (#{$wide-viewport}) {
     padding-left: 5px;
     padding-right: 5px;
   }
-  
+
   &.loading {
     background: url(../images/loading.gif) center no-repeat #fff;
   }
-  
+
   div.coto {
     position: relative;
     margin-bottom: 6px;
-    
+
     &:first-child {
       margin-top: 12px;
     }
-    
+
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
     }
-    
+
     div.author {
       margin-bottom: 8px;
-      
+
       img.avatar {
         margin: 0;
         padding: 0;
@@ -49,7 +49,7 @@
         border-radius: 4px;
         vertical-align: middle;
       }
-      
+
       span.name {
         color: #aaa;
         font-weight: bold;
@@ -68,28 +68,28 @@
   bottom: 0;
   height: 48px;
   padding: 0 5px;
-  
+
   div.toolbar {
     position: relative;
     height: 40px;
-    
+
     span.user {
       margin-left: 5px;
       line-height: 40px;
       vertical-align: middle;
       font-weight: bold;
       color: gray;
-      
+
       .material-icons {
         margin-right: 3px;
         vertical-align: -6px;
       }
-      
+
       &.anonymous {
         color: black;
         opacity: 0.26;
       }
-      
+
       &.session {
         img.avatar {
           margin: 0;
@@ -102,12 +102,12 @@
         }
       }
     }
-    
+
     div.tool-buttons {
       display: inline-block;
       position: absolute;
       right: 0;
-      
+
       span.shortcut-help {
         margin-left: 4px;
         text-transform: none;
@@ -115,13 +115,13 @@
       }
     }
   }
-  
+
   textarea.coto {
     margin: 0;
     width: 100%;
     height: 38px;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    
+
     @media (#{$narrow-viewport}) {
       // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
       font-size: 16px;

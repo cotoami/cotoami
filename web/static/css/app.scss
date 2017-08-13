@@ -30,12 +30,12 @@ $tool-button-color: #3572A5 !default;
   color: $tool-button-color;
   opacity: 0.6;
   cursor: pointer;
-  
+
   &:active,
   &:visited {
     color: $tool-button-color;
   }
-  
+
   &:hover {
     color: $tool-button-color;
     opacity: 1;
@@ -44,14 +44,13 @@ $tool-button-color: #3572A5 !default;
 
 #app {
   position: relative;
-  
+
   a.info-button {
     z-index: 10;
     position: absolute;
     bottom: 6px;
     right: 10px;
-    
-    
+
     i.material-icons {
       font-size: 32px;
     }
@@ -69,10 +68,10 @@ $tool-button-color: #3572A5 !default;
   padding-top: 35px;
   box-sizing: border-box;
   background-color: #e8e8e8;
-  
+
   div.main-column {
     display: none;
-    
+
     &.activeOnMobile {
       display: flex;
     }
@@ -89,19 +88,19 @@ $tool-button-color: #3572A5 !default;
   border-bottom: solid 1px #ddd;
   background-color: #fff;
   animation-duration: 0.5s;
-  
+
   &.neverToggled,
   &.empty {
     display: none;
   }
-  
+
   #navigation-content {
     max-height: 80vh;
     padding: 0 10px;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    
+
     div.coto-as-cotonoma {
       margin-bottom: 5px;
     }
@@ -135,7 +134,7 @@ $tool-button-color: #3572A5 !default;
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   &.neverToggled,
   &.empty {
     display: none;
@@ -164,7 +163,7 @@ div.main-traversal {
   right: 0;
   margin: auto;
   height: 280px;
-  
+
   div.view-switch {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -174,19 +173,19 @@ div.main-traversal {
     border-right-style: none;
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    
+
     i {
       width: 24px;
       text-align: center;
       font-size: 16px;
       line-height: 60px;
     }
-    
+
     &.selected {
       opacity: 0.5;
       box-shadow: none;
     }
-    
+
     &.empty i {
       color: gray;
       opacity: 0.3;
@@ -198,17 +197,17 @@ div.main-traversal {
   #app-body {
     overflow-x: hidden !important;
   }
-  
+
   #app-layout {
     flex-direction: row;
     width: 100%;
     margin: 0 auto !important;
-    
+
     div.main-column {
       display: flex;
     }
   }
-  
+
   #main-nav {
     position: relative;
     top: auto;
@@ -216,11 +215,11 @@ div.main-traversal {
     border-right: solid 1px #eee;
     padding: 0;
     animation-name: none;
-    
+
     &.notEmpty {
       display: block;
     }
-    
+
     #navigation-content {
       position: absolute;
       top: 0;
@@ -230,14 +229,14 @@ div.main-traversal {
       padding-top: 10px;
       padding-left: 10px;
       max-height: none;
-      
+
       div.member,
       div.cotonomas {
         font-size: 90%;
       }
     }
   }
-  
+
   #main-timeline {
     flex: 1;
     height: 100%;
@@ -252,7 +251,7 @@ div.main-traversal {
     animation-name: none;
     overflow-y: hidden;
   }
-  
+
   #main-selection {
     flex: 1;
     display: flex !important;
@@ -260,11 +259,11 @@ div.main-traversal {
     top: auto;
     overflow-y: hidden;
   }
-  
+
   #main-selection.empty {
     display: none !important;
   }
-  
+
   div.main-traversal {
     min-width: auto;
     width: auto;
@@ -272,7 +271,7 @@ div.main-traversal {
     margin: 0;
     padding: 0;
   }
-  
+
   #view-switch-container {
     display: none;
   }
