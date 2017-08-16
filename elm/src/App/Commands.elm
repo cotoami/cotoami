@@ -1,4 +1,4 @@
-module Components.Timeline.Commands exposing (..)
+module App.Commands exposing (..)
 
 import Dom.Scroll
 import Task
