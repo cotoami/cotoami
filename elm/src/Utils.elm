@@ -3,6 +3,7 @@ module Utils exposing
     , validateEmail
     , send
     , onClickWithoutPropagation
+    , onLinkButtonClick
     , httpRequestWithBody
     , httpDelete
     , httpPost
@@ -44,18 +45,23 @@ send msg =
 
 onClickWithoutPropagation : msg -> Attribute msg
 onClickWithoutPropagation message =
-    onWithoutPropagation "click" message
+    onNoValueEvent "click" message
+        { stopPropagation = True
+        , preventDefault = False
+        }
 
 
-onWithoutPropagation : String -> msg -> Attribute msg
-onWithoutPropagation eventName message =
-    let
-        defaultOptions = Html.Events.defaultOptions
-    in
-        onWithOptions
-            eventName
-            { defaultOptions | stopPropagation = True }
-            (Decode.succeed message)
+onLinkButtonClick : msg -> Attribute msg
+onLinkButtonClick message =
+    onNoValueEvent "click" message
+        { stopPropagation = True
+        , preventDefault = True
+        }
+
+
+onNoValueEvent : String -> msg -> Html.Events.Options -> Attribute msg
+onNoValueEvent eventName message options =
+    onWithOptions eventName options (Decode.succeed message)
 
 
 commonRequestHeaders : List Http.Header

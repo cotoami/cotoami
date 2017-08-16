@@ -3,7 +3,7 @@ module Components.Coto exposing (..)
 import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onLinkButtonClick)
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Types.Graph exposing (Graph, pinned, hasChildren)
@@ -22,7 +22,7 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
                     a
                         [ class "posted-in"
                         , href ("/cotonomas/" ++ postedIn.key)
-                        , onClickWithoutPropagation (cotonomaClick postedIn.key)
+                        , onLinkButtonClick (cotonomaClick postedIn.key)
                         ]
                         [ text postedIn.name ]
                 else
@@ -84,7 +84,7 @@ bodyDiv context graph config model =
                         Nothing -> span [] content
                         Just cotonomaKey ->
                             a [ href ("/cotonomas/" ++ cotonomaKey)
-                              , onClickWithoutPropagation (config.cotonomaClick cotonomaKey)
+                              , onLinkButtonClick (config.cotonomaClick cotonomaKey)
                               ]
                               content
                     ]
@@ -104,7 +104,7 @@ cotoToolsSpan context graph config cotoId =
                 a
                     [ class "tool-button select-coto"
                     , title "Select this coto"
-                    , onClickWithoutPropagation (selectCoto cotoId)
+                    , onLinkButtonClick (selectCoto cotoId)
                     ]
                     [ i [ class "material-icons" ]
                         [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
@@ -122,7 +122,7 @@ cotoToolsSpan context graph config cotoId =
                     a
                         [ class "tool-button traverse-coto"
                         , title "Traverse from this coto"
-                        , onClickWithoutPropagation (openTraversal cotoId)
+                        , onLinkButtonClick (openTraversal cotoId)
                         ]
                         [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
                 else
@@ -135,7 +135,7 @@ cotoToolsSpan context graph config cotoId =
                 a
                     [ class "tool-button open-coto"
                     , title "Open coto view"
-                    , onClickWithoutPropagation openCoto
+                    , onLinkButtonClick openCoto
                     ]
                     [ i [ class "material-icons" ] [ text "settings" ] ]
         , case config.deleteConnection of
@@ -146,7 +146,7 @@ cotoToolsSpan context graph config cotoId =
                 a
                     [ class "tool-button delete-connection"
                     , title "Delete connection"
-                    , onClickWithoutPropagation deleteConnection
+                    , onLinkButtonClick deleteConnection
                     ]
                     [ i [ class "material-icons" ] [ text "close" ] ]
         ]
@@ -161,7 +161,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
         Just cotoId ->
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
-                    [ a [ onClickWithoutPropagation (buttonClick cotoId) ]
+                    [ a [ onLinkButtonClick (buttonClick cotoId) ]
                         [ i [ class "material-icons" ] [ text "more_horiz" ] ]
                     ]
             else

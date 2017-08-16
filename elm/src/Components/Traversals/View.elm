@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
@@ -70,7 +70,7 @@ traversalDiv context graph traversal connections startCoto  =
             [ span [ class "description" ] []
             , a [ class "tool-button close-traversal"
                 , href "/"
-                , onClickWithoutPropagation (CloseTraversal traversal.start)
+                , onLinkButtonClick (CloseTraversal traversal.start)
                 ]
                 [ i [ class "material-icons" ] [ text "close" ] ]
             ]
@@ -224,7 +224,7 @@ traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> H
 traverseButtonDiv buttonClick index cotoId traversal graph =
     if hasChildren cotoId graph then
         div [ class "sub-cotos-button" ]
-            [ a [ onClickWithoutPropagation (buttonClick (Traverse traversal index cotoId)) ]
+            [ a [ onLinkButtonClick (buttonClick (Traverse traversal index cotoId)) ]
                 [ i [ class "material-icons" ] [ text "arrow_downward" ]
                 ]
             ]

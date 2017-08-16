@@ -3,7 +3,7 @@ module Components.Cotonomas exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onLinkButtonClick)
 import App.Types.Coto exposing (Cotonoma)
 import App.Messages exposing (Msg(CotonomaClick))
 
@@ -19,7 +19,7 @@ view cotonomas =
                 , div [ class "coto-as-cotonoma" ]
                     [ a
                         [ href ("/cotonomas/" ++ cotonoma.key)
-                        , onClickWithoutPropagation (CotonomaClick cotonoma.key)
+                        , onLinkButtonClick (CotonomaClick cotonoma.key)
                         ]
                         [ i [ class "material-icons" ] [ text "exit_to_app" ]
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]

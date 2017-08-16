@@ -3,7 +3,7 @@ module Components.AppHeader exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onLinkButtonClick)
 import App.Model exposing (Model, isNavigationEmpty)
 import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
@@ -19,7 +19,7 @@ view model =
                     ]
 
                 Just cotonoma ->
-                    [ a [ class "to-home", onClickWithoutPropagation HomeClick, href "/" ]
+                    [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
                         [ i [ class "material-icons" ] [ text "home" ] ]
                     , i [ class "arrow material-icons" ] [ text "navigate_next" ]
                     , span [ class "cotonoma-name" ] [ text cotonoma.name ]
