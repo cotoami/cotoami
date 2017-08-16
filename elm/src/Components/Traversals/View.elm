@@ -225,7 +225,7 @@ traverseButtonDiv buttonClick index cotoId traversal graph =
     if hasChildren cotoId graph then
         div [ class "sub-cotos-button" ]
             [ a [ onClickWithoutPropagation (buttonClick (Traverse traversal index cotoId)) ]
-                [ i [ class "material-icons" ] [ text "more_horiz" ]
+                [ i [ class "material-icons" ] [ text "arrow_downward" ]
                 ]
             ]
     else
