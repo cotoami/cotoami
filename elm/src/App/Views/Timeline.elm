@@ -1,4 +1,4 @@
-module Components.Timeline.View exposing (..)
+module App.Views.Timeline exposing (..)
 
 import Html exposing (..)
 import Html.Keyed

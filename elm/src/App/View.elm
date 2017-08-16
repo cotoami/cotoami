@@ -7,6 +7,7 @@ import Exts.Maybe exposing (isNothing)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Views.Timeline
 import Components.AppHeader
 import Components.Navigation
 import Components.ConfirmModal.View
@@ -14,7 +15,6 @@ import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotoSelection.View
-import Components.Timeline.View
 import Components.CotonomaModal.View
 import Components.PinnedCotos
 import Components.ConnectModal
@@ -107,7 +107,7 @@ defaultColumnDivs model =
             , ( "fadeIn", model.activeViewOnMobile == TimelineView )
             ]
         ]
-        [ Components.Timeline.View.view
+        [ App.Views.Timeline.view
             model.context
             model.graph
             model.timeline
