@@ -107,12 +107,10 @@ defaultColumnDivs model =
             , ( "fadeIn", model.activeViewOnMobile == TimelineView )
             ]
         ]
-        [ Html.map TimelineMsg
-            (Components.Timeline.View.view
-                model.context
-                model.graph
-                model.timeline
-            )
+        [ Components.Timeline.View.view
+            model.context
+            model.graph
+            model.timeline
         ]
     , div
         [ id "main-stock"

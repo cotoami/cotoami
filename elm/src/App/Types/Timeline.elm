@@ -2,7 +2,7 @@ module App.Types.Timeline exposing (..)
 
 import Maybe exposing (andThen)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post, defaultPost, toCoto, isSelfOrPostedIn)
 
 
 type alias Timeline =
@@ -22,6 +22,11 @@ defaultTimeline =
     , posts = []
     , loading = True
     }
+
+
+setEditingNew : Bool -> Timeline -> Timeline
+setEditingNew editingNew timeline =
+    { timeline | editingNew = editingNew }
 
 
 getCoto : CotoId -> Timeline -> Maybe Coto
@@ -55,3 +60,24 @@ updatePost update cotoId posts =
                  post
          )
          posts
+
+
+postContent : String -> Maybe Cotonoma -> Bool -> String -> Timeline -> ( Timeline, Post )
+postContent clientId maybeCotonoma asCotonoma content model =
+    let
+        postId = model.postIdCounter + 1
+    in
+        { defaultPost
+        | postId = Just postId
+        , content = content
+        , asCotonoma = asCotonoma
+        , postedIn = maybeCotonoma
+        }
+            |> \newPost ->
+                ( { model
+                  | posts = newPost :: model.posts
+                  , postIdCounter = postId
+                  , newContent = ""
+                  }
+                , newPost
+                )

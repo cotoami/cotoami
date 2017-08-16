@@ -16,13 +16,13 @@ import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph, member)
+import App.Types.Timeline exposing (Timeline)
+import App.Messages exposing (..)
 import App.Markdown
-import Components.Timeline.Model exposing (Model)
-import Components.Timeline.Messages exposing (..)
 import Components.Coto
 
 
-view : Context -> Graph -> Model -> Html Msg
+view : Context -> Graph -> Timeline -> Html Msg
 view context graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
         [ timelineDiv context graph model
@@ -30,7 +30,7 @@ view context graph model =
         ]
 
 
-newPostEditor : Context -> Model -> Html Msg
+newPostEditor : Context -> Timeline -> Html Msg
 newPostEditor context model =
     div [ id "new-coto" ]
         [ div [ class "toolbar", hidden (not model.editingNew) ]
@@ -50,7 +50,7 @@ newPostEditor context model =
                 [ button
                     [ class "button-primary"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown Components.Timeline.Messages.Post
+                    , onMouseDown App.Messages.Post
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -70,7 +70,7 @@ newPostEditor context model =
         ]
 
 
-timelineDiv : Context -> Graph -> Model -> Html Msg
+timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
     Html.Keyed.node
         "div"
@@ -109,9 +109,9 @@ postDiv context graph post =
                 (case post.cotoId of
                     Nothing -> []
                     Just cotoId ->
-                        [ onClick (PostClick cotoId)
-                        , onMouseEnter (PostMouseEnter cotoId)
-                        , onMouseLeave (PostMouseLeave cotoId)
+                        [ onClick (CotoClick cotoId)
+                        , onMouseEnter (CotoMouseEnter cotoId)
+                        , onMouseLeave (CotoMouseLeave cotoId)
                         ]
                 )
         )
@@ -199,7 +199,7 @@ customHtmlInline inline =
             App.Markdown.customHtmlInline inline
 
 
-timelineClass : Model -> String
+timelineClass : Timeline -> String
 timelineClass model =
     if model.editingNew then
         "editing"

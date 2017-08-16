@@ -3,7 +3,7 @@ module App.Server.Coto exposing (..)
 import Http
 import Json.Decode as Decode
 import Utils exposing (httpDelete)
-import App.Messages exposing (Msg(..))
+import App.Messages exposing (Msg(CotonomaFetched, CotoDeleted))
 import App.Types.Post exposing (Post)
 import App.Types.Coto exposing (CotoId, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)

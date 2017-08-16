@@ -10,8 +10,8 @@ import Http exposing (Request)
 import Utils exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post)
+import App.Messages exposing (..)
 import App.Server.Coto exposing (decodePost)
-import Components.Timeline.Messages exposing (..)
 
 
 scrollToBottom : msg -> Cmd msg

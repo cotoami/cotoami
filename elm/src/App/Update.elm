@@ -4,29 +4,30 @@ import Dict
 import Task
 import Process
 import Time
+import Json.Decode as Decode
 import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
+import Utils exposing (isBlank, send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn, setCotoSaved)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
+import App.Types.Post exposing (Post, defaultPost)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
+import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, unpinCoto, disconnect)
-import App.Channels exposing (decodePresenceState, decodePresenceDiff)
+import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (updatePost, setLoading)
-import Components.Timeline.Messages
-import Components.Timeline.Update
-import Components.Timeline.Commands exposing (fetchPosts)
+import Components.Timeline.Commands exposing (fetchPosts, scrollToBottom)
 import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
@@ -105,22 +106,18 @@ update msg model =
             changeLocationToHome model
 
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
-            (Components.Timeline.Update.update
-                model.context
-                (Components.Timeline.Messages.PostsFetched (Ok posts))
-                model.timeline
-            )
-                |> \( timeline, cmd ) ->
-                    { model
-                    | context = model.context
-                        |> \context -> { context | cotonoma = Just cotonoma }
-                    , members = members
-                    , navigationOpen = False
-                    , timeline = timeline
-                    } !
-                        [ Cmd.map TimelineMsg cmd
-                        , fetchSubCotonomas (Just cotonoma)
-                        ]
+            { model
+            | context = model.context
+                |> \context -> { context | cotonoma = Just cotonoma }
+            , members = members
+            , navigationOpen = False
+            , timeline = model.timeline
+                |> \t -> { t | posts = posts, loading = False }
+            } !
+                [ scrollToBottom NoOp
+                , fetchSubCotonomas (Just cotonoma)
+                ]
+
 
         CotonomaFetched (Err _) ->
             model ! []
@@ -214,48 +211,62 @@ update msg model =
                         _ ->
                             ( model, cmd )
 
-        TimelineMsg subMsg ->
-            Components.Timeline.Update.update model.context subMsg model.timeline
-                |> \( timeline, cmd ) -> { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.Timeline.Messages.PostClick cotoId ->
-                            (clickCoto cotoId model) ! [ cmd ]
+        PostsFetched (Ok posts) ->
+            { model
+            | timeline = model.timeline |> \t -> { t | posts = posts , loading = False }
+            } ! [ scrollToBottom NoOp ]
 
-                        Components.Timeline.Messages.PostMouseEnter cotoId ->
-                            { model | context = setFocus (Just cotoId) model.context } ! [ cmd ]
+        PostsFetched (Err _) ->
+            model ! []
 
-                        Components.Timeline.Messages.PostMouseLeave cotoId ->
-                            { model | context = setFocus Nothing model.context } ! [ cmd ]
+        ImageLoaded ->
+            model ! [ scrollToBottom NoOp ]
 
-                        Components.Timeline.Messages.OpenPost post ->
-                            openCoto (toCoto post) model ! [ cmd ]
+        EditorFocus ->
+            { model | timeline = setEditingNew True model.timeline } ! []
 
-                        Components.Timeline.Messages.CotonomaClick key ->
-                            changeLocationToCotonoma key model
+        EditorBlur ->
+            { model | timeline = setEditingNew False model.timeline } ! []
 
-                        Components.Timeline.Messages.CotonomaPushed post ->
-                            model !
-                                [ cmd
-                                , fetchRecentCotonomas
-                                , fetchSubCotonomas model.context.cotonoma
-                                ]
+        EditorInput content ->
+            { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
-                        Components.Timeline.Messages.SelectCoto cotoId ->
-                            { model
-                            | context = updateSelection cotoId model.context
-                            } ! [ cmd ]
+        EditorKeyDown key ->
+            if key == enter.keyCode && model.context.ctrlDown && (not (isBlank model.timeline.newContent)) then
+                post model
+            else
+                model ! []
 
-                        Components.Timeline.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
-                                [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
+        Post ->
+            post model
 
-                        _ ->
-                            ( model, cmd )
+        Posted (Ok response) ->
+            { model
+            | timeline = model.timeline |> \t -> { t | posts = setCotoSaved response t.posts }
+            } ! []
+
+        Posted (Err _) ->
+            model ! []
+
+        OpenPost post ->
+            openCoto (toCoto post) model ! []
+
+        PostPushed payload ->
+            case Decode.decodeValue (decodePayload "post" decodePost) payload of
+                Ok decodedPayload ->
+                    handlePushedPost model.context.clientId decodedPayload model
+                Err err ->
+                    model ! []
+
+        CotonomaPushed post ->
+            model !
+                [ fetchRecentCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
 
         DeleteCoto coto ->
             { model
-            | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
+            | timeline = App.Types.Timeline.deleteCoto coto model.timeline
             , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
             , traversals = closeTraversal coto.id model.traversals
             , context = deleteSelection coto.id model.context
@@ -300,8 +311,13 @@ update msg model =
                             } ! [ Cmd.map CotonomaModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
-                                Components.CotonomaModal.Messages.Posted (Ok _) ->
-                                    { model | cotonomasLoading = True } !
+                                Components.CotonomaModal.Messages.Posted (Ok response) ->
+                                    { model
+                                    | cotonomasLoading = True
+                                    , timeline =
+                                        model.timeline
+                                            |> \t -> { t | posts = setCotoSaved response t.posts }
+                                    } !
                                         [ cmd
                                         , fetchRecentCotonomas
                                         , fetchSubCotonomas model.context.cotonoma
@@ -499,6 +515,7 @@ openCoto maybeCoto model =
         |> \modal -> { modal | open = True , coto =  maybeCoto }
     }
 
+
 applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
@@ -532,6 +549,7 @@ applyPresenceDiff ( joins, leaves ) presences =
                 presences
                 leaves
 
+
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
@@ -554,7 +572,7 @@ loadHome model =
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !
-        [ Cmd.map TimelineMsg fetchPosts
+        [ fetchPosts
         , fetchRecentCotonomas
         , fetchGraph Nothing
         ]
@@ -608,3 +626,35 @@ closeModal model =
        { model | connectModalOpen = False, connectMode = False }
     else
         model
+
+
+handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
+handlePushedPost clientId payload model =
+    if payload.clientId /= clientId then
+        { model
+        | timeline =
+            model.timeline
+                |> \t -> { t | posts = payload.body :: t.posts }
+        } !
+            if payload.body.asCotonoma then
+                [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
+            else
+                [ scrollToBottom NoOp ]
+    else
+        model ! []
+
+
+post : Model -> ( Model, Cmd Msg )
+post model =
+    let
+        clientId = model.context.clientId
+        cotonoma = model.context.cotonoma
+        newContent = model.timeline.newContent
+    in
+        model.timeline
+            |> postContent clientId cotonoma False newContent
+            |> \( timeline, newPost ) ->
+                { model | timeline = timeline } !
+                    [ scrollToBottom NoOp
+                    , Components.Timeline.Commands.post clientId cotonoma Posted newPost
+                    ]

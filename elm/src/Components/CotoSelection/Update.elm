@@ -8,10 +8,11 @@ import Maybe exposing (andThen, withDefault)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context, clearSelection, deleteSelection, setBeingDeselected)
 import App.Types.Graph exposing (addConnections, addRootConnections)
+import App.Types.Post exposing (setCotoSaved)
+import App.Types.Timeline exposing (postContent)
 import App.Server.Graph exposing (pinCotos)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
-import Components.Timeline.Update exposing (postContent, setCotoSaved)
 import Components.Timeline.Commands exposing (scrollToBottom, post)
 
 
