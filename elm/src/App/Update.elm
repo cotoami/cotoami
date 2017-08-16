@@ -21,13 +21,13 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto, decodePost)
+import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, unpinCoto, disconnect)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Commands exposing (fetchPosts, scrollToBottom)
+import Components.Timeline.Commands exposing (scrollToBottom)
 import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages

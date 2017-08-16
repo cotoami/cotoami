@@ -1,6 +1,5 @@
 module Components.Timeline.Commands exposing (..)
 
-import Json.Decode as Decode
 import Json.Encode as Encode
 import Dom.Scroll
 import Task
@@ -10,7 +9,6 @@ import Http exposing (Request)
 import Utils exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post)
-import App.Messages exposing (..)
 import App.Server.Coto exposing (decodePost)
 
 
@@ -19,11 +17,6 @@ scrollToBottom msg =
     Process.sleep (1 * Time.millisecond)
     |> Task.andThen (\_ -> (Dom.Scroll.toBottom "timeline"))
     |> Task.attempt (\_ -> msg)
-
-
-fetchPosts : Cmd Msg
-fetchPosts =
-    Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
