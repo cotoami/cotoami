@@ -21,28 +21,30 @@ import Components.Traversals.Messages
 
 type Msg
     = NoOp
+    | KeyDown KeyCode
+    | KeyUp KeyCode
     | OnLocationChange Location
     | NavigationToggle
     | SwitchViewOnMobile ActiveViewOnMobile
+    | HomeClick
+    | CotonomaPresenceState Value
+    | CotonomaPresenceDiff Value
+
+    -- Fetched
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | HomeClick
     | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
-    | KeyDown KeyCode
-    | KeyUp KeyCode
-    | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
+
+    -- Modal
     | OpenSigninModal
-    | SigninModalMsg Components.SigninModal.Msg
     | OpenProfileModal
-    | ProfileModalMsg Components.ProfileModal.Msg
-    | CotoModalMsg Components.CotoModal.Msg
-    | DeleteCoto Coto
-    | CotoDeleted (Result Http.Error String)
     | OpenCotonomaModal
-    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CloseConnectModal
+
+    -- Coto
     | CotoClick CotoId
     | CotoMouseEnter CotoId
     | CotoMouseLeave CotoId
@@ -50,19 +52,16 @@ type Msg
     | SelectCoto CotoId
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
+    | DeleteCoto Coto
+    | CotoDeleted (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
-    | CotonomaPresenceState Value
-    | CotonomaPresenceDiff Value
-    | CotoSelectionMsg Components.CotoSelection.Messages.Msg
-    | CloseConnectModal
     | Connect Coto (List Coto)
     | Connected (Result Http.Error String)
-    | TraversalMsg Components.Traversals.Messages.Msg
     | ConnectionDeleted (Result Http.Error String)
 
-    -- from timeline
+    -- Timeline
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
     | EditorFocus
@@ -74,3 +73,12 @@ type Msg
     | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post
+
+    -- Sub components
+    | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
+    | SigninModalMsg Components.SigninModal.Msg
+    | ProfileModalMsg Components.ProfileModal.Msg
+    | CotoModalMsg Components.CotoModal.Msg
+    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotoSelectionMsg Components.CotoSelection.Messages.Msg
+    | TraversalMsg Components.Traversals.Messages.Msg
