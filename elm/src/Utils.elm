@@ -54,7 +54,7 @@ onWithoutPropagation eventName message =
     in
         onWithOptions
             eventName
-            { defaultOptions | stopPropagation = True, preventDefault = True }
+            { defaultOptions | stopPropagation = True }
             (Decode.succeed message)
 
 
