@@ -1,11 +1,11 @@
-module Components.Timeline.Model exposing (..)
+module App.Types.Timeline exposing (..)
 
 import Maybe exposing (andThen)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isSelfOrPostedIn)
 
 
-type alias Model =
+type alias Timeline =
     { editingNew : Bool
     , newContent : String
     , postIdCounter : Int
@@ -14,8 +14,8 @@ type alias Model =
     }
 
 
-initModel : Model
-initModel =
+defaultTimeline : Timeline
+defaultTimeline =
     { editingNew = False
     , newContent = ""
     , postIdCounter = 0
@@ -24,7 +24,7 @@ initModel =
     }
 
 
-getCoto : CotoId -> Model -> Maybe Coto
+getCoto : CotoId -> Timeline -> Maybe Coto
 getCoto cotoId model =
     model.posts
         |> List.filter (\post -> post.cotoId == Just cotoId)
@@ -32,7 +32,7 @@ getCoto cotoId model =
         |> andThen toCoto
 
 
-deleteCoto : Coto -> Model -> Model
+deleteCoto : Coto -> Timeline -> Timeline
 deleteCoto coto model =
     { model
     | posts = model.posts |>
@@ -40,7 +40,7 @@ deleteCoto coto model =
     }
 
 
-setLoading : Model -> Model
+setLoading : Timeline -> Timeline
 setLoading model =
     { model | posts = [], loading = True }
 
