@@ -40,7 +40,7 @@ defmodule Cotoami.CotoGraphService do
         AS subcotonomas, parent, has, child
       WHERE (child:#{@label_cotonoma} AND subcotonomas = 1) OR
         ((NOT child:#{@label_cotonoma}) AND subcotonomas = 0)
-      RETURN parent, has, child
+      RETURN DISTINCT parent, has, child
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
     bolt_conn

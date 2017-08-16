@@ -1,7 +1,6 @@
 defmodule Cotoami.CotoGraphServiceTest do
   use Cotoami.ModelCase
   import ShorterMaps
-  alias Bolt.Sips
   alias Cotoami.{
     CotoGraphService, Neo4jService, AmishiService, CotoService,
     CotonomaService, CotoGraph
@@ -14,9 +13,9 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a coto pinned to an amishi" do
-    setup ~M{amishi} do
+    setup ~M{conn, amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(Sips.conn, coto, amishi)
+      CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
@@ -55,11 +54,11 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "unpin", ~M{conn, amishi, coto} do
-      CotoGraphService.unpin(Sips.conn, coto, amishi)
+      CotoGraphService.unpin(conn, coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
     end
 
-    test "graph", ~M{amishi, coto} do
+    test "graph", ~M{conn, amishi, coto} do
       coto_id = coto.id
       amishi_id = amishi.id
       assert %CotoGraph{
@@ -86,14 +85,14 @@ defmodule Cotoami.CotoGraphServiceTest do
           }
         ],
         connections: %{}
-      } = CotoGraphService.get_graph(Sips.conn, amishi)
+      } = CotoGraphService.get_graph(conn, amishi)
     end
   end
 
   describe "a cotonoma pinned to an amishi" do
-    setup ~M{amishi} do
+    setup ~M{conn, amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
-      CotoGraphService.pin(Sips.conn, coto, amishi)
+      CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
@@ -122,10 +121,10 @@ defmodule Cotoami.CotoGraphServiceTest do
   end
 
   describe "a coto pinned to a cotonoma" do
-    setup ~M{amishi} do
+    setup ~M{conn, amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
+      CotoGraphService.pin(conn, coto, cotonoma, amishi)
       ~M{coto, cotonoma}
     end
 
@@ -164,16 +163,16 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "unpin", ~M{conn, coto, cotonoma} do
-      CotoGraphService.unpin(Sips.conn, coto, cotonoma)
+      CotoGraphService.unpin(conn, coto, cotonoma)
       assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
     end
   end
 
   describe "two cotos with a connection" do
-    setup ~M{amishi} do
+    setup ~M{conn, amishi} do
       {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
-      CotoGraphService.connect(Sips.conn, coto1, coto2, amishi)
+      CotoGraphService.connect(conn, coto1, coto2, amishi)
       ~M{coto1, coto2}
     end
 
@@ -211,8 +210,37 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "disconnect", ~M{conn, amishi, coto1, coto2} do
-      CotoGraphService.disconnect(Sips.conn, coto1, coto2, amishi)
+      CotoGraphService.disconnect(conn, coto1, coto2, amishi)
       assert [] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
+    end
+  end
+
+  describe "two paths to the same cotos" do
+    # a -> b
+    # c -> a -> b
+    setup ~M{conn, amishi} do
+      {coto_a, _posted_in} = CotoService.create!(nil, amishi.id, "a")
+      {coto_b, _posted_in} = CotoService.create!(nil, amishi.id, "b")
+      {coto_c, _posted_in} = CotoService.create!(nil, amishi.id, "c")
+      CotoGraphService.connect(conn, coto_a, coto_b, amishi)
+      CotoGraphService.connect(conn, coto_c, coto_a, amishi)
+      ~M{coto_a, coto_b, coto_c}
+    end
+
+    test "graph (ensure no duplicate connections)",
+        ~M{conn, amishi, coto_a, coto_b, coto_c} do
+      {amishi_id, coto_a_id, coto_b_id, coto_c_id} =
+        {amishi.id, coto_a.id, coto_b.id, coto_c.id}
+      assert %CotoGraph{
+        root_connections: [
+          %{"start" => ^amishi_id, "end" => ^coto_c_id, "order" => 2},
+          %{"start" => ^amishi_id, "end" => ^coto_a_id, "order" => 1}
+        ],
+        connections: %{
+          ^coto_a_id => [%{"start" => ^coto_a_id, "end" => ^coto_b_id}],
+          ^coto_c_id => [%{"start" => ^coto_c_id, "end" => ^coto_a_id}]
+        }
+      } = CotoGraphService.get_graph(conn, amishi)
     end
   end
 end
