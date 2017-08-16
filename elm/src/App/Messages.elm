@@ -13,7 +13,6 @@ import App.Types.Graph exposing (Graph)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Messages
 import Components.CotoModal
 import Components.CotonomaModal.Messages
 import Components.CotoSelection.Messages
@@ -39,7 +38,6 @@ type Msg
     | SigninModalMsg Components.SigninModal.Msg
     | OpenProfileModal
     | ProfileModalMsg Components.ProfileModal.Msg
-    | TimelineMsg Components.Timeline.Messages.Msg
     | CotoModalMsg Components.CotoModal.Msg
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
@@ -63,3 +61,19 @@ type Msg
     | Connected (Result Http.Error String)
     | TraversalMsg Components.Traversals.Messages.Msg
     | ConnectionDeleted (Result Http.Error String)
+
+    -- from timeline
+    | PostsFetched (Result Http.Error (List Post))
+    | ImageLoaded
+    | PostClick CotoId
+    | PostMouseEnter CotoId
+    | PostMouseLeave CotoId
+    | EditorFocus
+    | EditorBlur
+    | EditorInput String
+    | EditorKeyDown KeyCode
+    | Post
+    | Posted (Result Http.Error Post)
+    | OpenPost Post
+    | PostPushed Value
+    | CotonomaPushed Post
