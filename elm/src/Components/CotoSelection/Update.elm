@@ -10,10 +10,11 @@ import App.Types.Context exposing (Context, clearSelection, deleteSelection, set
 import App.Types.Graph exposing (addConnections, addRootConnections)
 import App.Types.Post exposing (setCotoSaved)
 import App.Types.Timeline exposing (postContent)
+import App.Server.Coto exposing (post)
 import App.Server.Graph exposing (pinCotos)
 import App.Model exposing (..)
 import Components.CotoSelection.Messages exposing (..)
-import Components.Timeline.Commands exposing (scrollToBottom, post)
+import Components.Timeline.Commands exposing (scrollToBottom)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

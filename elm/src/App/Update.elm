@@ -656,5 +656,5 @@ post model =
             |> \( timeline, newPost ) ->
                 { model | timeline = timeline } !
                     [ scrollToBottom NoOp
-                    , Components.Timeline.Commands.post clientId cotonoma Posted newPost
+                    , App.Server.Coto.post clientId cotonoma Posted newPost
                     ]
