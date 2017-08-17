@@ -12,13 +12,13 @@ import App.Views.AppHeader
 import App.Views.Timeline
 import App.Views.Traversals
 import App.Views.Navigation
+import App.Views.PinnedCotos
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotoSelection.View
 import Components.CotonomaModal.View
-import Components.PinnedCotos
 import Components.ConnectModal
 
 
@@ -118,7 +118,7 @@ defaultColumnDivs model =
             , ( "fadeIn", model.activeViewOnMobile == PinnedView )
             ]
         ]
-        [ Components.PinnedCotos.view model.context model.graph
+        [ App.Views.PinnedCotos.view model.context model.graph
         ]
     ]
 
