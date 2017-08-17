@@ -79,7 +79,7 @@ type Msg
     -- Traversals
     | TraverseClick Traverse
     | CloseTraversal CotoId
-    | ChangePage Int
+    | SwitchTraversal Int
 
     -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg

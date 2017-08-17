@@ -359,9 +359,9 @@ update msg model =
             | traversals = closeTraversal cotoId model.traversals
             } ! []
 
-        ChangePage pageIndex ->
+        SwitchTraversal pageIndex ->
             { model
-            | traversals = model.traversals |> \t -> { t | activePageIndex = pageIndex }
+            | traversals = model.traversals |> \t -> { t | activeIndexOnMobile = pageIndex }
             } ! []
 
         --

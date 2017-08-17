@@ -28,7 +28,7 @@ view activeOnMobile context graph model =
         |> List.indexedMap
             (\index traversalDiv ->
                 let
-                    visibleOnMobile = activeOnMobile && (inActivePage index model)
+                    visibleOnMobile = activeOnMobile && (isActiveIndex index model)
                 in
                     div [ classList
                             [ ( "main-column", True )
@@ -37,7 +37,7 @@ view activeOnMobile context graph model =
                             , ( "activeOnMobile", visibleOnMobile )
                             , ( "animated", visibleOnMobile )
                             , ( "fadeIn", visibleOnMobile )
-                            , ( "not-in-active-page", not (inActivePage index model) )
+                            , ( "not-in-active-page", not (isActiveIndex index model) )
                             ]
                         ]
                         [ traversalDiv ]
@@ -202,15 +202,15 @@ bodyDiv maybeConnection context graph coto =
 
 traversalsPaginationDiv : Traversals -> Html Msg
 traversalsPaginationDiv model =
-    if (App.Types.Traversal.countPages model) > 1 then
+    if (App.Types.Traversal.size model) > 1 then
         model.order
             |> List.indexedMap
                 (\index cotoId ->
                     div [ class "button-container" ]
                         [ button
                             [ class "button"
-                            , disabled (model.activePageIndex == index)
-                            , onClickWithoutPropagation (ChangePage index)
+                            , disabled (model.activeIndexOnMobile == index)
+                            , onClickWithoutPropagation (SwitchTraversal index)
                             ]
                             [ text (toString (index + 1)) ]
                         ]

@@ -60,8 +60,7 @@ traversed index cotoId traversal =
 type alias Traversals =
     { entries : Dict.Dict CotoId Traversal
     , order : List CotoId
-    , pageSize : Int
-    , activePageIndex : Int
+    , activeIndexOnMobile : Int
     }
 
 
@@ -69,8 +68,7 @@ defaultTraversals : Traversals
 defaultTraversals =
     { entries = Dict.empty
     , order = []
-    , pageSize = 1
-    , activePageIndex = 0
+    , activeIndexOnMobile = 0
     }
 
 
@@ -92,7 +90,7 @@ openTraversal description cotoId traversals =
         traversals.order
         |> List.filter (\id -> id /= cotoId)
         |> (::) cotoId
-    , activePageIndex = 0
+    , activeIndexOnMobile = 0
     }
 
 
@@ -111,14 +109,6 @@ updateTraversal traversal traversals =
     }
 
 
-countPages : Traversals -> Int
-countPages traversals =
-    ((size traversals) + traversals.pageSize - 1) // traversals.pageSize
-
-
-inActivePage : Int -> Traversals -> Bool
-inActivePage traversalIndex traversals =
-    traversals.activePageIndex * traversals.pageSize
-        |> \startIndex ->
-            startIndex <= traversalIndex &&
-                traversalIndex < startIndex + traversals.pageSize
+isActiveIndex : Int -> Traversals -> Bool
+isActiveIndex traversalIndex traversals =
+    traversalIndex == traversals.activeIndexOnMobile
