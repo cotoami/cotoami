@@ -11,7 +11,7 @@ import App.Messages exposing (..)
 import App.Views.AppHeader
 import App.Views.Timeline
 import App.Views.Traversals
-import Components.Navigation
+import App.Views.Navigation
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
@@ -94,7 +94,7 @@ defaultColumnDivs model =
             , ( "slideInDown", model.navigationToggled && model.navigationOpen )
             , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
             ]
-        ] (Components.Navigation.view model)
+        ] (App.Views.Navigation.view model)
     , div
         [ id "main-timeline"
         , classList

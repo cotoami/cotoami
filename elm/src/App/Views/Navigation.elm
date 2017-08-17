@@ -1,4 +1,4 @@
-module Components.Navigation exposing (..)
+module App.Views.Navigation exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
