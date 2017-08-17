@@ -3,17 +3,15 @@ module Components.CotonomaModal.Update exposing (..)
 import Utils exposing (validateEmail)
 import App.Types.Context exposing (Context)
 import App.Types.Session exposing (Session)
+import App.Types.Timeline exposing (Timeline, postContent)
 import App.Server.Amishi exposing (fetchAmishi)
-import Components.Timeline.Model as Timeline
-import Components.Timeline.Messages
-import Components.Timeline.Update exposing (postContent)
-import Components.Timeline.Commands exposing (scrollToBottom)
+import App.Commands exposing (scrollToBottom)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 import Components.CotonomaModal.Commands exposing (..)
 
 
-update : Msg -> Session -> Context -> Timeline.Model -> Model -> ( Model, Timeline.Model, Cmd Msg )
+update : Msg -> Session -> Context -> Timeline -> Model -> ( Model, Timeline, Cmd Msg )
 update msg session context timeline model =
     case msg of
         NoOp ->
@@ -76,12 +74,7 @@ update msg session context timeline model =
                     )
 
         Posted (Ok response) ->
-            (Components.Timeline.Update.update
-                context
-                (Components.Timeline.Messages.Posted (Ok response))
-                timeline
-            )
-                |> \( timeline, _ ) -> ( model, timeline, Cmd.none )
+            ( model, timeline, Cmd.none )
 
         Posted (Err _) ->
             ( model, timeline, Cmd.none )

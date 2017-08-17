@@ -12,10 +12,10 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Graph, defaultGraph, addConnections)
+import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model
 import Components.CotoModal
 import Components.CotonomaModal.Model
 import Components.Traversals.Model exposing (Description)
@@ -36,7 +36,7 @@ type alias Model =
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
-    , timeline : Components.Timeline.Model.Model
+    , timeline : Timeline
     , cotoSelectionTitle : String
     , connectMode : Bool
     , connectingTo : Maybe CotoId
@@ -74,7 +74,7 @@ initModel seed route =
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
-    , timeline = Components.Timeline.Model.initModel
+    , timeline = defaultTimeline
     , cotoSelectionTitle = ""
     , connectMode = False
     , connectingTo = Nothing
@@ -89,7 +89,7 @@ getCoto : CotoId -> Model -> Maybe Coto
 getCoto cotoId model =
     case Dict.get cotoId model.graph.cotos of
         Nothing ->
-            Components.Timeline.Model.getCoto cotoId model.timeline
+            App.Types.Timeline.getCoto cotoId model.timeline
         Just coto ->
             Just coto
 

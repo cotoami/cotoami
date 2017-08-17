@@ -71,3 +71,18 @@ isPostedInCoto coto post =
 isSelfOrPostedIn : Coto -> Post -> Bool
 isSelfOrPostedIn coto post =
     post.cotoId == Just coto.id || (isPostedInCoto coto post)
+
+
+setCotoSaved : Post -> List Post -> List Post
+setCotoSaved apiResponse posts =
+    List.map
+        (\post ->
+            if post.postId == apiResponse.postId then
+                { post
+                | cotoId = apiResponse.cotoId
+                , cotonomaKey = apiResponse.cotonomaKey
+                }
+            else
+                post
+        )
+        posts

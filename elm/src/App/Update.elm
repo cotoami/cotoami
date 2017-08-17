@@ -4,29 +4,30 @@ import Dict
 import Task
 import Process
 import Time
+import Json.Decode as Decode
 import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
+import Utils exposing (isBlank, send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn, setCotoSaved)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
+import App.Types.Post exposing (Post, defaultPost)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Coto exposing (fetchCotonomaPosts, deleteCoto)
+import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, unpinCoto, disconnect)
-import App.Channels exposing (decodePresenceState, decodePresenceDiff)
+import App.Commands exposing (scrollToBottom)
+import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.ProfileModal
-import Components.Timeline.Model exposing (updatePost, setLoading)
-import Components.Timeline.Messages
-import Components.Timeline.Update
-import Components.Timeline.Commands exposing (fetchPosts)
 import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
@@ -44,6 +45,20 @@ update msg model =
         NoOp ->
             model ! []
 
+        KeyDown key ->
+            if key == ctrl.keyCode || key == meta.keyCode then
+                { model | context = ctrlDown True model.context } ! []
+            else if key == escape.keyCode then
+                (closeModal model) ! []
+            else
+                model ! []
+
+        KeyUp key ->
+            if key == ctrl.keyCode || key == meta.keyCode then
+                { model | context = ctrlDown False model.context } ! []
+            else
+                model ! []
+
         OnLocationChange location ->
             parseLocation location
                 |> \route -> ( route, { model | route = route } )
@@ -57,6 +72,32 @@ update msg model =
 
                         NotFoundRoute ->
                             ( model, Cmd.none )
+
+        NavigationToggle ->
+            { model
+            | navigationToggled = True
+            , navigationOpen = (not model.navigationOpen)
+            } ! []
+
+        SwitchViewOnMobile view ->
+            { model
+            | activeViewOnMobile = view
+            } ! []
+
+        HomeClick ->
+            changeLocationToHome model
+
+        CotonomaPresenceState payload ->
+            { model | memberPresences = decodePresenceState payload } ! []
+
+        CotonomaPresenceDiff payload ->
+            decodePresenceDiff payload
+                |> \diff -> applyPresenceDiff diff model.memberPresences
+                |> \presences -> { model | memberPresences = presences } ! []
+
+        --
+        -- Fetched
+        --
 
         SessionFetched (Ok session) ->
             { model
@@ -90,37 +131,18 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        NavigationToggle ->
-            { model
-            | navigationToggled = True
-            , navigationOpen = (not model.navigationOpen)
-            } ! []
-
-        SwitchViewOnMobile view ->
-            { model
-            | activeViewOnMobile = view
-            } ! []
-
-        HomeClick ->
-            changeLocationToHome model
-
         CotonomaFetched (Ok (cotonoma, members, posts)) ->
-            (Components.Timeline.Update.update
-                model.context
-                (Components.Timeline.Messages.PostsFetched (Ok posts))
-                model.timeline
-            )
-                |> \( timeline, cmd ) ->
-                    { model
-                    | context = model.context
-                        |> \context -> { context | cotonoma = Just cotonoma }
-                    , members = members
-                    , navigationOpen = False
-                    , timeline = timeline
-                    } !
-                        [ Cmd.map TimelineMsg cmd
-                        , fetchSubCotonomas (Just cotonoma)
-                        ]
+            { model
+            | context = model.context
+                |> \context -> { context | cotonoma = Just cotonoma }
+            , members = members
+            , navigationOpen = False
+            , timeline = model.timeline
+                |> \t -> { t | posts = posts, loading = False }
+            } !
+                [ scrollToBottom NoOp
+                , fetchSubCotonomas (Just cotonoma)
+                ]
 
         CotonomaFetched (Err _) ->
             model ! []
@@ -137,35 +159,188 @@ update msg model =
         SubgraphFetched (Err _) ->
             model ! []
 
-        KeyDown key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown True model.context } ! []
-            else if key == escape.keyCode then
-                (closeModal model) ! []
+        --
+        -- Modal
+        --
+
+        OpenSigninModal ->
+            openSigninModal model ! []
+
+        OpenProfileModal ->
+            model.profileModal
+                |> \modal -> { model | profileModal = { modal | open = True } } ! []
+
+        OpenCotonomaModal ->
+            (case model.context.session of
+                Nothing ->
+                    model.cotonomaModal
+                Just session ->
+                    setDefaultMembers
+                        session
+                        (getOwnerAndMembers model)
+                        model.cotonomaModal
+            )
+                |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
+
+        CloseConnectModal ->
+            { model | connectModalOpen = False } ! []
+
+        --
+        -- Coto
+        --
+
+        CotoClick cotoId ->
+            clickCoto cotoId model ! []
+
+        CotoMouseEnter cotoId ->
+            { model | context = setFocus (Just cotoId) model.context } ! []
+
+        CotoMouseLeave cotoId ->
+            { model | context = setFocus Nothing model.context } ! []
+
+        OpenCoto coto ->
+            openCoto (Just coto) model ! []
+
+        SelectCoto cotoId ->
+            { model
+            | context = updateSelection cotoId model.context
+            } ! []
+
+        OpenTraversal cotoId ->
+            openTraversal Components.Traversals.Model.Opened cotoId model !
+                [ fetchSubgraphIfCotonoma model.graph cotoId ]
+
+        CotonomaClick key ->
+            changeLocationToCotonoma key model
+
+        DeleteCoto coto ->
+            { model
+            | timeline = App.Types.Timeline.deleteCoto coto model.timeline
+            , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
+            , traversals = closeTraversal coto.id model.traversals
+            , context = deleteSelection coto.id model.context
+            } !
+                (if coto.asCotonoma then
+                    [ fetchRecentCotonomas
+                    , fetchSubCotonomas model.context.cotonoma
+                    ]
+                 else []
+                )
+
+        CotoDeleted _ ->
+            model ! []
+
+        ConfirmUnpinCoto cotoId ->
+            confirm
+                "Are you sure you want to unpin this coto?"
+                (UnpinCoto cotoId)
+                model
+            ! []
+
+        UnpinCoto cotoId ->
+            { model | graph = model.graph |> deleteRootConnection cotoId } !
+                [ unpinCoto
+                    CotoUnpinned
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    cotoId
+                ]
+
+        CotoUnpinned (Ok _) ->
+            model ! []
+
+        CotoUnpinned (Err _) ->
+            model ! []
+
+        Connect startCoto endCotos ->
+            connect startCoto endCotos model !
+                [ App.Server.Graph.connect
+                    Connected
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    startCoto.id
+                    (List.map (\coto -> coto.id) endCotos)
+                ]
+
+        Connected (Ok _) ->
+            model ! []
+
+        Connected (Err _) ->
+            model ! []
+
+        ConnectionDeleted (Ok _) ->
+            model ! []
+
+        ConnectionDeleted (Err _) ->
+            model ! []
+
+        --
+        -- Timeline
+        --
+
+        PostsFetched (Ok posts) ->
+            { model
+            | timeline = model.timeline |> \t -> { t | posts = posts , loading = False }
+            } ! [ scrollToBottom NoOp ]
+
+        PostsFetched (Err _) ->
+            model ! []
+
+        ImageLoaded ->
+            model ! [ scrollToBottom NoOp ]
+
+        EditorFocus ->
+            { model | timeline = setEditingNew True model.timeline } ! []
+
+        EditorBlur ->
+            { model | timeline = setEditingNew False model.timeline } ! []
+
+        EditorInput content ->
+            { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
+
+        EditorKeyDown key ->
+            if key == enter.keyCode && model.context.ctrlDown && (not (isBlank model.timeline.newContent)) then
+                post model
             else
                 model ! []
 
-        KeyUp key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown False model.context } ! []
-            else
-                model ! []
+        Post ->
+            post model
+
+        Posted (Ok response) ->
+            { model
+            | timeline = model.timeline |> \t -> { t | posts = setCotoSaved response t.posts }
+            } ! []
+
+        Posted (Err _) ->
+            model ! []
+
+        OpenPost post ->
+            openCoto (toCoto post) model ! []
+
+        PostPushed payload ->
+            case Decode.decodeValue (decodePayload "post" decodePost) payload of
+                Ok decodedPayload ->
+                    handlePushedPost model.context.clientId decodedPayload model
+                Err err ->
+                    model ! []
+
+        CotonomaPushed post ->
+            model !
+                [ fetchRecentCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
+
+        --
+        -- Sub components
+        --
 
         ConfirmModalMsg subMsg ->
             Components.ConfirmModal.Update.update subMsg model.confirmModal
                 |> \( modal, cmd ) -> { model | confirmModal = modal } ! [ cmd ]
 
-        OpenSigninModal ->
-            openSigninModal model ! []
-
         SigninModalMsg subMsg ->
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
                     { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
-
-        OpenProfileModal ->
-            model.profileModal
-                |> \modal -> { model | profileModal = { modal | open = True } } ! []
 
         ProfileModalMsg subMsg ->
             Components.ProfileModal.update subMsg model.profileModal
@@ -214,74 +389,6 @@ update msg model =
                         _ ->
                             ( model, cmd )
 
-        TimelineMsg subMsg ->
-            Components.Timeline.Update.update model.context subMsg model.timeline
-                |> \( timeline, cmd ) -> { model | timeline = timeline } ! [ Cmd.map TimelineMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.Timeline.Messages.PostClick cotoId ->
-                            (clickCoto cotoId model) ! [ cmd ]
-
-                        Components.Timeline.Messages.PostMouseEnter cotoId ->
-                            { model | context = setFocus (Just cotoId) model.context } ! [ cmd ]
-
-                        Components.Timeline.Messages.PostMouseLeave cotoId ->
-                            { model | context = setFocus Nothing model.context } ! [ cmd ]
-
-                        Components.Timeline.Messages.OpenPost post ->
-                            openCoto (toCoto post) model ! [ cmd ]
-
-                        Components.Timeline.Messages.CotonomaClick key ->
-                            changeLocationToCotonoma key model
-
-                        Components.Timeline.Messages.CotonomaPushed post ->
-                            model !
-                                [ cmd
-                                , fetchRecentCotonomas
-                                , fetchSubCotonomas model.context.cotonoma
-                                ]
-
-                        Components.Timeline.Messages.SelectCoto cotoId ->
-                            { model
-                            | context = updateSelection cotoId model.context
-                            } ! [ cmd ]
-
-                        Components.Timeline.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
-                                [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
-
-                        _ ->
-                            ( model, cmd )
-
-        DeleteCoto coto ->
-            { model
-            | timeline = Components.Timeline.Model.deleteCoto coto model.timeline
-            , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
-            , traversals = closeTraversal coto.id model.traversals
-            , context = deleteSelection coto.id model.context
-            } !
-                (if coto.asCotonoma then
-                    [ fetchRecentCotonomas
-                    , fetchSubCotonomas model.context.cotonoma
-                    ]
-                 else []
-                )
-
-        CotoDeleted _ ->
-            model ! []
-
-        OpenCotonomaModal ->
-            (case model.context.session of
-                Nothing ->
-                    model.cotonomaModal
-                Just session ->
-                    setDefaultMembers
-                        session
-                        (getOwnerAndMembers model)
-                        model.cotonomaModal
-            )
-                |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
-
         CotonomaModalMsg subMsg ->
             case model.context.session of
                 Nothing -> model ! []
@@ -300,67 +407,19 @@ update msg model =
                             } ! [ Cmd.map CotonomaModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
-                                Components.CotonomaModal.Messages.Posted (Ok _) ->
-                                    { model | cotonomasLoading = True } !
+                                Components.CotonomaModal.Messages.Posted (Ok response) ->
+                                    { model
+                                    | cotonomasLoading = True
+                                    , timeline =
+                                        model.timeline
+                                            |> \t -> { t | posts = setCotoSaved response t.posts }
+                                    } !
                                         [ cmd
                                         , fetchRecentCotonomas
                                         , fetchSubCotonomas model.context.cotonoma
                                         ]
                                 _ ->
                                     ( model, cmd )
-
-        CotoClick cotoId ->
-            clickCoto cotoId model ! []
-
-        CotoMouseEnter cotoId ->
-            { model | context = setFocus (Just cotoId) model.context } ! []
-
-        CotoMouseLeave cotoId ->
-            { model | context = setFocus Nothing model.context } ! []
-
-        OpenCoto coto ->
-            openCoto (Just coto) model ! []
-
-        SelectCoto cotoId ->
-            { model
-            | context = updateSelection cotoId model.context
-            } ! []
-
-        OpenTraversal cotoId ->
-            openTraversal Components.Traversals.Model.Opened cotoId model !
-                [ fetchSubgraphIfCotonoma model.graph cotoId ]
-
-        CotonomaClick key ->
-            changeLocationToCotonoma key model
-
-        ConfirmUnpinCoto cotoId ->
-            confirm
-                "Are you sure you want to unpin this coto?"
-                (UnpinCoto cotoId)
-                model
-            ! []
-
-        UnpinCoto cotoId ->
-            { model | graph = model.graph |> deleteRootConnection cotoId } !
-                [ unpinCoto
-                    CotoUnpinned
-                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    cotoId
-                ]
-
-        CotoUnpinned (Ok _) ->
-            model ! []
-
-        CotoUnpinned (Err _) ->
-            model ! []
-
-        CotonomaPresenceState payload ->
-            { model | memberPresences = decodePresenceState payload } ! []
-
-        CotonomaPresenceDiff payload ->
-            decodePresenceDiff payload
-                |> \diff -> applyPresenceDiff diff model.memberPresences
-                |> \presences -> { model | memberPresences = presences } ! []
 
         CotoSelectionMsg subMsg ->
             Components.CotoSelection.Update.update subMsg model
@@ -390,24 +449,6 @@ update msg model =
 
                         _ ->
                             ( model, cmd )
-
-        CloseConnectModal ->
-            { model | connectModalOpen = False } ! []
-
-        Connect startCoto endCotos ->
-            connect startCoto endCotos model !
-                [ App.Server.Graph.connect
-                    Connected
-                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    startCoto.id
-                    (List.map (\coto -> coto.id) endCotos)
-                ]
-
-        Connected (Ok _) ->
-            model ! []
-
-        Connected (Err _) ->
-            model ! []
 
         TraversalMsg subMsg ->
             Components.Traversals.Update.update subMsg model.traversals
@@ -459,12 +500,6 @@ update msg model =
                         _ ->
                             ( model, cmd )
 
-        ConnectionDeleted (Ok _) ->
-            model ! []
-
-        ConnectionDeleted (Err _) ->
-            model ! []
-
 
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =
@@ -499,6 +534,7 @@ openCoto maybeCoto model =
         |> \modal -> { modal | open = True , coto =  maybeCoto }
     }
 
+
 applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
@@ -532,6 +568,7 @@ applyPresenceDiff ( joins, leaves ) presences =
                 presences
                 leaves
 
+
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
@@ -554,7 +591,7 @@ loadHome model =
     , traversals = Components.Traversals.Model.initModel
     , activeViewOnMobile = TimelineView
     } !
-        [ Cmd.map TimelineMsg fetchPosts
+        [ fetchPosts
         , fetchRecentCotonomas
         , fetchGraph Nothing
         ]
@@ -608,3 +645,35 @@ closeModal model =
        { model | connectModalOpen = False, connectMode = False }
     else
         model
+
+
+handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
+handlePushedPost clientId payload model =
+    if payload.clientId /= clientId then
+        { model
+        | timeline =
+            model.timeline
+                |> \t -> { t | posts = payload.body :: t.posts }
+        } !
+            if payload.body.asCotonoma then
+                [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
+            else
+                [ scrollToBottom NoOp ]
+    else
+        model ! []
+
+
+post : Model -> ( Model, Cmd Msg )
+post model =
+    let
+        clientId = model.context.clientId
+        cotonoma = model.context.cotonoma
+        newContent = model.timeline.newContent
+    in
+        model.timeline
+            |> postContent clientId cotonoma False newContent
+            |> \( timeline, newPost ) ->
+                { model | timeline = timeline } !
+                    [ scrollToBottom NoOp
+                    , App.Server.Coto.post clientId cotonoma Posted newPost
+                    ]
