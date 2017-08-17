@@ -1,4 +1,4 @@
-module Components.Traversals.View exposing (..)
+module App.Views.Traversals exposing (..)
 
 import Dict
 import Html exposing (..)
