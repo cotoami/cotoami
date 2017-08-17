@@ -4,10 +4,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
+import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Views.Timeline
+import App.Views.Traversals
 import Components.AppHeader
 import Components.Navigation
 import Components.ConfirmModal.View
@@ -18,8 +20,6 @@ import Components.CotoSelection.View
 import Components.CotonomaModal.View
 import Components.PinnedCotos
 import Components.ConnectModal
-import Components.Traversals.Model
-import Components.Traversals.View
 
 
 view : Model -> Html Msg
@@ -47,14 +47,11 @@ view model =
                 [ div [ id "app-layout" ]
                     (List.concat
                         [ defaultColumnDivs model
-                        , List.map
-                            (\div -> Html.map TraversalMsg div)
-                            (Components.Traversals.View.view
-                                (model.activeViewOnMobile == TraversalsView)
-                                model.context
-                                model.graph
-                                model.traversals
-                            )
+                        , App.Views.Traversals.view
+                            (model.activeViewOnMobile == TraversalsView)
+                            model.context
+                            model.graph
+                            model.traversals
                         , [ selectionColumnDiv model
                           , viewSwitchContainerDiv model
                           ]
@@ -166,7 +163,7 @@ viewSwitchContainerDiv model =
             "fa-share-alt"
             "Switch to traversals"
             (model.activeViewOnMobile == TraversalsView)
-            (Components.Traversals.Model.isEmpty model.traversals)
+            (App.Types.Traversal.isEmpty model.traversals)
             (SwitchViewOnMobile TraversalsView)
         , viewSwitchDiv
             "switch-to-selection"

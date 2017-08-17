@@ -17,6 +17,7 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
+import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
@@ -32,9 +33,6 @@ import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
-import Components.Traversals.Messages
-import Components.Traversals.Model exposing (closeTraversal)
-import Components.Traversals.Update
 import Components.CotoSelection.Messages
 import Components.CotoSelection.Update
 
@@ -207,7 +205,7 @@ update msg model =
             } ! []
 
         OpenTraversal cotoId ->
-            openTraversal Components.Traversals.Model.Opened cotoId model !
+            openTraversal App.Types.Traversal.Opened cotoId model !
                 [ fetchSubgraphIfCotonoma model.graph cotoId ]
 
         CotonomaClick key ->
@@ -265,6 +263,24 @@ update msg model =
 
         Connected (Err _) ->
             model ! []
+
+        ConfirmDeleteConnection conn ->
+            confirm
+                ("Are you sure you want to delete this connection?")
+                (DeleteConnection conn)
+                model
+            ! []
+
+        DeleteConnection ( startId, endId ) ->
+            { model
+            | graph = deleteConnection ( startId, endId ) model.graph
+            } !
+                [ disconnect
+                    ConnectionDeleted
+                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                    startId
+                    endId
+                ]
 
         ConnectionDeleted (Ok _) ->
             model ! []
@@ -328,6 +344,25 @@ update msg model =
                 [ fetchRecentCotonomas
                 , fetchSubCotonomas model.context.cotonoma
                 ]
+
+        --
+        -- Traversals
+        --
+
+        TraverseClick traverse ->
+            { model
+            | traversals = updateTraversal (doTraverse traverse) model.traversals
+            } ! []
+
+        CloseTraversal cotoId ->
+            { model
+            | traversals = closeTraversal cotoId model.traversals
+            } ! []
+
+        SwitchTraversal pageIndex ->
+            { model
+            | traversals = model.traversals |> \t -> { t | activeIndexOnMobile = pageIndex }
+            } ! []
 
         --
         -- Sub components
@@ -430,7 +465,7 @@ update msg model =
                             changeLocationToCotonoma key model
 
                         Components.CotoSelection.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
+                            openTraversal App.Types.Traversal.Opened cotoId model !
                                 [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
 
                         Components.CotoSelection.Messages.ConfirmPin ->
@@ -446,56 +481,6 @@ update msg model =
                                 (CotoSelectionMsg Components.CotoSelection.Messages.PostGroupingCoto)
                                 model
                             ! [ cmd ]
-
-                        _ ->
-                            ( model, cmd )
-
-        TraversalMsg subMsg ->
-            Components.Traversals.Update.update subMsg model.traversals
-                |> \( traversals, cmd ) ->
-                    { model | traversals = traversals } ! [ Cmd.map TraversalMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.Traversals.Messages.CotoClick cotoId ->
-                            clickCoto cotoId model ! [ cmd ]
-
-                        Components.Traversals.Messages.CotoMouseEnter cotoId ->
-                            { model | context = setFocus (Just cotoId) model.context } ! [ cmd ]
-
-                        Components.Traversals.Messages.CotoMouseLeave cotoId ->
-                            { model | context = setFocus Nothing model.context } ! [ cmd ]
-
-                        Components.Traversals.Messages.OpenCoto coto ->
-                            openCoto (Just coto) model ! [ cmd ]
-
-                        Components.Traversals.Messages.SelectCoto cotoId ->
-                            { model | context = updateSelection cotoId model.context } ! [ cmd ]
-
-                        Components.Traversals.Messages.CotonomaClick key ->
-                            changeLocationToCotonoma key model
-
-                        Components.Traversals.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
-                                [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
-
-                        Components.Traversals.Messages.ConfirmDeleteConnection conn ->
-                            confirm
-                                ("Are you sure you want to delete this connection?")
-                                (TraversalMsg (Components.Traversals.Messages.DeleteConnection conn))
-                                model
-                            ! [ cmd ]
-
-                        Components.Traversals.Messages.DeleteConnection (startId, endId) ->
-                            { model
-                            | graph = deleteConnection (startId, endId) model.graph
-                            } !
-                                [ cmd
-                                , disconnect
-                                    ConnectionDeleted
-                                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                    startId
-                                    endId
-                                ]
 
                         _ ->
                             ( model, cmd )
@@ -588,7 +573,7 @@ loadHome model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
-    , traversals = Components.Traversals.Model.initModel
+    , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
     } !
         [ fetchPosts
@@ -615,7 +600,7 @@ loadCotonoma key model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
-    , traversals = Components.Traversals.Model.initModel
+    , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
     } !
         [ fetchRecentCotonomas

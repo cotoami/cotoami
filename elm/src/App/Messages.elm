@@ -10,13 +10,13 @@ import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
+import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.Messages
 import Components.CotoSelection.Messages
-import Components.Traversals.Messages
 
 
 type Msg
@@ -59,6 +59,8 @@ type Msg
     | CotoUnpinned (Result Http.Error String)
     | Connect Coto (List Coto)
     | Connected (Result Http.Error String)
+    | ConfirmDeleteConnection ( CotoId, CotoId )
+    | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
 
     -- Timeline
@@ -74,6 +76,11 @@ type Msg
     | PostPushed Value
     | CotonomaPushed Post
 
+    -- Traversals
+    | TraverseClick Traverse
+    | CloseTraversal CotoId
+    | SwitchTraversal Int
+
     -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
@@ -81,4 +88,3 @@ type Msg
     | CotoModalMsg Components.CotoModal.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
     | CotoSelectionMsg Components.CotoSelection.Messages.Msg
-    | TraversalMsg Components.Traversals.Messages.Msg

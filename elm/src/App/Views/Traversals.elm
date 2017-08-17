@@ -1,4 +1,4 @@
-module Components.Traversals.View exposing (..)
+module App.Views.Traversals exposing (..)
 
 import Dict
 import Html exposing (..)
@@ -9,18 +9,18 @@ import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
+import App.Types.Traversal exposing (..)
 import App.Markdown
+import App.Messages exposing (..)
 import Components.Coto
-import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (..)
 
 
-view : Bool -> Context -> Graph -> Model -> List (Html Msg)
+view : Bool -> Context -> Graph -> Traversals -> List (Html Msg)
 view activeOnMobile context graph model =
     model.order
         |> List.filterMap
             (\cotoId ->
-                case Dict.get cotoId model.traversals of
+                case Dict.get cotoId model.entries of
                     Nothing -> Nothing
                     Just traversal ->
                         traversal |> maybeTraversalDiv context graph
@@ -28,7 +28,7 @@ view activeOnMobile context graph model =
         |> List.indexedMap
             (\index traversalDiv ->
                 let
-                    visibleOnMobile = activeOnMobile && (inActivePage index model)
+                    visibleOnMobile = activeOnMobile && (isActiveIndex index model)
                 in
                     div [ classList
                             [ ( "main-column", True )
@@ -37,7 +37,7 @@ view activeOnMobile context graph model =
                             , ( "activeOnMobile", visibleOnMobile )
                             , ( "animated", visibleOnMobile )
                             , ( "fadeIn", visibleOnMobile )
-                            , ( "not-in-active-page", not (inActivePage index model) )
+                            , ( "not-in-active-page", not (isActiveIndex index model) )
                             ]
                         ]
                         [ traversalDiv ]
@@ -200,17 +200,17 @@ bodyDiv maybeConnection context graph coto =
         }
 
 
-traversalsPaginationDiv : Model -> Html Msg
+traversalsPaginationDiv : Traversals -> Html Msg
 traversalsPaginationDiv model =
-    if (Components.Traversals.Model.countPages model) > 1 then
+    if (App.Types.Traversal.size model) > 1 then
         model.order
             |> List.indexedMap
                 (\index cotoId ->
                     div [ class "button-container" ]
                         [ button
                             [ class "button"
-                            , disabled (model.activePageIndex == index)
-                            , onClickWithoutPropagation (ChangePage index)
+                            , disabled (model.activeIndexOnMobile == index)
+                            , onClickWithoutPropagation (SwitchTraversal index)
                             ]
                             [ text (toString (index + 1)) ]
                         ]
