@@ -8,7 +8,7 @@ import App.Types.Amishi exposing (Amishi)
 import App.Types.MemberPresences exposing (MemberPresences, isPresent)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg)
-import Components.Cotonomas
+import App.Views.Cotonomas
 
 
 view : Model -> List (Html Msg)
@@ -74,7 +74,7 @@ subCotonomasNav : List Cotonoma -> Html Msg
 subCotonomasNav cotonomas =
     div [ class "sub" ]
         [ div [ class "navigation-title" ] [ text "Sub" ]
-        , Components.Cotonomas.view cotonomas
+        , App.Views.Cotonomas.view cotonomas
         ]
 
 
@@ -82,5 +82,5 @@ recentCotonomasNav : List Cotonoma -> Html Msg
 recentCotonomasNav cotonomas =
     div [ class "recent" ]
         [ div [ class "navigation-title" ] [ text "Recent" ]
-        , Components.Cotonomas.view cotonomas
+        , App.Views.Cotonomas.view cotonomas
         ]

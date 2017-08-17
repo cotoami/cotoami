@@ -1,4 +1,4 @@
-module Components.Cotonomas exposing (..)
+module App.Views.Cotonomas exposing (..)
 
 import Html exposing (..)
 import Html.Keyed
