@@ -13,13 +13,13 @@ import App.Views.Timeline
 import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
+import App.Views.ConnectModal
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotoSelection.View
 import Components.CotonomaModal.View
-import Components.ConnectModal
 
 
 view : Model -> Html Msg
@@ -70,7 +70,7 @@ view model =
               (Components.CotoModal.view model.cotoModal)
           , Html.map CotonomaModalMsg
               (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
-          , Components.ConnectModal.view model
+          , App.Views.ConnectModal.view model
           , a
               [ class "tool-button info-button"
               , title "News and Feedback"

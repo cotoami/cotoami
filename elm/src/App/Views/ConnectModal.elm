@@ -1,4 +1,4 @@
-module Components.ConnectModal exposing (..)
+module App.Views.ConnectModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
