@@ -1,4 +1,4 @@
-module Components.Coto exposing (..)
+module App.Views.Coto exposing (..)
 
 import Set
 import Html exposing (..)

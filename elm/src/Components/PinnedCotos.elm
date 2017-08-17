@@ -11,7 +11,7 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
 import App.Markdown
 import App.Messages exposing (..)
-import Components.Coto
+import App.Views.Coto
 
 
 view : Context -> Graph -> Html Msg
@@ -76,16 +76,16 @@ cotoDiv context graph coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+            [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv context graph coto
-            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+            , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
             ]
         ]
 
 
 bodyDiv : Context -> Graph -> Coto -> Html Msg
 bodyDiv context graph coto =
-    Components.Coto.bodyDiv
+    App.Views.Coto.bodyDiv
         context
         graph
         { openCoto = Just (OpenCoto coto)

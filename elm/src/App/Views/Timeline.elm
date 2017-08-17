@@ -19,7 +19,7 @@ import App.Types.Graph exposing (Graph, member)
 import App.Types.Timeline exposing (Timeline)
 import App.Messages exposing (..)
 import App.Markdown
-import Components.Coto
+import App.Views.Coto
 
 
 view : Context -> Graph -> Timeline -> Html Msg
@@ -120,7 +120,7 @@ postDiv context graph post =
             [ headerDiv context.cotonoma graph post
             , authorDiv context.session post
             , bodyDiv context graph post
-            , Components.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+            , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
             ]
         ]
 
@@ -138,7 +138,7 @@ headerDiv maybeCotonoma graph post =
         Nothing ->
             div [ class "coto-header" ] []
         Just coto ->
-            Components.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+            App.Views.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
 
 
 authorDiv : Maybe Session -> Post -> Html Msg
@@ -160,7 +160,7 @@ authorDiv maybeSession post =
 
 bodyDiv : Context -> Graph -> Post -> Html Msg
 bodyDiv context graph post =
-    Components.Coto.bodyDiv
+    App.Views.Coto.bodyDiv
         context
         graph
         { openCoto = Just (OpenPost post)

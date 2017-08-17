@@ -11,7 +11,7 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
 import App.Markdown
-import Components.Coto
+import App.Views.Coto
 import Components.CotoSelection.Messages exposing (..)
 
 
@@ -134,16 +134,16 @@ cotoDiv beingDeselected context graph coto =
                         text "check_box"
                     ]
                 ]
-            , Components.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+            , App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv context graph coto
-            , Components.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+            , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
             ]
         ]
 
 
 bodyDiv : Context -> Graph -> Coto -> Html Msg
 bodyDiv context graph coto =
-    Components.Coto.bodyDiv
+    App.Views.Coto.bodyDiv
         context
         graph
         { openCoto = Nothing
