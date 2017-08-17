@@ -1,4 +1,4 @@
-module Components.AppHeader exposing (..)
+module App.Views.AppHeader exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -8,9 +8,9 @@ import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Views.AppHeader
 import App.Views.Timeline
 import App.Views.Traversals
-import Components.AppHeader
 import Components.Navigation
 import Components.ConfirmModal.View
 import Components.SigninModal
@@ -42,7 +42,7 @@ view model =
               , ( "in-connect-mode", model.connectMode )
               ]
           ]
-          [ Components.AppHeader.view model
+          [ App.Views.AppHeader.view model
           , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     (List.concat
