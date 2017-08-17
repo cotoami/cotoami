@@ -1,4 +1,4 @@
-module Components.Traversals.Model exposing (..)
+module App.Types.Traversal exposing (..)
 
 import Dict
 import App.Types.Coto exposing (CotoId)
@@ -57,68 +57,68 @@ traversed index cotoId traversal =
             Just nextStep -> nextStep == cotoId
 
 
-type alias Model =
-    { traversals : Dict.Dict CotoId Traversal
+type alias Traversals =
+    { entries : Dict.Dict CotoId Traversal
     , order : List CotoId
     , pageSize : Int
     , activePageIndex : Int
     }
 
 
-initModel : Model
-initModel =
-    { traversals = Dict.empty
+defaultTraversals : Traversals
+defaultTraversals =
+    { entries = Dict.empty
     , order = []
     , pageSize = 1
     , activePageIndex = 0
     }
 
 
-isEmpty : Model -> Bool
-isEmpty model =
-    Dict.isEmpty model.traversals
+isEmpty : Traversals -> Bool
+isEmpty traversals =
+    Dict.isEmpty traversals.entries
 
 
-size : Model -> Int
-size model =
-    Dict.size model.traversals
+size : Traversals -> Int
+size traversals =
+    Dict.size traversals.entries
 
 
-openTraversal : Description -> CotoId -> Model -> Model
-openTraversal description cotoId model =
-    { model
-    | traversals = Dict.insert cotoId (initTraversal description cotoId) model.traversals
+openTraversal : Description -> CotoId -> Traversals -> Traversals
+openTraversal description cotoId traversals =
+    { traversals
+    | entries = Dict.insert cotoId (initTraversal description cotoId) traversals.entries
     , order =
-        model.order
+        traversals.order
         |> List.filter (\id -> id /= cotoId)
         |> (::) cotoId
     , activePageIndex = 0
     }
 
 
-closeTraversal : CotoId -> Model -> Model
-closeTraversal cotoId model =
-    { model
-    | traversals = Dict.remove cotoId model.traversals
-    , order = List.filter (\id -> id /= cotoId) model.order
+closeTraversal : CotoId -> Traversals -> Traversals
+closeTraversal cotoId traversals =
+    { traversals
+    | entries = Dict.remove cotoId traversals.entries
+    , order = List.filter (\id -> id /= cotoId) traversals.order
     }
 
 
-updateTraversal : Traversal -> Model -> Model
-updateTraversal traversal model =
-    { model
-    | traversals = Dict.insert traversal.start traversal model.traversals
+updateTraversal : Traversal -> Traversals -> Traversals
+updateTraversal traversal traversals =
+    { traversals
+    | entries = Dict.insert traversal.start traversal traversals.entries
     }
 
 
-countPages : Model -> Int
-countPages model =
-    ((size model) + model.pageSize - 1) // model.pageSize
+countPages : Traversals -> Int
+countPages traversals =
+    ((size traversals) + traversals.pageSize - 1) // traversals.pageSize
 
 
-inActivePage : Int -> Model -> Bool
-inActivePage traversalIndex model =
-    model.activePageIndex * model.pageSize
+inActivePage : Int -> Traversals -> Bool
+inActivePage traversalIndex traversals =
+    traversals.activePageIndex * traversals.pageSize
         |> \startIndex ->
             startIndex <= traversalIndex &&
-                traversalIndex < startIndex + model.pageSize
+                traversalIndex < startIndex + traversals.pageSize

@@ -9,18 +9,18 @@ import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
+import App.Types.Traversal exposing (..)
 import App.Markdown
 import Components.Coto
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (..)
 
 
-view : Bool -> Context -> Graph -> Model -> List (Html Msg)
+view : Bool -> Context -> Graph -> Traversals -> List (Html Msg)
 view activeOnMobile context graph model =
     model.order
         |> List.filterMap
             (\cotoId ->
-                case Dict.get cotoId model.traversals of
+                case Dict.get cotoId model.entries of
                     Nothing -> Nothing
                     Just traversal ->
                         traversal |> maybeTraversalDiv context graph
@@ -200,9 +200,9 @@ bodyDiv maybeConnection context graph coto =
         }
 
 
-traversalsPaginationDiv : Model -> Html Msg
+traversalsPaginationDiv : Traversals -> Html Msg
 traversalsPaginationDiv model =
-    if (Components.Traversals.Model.countPages model) > 1 then
+    if (App.Types.Traversal.countPages model) > 1 then
         model.order
             |> List.indexedMap
                 (\index cotoId ->

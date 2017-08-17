@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
+import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -18,7 +19,6 @@ import Components.CotoSelection.View
 import Components.CotonomaModal.View
 import Components.PinnedCotos
 import Components.ConnectModal
-import Components.Traversals.Model
 import Components.Traversals.View
 
 
@@ -166,7 +166,7 @@ viewSwitchContainerDiv model =
             "fa-share-alt"
             "Switch to traversals"
             (model.activeViewOnMobile == TraversalsView)
-            (Components.Traversals.Model.isEmpty model.traversals)
+            (App.Types.Traversal.isEmpty model.traversals)
             (SwitchViewOnMobile TraversalsView)
         , viewSwitchDiv
             "switch-to-selection"

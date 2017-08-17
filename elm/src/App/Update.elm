@@ -17,6 +17,7 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
+import App.Types.Traversal exposing (closeTraversal, defaultTraversals)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
@@ -33,7 +34,6 @@ import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
 import Components.Traversals.Messages
-import Components.Traversals.Model exposing (closeTraversal)
 import Components.Traversals.Update
 import Components.CotoSelection.Messages
 import Components.CotoSelection.Update
@@ -207,7 +207,7 @@ update msg model =
             } ! []
 
         OpenTraversal cotoId ->
-            openTraversal Components.Traversals.Model.Opened cotoId model !
+            openTraversal App.Types.Traversal.Opened cotoId model !
                 [ fetchSubgraphIfCotonoma model.graph cotoId ]
 
         CotonomaClick key ->
@@ -430,7 +430,7 @@ update msg model =
                             changeLocationToCotonoma key model
 
                         Components.CotoSelection.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
+                            openTraversal App.Types.Traversal.Opened cotoId model !
                                 [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
 
                         Components.CotoSelection.Messages.ConfirmPin ->
@@ -475,7 +475,7 @@ update msg model =
                             changeLocationToCotonoma key model
 
                         Components.Traversals.Messages.OpenTraversal cotoId ->
-                            openTraversal Components.Traversals.Model.Opened cotoId model !
+                            openTraversal App.Types.Traversal.Opened cotoId model !
                                 [ cmd, fetchSubgraphIfCotonoma model.graph cotoId ]
 
                         Components.Traversals.Messages.ConfirmDeleteConnection conn ->
@@ -588,7 +588,7 @@ loadHome model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
-    , traversals = Components.Traversals.Model.initModel
+    , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
     } !
         [ fetchPosts
@@ -615,7 +615,7 @@ loadCotonoma key model =
     , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
-    , traversals = Components.Traversals.Model.initModel
+    , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
     } !
         [ fetchRecentCotonomas

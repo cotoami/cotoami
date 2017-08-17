@@ -1,7 +1,7 @@
 module Components.Traversals.Messages exposing (..)
 
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
-import Components.Traversals.Model exposing (Traverse)
+import App.Types.Traversal exposing (Traverse)
 
 
 type Msg

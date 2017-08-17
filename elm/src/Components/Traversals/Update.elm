@@ -1,10 +1,10 @@
 module Components.Traversals.Update exposing (..)
 
+import App.Types.Traversal exposing (..)
 import Components.Traversals.Messages exposing (..)
-import Components.Traversals.Model exposing (..)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Traversals -> ( Traversals, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->

@@ -13,12 +13,12 @@ import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Graph, defaultGraph, addConnections)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
+import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.Model
-import Components.Traversals.Model exposing (Description)
 
 
 type alias Model =
@@ -43,7 +43,7 @@ type alias Model =
     , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
-    , traversals : Components.Traversals.Model.Model
+    , traversals : Traversals
     }
 
 
@@ -81,7 +81,7 @@ initModel seed route =
     , connectModalOpen = False
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
-    , traversals = Components.Traversals.Model.initModel
+    , traversals = defaultTraversals
     }
 
 
@@ -136,7 +136,7 @@ openTraversal : Description -> CotoId -> Model -> Model
 openTraversal description cotoId model =
     { model
     | traversals =
-          Components.Traversals.Model.openTraversal
+          App.Types.Traversal.openTraversal
               description
               cotoId
               model.traversals
