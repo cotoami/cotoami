@@ -47,14 +47,11 @@ view model =
                 [ div [ id "app-layout" ]
                     (List.concat
                         [ defaultColumnDivs model
-                        , List.map
-                            (\div -> Html.map TraversalMsg div)
-                            (Components.Traversals.View.view
-                                (model.activeViewOnMobile == TraversalsView)
-                                model.context
-                                model.graph
-                                model.traversals
-                            )
+                        , Components.Traversals.View.view
+                            (model.activeViewOnMobile == TraversalsView)
+                            model.context
+                            model.graph
+                            model.traversals
                         , [ selectionColumnDiv model
                           , viewSwitchContainerDiv model
                           ]

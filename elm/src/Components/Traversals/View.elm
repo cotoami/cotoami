@@ -11,8 +11,8 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
 import App.Markdown
+import App.Messages exposing (..)
 import Components.Coto
-import Components.Traversals.Messages exposing (..)
 
 
 view : Bool -> Context -> Graph -> Traversals -> List (Html Msg)
