@@ -5,7 +5,7 @@ import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
@@ -44,9 +44,9 @@ type Msg
     | CloseConnectModal
 
     -- Coto
-    | CotoClick CotoId
-    | CotoMouseEnter CotoId
-    | CotoMouseLeave CotoId
+    | CotoClick ElementId CotoId
+    | CotoMouseEnter ElementId CotoId
+    | CotoMouseLeave ElementId CotoId
     | OpenCoto Coto
     | SelectCoto CotoId
     | OpenTraversal CotoId

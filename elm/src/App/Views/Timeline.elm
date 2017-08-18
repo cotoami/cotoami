@@ -97,32 +97,36 @@ getKey post =
 
 postDiv : Context -> Graph -> Post -> Html Msg
 postDiv context graph post =
-    div
-        (classList
-            [ ( "coto", True )
-            , ( "selectable", True )
-            , ( "coto-focus", post.cotoId == context.cotoFocus )
-            , ( "selected", isActive context.selection post )
-            , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
-            , ( "being-hidden", post.beingDeleted )
-            ] ::
-                (case post.cotoId of
-                    Nothing -> []
-                    Just cotoId ->
-                        [ onClick (CotoClick cotoId)
-                        , onMouseEnter (CotoMouseEnter cotoId)
-                        , onMouseLeave (CotoMouseLeave cotoId)
-                        ]
-                )
-        )
-        [ div
-            [ class "coto-inner" ]
-            [ headerDiv context.cotonoma graph post
-            , authorDiv context.session post
-            , bodyDiv context graph post
-            , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+    let
+        elementId = "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
+    in
+        div
+            (classList
+                [ ( "coto", True )
+                , ( "selectable", True )
+                , ( "element-focus", Just elementId == context.elementFocus )
+                , ( "coto-focus", post.cotoId == context.cotoFocus )
+                , ( "selected", isActive context.selection post )
+                , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
+                , ( "being-hidden", post.beingDeleted )
+                ] ::
+                    (case post.cotoId of
+                        Nothing -> []
+                        Just cotoId ->
+                            [ onClick (CotoClick elementId cotoId)
+                            , onMouseEnter (CotoMouseEnter elementId cotoId)
+                            , onMouseLeave (CotoMouseLeave elementId cotoId)
+                            ]
+                    )
+            )
+            [ div
+                [ class "coto-inner" ]
+                [ headerDiv context.cotonoma graph post
+                , authorDiv context.session post
+                , bodyDiv context graph post
+                , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+                ]
             ]
-        ]
 
 
 isActive : CotoSelection -> Post -> Bool

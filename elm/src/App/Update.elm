@@ -187,14 +187,24 @@ update msg model =
         -- Coto
         --
 
-        CotoClick cotoId ->
+        CotoClick elementId cotoId ->
             clickCoto cotoId model ! []
 
-        CotoMouseEnter cotoId ->
-            { model | context = setCotoFocus (Just cotoId) model.context } ! []
+        CotoMouseEnter elementId cotoId ->
+            { model
+            | context =
+                model.context
+                    |> setElementFocus (Just elementId)
+                    |> setCotoFocus (Just cotoId)
+            } ! []
 
-        CotoMouseLeave cotoId ->
-            { model | context = setCotoFocus Nothing model.context } ! []
+        CotoMouseLeave elementId cotoId ->
+            { model
+            | context =
+                model.context
+                    |> setElementFocus Nothing
+                    |> setCotoFocus Nothing
+            } ! []
 
         OpenCoto coto ->
             openCoto (Just coto) model ! []

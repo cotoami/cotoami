@@ -108,24 +108,29 @@ traversalStepDiv context graph cotoId traversalStep =
 
 
 traversalStepCotoDiv : Context -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
-traversalStepCotoDiv context graph traversalStep connections coto =
-    div [ classList
-            [ ( "coto", True )
-            , ( "selectable", True )
-            , ( "coto-focus", Just coto.id == context.cotoFocus )
-            , ( "selected", List.member coto.id context.selection )
+traversalStepCotoDiv context graph ( traversal, index ) connections coto =
+    let
+        elementId =
+            "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
+    in
+        div [ classList
+                [ ( "coto", True )
+                , ( "selectable", True )
+                , ( "element-focus", Just elementId == context.elementFocus )
+                , ( "coto-focus", Just coto.id == context.cotoFocus )
+                , ( "selected", List.member coto.id context.selection )
+                ]
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
-        , onClickWithoutPropagation (CotoClick coto.id)
-        , onMouseEnter (CotoMouseEnter coto.id)
-        , onMouseLeave (CotoMouseLeave coto.id)
-        ]
-        [ div [ class "coto-inner" ]
-              [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-              , bodyDiv Nothing context graph coto
-              , div [ class "main-sub-border" ] []
-              , connectionsDiv traversalStep "sub-cotos" coto.id connections context graph
-              ]
-        ]
+            [ div [ class "coto-inner" ]
+                  [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                  , bodyDiv Nothing context graph coto
+                  , div [ class "main-sub-border" ] []
+                  , connectionsDiv ( traversal, index ) "sub-cotos" coto.id connections context graph
+                  ]
+            ]
 
 
 connectionsDiv : ( Traversal, Int ) -> String -> CotoId -> List Connection -> Context -> Graph -> Html Msg
@@ -158,24 +163,29 @@ connectionDiv ( traversal, index ) context graph parentId coto =
 
 cotoDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
 cotoDiv ( traversal, index ) context graph parentId coto =
-    div
-        [ classList
-            [ ( "coto", True )
-            , ( "selectable", True )
-            , ( "coto-focus", Just coto.id == context.cotoFocus )
-            , ( "selected", List.member coto.id context.selection )
+    let
+        elementId =
+            "traversal-" ++ traversal.start ++ "-step-" ++ (toString index) ++ "-" ++ coto.id
+    in
+        div
+            [ classList
+                [ ( "coto", True )
+                , ( "selectable", True )
+                , ( "element-focus", Just elementId == context.elementFocus )
+                , ( "coto-focus", Just coto.id == context.cotoFocus )
+                , ( "selected", List.member coto.id context.selection )
+                ]
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
-        , onClickWithoutPropagation (CotoClick coto.id)
-        , onMouseEnter (CotoMouseEnter coto.id)
-        , onMouseLeave (CotoMouseLeave coto.id)
-        ]
-        [ div
-            [ class "coto-inner" ]
-            [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-            , bodyDiv (Just ( parentId, coto.id )) context graph coto
-            , traverseButtonDiv TraverseClick index coto.id traversal graph
+            [ div
+                [ class "coto-inner" ]
+                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                , bodyDiv (Just ( parentId, coto.id )) context graph coto
+                , traverseButtonDiv TraverseClick index coto.id traversal graph
+                ]
             ]
-        ]
 
 
 bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
