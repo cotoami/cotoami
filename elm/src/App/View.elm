@@ -13,12 +13,12 @@ import App.Views.Timeline
 import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
+import App.Views.CotoSelection
 import App.Views.ConnectModal
 import Components.ConfirmModal.View
 import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
-import Components.CotoSelection.View
 import Components.CotonomaModal.View
 
 
@@ -58,7 +58,7 @@ view model =
                         ]
                     )
                 ]
-          , Components.CotoSelection.View.cotoSelectionTools model
+          , App.Views.CotoSelection.cotoSelectionTools model
           , Html.map ConfirmModalMsg
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg
@@ -134,7 +134,7 @@ selectionColumnDiv model =
             , ( "empty", List.isEmpty model.context.selection )
             ]
         ]
-        [ Components.CotoSelection.View.cotoSelectionColumnDiv model
+        [ App.Views.CotoSelection.cotoSelectionColumnDiv model
         ]
 
 

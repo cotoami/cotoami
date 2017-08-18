@@ -1,4 +1,4 @@
-module Components.CotoSelection.View exposing (..)
+module App.Views.CotoSelection exposing (..)
 
 import Set
 import Html exposing (..)
