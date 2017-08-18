@@ -101,7 +101,7 @@ postDiv context graph post =
         (classList
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "focus", post.cotoId == context.focus )
+            , ( "focus", post.cotoId == context.cotoFocus )
             , ( "selected", isActive context.selection post )
             , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
             , ( "being-hidden", post.beingDeleted )

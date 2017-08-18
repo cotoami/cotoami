@@ -191,10 +191,10 @@ update msg model =
             clickCoto cotoId model ! []
 
         CotoMouseEnter cotoId ->
-            { model | context = setFocus (Just cotoId) model.context } ! []
+            { model | context = setCotoFocus (Just cotoId) model.context } ! []
 
         CotoMouseLeave cotoId ->
-            { model | context = setFocus Nothing model.context } ! []
+            { model | context = setCotoFocus Nothing model.context } ! []
 
         OpenCoto coto ->
             openCoto (Just coto) model ! []
@@ -596,7 +596,7 @@ clickCoto cotoId model =
             , connectingTo = Just cotoId
             }
     else
-        { model | context = setFocus (Just cotoId) model.context }
+        { model | context = setCotoFocus (Just cotoId) model.context }
 
 
 openCoto : Maybe Coto -> Model -> Model

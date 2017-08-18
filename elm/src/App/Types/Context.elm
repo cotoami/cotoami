@@ -12,26 +12,26 @@ type alias Context =
     { clientId : String
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
-    , focus : Maybe CotoId
+    , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set.Set CotoId
     , ctrlDown : Bool
     }
 
 
-setFocus : Maybe CotoId -> Context -> Context
-setFocus maybeCotoId context =
-    { context | focus = maybeCotoId }
+setCotoFocus : Maybe CotoId -> Context -> Context
+setCotoFocus maybeCotoId context =
+    { context | cotoFocus = maybeCotoId }
 
 
-updateFocus : CotoId -> Context -> Context
-updateFocus cotoId context =
+updateCotoFocus : CotoId -> Context -> Context
+updateCotoFocus cotoId context =
     { context
-    | focus =
-        case context.focus of
+    | cotoFocus =
+        case context.cotoFocus of
             Nothing -> Just cotoId
-            Just focus ->
-                if focus == cotoId then
+            Just cotoFocus ->
+                if cotoFocus == cotoId then
                     Nothing
                 else
                     Just cotoId
