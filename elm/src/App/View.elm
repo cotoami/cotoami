@@ -58,8 +58,7 @@ view model =
                         ]
                     )
                 ]
-          , Html.map CotoSelectionMsg
-              (Components.CotoSelection.View.cotoSelectionTools model)
+          , Components.CotoSelection.View.cotoSelectionTools model
           , Html.map ConfirmModalMsg
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg
@@ -135,8 +134,7 @@ selectionColumnDiv model =
             , ( "empty", List.isEmpty model.context.selection )
             ]
         ]
-        [ Html.map CotoSelectionMsg
-            (Components.CotoSelection.View.cotoSelectionColumnDiv model)
+        [ Components.CotoSelection.View.cotoSelectionColumnDiv model
         ]
 
 

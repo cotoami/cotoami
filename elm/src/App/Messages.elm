@@ -16,7 +16,6 @@ import Components.SigninModal
 import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.Messages
-import Components.CotoSelection.Messages
 
 
 type Msg
@@ -81,10 +80,22 @@ type Msg
     | CloseTraversal CotoId
     | SwitchTraversal Int
 
+    -- CotoSelection
+    | DeselectingCoto CotoId
+    | DeselectCoto
+    | ClearSelection
+    | ConfirmPinSelectedCotos
+    | PinSelectedCotos
+    | SelectedCotosPinned (Result Http.Error String)
+    | SetConnectMode Bool
+    | CotoSelectionTitleInput String
+    | ConfirmCreateGroupingCoto
+    | PostGroupingCoto
+    | GroupingCotoPosted (Result Http.Error Post)
+
     -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
     | ProfileModalMsg Components.ProfileModal.Msg
     | CotoModalMsg Components.CotoModal.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
-    | CotoSelectionMsg Components.CotoSelection.Messages.Msg

@@ -10,9 +10,9 @@ import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
+import App.Messages exposing (..)
 import App.Markdown
 import App.Views.Coto
-import Components.CotoSelection.Messages exposing (..)
 
 
 cotoSelectionColumnDiv : Model -> Html Msg
@@ -54,7 +54,7 @@ cotoSelectionToolsDiv model =
     else
         div [ class "selection-tools" ]
           [ button
-              [ class "button", onClick ConfirmPin ]
+              [ class "button", onClick ConfirmPinSelectedCotos ]
               [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
               , text "Pin"
               ]
@@ -184,7 +184,7 @@ cotoSelectionTools model =
                 [ selectionInfoDiv model
                 , div [ class "buttons" ]
                     [ button
-                       [ class "button", onClick ConfirmPin ]
+                       [ class "button", onClick ConfirmPinSelectedCotos ]
                        [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                        , text "Pin"
                        ]
