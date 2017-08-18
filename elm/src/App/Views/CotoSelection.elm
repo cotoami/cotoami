@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (onClickWithoutPropagation, isBlank)
+import Utils exposing (onLinkButtonClick, isBlank)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -24,7 +24,7 @@ cotoSelectionColumnDiv model =
             , cotoSelectionToolsDiv model
             , a [ class "tool-button close-selection"
                 , href "/"
-                , onClickWithoutPropagation ClearSelection
+                , onLinkButtonClick ClearSelection
                 ]
                 [ i [ class "material-icons" ] [ text "close" ] ]
             ]
@@ -125,7 +125,7 @@ cotoDiv beingDeselected context graph coto =
             [ class "coto-inner" ]
             [ a [ class "tool-button deselect-coto"
                 , title "Deselect coto"
-                , onClickWithoutPropagation (DeselectingCoto coto.id)
+                , onLinkButtonClick (DeselectingCoto coto.id)
                 ]
                 [ i [ class "material-icons" ]
                     [ if beingDeselected then
