@@ -1,18 +1,18 @@
-module Components.CotoSelection.View exposing (..)
+module App.Views.CotoSelection exposing (..)
 
 import Set
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (onClickWithoutPropagation, isBlank)
+import Utils exposing (onLinkButtonClick, isBlank)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
+import App.Messages exposing (..)
 import App.Markdown
 import App.Views.Coto
-import Components.CotoSelection.Messages exposing (..)
 
 
 cotoSelectionColumnDiv : Model -> Html Msg
@@ -24,7 +24,7 @@ cotoSelectionColumnDiv model =
             , cotoSelectionToolsDiv model
             , a [ class "tool-button close-selection"
                 , href "/"
-                , onClickWithoutPropagation ClearSelection
+                , onLinkButtonClick ClearSelection
                 ]
                 [ i [ class "material-icons" ] [ text "close" ] ]
             ]
@@ -54,7 +54,7 @@ cotoSelectionToolsDiv model =
     else
         div [ class "selection-tools" ]
           [ button
-              [ class "button", onClick ConfirmPin ]
+              [ class "button", onClick ConfirmPinSelectedCotos ]
               [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
               , text "Pin"
               ]
@@ -125,7 +125,7 @@ cotoDiv beingDeselected context graph coto =
             [ class "coto-inner" ]
             [ a [ class "tool-button deselect-coto"
                 , title "Deselect coto"
-                , onClickWithoutPropagation (DeselectingCoto coto.id)
+                , onLinkButtonClick (DeselectingCoto coto.id)
                 ]
                 [ i [ class "material-icons" ]
                     [ if beingDeselected then
@@ -184,7 +184,7 @@ cotoSelectionTools model =
                 [ selectionInfoDiv model
                 , div [ class "buttons" ]
                     [ button
-                       [ class "button", onClick ConfirmPin ]
+                       [ class "button", onClick ConfirmPinSelectedCotos ]
                        [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
                        , text "Pin"
                        ]
