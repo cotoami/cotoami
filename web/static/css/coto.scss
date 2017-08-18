@@ -64,12 +64,12 @@ div.coto {
 }
 
 div.coto.selectable {
-  &.focus > div.coto-inner {
-    border: 2px solid #ffdd33 !important;
+  &.element-focus > div.coto-inner > div.coto-body > span.coto-tools {
+    display: inline-block !important;
+  }
 
-    & > div.coto-body > span.coto-tools {
-      display: inline-block !important;
-    }
+  &.coto-focus > div.coto-inner {
+    border: 2px solid #ffdd33 !important;
   }
 
   &.selected > div.coto-inner {

@@ -57,7 +57,8 @@ initModel seed route =
                 |> \( uuid, _ ) -> Uuid.toString uuid
         , session = Nothing
         , cotonoma = Nothing
-        , focus = Nothing
+        , elementFocus = Nothing
+        , cotoFocus = Nothing
         , selection = []
         , deselecting = Set.empty
         , ctrlDown = False

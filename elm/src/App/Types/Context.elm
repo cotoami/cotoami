@@ -2,7 +2,7 @@ module App.Types.Context exposing (..)
 
 import Set
 import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (CotoId, Cotonoma)
+import App.Types.Coto exposing (ElementId, CotoId, Cotonoma)
 
 
 type alias CotoSelection = List CotoId
@@ -12,30 +12,22 @@ type alias Context =
     { clientId : String
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
-    , focus : Maybe CotoId
+    , elementFocus : Maybe ElementId
+    , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set.Set CotoId
     , ctrlDown : Bool
     }
 
 
-setFocus : Maybe CotoId -> Context -> Context
-setFocus maybeCotoId context =
-    { context | focus = maybeCotoId }
+setElementFocus : Maybe String -> Context -> Context
+setElementFocus maybeElementId context =
+    { context | elementFocus = maybeElementId }
 
 
-updateFocus : CotoId -> Context -> Context
-updateFocus cotoId context =
-    { context
-    | focus =
-        case context.focus of
-            Nothing -> Just cotoId
-            Just focus ->
-                if focus == cotoId then
-                    Nothing
-                else
-                    Just cotoId
-    }
+setCotoFocus : Maybe CotoId -> Context -> Context
+setCotoFocus maybeCotoId context =
+    { context | cotoFocus = maybeCotoId }
 
 
 isSelected : CotoId -> Context -> Bool

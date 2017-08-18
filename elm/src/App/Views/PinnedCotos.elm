@@ -61,26 +61,30 @@ connectionDiv context graph coto =
 
 cotoDiv : Context -> Graph -> Coto -> Html Msg
 cotoDiv context graph coto =
-    div
-        [ classList
-            [ ( "coto", True )
-            , ( "selectable", True )
-            , ( "focus", Just coto.id == context.focus )
-            , ( "selected", isSelected coto.id context )
-            , ( "animated", True )
-            , ( "fadeIn", True )
+    let
+        elementId = "pinned-" ++ coto.id
+    in
+        div
+            [ classList
+                [ ( "coto", True )
+                , ( "selectable", True )
+                , ( "element-focus", Just elementId == context.elementFocus )
+                , ( "coto-focus", Just coto.id == context.cotoFocus )
+                , ( "selected", isSelected coto.id context )
+                , ( "animated", True )
+                , ( "fadeIn", True )
+                ]
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
-        , onClickWithoutPropagation (CotoClick coto.id)
-        , onMouseEnter (CotoMouseEnter coto.id)
-        , onMouseLeave (CotoMouseLeave coto.id)
-        ]
-        [ div
-            [ class "coto-inner" ]
-            [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-            , bodyDiv context graph coto
-            , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+            [ div
+                [ class "coto-inner" ]
+                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                , bodyDiv context graph coto
+                , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                ]
             ]
-        ]
 
 
 bodyDiv : Context -> Graph -> Coto -> Html Msg

@@ -13,7 +13,7 @@ import Navigation
 import Utils exposing (isBlank, send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn, setCotoSaved)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
@@ -187,14 +187,24 @@ update msg model =
         -- Coto
         --
 
-        CotoClick cotoId ->
-            clickCoto cotoId model ! []
+        CotoClick elementId cotoId ->
+            clickCoto elementId cotoId model ! []
 
-        CotoMouseEnter cotoId ->
-            { model | context = setFocus (Just cotoId) model.context } ! []
+        CotoMouseEnter elementId cotoId ->
+            { model
+            | context =
+                model.context
+                    |> setElementFocus (Just elementId)
+                    |> setCotoFocus (Just cotoId)
+            } ! []
 
-        CotoMouseLeave cotoId ->
-            { model | context = setFocus Nothing model.context } ! []
+        CotoMouseLeave elementId cotoId ->
+            { model
+            | context =
+                model.context
+                    |> setElementFocus Nothing
+                    |> setCotoFocus Nothing
+            } ! []
 
         OpenCoto coto ->
             openCoto (Just coto) model ! []
@@ -585,8 +595,8 @@ confirm message msgOnConfirm model =
             }
     }
 
-clickCoto : CotoId -> Model -> Model
-clickCoto cotoId model =
+clickCoto : ElementId -> CotoId -> Model -> Model
+clickCoto elementId cotoId model =
     if model.connectMode then
         if model.context.selection |> List.member cotoId then
             model
@@ -596,7 +606,12 @@ clickCoto cotoId model =
             , connectingTo = Just cotoId
             }
     else
-        { model | context = setFocus (Just cotoId) model.context }
+        { model
+        | context =
+            model.context
+                |> setElementFocus (Just elementId)
+                |> setCotoFocus (Just cotoId)
+        }
 
 
 openCoto : Maybe Coto -> Model -> Model

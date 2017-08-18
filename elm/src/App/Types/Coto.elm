@@ -4,6 +4,9 @@ import Exts.Maybe exposing (isJust, isNothing)
 import App.Types.Amishi exposing (Amishi)
 
 
+type alias ElementId = String
+
+
 type alias CotoId = String
 
 
