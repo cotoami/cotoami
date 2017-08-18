@@ -64,7 +64,7 @@ div.coto {
 }
 
 div.coto.selectable {
-  &.focus > div.coto-inner {
+  &.coto-focus > div.coto-inner {
     border: 2px solid #ffdd33 !important;
 
     & > div.coto-body > span.coto-tools {

@@ -65,7 +65,7 @@ cotoDiv context graph coto =
         [ classList
             [ ( "coto", True )
             , ( "selectable", True )
-            , ( "focus", Just coto.id == context.cotoFocus )
+            , ( "coto-focus", Just coto.id == context.cotoFocus )
             , ( "selected", isSelected coto.id context )
             , ( "animated", True )
             , ( "fadeIn", True )
