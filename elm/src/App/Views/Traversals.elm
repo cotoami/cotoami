@@ -121,16 +121,16 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
                   [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
                   , App.Views.Coto.bodyDiv Nothing context graph coto
                   , div [ class "main-sub-border" ] []
-                  , connectionsDiv ( traversal, index ) "sub-cotos" coto.id connections context graph
+                  , connectionsDiv ( traversal, index ) coto.id connections context graph
                   ]
             ]
 
 
-connectionsDiv : ( Traversal, Int ) -> String -> CotoId -> List Connection -> Context -> Graph -> Html Msg
-connectionsDiv traversalStep divClass parentId connections context graph =
+connectionsDiv : ( Traversal, Int ) -> CotoId -> List Connection -> Context -> Graph -> Html Msg
+connectionsDiv traversalStep parentId connections context graph =
     Html.Keyed.node
         "div"
-        [ class divClass ]
+        [ class "sub-cotos" ]
         (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
