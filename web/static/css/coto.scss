@@ -52,6 +52,39 @@ div.coto {
       }
     }
 
+    div.main-sub-border {
+      padding-top: 3px;
+      border-bottom: 1px solid #eee;
+    }
+
+    div.sub-cotos {
+      div.outbound-conn {
+        margin-top: 8px;
+        border-left: 3px solid #ddd;
+        border-radius: 4px 4px 4px 4px;
+
+        div.coto {
+          padding-bottom: 0;
+          border-style: none;
+          box-shadow: none;
+
+          div.coto-inner {
+            padding: 6px 12px;
+
+            div.coto-header {
+              min-height: auto;
+            }
+
+            div.coto-body {
+              span.coto-tools {
+                right: -10px;
+              }
+            }
+          }
+        }
+      }
+    }
+
     div.sub-cotos-button {
       text-align: center;
       padding-top: 5px;
