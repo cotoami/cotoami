@@ -143,7 +143,7 @@ cotoDiv beingDeselected context graph coto =
 
 bodyDiv : Context -> Graph -> Coto -> Html Msg
 bodyDiv context graph coto =
-    App.Views.Coto.bodyDiv
+    App.Views.Coto.bodyDivWithConfig
         context
         graph
         { openCoto = Nothing
