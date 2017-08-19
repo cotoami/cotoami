@@ -4,9 +4,11 @@ import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onLinkButtonClick)
+import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Types.Graph exposing (Graph, pinned, hasChildren)
+import App.Messages exposing (..)
 
 
 cotoClassList : Context -> ElementId -> Maybe CotoId -> List (String, Bool) -> Attribute msg
@@ -71,6 +73,20 @@ type alias BodyConfig msg =
     , cotonomaClick : CotonomaKey -> msg
     , deleteConnection : Maybe msg
     , markdown : String -> Html msg
+    }
+
+
+defaultBodyConfig : Maybe ( CotoId, CotoId ) -> Coto -> BodyConfig Msg
+defaultBodyConfig maybeConnection coto =
+    { openCoto = Just (OpenCoto coto)
+    , selectCoto = Just SelectCoto
+    , openTraversal = Just OpenTraversal
+    , cotonomaClick = CotonomaClick
+    , deleteConnection =
+        case maybeConnection of
+            Nothing -> Nothing
+            Just connection -> Just (ConfirmDeleteConnection connection)
+    , markdown = App.Markdown.markdown
     }
 
 

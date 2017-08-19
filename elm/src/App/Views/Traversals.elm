@@ -10,7 +10,6 @@ import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
-import App.Markdown
 import App.Messages exposing (..)
 import App.Views.Coto
 
@@ -181,16 +180,7 @@ bodyDiv maybeConnection context graph coto =
     App.Views.Coto.bodyDiv
         context
         graph
-        { openCoto = Just (OpenCoto coto)
-        , selectCoto = Just SelectCoto
-        , openTraversal = Just OpenTraversal
-        , cotonomaClick = CotonomaClick
-        , deleteConnection =
-            case maybeConnection of
-                Nothing -> Nothing
-                Just connection -> Just (ConfirmDeleteConnection connection)
-        , markdown = App.Markdown.markdown
-        }
+        (App.Views.Coto.defaultBodyConfig maybeConnection coto)
         { cotoId = Just coto.id
         , content = coto.content
         , asCotonoma = coto.asCotonoma
