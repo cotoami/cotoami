@@ -65,13 +65,8 @@ cotoDiv context graph coto =
         elementId = "pinned-" ++ coto.id
     in
         div
-            [ classList
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "element-focus", Just elementId == context.elementFocus )
-                , ( "coto-focus", Just coto.id == context.cotoFocus )
-                , ( "selected", isSelected coto.id context )
-                , ( "animated", True )
+            [ App.Views.Coto.cotoClassList context elementId (Just coto.id)
+                [ ( "animated", True )
                 , ( "fadeIn", True )
                 ]
             , onClickWithoutPropagation (CotoClick elementId coto.id)

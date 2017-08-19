@@ -5,8 +5,20 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils exposing (onLinkButtonClick)
 import App.Types.Context exposing (Context, isSelected)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Types.Graph exposing (Graph, pinned, hasChildren)
+
+
+cotoClassList : Context -> ElementId -> Maybe CotoId -> List (String, Bool) -> Attribute msg
+cotoClassList context elementId maybeCotoId additionalClasses =
+    classList
+        ( [ ( "coto", True )
+          , ( "selectable", True )
+          , ( "element-focus", Just elementId == context.elementFocus )
+          , ( "coto-focus", maybeCotoId == context.cotoFocus )
+          , ( "selected", isSelected maybeCotoId context )
+          ] ++ additionalClasses
+        )
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -107,7 +119,7 @@ cotoToolsSpan context graph config cotoId =
                     , onLinkButtonClick (selectCoto cotoId)
                     ]
                     [ i [ class "material-icons" ]
-                        [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
+                        [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
                             text "check_box"
                           else
                             text "check_box_outline_blank"

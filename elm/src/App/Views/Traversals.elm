@@ -113,13 +113,7 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
         elementId =
             "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
     in
-        div [ classList
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "element-focus", Just elementId == context.elementFocus )
-                , ( "coto-focus", Just coto.id == context.cotoFocus )
-                , ( "selected", List.member coto.id context.selection )
-                ]
+        div [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
             , onClickWithoutPropagation (CotoClick elementId coto.id)
             , onMouseEnter (CotoMouseEnter elementId coto.id)
             , onMouseLeave (CotoMouseLeave elementId coto.id)
