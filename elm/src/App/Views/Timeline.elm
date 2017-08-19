@@ -152,7 +152,7 @@ authorDiv maybeSession post =
 
 bodyDiv : Context -> Graph -> Post -> Html Msg
 bodyDiv context graph post =
-    App.Views.Coto.bodyDiv
+    App.Views.Coto.bodyDivWithConfig
         context
         graph
         { openCoto = Just (OpenPost post)

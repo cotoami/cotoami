@@ -90,8 +90,8 @@ defaultBodyConfig maybeConnection coto =
     }
 
 
-bodyDiv : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
-bodyDiv context graph config model =
+bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
+bodyDivWithConfig context graph config model =
     div [ class "coto-body" ]
         [ (case model.cotoId of
             Nothing ->

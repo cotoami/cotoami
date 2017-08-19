@@ -177,7 +177,7 @@ cotoDiv ( traversal, index ) context graph parentId coto =
 
 bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
 bodyDiv maybeConnection context graph coto =
-    App.Views.Coto.bodyDiv
+    App.Views.Coto.bodyDivWithConfig
         context
         graph
         (App.Views.Coto.defaultBodyConfig maybeConnection coto)

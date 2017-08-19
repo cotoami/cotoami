@@ -86,7 +86,7 @@ bodyDiv context graph coto =
     let
         defaultBodyConfig = App.Views.Coto.defaultBodyConfig Nothing coto
     in
-        App.Views.Coto.bodyDiv
+        App.Views.Coto.bodyDivWithConfig
             context
             graph
             { defaultBodyConfig
