@@ -212,8 +212,24 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
                 div [] []
 
 
-subCotosDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
-subCotosDiv context graph parentElementId parentCotoId connections =
+subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
+subCotosDiv context graph parentElementId coto =
+    case Dict.get coto.id graph.connections of
+        Nothing -> div [] []
+        Just connections ->
+            div []
+                [ div [ class "main-sub-border" ] []
+                , connectionsDiv
+                    context
+                    graph
+                    parentElementId
+                    coto.id
+                    connections
+                ]
+
+
+connectionsDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
+connectionsDiv context graph parentElementId parentCotoId connections =
     Html.Keyed.node
         "div"
         [ class "sub-cotos" ]

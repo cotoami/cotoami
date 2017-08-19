@@ -76,7 +76,7 @@ cotoDiv context graph coto =
                 [ class "coto-inner" ]
                 [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
                 , bodyDiv context graph coto
-                , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                , App.Views.Coto.subCotosDiv context graph elementId coto
                 ]
             ]
 
