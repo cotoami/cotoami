@@ -121,6 +121,19 @@ bodyDivWithConfig context graph config model =
         ]
 
 
+bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
+bodyDiv maybeConnection context graph coto =
+    bodyDivWithConfig
+        context
+        graph
+        (defaultBodyConfig maybeConnection coto)
+        { cotoId = Just coto.id
+        , content = coto.content
+        , asCotonoma = coto.asCotonoma
+        , cotonomaKey = coto.cotonomaKey
+        }
+
+
 cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
 cotoToolsSpan context graph config cotoId =
     span [ class "coto-tools" ]

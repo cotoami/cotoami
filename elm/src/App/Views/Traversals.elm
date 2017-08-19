@@ -119,7 +119,7 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
             ]
             [ div [ class "coto-inner" ]
                   [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                  , bodyDiv Nothing context graph coto
+                  , App.Views.Coto.bodyDiv Nothing context graph coto
                   , div [ class "main-sub-border" ] []
                   , connectionsDiv ( traversal, index ) "sub-cotos" coto.id connections context graph
                   ]
@@ -169,23 +169,10 @@ cotoDiv ( traversal, index ) context graph parentId coto =
             [ div
                 [ class "coto-inner" ]
                 [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                , bodyDiv (Just ( parentId, coto.id )) context graph coto
+                , App.Views.Coto.bodyDiv (Just ( parentId, coto.id )) context graph coto
                 , traverseButtonDiv TraverseClick index coto.id traversal graph
                 ]
             ]
-
-
-bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
-bodyDiv maybeConnection context graph coto =
-    App.Views.Coto.bodyDivWithConfig
-        context
-        graph
-        (App.Views.Coto.defaultBodyConfig maybeConnection coto)
-        { cotoId = Just coto.id
-        , content = coto.content
-        , asCotonoma = coto.asCotonoma
-        , cotonomaKey = coto.cotonomaKey
-        }
 
 
 traversalsPaginationDiv : Traversals -> Html Msg
