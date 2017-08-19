@@ -3,7 +3,8 @@ module App.Views.Coto exposing (..)
 import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Utils exposing (onLinkButtonClick)
+import Html.Events exposing (..)
+import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
@@ -207,3 +208,23 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
                     ]
             else
                 div [] []
+
+
+subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
+subCotoDiv context graph parentElementId parentCotoId coto =
+    let
+        elementId = parentElementId ++ "-" ++ coto.id
+    in
+        div
+            [ cotoClassList context elementId (Just coto.id) []
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
+            ]
+            [ div
+                [ class "coto-inner" ]
+                [ headerDiv CotonomaClick context.cotonoma graph coto
+                , bodyDiv (Just ( parentCotoId, coto.id )) context graph coto
+                , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                ]
+            ]
