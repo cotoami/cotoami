@@ -174,7 +174,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ i [ class "material-icons" ] [ text "more_horiz" ] ]
+                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
                     ]
             else
                 div [] []
