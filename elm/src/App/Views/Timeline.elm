@@ -101,13 +101,8 @@ postDiv context graph post =
         elementId = "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (classList
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "element-focus", Just elementId == context.elementFocus )
-                , ( "coto-focus", post.cotoId == context.cotoFocus )
-                , ( "selected", isActive context.selection post )
-                , ( "posting", (isJust context.session) && (isNothing post.cotoId) )
+            (App.Views.Coto.cotoClassList context elementId post.cotoId
+                [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 ] ::
                     (case post.cotoId of
@@ -127,13 +122,6 @@ postDiv context graph post =
                 , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
                 ]
             ]
-
-
-isActive : CotoSelection -> Post -> Bool
-isActive selection post =
-    case post.cotoId of
-        Nothing -> False
-        Just cotoId -> List.member cotoId selection
 
 
 headerDiv : Maybe Cotonoma -> Graph -> Post -> Html Msg
@@ -164,7 +152,7 @@ authorDiv maybeSession post =
 
 bodyDiv : Context -> Graph -> Post -> Html Msg
 bodyDiv context graph post =
-    App.Views.Coto.bodyDiv
+    App.Views.Coto.bodyDivWithConfig
         context
         graph
         { openCoto = Just (OpenPost post)

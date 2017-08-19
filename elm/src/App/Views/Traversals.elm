@@ -10,7 +10,6 @@ import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
-import App.Markdown
 import App.Messages exposing (..)
 import App.Views.Coto
 
@@ -113,31 +112,25 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
         elementId =
             "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
     in
-        div [ classList
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "element-focus", Just elementId == context.elementFocus )
-                , ( "coto-focus", Just coto.id == context.cotoFocus )
-                , ( "selected", List.member coto.id context.selection )
-                ]
+        div [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
             , onClickWithoutPropagation (CotoClick elementId coto.id)
             , onMouseEnter (CotoMouseEnter elementId coto.id)
             , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
             [ div [ class "coto-inner" ]
                   [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                  , bodyDiv Nothing context graph coto
+                  , App.Views.Coto.bodyDiv Nothing context graph coto
                   , div [ class "main-sub-border" ] []
-                  , connectionsDiv ( traversal, index ) "sub-cotos" coto.id connections context graph
+                  , connectionsDiv ( traversal, index ) coto.id connections context graph
                   ]
             ]
 
 
-connectionsDiv : ( Traversal, Int ) -> String -> CotoId -> List Connection -> Context -> Graph -> Html Msg
-connectionsDiv traversalStep divClass parentId connections context graph =
+connectionsDiv : ( Traversal, Int ) -> CotoId -> List Connection -> Context -> Graph -> Html Msg
+connectionsDiv traversalStep parentId connections context graph =
     Html.Keyed.node
         "div"
-        [ class divClass ]
+        [ class "sub-cotos" ]
         (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
@@ -168,13 +161,7 @@ cotoDiv ( traversal, index ) context graph parentId coto =
             "traversal-" ++ traversal.start ++ "-step-" ++ (toString index) ++ "-" ++ coto.id
     in
         div
-            [ classList
-                [ ( "coto", True )
-                , ( "selectable", True )
-                , ( "element-focus", Just elementId == context.elementFocus )
-                , ( "coto-focus", Just coto.id == context.cotoFocus )
-                , ( "selected", List.member coto.id context.selection )
-                ]
+            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
             , onClickWithoutPropagation (CotoClick elementId coto.id)
             , onMouseEnter (CotoMouseEnter elementId coto.id)
             , onMouseLeave (CotoMouseLeave elementId coto.id)
@@ -182,32 +169,10 @@ cotoDiv ( traversal, index ) context graph parentId coto =
             [ div
                 [ class "coto-inner" ]
                 [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                , bodyDiv (Just ( parentId, coto.id )) context graph coto
+                , App.Views.Coto.bodyDiv (Just ( parentId, coto.id )) context graph coto
                 , traverseButtonDiv TraverseClick index coto.id traversal graph
                 ]
             ]
-
-
-bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
-bodyDiv maybeConnection context graph coto =
-    App.Views.Coto.bodyDiv
-        context
-        graph
-        { openCoto = Just (OpenCoto coto)
-        , selectCoto = Just SelectCoto
-        , openTraversal = Just OpenTraversal
-        , cotonomaClick = CotonomaClick
-        , deleteConnection =
-            case maybeConnection of
-                Nothing -> Nothing
-                Just connection -> Just (ConfirmDeleteConnection connection)
-        , markdown = App.Markdown.markdown
-        }
-        { cotoId = Just coto.id
-        , content = coto.content
-        , asCotonoma = coto.asCotonoma
-        , cotonomaKey = coto.cotonomaKey
-        }
 
 
 traversalsPaginationDiv : Traversals -> Html Msg

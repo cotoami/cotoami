@@ -30,9 +30,11 @@ setCotoFocus maybeCotoId context =
     { context | cotoFocus = maybeCotoId }
 
 
-isSelected : CotoId -> Context -> Bool
-isSelected cotoId context =
-    List.member cotoId context.selection
+isSelected : Maybe CotoId -> Context -> Bool
+isSelected maybeCotoId context =
+    case maybeCotoId of
+        Nothing -> False
+        Just cotoId -> List.member cotoId context.selection
 
 
 updateSelection : CotoId -> Context -> Context

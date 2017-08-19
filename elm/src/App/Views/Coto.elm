@@ -1,12 +1,29 @@
 module App.Views.Coto exposing (..)
 
 import Set
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Utils exposing (onLinkButtonClick)
+import Html.Events exposing (..)
+import Html.Keyed
+import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
+import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Types.Graph exposing (Graph, pinned, hasChildren)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Types.Graph exposing (Graph, Connection, pinned, hasChildren)
+import App.Messages exposing (..)
+
+
+cotoClassList : Context -> ElementId -> Maybe CotoId -> List (String, Bool) -> Attribute msg
+cotoClassList context elementId maybeCotoId additionalClasses =
+    classList
+        ( [ ( "coto", True )
+          , ( "selectable", True )
+          , ( "element-focus", Just elementId == context.elementFocus )
+          , ( "coto-focus", maybeCotoId == context.cotoFocus )
+          , ( "selected", isSelected maybeCotoId context )
+          ] ++ additionalClasses
+        )
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -62,8 +79,22 @@ type alias BodyConfig msg =
     }
 
 
-bodyDiv : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
-bodyDiv context graph config model =
+defaultBodyConfig : Maybe ( CotoId, CotoId ) -> Coto -> BodyConfig Msg
+defaultBodyConfig maybeConnection coto =
+    { openCoto = Just (OpenCoto coto)
+    , selectCoto = Just SelectCoto
+    , openTraversal = Just OpenTraversal
+    , cotonomaClick = CotonomaClick
+    , deleteConnection =
+        case maybeConnection of
+            Nothing -> Nothing
+            Just connection -> Just (ConfirmDeleteConnection connection)
+    , markdown = App.Markdown.markdown
+    }
+
+
+bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
+bodyDivWithConfig context graph config model =
     div [ class "coto-body" ]
         [ (case model.cotoId of
             Nothing ->
@@ -93,6 +124,19 @@ bodyDiv context graph config model =
         ]
 
 
+bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
+bodyDiv maybeConnection context graph coto =
+    bodyDivWithConfig
+        context
+        graph
+        (defaultBodyConfig maybeConnection coto)
+        { cotoId = Just coto.id
+        , content = coto.content
+        , asCotonoma = coto.asCotonoma
+        , cotonomaKey = coto.cotonomaKey
+        }
+
+
 cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
 cotoToolsSpan context graph config cotoId =
     span [ class "coto-tools" ]
@@ -107,7 +151,7 @@ cotoToolsSpan context graph config cotoId =
                     , onLinkButtonClick (selectCoto cotoId)
                     ]
                     [ i [ class "material-icons" ]
-                        [ if isSelected cotoId context && not (Set.member cotoId context.deselecting) then
+                        [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
                             text "check_box"
                           else
                             text "check_box_outline_blank"
@@ -162,7 +206,69 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ i [ class "material-icons" ] [ text "more_horiz" ] ]
+                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
                     ]
             else
                 div [] []
+
+
+subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
+subCotosDiv context graph parentElementId coto =
+    case Dict.get coto.id graph.connections of
+        Nothing -> div [] []
+        Just connections ->
+            div []
+                [ div [ class "main-sub-border" ] []
+                , connectionsDiv
+                    context
+                    graph
+                    parentElementId
+                    coto.id
+                    connections
+                ]
+
+
+connectionsDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
+connectionsDiv context graph parentElementId parentCotoId connections =
+    Html.Keyed.node
+        "div"
+        [ class "sub-cotos" ]
+        (List.filterMap
+            (\conn ->
+                case Dict.get conn.end graph.cotos of
+                    Nothing -> Nothing  -- Missing the end node
+                    Just coto -> Just
+                        ( conn.key
+                        , div
+                            [ class "outbound-conn" ]
+                            [ subCotoDiv
+                                context
+                                graph
+                                parentElementId
+                                parentCotoId
+                                coto
+                            ]
+                        )
+            )
+            (List.reverse connections)
+        )
+
+
+subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
+subCotoDiv context graph parentElementId parentCotoId coto =
+    let
+        elementId = parentElementId ++ "-" ++ coto.id
+    in
+        div
+            [ cotoClassList context elementId (Just coto.id) []
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
+            ]
+            [ div
+                [ class "coto-inner" ]
+                [ headerDiv CotonomaClick context.cotonoma graph coto
+                , bodyDiv (Just ( parentCotoId, coto.id )) context graph coto
+                , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                ]
+            ]
