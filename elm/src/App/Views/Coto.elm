@@ -1,14 +1,16 @@
 module App.Views.Coto exposing (..)
 
 import Set
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Html.Keyed
 import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Types.Graph exposing (Graph, pinned, hasChildren)
+import App.Types.Graph exposing (Graph, Connection, pinned, hasChildren)
 import App.Messages exposing (..)
 
 
@@ -208,6 +210,32 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
                     ]
             else
                 div [] []
+
+
+subCotosDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
+subCotosDiv context graph parentElementId parentCotoId connections =
+    Html.Keyed.node
+        "div"
+        [ class "sub-cotos" ]
+        (List.filterMap
+            (\conn ->
+                case Dict.get conn.end graph.cotos of
+                    Nothing -> Nothing  -- Missing the end node
+                    Just coto -> Just
+                        ( conn.key
+                        , div
+                            [ class "outbound-conn" ]
+                            [ subCotoDiv
+                                context
+                                graph
+                                parentElementId
+                                parentCotoId
+                                coto
+                            ]
+                        )
+            )
+            (List.reverse connections)
+        )
 
 
 subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
