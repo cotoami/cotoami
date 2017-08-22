@@ -215,8 +215,8 @@ update msg model =
             } ! []
 
         OpenTraversal cotoId ->
-            openTraversal App.Types.Traversal.Opened cotoId model !
-                [ fetchSubgraphIfCotonoma model.graph cotoId ]
+            openTraversal App.Types.Traversal.Opened cotoId model
+                |> \model -> model ! [ fetchSubgraphIfCotonoma model.graph cotoId ]
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
