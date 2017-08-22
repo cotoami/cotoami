@@ -163,15 +163,12 @@ cotoToolsSpan context graph config asCotonoma cotoId =
                 span [] []
 
             Just openTraversal ->
-                if asCotonoma || App.Types.Graph.member cotoId graph then
-                    a
-                        [ class "tool-button traverse-coto"
-                        , title "Traverse from this coto"
-                        , onLinkButtonClick (openTraversal cotoId)
-                        ]
-                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
-                else
-                    span [] []
+                a
+                    [ class "tool-button traverse-coto"
+                    , title "Traverse from this coto"
+                    , onLinkButtonClick (openTraversal cotoId)
+                    ]
+                    [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
 
         , case config.openCoto of
             Nothing ->
