@@ -136,7 +136,14 @@ getOwnerAndMembers model =
 openTraversal : Description -> CotoId -> Model -> Model
 openTraversal description cotoId model =
     { model
-    | traversals =
+    | graph =
+        if App.Types.Graph.member cotoId model.graph then
+            model.graph
+        else
+            case getCoto cotoId model of
+                Nothing -> model.graph
+                Just coto -> App.Types.Graph.addCoto coto model.graph
+    , traversals =
           App.Types.Traversal.openTraversal
               description
               cotoId
