@@ -75,7 +75,9 @@ traversalDiv context graph traversal connections startCoto  =
             ]
         , div
             [ class "column-body" ]
-            [ traversalStepCotoDiv context graph ( traversal, -1 ) connections startCoto
+            [ div [ class "traversal-start" ]
+                [ traversalStepCotoDiv context graph ( traversal, -1 ) connections startCoto
+                ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
                 |> List.indexedMap (\index step -> traversalStepDiv context graph step  ( traversal, index ))

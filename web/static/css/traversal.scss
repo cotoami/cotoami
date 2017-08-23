@@ -71,6 +71,12 @@ div.traversal {
         opacity: 0.4;
       }
     }
+
+    div.traversal-start > div.coto > div.coto-inner > div.coto-body {
+      a.traverse-coto {
+        display: none !important;
+      }
+    }
   }
 }
 
