@@ -58,6 +58,13 @@ getCoto cotoId graph =
     Dict.get cotoId graph.cotos
 
 
+addCoto : Coto -> Graph -> Graph
+addCoto coto graph =
+    { graph
+    | cotos = Dict.insert coto.id coto graph.cotos
+    }
+
+
 hasConnection : CotoId -> CotoId -> Graph -> Bool
 hasConnection startId endId graph =
     case Dict.get startId graph.connections of

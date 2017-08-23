@@ -101,7 +101,7 @@ bodyDivWithConfig context graph config model =
                 span [] []
 
             Just cotoId ->
-                cotoToolsSpan context graph config cotoId
+                cotoToolsSpan context graph config model.asCotonoma cotoId
           )
         , if model.asCotonoma then
             let
@@ -137,8 +137,8 @@ bodyDiv maybeConnection context graph coto =
         }
 
 
-cotoToolsSpan : Context -> Graph -> BodyConfig msg -> CotoId -> Html msg
-cotoToolsSpan context graph config cotoId =
+cotoToolsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
+cotoToolsSpan context graph config asCotonoma cotoId =
     span [ class "coto-tools" ]
         [ case config.selectCoto of
             Nothing ->
@@ -157,20 +157,19 @@ cotoToolsSpan context graph config cotoId =
                             text "check_box_outline_blank"
                         ]
                     ]
+
         , case config.openTraversal of
             Nothing ->
                 span [] []
 
             Just openTraversal ->
-                if App.Types.Graph.member cotoId graph then
-                    a
-                        [ class "tool-button traverse-coto"
-                        , title "Traverse from this coto"
-                        , onLinkButtonClick (openTraversal cotoId)
-                        ]
-                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
-                else
-                    span [] []
+                a
+                    [ class "tool-button traverse-coto"
+                    , title "Traverse from this coto"
+                    , onLinkButtonClick (openTraversal cotoId)
+                    ]
+                    [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+
         , case config.openCoto of
             Nothing ->
                 span [] []
@@ -182,6 +181,7 @@ cotoToolsSpan context graph config cotoId =
                     , onLinkButtonClick openCoto
                     ]
                     [ i [ class "material-icons" ] [ text "settings" ] ]
+
         , case config.deleteConnection of
             Nothing ->
                 span [] []
