@@ -151,11 +151,11 @@ connectionDiv ( traversal, index ) context graph parentId coto =
             , ( "traversed", traversed index coto.id traversal )
             ]
         ]
-        [ cotoDiv ( traversal, index ) context graph parentId coto ]
+        [ subCotoDiv ( traversal, index ) context graph parentId coto ]
 
 
-cotoDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
-cotoDiv ( traversal, index ) context graph parentId coto =
+subCotoDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
+subCotoDiv ( traversal, index ) context graph parentId coto =
     let
         elementId =
             "traversal-" ++ traversal.start ++ "-step-" ++ (toString index) ++ "-" ++ coto.id
