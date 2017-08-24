@@ -243,9 +243,20 @@ update msg model =
                 |> Maybe.map (\coto ->
                     { model
                     | graph = addRootConnection coto model.graph
-                    } ! []
+                    } !
+                        [ pinCotos
+                            CotoPinned
+                            (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                            [ cotoId ]
+                        ]
                 )
-                |> \maybeModelAndCmd -> withDefault (model ! []) maybeModelAndCmd
+                |> withDefault (model ! [])
+
+        CotoPinned (Ok _) ->
+            model ! []
+
+        CotoPinned (Err _) ->
+            model ! []
 
         ConfirmUnpinCoto cotoId ->
             confirm
@@ -492,7 +503,7 @@ update msg model =
                                     (List.map (\coto -> coto.id) endCotos)
                                 )
                         )
-                        |> \maybeModelAndCmd -> withDefault (model ! []) maybeModelAndCmd
+                        |> withDefault (model ! [])
                 )
 
         GroupingCotoPosted (Err _) ->

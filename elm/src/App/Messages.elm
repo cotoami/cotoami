@@ -54,6 +54,7 @@ type Msg
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | PinCoto CotoId
+    | CotoPinned (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
