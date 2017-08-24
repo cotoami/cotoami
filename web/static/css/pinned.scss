@@ -37,16 +37,12 @@
 
       div.unpin-button {
         position: relative;
-        height: 5px;
+        height: 10px;
 
         a.unpin {
           position: absolute;
           top: -12px;
           left: 0;
-          right: 0;
-          margin: auto;
-          width: 24px;
-          text-align: center;
 
           i {
             font-size: 24px;
