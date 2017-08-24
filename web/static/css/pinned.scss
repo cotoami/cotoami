@@ -31,8 +31,31 @@
       padding-bottom: 50px;
     }
 
+    div.pinned-coto {
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+      div.unpin-button {
+        position: relative;
+        height: 5px;
+
+        a.unpin {
+          position: absolute;
+          top: -12px;
+          left: 0;
+          right: 0;
+          margin: auto;
+          width: 24px;
+          text-align: center;
+
+          i {
+            font-size: 24px;
+          }
+        }
+      }
+    }
+
     div.coto {
-      margin-bottom: 10px;
       animation-duration: 1s;
 
       div.coto-header {
