@@ -53,6 +53,7 @@ type Msg
     | CotonomaClick CotonomaKey
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
+    | PinCoto CotoId
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
