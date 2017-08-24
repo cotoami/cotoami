@@ -43,10 +43,20 @@ div.coto {
         height: 34px;
 
         a.tool-button {
-          margin-left: 6px;
+          margin-left: 10px;
 
-          i {
+          i.material-icons {
             font-size: 30px;
+          }
+
+          i.fa {
+            width: 30px;
+            text-align: center;
+
+            &.fa-thumb-tack {
+              font-size: 27px;
+              vertical-align: 5px;
+            }
           }
         }
       }

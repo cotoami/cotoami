@@ -158,6 +158,15 @@ cotoToolsSpan context graph config asCotonoma cotoId =
                         ]
                     ]
 
+        , if pinned cotoId graph then
+            span [] []
+          else
+            a
+                [ class "tool-button pin-coto"
+                , title "Pin this coto"
+                ]
+                [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
+
         , case config.openTraversal of
             Nothing ->
                 span [] []
