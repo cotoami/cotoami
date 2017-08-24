@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Utils exposing (onClickWithoutPropagation)
+import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context, isSelected)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
@@ -65,7 +65,8 @@ cotoDiv context graph coto =
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id)
-                [ ( "animated", True )
+                [ ( "pinned-coto", True )
+                , ( "animated", True )
                 , ( "fadeIn", True )
                 ]
             , onClickWithoutPropagation (CotoClick elementId coto.id)
@@ -74,26 +75,20 @@ cotoDiv context graph coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                , bodyDiv context graph coto
+                [ unpinButtonDiv coto.id
+                , App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                , App.Views.Coto.bodyDiv Nothing context graph coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
                 ]
             ]
 
 
-bodyDiv : Context -> Graph -> Coto -> Html Msg
-bodyDiv context graph coto =
-    let
-        defaultBodyConfig = App.Views.Coto.defaultBodyConfig Nothing coto
-    in
-        App.Views.Coto.bodyDivWithConfig
-            context
-            graph
-            { defaultBodyConfig
-            | deleteConnection = Just (ConfirmUnpinCoto coto.id)
-            }
-            { cotoId = Just coto.id
-            , content = coto.content
-            , asCotonoma = coto.asCotonoma
-            , cotonomaKey = coto.cotonomaKey
-            }
+unpinButtonDiv : CotoId -> Html Msg
+unpinButtonDiv cotoId =
+    div [ class "unpin-button" ]
+        [ a [ class "tool-button unpin"
+            , onLinkButtonClick (ConfirmUnpinCoto cotoId)
+            ]
+            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
+            ]
+        ]

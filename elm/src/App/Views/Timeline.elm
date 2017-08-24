@@ -157,6 +157,7 @@ bodyDiv context graph post =
         graph
         { openCoto = Just (OpenPost post)
         , selectCoto = Just SelectCoto
+        , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
         , deleteConnection = Nothing

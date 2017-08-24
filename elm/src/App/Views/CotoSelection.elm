@@ -148,6 +148,7 @@ bodyDiv context graph coto =
         graph
         { openCoto = Nothing
         , selectCoto = Nothing
+        , pinCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
         , deleteConnection = Nothing

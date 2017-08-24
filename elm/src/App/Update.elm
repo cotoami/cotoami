@@ -238,6 +238,26 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
+        PinCoto cotoId ->
+            App.Model.getCoto cotoId model
+                |> Maybe.map (\coto ->
+                    { model
+                    | graph = addRootConnection coto model.graph
+                    } !
+                        [ pinCotos
+                            CotoPinned
+                            (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                            [ cotoId ]
+                        ]
+                )
+                |> withDefault (model ! [])
+
+        CotoPinned (Ok _) ->
+            model ! []
+
+        CotoPinned (Err _) ->
+            model ! []
+
         ConfirmUnpinCoto cotoId ->
             confirm
                 "Are you sure you want to unpin this coto?"
@@ -471,20 +491,19 @@ update msg model =
                 |> (\model ->
                     response.cotoId
                         |> andThen (\cotoId -> App.Model.getCoto cotoId model)
-                        |> andThen (\startCoto ->
+                        |> Maybe.map (\startCoto ->
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                Just
-                                    ( connect startCoto endCotos model
-                                    , App.Server.Graph.connect
-                                        Connected
-                                        (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                        startCoto.id
-                                        (List.map (\coto -> coto.id) endCotos)
-                                    )
+                                ( connect startCoto endCotos model
+                                , App.Server.Graph.connect
+                                    Connected
+                                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                                    startCoto.id
+                                    (List.map (\coto -> coto.id) endCotos)
+                                )
                         )
-                        |> \maybeModelAndCmd -> withDefault (model ! []) maybeModelAndCmd
+                        |> withDefault (model ! [])
                 )
 
         GroupingCotoPosted (Err _) ->

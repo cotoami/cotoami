@@ -72,6 +72,7 @@ type alias BodyModel =
 type alias BodyConfig msg =
     { openCoto : Maybe msg
     , selectCoto : Maybe (CotoId -> msg)
+    , pinCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
     , deleteConnection : Maybe msg
@@ -83,6 +84,7 @@ defaultBodyConfig : Maybe ( CotoId, CotoId ) -> Coto -> BodyConfig Msg
 defaultBodyConfig maybeConnection coto =
     { openCoto = Just (OpenCoto coto)
     , selectCoto = Just SelectCoto
+    , pinCoto = Just PinCoto
     , openTraversal = Just OpenTraversal
     , cotonomaClick = CotonomaClick
     , deleteConnection =
@@ -157,6 +159,21 @@ cotoToolsSpan context graph config asCotonoma cotoId =
                             text "check_box_outline_blank"
                         ]
                     ]
+
+        , case config.pinCoto of
+            Nothing ->
+                span [] []
+
+            Just pinCoto ->
+                if pinned cotoId graph then
+                    span [] []
+                else
+                    a
+                        [ class "tool-button pin-coto"
+                        , title "Pin this coto"
+                        , onLinkButtonClick (pinCoto cotoId)
+                        ]
+                        [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
 
         , case config.openTraversal of
             Nothing ->

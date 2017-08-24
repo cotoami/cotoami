@@ -3,7 +3,7 @@
 #pinned-cotos {
   flex: 1;
   position: relative;
-  
+
   div.column-header {
     text-align: center;
     font-size: 18px;
@@ -12,29 +12,48 @@
     margin-bottom: 5px;
     padding-top: 5px;
   }
-  
+
   div.column-body {
     position: absolute;
     top: 32px;
     bottom: 0;
     left: 0;
     right: 0;
-    
+
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 10px;
     padding-bottom: 50px;
-    
+
     @media (#{$wide-viewport}) {
       padding: 5px;
       padding-bottom: 50px;
     }
-    
+
+    div.pinned-coto {
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+      div.unpin-button {
+        position: relative;
+        height: 10px;
+
+        a.unpin {
+          position: absolute;
+          top: -12px;
+          left: 0;
+
+          i {
+            font-size: 24px;
+          }
+        }
+      }
+    }
+
     div.coto {
-      margin-bottom: 10px;
-      animation-duration: 2s;
-      
+      animation-duration: 1s;
+
       div.coto-header {
         i.pinned,
         i.connected {
