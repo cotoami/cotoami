@@ -15,6 +15,27 @@ import App.Markdown
 import App.Views.Coto
 
 
+statusBar : Model -> Html Msg
+statusBar model =
+    div [ id "coto-selection-bar"
+        , classList
+            [ ( "empty", List.isEmpty model.context.selection )
+            ]
+        ]
+        [ a [ class "close", onClick ClearSelection ]
+            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+        , div [ class "selection-info" ]
+            [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
+            , span
+                [ class "selection-count" ]
+                [ text (model.context.selection |> List.length |> toString) ]
+            , span
+                [ class "text" ]
+                [ text " cotos selected" ]
+            ]
+        ]
+
+
 cotoSelectionColumnDiv : Model -> Html Msg
 cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
@@ -124,24 +145,3 @@ bodyDiv context graph coto =
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }
-
-
-cotoSelectionTools : Model -> Html Msg
-cotoSelectionTools model =
-    div [ id "coto-selection-tools"
-        , classList
-            [ ( "empty", List.isEmpty model.context.selection )
-            ]
-        ]
-        [ a [ class "close", onClick ClearSelection ]
-            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
-        , div [ class "selection-info" ]
-            [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
-            , span
-                [ class "selection-count" ]
-                [ text (model.context.selection |> List.length |> toString) ]
-            , span
-                [ class "text" ]
-                [ text " cotos selected" ]
-            ]
-        ]

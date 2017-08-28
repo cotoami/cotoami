@@ -57,7 +57,7 @@ view model =
                         ]
                     )
                 ]
-          , App.Views.CotoSelection.cotoSelectionTools model
+          , App.Views.CotoSelection.statusBar model
           , Html.map ConfirmModalMsg
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg
