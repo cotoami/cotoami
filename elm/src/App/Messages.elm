@@ -86,9 +86,6 @@ type Msg
     | DeselectingCoto CotoId
     | DeselectCoto
     | ClearSelection
-    | ConfirmPinSelectedCotos
-    | PinSelectedCotos
-    | SelectedCotosPinned (Result Http.Error String)
     | CotoSelectionTitleInput String
     | ConfirmCreateGroupingCoto
     | PostGroupingCoto

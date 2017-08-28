@@ -418,27 +418,6 @@ update msg model =
                     anotherView -> anotherView
             } ! []
 
-        ConfirmPinSelectedCotos ->
-            confirm
-                "Are you sure you want to pin the selected cotos?"
-                PinSelectedCotos
-                model
-            ! []
-
-        PinSelectedCotos ->
-            pinSelectedCotos model !
-                [ pinCotos
-                    SelectedCotosPinned
-                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    model.context.selection
-                ]
-
-        SelectedCotosPinned (Ok _) ->
-            model ! []
-
-        SelectedCotosPinned (Err _) ->
-            model ! []
-
         CotoSelectionTitleInput title ->
             { model | cotoSelectionTitle = title } ! []
 
