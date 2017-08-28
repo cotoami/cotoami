@@ -65,15 +65,15 @@ addCoto coto graph =
     }
 
 
-hasConnection : CotoId -> CotoId -> Graph -> Bool
-hasConnection startId endId graph =
+connected : CotoId -> CotoId -> Graph -> Bool
+connected startId endId graph =
     case Dict.get startId graph.connections of
         Nothing -> False
         Just conns -> List.any (\conn -> conn.end == endId) conns
 
 
-connected : CotoId -> Graph -> Bool
-connected cotoId graph =
+inGraph : CotoId -> Graph -> Bool
+inGraph cotoId graph =
     (graph.rootConnections |> List.any (\conn -> conn.end == cotoId))
         || (graph.connections |> Dict.member cotoId)
         || (graph.connections
@@ -135,7 +135,7 @@ addConnection start end graph =
                 (initConnection Nothing start.id) :: graph.rootConnections
 
         connections =
-            if hasConnection start.id end.id graph then
+            if connected start.id end.id graph then
                 graph.connections
             else
                 Dict.update
@@ -175,7 +175,7 @@ deleteConnection ( fromId, toId ) graph =
             { graph
             | cotos =
                 -- remove the coto (toId) if it's an orphan
-                if connected toId graph then
+                if inGraph toId graph then
                     graph.cotos
                 else
                     graph.cotos |> Dict.remove toId
