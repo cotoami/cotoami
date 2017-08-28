@@ -25,7 +25,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, disconnect)
+import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (scrollToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
@@ -309,9 +309,9 @@ update msg model =
 
         DeleteConnection ( startId, endId ) ->
             { model
-            | graph = deleteConnection ( startId, endId ) model.graph
+            | graph = disconnect ( startId, endId ) model.graph
             } !
-                [ disconnect
+                [ App.Server.Graph.disconnect
                     ConnectionDeleted
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     startId

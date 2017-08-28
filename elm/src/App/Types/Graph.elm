@@ -166,8 +166,8 @@ addConnections startCoto endCotos graph =
         endCotos
 
 
-deleteConnection : ( CotoId, CotoId ) -> Graph -> Graph
-deleteConnection ( fromId, toId ) graph =
+disconnect : ( CotoId, CotoId ) -> Graph -> Graph
+disconnect ( fromId, toId ) graph =
     { graph
     | connections = graph.connections |> doDeleteConnection ( fromId, toId )
     }
