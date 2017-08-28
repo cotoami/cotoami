@@ -171,27 +171,24 @@ cotoSelectionTools model =
         ]
         [ a [ class "close", onClick ClearSelection ]
             [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
-        , if model.connectMode then
-            div [ class "connect-mode" ]
-                [ span
-                    [ class "connect-mode-message" ]
-                    [ text "Select a target coto..." ]
+        , selectionInfoDiv model
+        , div [ class "grouping-coto" ]
+            [ span
+                [ class "selection-title" ]
+                [ input
+                    [ type_ "text"
+                    , name "title"
+                    , placeholder "Title for this selection"
+                    , maxlength titleMaxlength
+                    , value model.cotoSelectionTitle
+                    , onInput CotoSelectionTitleInput
+                    ] []
                 , button
-                    [ class "button", onClick (SetConnectMode False) ]
-                    [ text "Cancel" ]
-                ]
-          else
-            div [ class "default" ]
-                [ selectionInfoDiv model
-                , div [ class "buttons" ]
-                    [ button
-                       [ class "button", onClick ConfirmPinSelectedCotos ]
-                       [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                       , text "Pin"
-                       ]
-                    , button
-                       [ class "button", onClick (SetConnectMode True) ]
-                       [ text "Connect" ]
+                    [ class "button"
+                    , disabled (not (validateTitle model.cotoSelectionTitle))
+                    , onClick ConfirmCreateGroupingCoto
                     ]
+                    [ text "Post" ]
                 ]
+            ]
         ]
