@@ -158,7 +158,5 @@ connect outbound subject objects model =
             App.Types.Graph.connectOneToMany subject objects model.graph
         else
             App.Types.Graph.connectManyToOne objects subject model.graph
-    , context =
-        model.context |> \context -> { context | selection = [] }
     , connectingCotoId = Nothing
     }
