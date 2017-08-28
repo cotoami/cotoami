@@ -181,7 +181,7 @@ update msg model =
                 |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
 
         CloseConnectModal ->
-            { model | connectModalOpen = False } ! []
+            { model | connectingCotoId = Nothing } ! []
 
         --
         -- Coto
@@ -278,6 +278,12 @@ update msg model =
 
         CotoUnpinned (Err _) ->
             model ! []
+
+        ConfirmConnect cotoId inbound ->
+            { model
+            | connectingCotoId = Just cotoId
+            , connectingInbound = inbound
+            } ! []
 
         Connect startCoto endCotos ->
             connect startCoto endCotos model !
@@ -411,7 +417,7 @@ update msg model =
         ClearSelection ->
             { model
             | context = clearSelection model.context
-            , connectModalOpen = False
+            , connectingCotoId = Nothing
             , activeViewOnMobile =
                 case model.activeViewOnMobile of
                     SelectionView -> TimelineView
@@ -648,7 +654,7 @@ loadHome model =
     , cotonomasLoading = True
     , subCotonomas = []
     , timeline = setLoading model.timeline
-    , connectingTo = Nothing
+    , connectingCotoId = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
@@ -674,7 +680,7 @@ loadCotonoma key model =
     , members = []
     , cotonomasLoading = True
     , timeline = setLoading model.timeline
-    , connectingTo = Nothing
+    , connectingCotoId = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView

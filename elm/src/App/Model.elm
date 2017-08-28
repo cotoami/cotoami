@@ -38,8 +38,8 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , timeline : Timeline
     , cotoSelectionTitle : String
-    , connectingTo : Maybe CotoId
-    , connectModalOpen : Bool
+    , connectingCotoId : Maybe CotoId
+    , connectingInbound : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Traversals
@@ -76,8 +76,8 @@ initModel seed route =
     , subCotonomas = []
     , timeline = defaultTimeline
     , cotoSelectionTitle = ""
-    , connectingTo = Nothing
-    , connectModalOpen = False
+    , connectingCotoId = Nothing
+    , connectingInbound = True
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -155,5 +155,5 @@ connect startCoto endCotos model =
     { model
     | graph = model.graph |> addConnections startCoto endCotos
     , context = model.context |> \context -> { context | selection = [] }
-    , connectModalOpen = False
+    , connectingCotoId = Nothing
     }

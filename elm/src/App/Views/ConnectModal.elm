@@ -1,5 +1,6 @@
 module App.Views.ConnectModal exposing (..)
 
+import Maybe exposing (andThen)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -13,43 +14,35 @@ import App.Markdown
 
 view : Model -> Html Msg
 view model =
-    Modal.view
-        "connect-modal"
-        (if model.connectModalOpen then
-            case model.connectingTo of
-                Nothing -> Nothing
-                Just startCotoId -> Just (modalConfig startCotoId model)
-         else
-            Nothing
-        )
+    model.connectingCotoId
+        |> andThen (\cotoId -> getCoto cotoId model)
+        |> modalConfig (getSelectedCotos model)
+        |> Just
+        |> Modal.view "connect-modal"
 
 
-modalConfig : CotoId -> Model -> Modal.Config Msg
-modalConfig startCotoId model =
-    let
-        maybeStartCoto = getCoto startCotoId model
-        endCotos = getSelectedCotos model
-    in
-        case maybeStartCoto of
-            Nothing ->
-                { closeMessage = CloseConnectModal
-                , title = "Connect Preview"
-                , content = div [] [ text "Selected coto has been deleted." ]
-                , buttons = []
-                }
+modalConfig : List Coto -> Maybe Coto -> Modal.Config Msg
+modalConfig selectedCotos maybeConnectingCoto =
+    case maybeConnectingCoto of
+        Nothing ->
+            { closeMessage = CloseConnectModal
+            , title = "Connect Preview"
+            , content = div [] [ text "Selected coto has been deleted." ]
+            , buttons = []
+            }
 
-            Just startCoto ->
-                { closeMessage = CloseConnectModal
-                , title = "Connect Preview"
-                , content = modalContent startCoto endCotos
-                , buttons =
-                    [ button
-                        [ class "button button-primary"
-                        , onClick (Connect startCoto endCotos)
-                        ]
-                        [ text "Connect" ]
+        Just connectingCoto ->
+            { closeMessage = CloseConnectModal
+            , title = "Connect Preview"
+            , content = modalContent connectingCoto selectedCotos
+            , buttons =
+                [ button
+                    [ class "button button-primary"
+                    , onClick (Connect connectingCoto selectedCotos)
                     ]
-                }
+                    [ text "Connect" ]
+                ]
+            }
 
 
 modalContent : Coto -> List Coto -> Html Msg
