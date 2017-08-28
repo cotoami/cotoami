@@ -12,12 +12,36 @@
     min-height: 40px;
     text-align: center;
     margin-bottom: 5px;
-    padding-top: 5px;
+    padding-top: 20px;
 
     a.close-selection {
       position: absolute;
       top: 10px;
       right: 6px;
+    }
+
+    div.grouping-coto {
+      span.selection-title {
+        white-space: nowrap;
+
+        input {
+          margin: 0;
+          border-radius: 4px 0 0 4px;
+          color: #222;
+
+          @media (#{$narrow-viewport}) {
+            // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+            font-size: 16px;
+          }
+        }
+
+        button {
+          margin: 0;
+          padding: 0 15px;
+          border-radius: 0 4px 4px 0;
+          vertical-align: top;
+        }
+      }
     }
   }
 

@@ -8,8 +8,7 @@
   right: 0;
   margin: auto;
   width: 90vw;
-  padding: 10px;
-  padding-top: 2px;
+  padding: 5px;
   background: rgba(85,85,85,0.7);
   color: #eee;
   text-align: center;
@@ -19,30 +18,17 @@
   }
 
   @media (#{$wide-viewport}) {
-    width: 450px;
+    width: 300px;
   }
 
   a.close {
     position: absolute;
-    top: 5px;
+    top: 8px;
     right: 8px;
     padding: 0;
     font-size: 20px;
     line-height: 20px;
     color: #ccc;
-  }
-
-  button {
-    background-color: #fff;
-    margin: 0;
-    margin-left: 3px;
-    margin-right: 3px;
-    padding: 0 20px;
-
-    i {
-      margin-right: 5px;
-      font-size: 14px;
-    }
   }
 
   div.selection-info {
@@ -53,36 +39,13 @@
     }
 
     span.selection-count {
+      font-size: 18px;
       font-weight: bold;
       font-family: arial, sans-serif;
     }
 
     span.text {
       opacity: 0.8;
-    }
-  }
-
-  div.grouping-coto {
-    span.selection-title {
-      white-space: nowrap;
-
-      input {
-        margin: 0;
-        border-radius: 4px 0 0 4px;
-        color: #222;
-
-        @media (#{$narrow-viewport}) {
-          // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
-          font-size: 16px;
-        }
-      }
-
-      button {
-        margin: 0;
-        padding: 0 15px;
-        border-radius: 0 4px 4px 0;
-        vertical-align: top;
-      }
     }
   }
 }

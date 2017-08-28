@@ -20,11 +20,25 @@ cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            [ a [ class "tool-button close-selection"
-                , href "/"
-                , onLinkButtonClick ClearSelection
+            [ div [ class "grouping-coto" ]
+                [ span
+                    [ class "selection-title" ]
+                    [ input
+                        [ type_ "text"
+                        , name "title"
+                        , placeholder "Title for this selection"
+                        , maxlength titleMaxlength
+                        , value model.cotoSelectionTitle
+                        , onInput CotoSelectionTitleInput
+                        ] []
+                    , button
+                        [ class "button"
+                        , disabled (not (validateTitle model.cotoSelectionTitle))
+                        , onClick ConfirmCreateGroupingCoto
+                        ]
+                        [ text "New Coto" ]
+                    ]
                 ]
-                [ i [ class "material-icons" ] [ text "close" ] ]
             ]
         , div
             [ class "column-body" ]
@@ -129,24 +143,5 @@ cotoSelectionTools model =
             , span
                 [ class "text" ]
                 [ text " cotos selected" ]
-            ]
-        , div [ class "grouping-coto" ]
-            [ span
-                [ class "selection-title" ]
-                [ input
-                    [ type_ "text"
-                    , name "title"
-                    , placeholder "Title for this selection"
-                    , maxlength titleMaxlength
-                    , value model.cotoSelectionTitle
-                    , onInput CotoSelectionTitleInput
-                    ] []
-                , button
-                    [ class "button"
-                    , disabled (not (validateTitle model.cotoSelectionTitle))
-                    , onClick ConfirmCreateGroupingCoto
-                    ]
-                    [ text "Post" ]
-                ]
             ]
         ]
