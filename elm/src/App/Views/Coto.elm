@@ -142,26 +142,24 @@ bodyDiv maybeConnection context graph coto =
 cotoToolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
 cotoToolButtonsSpan context graph config asCotonoma cotoId =
     span [ class "coto-tool-buttons" ]
-        [ span [ class "default-buttons" ]
-            [ case config.selectCoto of
-                Nothing ->
-                    span [] []
+        [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
+            span [] []
+          else
+            span [ class "connecting-buttons" ]
+                [ a
+                    [ class "tool-button connect-to-this"
+                    , title "Connect from the selected cotos to this coto"
+                    ]
+                    [ i [ class "material-icons" ] [ text "file_download" ] ]
+                , a
+                    [ class "tool-button connect-to-selection"
+                    , title "Connect from this coto to the selected cotos"
+                    ]
+                    [ i [ class "material-icons" ] [ text "file_upload" ] ]
+                ]
 
-                Just selectCoto ->
-                    a
-                        [ class "tool-button select-coto"
-                        , title "Select this coto"
-                        , onLinkButtonClick (selectCoto cotoId)
-                        ]
-                        [ i [ class "material-icons" ]
-                            [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
-                                text "check_box"
-                              else
-                                text "check_box_outline_blank"
-                            ]
-                        ]
-
-            , case config.pinCoto of
+        , span [ class "default-buttons" ]
+            [ case config.pinCoto of
                 Nothing ->
                     span [] []
 
@@ -211,23 +209,25 @@ cotoToolButtonsSpan context graph config asCotonoma cotoId =
                         , onLinkButtonClick deleteConnection
                         ]
                         [ i [ class "material-icons" ] [ text "close" ] ]
-            ]
 
-        , if List.isEmpty context.selection || isSelected (Just cotoId) context then
-            span [] []
-          else
-            span [ class "connecting-buttons" ]
-                [ a
-                    [ class "tool-button connect-to-this"
-                    , title "Connect from the selected cotos to this coto"
-                    ]
-                    [ i [ class "material-icons" ] [ text "file_download" ] ]
-                , a
-                    [ class "tool-button connect-to-selection"
-                    , title "Connect from this coto to the selected cotos"
-                    ]
-                    [ i [ class "material-icons" ] [ text "file_upload" ] ]
-                ]
+            , case config.selectCoto of
+                Nothing ->
+                    span [] []
+
+                Just selectCoto ->
+                    a
+                        [ class "tool-button select-coto"
+                        , title "Select this coto"
+                        , onLinkButtonClick (selectCoto cotoId)
+                        ]
+                        [ i [ class "material-icons" ]
+                            [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
+                                text "check_box"
+                              else
+                                text "check_box_outline_blank"
+                            ]
+                        ]
+            ]
         ]
 
 
