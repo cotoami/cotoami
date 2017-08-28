@@ -25,7 +25,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, pinCotos, unpinCoto, disconnect)
+import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, disconnect)
 import App.Commands exposing (scrollToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
@@ -242,9 +242,9 @@ update msg model =
             App.Model.getCoto cotoId model
                 |> Maybe.map (\coto ->
                     { model
-                    | graph = addRootConnection coto model.graph
+                    | graph = pinCoto coto model.graph
                     } !
-                        [ pinCotos
+                        [ App.Server.Graph.pinCotos
                             CotoPinned
                             (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                             [ cotoId ]
@@ -266,8 +266,8 @@ update msg model =
             ! []
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> deleteRootConnection cotoId } !
-                [ unpinCoto
+            { model | graph = model.graph |> unpinCoto cotoId } !
+                [ App.Server.Graph.unpinCoto
                     CotoUnpinned
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     cotoId
@@ -286,7 +286,7 @@ update msg model =
             } ! []
 
         Connect startCoto endCotos ->
-            connect startCoto endCotos model !
+            App.Model.connect startCoto endCotos model !
                 [ App.Server.Graph.connect
                     Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
@@ -467,7 +467,7 @@ update msg model =
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                ( connect startCoto endCotos model
+                                ( App.Model.connect startCoto endCotos model
                                 , App.Server.Graph.connect
                                     Connected
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
@@ -748,7 +748,7 @@ pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
     model.context.selection
         |> List.filterMap (\cotoId -> App.Model.getCoto cotoId model)
-        |> \cotos -> model.graph |> addRootConnections cotos
+        |> \cotos -> model.graph |> pinCotos cotos
         |> \graph ->
             { model
             | graph = graph

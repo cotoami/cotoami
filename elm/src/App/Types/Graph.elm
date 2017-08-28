@@ -89,18 +89,18 @@ hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
 
 
-addRootConnections : List Coto -> Graph -> Graph
-addRootConnections cotos model =
+pinCotos : List Coto -> Graph -> Graph
+pinCotos cotos model =
     List.foldr
         (\coto model ->
-            addRootConnection coto model
+            pinCoto coto model
         )
         model
         cotos
 
 
-addRootConnection : Coto -> Graph -> Graph
-addRootConnection coto graph =
+pinCoto : Coto -> Graph -> Graph
+pinCoto coto graph =
     if pinned coto.id graph then
         graph
     else
@@ -111,8 +111,8 @@ addRootConnection coto graph =
         }
 
 
-deleteRootConnection : CotoId -> Graph -> Graph
-deleteRootConnection cotoId graph =
+unpinCoto : CotoId -> Graph -> Graph
+unpinCoto cotoId graph =
     { graph
     | rootConnections =
         graph.rootConnections
@@ -120,8 +120,8 @@ deleteRootConnection cotoId graph =
     }
 
 
-addConnection : Coto -> Coto -> Graph -> Graph
-addConnection start end graph =
+connect : Coto -> Coto -> Graph -> Graph
+connect start end graph =
     let
         cotos =
             graph.cotos
@@ -160,7 +160,7 @@ addConnections : Coto -> (List Coto) -> Graph -> Graph
 addConnections startCoto endCotos graph =
     List.foldr
         (\endCoto graph ->
-            addConnection startCoto endCoto graph
+            connect startCoto endCoto graph
         )
         graph
         endCotos
