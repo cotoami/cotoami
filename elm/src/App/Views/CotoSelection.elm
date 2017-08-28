@@ -117,7 +117,6 @@ cotoSelectionTools model =
     div [ id "coto-selection-tools"
         , classList
             [ ( "empty", List.isEmpty model.context.selection )
-            , ( "in-connect-mode", model.connectMode )
             ]
         ]
         [ a [ class "close", onClick ClearSelection ]

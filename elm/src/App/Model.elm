@@ -38,7 +38,6 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , timeline : Timeline
     , cotoSelectionTitle : String
-    , connectMode : Bool
     , connectingTo : Maybe CotoId
     , connectModalOpen : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
@@ -77,7 +76,6 @@ initModel seed route =
     , subCotonomas = []
     , timeline = defaultTimeline
     , cotoSelectionTitle = ""
-    , connectMode = False
     , connectingTo = Nothing
     , connectModalOpen = False
     , cotonomaModal = Components.CotonomaModal.Model.initModel
@@ -157,6 +155,5 @@ connect startCoto endCotos model =
     { model
     | graph = model.graph |> addConnections startCoto endCotos
     , context = model.context |> \context -> { context | selection = [] }
-    , connectMode = False
     , connectModalOpen = False
     }

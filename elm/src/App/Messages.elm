@@ -89,7 +89,6 @@ type Msg
     | ConfirmPinSelectedCotos
     | PinSelectedCotos
     | SelectedCotosPinned (Result Http.Error String)
-    | SetConnectMode Bool
     | CotoSelectionTitleInput String
     | ConfirmCreateGroupingCoto
     | PostGroupingCoto

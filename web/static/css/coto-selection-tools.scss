@@ -20,10 +20,6 @@
 
   @media (#{$wide-viewport}) {
     width: 450px;
-
-    &.in-connect-mode {
-      display: block;
-    }
   }
 
   a.close {

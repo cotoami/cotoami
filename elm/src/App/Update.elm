@@ -411,7 +411,6 @@ update msg model =
         ClearSelection ->
             { model
             | context = clearSelection model.context
-            , connectMode = False
             , connectModalOpen = False
             , activeViewOnMobile =
                 case model.activeViewOnMobile of
@@ -439,18 +438,6 @@ update msg model =
 
         SelectedCotosPinned (Err _) ->
             model ! []
-
-        SetConnectMode enabled ->
-            { model
-            | connectMode = enabled
-            , activeViewOnMobile =
-                if enabled then
-                    case model.activeViewOnMobile of
-                        SelectionView -> TimelineView
-                        anotherView -> anotherView
-                else
-                    model.activeViewOnMobile
-            } ! []
 
         CotoSelectionTitleInput title ->
             { model | cotoSelectionTitle = title } ! []
@@ -616,21 +603,12 @@ confirm message msgOnConfirm model =
 
 clickCoto : ElementId -> CotoId -> Model -> Model
 clickCoto elementId cotoId model =
-    if model.connectMode then
-        if model.context.selection |> List.member cotoId then
-            model
-        else
-            { model
-            | connectModalOpen = True
-            , connectingTo = Just cotoId
-            }
-    else
-        { model
-        | context =
-            model.context
-                |> setElementFocus (Just elementId)
-                |> setCotoFocus (Just cotoId)
-        }
+    { model
+    | context =
+        model.context
+            |> setElementFocus (Just elementId)
+            |> setCotoFocus (Just cotoId)
+    }
 
 
 openCoto : Maybe Coto -> Model -> Model
@@ -691,7 +669,6 @@ loadHome model =
     , cotonomasLoading = True
     , subCotonomas = []
     , timeline = setLoading model.timeline
-    , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -718,7 +695,6 @@ loadCotonoma key model =
     , members = []
     , cotonomasLoading = True
     , timeline = setLoading model.timeline
-    , connectMode = False
     , connectingTo = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -747,8 +723,6 @@ closeModal model =
        { model | cotoModal = model.cotoModal |> closeOpenable }
     else if model.cotonomaModal.open then
        { model | cotonomaModal = model.cotonomaModal |> closeOpenable }
-    else if model.connectMode then
-       { model | connectModalOpen = False, connectMode = False }
     else
         model
 
