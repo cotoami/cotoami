@@ -142,74 +142,92 @@ bodyDiv maybeConnection context graph coto =
 cotoToolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
 cotoToolButtonsSpan context graph config asCotonoma cotoId =
     span [ class "coto-tool-buttons" ]
-        [ case config.selectCoto of
-            Nothing ->
-                span [] []
-
-            Just selectCoto ->
-                a
-                    [ class "tool-button select-coto"
-                    , title "Select this coto"
-                    , onLinkButtonClick (selectCoto cotoId)
-                    ]
-                    [ i [ class "material-icons" ]
-                        [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
-                            text "check_box"
-                          else
-                            text "check_box_outline_blank"
-                        ]
-                    ]
-
-        , case config.pinCoto of
-            Nothing ->
-                span [] []
-
-            Just pinCoto ->
-                if pinned cotoId graph then
+        [ span [ class "default-buttons" ]
+            [ case config.selectCoto of
+                Nothing ->
                     span [] []
-                else
+
+                Just selectCoto ->
                     a
-                        [ class "tool-button pin-coto"
-                        , title "Pin this coto"
-                        , onLinkButtonClick (pinCoto cotoId)
+                        [ class "tool-button select-coto"
+                        , title "Select this coto"
+                        , onLinkButtonClick (selectCoto cotoId)
                         ]
-                        [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
+                        [ i [ class "material-icons" ]
+                            [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
+                                text "check_box"
+                              else
+                                text "check_box_outline_blank"
+                            ]
+                        ]
 
-        , case config.openTraversal of
-            Nothing ->
-                span [] []
+            , case config.pinCoto of
+                Nothing ->
+                    span [] []
 
-            Just openTraversal ->
-                a
-                    [ class "tool-button traverse-coto"
-                    , title "Traverse from this coto"
-                    , onLinkButtonClick (openTraversal cotoId)
+                Just pinCoto ->
+                    if pinned cotoId graph then
+                        span [] []
+                    else
+                        a
+                            [ class "tool-button pin-coto"
+                            , title "Pin this coto"
+                            , onLinkButtonClick (pinCoto cotoId)
+                            ]
+                            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
+
+            , case config.openTraversal of
+                Nothing ->
+                    span [] []
+
+                Just openTraversal ->
+                    a
+                        [ class "tool-button traverse-coto"
+                        , title "Traverse from this coto"
+                        , onLinkButtonClick (openTraversal cotoId)
+                        ]
+                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+
+            , case config.openCoto of
+                Nothing ->
+                    span [] []
+
+                Just openCoto ->
+                    a
+                        [ class "tool-button open-coto"
+                        , title "Open coto view"
+                        , onLinkButtonClick openCoto
+                        ]
+                        [ i [ class "material-icons" ] [ text "settings" ] ]
+
+            , case config.deleteConnection of
+                Nothing ->
+                    span [] []
+
+                Just deleteConnection ->
+                    a
+                        [ class "tool-button delete-connection"
+                        , title "Delete connection"
+                        , onLinkButtonClick deleteConnection
+                        ]
+                        [ i [ class "material-icons" ] [ text "close" ] ]
+            ]
+
+        , if List.isEmpty context.selection || isSelected (Just cotoId) context then
+            span [] []
+          else
+            span [ class "connecting-buttons" ]
+                [ a
+                    [ class "tool-button connect-to-this"
+                    , title "Connect from the selected cotos to this coto"
                     ]
-                    [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
-
-        , case config.openCoto of
-            Nothing ->
-                span [] []
-
-            Just openCoto ->
-                a
-                    [ class "tool-button open-coto"
-                    , title "Open coto view"
-                    , onLinkButtonClick openCoto
+                    [ i [ class "material-icons" ] [ text "file_download" ] ]
+                , a
+                    [ class "tool-button connect-to-selection"
+                    , title "Connect from this coto to the selected cotos"
                     ]
-                    [ i [ class "material-icons" ] [ text "settings" ] ]
-
-        , case config.deleteConnection of
-            Nothing ->
-                span [] []
-
-            Just deleteConnection ->
-                a
-                    [ class "tool-button delete-connection"
-                    , title "Delete connection"
-                    , onLinkButtonClick deleteConnection
-                    ]
-                    [ i [ class "material-icons" ] [ text "close" ] ]
+                    [ i [ class "material-icons" ] [ text "file_upload" ] ]
+                ]
         ]
 
 
