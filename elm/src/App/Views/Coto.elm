@@ -103,7 +103,7 @@ bodyDivWithConfig context graph config model =
                 span [] []
 
             Just cotoId ->
-                cotoToolsSpan context graph config model.asCotonoma cotoId
+                cotoToolButtonsSpan context graph config model.asCotonoma cotoId
           )
         , if model.asCotonoma then
             let
@@ -139,9 +139,9 @@ bodyDiv maybeConnection context graph coto =
         }
 
 
-cotoToolsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
-cotoToolsSpan context graph config asCotonoma cotoId =
-    span [ class "coto-tools" ]
+cotoToolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
+cotoToolButtonsSpan context graph config asCotonoma cotoId =
+    span [ class "coto-tool-buttons" ]
         [ case config.selectCoto of
             Nothing ->
                 span [] []

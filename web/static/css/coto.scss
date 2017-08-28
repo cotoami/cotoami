@@ -30,7 +30,7 @@ div.coto {
     div.coto-body {
       position: relative;
 
-      span.coto-tools {
+      span.coto-tool-buttons {
         display: none;
         position: absolute;
         top: 0;
@@ -86,7 +86,7 @@ div.coto {
             }
 
             div.coto-body {
-              span.coto-tools {
+              span.coto-tool-buttons {
                 right: -10px;
               }
             }
@@ -107,7 +107,7 @@ div.coto {
 }
 
 div.coto.selectable {
-  &.element-focus > div.coto-inner > div.coto-body > span.coto-tools {
+  &.element-focus > div.coto-inner > div.coto-body > span.coto-tool-buttons {
     display: inline-block !important;
   }
 
