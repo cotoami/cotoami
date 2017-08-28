@@ -16,54 +16,63 @@ view : Model -> Html Msg
 view model =
     model.connectingCotoId
         |> andThen (\cotoId -> getCoto cotoId model)
-        |> modalConfig (getSelectedCotos model)
-        |> Just
+        |> Maybe.map (\coto ->
+            modalConfig model.connectingInbound (getSelectedCotos model) coto
+        )
         |> Modal.view "connect-modal"
 
 
-modalConfig : List Coto -> Maybe Coto -> Modal.Config Msg
-modalConfig selectedCotos maybeConnectingCoto =
-    case maybeConnectingCoto of
-        Nothing ->
-            { closeMessage = CloseConnectModal
-            , title = "Connect Preview"
-            , content = div [] [ text "Selected coto has been deleted." ]
-            , buttons = []
-            }
-
-        Just connectingCoto ->
-            { closeMessage = CloseConnectModal
-            , title = "Connect Preview"
-            , content = modalContent connectingCoto selectedCotos
-            , buttons =
-                [ button
-                    [ class "button button-primary"
-                    , onClick (Connect connectingCoto selectedCotos)
-                    ]
-                    [ text "Connect" ]
-                ]
-            }
-
-
-modalContent : Coto -> List Coto -> Html Msg
-modalContent startCoto endCotos =
-    div []
-        [ div
-            [ class "start-coto coto" ]
-            [ App.Markdown.markdown startCoto.content ]
-        , div
-            [ class "connect-buttons" ]
-            [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
-        , Html.Keyed.node
-            "div"
-            [ class "end-cotos" ]
-            (List.map
-                (\coto ->
-                    ( toString coto.id
-                    , div [ class "coto" ]
-                        [ App.Markdown.markdown coto.content ]
-                    )
-                )
-                (List.reverse endCotos)
-            )
+modalConfig : Bool -> List Coto -> Coto -> Modal.Config Msg
+modalConfig inbound selectedCotos connectingCoto =
+    { closeMessage = CloseConnectModal
+    , title = "Connect Preview"
+    , content = modalContent inbound selectedCotos connectingCoto
+    , buttons =
+        [ button
+            [ class "button button-primary"
+            , onClick (Connect connectingCoto selectedCotos)
+            ]
+            [ text "Connect" ]
         ]
+    }
+
+
+modalContent : Bool -> List Coto -> Coto -> Html Msg
+modalContent inbound selectedCotos connectingCoto =
+    let
+        selectedCotosHtml =
+            Html.Keyed.node
+                "div"
+                [ class "selected-cotos" ]
+                (List.map
+                    (\coto ->
+                        ( toString coto.id
+                        , div [ class "coto-content" ]
+                            [ App.Markdown.markdown coto.content ]
+                        )
+                    )
+                    (List.reverse selectedCotos)
+                )
+
+        connectingCotoHtml =
+            div [ class "connecting-coto coto-content" ]
+                [ App.Markdown.markdown connectingCoto.content ]
+
+        ( start, end ) =
+            if inbound then
+                ( selectedCotosHtml, connectingCotoHtml )
+            else
+                ( connectingCotoHtml, selectedCotosHtml )
+
+    in
+        div []
+            [ div
+                [ class "start" ]
+                [ start ]
+            , div
+                [ class "arrow" ]
+                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
+            , div
+                [ class "end" ]
+                [ end ]
+            ]

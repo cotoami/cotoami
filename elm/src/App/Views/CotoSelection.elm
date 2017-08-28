@@ -137,6 +137,7 @@ bodyDiv context graph coto =
         , pinCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
+        , confirmConnect = Nothing
         , deleteConnection = Nothing
         , markdown = App.Markdown.markdown
         }

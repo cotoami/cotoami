@@ -160,6 +160,7 @@ bodyDiv context graph post =
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
+        , confirmConnect = Just ConfirmConnect
         , deleteConnection = Nothing
         , markdown = markdown
         }

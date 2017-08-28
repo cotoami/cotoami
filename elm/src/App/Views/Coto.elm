@@ -75,6 +75,7 @@ type alias BodyConfig msg =
     , pinCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
+    , confirmConnect : Maybe (CotoId -> Bool -> msg)
     , deleteConnection : Maybe msg
     , markdown : String -> Html msg
     }
@@ -87,6 +88,7 @@ defaultBodyConfig maybeConnection coto =
     , pinCoto = Just PinCoto
     , openTraversal = Just OpenTraversal
     , cotonomaClick = CotonomaClick
+    , confirmConnect = Just ConfirmConnect
     , deleteConnection =
         case maybeConnection of
             Nothing -> Nothing
@@ -145,18 +147,25 @@ toolButtonsSpan context graph config asCotonoma cotoId =
         [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
             span [] []
           else
-            span [ class "connecting-buttons" ]
-                [ a
-                    [ class "tool-button connect-to-this"
-                    , title "Connect from the selected cotos to this coto"
-                    ]
-                    [ i [ class "material-icons" ] [ text "file_download" ] ]
-                , a
-                    [ class "tool-button connect-to-selection"
-                    , title "Connect from this coto to the selected cotos"
-                    ]
-                    [ i [ class "material-icons" ] [ text "file_upload" ] ]
-                ]
+            case config.confirmConnect of
+                Nothing ->
+                    span [] []
+
+                Just confirmConnect ->
+                    span [ class "connecting-buttons" ]
+                        [ a
+                            [ class "tool-button connect-to-this"
+                            , title "Connect from the selected cotos to this coto"
+                            , onLinkButtonClick (confirmConnect cotoId True)
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_download" ] ]
+                        , a
+                            [ class "tool-button connect-to-selection"
+                            , title "Connect from this coto to the selected cotos"
+                            , onLinkButtonClick (confirmConnect cotoId False)
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_upload" ] ]
+                        ]
 
         , span [ class "default-buttons" ]
             [ case config.pinCoto of

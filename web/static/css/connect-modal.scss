@@ -2,47 +2,44 @@
 
 #connect-modal {
   .modal-content {
-    
-    @media (#{$narrow-viewport}) {
-      width: 80vw;
-    }
-    
-    div.coto {
+    width: 80vw;
+
+    div.coto-content {
+      margin-top: 10px;
+      margin-bottom: 10px;
       border: 1px solid #ddd;
       padding: 10px;
     }
-    
-    div.start-coto {
+
+    div.connecting-coto {
       max-height: 15vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
-    
-    div.end-cotos {
+
+    div.selected-cotos {
       max-height: 40vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      
-      div.coto {
-        margin-bottom: 10px;
+    }
+
+    div.arrow {
+      height: 24px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      text-align: center;
+
+      i {
+        font-size: 24px;
       }
     }
-    
-    div.connect-buttons {
-      padding-top: 15px;
-      padding-bottom: 5px;
-      text-align: center;
-      
-      button {
-        padding-top: 6px;
-        
-        &.connect-downward {
-          margin-right: 20px;
-        }
-        &.connect-upward {
-          margin-left: 20px;
-        }
-      }
+
+    hr.modal-buttons-seperator {
+      display: none;
+    }
+
+    div.modal-buttons {
+      padding-top: 5px;
     }
   }
 }
