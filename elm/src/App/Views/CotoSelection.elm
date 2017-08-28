@@ -20,9 +20,7 @@ cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            [ selectionInfoDiv model
-            , cotoSelectionToolsDiv model
-            , a [ class "tool-button close-selection"
+            [ a [ class "tool-button close-selection"
                 , href "/"
                 , onLinkButtonClick ClearSelection
                 ]
@@ -32,53 +30,6 @@ cotoSelectionColumnDiv model =
             [ class "column-body" ]
             [ selectedCotosDiv model ]
         ]
-
-
-selectionInfoDiv : Model -> Html Msg
-selectionInfoDiv model =
-    div [ class "selection-info" ]
-        [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
-        , span
-            [ class "selection-count" ]
-            [ text (model.context.selection |> List.length |> toString) ]
-        , span
-            [ class "text" ]
-            [ text " cotos selected" ]
-        ]
-
-
-cotoSelectionToolsDiv : Model -> Html Msg
-cotoSelectionToolsDiv model =
-    if model.connectMode then
-        div [] []
-    else
-        div [ class "selection-tools" ]
-          [ button
-              [ class "button", onClick ConfirmPinSelectedCotos ]
-              [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-              , text "Pin"
-              ]
-          , button
-              [ class "button", onClick (SetConnectMode True) ]
-              [ text "Connect" ]
-          , span
-              [ class "selection-title" ]
-              [ input
-                  [ type_ "text"
-                  , name "title"
-                  , placeholder "Title for this group"
-                  , maxlength titleMaxlength
-                  , value model.cotoSelectionTitle
-                  , onInput CotoSelectionTitleInput
-                  ] []
-              , button
-                  [ class "button"
-                  , disabled (not (validateTitle model.cotoSelectionTitle))
-                  , onClick ConfirmCreateGroupingCoto
-                  ]
-                  [ text "Save" ]
-              ]
-          ]
 
 
 titleMaxlength : Int
@@ -171,7 +122,15 @@ cotoSelectionTools model =
         ]
         [ a [ class "close", onClick ClearSelection ]
             [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
-        , selectionInfoDiv model
+        , div [ class "selection-info" ]
+            [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
+            , span
+                [ class "selection-count" ]
+                [ text (model.context.selection |> List.length |> toString) ]
+            , span
+                [ class "text" ]
+                [ text " cotos selected" ]
+            ]
         , div [ class "grouping-coto" ]
             [ span
                 [ class "selection-title" ]
