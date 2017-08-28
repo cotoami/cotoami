@@ -17,20 +17,20 @@ view model =
     model.connectingCotoId
         |> andThen (\cotoId -> getCoto cotoId model)
         |> Maybe.map (\coto ->
-            modalConfig model.connectingInbound (getSelectedCotos model) coto
+            modalConfig model.connectingOutbound (getSelectedCotos model) coto
         )
         |> Modal.view "connect-modal"
 
 
 modalConfig : Bool -> List Coto -> Coto -> Modal.Config Msg
-modalConfig inbound selectedCotos connectingCoto =
+modalConfig outbound selectedCotos connectingCoto =
     { closeMessage = CloseConnectModal
     , title = "Connect Preview"
-    , content = modalContent inbound selectedCotos connectingCoto
+    , content = modalContent outbound selectedCotos connectingCoto
     , buttons =
         [ button
             [ class "button button-primary"
-            , onClick (Connect connectingCoto selectedCotos)
+            , onClick (Connect outbound connectingCoto selectedCotos)
             ]
             [ text "Connect" ]
         ]
@@ -38,7 +38,7 @@ modalConfig inbound selectedCotos connectingCoto =
 
 
 modalContent : Bool -> List Coto -> Coto -> Html Msg
-modalContent inbound selectedCotos connectingCoto =
+modalContent outbound selectedCotos connectingCoto =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -59,10 +59,10 @@ modalContent inbound selectedCotos connectingCoto =
                 [ App.Markdown.markdown connectingCoto.content ]
 
         ( start, end ) =
-            if inbound then
-                ( selectedCotosHtml, connectingCotoHtml )
-            else
+            if outbound then
                 ( connectingCotoHtml, selectedCotosHtml )
+            else
+                ( selectedCotosHtml, connectingCotoHtml )
 
     in
         div []

@@ -39,7 +39,7 @@ type alias Model =
     , timeline : Timeline
     , cotoSelectionTitle : String
     , connectingCotoId : Maybe CotoId
-    , connectingInbound : Bool
+    , connectingOutbound : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Traversals
@@ -77,7 +77,7 @@ initModel seed route =
     , timeline = defaultTimeline
     , cotoSelectionTitle = ""
     , connectingCotoId = Nothing
-    , connectingInbound = True
+    , connectingOutbound = True
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -150,10 +150,15 @@ openTraversal description cotoId model =
     }
 
 
-connect : Coto -> List Coto -> Model -> Model
-connect startCoto endCotos model =
+connect : Bool -> Coto -> List Coto -> Model -> Model
+connect outbound subject objects model =
     { model
-    | graph = model.graph |> App.Types.Graph.connectOneToMany startCoto endCotos
-    , context = model.context |> \context -> { context | selection = [] }
+    | graph =
+        if outbound then
+            App.Types.Graph.connectOneToMany subject objects model.graph
+        else
+            App.Types.Graph.connectManyToOne objects subject model.graph
+    , context =
+        model.context |> \context -> { context | selection = [] }
     , connectingCotoId = Nothing
     }

@@ -156,13 +156,13 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         [ a
                             [ class "tool-button connect-to-this"
                             , title "Connect from the selected cotos to this coto"
-                            , onLinkButtonClick (confirmConnect cotoId True)
+                            , onLinkButtonClick (confirmConnect cotoId False)
                             ]
                             [ i [ class "material-icons" ] [ text "file_download" ] ]
                         , a
                             [ class "tool-button connect-to-selection"
                             , title "Connect from this coto to the selected cotos"
-                            , onLinkButtonClick (confirmConnect cotoId False)
+                            , onLinkButtonClick (confirmConnect cotoId True)
                             ]
                             [ i [ class "material-icons" ] [ text "file_upload" ] ]
                         ]

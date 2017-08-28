@@ -279,19 +279,19 @@ update msg model =
         CotoUnpinned (Err _) ->
             model ! []
 
-        ConfirmConnect cotoId inbound ->
+        ConfirmConnect cotoId outbound ->
             { model
             | connectingCotoId = Just cotoId
-            , connectingInbound = inbound
+            , connectingOutbound = outbound
             } ! []
 
-        Connect startCoto endCotos ->
-            App.Model.connect startCoto endCotos model !
+        Connect outbound subject objects ->
+            App.Model.connect outbound subject objects model !
                 [ App.Server.Graph.connect
                     Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    startCoto.id
-                    (List.map (\coto -> coto.id) endCotos)
+                    subject.id
+                    (List.map (\coto -> coto.id) objects)
                 ]
 
         Connected (Ok _) ->
@@ -467,7 +467,7 @@ update msg model =
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                ( App.Model.connect startCoto endCotos model
+                                ( App.Model.connect True startCoto endCotos model
                                 , App.Server.Graph.connect
                                     Connected
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)

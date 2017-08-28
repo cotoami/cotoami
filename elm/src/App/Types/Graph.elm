@@ -166,6 +166,16 @@ connectOneToMany startCoto endCotos graph =
         endCotos
 
 
+connectManyToOne : (List Coto) -> Coto -> Graph -> Graph
+connectManyToOne startCotos endCoto graph =
+    List.foldr
+        (\startCoto graph ->
+            connect startCoto endCoto graph
+        )
+        graph
+        startCotos
+
+
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
     { graph

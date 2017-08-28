@@ -59,7 +59,7 @@ type Msg
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
     | ConfirmConnect CotoId Bool
-    | Connect Coto (List Coto)
+    | Connect Bool Coto (List Coto)
     | Connected (Result Http.Error String)
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
