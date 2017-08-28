@@ -11,7 +11,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
-import App.Types.Graph exposing (Graph, defaultGraph, addConnections)
+import App.Types.Graph exposing (Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
@@ -153,7 +153,7 @@ openTraversal description cotoId model =
 connect : Coto -> List Coto -> Model -> Model
 connect startCoto endCotos model =
     { model
-    | graph = model.graph |> addConnections startCoto endCotos
+    | graph = model.graph |> App.Types.Graph.connectOneToMany startCoto endCotos
     , context = model.context |> \context -> { context | selection = [] }
     , connectingCotoId = Nothing
     }

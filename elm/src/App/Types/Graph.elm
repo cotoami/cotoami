@@ -156,8 +156,8 @@ connect start end graph =
         }
 
 
-addConnections : Coto -> (List Coto) -> Graph -> Graph
-addConnections startCoto endCotos graph =
+connectOneToMany : Coto -> (List Coto) -> Graph -> Graph
+connectOneToMany startCoto endCotos graph =
     List.foldr
         (\endCoto graph ->
             connect startCoto endCoto graph
@@ -169,7 +169,7 @@ addConnections startCoto endCotos graph =
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
     { graph
-    | connections = graph.connections |> doDeleteConnection ( fromId, toId )
+    | connections = graph.connections |> doDisconnect ( fromId, toId )
     }
         |> \graph ->
             { graph
@@ -181,8 +181,8 @@ disconnect ( fromId, toId ) graph =
                     graph.cotos |> Dict.remove toId
             }
 
-doDeleteConnection : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
-doDeleteConnection ( fromId, toId ) connections =
+doDisconnect : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
+doDisconnect ( fromId, toId ) connections =
     connections
     |> Dict.update
         fromId
