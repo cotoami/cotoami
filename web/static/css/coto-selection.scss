@@ -6,95 +6,95 @@
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
-  
+
   div.column-header {
     z-index: 3;   // workaround for iOS bug where the header disappears when the input has focus
     min-height: 30px;
     text-align: center;
     margin-bottom: 5px;
     padding-top: 5px;
-    
+
     div.selection-info {
       padding-top: 3px;
       padding-bottom: 10px;
       color: gray;
-      
+
       i {
         margin-right: 6px;
         font-size: 18px;
         vertical-align: middle;
       }
-      
+
       span.selection-count {
         font-weight: bold;
         font-family: arial, sans-serif;
       }
-      
+
       span.text {
         opacity: 0.8;
       }
     }
-    
+
     div.selection-tools {
       button {
         margin-right: 8px;
         padding: 0 15px;
         background-color: #fff;
         vertical-align: top;
-        
+
         i {
           margin-right: 5px;
         }
       }
-      
+
       span.selection-title {
         white-space: nowrap;
-        
+
         input {
           border-radius: 4px 0 0 4px;
-          
+
           @media (#{$narrow-viewport}) {
             // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
             font-size: 16px;
           }
         }
-        
+
         button {
           margin-right: 0;
           border-radius: 0 4px 4px 0;
         }
       }
     }
-    
+
     a.close-selection {
       position: absolute;
       top: 10px;
       right: 6px;
     }
   }
-  
+
   div.column-body {
     flex: 1;
-    
+
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 10px;
     padding-bottom: 50px;
-    
+
     div.coto {
       margin-bottom: 10px;
       border: 1px dashed #ddd;
-      
+
       div.coto-inner {
         position: relative;
-        
+
         a.deselect-coto {
           position: absolute;
           top: 3px;
           left: 3px;
         }
-        
+
         div.coto-header {
           min-height: 35px;
         }
