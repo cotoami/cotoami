@@ -11,7 +11,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
-import App.Types.Graph exposing (Graph, defaultGraph, addConnections)
+import App.Types.Graph exposing (Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
@@ -37,10 +37,10 @@ type alias Model =
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
     , timeline : Timeline
+    , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
-    , connectMode : Bool
-    , connectingTo : Maybe CotoId
-    , connectModalOpen : Bool
+    , connectingCotoId : Maybe CotoId
+    , connectingOutbound : Bool
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Traversals
@@ -76,10 +76,10 @@ initModel seed route =
     , cotonomasLoading = False
     , subCotonomas = []
     , timeline = defaultTimeline
+    , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
-    , connectMode = False
-    , connectingTo = Nothing
-    , connectModalOpen = False
+    , connectingCotoId = Nothing
+    , connectingOutbound = True
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -152,11 +152,21 @@ openTraversal description cotoId model =
     }
 
 
-connect : Coto -> List Coto -> Model -> Model
-connect startCoto endCotos model =
+connect : Bool -> Coto -> List Coto -> Model -> Model
+connect outbound subject objects model =
     { model
-    | graph = model.graph |> addConnections startCoto endCotos
-    , context = model.context |> \context -> { context | selection = [] }
-    , connectMode = False
-    , connectModalOpen = False
+    | graph =
+        if outbound then
+            App.Types.Graph.connectOneToMany subject objects model.graph
+        else
+            App.Types.Graph.connectManyToOne objects subject model.graph
+    , connectingCotoId = Nothing
     }
+
+
+closeSelectionColumnIfEmpty : Model -> Model
+closeSelectionColumnIfEmpty model =
+    if List.isEmpty model.context.selection then
+        { model | cotoSelectionColumnOpen = False }
+    else
+        model

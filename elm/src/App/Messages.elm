@@ -58,8 +58,9 @@ type Msg
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
-    | Connect Coto (List Coto)
-    | Connected (Result Http.Error String)
+    | ConfirmConnect CotoId Bool
+    | Connect Bool Coto (List Coto)
+    | Connected (Result Http.Error (List String))
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
@@ -86,10 +87,7 @@ type Msg
     | DeselectingCoto CotoId
     | DeselectCoto
     | ClearSelection
-    | ConfirmPinSelectedCotos
-    | PinSelectedCotos
-    | SelectedCotosPinned (Result Http.Error String)
-    | SetConnectMode Bool
+    | CotoSelectionColumnToggle
     | CotoSelectionTitleInput String
     | ConfirmCreateGroupingCoto
     | PostGroupingCoto

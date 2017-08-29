@@ -15,70 +15,68 @@ import App.Markdown
 import App.Views.Coto
 
 
+statusBar : Model -> Html Msg
+statusBar model =
+    div [ id "coto-selection-bar"
+        , classList
+            [ ( "empty", List.isEmpty model.context.selection )
+            ]
+        ]
+        [ a [ class "close", onClick ClearSelection ]
+            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+        , div [ class "selection-info" ]
+            [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
+            , span
+                [ class "selection-count" ]
+                [ text (model.context.selection |> List.length |> toString) ]
+            , span
+                [ class "text" ]
+                [ text " cotos selected" ]
+            , a [ class "toggle", onClick CotoSelectionColumnToggle ]
+                [ i
+                    [ class
+                        (if model.cotoSelectionColumnOpen then
+                            "fa fa-caret-up"
+                        else
+                            "fa fa-caret-down"
+                        )
+                    , (attribute "aria-hidden" "true")
+                    ]
+                    []
+                ]
+            ]
+        ]
+
+
 cotoSelectionColumnDiv : Model -> Html Msg
 cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            [ selectionInfoDiv model
-            , cotoSelectionToolsDiv model
-            , a [ class "tool-button close-selection"
-                , href "/"
-                , onLinkButtonClick ClearSelection
+            [ div [ class "grouping-coto" ]
+                [ span
+                    [ class "selection-title" ]
+                    [ input
+                        [ type_ "text"
+                        , name "title"
+                        , placeholder "Title for this selection"
+                        , maxlength titleMaxlength
+                        , value model.cotoSelectionTitle
+                        , onInput CotoSelectionTitleInput
+                        ] []
+                    , button
+                        [ class "button"
+                        , disabled (not (validateTitle model.cotoSelectionTitle))
+                        , onClick ConfirmCreateGroupingCoto
+                        ]
+                        [ text "New Coto" ]
+                    ]
                 ]
-                [ i [ class "material-icons" ] [ text "close" ] ]
             ]
         , div
             [ class "column-body" ]
             [ selectedCotosDiv model ]
         ]
-
-
-selectionInfoDiv : Model -> Html Msg
-selectionInfoDiv model =
-    div [ class "selection-info" ]
-        [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
-        , span
-            [ class "selection-count" ]
-            [ text (model.context.selection |> List.length |> toString) ]
-        , span
-            [ class "text" ]
-            [ text " cotos selected" ]
-        ]
-
-
-cotoSelectionToolsDiv : Model -> Html Msg
-cotoSelectionToolsDiv model =
-    if model.connectMode then
-        div [] []
-    else
-        div [ class "selection-tools" ]
-          [ button
-              [ class "button", onClick ConfirmPinSelectedCotos ]
-              [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-              , text "Pin"
-              ]
-          , button
-              [ class "button", onClick (SetConnectMode True) ]
-              [ text "Connect" ]
-          , span
-              [ class "selection-title" ]
-              [ input
-                  [ type_ "text"
-                  , name "title"
-                  , placeholder "Title for this group"
-                  , maxlength titleMaxlength
-                  , value model.cotoSelectionTitle
-                  , onInput CotoSelectionTitleInput
-                  ] []
-              , button
-                  [ class "button"
-                  , disabled (not (validateTitle model.cotoSelectionTitle))
-                  , onClick ConfirmCreateGroupingCoto
-                  ]
-                  [ text "Save" ]
-              ]
-          ]
 
 
 titleMaxlength : Int
@@ -151,6 +149,7 @@ bodyDiv context graph coto =
         , pinCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
+        , confirmConnect = Nothing
         , deleteConnection = Nothing
         , markdown = App.Markdown.markdown
         }
@@ -159,39 +158,3 @@ bodyDiv context graph coto =
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }
-
-
-cotoSelectionTools : Model -> Html Msg
-cotoSelectionTools model =
-    div [ id "coto-selection-tools"
-        , classList
-            [ ( "empty", List.isEmpty model.context.selection )
-            , ( "in-connect-mode", model.connectMode )
-            ]
-        ]
-        [ a [ class "close", onClick ClearSelection ]
-            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
-        , if model.connectMode then
-            div [ class "connect-mode" ]
-                [ span
-                    [ class "connect-mode-message" ]
-                    [ text "Select a target coto..." ]
-                , button
-                    [ class "button", onClick (SetConnectMode False) ]
-                    [ text "Cancel" ]
-                ]
-          else
-            div [ class "default" ]
-                [ selectionInfoDiv model
-                , div [ class "buttons" ]
-                    [ button
-                       [ class "button", onClick ConfirmPinSelectedCotos ]
-                       [ i [ class "fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-                       , text "Pin"
-                       ]
-                    , button
-                       [ class "button", onClick (SetConnectMode True) ]
-                       [ text "Connect" ]
-                    ]
-                ]
-        ]

@@ -1,0 +1,68 @@
+@import 'variables';
+
+#coto-selection-bar {
+  z-index: 12;
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 90vw;
+  padding: 5px;
+  background: rgba(85, 85, 85, .7);
+  color: #eee;
+  text-align: center;
+
+  &.empty {
+    display: none;
+  }
+
+  @media (#{$wide-viewport}) {
+    width: 300px;
+  }
+
+  a.close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    font-size: 20px;
+    line-height: 20px;
+    color: #ccc;
+  }
+
+  div.selection-info {
+    i {
+      margin-right: 6px;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+    span.selection-count {
+      font-size: 18px;
+      font-weight: bold;
+      font-family: arial, sans-serif;
+    }
+
+    span.text {
+      opacity: 0.8;
+    }
+
+    a.toggle {
+      margin-left: 10px;
+      color: #eee;
+
+      @media (#{$narrow-viewport}) {
+        display: none;
+      }
+
+      i {
+        font-size: 20px;
+
+        &.fa-caret-up {
+          padding-bottom: 5px;
+        }
+      }
+    }
+  }
+}

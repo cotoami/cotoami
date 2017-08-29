@@ -1,5 +1,6 @@
 module App.Views.ConnectModal exposing (..)
 
+import Maybe exposing (andThen)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -13,64 +14,65 @@ import App.Markdown
 
 view : Model -> Html Msg
 view model =
-    Modal.view
-        "connect-modal"
-        (if model.connectModalOpen then
-            case model.connectingTo of
-                Nothing -> Nothing
-                Just startCotoId -> Just (modalConfig startCotoId model)
-         else
-            Nothing
+    model.connectingCotoId
+        |> andThen (\cotoId -> getCoto cotoId model)
+        |> Maybe.map (\coto ->
+            modalConfig model.connectingOutbound (getSelectedCotos model) coto
         )
+        |> Modal.view "connect-modal"
 
 
-modalConfig : CotoId -> Model -> Modal.Config Msg
-modalConfig startCotoId model =
-    let
-        maybeStartCoto = getCoto startCotoId model
-        endCotos = getSelectedCotos model
-    in
-        case maybeStartCoto of
-            Nothing ->
-                { closeMessage = CloseConnectModal
-                , title = "Connect Preview"
-                , content = div [] [ text "Selected coto has been deleted." ]
-                , buttons = []
-                }
-
-            Just startCoto ->
-                { closeMessage = CloseConnectModal
-                , title = "Connect Preview"
-                , content = modalContent startCoto endCotos
-                , buttons =
-                    [ button
-                        [ class "button button-primary"
-                        , onClick (Connect startCoto endCotos)
-                        ]
-                        [ text "Connect" ]
-                    ]
-                }
-
-
-modalContent : Coto -> List Coto -> Html Msg
-modalContent startCoto endCotos =
-    div []
-        [ div
-            [ class "start-coto coto" ]
-            [ App.Markdown.markdown startCoto.content ]
-        , div
-            [ class "connect-buttons" ]
-            [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
-        , Html.Keyed.node
-            "div"
-            [ class "end-cotos" ]
-            (List.map
-                (\coto ->
-                    ( toString coto.id
-                    , div [ class "coto" ]
-                        [ App.Markdown.markdown coto.content ]
-                    )
-                )
-                (List.reverse endCotos)
-            )
+modalConfig : Bool -> List Coto -> Coto -> Modal.Config Msg
+modalConfig outbound selectedCotos connectingCoto =
+    { closeMessage = CloseConnectModal
+    , title = "Connect Preview"
+    , content = modalContent outbound selectedCotos connectingCoto
+    , buttons =
+        [ button
+            [ class "button button-primary"
+            , onClick (Connect outbound connectingCoto selectedCotos)
+            ]
+            [ text "Connect" ]
         ]
+    }
+
+
+modalContent : Bool -> List Coto -> Coto -> Html Msg
+modalContent outbound selectedCotos connectingCoto =
+    let
+        selectedCotosHtml =
+            Html.Keyed.node
+                "div"
+                [ class "selected-cotos" ]
+                (List.map
+                    (\coto ->
+                        ( toString coto.id
+                        , div [ class "coto-content" ]
+                            [ App.Markdown.markdown coto.content ]
+                        )
+                    )
+                    (List.reverse selectedCotos)
+                )
+
+        connectingCotoHtml =
+            div [ class "connecting-coto coto-content" ]
+                [ App.Markdown.markdown connectingCoto.content ]
+
+        ( start, end ) =
+            if outbound then
+                ( connectingCotoHtml, selectedCotosHtml )
+            else
+                ( selectedCotosHtml, connectingCotoHtml )
+
+    in
+        div []
+            [ div
+                [ class "start" ]
+                [ start ]
+            , div
+                [ class "arrow" ]
+                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
+            , div
+                [ class "end" ]
+                [ end ]
+            ]

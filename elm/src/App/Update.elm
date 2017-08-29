@@ -25,7 +25,7 @@ import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma, pinCotos, unpinCoto, disconnect)
+import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (scrollToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
@@ -181,7 +181,7 @@ update msg model =
                 |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
 
         CloseConnectModal ->
-            { model | connectModalOpen = False } ! []
+            { model | connectingCotoId = Nothing } ! []
 
         --
         -- Coto
@@ -210,9 +210,11 @@ update msg model =
             openCoto (Just coto) model ! []
 
         SelectCoto cotoId ->
-            { model
-            | context = updateSelection cotoId model.context
-            } ! []
+            ( { model
+              | context = updateSelection cotoId model.context
+              } |> closeSelectionColumnIfEmpty
+            , Cmd.none
+            )
 
         OpenTraversal cotoId ->
             openTraversal App.Types.Traversal.Opened cotoId model
@@ -242,9 +244,9 @@ update msg model =
             App.Model.getCoto cotoId model
                 |> Maybe.map (\coto ->
                     { model
-                    | graph = addRootConnection coto model.graph
+                    | graph = pinCoto coto model.graph
                     } !
-                        [ pinCotos
+                        [ App.Server.Graph.pinCotos
                             CotoPinned
                             (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                             [ cotoId ]
@@ -266,8 +268,8 @@ update msg model =
             ! []
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> deleteRootConnection cotoId } !
-                [ unpinCoto
+            { model | graph = model.graph |> unpinCoto cotoId } !
+                [ App.Server.Graph.unpinCoto
                     CotoUnpinned
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     cotoId
@@ -279,13 +281,20 @@ update msg model =
         CotoUnpinned (Err _) ->
             model ! []
 
-        Connect startCoto endCotos ->
-            connect startCoto endCotos model !
+        ConfirmConnect cotoId outbound ->
+            { model
+            | connectingCotoId = Just cotoId
+            , connectingOutbound = outbound
+            } ! []
+
+        Connect outbound subject objects ->
+            App.Model.connect outbound subject objects model !
                 [ App.Server.Graph.connect
                     Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    startCoto.id
-                    (List.map (\coto -> coto.id) endCotos)
+                    outbound
+                    subject.id
+                    (List.map (\coto -> coto.id) objects)
                 ]
 
         Connected (Ok _) ->
@@ -303,9 +312,9 @@ update msg model =
 
         DeleteConnection ( startId, endId ) ->
             { model
-            | graph = deleteConnection ( startId, endId ) model.graph
+            | graph = disconnect ( startId, endId ) model.graph
             } !
-                [ disconnect
+                [ App.Server.Graph.disconnect
                     ConnectionDeleted
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     startId
@@ -411,45 +420,17 @@ update msg model =
         ClearSelection ->
             { model
             | context = clearSelection model.context
-            , connectMode = False
-            , connectModalOpen = False
+            , connectingCotoId = Nothing
+            , cotoSelectionColumnOpen = False
             , activeViewOnMobile =
                 case model.activeViewOnMobile of
                     SelectionView -> TimelineView
                     anotherView -> anotherView
             } ! []
 
-        ConfirmPinSelectedCotos ->
-            confirm
-                "Are you sure you want to pin the selected cotos?"
-                PinSelectedCotos
-                model
-            ! []
-
-        PinSelectedCotos ->
-            pinSelectedCotos model !
-                [ pinCotos
-                    SelectedCotosPinned
-                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    model.context.selection
-                ]
-
-        SelectedCotosPinned (Ok _) ->
-            model ! []
-
-        SelectedCotosPinned (Err _) ->
-            model ! []
-
-        SetConnectMode enabled ->
+        CotoSelectionColumnToggle ->
             { model
-            | connectMode = enabled
-            , activeViewOnMobile =
-                if enabled then
-                    case model.activeViewOnMobile of
-                        SelectionView -> TimelineView
-                        anotherView -> anotherView
-                else
-                    model.activeViewOnMobile
+            | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen)
             } ! []
 
         CotoSelectionTitleInput title ->
@@ -495,10 +476,11 @@ update msg model =
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                ( connect startCoto endCotos model
+                                ( App.Model.connect True startCoto endCotos model
                                 , App.Server.Graph.connect
                                     Connected
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                                    True
                                     startCoto.id
                                     (List.map (\coto -> coto.id) endCotos)
                                 )
@@ -616,21 +598,12 @@ confirm message msgOnConfirm model =
 
 clickCoto : ElementId -> CotoId -> Model -> Model
 clickCoto elementId cotoId model =
-    if model.connectMode then
-        if model.context.selection |> List.member cotoId then
-            model
-        else
-            { model
-            | connectModalOpen = True
-            , connectingTo = Just cotoId
-            }
-    else
-        { model
-        | context =
-            model.context
-                |> setElementFocus (Just elementId)
-                |> setCotoFocus (Just cotoId)
-        }
+    { model
+    | context =
+        model.context
+            |> setElementFocus (Just elementId)
+            |> setCotoFocus (Just cotoId)
+    }
 
 
 openCoto : Maybe Coto -> Model -> Model
@@ -691,8 +664,7 @@ loadHome model =
     , cotonomasLoading = True
     , subCotonomas = []
     , timeline = setLoading model.timeline
-    , connectMode = False
-    , connectingTo = Nothing
+    , connectingCotoId = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
@@ -718,8 +690,7 @@ loadCotonoma key model =
     , members = []
     , cotonomasLoading = True
     , timeline = setLoading model.timeline
-    , connectMode = False
-    , connectingTo = Nothing
+    , connectingCotoId = Nothing
     , graph = defaultGraph
     , traversals = defaultTraversals
     , activeViewOnMobile = TimelineView
@@ -747,8 +718,6 @@ closeModal model =
        { model | cotoModal = model.cotoModal |> closeOpenable }
     else if model.cotonomaModal.open then
        { model | cotonomaModal = model.cotonomaModal |> closeOpenable }
-    else if model.connectMode then
-       { model | connectModalOpen = False, connectMode = False }
     else
         model
 
@@ -789,7 +758,7 @@ pinSelectedCotos : Model -> Model
 pinSelectedCotos model =
     model.context.selection
         |> List.filterMap (\cotoId -> App.Model.getCoto cotoId model)
-        |> \cotos -> model.graph |> addRootConnections cotos
+        |> \cotos -> model.graph |> pinCotos cotos
         |> \graph ->
             { model
             | graph = graph
@@ -811,3 +780,4 @@ doDeselect model =
             , deselecting = Set.empty
             }
     }
+        |> closeSelectionColumnIfEmpty

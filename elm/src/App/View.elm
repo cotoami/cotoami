@@ -39,7 +39,6 @@ view model =
           , classList
               [ ( "cotonomas-loading", model.cotonomasLoading )
               , ( activeViewOnMobile ++ "-view-on-mobile", True )
-              , ( "in-connect-mode", model.connectMode )
               ]
           ]
           [ App.Views.AppHeader.view model
@@ -58,7 +57,7 @@ view model =
                         ]
                     )
                 ]
-          , App.Views.CotoSelection.cotoSelectionTools model
+          , App.Views.CotoSelection.statusBar model
           , Html.map ConfirmModalMsg
               (Components.ConfirmModal.View.view model.confirmModal)
           , Html.map SigninModalMsg
@@ -132,6 +131,7 @@ selectionColumnDiv model =
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.context.selection) )
             , ( "empty", List.isEmpty model.context.selection )
+            , ( "hidden", not model.cotoSelectionColumnOpen )
             ]
         ]
         [ App.Views.CotoSelection.cotoSelectionColumnDiv model
