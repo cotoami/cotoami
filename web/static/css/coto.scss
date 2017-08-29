@@ -1,112 +1,112 @@
 div.coto {
   border: 1px solid #ddd;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
   padding: 0;
   background-color: #fff;
 
-  div.coto-inner {
-    margin: 0;
-    border: transparent 2px solid;
-    padding: 12px;
-    padding-top: 0;
+  div.main-sub-border {
+    padding-top: 3px;
+    border-bottom: 1px solid #eee;
+  }
 
-    div.coto-header {
-      min-height: 12px;
-      text-align: right;
+  div.sub-cotos-button {
+    text-align: center;
+    padding-top: 5px;
 
-      a.posted-in {
-        font-size: 12px;
-        color: black;
-        opacity: 0.3;
+    i {
+      vertical-align: bottom;
+    }
+  }
+}
+
+div.coto-inner {
+  margin: 0;
+  border: transparent 2px solid;
+  padding: 12px;
+  padding-top: 0;
+}
+
+div.coto-header {
+  min-height: 12px;
+  text-align: right;
+
+  a.posted-in {
+    font-size: 12px;
+    color: black;
+    opacity: .3;
+  }
+
+  i.pinned,
+  i.connected {
+    margin-left: 10px;
+    opacity: .5;
+  }
+}
+
+div.coto-body {
+  position: relative;
+
+  span.coto-tool-buttons {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+
+    background-color: rgba(255, 255, 255, .6);
+    padding: 0;
+    padding-top: 2px;
+    height: 34px;
+
+    a.tool-button {
+      margin-left: 10px;
+
+      i.material-icons {
+        font-size: 30px;
       }
 
-      i.pinned,
-      i.connected {
-        margin-left: 10px;
-        opacity: 0.5;
-      }
-    }
+      i.fa {
+        width: 30px;
+        text-align: center;
 
-    div.coto-body {
-      position: relative;
-
-      span.coto-tool-buttons {
-        display: none;
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 2;
-
-        background-color: rgba(255,255,255,0.6);
-        padding: 0;
-        padding-top: 2px;
-        height: 34px;
-
-        a.tool-button {
-          margin-left: 10px;
-
-          i.material-icons {
-            font-size: 30px;
-          }
-
-          i.fa {
-            width: 30px;
-            text-align: center;
-
-            &.fa-thumb-tack {
-              font-size: 27px;
-              vertical-align: 5px;
-            }
-          }
-        }
-
-        span.connecting-buttons {
-          a.tool-button {
-            color: #ffa500;
-          }
-        }
-      }
-    }
-
-    div.main-sub-border {
-      padding-top: 3px;
-      border-bottom: 1px solid #eee;
-    }
-
-    div.sub-cotos {
-      div.outbound-conn {
-        margin-top: 8px;
-        border-left: 3px solid #ddd;
-        border-radius: 4px 4px 4px 4px;
-
-        div.coto {
-          padding-bottom: 0;
-          border-style: none;
-          box-shadow: none;
-
-          div.coto-inner {
-            padding: 6px 12px;
-
-            div.coto-header {
-              min-height: auto;
-            }
-
-            div.coto-body {
-              span.coto-tool-buttons {
-                right: -10px;
-              }
-            }
-          }
+        &.fa-thumb-tack {
+          font-size: 27px;
+          vertical-align: 5px;
         }
       }
     }
 
-    div.sub-cotos-button {
-      text-align: center;
-      padding-top: 5px;
+    span.connecting-buttons {
+      a.tool-button {
+        color: #ffa500;
+      }
+    }
+  }
+}
 
-      i {
-        vertical-align: bottom;
+div.sub-cotos {
+  div.outbound-conn {
+    margin-top: 8px;
+    border-left: 3px solid #ddd;
+    border-radius: 4px 4px 4px 4px;
+
+    div.coto {
+      padding-bottom: 0;
+      border-style: none;
+      box-shadow: none;
+
+      div.coto-inner {
+        padding: 6px 12px;
+
+        div.coto-header {
+          min-height: auto;
+        }
+
+        div.coto-body {
+          span.coto-tool-buttons {
+            right: -10px;
+          }
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import 'variables';
 
 #coto-selection-bar {
   z-index: 12;
@@ -9,7 +9,7 @@
   margin: auto;
   width: 90vw;
   padding: 5px;
-  background: rgba(85,85,85,0.7);
+  background: rgba(85, 85, 85, .7);
   color: #eee;
   text-align: center;
 
