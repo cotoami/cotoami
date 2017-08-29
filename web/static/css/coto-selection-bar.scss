@@ -47,5 +47,18 @@
     span.text {
       opacity: 0.8;
     }
+
+    a.toggle {
+      margin-left: 10px;
+      color: #eee;
+
+      i {
+        font-size: 20px;
+
+        &.fa-caret-up {
+          padding-bottom: 5px;
+        }
+      }
+    }
   }
 }

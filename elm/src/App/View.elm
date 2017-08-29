@@ -131,6 +131,7 @@ selectionColumnDiv model =
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.context.selection) )
             , ( "empty", List.isEmpty model.context.selection )
+            , ( "hidden", not model.cotoSelectionColumnOpen )
             ]
         ]
         [ App.Views.CotoSelection.cotoSelectionColumnDiv model

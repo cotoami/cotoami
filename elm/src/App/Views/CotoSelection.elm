@@ -32,6 +32,18 @@ statusBar model =
             , span
                 [ class "text" ]
                 [ text " cotos selected" ]
+            , a [ class "toggle", onClick CotoSelectionColumnToggle ]
+                [ i
+                    [ class
+                        (if model.cotoSelectionColumnOpen then
+                            "fa fa-caret-up"
+                        else
+                            "fa fa-caret-down"
+                        )
+                    , (attribute "aria-hidden" "true")
+                    ]
+                    []
+                ]
             ]
         ]
 

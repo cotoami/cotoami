@@ -210,9 +210,11 @@ update msg model =
             openCoto (Just coto) model ! []
 
         SelectCoto cotoId ->
-            { model
-            | context = updateSelection cotoId model.context
-            } ! []
+            ( { model
+              | context = updateSelection cotoId model.context
+              } |> closeSelectionColumnIfEmpty
+            , Cmd.none
+            )
 
         OpenTraversal cotoId ->
             openTraversal App.Types.Traversal.Opened cotoId model
@@ -419,10 +421,16 @@ update msg model =
             { model
             | context = clearSelection model.context
             , connectingCotoId = Nothing
+            , cotoSelectionColumnOpen = False
             , activeViewOnMobile =
                 case model.activeViewOnMobile of
                     SelectionView -> TimelineView
                     anotherView -> anotherView
+            } ! []
+
+        CotoSelectionColumnToggle ->
+            { model
+            | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen)
             } ! []
 
         CotoSelectionTitleInput title ->
@@ -772,3 +780,4 @@ doDeselect model =
             , deselecting = Set.empty
             }
     }
+        |> closeSelectionColumnIfEmpty

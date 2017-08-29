@@ -260,15 +260,15 @@ div.main-traversal {
 
   #main-selection {
     flex: 1;
-    display: none !important;
+    display: flex !important;
     position: relative;
     top: auto;
     overflow-y: hidden;
     background-color: #e8e8e8;
-  }
 
-  #main-selection.empty {
-    display: none !important;
+    &.empty, &.hidden {
+      display: none !important;
+    }
   }
 
   #view-switch-container {

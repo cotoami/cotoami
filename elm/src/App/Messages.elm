@@ -87,6 +87,7 @@ type Msg
     | DeselectingCoto CotoId
     | DeselectCoto
     | ClearSelection
+    | CotoSelectionColumnToggle
     | CotoSelectionTitleInput String
     | ConfirmCreateGroupingCoto
     | PostGroupingCoto

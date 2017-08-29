@@ -37,6 +37,7 @@ type alias Model =
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
     , timeline : Timeline
+    , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
     , connectingCotoId : Maybe CotoId
     , connectingOutbound : Bool
@@ -75,6 +76,7 @@ initModel seed route =
     , cotonomasLoading = False
     , subCotonomas = []
     , timeline = defaultTimeline
+    , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
     , connectingCotoId = Nothing
     , connectingOutbound = True
@@ -160,3 +162,11 @@ connect outbound subject objects model =
             App.Types.Graph.connectManyToOne objects subject model.graph
     , connectingCotoId = Nothing
     }
+
+
+closeSelectionColumnIfEmpty : Model -> Model
+closeSelectionColumnIfEmpty model =
+    if List.isEmpty model.context.selection then
+        { model | cotoSelectionColumnOpen = False }
+    else
+        model
