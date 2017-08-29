@@ -176,8 +176,8 @@ div.main-traversal {
     }
 
     &.selected {
-      opacity: 0.5;
       box-shadow: none;
+      background-color: #eee;
     }
 
     &.empty i {
