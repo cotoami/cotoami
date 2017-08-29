@@ -10,8 +10,8 @@ div.coto {
   }
 
   div.sub-cotos-button {
-    text-align: center;
     padding-top: 5px;
+    text-align: center;
 
     i {
       vertical-align: bottom;
@@ -20,10 +20,10 @@ div.coto {
 }
 
 div.coto-inner {
-  margin: 0;
-  border: transparent 2px solid;
   padding: 12px;
   padding-top: 0;
+  margin: 0;
+  border: transparent 2px solid;
 }
 
 div.coto-header {
@@ -32,7 +32,7 @@ div.coto-header {
 
   a.posted-in {
     font-size: 12px;
-    color: black;
+    color: #000;
     opacity: .3;
   }
 
@@ -47,16 +47,15 @@ div.coto-body {
   position: relative;
 
   span.coto-tool-buttons {
-    display: none;
     position: absolute;
     top: 0;
     right: 0;
     z-index: 2;
-
-    background-color: rgba(255, 255, 255, .6);
+    display: none;
+    height: 34px;
     padding: 0;
     padding-top: 2px;
-    height: 34px;
+    background-color: rgba(255, 255, 255, .6);
 
     a.tool-button {
       margin-left: 10px;
@@ -88,25 +87,25 @@ div.sub-cotos {
   div.outbound-conn {
     margin-top: 8px;
     border-left: 3px solid #ddd;
-    border-radius: 4px 4px 4px 4px;
+    border-radius: 4px;
 
     div.coto {
       padding-bottom: 0;
       border-style: none;
       box-shadow: none;
+    }
 
-      div.coto-inner {
-        padding: 6px 12px;
+    div.coto-inner {
+      padding: 6px 12px;
+    }
 
-        div.coto-header {
-          min-height: auto;
-        }
+    div.coto-header {
+      min-height: auto;
+    }
 
-        div.coto-body {
-          span.coto-tool-buttons {
-            right: -10px;
-          }
-        }
+    div.coto-body {
+      span.coto-tool-buttons {
+        right: -10px;
       }
     }
   }

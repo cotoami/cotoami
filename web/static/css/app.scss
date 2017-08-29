@@ -266,7 +266,8 @@ div.main-traversal {
     overflow-y: hidden;
     background-color: #e8e8e8;
 
-    &.empty, &.hidden {
+    &.empty,
+    &.hidden {
       display: none !important;
     }
   }
