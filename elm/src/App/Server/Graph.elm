@@ -8,9 +8,7 @@ import Utils exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Connection, initConnection, Graph, getCoto)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post)
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Server.Coto exposing (postRequest)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
 
@@ -157,22 +155,3 @@ disconnect maybeCotonomaKey startId endId =
         url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send ConnectionDeleted (httpDelete url)
-
-
-postAndConnect : String -> Maybe Cotonoma -> Bool -> List CotoId -> Post -> Cmd Msg
-postAndConnect clientId maybeCotonoma outbound targetIds post =
-    postRequest clientId maybeCotonoma post
-        |> Http.toTask
-        |> andThen (\post ->
-            case post.cotoId of
-                Nothing ->
-                    -- NetworkError is dummy because it should not happen
-                    Task.fail Http.NetworkError
-                Just cotoId ->
-                    connectTask
-                        (Maybe.map (\cotonoma -> cotonoma.key) maybeCotonoma)
-                        outbound
-                        targetIds
-                        cotoId
-        )
-        |> Task.attempt Connected
