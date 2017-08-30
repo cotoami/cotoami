@@ -47,8 +47,26 @@ newPostEditor context model =
                           ]
               )
             , div [ class "tool-buttons" ]
-                [ button
-                    [ class "button-primary"
+                [ if List.isEmpty context.selection then
+                    span [] []
+                  else
+                    span [ class "connect-buttons" ]
+                        [ button
+                            [ class "button connect-outbound"
+                            , disabled (isBlank model.newContent)
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_upload" ]
+                            ]
+                        , button
+                            [ class "button connect-inbound"
+                            , disabled (isBlank model.newContent)
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_download" ]
+                            , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
+                            ]
+                        ]
+                , button
+                    [ class "button-primary post"
                     , disabled (isBlank model.newContent)
                     , onMouseDown App.Messages.Post
                     ]

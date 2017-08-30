@@ -148,6 +148,7 @@ input {
 
 button[disabled],
 button[disabled]:hover {
+  color: #fff;
   background: #ccc !important;
   border-color: #ccc !important;
   text-shadow:none !important;
