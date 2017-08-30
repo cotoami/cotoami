@@ -15,7 +15,7 @@ import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph, member)
+import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline)
 import App.Messages exposing (..)
 import App.Markdown
@@ -60,6 +60,7 @@ newPostEditor context model =
                         , button
                             [ class "button connect-inbound"
                             , disabled (isBlank model.newContent)
+                            , onMouseDown (App.Messages.Post (Just Inbound))
                             ]
                             [ i [ class "material-icons" ] [ text "file_download" ]
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
