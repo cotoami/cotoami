@@ -81,3 +81,10 @@ postContent clientId maybeCotonoma asCotonoma content model =
                   }
                 , newPost
                 )
+
+
+setCotoSaved : Post -> Timeline -> Timeline
+setCotoSaved apiResponse timeline =
+    { timeline
+    | posts = App.Types.Post.setCotoSaved apiResponse timeline.posts
+    }

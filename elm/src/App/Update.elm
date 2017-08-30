@@ -14,11 +14,11 @@ import Utils exposing (isBlank, send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn, setCotoSaved)
+import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -357,9 +357,7 @@ update msg model =
             post maybeDirection model
 
         Posted (Ok response) ->
-            { model
-            | timeline = model.timeline |> \t -> { t | posts = setCotoSaved response t.posts }
-            } ! []
+            { model | timeline = setCotoSaved response model.timeline } ! []
 
         Posted (Err _) ->
             model ! []
@@ -467,9 +465,7 @@ update msg model =
 
         GroupingCotoPosted (Ok response) ->
             { model
-            | timeline =
-                model.timeline
-                    |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
+            | timeline = setCotoSaved response model.timeline
             }
                 |> (\model ->
                     response.cotoId
@@ -573,9 +569,7 @@ update msg model =
                                 Components.CotonomaModal.Messages.Posted (Ok response) ->
                                     { model
                                     | cotonomasLoading = True
-                                    , timeline =
-                                        model.timeline
-                                            |> \t -> { t | posts = setCotoSaved response t.posts }
+                                    , timeline = setCotoSaved response model.timeline
                                     } !
                                         [ cmd
                                         , fetchRecentCotonomas
