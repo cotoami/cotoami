@@ -120,8 +120,8 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connect : (Result Http.Error (List String) -> msg) -> Maybe CotonomaKey -> Bool -> CotoId -> List CotoId -> Cmd msg
-connect tag maybeCotonomaKey outbound subject objects =
+connect : Maybe CotonomaKey -> Bool -> CotoId -> List CotoId -> Cmd Msg
+connect maybeCotonomaKey outbound subject objects =
     let
         requests =
             if outbound then
@@ -140,7 +140,7 @@ connect tag maybeCotonomaKey outbound subject objects =
                     )
                     objects
     in
-        requests |> List.map Http.toTask |> Task.sequence |> Task.attempt tag
+        requests |> List.map Http.toTask |> Task.sequence |> Task.attempt Connected
 
 
 disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg

@@ -290,7 +290,6 @@ update msg model =
         Connect outbound subject objects ->
             App.Model.connect outbound subject objects model !
                 [ App.Server.Graph.connect
-                    Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     outbound
                     subject.id
@@ -478,7 +477,6 @@ update msg model =
                             in
                                 ( App.Model.connect True startCoto endCotos model
                                 , App.Server.Graph.connect
-                                    Connected
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                                     True
                                     startCoto.id
