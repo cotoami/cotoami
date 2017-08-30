@@ -353,8 +353,8 @@ update msg model =
             else
                 model ! []
 
-        Post ->
-            post Nothing model
+        Post maybeConnectOutbound ->
+            post maybeConnectOutbound model
 
         Posted (Ok response) ->
             { model

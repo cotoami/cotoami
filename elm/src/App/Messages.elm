@@ -72,7 +72,7 @@ type Msg
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
-    | Post
+    | Post (Maybe Bool)
     | Posted (Result Http.Error Post)
     | PostedAndConnect (Result Http.Error Post)
     | OpenPost Post
