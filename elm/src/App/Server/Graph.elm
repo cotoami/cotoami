@@ -143,9 +143,9 @@ connect maybeCotonomaKey outbound objects subject =
         requests |> List.map Http.toTask |> Task.sequence |> Task.attempt Connected
 
 
-disconnect : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd msg
-disconnect tag maybeCotonomaKey startId endId =
+disconnect : Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
+disconnect maybeCotonomaKey startId endId =
     let
         url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
-        Http.send tag (httpDelete url)
+        Http.send ConnectionDeleted (httpDelete url)

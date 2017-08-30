@@ -312,7 +312,6 @@ update msg model =
             | graph = disconnect ( startId, endId ) model.graph
             } !
                 [ App.Server.Graph.disconnect
-                    ConnectionDeleted
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     startId
                     endId
