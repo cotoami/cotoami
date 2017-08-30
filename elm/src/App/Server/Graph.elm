@@ -120,8 +120,8 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connect : Maybe CotonomaKey -> Bool -> CotoId -> List CotoId -> Cmd Msg
-connect maybeCotonomaKey outbound subject objects =
+connect : Maybe CotonomaKey -> Bool ->List CotoId ->  CotoId -> Cmd Msg
+connect maybeCotonomaKey outbound objects subject =
     let
         requests =
             if outbound then

@@ -292,8 +292,8 @@ update msg model =
                 [ App.Server.Graph.connect
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     outbound
-                    subject.id
                     (List.map (\coto -> coto.id) objects)
+                    subject.id
                 ]
 
         Connected (Ok _) ->
@@ -479,8 +479,8 @@ update msg model =
                                 , App.Server.Graph.connect
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                                     True
-                                    startCoto.id
                                     (List.map (\coto -> coto.id) endCotos)
+                                    startCoto.id
                                 )
                         )
                         |> withDefault (model ! [])
