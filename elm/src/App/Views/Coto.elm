@@ -10,7 +10,7 @@ import Utils exposing (onClickWithoutPropagation, onLinkButtonClick)
 import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
-import App.Types.Graph exposing (Graph, Connection, pinned, hasChildren)
+import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasChildren)
 import App.Messages exposing (..)
 
 
@@ -75,7 +75,7 @@ type alias BodyConfig msg =
     , pinCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
-    , confirmConnect : Maybe (CotoId -> Bool -> msg)
+    , confirmConnect : Maybe (CotoId -> Direction -> msg)
     , deleteConnection : Maybe msg
     , markdown : String -> Html msg
     }
@@ -156,13 +156,13 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         [ a
                             [ class "tool-button connect-to-this"
                             , title "Inbound connection from the selected cotos"
-                            , onLinkButtonClick (confirmConnect cotoId False)
+                            , onLinkButtonClick (confirmConnect cotoId Inbound)
                             ]
                             [ i [ class "material-icons" ] [ text "file_download" ] ]
                         , a
                             [ class "tool-button connect-to-selection"
                             , title "Outbound connection to the selected cotos"
-                            , onLinkButtonClick (confirmConnect cotoId True)
+                            , onLinkButtonClick (confirmConnect cotoId Outbound)
                             ]
                             [ i [ class "material-icons" ] [ text "file_upload" ] ]
                         ]

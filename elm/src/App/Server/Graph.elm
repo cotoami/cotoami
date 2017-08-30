@@ -6,7 +6,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
-import App.Types.Graph exposing (Connection, initConnection, Graph, getCoto)
+import App.Types.Graph exposing (Direction, Connection, initConnection, Graph, getCoto)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
@@ -120,32 +120,33 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connectTask : Maybe CotonomaKey -> Bool -> List CotoId -> CotoId -> Task Http.Error (List String)
-connectTask maybeCotonomaKey outbound objects subject =
+connectTask : Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
+connectTask maybeCotonomaKey direction objects subject =
     let
         requests =
-            if outbound then
-                [ httpPut
-                    (connectUrl maybeCotonomaKey subject)
-                    (cotoIdsAsJsonBody "end_ids" objects)
-                    (Decode.succeed "done")
-                ]
-            else
-                List.map
-                    (\startId ->
-                        httpPut
-                            (connectUrl maybeCotonomaKey startId)
-                            (cotoIdsAsJsonBody "end_ids" [ subject ])
-                            (Decode.succeed "done")
-                    )
-                    objects
+            case direction of
+                App.Types.Graph.Outbound ->
+                    [ httpPut
+                        (connectUrl maybeCotonomaKey subject)
+                        (cotoIdsAsJsonBody "end_ids" objects)
+                        (Decode.succeed "done")
+                    ]
+                App.Types.Graph.Inbound ->
+                    List.map
+                        (\startId ->
+                            httpPut
+                                (connectUrl maybeCotonomaKey startId)
+                                (cotoIdsAsJsonBody "end_ids" [ subject ])
+                                (Decode.succeed "done")
+                        )
+                        objects
     in
         requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : Maybe CotonomaKey -> Bool ->List CotoId -> CotoId -> Cmd Msg
-connect maybeCotonomaKey outbound objects subject =
-    connectTask maybeCotonomaKey outbound objects subject
+connect : Maybe CotonomaKey -> Direction ->List CotoId -> CotoId -> Cmd Msg
+connect maybeCotonomaKey direction objects subject =
+    connectTask maybeCotonomaKey direction objects subject
         |> Task.attempt Connected
 
 

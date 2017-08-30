@@ -279,17 +279,17 @@ update msg model =
         CotoUnpinned (Err _) ->
             model ! []
 
-        ConfirmConnect cotoId outbound ->
+        ConfirmConnect cotoId direction ->
             { model
             | connectingCotoId = Just cotoId
-            , connectingOutbound = outbound
+            , connectingDirection = direction
             } ! []
 
-        Connect outbound subject objects ->
-            App.Model.connect outbound subject objects model !
+        Connect subject objects direction ->
+            App.Model.connect direction subject objects model !
                 [ App.Server.Graph.connect
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    outbound
+                    direction
                     (List.map (\coto -> coto.id) objects)
                     subject.id
                 ]
@@ -353,8 +353,8 @@ update msg model =
             else
                 model ! []
 
-        Post maybeConnectOutbound ->
-            post maybeConnectOutbound model
+        Post maybeDirection ->
+            post maybeDirection model
 
         Posted (Ok response) ->
             { model
@@ -478,10 +478,10 @@ update msg model =
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                ( App.Model.connect True startCoto endCotos model
+                                ( App.Model.connect Outbound startCoto endCotos model
                                 , App.Server.Graph.connect
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                    True
+                                    Outbound
                                     (List.map (\coto -> coto.id) endCotos)
                                     startCoto.id
                                 )
@@ -739,14 +739,14 @@ handlePushedPost clientId payload model =
         model ! []
 
 
-post : Maybe Bool -> Model -> ( Model, Cmd Msg )
-post maybeConnectOutbound model =
+post : Maybe Direction -> Model -> ( Model, Cmd Msg )
+post maybeDirection model =
     let
         clientId = model.context.clientId
         cotonoma = model.context.cotonoma
         newContent = model.timeline.newContent
         postMsg =
-            case maybeConnectOutbound of
+            case maybeDirection of
                 Nothing -> Posted
                 Just _ -> PostedAndConnect
     in
@@ -755,7 +755,8 @@ post maybeConnectOutbound model =
             |> \( timeline, newPost ) ->
                 { model
                 | timeline = timeline
-                , connectingOutbound = Maybe.withDefault True maybeConnectOutbound
+                , connectingDirection =
+                    Maybe.withDefault Outbound maybeDirection
                 } !
                     [ scrollToBottom NoOp
                     , App.Server.Coto.post clientId cotonoma postMsg newPost

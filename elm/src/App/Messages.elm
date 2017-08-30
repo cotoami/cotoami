@@ -9,7 +9,7 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph)
+import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
@@ -58,8 +58,8 @@ type Msg
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
-    | ConfirmConnect CotoId Bool
-    | Connect Bool Coto (List Coto)
+    | ConfirmConnect CotoId Direction
+    | Connect Coto (List Coto) Direction
     | Connected (Result Http.Error (List String))
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
@@ -72,7 +72,7 @@ type Msg
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
-    | Post (Maybe Bool)
+    | Post (Maybe Direction)
     | Posted (Result Http.Error Post)
     | PostedAndConnect (Result Http.Error Post)
     | OpenPost Post

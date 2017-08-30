@@ -11,7 +11,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
-import App.Types.Graph exposing (Graph, defaultGraph)
+import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
@@ -40,7 +40,7 @@ type alias Model =
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
     , connectingCotoId : Maybe CotoId
-    , connectingOutbound : Bool
+    , connectingDirection : Direction
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Traversals
@@ -79,7 +79,7 @@ initModel seed route =
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
     , connectingCotoId = Nothing
-    , connectingOutbound = True
+    , connectingDirection = App.Types.Graph.Outbound
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -152,14 +152,15 @@ openTraversal description cotoId model =
     }
 
 
-connect : Bool -> Coto -> List Coto -> Model -> Model
-connect outbound subject objects model =
+connect : Direction -> Coto -> List Coto -> Model -> Model
+connect direction subject objects model =
     { model
     | graph =
-        if outbound then
-            App.Types.Graph.connectOneToMany subject objects model.graph
-        else
-            App.Types.Graph.connectManyToOne objects subject model.graph
+        case direction of
+            App.Types.Graph.Outbound ->
+                App.Types.Graph.connectOneToMany subject objects model.graph
+            App.Types.Graph.Inbound ->
+                App.Types.Graph.connectManyToOne objects subject model.graph
     , connectingCotoId = Nothing
     }
 
