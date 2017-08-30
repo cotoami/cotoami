@@ -286,7 +286,7 @@ update msg model =
             } ! []
 
         Connect subject objects direction ->
-            App.Model.connect direction subject objects model !
+            App.Model.connect direction objects subject model !
                 [ App.Server.Graph.connect
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     direction
@@ -362,8 +362,28 @@ update msg model =
         Posted (Err _) ->
             model ! []
 
-        PostedAndConnect (Ok post) ->
-            model ! []
+        PostedAndConnect (Ok response) ->
+            { model | timeline = setCotoSaved response model.timeline }
+                |> (\model ->
+                    response.cotoId
+                        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
+                        |> Maybe.map (\subject ->
+                            let
+                                direction = model.connectingDirection
+                                objects = getSelectedCotos model
+                                maybeCotonomaKey =
+                                    Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
+                            in
+                                ( App.Model.connect direction objects subject model
+                                , App.Server.Graph.connect
+                                    maybeCotonomaKey
+                                    direction
+                                    (List.map (\coto -> coto.id) objects)
+                                    subject.id
+                                )
+                        )
+                        |> withDefault (model ! [])
+                )
 
         PostedAndConnect (Err _) ->
             model ! []
@@ -474,7 +494,7 @@ update msg model =
                             let
                                 endCotos = getSelectedCotos model
                             in
-                                ( App.Model.connect Outbound startCoto endCotos model
+                                ( App.Model.connect Outbound endCotos startCoto model
                                 , App.Server.Graph.connect
                                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                                     Outbound

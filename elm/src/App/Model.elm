@@ -152,8 +152,8 @@ openTraversal description cotoId model =
     }
 
 
-connect : Direction -> Coto -> List Coto -> Model -> Model
-connect direction subject objects model =
+connect : Direction -> List Coto -> Coto -> Model -> Model
+connect direction objects subject model =
     { model
     | graph =
         case direction of

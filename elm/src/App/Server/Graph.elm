@@ -144,7 +144,7 @@ connectTask maybeCotonomaKey direction objects subject =
         requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : Maybe CotonomaKey -> Direction ->List CotoId -> CotoId -> Cmd Msg
+connect : Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
 connect maybeCotonomaKey direction objects subject =
     connectTask maybeCotonomaKey direction objects subject
         |> Task.attempt Connected
