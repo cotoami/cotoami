@@ -349,12 +349,12 @@ update msg model =
 
         EditorKeyDown key ->
             if key == enter.keyCode && model.context.ctrlDown && (not (isBlank model.timeline.newContent)) then
-                post model
+                post Nothing model
             else
                 model ! []
 
         Post ->
-            post model
+            post Nothing model
 
         Posted (Ok response) ->
             { model
@@ -362,6 +362,12 @@ update msg model =
             } ! []
 
         Posted (Err _) ->
+            model ! []
+
+        PostedAndConnect (Ok post) ->
+            model ! []
+
+        PostedAndConnect (Err _) ->
             model ! []
 
         OpenPost post ->
@@ -733,19 +739,26 @@ handlePushedPost clientId payload model =
         model ! []
 
 
-post : Model -> ( Model, Cmd Msg )
-post model =
+post : Maybe Bool -> Model -> ( Model, Cmd Msg )
+post maybeConnectOutbound model =
     let
         clientId = model.context.clientId
         cotonoma = model.context.cotonoma
         newContent = model.timeline.newContent
+        postMsg =
+            case maybeConnectOutbound of
+                Nothing -> Posted
+                Just _ -> PostedAndConnect
     in
         model.timeline
             |> postContent clientId cotonoma False newContent
             |> \( timeline, newPost ) ->
-                { model | timeline = timeline } !
+                { model
+                | timeline = timeline
+                , connectingOutbound = Maybe.withDefault True maybeConnectOutbound
+                } !
                     [ scrollToBottom NoOp
-                    , App.Server.Coto.post clientId cotonoma Posted newPost
+                    , App.Server.Coto.post clientId cotonoma postMsg newPost
                     ]
 
 
