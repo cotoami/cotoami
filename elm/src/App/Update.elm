@@ -269,7 +269,6 @@ update msg model =
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId } !
                 [ App.Server.Graph.unpinCoto
-                    CotoUnpinned
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     cotoId
                 ]

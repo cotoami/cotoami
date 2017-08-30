@@ -102,12 +102,12 @@ pinCotos maybeCotonomaKey cotoIds =
         Http.send CotoPinned (httpPut url body (Decode.succeed "done"))
 
 
-unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
-unpinCoto tag maybeCotonomaKey cotoId =
+unpinCoto : Maybe CotonomaKey -> CotoId -> Cmd Msg
+unpinCoto maybeCotonomaKey cotoId =
     let
         url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
-        Http.send tag (httpDelete url)
+        Http.send CotoUnpinned (httpDelete url)
 
 
 connectUrl : Maybe CotonomaKey -> CotoId -> String
