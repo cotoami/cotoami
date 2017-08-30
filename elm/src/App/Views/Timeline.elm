@@ -54,6 +54,7 @@ newPostEditor context model =
                         [ button
                             [ class "button connect-outbound"
                             , disabled (isBlank model.newContent)
+                            , onMouseDown (App.Messages.Post (Just Outbound))
                             ]
                             [ i [ class "material-icons" ] [ text "file_upload" ]
                             ]
