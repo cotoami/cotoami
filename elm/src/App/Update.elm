@@ -247,7 +247,6 @@ update msg model =
                     | graph = pinCoto coto model.graph
                     } !
                         [ App.Server.Graph.pinCotos
-                            CotoPinned
                             (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                             [ cotoId ]
                         ]

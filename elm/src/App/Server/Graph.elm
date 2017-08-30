@@ -93,13 +93,13 @@ cotoIdsAsJsonBody key cotoIds =
             ]
 
 
-pinCotos : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> List CotoId -> Cmd msg
-pinCotos tag maybeCotonomaKey cotoIds =
+pinCotos : Maybe CotonomaKey -> List CotoId -> Cmd Msg
+pinCotos maybeCotonomaKey cotoIds =
     let
         url = pinUrl maybeCotonomaKey
         body = cotoIdsAsJsonBody "coto_ids" cotoIds
     in
-        Http.send tag (httpPut url body (Decode.succeed "done"))
+        Http.send CotoPinned (httpPut url body (Decode.succeed "done"))
 
 
 unpinCoto : (Result Http.Error String -> msg) -> Maybe CotonomaKey -> CotoId -> Cmd msg
