@@ -1,7 +1,7 @@
 module App.Server.Graph exposing (..)
 
 import Http
-import Task
+import Task exposing (Task, andThen)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils exposing (httpPut, httpDelete)
@@ -120,8 +120,8 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connect : Maybe CotonomaKey -> Bool ->List CotoId ->  CotoId -> Cmd Msg
-connect maybeCotonomaKey outbound objects subject =
+connectTask : Maybe CotonomaKey -> Bool -> List CotoId -> CotoId -> Task Http.Error (List String)
+connectTask maybeCotonomaKey outbound objects subject =
     let
         requests =
             if outbound then
@@ -140,7 +140,13 @@ connect maybeCotonomaKey outbound objects subject =
                     )
                     objects
     in
-        requests |> List.map Http.toTask |> Task.sequence |> Task.attempt Connected
+        requests |> List.map Http.toTask |> Task.sequence
+
+
+connect : Maybe CotonomaKey -> Bool ->List CotoId -> CotoId -> Cmd Msg
+connect maybeCotonomaKey outbound objects subject =
+    connectTask maybeCotonomaKey outbound objects subject
+        |> Task.attempt Connected
 
 
 disconnect : Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
