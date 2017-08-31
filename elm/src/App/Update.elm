@@ -350,9 +350,17 @@ update msg model =
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
-        EditorKeyDown key ->
-            if key == enter.keyCode && isCtrlDown model.context && isNotBlank model.timeline.newContent then
-                post Nothing model
+        EditorKeyDown keyCode ->
+            if keyCode == enter.keyCode &&
+               not (Set.isEmpty model.context.modifierKeys) &&
+               isNotBlank model.timeline.newContent
+            then
+                if isCtrlDown model.context then
+                    post Nothing model
+                else if isAltDown model.context then
+                    post (Just Inbound) model
+                else
+                    model ! []
             else
                 model ! []
 

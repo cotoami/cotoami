@@ -124,3 +124,17 @@ isCtrlDown context =
                         Meta -> True
                         _ -> False
         )
+
+
+isAltDown : Context -> Bool
+isAltDown context =
+    context.modifierKeys
+        |> Set.toList
+        |> List.any (\keyCode ->
+            case toModifier keyCode of
+                Nothing -> False
+                Just modifier ->
+                    case modifier of
+                        Alt -> True
+                        _ -> False
+        )
