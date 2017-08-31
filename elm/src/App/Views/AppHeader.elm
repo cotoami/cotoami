@@ -3,7 +3,7 @@ module App.Views.AppHeader exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.Events exposing (onLinkButtonClick)
+import Util.EventUtil exposing (onLinkButtonClick)
 import App.Model exposing (Model, isNavigationEmpty)
 import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 

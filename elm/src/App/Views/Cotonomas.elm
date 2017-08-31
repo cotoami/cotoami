@@ -3,7 +3,7 @@ module App.Views.Cotonomas exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Util.Events exposing (onLinkButtonClick)
+import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Coto exposing (Cotonoma)
 import App.Messages exposing (Msg(CotonomaClick))
 

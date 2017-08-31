@@ -6,7 +6,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.StringUtil exposing (isBlank)
-import Util.Events exposing (onLinkButtonClick)
+import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)

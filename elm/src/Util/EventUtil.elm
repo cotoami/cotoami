@@ -1,4 +1,4 @@
-module Util.Events exposing (onClickWithoutPropagation, onLinkButtonClick)
+module Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
