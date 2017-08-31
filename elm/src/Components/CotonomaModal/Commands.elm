@@ -2,7 +2,7 @@ module Components.CotonomaModal.Commands exposing (..)
 
 import Json.Encode as Encode
 import Http
-import Utils exposing (httpPost)
+import Util.HttpUtil exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Server.Coto exposing (decodePost)
 import Components.CotonomaModal.Model exposing (..)

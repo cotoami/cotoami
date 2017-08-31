@@ -4,7 +4,7 @@ import Http
 import Task exposing (Task, andThen)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Utils exposing (httpPut, httpDelete)
+import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Direction, Connection, initConnection, Graph, getCoto)
 import App.Types.Coto exposing (Coto, CotoId, initCoto, Cotonoma, CotonomaKey)
