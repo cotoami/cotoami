@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onCheck)
 import Http
 import Json.Decode as Decode
-import Utils exposing (validateEmail)
+import Util.StringUtil exposing (validateEmail)
 import Util.Modal as Modal
 
 

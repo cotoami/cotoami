@@ -10,7 +10,8 @@ import Json.Decode as Decode
 import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
-import Utils exposing (isBlank, send)
+import Util.StringUtil exposing (isBlank)
+import Utils exposing (send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)

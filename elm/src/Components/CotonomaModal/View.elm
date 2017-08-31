@@ -3,7 +3,7 @@ module Components.CotonomaModal.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (isBlank)
+import Util.StringUtil exposing (isBlank)
 import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
