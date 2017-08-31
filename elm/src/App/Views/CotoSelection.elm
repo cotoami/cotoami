@@ -54,26 +54,7 @@ cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            [ div [ class "grouping-coto" ]
-                [ span
-                    [ class "selection-title" ]
-                    [ input
-                        [ type_ "text"
-                        , name "title"
-                        , placeholder "Title for this selection"
-                        , maxlength titleMaxlength
-                        , value model.cotoSelectionTitle
-                        , onInput CotoSelectionTitleInput
-                        ] []
-                    , button
-                        [ class "button"
-                        , disabled (not (validateTitle model.cotoSelectionTitle))
-                        , onClick ConfirmCreateGroupingCoto
-                        ]
-                        [ text "New Coto" ]
-                    ]
-                ]
-            ]
+            []
         , div
             [ class "column-body" ]
             [ selectedCotosDiv model ]

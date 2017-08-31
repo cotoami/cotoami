@@ -89,10 +89,6 @@ type Msg
     | DeselectCoto
     | ClearSelection
     | CotoSelectionColumnToggle
-    | CotoSelectionTitleInput String
-    | ConfirmCreateGroupingCoto
-    | PostGroupingCoto
-    | GroupingCotoPosted (Result Http.Error Post)
 
     -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
