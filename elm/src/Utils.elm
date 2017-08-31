@@ -1,7 +1,5 @@
 module Utils exposing
     ( send
-    , onClickWithoutPropagation
-    , onLinkButtonClick
     , httpRequestWithBody
     , httpDelete
     , httpPost
@@ -9,38 +7,14 @@ module Utils exposing
     )
 
 import Task
-import Html exposing (Attribute)
-import Html.Events exposing (onWithOptions)
-import Json.Decode as Decode
 import Http
+import Json.Decode as Decode
 
 
 -- https://medium.com/elm-shorts/how-to-turn-a-msg-into-a-cmd-msg-in-elm-5dd095175d84
 send : msg -> Cmd msg
 send msg =
-    Task.succeed msg
-    |> Task.perform identity
-
-
-onClickWithoutPropagation : msg -> Attribute msg
-onClickWithoutPropagation message =
-    onNoValueEvent "click" message
-        { stopPropagation = True
-        , preventDefault = False
-        }
-
-
-onLinkButtonClick : msg -> Attribute msg
-onLinkButtonClick message =
-    onNoValueEvent "click" message
-        { stopPropagation = True
-        , preventDefault = True
-        }
-
-
-onNoValueEvent : String -> msg -> Html.Events.Options -> Attribute msg
-onNoValueEvent eventName message options =
-    onWithOptions eventName options (Decode.succeed message)
+    Task.succeed msg |> Task.perform identity
 
 
 commonRequestHeaders : List Http.Header
