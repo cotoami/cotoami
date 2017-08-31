@@ -11,7 +11,6 @@ import Http exposing (Error(..))
 import Keys exposing (ctrl, meta, enter, escape)
 import Navigation
 import Util.StringUtil exposing (isBlank)
-import Utils exposing (send)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
@@ -27,7 +26,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
-import App.Commands exposing (scrollToBottom)
+import App.Commands exposing (sendMsg, scrollToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -747,7 +746,7 @@ handlePushedPost clientId payload model =
                 |> \t -> { t | posts = payload.body :: t.posts }
         } !
             if payload.body.asCotonoma then
-                [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
+                [ scrollToBottom NoOp, sendMsg (CotonomaPushed payload.body) ]
             else
                 [ scrollToBottom NoOp ]
     else

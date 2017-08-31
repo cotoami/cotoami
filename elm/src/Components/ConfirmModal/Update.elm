@@ -1,6 +1,6 @@
 module Components.ConfirmModal.Update exposing (..)
 
-import Utils exposing (send)
+import App.Commands exposing (sendMsg)
 import App.Messages
 import Components.ConfirmModal.Model exposing (..)
 import Components.ConfirmModal.Messages exposing (..)
@@ -13,4 +13,4 @@ update msg model =
             ( { model | open = False }, Cmd.none )
 
         Confirm ->
-            ( { model | open = False } , send model.msgOnConfirm )
+            ( { model | open = False } , sendMsg model.msgOnConfirm )
