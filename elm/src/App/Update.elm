@@ -8,9 +8,9 @@ import Time
 import Maybe exposing (andThen, withDefault)
 import Json.Decode as Decode
 import Http exposing (Error(..))
-import Keys exposing (ctrl, meta, enter, escape)
+import Util.Keys exposing (enter, escape)
 import Navigation
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
@@ -43,19 +43,22 @@ update msg model =
         NoOp ->
             model ! []
 
-        KeyDown key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown True model.context } ! []
-            else if key == escape.keyCode then
-                (closeModal model) ! []
-            else
-                model ! []
+        KeyDown keyCode ->
+            { model
+            | context = App.Types.Context.keyDown keyCode model.context
+            }
+                |> (\model ->
+                    if keyCode == escape.keyCode then
+                        closeModal model
+                    else
+                        model
+                )
+                |> \model -> model ! []
 
-        KeyUp key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown False model.context } ! []
-            else
-                model ! []
+        KeyUp keyCode ->
+            { model
+            | context = App.Types.Context.keyUp keyCode model.context
+            } ! []
 
         OnLocationChange location ->
             parseLocation location
@@ -348,7 +351,7 @@ update msg model =
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
         EditorKeyDown key ->
-            if key == enter.keyCode && model.context.ctrlDown && (not (isBlank model.timeline.newContent)) then
+            if key == enter.keyCode && isCtrlDown model.context && isNotBlank model.timeline.newContent then
                 post Nothing model
             else
                 model ! []

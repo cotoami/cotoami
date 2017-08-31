@@ -1,4 +1,4 @@
-module Util.StringUtil exposing (isBlank, validateEmail)
+module Util.StringUtil exposing (isBlank, isNotBlank, validateEmail)
 
 import Regex exposing (Regex, caseInsensitive, regex, contains)
 
@@ -8,9 +8,14 @@ isBlank string =
     String.trim string |> String.isEmpty
 
 
+isNotBlank : String -> Bool
+isNotBlank string =
+    not (isBlank string)
+
+
 validateEmail : String -> Bool
 validateEmail string =
-    not (isBlank string) && Regex.contains emailRegex string
+    isNotBlank string && Regex.contains emailRegex string
 
 
 emailRegex : Regex

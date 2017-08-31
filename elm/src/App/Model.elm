@@ -1,13 +1,10 @@
 module App.Model exposing (..)
 
-import Set
 import Dict
-import Uuid
-import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
-import App.Types.Context exposing (Context)
+import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
@@ -50,19 +47,7 @@ type alias Model =
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
-    , context =
-        { clientId =
-            initialSeed seed
-                |> step Uuid.uuidGenerator
-                |> \( uuid, _ ) -> Uuid.toString uuid
-        , session = Nothing
-        , cotonoma = Nothing
-        , elementFocus = Nothing
-        , cotoFocus = Nothing
-        , selection = []
-        , deselecting = Set.empty
-        , ctrlDown = False
-        }
+    , context = initContext seed
     , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
