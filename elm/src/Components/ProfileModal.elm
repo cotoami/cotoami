@@ -2,7 +2,7 @@ module Components.ProfileModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Modal
+import Util.Modal as Modal
 import App.Types.Session exposing (Session)
 
 

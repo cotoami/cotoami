@@ -1,4 +1,4 @@
-module Modal exposing (Config, view)
+module Util.Modal exposing (Config, view)
 
 import Html
 import Html exposing (..)

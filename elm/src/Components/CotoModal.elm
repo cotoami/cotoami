@@ -3,7 +3,7 @@ module Components.CotoModal exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Modal
+import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Markdown
 
