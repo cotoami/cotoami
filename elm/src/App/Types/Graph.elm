@@ -5,6 +5,11 @@ import Maybe exposing (withDefault)
 import App.Types.Coto exposing (Coto, CotoId)
 
 
+type Direction
+    = Outbound
+    | Inbound
+
+
 type alias Connection =
     { key : String
     , start : Maybe CotoId

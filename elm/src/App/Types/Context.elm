@@ -1,6 +1,10 @@
 module App.Types.Context exposing (..)
 
-import Set
+import Set exposing (Set)
+import Uuid
+import Random.Pcg exposing (initialSeed, step)
+import Keyboard exposing (KeyCode)
+import Util.Keys exposing (Modifier(..), isModifier, toModifier)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, CotoId, Cotonoma)
 
@@ -15,8 +19,24 @@ type alias Context =
     , elementFocus : Maybe ElementId
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
-    , deselecting : Set.Set CotoId
-    , ctrlDown : Bool
+    , deselecting : Set CotoId
+    , modifierKeys : Set KeyCode
+    }
+
+
+initContext : Int -> Context
+initContext seed =
+    { clientId =
+        initialSeed seed
+            |> step Uuid.uuidGenerator
+            |> \( uuid, _ ) -> Uuid.toString uuid
+    , session = Nothing
+    , cotonoma = Nothing
+    , elementFocus = Nothing
+    , cotoFocus = Nothing
+    , selection = []
+    , deselecting = Set.empty
+    , modifierKeys = Set.empty
     }
 
 
@@ -71,6 +91,50 @@ setBeingDeselected cotoId context =
     }
 
 
-ctrlDown : Bool -> Context -> Context
-ctrlDown down context =
-    { context | ctrlDown = down }
+keyDown : KeyCode -> Context -> Context
+keyDown keyCode context =
+    if isModifier keyCode then
+        { context
+        | modifierKeys = Set.insert keyCode context.modifierKeys
+        }
+    else
+        context
+
+
+keyUp : KeyCode -> Context -> Context
+keyUp keyCode context =
+    if isModifier keyCode then
+        { context
+        | modifierKeys = Set.remove keyCode context.modifierKeys
+        }
+    else
+        context
+
+
+isCtrlDown : Context -> Bool
+isCtrlDown context =
+    context.modifierKeys
+        |> Set.toList
+        |> List.any (\keyCode ->
+            case toModifier keyCode of
+                Nothing -> False
+                Just modifier ->
+                    case modifier of
+                        Ctrl -> True
+                        Meta -> True
+                        _ -> False
+        )
+
+
+isAltDown : Context -> Bool
+isAltDown context =
+    context.modifierKeys
+        |> Set.toList
+        |> List.any (\keyCode ->
+            case toModifier keyCode of
+                Nothing -> False
+                Just modifier ->
+                    case modifier of
+                        Alt -> True
+                        _ -> False
+        )

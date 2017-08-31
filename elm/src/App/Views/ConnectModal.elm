@@ -5,8 +5,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
-import Modal
+import Util.Modal as Modal
 import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Graph exposing (Direction(..))
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Markdown
@@ -17,28 +18,28 @@ view model =
     model.connectingCotoId
         |> andThen (\cotoId -> getCoto cotoId model)
         |> Maybe.map (\coto ->
-            modalConfig model.connectingOutbound (getSelectedCotos model) coto
+            modalConfig model.connectingDirection (getSelectedCotos model) coto
         )
         |> Modal.view "connect-modal"
 
 
-modalConfig : Bool -> List Coto -> Coto -> Modal.Config Msg
-modalConfig outbound selectedCotos connectingCoto =
+modalConfig : Direction -> List Coto -> Coto -> Modal.Config Msg
+modalConfig direction selectedCotos connectingCoto =
     { closeMessage = CloseConnectModal
     , title = "Connect Preview"
-    , content = modalContent outbound selectedCotos connectingCoto
+    , content = modalContent direction selectedCotos connectingCoto
     , buttons =
         [ button
             [ class "button button-primary"
-            , onClick (Connect outbound connectingCoto selectedCotos)
+            , onClick (Connect connectingCoto selectedCotos direction)
             ]
             [ text "Connect" ]
         ]
     }
 
 
-modalContent : Bool -> List Coto -> Coto -> Html Msg
-modalContent outbound selectedCotos connectingCoto =
+modalContent : Direction -> List Coto -> Coto -> Html Msg
+modalContent direction selectedCotos connectingCoto =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -59,10 +60,9 @@ modalContent outbound selectedCotos connectingCoto =
                 [ App.Markdown.markdown connectingCoto.content ]
 
         ( start, end ) =
-            if outbound then
-                ( connectingCotoHtml, selectedCotosHtml )
-            else
-                ( selectedCotosHtml, connectingCotoHtml )
+            case direction of
+                Outbound -> ( connectingCotoHtml, selectedCotosHtml )
+                Inbound -> ( selectedCotosHtml, connectingCotoHtml )
 
     in
         div []

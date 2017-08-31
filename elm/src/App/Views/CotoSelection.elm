@@ -5,7 +5,8 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (onLinkButtonClick, isBlank)
+import Util.StringUtil exposing (isBlank)
+import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -53,26 +54,7 @@ cotoSelectionColumnDiv model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            [ div [ class "grouping-coto" ]
-                [ span
-                    [ class "selection-title" ]
-                    [ input
-                        [ type_ "text"
-                        , name "title"
-                        , placeholder "Title for this selection"
-                        , maxlength titleMaxlength
-                        , value model.cotoSelectionTitle
-                        , onInput CotoSelectionTitleInput
-                        ] []
-                    , button
-                        [ class "button"
-                        , disabled (not (validateTitle model.cotoSelectionTitle))
-                        , onClick ConfirmCreateGroupingCoto
-                        ]
-                        [ text "New Coto" ]
-                    ]
-                ]
-            ]
+            []
         , div
             [ class "column-body" ]
             [ selectedCotosDiv model ]

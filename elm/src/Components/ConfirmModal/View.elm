@@ -3,7 +3,7 @@ module Components.ConfirmModal.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Modal
+import Util.Modal as Modal
 import Components.ConfirmModal.Model exposing (..)
 import Components.ConfirmModal.Messages exposing (..)
 

@@ -1,6 +1,6 @@
 module Components.CotonomaModal.Update exposing (..)
 
-import Utils exposing (validateEmail)
+import Util.StringUtil exposing (validateEmail)
 import App.Types.Context exposing (Context)
 import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline, postContent)

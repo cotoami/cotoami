@@ -1,17 +1,14 @@
 module App.Model exposing (..)
 
-import Set
 import Dict
-import Uuid
-import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
-import App.Types.Context exposing (Context)
+import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
-import App.Types.Graph exposing (Graph, defaultGraph)
+import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
@@ -40,7 +37,7 @@ type alias Model =
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
     , connectingCotoId : Maybe CotoId
-    , connectingOutbound : Bool
+    , connectingDirection : Direction
     , cotonomaModal : Components.CotonomaModal.Model.Model
     , graph : Graph
     , traversals : Traversals
@@ -50,19 +47,7 @@ type alias Model =
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
-    , context =
-        { clientId =
-            initialSeed seed
-                |> step Uuid.uuidGenerator
-                |> \( uuid, _ ) -> Uuid.toString uuid
-        , session = Nothing
-        , cotonoma = Nothing
-        , elementFocus = Nothing
-        , cotoFocus = Nothing
-        , selection = []
-        , deselecting = Set.empty
-        , ctrlDown = False
-        }
+    , context = initContext seed
     , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
@@ -79,7 +64,7 @@ initModel seed route =
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
     , connectingCotoId = Nothing
-    , connectingOutbound = True
+    , connectingDirection = App.Types.Graph.Outbound
     , cotonomaModal = Components.CotonomaModal.Model.initModel
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -152,14 +137,15 @@ openTraversal description cotoId model =
     }
 
 
-connect : Bool -> Coto -> List Coto -> Model -> Model
-connect outbound subject objects model =
+connect : Direction -> List Coto -> Coto -> Model -> Model
+connect direction objects subject model =
     { model
     | graph =
-        if outbound then
-            App.Types.Graph.connectOneToMany subject objects model.graph
-        else
-            App.Types.Graph.connectManyToOne objects subject model.graph
+        case direction of
+            App.Types.Graph.Outbound ->
+                App.Types.Graph.connectOneToMany subject objects model.graph
+            App.Types.Graph.Inbound ->
+                App.Types.Graph.connectManyToOne objects subject model.graph
     , connectingCotoId = Nothing
     }
 

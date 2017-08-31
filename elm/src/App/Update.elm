@@ -8,17 +8,17 @@ import Time
 import Maybe exposing (andThen, withDefault)
 import Json.Decode as Decode
 import Http exposing (Error(..))
-import Keys exposing (ctrl, meta, enter, escape)
+import Util.Keys exposing (enter, escape)
 import Navigation
-import Utils exposing (isBlank, send)
+import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn, setCotoSaved)
+import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -26,7 +26,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
-import App.Commands exposing (scrollToBottom)
+import App.Commands exposing (sendMsg, scrollToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -43,19 +43,22 @@ update msg model =
         NoOp ->
             model ! []
 
-        KeyDown key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown True model.context } ! []
-            else if key == escape.keyCode then
-                (closeModal model) ! []
-            else
-                model ! []
+        KeyDown keyCode ->
+            { model
+            | context = App.Types.Context.keyDown keyCode model.context
+            }
+                |> (\model ->
+                    if keyCode == escape.keyCode then
+                        closeModal model
+                    else
+                        model
+                )
+                |> \model -> model ! []
 
-        KeyUp key ->
-            if key == ctrl.keyCode || key == meta.keyCode then
-                { model | context = ctrlDown False model.context } ! []
-            else
-                model ! []
+        KeyUp keyCode ->
+            { model
+            | context = App.Types.Context.keyUp keyCode model.context
+            } ! []
 
         OnLocationChange location ->
             parseLocation location
@@ -247,7 +250,6 @@ update msg model =
                     | graph = pinCoto coto model.graph
                     } !
                         [ App.Server.Graph.pinCotos
-                            CotoPinned
                             (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                             [ cotoId ]
                         ]
@@ -270,7 +272,6 @@ update msg model =
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId } !
                 [ App.Server.Graph.unpinCoto
-                    CotoUnpinned
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     cotoId
                 ]
@@ -281,20 +282,19 @@ update msg model =
         CotoUnpinned (Err _) ->
             model ! []
 
-        ConfirmConnect cotoId outbound ->
+        ConfirmConnect cotoId direction ->
             { model
             | connectingCotoId = Just cotoId
-            , connectingOutbound = outbound
+            , connectingDirection = direction
             } ! []
 
-        Connect outbound subject objects ->
-            App.Model.connect outbound subject objects model !
+        Connect subject objects direction ->
+            App.Model.connect direction objects subject model !
                 [ App.Server.Graph.connect
-                    Connected
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                    outbound
-                    subject.id
+                    direction
                     (List.map (\coto -> coto.id) objects)
+                    subject.id
                 ]
 
         Connected (Ok _) ->
@@ -315,7 +315,6 @@ update msg model =
             | graph = disconnect ( startId, endId ) model.graph
             } !
                 [ App.Server.Graph.disconnect
-                    ConnectionDeleted
                     (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                     startId
                     endId
@@ -351,21 +350,53 @@ update msg model =
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
-        EditorKeyDown key ->
-            if key == enter.keyCode && model.context.ctrlDown && (not (isBlank model.timeline.newContent)) then
-                post model
+        EditorKeyDown keyCode ->
+            if keyCode == enter.keyCode &&
+               not (Set.isEmpty model.context.modifierKeys) &&
+               isNotBlank model.timeline.newContent
+            then
+                if isCtrlDown model.context then
+                    post Nothing model
+                else if isAltDown model.context then
+                    post (Just Inbound) model
+                else
+                    model ! []
             else
                 model ! []
 
-        Post ->
-            post model
+        Post maybeDirection ->
+            post maybeDirection model
 
         Posted (Ok response) ->
-            { model
-            | timeline = model.timeline |> \t -> { t | posts = setCotoSaved response t.posts }
-            } ! []
+            { model | timeline = setCotoSaved response model.timeline } ! []
 
         Posted (Err _) ->
+            model ! []
+
+        PostedAndConnect (Ok response) ->
+            { model | timeline = setCotoSaved response model.timeline }
+                |> (\model ->
+                    response.cotoId
+                        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
+                        |> Maybe.map (\subject ->
+                            let
+                                direction = model.connectingDirection
+                                objects = getSelectedCotos model
+                                maybeCotonomaKey =
+                                    Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
+                            in
+                                ( App.Model.connect direction objects subject model
+                                , App.Server.Graph.connect
+                                    maybeCotonomaKey
+                                    direction
+                                    (List.map (\coto -> coto.id) objects)
+                                    subject.id
+                                )
+                        )
+                        |> withDefault (model ! [])
+                )
+
+        PostedAndConnect (Err _) ->
             model ! []
 
         OpenPost post ->
@@ -432,64 +463,6 @@ update msg model =
             { model
             | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen)
             } ! []
-
-        CotoSelectionTitleInput title ->
-            { model | cotoSelectionTitle = title } ! []
-
-        ConfirmCreateGroupingCoto ->
-            confirm
-                ("You are about to create a grouping coto: \"" ++ model.cotoSelectionTitle ++ "\"")
-                PostGroupingCoto
-                model
-            ! []
-
-        PostGroupingCoto ->
-            model.timeline
-                |> postContent
-                    model.context.clientId
-                    model.context.cotonoma
-                    False
-                    model.cotoSelectionTitle
-                |> \( timeline, newPost ) ->
-                    { model
-                    | timeline = timeline
-                    , cotoSelectionTitle = ""
-                    } !
-                        [ scrollToBottom NoOp
-                        , App.Server.Coto.post
-                            model.context.clientId
-                            model.context.cotonoma
-                            GroupingCotoPosted
-                            newPost
-                        ]
-
-        GroupingCotoPosted (Ok response) ->
-            { model
-            | timeline =
-                model.timeline
-                    |> \timeline -> { timeline | posts = setCotoSaved response timeline.posts }
-            }
-                |> (\model ->
-                    response.cotoId
-                        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
-                        |> Maybe.map (\startCoto ->
-                            let
-                                endCotos = getSelectedCotos model
-                            in
-                                ( App.Model.connect True startCoto endCotos model
-                                , App.Server.Graph.connect
-                                    Connected
-                                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                    True
-                                    startCoto.id
-                                    (List.map (\coto -> coto.id) endCotos)
-                                )
-                        )
-                        |> withDefault (model ! [])
-                )
-
-        GroupingCotoPosted (Err _) ->
-            model ! []
 
         --
         -- Sub components
@@ -572,9 +545,7 @@ update msg model =
                                 Components.CotonomaModal.Messages.Posted (Ok response) ->
                                     { model
                                     | cotonomasLoading = True
-                                    , timeline =
-                                        model.timeline
-                                            |> \t -> { t | posts = setCotoSaved response t.posts }
+                                    , timeline = setCotoSaved response model.timeline
                                     } !
                                         [ cmd
                                         , fetchRecentCotonomas
@@ -731,26 +702,34 @@ handlePushedPost clientId payload model =
                 |> \t -> { t | posts = payload.body :: t.posts }
         } !
             if payload.body.asCotonoma then
-                [ scrollToBottom NoOp, send (CotonomaPushed payload.body) ]
+                [ scrollToBottom NoOp, sendMsg (CotonomaPushed payload.body) ]
             else
                 [ scrollToBottom NoOp ]
     else
         model ! []
 
 
-post : Model -> ( Model, Cmd Msg )
-post model =
+post : Maybe Direction -> Model -> ( Model, Cmd Msg )
+post maybeDirection model =
     let
         clientId = model.context.clientId
         cotonoma = model.context.cotonoma
         newContent = model.timeline.newContent
+        postMsg =
+            case maybeDirection of
+                Nothing -> Posted
+                Just _ -> PostedAndConnect
     in
         model.timeline
             |> postContent clientId cotonoma False newContent
             |> \( timeline, newPost ) ->
-                { model | timeline = timeline } !
+                { model
+                | timeline = timeline
+                , connectingDirection =
+                    Maybe.withDefault Outbound maybeDirection
+                } !
                     [ scrollToBottom NoOp
-                    , App.Server.Coto.post clientId cotonoma Posted newPost
+                    , App.Server.Coto.post clientId cotonoma postMsg newPost
                     ]
 
 

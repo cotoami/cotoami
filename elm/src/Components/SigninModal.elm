@@ -5,8 +5,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onCheck)
 import Http
 import Json.Decode as Decode
-import Utils exposing (validateEmail)
-import Modal
+import Util.StringUtil exposing (validateEmail)
+import Util.Modal as Modal
 
 
 type alias Model =

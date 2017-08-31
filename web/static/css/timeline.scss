@@ -107,11 +107,29 @@
       display: inline-block;
       position: absolute;
       right: 0;
+    }
 
-      span.shortcut-help {
-        margin-left: 4px;
-        text-transform: none;
-        opacity: 0.7;
+    span.shortcut-help {
+      margin-left: 4px;
+      text-transform: none;
+      opacity: 0.7;
+    }
+
+    span.connect-buttons {
+      button {
+        padding-left: 8px;
+        padding-right: 8px;
+        margin-right: 5px;
+        background-color: #fff;
+
+        @media (#{$narrow-viewport}) {
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+
+        i {
+          vertical-align: middle;
+        }
       }
     }
   }

@@ -10,12 +10,12 @@ import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
-import Utils exposing (isBlank)
+import Util.StringUtil exposing (isBlank)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph, member)
+import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline)
 import App.Messages exposing (..)
 import App.Markdown
@@ -47,10 +47,30 @@ newPostEditor context model =
                           ]
               )
             , div [ class "tool-buttons" ]
-                [ button
-                    [ class "button-primary"
+                [ if List.isEmpty context.selection then
+                    span [] []
+                  else
+                    span [ class "connect-buttons" ]
+                        [ button
+                            [ class "button connect-outbound"
+                            , disabled (isBlank model.newContent)
+                            , onMouseDown (App.Messages.Post (Just Outbound))
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_upload" ]
+                            ]
+                        , button
+                            [ class "button connect-inbound"
+                            , disabled (isBlank model.newContent)
+                            , onMouseDown (App.Messages.Post (Just Inbound))
+                            ]
+                            [ i [ class "material-icons" ] [ text "file_download" ]
+                            , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
+                            ]
+                        ]
+                , button
+                    [ class "button-primary post"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown App.Messages.Post
+                    , onMouseDown (App.Messages.Post Nothing)
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
