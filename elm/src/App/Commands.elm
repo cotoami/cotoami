@@ -1,7 +1,7 @@
 module App.Commands exposing (..)
 
 import Dom.Scroll
-import Task
+import Task exposing (andThen, attempt)
 import Process
 import Time
 
@@ -12,8 +12,13 @@ sendMsg msg =
     Task.succeed msg |> Task.perform identity
 
 
-scrollToBottom : msg -> Cmd msg
-scrollToBottom msg =
+scrollTimelineToBottom : msg -> Cmd msg
+scrollTimelineToBottom msg =
+    scrollToBottom "timeline" msg
+
+
+scrollToBottom : String -> msg -> Cmd msg
+scrollToBottom elementId msg =
     Process.sleep (1 * Time.millisecond)
-    |> Task.andThen (\_ -> (Dom.Scroll.toBottom "timeline"))
-    |> Task.attempt (\_ -> msg)
+        |> andThen (\_ -> (Dom.Scroll.toBottom elementId))
+        |> attempt (\_ -> msg)

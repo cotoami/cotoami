@@ -5,7 +5,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline, postContent)
 import App.Server.Amishi exposing (fetchAmishi)
-import App.Commands exposing (scrollToBottom)
+import App.Commands exposing (scrollTimelineToBottom)
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 import Components.CotonomaModal.Commands exposing (..)
@@ -63,7 +63,7 @@ update msg session context timeline model =
                     ( initModel
                     , timeline
                     , Cmd.batch
-                        [ scrollToBottom NoOp
+                        [ scrollTimelineToBottom NoOp
                         , postCotonoma
                             context.clientId
                             context.cotonoma

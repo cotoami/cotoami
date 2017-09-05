@@ -26,7 +26,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
-import App.Commands exposing (sendMsg, scrollToBottom)
+import App.Commands exposing (sendMsg, scrollTimelineToBottom)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -141,7 +141,7 @@ update msg model =
             , timeline = model.timeline
                 |> \t -> { t | posts = posts, loading = False }
             } !
-                [ scrollToBottom NoOp
+                [ scrollTimelineToBottom NoOp
                 , fetchSubCotonomas (Just cotonoma)
                 ]
 
@@ -333,13 +333,13 @@ update msg model =
         PostsFetched (Ok posts) ->
             { model
             | timeline = model.timeline |> \t -> { t | posts = posts , loading = False }
-            } ! [ scrollToBottom NoOp ]
+            } ! [ scrollTimelineToBottom NoOp ]
 
         PostsFetched (Err _) ->
             model ! []
 
         ImageLoaded ->
-            model ! [ scrollToBottom NoOp ]
+            model ! [ scrollTimelineToBottom NoOp ]
 
         EditorFocus ->
             { model | timeline = setEditingNew True model.timeline } ! []
@@ -702,9 +702,9 @@ handlePushedPost clientId payload model =
                 |> \t -> { t | posts = payload.body :: t.posts }
         } !
             if payload.body.asCotonoma then
-                [ scrollToBottom NoOp, sendMsg (CotonomaPushed payload.body) ]
+                [ scrollTimelineToBottom NoOp, sendMsg (CotonomaPushed payload.body) ]
             else
-                [ scrollToBottom NoOp ]
+                [ scrollTimelineToBottom NoOp ]
     else
         model ! []
 
@@ -728,7 +728,7 @@ post maybeDirection model =
                 , connectingDirection =
                     Maybe.withDefault Outbound maybeDirection
                 } !
-                    [ scrollToBottom NoOp
+                    [ scrollTimelineToBottom NoOp
                     , App.Server.Coto.post clientId cotonoma postMsg newPost
                     ]
 
