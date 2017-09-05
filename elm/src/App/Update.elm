@@ -26,7 +26,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
-import App.Commands exposing (sendMsg, scrollTimelineToBottom)
+import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.SigninModal
@@ -141,7 +141,7 @@ update msg model =
             , timeline = model.timeline
                 |> \t -> { t | posts = posts, loading = False }
             } !
-                [ scrollTimelineToBottom NoOp
+                [ App.Commands.scrollTimelineToBottom NoOp
                 , fetchSubCotonomas (Just cotonoma)
                 ]
 
@@ -252,6 +252,7 @@ update msg model =
                         [ App.Server.Graph.pinCotos
                             (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                             [ cotoId ]
+                        , App.Commands.scrollPinnedCotosToBottom NoOp
                         ]
                 )
                 |> withDefault (model ! [])
@@ -333,13 +334,13 @@ update msg model =
         PostsFetched (Ok posts) ->
             { model
             | timeline = model.timeline |> \t -> { t | posts = posts , loading = False }
-            } ! [ scrollTimelineToBottom NoOp ]
+            } ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         PostsFetched (Err _) ->
             model ! []
 
         ImageLoaded ->
-            model ! [ scrollTimelineToBottom NoOp ]
+            model ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         EditorFocus ->
             { model | timeline = setEditingNew True model.timeline } ! []
@@ -702,9 +703,11 @@ handlePushedPost clientId payload model =
                 |> \t -> { t | posts = payload.body :: t.posts }
         } !
             if payload.body.asCotonoma then
-                [ scrollTimelineToBottom NoOp, sendMsg (CotonomaPushed payload.body) ]
+                [ App.Commands.scrollTimelineToBottom NoOp
+                , sendMsg (CotonomaPushed payload.body)
+                ]
             else
-                [ scrollTimelineToBottom NoOp ]
+                [ App.Commands.scrollTimelineToBottom NoOp ]
     else
         model ! []
 
@@ -728,7 +731,7 @@ post maybeDirection model =
                 , connectingDirection =
                     Maybe.withDefault Outbound maybeDirection
                 } !
-                    [ scrollTimelineToBottom NoOp
+                    [ App.Commands.scrollTimelineToBottom NoOp
                     , App.Server.Coto.post clientId cotonoma postMsg newPost
                     ]
 

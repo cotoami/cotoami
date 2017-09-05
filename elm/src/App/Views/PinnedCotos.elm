@@ -20,7 +20,7 @@ view context graph =
             [ class "column-header" ]
             []
         , div
-            [ class "column-body" ]
+            [ id "pinned-cotos-body", class "column-body" ]
             [ pinnedCotos context graph ]
         ]
 

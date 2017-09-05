@@ -17,6 +17,11 @@ scrollTimelineToBottom msg =
     scrollToBottom "timeline" msg
 
 
+scrollPinnedCotosToBottom : msg -> Cmd msg
+scrollPinnedCotosToBottom msg =
+    scrollToBottom "pinned-cotos-body" msg
+
+
 scrollToBottom : String -> msg -> Cmd msg
 scrollToBottom elementId msg =
     Process.sleep (1 * Time.millisecond)
