@@ -18,8 +18,7 @@ view context graph =
     div [ id "pinned-cotos" ]
         [ div
             [ class "column-header" ]
-            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-            ]
+            []
         , div
             [ class "column-body" ]
             [ pinnedCotos context graph ]
