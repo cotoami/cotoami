@@ -1,4 +1,4 @@
-module Components.CotoModal exposing (..)
+module App.Views.CotoModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
