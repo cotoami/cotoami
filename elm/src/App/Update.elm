@@ -222,8 +222,11 @@ update msg model =
             }
                 ! []
 
-        OpenCoto coto ->
+        OpenCotoModal coto ->
             openCoto (Just coto) model ! []
+
+        CloseCotoModal ->
+            model ! []
 
         SelectCoto cotoId ->
             ( { model
@@ -239,6 +242,9 @@ update msg model =
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
+
+        ConfirmDeleteCoto ->
+            model ! []
 
         DeleteCoto coto ->
             { model
@@ -515,7 +521,7 @@ update msg model =
                         ! [ Cmd.map CotoModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
-                                Components.CotoModal.ConfirmDelete ->
+                                ConfirmDeleteCoto ->
                                     confirm
                                         "Are you sure you want to delete this coto?"
                                         (case model.cotoModal.coto of
@@ -523,12 +529,12 @@ update msg model =
                                                 App.Messages.NoOp
 
                                             Just coto ->
-                                                CotoModalMsg (Components.CotoModal.Delete coto)
+                                                CotoModalMsg (DeleteCoto coto)
                                         )
                                         model
                                         ! [ cmd ]
 
-                                Components.CotoModal.Delete coto ->
+                                DeleteCoto coto ->
                                     { model
                                         | timeline =
                                             model.timeline

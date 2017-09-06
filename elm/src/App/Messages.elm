@@ -13,7 +13,6 @@ import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
-import Components.CotoModal
 import Components.CotonomaModal.Messages
 
 
@@ -40,14 +39,16 @@ type Msg
     | CloseProfileModal
     | OpenCotonomaModal
     | CloseConnectModal
+    | OpenCotoModal Coto
+    | CloseCotoModal
       -- Coto
     | CotoClick ElementId CotoId
     | CotoMouseEnter ElementId CotoId
     | CotoMouseLeave ElementId CotoId
-    | OpenCoto Coto
     | SelectCoto CotoId
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
+    | ConfirmDeleteCoto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | PinCoto CotoId
@@ -86,5 +87,5 @@ type Msg
       -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
-    | CotoModalMsg Components.CotoModal.Msg
+    | CotoModalMsg Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg

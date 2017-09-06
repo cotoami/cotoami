@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Markdown
+import App.Messages exposing (Msg(..))
 
 
 type alias Model =
@@ -21,23 +22,20 @@ initModel =
     }
 
 
-type Msg
-    = Close
-    | ConfirmDelete
-    | Delete Coto
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Close ->
+        CloseCotoModal ->
             ( { model | open = False }, Cmd.none )
 
-        ConfirmDelete ->
+        ConfirmDeleteCoto ->
             ( model, Cmd.none )
 
-        Delete coto ->
+        DeleteCoto coto ->
             ( { model | open = False }, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -58,7 +56,7 @@ view model =
 
 modalConfig : Coto -> Model -> Modal.Config Msg
 modalConfig coto model =
-    { closeMessage = Close
+    { closeMessage = CloseCotoModal
     , title =
         if coto.asCotonoma then
             "Cotonoma"
@@ -74,6 +72,6 @@ modalConfig coto model =
         [ if coto.asCotonoma then
             span [] []
           else
-            button [ class "button", onClick ConfirmDelete ] [ text "Delete" ]
+            button [ class "button", onClick ConfirmDeleteCoto ] [ text "Delete" ]
         ]
     }
