@@ -10,22 +10,6 @@ import App.Messages exposing (Msg(..))
 import App.Types.CotoModal exposing (..)
 
 
-update : Msg -> CotoModal -> ( CotoModal, Cmd Msg )
-update msg model =
-    case msg of
-        CloseCotoModal ->
-            ( { model | open = False }, Cmd.none )
-
-        ConfirmDeleteCoto ->
-            ( model, Cmd.none )
-
-        DeleteCoto coto ->
-            ( { model | open = False }, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
-
-
 view : CotoModal -> Html Msg
 view model =
     Modal.view

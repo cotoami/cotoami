@@ -49,6 +49,7 @@ type Msg
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ConfirmDeleteCoto
+    | RequestDeleteCoto Coto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | PinCoto CotoId
@@ -87,5 +88,4 @@ type Msg
       -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
-    | CotoModalMsg Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg

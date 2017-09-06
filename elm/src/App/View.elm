@@ -72,8 +72,7 @@ view model =
             , Html.map SigninModalMsg
                 (Components.SigninModal.view model.signinModal anyAnonymousCotos)
             , App.Views.ProfileModal.view model.context.session model.profileModal
-            , Html.map CotoModalMsg
-                (Components.CotoModal.view model.cotoModal)
+            , Components.CotoModal.view model.cotoModal
             , Html.map CotonomaModalMsg
                 (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
             , App.Views.ConnectModal.view model

@@ -182,6 +182,13 @@ update msg model =
             model.profileModal
                 |> \modal -> { model | profileModal = { modal | open = False } } ! []
 
+        OpenCotoModal coto ->
+            openCoto (Just coto) model ! []
+
+        CloseCotoModal ->
+            model.cotoModal
+                |> \modal -> { model | cotoModal = { modal | open = False } } ! []
+
         OpenCotonomaModal ->
             (case model.context.session of
                 Nothing ->
@@ -222,12 +229,6 @@ update msg model =
             }
                 ! []
 
-        OpenCotoModal coto ->
-            openCoto (Just coto) model ! []
-
-        CloseCotoModal ->
-            model ! []
-
         SelectCoto cotoId ->
             ( { model
                 | context = updateSelection cotoId model.context
@@ -244,7 +245,44 @@ update msg model =
             changeLocationToCotonoma key model
 
         ConfirmDeleteCoto ->
-            model ! []
+            confirm
+                "Are you sure you want to delete this coto?"
+                (case model.cotoModal.coto of
+                    Nothing ->
+                        App.Messages.NoOp
+
+                    Just coto ->
+                        RequestDeleteCoto coto
+                )
+                model
+                ! []
+
+        RequestDeleteCoto coto ->
+            { model
+                | timeline =
+                    model.timeline
+                        |> (\timeline ->
+                                { timeline
+                                    | posts =
+                                        timeline.posts
+                                            |> List.map
+                                                (\post ->
+                                                    if isSelfOrPostedIn coto post then
+                                                        { post | beingDeleted = True }
+                                                    else
+                                                        post
+                                                )
+                                }
+                           )
+                , cotoModal =
+                    model.cotoModal
+                        |> \modal -> { modal | open = False }
+            }
+                ! [ deleteCoto coto.id
+                  , Process.sleep (1 * Time.second)
+                        |> Task.andThen (\_ -> Task.succeed ())
+                        |> Task.perform (\_ -> DeleteCoto coto)
+                  ]
 
         DeleteCoto coto ->
             { model
@@ -513,54 +551,6 @@ update msg model =
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
                     { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
-
-        CotoModalMsg subMsg ->
-            Components.CotoModal.update subMsg model.cotoModal
-                |> \( modal, cmd ) ->
-                    { model | cotoModal = modal }
-                        ! [ Cmd.map CotoModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                ConfirmDeleteCoto ->
-                                    confirm
-                                        "Are you sure you want to delete this coto?"
-                                        (case model.cotoModal.coto of
-                                            Nothing ->
-                                                App.Messages.NoOp
-
-                                            Just coto ->
-                                                CotoModalMsg (DeleteCoto coto)
-                                        )
-                                        model
-                                        ! [ cmd ]
-
-                                DeleteCoto coto ->
-                                    { model
-                                        | timeline =
-                                            model.timeline
-                                                |> (\timeline ->
-                                                        { timeline
-                                                            | posts =
-                                                                timeline.posts
-                                                                    |> List.map
-                                                                        (\post ->
-                                                                            if isSelfOrPostedIn coto post then
-                                                                                { post | beingDeleted = True }
-                                                                            else
-                                                                                post
-                                                                        )
-                                                        }
-                                                   )
-                                    }
-                                        ! [ cmd
-                                          , deleteCoto coto.id
-                                          , Process.sleep (1 * Time.second)
-                                                |> Task.andThen (\_ -> Task.succeed ())
-                                                |> Task.perform (\_ -> DeleteCoto coto)
-                                          ]
-
-                                _ ->
-                                    ( model, cmd )
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
