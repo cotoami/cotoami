@@ -7,22 +7,10 @@ import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Markdown
 import App.Messages exposing (Msg(..))
+import App.Types.CotoModal exposing (..)
 
 
-type alias Model =
-    { open : Bool
-    , coto : Maybe Coto
-    }
-
-
-initModel : Model
-initModel =
-    { open = False
-    , coto = Nothing
-    }
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> CotoModal -> ( CotoModal, Cmd Msg )
 update msg model =
     case msg of
         CloseCotoModal ->
@@ -38,7 +26,7 @@ update msg model =
             ( model, Cmd.none )
 
 
-view : Model -> Html Msg
+view : CotoModal -> Html Msg
 view model =
     Modal.view
         "coto-modal"
@@ -54,7 +42,7 @@ view model =
         )
 
 
-modalConfig : Coto -> Model -> Modal.Config Msg
+modalConfig : Coto -> CotoModal -> Modal.Config Msg
 modalConfig coto model =
     { closeMessage = CloseCotoModal
     , title =
