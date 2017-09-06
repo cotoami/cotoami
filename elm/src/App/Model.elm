@@ -11,9 +11,9 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
+import App.Types.ProfileModal exposing (..)
 import Components.ConfirmModal.Model
 import Components.SigninModal
-import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.Model
 
@@ -28,7 +28,7 @@ type alias Model =
     , memberPresences : MemberPresences
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , profileModal : Components.ProfileModal.Model
+    , profileModal : ProfileModal
     , cotoModal : Components.CotoModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -55,7 +55,7 @@ initModel seed route =
     , memberPresences = Dict.empty
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , profileModal = Components.ProfileModal.initModel
+    , profileModal = initProfileModel
     , cotoModal = Components.CotoModal.initModel
     , recentCotonomas = []
     , cotonomasLoading = False
@@ -76,6 +76,7 @@ getCoto cotoId model =
     case Dict.get cotoId model.graph.cotos of
         Nothing ->
             App.Types.Timeline.getCoto cotoId model.timeline
+
         Just coto ->
             Just coto
 
@@ -90,9 +91,9 @@ getSelectedCotos model =
 openSigninModal : Model -> Model
 openSigninModal model =
     { model
-    | signinModal =
-        model.signinModal
-            |> \modal -> { modal | open = True }
+        | signinModal =
+            model.signinModal
+                |> \modal -> { modal | open = True }
     }
 
 
@@ -105,48 +106,57 @@ isNavigationEmpty model =
 
 isStockEmpty : Model -> Bool
 isStockEmpty model =
-      List.isEmpty model.graph.rootConnections
+    List.isEmpty model.graph.rootConnections
 
 
 getOwnerAndMembers : Model -> List Amishi
 getOwnerAndMembers model =
     case model.context.cotonoma of
-        Nothing -> []
+        Nothing ->
+            []
+
         Just cotonoma ->
             case cotonoma.owner of
-                Nothing -> model.members
-                Just owner -> owner :: model.members
+                Nothing ->
+                    model.members
+
+                Just owner ->
+                    owner :: model.members
 
 
 openTraversal : Description -> CotoId -> Model -> Model
 openTraversal description cotoId model =
     { model
-    | graph =
-        if App.Types.Graph.member cotoId model.graph then
-            model.graph
-        else
-            case getCoto cotoId model of
-                Nothing -> model.graph
-                Just coto -> App.Types.Graph.addCoto coto model.graph
-    , traversals =
-          App.Types.Traversal.openTraversal
-              description
-              cotoId
-              model.traversals
-    , activeViewOnMobile = TraversalsView
+        | graph =
+            if App.Types.Graph.member cotoId model.graph then
+                model.graph
+            else
+                case getCoto cotoId model of
+                    Nothing ->
+                        model.graph
+
+                    Just coto ->
+                        App.Types.Graph.addCoto coto model.graph
+        , traversals =
+            App.Types.Traversal.openTraversal
+                description
+                cotoId
+                model.traversals
+        , activeViewOnMobile = TraversalsView
     }
 
 
 connect : Direction -> List Coto -> Coto -> Model -> Model
 connect direction objects subject model =
     { model
-    | graph =
-        case direction of
-            App.Types.Graph.Outbound ->
-                App.Types.Graph.connectOneToMany subject objects model.graph
-            App.Types.Graph.Inbound ->
-                App.Types.Graph.connectManyToOne objects subject model.graph
-    , connectingCotoId = Nothing
+        | graph =
+            case direction of
+                App.Types.Graph.Outbound ->
+                    App.Types.Graph.connectOneToMany subject objects model.graph
+
+                App.Types.Graph.Inbound ->
+                    App.Types.Graph.connectManyToOne objects subject model.graph
+        , connectingCotoId = Nothing
     }
 
 

@@ -4,31 +4,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Util.Modal as Modal
 import App.Types.Session exposing (Session)
+import App.Types.ProfileModal as PM
+import App.Messages exposing (Msg(CloseProfileModal))
 
 
-type alias Model =
-    { open : Bool
-    }
-
-
-initModel : Model
-initModel =
-    { open = False
-    }
-
-
-type Msg
-    = Close
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Close ->
-            ( { model | open = False }, Cmd.none )
-
-
-view : Maybe Session -> Model -> Html Msg
+view : Maybe Session -> PM.ProfileModal -> Html Msg
 view maybeSession model =
     Modal.view
         "profile-modal"
@@ -45,9 +25,9 @@ view maybeSession model =
         )
 
 
-modalConfig : Session -> Model -> Modal.Config Msg
+modalConfig : Session -> PM.ProfileModal -> Modal.Config Msg
 modalConfig session model =
-    { closeMessage = Close
+    { closeMessage = CloseProfileModal
     , title = "Amishi Profile"
     , content =
         div []

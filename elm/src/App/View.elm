@@ -28,21 +28,30 @@ view model =
         anyAnonymousCotos =
             (isNothing model.context.session)
                 && not (List.isEmpty model.timeline.posts)
+
         activeViewOnMobile =
             case model.activeViewOnMobile of
-                TimelineView -> "timeline"
-                PinnedView -> "pinned"
-                TraversalsView -> "traversals"
-                SelectionView -> "selection"
+                TimelineView ->
+                    "timeline"
+
+                PinnedView ->
+                    "pinned"
+
+                TraversalsView ->
+                    "traversals"
+
+                SelectionView ->
+                    "selection"
     in
-      div [ id "app"
-          , classList
-              [ ( "cotonomas-loading", model.cotonomasLoading )
-              , ( activeViewOnMobile ++ "-view-on-mobile", True )
-              ]
-          ]
-          [ App.Views.AppHeader.view model
-          , div [ id "app-body" ]
+        div
+            [ id "app"
+            , classList
+                [ ( "cotonomas-loading", model.cotonomasLoading )
+                , ( activeViewOnMobile ++ "-view-on-mobile", True )
+                ]
+            ]
+            [ App.Views.AppHeader.view model
+            , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     (List.concat
                         [ defaultColumnDivs model
@@ -57,27 +66,26 @@ view model =
                         ]
                     )
                 ]
-          , App.Views.CotoSelection.statusBar model
-          , Html.map ConfirmModalMsg
-              (Components.ConfirmModal.View.view model.confirmModal)
-          , Html.map SigninModalMsg
-              (Components.SigninModal.view model.signinModal anyAnonymousCotos)
-          , Html.map ProfileModalMsg
-              (Components.ProfileModal.view model.context.session model.profileModal)
-          , Html.map CotoModalMsg
-              (Components.CotoModal.view model.cotoModal)
-          , Html.map CotonomaModalMsg
-              (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
-          , App.Views.ConnectModal.view model
-          , a
-              [ class "tool-button info-button"
-              , title "News and Feedback"
-              , href "https://twitter.com/cotoami"
-              , target "_blank"
-              , hidden (model.timeline.editingNew)
-              ]
-              [ i [ class "material-icons" ] [ text "info" ] ]
-          ]
+            , App.Views.CotoSelection.statusBar model
+            , Html.map ConfirmModalMsg
+                (Components.ConfirmModal.View.view model.confirmModal)
+            , Html.map SigninModalMsg
+                (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+            , Components.ProfileModal.view model.context.session model.profileModal
+            , Html.map CotoModalMsg
+                (Components.CotoModal.view model.cotoModal)
+            , Html.map CotonomaModalMsg
+                (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
+            , App.Views.ConnectModal.view model
+            , a
+                [ class "tool-button info-button"
+                , title "News and Feedback"
+                , href "https://twitter.com/cotoami"
+                , target "_blank"
+                , hidden (model.timeline.editingNew)
+                ]
+                [ i [ class "material-icons" ] [ text "info" ] ]
+            ]
 
 
 defaultColumnDivs : Model -> List (Html Msg)
@@ -92,7 +100,8 @@ defaultColumnDivs model =
             , ( "slideInDown", model.navigationToggled && model.navigationOpen )
             , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
             ]
-        ] (App.Views.Navigation.view model)
+        ]
+        (App.Views.Navigation.view model)
     , div
         [ id "main-timeline"
         , classList
@@ -176,11 +185,12 @@ viewSwitchContainerDiv model =
 viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
 viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
     let
-        icon = i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] []
+        icon =
+            i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] []
     in
         div
             [ id divId
-            ,  classList
+            , classList
                 [ ( "view-switch", True )
                 , ( "selected", selected )
                 , ( "empty", empty )
@@ -189,9 +199,10 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
             [ if selected || empty then
                 span [ class "tool-button" ] [ icon ]
               else
-                a [ class "tool-button"
-                  , title buttonTitle
-                  , onClick onClickMsg
-                  ]
-                  [ icon ]
+                a
+                    [ class "tool-button"
+                    , title buttonTitle
+                    , onClick onClickMsg
+                    ]
+                    [ icon ]
             ]
