@@ -15,9 +15,9 @@ import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Views.ConnectModal
+import App.Views.ProfileModal
 import Components.ConfirmModal.View
 import Components.SigninModal
-import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.View
 
@@ -71,7 +71,7 @@ view model =
                 (Components.ConfirmModal.View.view model.confirmModal)
             , Html.map SigninModalMsg
                 (Components.SigninModal.view model.signinModal anyAnonymousCotos)
-            , Components.ProfileModal.view model.context.session model.profileModal
+            , App.Views.ProfileModal.view model.context.session model.profileModal
             , Html.map CotoModalMsg
                 (Components.CotoModal.view model.cotoModal)
             , Html.map CotonomaModalMsg

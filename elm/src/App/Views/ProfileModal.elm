@@ -1,14 +1,14 @@
-module Components.ProfileModal exposing (..)
+module App.Views.ProfileModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Util.Modal as Modal
 import App.Types.Session exposing (Session)
-import App.Types.ProfileModal as PM
+import App.Types.ProfileModal exposing (ProfileModal)
 import App.Messages exposing (Msg(CloseProfileModal))
 
 
-view : Maybe Session -> PM.ProfileModal -> Html Msg
+view : Maybe Session -> ProfileModal -> Html Msg
 view maybeSession model =
     Modal.view
         "profile-modal"
@@ -25,7 +25,7 @@ view maybeSession model =
         )
 
 
-modalConfig : Session -> PM.ProfileModal -> Modal.Config Msg
+modalConfig : Session -> ProfileModal -> Modal.Config Msg
 modalConfig session model =
     { closeMessage = CloseProfileModal
     , title = "Amishi Profile"
