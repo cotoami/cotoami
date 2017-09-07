@@ -17,6 +17,15 @@ import Components.CotoModal
 import Components.CotonomaModal.Model
 
 
+type Modal
+    = ConfirmModal
+    | SigninModal
+    | ProfileModal
+    | CotoModal
+    | CotonomaModal
+    | ConnectModal
+
+
 type alias Model =
     { route : Route
     , context : Context
@@ -25,9 +34,9 @@ type alias Model =
     , navigationOpen : Bool
     , members : List Amishi
     , memberPresences : MemberPresences
+    , modals : List Modal
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , profileModalOpen : Bool
     , cotoModal : Components.CotoModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -52,9 +61,9 @@ initModel seed route =
     , navigationOpen = False
     , members = []
     , memberPresences = Dict.empty
+    , modals = []
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , profileModalOpen = False
     , cotoModal = Components.CotoModal.initModel
     , recentCotonomas = []
     , cotonomasLoading = False
@@ -87,13 +96,14 @@ getSelectedCotos model =
         model.context.selection
 
 
-openSigninModal : Model -> Model
-openSigninModal model =
-    { model
-        | signinModal =
-            model.signinModal
-                |> \modal -> { modal | open = True }
-    }
+openModal : Modal -> Model -> Model
+openModal modal model =
+    { model | modals = modal :: model.modals }
+
+
+closeModal : Model -> Model
+closeModal model =
+    { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
 
 isNavigationEmpty : Model -> Bool

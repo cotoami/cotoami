@@ -25,7 +25,7 @@ view model =
 
 modalConfig : Direction -> List Coto -> Coto -> Modal.Config Msg
 modalConfig direction selectedCotos connectingCoto =
-    { closeMessage = CloseConnectModal
+    { closeMessage = CloseModal
     , title = "Connect Preview"
     , content = modalContent direction selectedCotos connectingCoto
     , buttons =

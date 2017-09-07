@@ -37,11 +37,10 @@ type Msg
     | SubgraphFetched (Result Http.Error Graph)
 
     -- Modal
+    | CloseModal
     | OpenSigninModal
     | OpenProfileModal
-    | CloseProfileModal
     | OpenCotonomaModal
-    | CloseConnectModal
 
     -- Coto
     | CotoClick ElementId CotoId
