@@ -175,12 +175,10 @@ update msg model =
             openSigninModal model ! []
 
         OpenProfileModal ->
-            model.profileModal
-                |> \modal -> { model | profileModal = { modal | open = True } } ! []
+            { model | profileModalOpen = True } ! []
 
         CloseProfileModal ->
-            model.profileModal
-                |> \modal -> { model | profileModal = { modal | open = False } } ! []
+            { model | profileModalOpen = False } ! []
 
         OpenCotonomaModal ->
             (case model.context.session of
@@ -728,8 +726,8 @@ closeModal model =
         { model | confirmModal = model.confirmModal |> closeOpenable }
     else if model.signinModal.open && not model.signinModal.requestDone then
         { model | signinModal = model.signinModal |> closeOpenable }
-    else if model.profileModal.open then
-        { model | profileModal = model.profileModal |> closeOpenable }
+    else if model.profileModalOpen then
+        { model | profileModalOpen = False }
     else if model.cotoModal.open then
         { model | cotoModal = model.cotoModal |> closeOpenable }
     else if model.cotonomaModal.open then
