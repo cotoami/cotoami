@@ -14,12 +14,7 @@ import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
-import App.Views.ConnectModal
-import App.Views.ProfileModal
-import Components.ConfirmModal.View
-import Components.SigninModal
-import Components.CotoModal
-import Components.CotonomaModal.View
+import App.Modals
 
 
 view : Model -> Html Msg
@@ -67,16 +62,6 @@ view model =
                     )
                 ]
             , App.Views.CotoSelection.statusBar model
-            , Html.map ConfirmModalMsg
-                (Components.ConfirmModal.View.view model.confirmModal)
-            , Html.map SigninModalMsg
-                (Components.SigninModal.view model.signinModal anyAnonymousCotos)
-            , App.Views.ProfileModal.view model.context.session model.profileModalOpen
-            , Html.map CotoModalMsg
-                (Components.CotoModal.view model.cotoModal)
-            , Html.map CotonomaModalMsg
-                (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
-            , App.Views.ConnectModal.view model
             , a
                 [ class "tool-button info-button"
                 , title "News and Feedback"
@@ -85,6 +70,7 @@ view model =
                 , hidden (model.timeline.editingNew)
                 ]
                 [ i [ class "material-icons" ] [ text "info" ] ]
+            , div [] (App.Modals.view model.modals)
             ]
 
 

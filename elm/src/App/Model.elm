@@ -11,6 +11,7 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
+import App.Modals exposing (Modal)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.CotoModal
@@ -25,6 +26,7 @@ type alias Model =
     , navigationOpen : Bool
     , members : List Amishi
     , memberPresences : MemberPresences
+    , modals : List Modal
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
     , profileModalOpen : Bool
@@ -52,6 +54,7 @@ initModel seed route =
     , navigationOpen = False
     , members = []
     , memberPresences = Dict.empty
+    , modals = []
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
     , profileModalOpen = False
