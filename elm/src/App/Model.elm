@@ -108,6 +108,10 @@ closeModal : Model -> Model
 closeModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
+clearModals : Model -> Model
+clearModals model =
+    { model | modals = [] }
+
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =

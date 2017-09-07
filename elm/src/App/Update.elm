@@ -251,7 +251,7 @@ update msg model =
                 ! []
 
         RequestDeleteCoto coto ->
-            { model
+            ({ model
                 | timeline =
                     model.timeline
                         |> (\timeline ->
@@ -270,7 +270,9 @@ update msg model =
                 , cotoModal =
                     model.cotoModal
                         |> \modal -> { modal | open = False }
-            }
+             }
+                |> (\model -> clearModals model)
+            )
                 ! [ deleteCoto coto.id
                   , Process.sleep (1 * Time.second)
                         |> Task.andThen (\_ -> Task.succeed ())
@@ -538,26 +540,29 @@ update msg model =
         --
         ConfirmModalMsg subMsg ->
             Components.ConfirmModal.Update.update subMsg model.confirmModal
-                |> \( modal, cmd ) -> { model | confirmModal = modal } ! [ cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.ConfirmModal.Messages.Close ->
-                            ( closeModal model, cmd )
+                |> \( modal, cmd ) ->
+                    { model | confirmModal = modal }
+                        ! [ cmd ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.ConfirmModal.Messages.Close ->
+                                    ( closeModal model, cmd )
 
-                        Components.ConfirmModal.Messages.Confirm ->
-                            ( closeModal model, cmd )
+                                Components.ConfirmModal.Messages.Confirm ->
+                                    ( closeModal model, cmd )
 
         SigninModalMsg subMsg ->
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
-                    { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.SigninModal.Close ->
-                            ( closeModal model, cmd )
-                        _ ->
-                            ( model, cmd )
+                    { model | signinModal = modal }
+                        ! [ Cmd.map SigninModalMsg cmd ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.SigninModal.Close ->
+                                    ( closeModal model, cmd )
 
+                                _ ->
+                                    ( model, cmd )
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
@@ -578,23 +583,23 @@ update msg model =
                                 , timeline = timeline
                             }
                                 ! [ Cmd.map CotonomaModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                Components.CotonomaModal.Messages.Close ->
-                                    ( closeModal model, cmd )
+                                |> \( model, cmd ) ->
+                                    case subMsg of
+                                        Components.CotonomaModal.Messages.Close ->
+                                            ( closeModal model, cmd )
 
-                                Components.CotonomaModal.Messages.Posted (Ok response) ->
-                                    { model
-                                        | cotonomasLoading = True
-                                        , timeline = setCotoSaved response model.timeline
-                                    }
-                                        ! [ cmd
-                                          , fetchRecentCotonomas
-                                          , fetchSubCotonomas model.context.cotonoma
-                                          ]
+                                        Components.CotonomaModal.Messages.Posted (Ok response) ->
+                                            { model
+                                                | cotonomasLoading = True
+                                                , timeline = setCotoSaved response model.timeline
+                                            }
+                                                ! [ cmd
+                                                  , fetchRecentCotonomas
+                                                  , fetchSubCotonomas model.context.cotonoma
+                                                  ]
 
-                                _ ->
-                                    ( model, cmd )
+                                        _ ->
+                                            ( model, cmd )
 
 
 confirm : String -> Msg -> Model -> Model
