@@ -733,11 +733,6 @@ loadCotonoma key model =
           ]
 
 
-closeOpenable : { a | open : Bool } -> { a | open : Bool }
-closeOpenable openable =
-    { openable | open = False }
-
-
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
