@@ -28,7 +28,7 @@ type alias Model =
     , memberPresences : MemberPresences
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , profileModal : ProfileModal
+    , profileModalOpen : Bool
     , cotoModal : CotoModal
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -55,7 +55,7 @@ initModel seed route =
     , memberPresences = Dict.empty
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , profileModal = initProfileModel
+    , profileModalOpen = False
     , cotoModal = initCotoModal
     , recentCotonomas = []
     , cotonomasLoading = False
