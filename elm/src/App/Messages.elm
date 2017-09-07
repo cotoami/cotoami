@@ -41,7 +41,6 @@ type Msg
     | OpenSigninModal
     | OpenProfileModal
     | OpenCotonomaModal
-    | CloseConnectModal
 
     -- Coto
     | CotoClick ElementId CotoId

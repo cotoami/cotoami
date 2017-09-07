@@ -10,7 +10,7 @@ update : Msg -> Model -> ( Model, Cmd App.Messages.Msg )
 update msg model =
     case msg of
         Close ->
-            ( { model | open = False }, Cmd.none )
+            ( model, Cmd.none )
 
         Confirm ->
-            ( { model | open = False } , sendMsg model.msgOnConfirm )
+            ( model, sendMsg model.msgOnConfirm )

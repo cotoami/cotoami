@@ -9,15 +9,13 @@ import App.Markdown
 
 
 type alias Model =
-    { open : Bool
-    , coto : Maybe Coto
+    { coto : Maybe Coto
     }
 
 
 initModel : Model
 initModel =
-    { open = False
-    , coto = Nothing
+    { coto = Nothing
     }
 
 
@@ -31,28 +29,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
-            ( { model | open = False }, Cmd.none )
+            ( model, Cmd.none )
 
         ConfirmDelete ->
             ( model, Cmd.none )
 
         Delete coto ->
-            ( { model | open = False }, Cmd.none )
+            ( model, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     Modal.view
         "coto-modal"
-        (if model.open then
-            case model.coto of
-                Nothing ->
-                    Nothing
+        (case model.coto of
+            Nothing ->
+                Nothing
 
-                Just coto ->
-                    Just (modalConfig coto model)
-         else
-            Nothing
+            Just coto ->
+                Just (modalConfig coto model)
         )
 
 
