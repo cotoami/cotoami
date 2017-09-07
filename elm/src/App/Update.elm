@@ -274,7 +274,7 @@ update msg model =
                 |> (\model -> clearModals model)
             )
                 ! [ deleteCoto coto.id
-                  , Process.sleep (1 * Time.second)
+                  , Process.sleep (1 * Time.second) -- Wait for CSS animation finish.
                         |> Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeleteCoto coto)
                   ]
