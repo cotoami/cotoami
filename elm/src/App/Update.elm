@@ -28,6 +28,7 @@ import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, dec
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
+import App.Modals
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.CotoModal
@@ -48,7 +49,7 @@ update msg model =
             }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            closeModal model
+                            { model | modals = App.Modals.close model.modals }
                         else
                             model
                    )
@@ -171,6 +172,9 @@ update msg model =
         --
         -- Modal
         --
+        CloseModal ->
+            { model | modals = App.Modals.close model.modals } ! []
+
         OpenSigninModal ->
             openSigninModal model ! []
 
@@ -505,12 +509,20 @@ update msg model =
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
                     { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.SigninModal.Close ->
+                                    ( { model | modals = App.Modals.close model.modals }
+                                    , cmd
+                                    )
+                                _ ->
+                                    ( model, cmd )
+
 
         CotoModalMsg subMsg ->
             Components.CotoModal.update subMsg model.cotoModal
                 |> \( modal, cmd ) ->
-                    { model | cotoModal = modal }
-                        ! [ Cmd.map CotoModalMsg cmd ]
+                    { model | cotoModal = modal } ! [ Cmd.map CotoModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
                                 Components.CotoModal.ConfirmDelete ->
@@ -718,22 +730,6 @@ loadCotonoma key model =
 closeOpenable : { a | open : Bool } -> { a | open : Bool }
 closeOpenable openable =
     { openable | open = False }
-
-
-closeModal : Model -> Model
-closeModal model =
-    if model.confirmModal.open then
-        { model | confirmModal = model.confirmModal |> closeOpenable }
-    else if model.signinModal.open && not model.signinModal.requestDone then
-        { model | signinModal = model.signinModal |> closeOpenable }
-    else if model.profileModalOpen then
-        { model | profileModalOpen = False }
-    else if model.cotoModal.open then
-        { model | cotoModal = model.cotoModal |> closeOpenable }
-    else if model.cotonomaModal.open then
-        { model | cotonomaModal = model.cotonomaModal |> closeOpenable }
-    else
-        model
 
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )

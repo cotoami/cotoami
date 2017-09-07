@@ -10,8 +10,7 @@ import Util.Modal as Modal
 
 
 type alias Model =
-    { open : Bool
-    , email : String
+    { email : String
     , saveAnonymousCotos : Bool
     , requestProcessing : Bool
     , requestDone : Bool
@@ -20,8 +19,7 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { open = False
-    , email = ""
+    { email = ""
     , saveAnonymousCotos = False
     , requestProcessing = False
     , requestDone = False
@@ -40,7 +38,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
-            ( { model | open = False, requestDone = False }, Cmd.none )
+            ( { model | requestDone = False }, Cmd.none )
 
         EmailInput content ->
             ( { model | email = content }, Cmd.none )
@@ -76,13 +74,9 @@ requestSignin email saveAnonymous =
 
 view : Model -> Bool -> Html Msg
 view model showAnonymousOption =
-    Modal.view
-        "signin-modal"
-        (if model.open then
-            Just (signinModalConfig model showAnonymousOption)
-         else
-            Nothing
-        )
+    signinModalConfig model showAnonymousOption
+        |> Just
+        |> Modal.view "signin-modal"
 
 
 signinModalConfig : Model -> Bool -> Modal.Config Msg

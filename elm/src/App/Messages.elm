@@ -37,6 +37,7 @@ type Msg
     | SubgraphFetched (Result Http.Error Graph)
 
     -- Modal
+    | CloseModal
     | OpenSigninModal
     | OpenProfileModal
     | CloseProfileModal

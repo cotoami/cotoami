@@ -92,11 +92,18 @@ getSelectedCotos model =
 
 openSigninModal : Model -> Model
 openSigninModal model =
-    { model
-        | signinModal =
-            model.signinModal
-                |> \modal -> { modal | open = True }
-    }
+    let
+        anyAnonymousCotos =
+            (isNothing model.context.session)
+                && not (List.isEmpty model.timeline.posts)
+
+        modal =
+            App.Modals.SigninModal
+                model.signinModal
+                anyAnonymousCotos
+
+    in
+        { model | modals = App.Modals.open modal model.modals }
 
 
 isNavigationEmpty : Model -> Bool

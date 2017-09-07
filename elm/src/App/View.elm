@@ -20,10 +20,6 @@ import App.Modals
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos =
-            (isNothing model.context.session)
-                && not (List.isEmpty model.timeline.posts)
-
         activeViewOnMobile =
             case model.activeViewOnMobile of
                 TimelineView ->

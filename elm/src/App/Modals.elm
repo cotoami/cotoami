@@ -29,6 +29,11 @@ open modal modals =
     modal :: modals
 
 
+close : List Modal -> List Modal
+close modals =
+    Maybe.withDefault [] (List.tail modals)
+
+
 view : List Modal -> List (Html Msg)
 view modals =
     List.map
