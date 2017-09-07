@@ -13,7 +13,6 @@ import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
-import Components.ProfileModal
 import Components.CotoModal
 import Components.CotonomaModal.Messages
 
@@ -33,13 +32,14 @@ type Msg
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaFetched (Result Http.Error (Cotonoma, List Amishi, List Post))
+    | CotonomaFetched (Result Http.Error ( Cotonoma, List Amishi, List Post ))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
 
     -- Modal
     | OpenSigninModal
     | OpenProfileModal
+    | CloseProfileModal
     | OpenCotonomaModal
     | CloseConnectModal
 
@@ -93,6 +93,5 @@ type Msg
     -- Sub components
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
-    | ProfileModalMsg Components.ProfileModal.Msg
     | CotoModalMsg Components.CotoModal.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
