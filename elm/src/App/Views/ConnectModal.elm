@@ -9,13 +9,17 @@ import Util.Modal as Modal
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph exposing (Direction(..))
 import App.Messages exposing (..)
+import App.Model exposing (..)
 import App.Markdown
 
 
-view : Direction -> List Coto -> Coto -> Html Msg
-view direction selectedCotos coto =
-    modalConfig direction selectedCotos coto
-        |> Just
+view : Model -> Html Msg
+view model =
+    model.connectingCotoId
+        |> andThen (\cotoId -> getCoto cotoId model)
+        |> Maybe.map (\coto ->
+            modalConfig model.connectingDirection (getSelectedCotos model) coto
+        )
         |> Modal.view "connect-modal"
 
 

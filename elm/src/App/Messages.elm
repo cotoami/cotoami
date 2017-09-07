@@ -40,7 +40,6 @@ type Msg
     | CloseModal
     | OpenSigninModal
     | OpenProfileModal
-    | CloseProfileModal
     | OpenCotonomaModal
     | CloseConnectModal
 

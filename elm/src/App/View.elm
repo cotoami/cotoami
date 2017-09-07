@@ -14,7 +14,12 @@ import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
-import App.Modals
+import App.Views.ConnectModal
+import App.Views.ProfileModal
+import Components.ConfirmModal.View
+import Components.SigninModal
+import Components.CotoModal
+import Components.CotonomaModal.View
 
 
 view : Model -> Html Msg
@@ -66,7 +71,7 @@ view model =
                 , hidden (model.timeline.editingNew)
                 ]
                 [ i [ class "material-icons" ] [ text "info" ] ]
-            , div [] (App.Modals.view model.modals)
+            , div [] (modals model)
             ]
 
 
@@ -188,3 +193,39 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
                     ]
                     [ icon ]
             ]
+
+
+modals : Model -> List (Html Msg)
+modals model =
+    let
+        anyAnonymousCotos =
+            (isNothing model.context.session)
+                && not (List.isEmpty model.timeline.posts)
+
+    in
+        List.map
+            (\modal ->
+                case modal of
+                    ConfirmModal ->
+                        Html.map ConfirmModalMsg
+                            (Components.ConfirmModal.View.view model.confirmModal)
+
+                    SigninModal ->
+                        Html.map SigninModalMsg
+                            (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+
+                    ProfileModal ->
+                        App.Views.ProfileModal.view model.context.session
+
+                    CotoModal ->
+                        Html.map CotoModalMsg
+                            (Components.CotoModal.view model.cotoModal)
+
+                    CotonomaModal ->
+                        Html.map CotonomaModalMsg
+                            (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
+
+                    ConnectModal ->
+                        App.Views.ConnectModal.view model
+            )
+            (List.reverse model.modals)

@@ -28,7 +28,6 @@ import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, dec
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import App.Modals
 import Components.ConfirmModal.Update
 import Components.SigninModal
 import Components.CotoModal
@@ -49,7 +48,7 @@ update msg model =
             }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            { model | modals = App.Modals.close model.modals }
+                            closeModal model
                         else
                             model
                    )
@@ -116,7 +115,7 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openSigninModal model ! []
+                        openModal App.Model.SigninModal model ! []
                     else
                         model ! []
 
@@ -173,16 +172,13 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            { model | modals = App.Modals.close model.modals } ! []
+            closeModal model ! []
 
         OpenSigninModal ->
-            openSigninModal model ! []
+            openModal App.Model.SigninModal model ! []
 
         OpenProfileModal ->
-            { model | profileModalOpen = True } ! []
-
-        CloseProfileModal ->
-            { model | profileModalOpen = False } ! []
+            openModal App.Model.ProfileModal model ! []
 
         OpenCotonomaModal ->
             (case model.context.session of
@@ -512,9 +508,7 @@ update msg model =
                         |> \( model, cmd ) ->
                             case subMsg of
                                 Components.SigninModal.Close ->
-                                    ( { model | modals = App.Modals.close model.modals }
-                                    , cmd
-                                    )
+                                    ( closeModal model, cmd )
                                 _ ->
                                     ( model, cmd )
 

@@ -11,11 +11,19 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
-import App.Modals exposing (Modal)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.CotoModal
 import Components.CotonomaModal.Model
+
+
+type Modal
+    = ConfirmModal
+    | SigninModal
+    | ProfileModal
+    | CotoModal
+    | CotonomaModal
+    | ConnectModal
 
 
 type alias Model =
@@ -29,7 +37,6 @@ type alias Model =
     , modals : List Modal
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , profileModalOpen : Bool
     , cotoModal : Components.CotoModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -57,7 +64,6 @@ initModel seed route =
     , modals = []
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , profileModalOpen = False
     , cotoModal = Components.CotoModal.initModel
     , recentCotonomas = []
     , cotonomasLoading = False
@@ -90,20 +96,14 @@ getSelectedCotos model =
         model.context.selection
 
 
-openSigninModal : Model -> Model
-openSigninModal model =
-    let
-        anyAnonymousCotos =
-            (isNothing model.context.session)
-                && not (List.isEmpty model.timeline.posts)
+openModal : Modal -> Model -> Model
+openModal modal model =
+    { model | modals = modal :: model.modals }
 
-        modal =
-            App.Modals.SigninModal
-                model.signinModal
-                anyAnonymousCotos
 
-    in
-        { model | modals = App.Modals.open modal model.modals }
+closeModal : Model -> Model
+closeModal model =
+    { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
 
 isNavigationEmpty : Model -> Bool
