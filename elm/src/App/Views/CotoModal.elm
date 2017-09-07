@@ -14,21 +14,18 @@ view : CotoModal -> Html Msg
 view model =
     Modal.view
         "coto-modal"
-        (if model.open then
-            case model.coto of
-                Nothing ->
-                    Nothing
+        (case model.coto of
+            Nothing ->
+                Nothing
 
-                Just coto ->
-                    Just (modalConfig coto model)
-         else
-            Nothing
+            Just coto ->
+                Just (modalConfig coto model)
         )
 
 
 modalConfig : Coto -> CotoModal -> Modal.Config Msg
 modalConfig coto model =
-    { closeMessage = CloseCotoModal
+    { closeMessage = CloseModal
     , title =
         if coto.asCotonoma then
             "Cotonoma"

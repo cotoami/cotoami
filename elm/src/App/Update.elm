@@ -29,6 +29,7 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
+import Components.ConfirmModal.Messages
 import Components.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
@@ -114,7 +115,7 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openSigninModal model ! []
+                        openModal App.Model.SigninModal model ! []
                     else
                         model ! []
 
@@ -170,37 +171,32 @@ update msg model =
         --
         -- Modal
         --
+        CloseModal ->
+            ( closeModal model, Cmd.none )
+
         OpenSigninModal ->
-            openSigninModal model ! []
+            openModal App.Model.SigninModal model ! []
 
         OpenProfileModal ->
-            { model | profileModalOpen = True } ! []
-
-        CloseProfileModal ->
-            { model | profileModalOpen = False } ! []
+            openModal App.Model.ProfileModal model ! []
 
         OpenCotoModal coto ->
             openCoto (Just coto) model ! []
 
-        CloseCotoModal ->
-            model.cotoModal
-                |> \modal -> { model | cotoModal = { modal | open = False } } ! []
-
         OpenCotonomaModal ->
-            (case model.context.session of
-                Nothing ->
-                    model.cotonomaModal
+            { model
+                | cotonomaModal =
+                    case model.context.session of
+                        Nothing ->
+                            model.cotonomaModal
 
-                Just session ->
-                    setDefaultMembers
-                        session
-                        (getOwnerAndMembers model)
-                        model.cotonomaModal
-            )
-                |> \modal -> { model | cotonomaModal = { modal | open = True } } ! []
-
-        CloseConnectModal ->
-            { model | connectingCotoId = Nothing } ! []
+                        Just session ->
+                            setDefaultMembers
+                                session
+                                (getOwnerAndMembers model)
+                                model.cotonomaModal
+            }
+                |> \model -> openModal App.Model.CotonomaModal model ! []
 
         --
         -- Coto
@@ -345,7 +341,7 @@ update msg model =
                 | connectingCotoId = Just cotoId
                 , connectingDirection = direction
             }
-                ! []
+                |> \model -> openModal App.Model.ConnectModal model ! []
 
         Connect subject objects direction ->
             App.Model.connect direction objects subject model
@@ -543,11 +539,25 @@ update msg model =
         ConfirmModalMsg subMsg ->
             Components.ConfirmModal.Update.update subMsg model.confirmModal
                 |> \( modal, cmd ) -> { model | confirmModal = modal } ! [ cmd ]
+                |> \( model, cmd ) ->
+                    case subMsg of
+                        Components.ConfirmModal.Messages.Close ->
+                            ( closeModal model, cmd )
+
+                        Components.ConfirmModal.Messages.Confirm ->
+                            ( closeModal model, cmd )
 
         SigninModalMsg subMsg ->
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
                     { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
+                |> \( model, cmd ) ->
+                    case subMsg of
+                        Components.SigninModal.Close ->
+                            ( closeModal model, cmd )
+                        _ ->
+                            ( model, cmd )
+
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
@@ -568,20 +578,23 @@ update msg model =
                                 , timeline = timeline
                             }
                                 ! [ Cmd.map CotonomaModalMsg cmd ]
-                                |> \( model, cmd ) ->
-                                    case subMsg of
-                                        Components.CotonomaModal.Messages.Posted (Ok response) ->
-                                            { model
-                                                | cotonomasLoading = True
-                                                , timeline = setCotoSaved response model.timeline
-                                            }
-                                                ! [ cmd
-                                                  , fetchRecentCotonomas
-                                                  , fetchSubCotonomas model.context.cotonoma
-                                                  ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.CotonomaModal.Messages.Close ->
+                                    ( closeModal model, cmd )
 
-                                        _ ->
-                                            ( model, cmd )
+                                Components.CotonomaModal.Messages.Posted (Ok response) ->
+                                    { model
+                                        | cotonomasLoading = True
+                                        , timeline = setCotoSaved response model.timeline
+                                    }
+                                        ! [ cmd
+                                          , fetchRecentCotonomas
+                                          , fetchSubCotonomas model.context.cotonoma
+                                          ]
+
+                                _ ->
+                                    ( model, cmd )
 
 
 confirm : String -> Msg -> Model -> Model
@@ -591,11 +604,11 @@ confirm message msgOnConfirm model =
             model.confirmModal
                 |> \modal ->
                     { modal
-                        | open = True
-                        , message = message
+                        | message = message
                         , msgOnConfirm = msgOnConfirm
                     }
     }
+        |> \model -> openModal App.Model.ConfirmModal model
 
 
 clickCoto : ElementId -> CotoId -> Model -> Model
@@ -613,8 +626,9 @@ openCoto maybeCoto model =
     { model
         | cotoModal =
             model.cotoModal
-                |> \modal -> { modal | open = True, coto = maybeCoto }
+                |> \modal -> { modal | coto = maybeCoto }
     }
+        |> \model -> openModal App.Model.CotoModal model
 
 
 applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
@@ -713,22 +727,6 @@ loadCotonoma key model =
 closeOpenable : { a | open : Bool } -> { a | open : Bool }
 closeOpenable openable =
     { openable | open = False }
-
-
-closeModal : Model -> Model
-closeModal model =
-    if model.confirmModal.open then
-        { model | confirmModal = model.confirmModal |> closeOpenable }
-    else if model.signinModal.open && not model.signinModal.requestDone then
-        { model | signinModal = model.signinModal |> closeOpenable }
-    else if model.profileModalOpen then
-        { model | profileModalOpen = False }
-    else if model.cotoModal.open then
-        { model | cotoModal = model.cotoModal |> closeOpenable }
-    else if model.cotonomaModal.open then
-        { model | cotonomaModal = model.cotonomaModal |> closeOpenable }
-    else
-        model
 
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )

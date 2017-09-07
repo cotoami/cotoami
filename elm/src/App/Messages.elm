@@ -34,13 +34,12 @@ type Msg
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
     -- Modal
+    | CloseModal
     | OpenSigninModal
     | OpenProfileModal
-    | CloseProfileModal
     | OpenCotonomaModal
-    | CloseConnectModal
     | OpenCotoModal Coto
-    | CloseCotoModal
+
     -- Coto
     | CotoClick ElementId CotoId
     | CotoMouseEnter ElementId CotoId

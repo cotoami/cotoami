@@ -25,10 +25,6 @@ import Components.CotonomaModal.View
 view : Model -> Html Msg
 view model =
     let
-        anyAnonymousCotos =
-            (isNothing model.context.session)
-                && not (List.isEmpty model.timeline.posts)
-
         activeViewOnMobile =
             case model.activeViewOnMobile of
                 TimelineView ->
@@ -67,15 +63,6 @@ view model =
                     )
                 ]
             , App.Views.CotoSelection.statusBar model
-            , Html.map ConfirmModalMsg
-                (Components.ConfirmModal.View.view model.confirmModal)
-            , Html.map SigninModalMsg
-                (Components.SigninModal.view model.signinModal anyAnonymousCotos)
-            , App.Views.ProfileModal.view model.context.session model.profileModalOpen
-            , App.Views.CotoModal.view model.cotoModal
-            , Html.map CotonomaModalMsg
-                (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
-            , App.Views.ConnectModal.view model
             , a
                 [ class "tool-button info-button"
                 , title "News and Feedback"
@@ -84,6 +71,7 @@ view model =
                 , hidden (model.timeline.editingNew)
                 ]
                 [ i [ class "material-icons" ] [ text "info" ] ]
+            , div [] (modals model)
             ]
 
 
@@ -205,3 +193,38 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
                     ]
                     [ icon ]
             ]
+
+
+modals : Model -> List (Html Msg)
+modals model =
+    let
+        anyAnonymousCotos =
+            (isNothing model.context.session)
+                && not (List.isEmpty model.timeline.posts)
+
+    in
+        List.map
+            (\modal ->
+                case modal of
+                    ConfirmModal ->
+                        Html.map ConfirmModalMsg
+                            (Components.ConfirmModal.View.view model.confirmModal)
+
+                    SigninModal ->
+                        Html.map SigninModalMsg
+                            (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+
+                    ProfileModal ->
+                        App.Views.ProfileModal.view model.context.session
+
+                    CotoModal ->
+                        App.Views.CotoModal.view model.cotoModal
+
+                    CotonomaModal ->
+                        Html.map CotonomaModalMsg
+                            (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
+
+                    ConnectModal ->
+                        App.Views.ConnectModal.view model
+            )
+            (List.reverse model.modals)

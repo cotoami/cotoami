@@ -18,11 +18,7 @@ view maybeSession model =
         (case maybeSession of
             Nothing -> Nothing
             Just session ->
-                (if model.open then
-                    Just (modalConfig session model)
-                 else
-                    Nothing
-                )
+                Just (modalConfig session model)
         )
 
 

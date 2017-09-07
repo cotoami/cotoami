@@ -8,8 +8,7 @@ type Member = SignedUp Amishi | NotYetSignedUp String
 
 
 type alias Model =
-    { open : Bool
-    , name : String
+    { name : String
     , memberEmail : String
     , memberEmailValid : Bool
     , membersLoading : Bool
@@ -19,8 +18,7 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { open = False
-    , name = ""
+    { name = ""
     , memberEmail = ""
     , memberEmailValid = False
     , membersLoading = False

@@ -12,11 +12,7 @@ view : Model -> Html Msg
 view model =
     Modal.view
         "confirm-modal"
-        (if model.open then
-            Just (modalConfig model)
-         else
-            Nothing
-        )
+        (Just (modalConfig model))
 
 
 modalConfig : Model -> Modal.Config Msg

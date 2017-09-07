@@ -4,11 +4,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Util.Modal as Modal
 import App.Types.Session exposing (Session)
-import App.Messages exposing (Msg(CloseProfileModal))
+import App.Messages exposing (Msg(CloseModal))
 
 
-view : Maybe Session -> Bool -> Html Msg
-view maybeSession open =
+view : Maybe Session -> Html Msg
+view maybeSession =
     Modal.view
         "profile-modal"
         (case maybeSession of
@@ -16,17 +16,13 @@ view maybeSession open =
                 Nothing
 
             Just session ->
-                (if open then
-                    Just (modalConfig session)
-                 else
-                    Nothing
-                )
+                Just (modalConfig session)
         )
 
 
 modalConfig : Session -> Modal.Config Msg
 modalConfig session =
-    { closeMessage = CloseProfileModal
+    { closeMessage = CloseModal
     , title = "Amishi Profile"
     , content =
         div []
