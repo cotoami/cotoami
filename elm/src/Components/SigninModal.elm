@@ -11,48 +11,6 @@ import App.Messages exposing (Msg(..))
 import App.Types.SigninModal exposing (..)
 
 
-
-update : Msg -> SigninModal -> ( SigninModal, Cmd Msg )
-update msg model =
-    case msg of
-        SigninClose ->
-            ( model, Cmd.none )
-
-        SigninEmailInput content ->
-            ( { model | email = content }, Cmd.none )
-
-        SigninSaveAnonymousCotosCheck checked ->
-            ( { model | saveAnonymousCotos = checked }, Cmd.none )
-
-        SigninRequestClick ->
-            { model | requestProcessing = True }
-                ! [ requestSignin model.email model.saveAnonymousCotos ]
-
-        SigninRequestDone (Ok message) ->
-            ( { model | email = "", requestProcessing = False, requestDone = True }, Cmd.none )
-
-        SigninRequestDone (Err _) ->
-            ( { model | requestProcessing = False }, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
-
-
-requestSignin : String -> Bool -> Cmd Msg
-requestSignin email saveAnonymous =
-    let
-        url =
-            "/api/signin/request/"
-                ++ email
-                ++ (if saveAnonymous then
-                        "/yes"
-                    else
-                        "/no"
-                   )
-    in
-        Http.send SigninRequestDone (Http.get url Decode.string)
-
-
 view : SigninModal -> Bool -> Html Msg
 view model showAnonymousOption =
     signinModalConfig model showAnonymousOption

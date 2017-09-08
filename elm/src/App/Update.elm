@@ -182,22 +182,47 @@ update msg model =
                 ! []
 
         SigninClose ->
-            model ! []
+            ( closeModal model, Cmd.none )
 
-        SigninEmailInput email ->
-            model ! []
+        SigninEmailInput content ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | email = content })
+            }
+                ! []
 
         SigninSaveAnonymousCotosCheck checked ->
-            model ! []
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | saveAnonymousCotos = checked })
+            }
+                ! []
 
         SigninRequestClick ->
-            model ! []
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestProcessing = True })
+            }
+                ! [ requestSignin model.signinModal.email model.signinModal.saveAnonymousCotos ]
 
         SigninRequestDone (Ok _) ->
-            model ! []
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestDone = True, requestProcessing = False })
+            }
+                ! []
 
         SigninRequestDone (Err _) ->
-            model ! []
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestProcessing = False })
+            }
+                ! []
 
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
@@ -556,19 +581,6 @@ update msg model =
                                 Components.ConfirmModal.Messages.Confirm ->
                                     ( closeModal model, cmd )
 
-        SigninModalMsg subMsg ->
-            Components.SigninModal.update subMsg model.signinModal
-                |> \( modal, cmd ) ->
-                    { model | signinModal = modal }
-                        ! [ Cmd.map SigninModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                SigninClose ->
-                                    ( closeModal model, cmd )
-
-                                _ ->
-                                    ( model, cmd )
-
         CotonomaModalMsg subMsg ->
             case model.context.session of
                 Nothing ->
@@ -811,3 +823,18 @@ doDeselect model =
                     }
     }
         |> closeSelectionColumnIfEmpty
+
+
+requestSignin : String -> Bool -> Cmd Msg
+requestSignin email saveAnonymous =
+    let
+        url =
+            "/api/signin/request/"
+                ++ email
+                ++ (if saveAnonymous then
+                        "/yes"
+                    else
+                        "/no"
+                   )
+    in
+        Http.send SigninRequestDone (Http.get url Decode.string)
