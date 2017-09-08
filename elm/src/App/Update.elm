@@ -20,6 +20,7 @@ import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
+import App.Types.SigninModal exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
@@ -176,7 +177,7 @@ update msg model =
 
         OpenSigninModal ->
             (openModal App.Model.SigninModal model
-                |> (\model -> { model | signinModal = Components.SigninModal.initModel })
+                |> (\model -> { model | signinModal = initSigninModel })
             )
                 ! []
 

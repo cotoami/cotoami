@@ -8,26 +8,11 @@ import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
 import Util.Modal as Modal
 import App.Messages exposing (Msg(..))
+import App.Types.SigninModal exposing (..)
 
 
-type alias Model =
-    { email : String
-    , saveAnonymousCotos : Bool
-    , requestProcessing : Bool
-    , requestDone : Bool
-    }
 
-
-initModel : Model
-initModel =
-    { email = ""
-    , saveAnonymousCotos = False
-    , requestProcessing = False
-    , requestDone = False
-    }
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> SigninModal -> ( SigninModal, Cmd Msg )
 update msg model =
     case msg of
         SigninClose ->
@@ -68,14 +53,14 @@ requestSignin email saveAnonymous =
         Http.send SigninRequestDone (Http.get url Decode.string)
 
 
-view : Model -> Bool -> Html Msg
+view : SigninModal -> Bool -> Html Msg
 view model showAnonymousOption =
     signinModalConfig model showAnonymousOption
         |> Just
         |> Modal.view "signin-modal"
 
 
-signinModalConfig : Model -> Bool -> Modal.Config Msg
+signinModalConfig : SigninModal -> Bool -> Modal.Config Msg
 signinModalConfig model showAnonymousOption =
     (if model.requestDone then
         { closeMessage = SigninClose
