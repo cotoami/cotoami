@@ -115,7 +115,7 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openModal App.Model.SigninModal model ! []
+                        update OpenSigninModal model
                     else
                         model ! []
 
@@ -175,7 +175,10 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         OpenSigninModal ->
-            openModal App.Model.SigninModal model ! []
+            (openModal App.Model.SigninModal model
+                |> (\model -> { model | signinModal = Components.SigninModal.initModel })
+            )
+                ! []
 
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []

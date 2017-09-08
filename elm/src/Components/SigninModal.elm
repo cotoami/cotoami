@@ -38,7 +38,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Close ->
-            ( { model | requestDone = False }, Cmd.none )
+            (model, Cmd.none)
 
         EmailInput content ->
             ( { model | email = content }, Cmd.none )
