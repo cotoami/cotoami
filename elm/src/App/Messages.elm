@@ -12,7 +12,11 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
+<<<<<<< HEAD
 import Components.SigninModal
+=======
+import Components.CotoModal
+>>>>>>> Move SigninModal messages to App.Messages.
 import Components.CotonomaModal.Messages
 
 
@@ -40,6 +44,11 @@ type Msg
       --
     | CloseModal
     | OpenSigninModal
+    | SigninClose
+    | SigninEmailInput String
+    | SigninSaveAnonymousCotosCheck Bool
+    | SigninRequestClick
+    | SigninRequestDone (Result Http.Error String)
     | OpenProfileModal
     | OpenCotonomaModal
     | OpenCotoModal Coto
@@ -99,5 +108,5 @@ type Msg
       -- Sub components
       --
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
-    | SigninModalMsg Components.SigninModal.Msg
+    | SigninModalMsg Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg

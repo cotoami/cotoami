@@ -180,6 +180,24 @@ update msg model =
             )
                 ! []
 
+        SigninClose ->
+            model ! []
+
+        SigninEmailInput email ->
+            model ! []
+
+        SigninSaveAnonymousCotosCheck checked ->
+            model ! []
+
+        SigninRequestClick ->
+            model ! []
+
+        SigninRequestDone (Ok _) ->
+            model ! []
+
+        SigninRequestDone (Err _) ->
+            model ! []
+
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
 
@@ -544,7 +562,7 @@ update msg model =
                         ! [ Cmd.map SigninModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
-                                Components.SigninModal.Close ->
+                                SigninClose ->
                                     ( closeModal model, cmd )
 
                                 _ ->
