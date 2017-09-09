@@ -38,7 +38,6 @@ type alias Model =
     , modals : List Modal
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , profileModalOpen : Bool
     , cotoModal : CotoModal
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -66,7 +65,6 @@ initModel seed route =
     , modals = []
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , profileModalOpen = False
     , cotoModal = initCotoModal
     , recentCotonomas = []
     , cotonomasLoading = False
