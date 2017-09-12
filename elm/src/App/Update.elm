@@ -18,7 +18,7 @@ import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -251,28 +251,14 @@ update msg model =
                 ! []
 
         RequestDeleteCoto coto ->
-            ({ model
-                | timeline =
-                    model.timeline
-                        |> (\timeline ->
-                                { timeline
-                                    | posts =
-                                        timeline.posts
-                                            |> List.map
-                                                (\post ->
-                                                    if isSelfOrPostedIn coto post then
-                                                        { post | beingDeleted = True }
-                                                    else
-                                                        post
-                                                )
-                                }
-                           )
-             }
-                |> (\model -> clearModals model)
+            ({ model | timeline = setBeingDeleted coto model.timeline }
+                |> clearModals
             )
                 ! [ deleteCoto coto.id
-                  , Process.sleep (1 * Time.second) -- Wait for CSS animation finish.
-                        |> Task.andThen (\_ -> Task.succeed ())
+                  , Process.sleep (1 * Time.second)
+                        -- Wait for CSS animation finish.
+                        |>
+                            Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeleteCoto coto)
                   ]
 
