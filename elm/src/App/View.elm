@@ -16,9 +16,9 @@ import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Views.ConnectModal
 import App.Views.ProfileModal
+import App.Views.CotoModal
 import Components.ConfirmModal.View
 import Components.SigninModal
-import Components.CotoModal
 import Components.CotonomaModal.View
 
 
@@ -218,8 +218,7 @@ modals model =
                         App.Views.ProfileModal.view model.context.session
 
                     CotoModal ->
-                        Html.map CotoModalMsg
-                            (Components.CotoModal.view model.cotoModal)
+                        App.Views.CotoModal.view model.openedCoto
 
                     CotonomaModal ->
                         Html.map CotonomaModalMsg

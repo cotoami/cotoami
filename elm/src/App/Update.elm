@@ -18,7 +18,7 @@ import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved)
+import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -31,7 +31,6 @@ import App.Channels exposing (Payload, decodePayload, decodePresenceState, decod
 import Components.ConfirmModal.Update
 import Components.ConfirmModal.Messages
 import Components.SigninModal
-import Components.CotoModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
@@ -173,13 +172,16 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            closeModal model ! []
+            ( closeModal model, Cmd.none )
 
         OpenSigninModal ->
             openModal App.Model.SigninModal model ! []
 
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
+
+        OpenCotoModal coto ->
+            openCoto (Just coto) model ! []
 
         OpenCotonomaModal ->
             { model
@@ -220,9 +222,6 @@ update msg model =
             }
                 ! []
 
-        OpenCoto coto ->
-            openCoto (Just coto) model ! []
-
         SelectCoto cotoId ->
             ( { model
                 | context = updateSelection cotoId model.context
@@ -237,6 +236,31 @@ update msg model =
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
+
+        ConfirmDeleteCoto ->
+            confirm
+                "Are you sure you want to delete this coto?"
+                (case model.openedCoto of
+                    Nothing ->
+                        App.Messages.NoOp
+
+                    Just coto ->
+                        RequestDeleteCoto coto
+                )
+                model
+                ! []
+
+        RequestDeleteCoto coto ->
+            ({ model | timeline = setBeingDeleted coto model.timeline }
+                |> clearModals
+            )
+                ! [ deleteCoto coto.id
+                  , Process.sleep (1 * Time.second)
+                        -- Wait for CSS animation finish.
+                        |>
+                            Task.andThen (\_ -> Task.succeed ())
+                        |> Task.perform (\_ -> DeleteCoto coto)
+                  ]
 
         DeleteCoto coto ->
             { model
@@ -499,74 +523,29 @@ update msg model =
         --
         ConfirmModalMsg subMsg ->
             Components.ConfirmModal.Update.update subMsg model.confirmModal
-                |> \( modal, cmd ) -> { model | confirmModal = modal } ! [ cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.ConfirmModal.Messages.Close ->
-                            ( closeModal model, cmd )
+                |> \( modal, cmd ) ->
+                    { model | confirmModal = modal }
+                        ! [ cmd ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.ConfirmModal.Messages.Close ->
+                                    ( closeModal model, cmd )
 
-                        Components.ConfirmModal.Messages.Confirm ->
-                            ( closeModal model, cmd )
+                                Components.ConfirmModal.Messages.Confirm ->
+                                    ( closeModal model, cmd )
 
         SigninModalMsg subMsg ->
             Components.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
-                    { model | signinModal = modal } ! [ Cmd.map SigninModalMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.SigninModal.Close ->
-                            ( closeModal model, cmd )
-                        _ ->
-                            ( model, cmd )
+                    { model | signinModal = modal }
+                        ! [ Cmd.map SigninModalMsg cmd ]
+                        |> \( model, cmd ) ->
+                            case subMsg of
+                                Components.SigninModal.Close ->
+                                    ( closeModal model, cmd )
 
-
-        CotoModalMsg subMsg ->
-            Components.CotoModal.update subMsg model.cotoModal
-                |> \( modal, cmd ) ->
-                    { model | cotoModal = modal } ! [ Cmd.map CotoModalMsg cmd ]
-                |> \( model, cmd ) ->
-                    case subMsg of
-                        Components.CotoModal.Close ->
-                            ( closeModal model, cmd )
-
-                        Components.CotoModal.ConfirmDelete ->
-                            confirm
-                                "Are you sure you want to delete this coto?"
-                                (case model.cotoModal.coto of
-                                    Nothing ->
-                                        App.Messages.NoOp
-
-                                    Just coto ->
-                                        CotoModalMsg (Components.CotoModal.Delete coto)
-                                )
-                                model
-                                ! [ cmd ]
-
-                        Components.CotoModal.Delete coto ->
-                            { model
-                                | timeline =
-                                    model.timeline
-                                        |> (\timeline ->
-                                                { timeline
-                                                    | posts =
-                                                        timeline.posts
-                                                            |> List.map
-                                                                (\post ->
-                                                                    if isSelfOrPostedIn coto post then
-                                                                        { post | beingDeleted = True }
-                                                                    else
-                                                                        post
-                                                                )
-                                                }
-                                           )
-                            }
-                                |> \model -> closeModal model
-                                    ! [ cmd
-                                      , deleteCoto coto.id
-                                      , Process.sleep (1 * Time.second)
-                                            |> Task.andThen (\_ -> Task.succeed ())
-                                            |> Task.perform (\_ -> DeleteCoto coto)
-                                      ]
+                                _ ->
+                                    ( model, cmd )
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
@@ -587,23 +566,23 @@ update msg model =
                                 , timeline = timeline
                             }
                                 ! [ Cmd.map CotonomaModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                Components.CotonomaModal.Messages.Close ->
-                                    ( closeModal model, cmd )
+                                |> \( model, cmd ) ->
+                                    case subMsg of
+                                        Components.CotonomaModal.Messages.Close ->
+                                            ( closeModal model, cmd )
 
-                                Components.CotonomaModal.Messages.Posted (Ok response) ->
-                                    { model
-                                        | cotonomasLoading = True
-                                        , timeline = setCotoSaved response model.timeline
-                                    }
-                                        ! [ cmd
-                                          , fetchRecentCotonomas
-                                          , fetchSubCotonomas model.context.cotonoma
-                                          ]
+                                        Components.CotonomaModal.Messages.Posted (Ok response) ->
+                                            { model
+                                                | cotonomasLoading = True
+                                                , timeline = setCotoSaved response model.timeline
+                                            }
+                                                ! [ cmd
+                                                  , fetchRecentCotonomas
+                                                  , fetchSubCotonomas model.context.cotonoma
+                                                  ]
 
-                                _ ->
-                                    ( model, cmd )
+                                        _ ->
+                                            ( model, cmd )
 
 
 confirm : String -> Msg -> Model -> Model
@@ -632,11 +611,7 @@ clickCoto elementId cotoId model =
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =
-    { model
-        | cotoModal =
-            model.cotoModal
-                |> \modal -> { modal | coto = maybeCoto }
-    }
+    { model | openedCoto = maybeCoto }
         |> \model -> openModal App.Model.CotoModal model
 
 

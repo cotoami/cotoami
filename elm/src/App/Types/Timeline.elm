@@ -88,3 +88,18 @@ setCotoSaved apiResponse timeline =
     { timeline
     | posts = App.Types.Post.setCotoSaved apiResponse timeline.posts
     }
+
+
+setBeingDeleted : Coto -> Timeline -> Timeline
+setBeingDeleted coto timeline =
+    { timeline
+        | posts =
+            List.map
+                (\post ->
+                    if isSelfOrPostedIn coto post then
+                        { post | beingDeleted = True }
+                    else
+                        post
+                )
+                timeline.posts
+    }

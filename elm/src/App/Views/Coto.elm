@@ -14,15 +14,16 @@ import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasCh
 import App.Messages exposing (..)
 
 
-cotoClassList : Context -> ElementId -> Maybe CotoId -> List (String, Bool) -> Attribute msg
+cotoClassList : Context -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
 cotoClassList context elementId maybeCotoId additionalClasses =
     classList
-        ( [ ( "coto", True )
-          , ( "selectable", True )
-          , ( "element-focus", Just elementId == context.elementFocus )
-          , ( "coto-focus", maybeCotoId == context.cotoFocus )
-          , ( "selected", isSelected maybeCotoId context )
-          ] ++ additionalClasses
+        ([ ( "coto", True )
+         , ( "selectable", True )
+         , ( "element-focus", Just elementId == context.elementFocus )
+         , ( "coto-focus", maybeCotoId == context.cotoFocus )
+         , ( "selected", isSelected maybeCotoId context )
+         ]
+            ++ additionalClasses
         )
 
 
@@ -83,7 +84,7 @@ type alias BodyConfig msg =
 
 defaultBodyConfig : Maybe ( CotoId, CotoId ) -> Coto -> BodyConfig Msg
 defaultBodyConfig maybeConnection coto =
-    { openCoto = Just (OpenCoto coto)
+    { openCoto = Just (OpenCotoModal coto)
     , selectCoto = Just SelectCoto
     , pinCoto = Just PinCoto
     , openTraversal = Just OpenTraversal
@@ -91,8 +92,11 @@ defaultBodyConfig maybeConnection coto =
     , confirmConnect = Just ConfirmConnect
     , deleteConnection =
         case maybeConnection of
-            Nothing -> Nothing
-            Just connection -> Just (ConfirmDeleteConnection connection)
+            Nothing ->
+                Nothing
+
+            Just connection ->
+                Just (ConfirmDeleteConnection connection)
     , markdown = App.Markdown.markdown
     }
 
@@ -116,12 +120,15 @@ bodyDivWithConfig context graph config model =
             in
                 div [ class "coto-as-cotonoma" ]
                     [ case model.cotonomaKey of
-                        Nothing -> span [] content
+                        Nothing ->
+                            span [] content
+
                         Just cotonomaKey ->
-                            a [ href ("/cotonomas/" ++ cotonomaKey)
-                              , onLinkButtonClick (config.cotonomaClick cotonomaKey)
-                              ]
-                              content
+                            a
+                                [ href ("/cotonomas/" ++ cotonomaKey)
+                                , onLinkButtonClick (config.cotonomaClick cotonomaKey)
+                                ]
+                                content
                     ]
           else
             config.markdown model.content
@@ -166,7 +173,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             ]
                             [ i [ class "material-icons" ] [ text "file_upload" ] ]
                         ]
-
         , span [ class "default-buttons" ]
             [ case config.pinCoto of
                 Nothing ->
@@ -182,7 +188,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
-
             , case config.openTraversal of
                 Nothing ->
                     span [] []
@@ -194,7 +199,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
                         [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
-
             , case config.openCoto of
                 Nothing ->
                     span [] []
@@ -206,7 +210,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , onLinkButtonClick openCoto
                         ]
                         [ i [ class "material-icons" ] [ text "settings" ] ]
-
             , case config.deleteConnection of
                 Nothing ->
                     span [] []
@@ -218,7 +221,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , onLinkButtonClick deleteConnection
                         ]
                         [ i [ class "material-icons" ] [ text "close" ] ]
-
             , case config.selectCoto of
                 Nothing ->
                     span [] []
@@ -259,7 +261,9 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
     case Dict.get coto.id graph.connections of
-        Nothing -> div [] []
+        Nothing ->
+            div [] []
+
         Just connections ->
             div []
                 [ div [ class "main-sub-border" ] []
@@ -280,19 +284,23 @@ connectionsDiv context graph parentElementId parentCotoId connections =
         (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
-                    Nothing -> Nothing  -- Missing the end node
-                    Just coto -> Just
-                        ( conn.key
-                        , div
-                            [ class "outbound-conn" ]
-                            [ subCotoDiv
-                                context
-                                graph
-                                parentElementId
-                                parentCotoId
-                                coto
-                            ]
-                        )
+                    Nothing ->
+                        Nothing
+
+                    -- Missing the end node
+                    Just coto ->
+                        Just
+                            ( conn.key
+                            , div
+                                [ class "outbound-conn" ]
+                                [ subCotoDiv
+                                    context
+                                    graph
+                                    parentElementId
+                                    parentCotoId
+                                    coto
+                                ]
+                            )
             )
             (List.reverse connections)
         )
@@ -301,7 +309,8 @@ connectionsDiv context graph parentElementId parentCotoId connections =
 subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
 subCotoDiv context graph parentElementId parentCotoId coto =
     let
-        elementId = parentElementId ++ "-" ++ coto.id
+        elementId =
+            parentElementId ++ "-" ++ coto.id
     in
         div
             [ cotoClassList context elementId (Just coto.id) []

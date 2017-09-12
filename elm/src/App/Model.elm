@@ -13,7 +13,6 @@ import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
 import Components.SigninModal
-import Components.CotoModal
 import Components.CotonomaModal.Model
 
 
@@ -35,9 +34,9 @@ type alias Model =
     , members : List Amishi
     , memberPresences : MemberPresences
     , modals : List Modal
+    , openedCoto: Maybe Coto
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , cotoModal : Components.CotoModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -62,9 +61,9 @@ initModel seed route =
     , members = []
     , memberPresences = Dict.empty
     , modals = []
+    , openedCoto = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , cotoModal = Components.CotoModal.initModel
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -104,6 +103,10 @@ openModal modal model =
 closeModal : Model -> Model
 closeModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
+
+clearModals : Model -> Model
+clearModals model =
+    { model | modals = [] }
 
 
 isNavigationEmpty : Model -> Bool

@@ -13,7 +13,6 @@ import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import Components.ConfirmModal.Messages
 import Components.SigninModal
-import Components.CotoModal
 import Components.CotonomaModal.Messages
 
 
@@ -27,29 +26,34 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
-
-    -- Fetched
+      --
+      -- Fetched
+      --
     | SessionFetched (Result Http.Error Session)
     | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomaFetched (Result Http.Error ( Cotonoma, List Amishi, List Post ))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
-
-    -- Modal
+      --
+      -- Modal
+      --
     | CloseModal
     | OpenSigninModal
     | OpenProfileModal
     | OpenCotonomaModal
-
-    -- Coto
+    | OpenCotoModal Coto
+      --
+      -- Coto
+      --
     | CotoClick ElementId CotoId
     | CotoMouseEnter ElementId CotoId
     | CotoMouseLeave ElementId CotoId
-    | OpenCoto Coto
     | SelectCoto CotoId
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
+    | ConfirmDeleteCoto
+    | RequestDeleteCoto Coto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | PinCoto CotoId
@@ -63,8 +67,9 @@ type Msg
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
-
-    -- Timeline
+      --
+      -- Timeline
+      --
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
     | EditorFocus
@@ -77,20 +82,22 @@ type Msg
     | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post
-
-    -- Traversals
+      --
+      -- Traversals
+      --
     | TraverseClick Traverse
     | CloseTraversal CotoId
     | SwitchTraversal Int
-
-    -- CotoSelection
+      --
+      -- CotoSelection
+      --
     | DeselectingCoto CotoId
     | DeselectCoto
     | ClearSelection
     | CotoSelectionColumnToggle
-
-    -- Sub components
+      --
+      -- Sub components
+      --
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg Components.SigninModal.Msg
-    | CotoModalMsg Components.CotoModal.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
