@@ -7,24 +7,23 @@ import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Markdown
 import App.Messages exposing (Msg(..))
-import App.Types.CotoModal exposing (..)
 
 
-view : CotoModal -> Html Msg
-view model =
+view : Maybe Coto -> Html Msg
+view maybeCoto =
     Modal.view
         "coto-modal"
-        (case model.coto of
+        (case maybeCoto of
             Nothing ->
                 Nothing
 
             Just coto ->
-                Just (modalConfig coto model)
+                Just (modalConfig coto)
         )
 
 
-modalConfig : Coto -> CotoModal -> Modal.Config Msg
-modalConfig coto model =
+modalConfig : Coto -> Modal.Config Msg
+modalConfig coto =
     { closeMessage = CloseModal
     , title =
         if coto.asCotonoma then

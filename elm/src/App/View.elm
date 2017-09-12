@@ -218,7 +218,7 @@ modals model =
                         App.Views.ProfileModal.view model.context.session
 
                     CotoModal ->
-                        App.Views.CotoModal.view model.cotoModal
+                        App.Views.CotoModal.view model.openedCoto
 
                     CotonomaModal ->
                         Html.map CotonomaModalMsg

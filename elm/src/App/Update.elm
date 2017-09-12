@@ -240,7 +240,7 @@ update msg model =
         ConfirmDeleteCoto ->
             confirm
                 "Are you sure you want to delete this coto?"
-                (case model.cotoModal.coto of
+                (case model.openedCoto of
                     Nothing ->
                         App.Messages.NoOp
 
@@ -267,9 +267,6 @@ update msg model =
                                                 )
                                 }
                            )
-                , cotoModal =
-                    model.cotoModal
-                        |> \modal -> { modal | open = False }
              }
                 |> (\model -> clearModals model)
             )
@@ -628,11 +625,7 @@ clickCoto elementId cotoId model =
 
 openCoto : Maybe Coto -> Model -> Model
 openCoto maybeCoto model =
-    { model
-        | cotoModal =
-            model.cotoModal
-                |> \modal -> { modal | coto = maybeCoto }
-    }
+    { model | openedCoto = maybeCoto }
         |> \model -> openModal App.Model.CotoModal model
 
 

@@ -11,7 +11,6 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
-import App.Types.CotoModal exposing (..)
 import Components.ConfirmModal.Model
 import Components.SigninModal
 import Components.CotonomaModal.Model
@@ -35,9 +34,9 @@ type alias Model =
     , members : List Amishi
     , memberPresences : MemberPresences
     , modals : List Modal
+    , openedCoto: Maybe Coto
     , confirmModal : Components.ConfirmModal.Model.Model
     , signinModal : Components.SigninModal.Model
-    , cotoModal : CotoModal
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -62,9 +61,9 @@ initModel seed route =
     , members = []
     , memberPresences = Dict.empty
     , modals = []
+    , openedCoto = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel
     , signinModal = Components.SigninModal.initModel
-    , cotoModal = initCotoModal
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
