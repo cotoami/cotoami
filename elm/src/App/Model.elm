@@ -11,7 +11,6 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
-import App.Types.ProfileModal exposing (..)
 import App.Types.CotoModal exposing (..)
 import Components.ConfirmModal.Model
 import Components.SigninModal
