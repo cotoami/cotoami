@@ -20,6 +20,7 @@ import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
+import App.Types.SigninModal exposing (..)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
@@ -30,7 +31,6 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.ConfirmModal.Messages
-import Components.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
@@ -115,7 +115,7 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openModal App.Model.SigninModal model ! []
+                        update OpenSigninModal model
                     else
                         model ! []
 
@@ -175,7 +175,53 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         OpenSigninModal ->
-            openModal App.Model.SigninModal model ! []
+            (openModal App.Model.SigninModal model
+                |> (\model -> { model | signinModal = initSigninModel })
+            )
+                ! []
+
+        SigninClose ->
+            ( closeModal model, Cmd.none )
+
+        SigninEmailInput content ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | email = content })
+            }
+                ! []
+
+        SigninSaveAnonymousCotosCheck checked ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | saveAnonymousCotos = checked })
+            }
+                ! []
+
+        SigninRequestClick ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestProcessing = True })
+            }
+                ! [ requestSignin model.signinModal.email model.signinModal.saveAnonymousCotos ]
+
+        SigninRequestDone (Ok _) ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestDone = True, requestProcessing = False })
+            }
+                ! []
+
+        SigninRequestDone (Err _) ->
+            { model
+                | signinModal =
+                    model.signinModal
+                        |> (\modal -> { modal | requestProcessing = False })
+            }
+                ! []
 
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
@@ -534,19 +580,6 @@ update msg model =
                                 Components.ConfirmModal.Messages.Confirm ->
                                     ( closeModal model, cmd )
 
-        SigninModalMsg subMsg ->
-            Components.SigninModal.update subMsg model.signinModal
-                |> \( modal, cmd ) ->
-                    { model | signinModal = modal }
-                        ! [ Cmd.map SigninModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                Components.SigninModal.Close ->
-                                    ( closeModal model, cmd )
-
-                                _ ->
-                                    ( model, cmd )
-
         CotonomaModalMsg subMsg ->
             case model.context.session of
                 Nothing ->
@@ -789,3 +822,18 @@ doDeselect model =
                     }
     }
         |> closeSelectionColumnIfEmpty
+
+
+requestSignin : String -> Bool -> Cmd Msg
+requestSignin email saveAnonymous =
+    let
+        url =
+            "/api/signin/request/"
+                ++ email
+                ++ (if saveAnonymous then
+                        "/yes"
+                    else
+                        "/no"
+                   )
+    in
+        Http.send SigninRequestDone (Http.get url Decode.string)
