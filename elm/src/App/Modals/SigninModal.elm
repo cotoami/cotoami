@@ -7,7 +7,7 @@ import Http
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
 import Util.Modal as Modal
-import App.Messages exposing (Msg(CloseModal))
+import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
@@ -63,14 +63,14 @@ requestSignin email saveAnonymous =
         Http.send RequestDone (Http.get url Decode.string)
 
 
-view : Model -> Bool -> Html App.Messages.Msg
+view : Model -> Bool -> Html AppMsg.Msg
 view model showAnonymousOption =
     signinModalConfig model showAnonymousOption
         |> Just
         |> Modal.view "signin-modal"
 
 
-signinModalConfig : Model -> Bool -> Modal.Config App.Messages.Msg
+signinModalConfig : Model -> Bool -> Modal.Config AppMsg.Msg
 signinModalConfig model showAnonymousOption =
     (if model.requestDone then
         { closeMessage = CloseModal
@@ -96,7 +96,7 @@ signinModalConfig model showAnonymousOption =
                             , name "email"
                             , placeholder "you@example.com"
                             , value model.email
-                            , onInput (App.Messages.SigninModalMsg << EmailInput)
+                            , onInput (AppMsg.SigninModalMsg << EmailInput)
                             ]
                             []
                         ]
@@ -105,7 +105,7 @@ signinModalConfig model showAnonymousOption =
                             [ label []
                                 [ input
                                     [ type_ "checkbox"
-                                    , onCheck (App.Messages.SigninModalMsg << SaveAnonymousCotosCheck)
+                                    , onCheck (AppMsg.SigninModalMsg << SaveAnonymousCotosCheck)
                                     ]
                                     []
                                 , span [ class "label-body" ]
@@ -124,7 +124,7 @@ signinModalConfig model showAnonymousOption =
             , button
                 [ class "button button-primary"
                 , disabled (not (validateEmail model.email) || model.requestProcessing)
-                , onClick (App.Messages.SigninModalMsg RequestClick)
+                , onClick (AppMsg.SigninModalMsg RequestClick)
                 ]
                 [ if model.requestProcessing then
                     text "Sending..."
