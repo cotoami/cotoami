@@ -1,4 +1,4 @@
-module App.Views.ProfileModal exposing (view)
+module App.Modals.ProfileModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
