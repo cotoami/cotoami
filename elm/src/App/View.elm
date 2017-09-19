@@ -17,8 +17,8 @@ import App.Views.CotoSelection
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.CotoModal
+import App.Modals.SigninModal
 import Components.ConfirmModal.View
-import Components.SigninModal
 import Components.CotonomaModal.View
 
 
@@ -212,7 +212,7 @@ modals model =
 
                     SigninModal ->
                         Html.map SigninModalMsg
-                            (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+                            (App.Modals.SigninModal.view model.signinModal anyAnonymousCotos)
 
                     ProfileModal ->
                         App.Modals.ProfileModal.view model.context.session

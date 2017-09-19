@@ -1,4 +1,4 @@
-module Components.SigninModal exposing (..)
+module App.Modals.SigninModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -12,7 +12,7 @@ import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import Components.ConfirmModal.Model
-import Components.SigninModal
+import App.Modals.SigninModal
 import Components.CotonomaModal.Model
 
 
@@ -36,7 +36,7 @@ type alias Model =
     , modals : List Modal
     , openedCoto: Maybe Coto
     , confirmModal : Components.ConfirmModal.Model.Model
-    , signinModal : Components.SigninModal.Model
+    , signinModal : App.Modals.SigninModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -63,7 +63,7 @@ initModel seed route =
     , modals = []
     , openedCoto = Nothing
     , confirmModal = Components.ConfirmModal.Model.initModel
-    , signinModal = Components.SigninModal.initModel
+    , signinModal = App.Modals.SigninModal.initModel
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []

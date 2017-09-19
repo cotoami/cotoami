@@ -30,7 +30,7 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import Components.ConfirmModal.Update
 import Components.ConfirmModal.Messages
-import Components.SigninModal
+import App.Modals.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
@@ -535,13 +535,13 @@ update msg model =
                                     ( closeModal model, cmd )
 
         SigninModalMsg subMsg ->
-            Components.SigninModal.update subMsg model.signinModal
+            App.Modals.SigninModal.update subMsg model.signinModal
                 |> \( modal, cmd ) ->
                     { model | signinModal = modal }
                         ! [ Cmd.map SigninModalMsg cmd ]
                         |> \( model, cmd ) ->
                             case subMsg of
-                                Components.SigninModal.Close ->
+                                App.Modals.SigninModal.Close ->
                                     ( closeModal model, cmd )
 
                                 _ ->
