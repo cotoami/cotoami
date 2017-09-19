@@ -17,8 +17,8 @@ type alias Model =
     }
 
 
-initModel : Model
-initModel =
+defaultModel : Model
+defaultModel =
     { email = ""
     , saveAnonymousCotos = False
     , requestProcessing = False
