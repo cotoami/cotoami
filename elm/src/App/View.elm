@@ -211,8 +211,7 @@ modals model =
                             (Components.ConfirmModal.View.view model.confirmModal)
 
                     SigninModal ->
-                        Html.map SigninModalMsg
-                            (App.Modals.SigninModal.view model.signinModal anyAnonymousCotos)
+                        App.Modals.SigninModal.view model.signinModal anyAnonymousCotos
 
                     ProfileModal ->
                         App.Modals.ProfileModal.view model.context.session

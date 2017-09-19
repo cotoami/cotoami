@@ -175,7 +175,8 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         OpenSigninModal ->
-            openModal App.Model.SigninModal model ! []
+            { model | signinModal = App.Modals.SigninModal.defaultModel }
+                |> \model -> openModal App.Model.SigninModal model ! []
 
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
@@ -536,16 +537,8 @@ update msg model =
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
-                |> \( modal, cmd ) ->
-                    { model | signinModal = modal }
-                        ! [ Cmd.map SigninModalMsg cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                App.Modals.SigninModal.Close ->
-                                    ( closeModal model, cmd )
-
-                                _ ->
-                                    ( model, cmd )
+                |> \( signinModal, subCmd ) ->
+                    { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
 
         CotonomaModalMsg subMsg ->
             case model.context.session of
