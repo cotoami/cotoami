@@ -14,11 +14,11 @@ import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
-import App.Views.ConnectModal
-import App.Views.ProfileModal
-import App.Views.CotoModal
+import App.Modals.ConnectModal
+import App.Modals.ProfileModal
+import App.Modals.CotoModal
+import App.Modals.SigninModal
 import Components.ConfirmModal.View
-import Components.SigninModal
 import Components.CotonomaModal.View
 
 
@@ -211,20 +211,19 @@ modals model =
                             (Components.ConfirmModal.View.view model.confirmModal)
 
                     SigninModal ->
-                        Html.map SigninModalMsg
-                            (Components.SigninModal.view model.signinModal anyAnonymousCotos)
+                        App.Modals.SigninModal.view model.signinModal anyAnonymousCotos
 
                     ProfileModal ->
-                        App.Views.ProfileModal.view model.context.session
+                        App.Modals.ProfileModal.view model.context.session
 
                     CotoModal ->
-                        App.Views.CotoModal.view model.openedCoto
+                        App.Modals.CotoModal.view model.openedCoto
 
                     CotonomaModal ->
                         Html.map CotonomaModalMsg
                             (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
 
                     ConnectModal ->
-                        App.Views.ConnectModal.view model
+                        App.Modals.ConnectModal.view model
             )
             (List.reverse model.modals)

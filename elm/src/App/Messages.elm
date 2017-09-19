@@ -11,8 +11,8 @@ import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
+import App.Modals.SigninModalMsg
 import Components.ConfirmModal.Messages
-import Components.SigninModal
 import Components.CotonomaModal.Messages
 
 
@@ -99,5 +99,5 @@ type Msg
       -- Sub components
       --
     | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
-    | SigninModalMsg Components.SigninModal.Msg
+    | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
