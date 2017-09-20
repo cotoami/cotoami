@@ -7,8 +7,9 @@ import Util.StringUtil exposing (isBlank)
 import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
-import Components.CotonomaModal.Model exposing (..)
+import App.Types.Coto exposing (Member(..))
 import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp, PostCotonoma))
+import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (Msg(..))
 
 

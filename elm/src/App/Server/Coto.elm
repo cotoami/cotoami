@@ -4,11 +4,11 @@ import Http exposing (Request)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Util.HttpUtil exposing (httpDelete, httpPost)
-import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotoDeleted))
+import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotoDeleted, CotonomaPosted))
 import App.Types.Post exposing (Post)
-import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey, Member)
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Server.Cotonoma exposing (decodeCotonoma)
+import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
 
 
 decodePost : Decode.Decoder Post
@@ -58,6 +58,15 @@ post : String -> Maybe Cotonoma -> ((Result Http.Error Post) -> msg) -> Post -> 
 post clientId maybeCotonoma msgAfterPosted post =
     postRequest clientId maybeCotonoma post
     |> Http.send msgAfterPosted
+
+
+postCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Cmd Msg
+postCotonoma clientId maybeCotonoma postId members name =
+    Http.send CotonomaPosted
+        <| httpPost
+            "/api/cotonomas"
+            (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId members name))
+            decodePost
 
 
 encodePost : String -> Maybe Cotonoma -> Post -> Encode.Value

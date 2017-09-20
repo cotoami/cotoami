@@ -52,3 +52,6 @@ isPostedInCotonoma maybeCotonoma coto =
             case coto.postedIn of
                 Nothing -> False
                 Just postedIn -> postedIn.id == cotonoma.id
+
+
+type Member = SignedUp Amishi | NotYetSignedUp String

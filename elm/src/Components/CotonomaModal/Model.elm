@@ -2,9 +2,7 @@ module Components.CotonomaModal.Model exposing (..)
 
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
-
-
-type Member = SignedUp Amishi | NotYetSignedUp String
+import App.Types.Coto exposing (Member(..))
 
 
 type alias Model =

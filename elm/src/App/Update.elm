@@ -24,14 +24,13 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost)
+import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost, postCotonoma)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Update
-import Components.CotonomaModal.Commands exposing (postCotonoma)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

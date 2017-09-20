@@ -4,6 +4,7 @@ import Util.StringUtil exposing (validateEmail)
 import App.Types.Context exposing (Context)
 import App.Types.Session exposing (Session)
 import App.Server.Amishi exposing (fetchAmishi)
+import App.Types.Coto exposing (Member(..))
 import Components.CotonomaModal.Model exposing (..)
 import Components.CotonomaModal.Messages exposing (..)
 
