@@ -195,7 +195,7 @@ update msg model =
                             setDefaultMembers
                                 session
                                 (getOwnerAndMembers model)
-                                model.cotonomaModal
+                                App.Modals.CotonomaModal.defaultModel
             }
                 |> \model -> openModal App.Model.CotonomaModal model ! []
 
