@@ -3,8 +3,8 @@ module App.Server.Post exposing (..)
 import Http exposing (Request)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Util.HttpUtil exposing (httpDelete, httpPost)
-import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotoDeleted, CotonomaPosted))
+import Util.HttpUtil exposing (httpPost)
+import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
 import App.Types.Post exposing (Post)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey, Member)
 import App.Server.Amishi exposing (decodeAmishi)
@@ -37,13 +37,6 @@ fetchCotonomaPosts key =
             (Decode.field "cotonoma" decodeCotonoma)
             (Decode.field "members" (Decode.list decodeAmishi))
             (Decode.field "cotos" (Decode.list decodePost))
-
-
-deleteCoto : CotoId -> Cmd Msg
-deleteCoto cotoId =
-    Http.send
-        CotoDeleted
-        ("/api/cotos/" ++ cotoId |> httpDelete)
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
