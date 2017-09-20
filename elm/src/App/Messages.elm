@@ -12,7 +12,6 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
-import Components.ConfirmModal.Messages
 import Components.CotonomaModal.Messages
 
 
@@ -39,6 +38,7 @@ type Msg
       -- Modal
       --
     | CloseModal
+    | Confirm
     | OpenSigninModal
     | OpenProfileModal
     | OpenCotonomaModal
@@ -98,6 +98,5 @@ type Msg
       --
       -- Sub components
       --
-    | ConfirmModalMsg Components.ConfirmModal.Messages.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
