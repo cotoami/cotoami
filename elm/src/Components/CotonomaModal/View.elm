@@ -8,7 +8,7 @@ import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
 import Components.CotonomaModal.Model exposing (..)
-import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp))
+import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp, PostCotonoma))
 import Components.CotonomaModal.Messages exposing (Msg(..))
 
 
@@ -65,7 +65,7 @@ modalConfig session model =
         [ button
             [ class "button button-primary"
             , disabled (not (validateName model.name))
-            , onClick (AppMsg.CotonomaModalMsg Post)
+            , onClick PostCotonoma
             ]
             [ text "Create" ]
         ]

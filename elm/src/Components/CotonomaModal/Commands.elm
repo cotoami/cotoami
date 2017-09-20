@@ -5,13 +5,13 @@ import Http
 import Util.HttpUtil exposing (httpPost)
 import App.Types.Coto exposing (Cotonoma)
 import App.Server.Coto exposing (decodePost)
+import App.Messages exposing (Msg(CotonomaPosted))
 import Components.CotonomaModal.Model exposing (..)
-import Components.CotonomaModal.Messages exposing (..)
 
 
 postCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Cmd Msg
 postCotonoma clientId maybeCotonoma postId members name =
-    Http.send Posted
+    Http.send CotonomaPosted
         <| httpPost
             "/api/cotonomas"
             (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId members name))

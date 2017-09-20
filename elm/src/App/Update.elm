@@ -30,8 +30,8 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
-import Components.CotonomaModal.Messages
 import Components.CotonomaModal.Update
+import Components.CotonomaModal.Commands exposing (postCotonoma)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -448,6 +448,40 @@ update msg model =
         PostedAndConnect (Err _) ->
             model ! []
 
+        PostCotonoma ->
+            model.timeline
+                |> postContent
+                    model.context.clientId
+                    model.context.cotonoma
+                    True
+                    model.cotonomaModal.name
+                |> \( timeline, _ ) ->
+                    ( { model | timeline = timeline }
+                    , Cmd.batch
+                        [ App.Commands.scrollTimelineToBottom NoOp
+                        , postCotonoma
+                            model.context.clientId
+                            model.context.cotonoma
+                            timeline.postIdCounter
+                            model.cotonomaModal.members
+                            model.cotonomaModal.name
+                        ]
+                    )
+
+        CotonomaPosted (Ok response) ->
+            ({ model
+                | cotonomasLoading = True
+                , timeline = setCotoSaved response model.timeline
+             }
+                |> closeModal
+            )
+                ! [ fetchRecentCotonomas
+                  , fetchSubCotonomas model.context.cotonoma
+                  ]
+
+        CotonomaPosted (Err _) ->
+            model ! []
+
         OpenPost post ->
             openCoto (toCoto post) model ! []
 
@@ -538,31 +572,11 @@ update msg model =
                         subMsg
                         session
                         model.context
-                        model.timeline
                         model.cotonomaModal
                     )
-                        |> \( modal, timeline, cmd ) ->
-                            { model
-                                | cotonomaModal = modal
-                                , timeline = timeline
-                            }
-                                ! [ Cmd.map CotonomaModalMsg cmd ]
-                                |> \( model, cmd ) ->
-                                    case subMsg of
-                                        Components.CotonomaModal.Messages.Posted (Ok response) ->
-                                            ({ model
-                                                | cotonomasLoading = True
-                                                , timeline = setCotoSaved response model.timeline
-                                             }
-                                                |> closeModal
-                                            )
-                                                ! [ cmd
-                                                  , fetchRecentCotonomas
-                                                  , fetchSubCotonomas model.context.cotonoma
-                                                  ]
-
-                                        _ ->
-                                            ( model, cmd )
+                        |> \( cotonomaModal, subCmd ) ->
+                            { model | cotonomaModal = cotonomaModal }
+                                ! [ Cmd.map CotonomaModalMsg subCmd ]
 
 
 confirm : String -> Msg -> Model -> Model
