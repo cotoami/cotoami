@@ -18,7 +18,7 @@ import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
-import Components.ConfirmModal.View
+import App.Modals.ConfirmModal
 import Components.CotonomaModal.View
 
 
@@ -207,8 +207,7 @@ modals model =
             (\modal ->
                 case modal of
                     ConfirmModal ->
-                        Html.map ConfirmModalMsg
-                            (Components.ConfirmModal.View.view model.confirmModal)
+                        App.Modals.ConfirmModal.view model.confirmMessage
 
                     SigninModal ->
                         App.Modals.SigninModal.view model.signinModal anyAnonymousCotos

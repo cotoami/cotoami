@@ -1,4 +1,4 @@
-module App.Modals.ConnectModal exposing (..)
+module App.Modals.ConnectModal exposing (view)
 
 import Maybe exposing (andThen)
 import Html exposing (..)

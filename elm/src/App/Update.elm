@@ -28,8 +28,6 @@ import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, dec
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import Components.ConfirmModal.Update
-import Components.ConfirmModal.Messages
 import App.Modals.SigninModal
 import Components.CotonomaModal.Model exposing (setDefaultMembers)
 import Components.CotonomaModal.Messages
@@ -173,6 +171,9 @@ update msg model =
         --
         CloseModal ->
             ( closeModal model, Cmd.none )
+
+        Confirm ->
+            ( closeModal model, sendMsg model.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -522,19 +523,6 @@ update msg model =
         --
         -- Sub components
         --
-        ConfirmModalMsg subMsg ->
-            Components.ConfirmModal.Update.update subMsg model.confirmModal
-                |> \( modal, cmd ) ->
-                    { model | confirmModal = modal }
-                        ! [ cmd ]
-                        |> \( model, cmd ) ->
-                            case subMsg of
-                                Components.ConfirmModal.Messages.Close ->
-                                    ( closeModal model, cmd )
-
-                                Components.ConfirmModal.Messages.Confirm ->
-                                    ( closeModal model, cmd )
-
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> \( signinModal, subCmd ) ->
@@ -581,13 +569,8 @@ update msg model =
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =
     { model
-        | confirmModal =
-            model.confirmModal
-                |> \modal ->
-                    { modal
-                        | message = message
-                        , msgOnConfirm = msgOnConfirm
-                    }
+        | confirmMessage = message
+        , msgOnConfirm = msgOnConfirm
     }
         |> \model -> openModal App.Model.ConfirmModal model
 
