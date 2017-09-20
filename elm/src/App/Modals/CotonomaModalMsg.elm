@@ -1,17 +1,13 @@
-module Components.CotonomaModal.Messages exposing (..)
+module App.Modals.CotonomaModalMsg exposing (..)
 
 import Http
 import App.Types.Amishi exposing (Amishi)
-import App.Types.Post exposing (Post)
 
 
 type Msg
     = NoOp
-    | Close
     | NameInput String
     | MemberEmailInput String
-    | Post
-    | Posted (Result Http.Error Post)
     | AddMember
     | RemoveMember String
     | AmishiFetched (Result Http.Error Amishi)

@@ -12,7 +12,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
-import Components.CotonomaModal.Messages
+import App.Modals.CotonomaModalMsg
 
 
 type Msg
@@ -79,6 +79,8 @@ type Msg
     | Post (Maybe Direction)
     | Posted (Result Http.Error Post)
     | PostedAndConnect (Result Http.Error Post)
+    | PostCotonoma
+    | CotonomaPosted (Result Http.Error Post)
     | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post
@@ -99,4 +101,4 @@ type Msg
       -- Sub components
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
-    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
