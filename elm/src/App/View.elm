@@ -219,8 +219,7 @@ modals model =
                         App.Modals.CotoModal.view model.openedCoto
 
                     CotonomaModal ->
-                        Html.map CotonomaModalMsg
-                            (Components.CotonomaModal.View.view model.context.session model.cotonomaModal)
+                        Components.CotonomaModal.View.view model.context.session model.cotonomaModal
 
                     ConnectModal ->
                         App.Modals.ConnectModal.view model

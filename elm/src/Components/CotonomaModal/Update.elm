@@ -17,9 +17,6 @@ update msg session context timeline model =
         NoOp ->
             ( model, timeline, Cmd.none )
 
-        Close ->
-            ( model, timeline, Cmd.none )
-
         NameInput content ->
             ( { model | name = content }, timeline, Cmd.none )
 

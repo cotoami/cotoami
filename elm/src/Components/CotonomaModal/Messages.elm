@@ -7,7 +7,6 @@ import App.Types.Post exposing (Post)
 
 type Msg
     = NoOp
-    | Close
     | NameInput String
     | MemberEmailInput String
     | Post

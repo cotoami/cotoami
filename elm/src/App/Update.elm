@@ -549,14 +549,13 @@ update msg model =
                                 ! [ Cmd.map CotonomaModalMsg cmd ]
                                 |> \( model, cmd ) ->
                                     case subMsg of
-                                        Components.CotonomaModal.Messages.Close ->
-                                            ( closeModal model, cmd )
-
                                         Components.CotonomaModal.Messages.Posted (Ok response) ->
-                                            { model
+                                            ({ model
                                                 | cotonomasLoading = True
                                                 , timeline = setCotoSaved response model.timeline
-                                            }
+                                             }
+                                                |> closeModal
+                                            )
                                                 ! [ cmd
                                                   , fetchRecentCotonomas
                                                   , fetchSubCotonomas model.context.cotonoma

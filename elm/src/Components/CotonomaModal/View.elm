@@ -8,10 +8,11 @@ import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
 import Components.CotonomaModal.Model exposing (..)
-import Components.CotonomaModal.Messages exposing (..)
+import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp))
+import Components.CotonomaModal.Messages exposing (Msg(..))
 
 
-view : Maybe Session -> Model -> Html Msg
+view : Maybe Session -> Model -> Html AppMsg.Msg
 view maybeSession model =
     Modal.view
         "cotonoma-modal"
@@ -22,9 +23,9 @@ view maybeSession model =
         )
 
 
-modalConfig : Session -> Model -> Modal.Config Msg
+modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    { closeMessage = Close
+    { closeMessage = CloseModal
     , title = "Cotonoma"
     , content = div []
         [ div []
@@ -36,7 +37,7 @@ modalConfig session model =
                 , placeholder "Name"
                 , maxlength nameMaxlength
                 , value model.name
-                , onInput NameInput
+                , onInput (AppMsg.CotonomaModalMsg << NameInput)
                 ] []
             ]
         , memberInputDiv model
@@ -64,14 +65,14 @@ modalConfig session model =
         [ button
             [ class "button button-primary"
             , disabled (not (validateName model.name))
-            , onClick Post
+            , onClick (AppMsg.CotonomaModalMsg Post)
             ]
             [ text "Create" ]
         ]
     }
 
 
-memberInputDiv : Model -> Html Msg
+memberInputDiv : Model -> Html AppMsg.Msg
 memberInputDiv model =
     div [ class "member-input" ]
         [ label [] [ text "Members" ]
@@ -81,7 +82,7 @@ memberInputDiv model =
             , name "member"
             , placeholder "Email address to invite"
             , value model.memberEmail
-            , onInput MemberEmailInput
+            , onInput (AppMsg.CotonomaModalMsg << MemberEmailInput)
             ] []
         , a
             [ classList
@@ -90,28 +91,28 @@ memberInputDiv model =
                 ]
             , title "Add member"
             , if model.memberEmailValid then
-                onClick AddMember
+                onClick (AppMsg.CotonomaModalMsg AddMember)
               else
-                onClick NoOp
+                onClick AppMsg.NoOp
             ]
             [ i [ class "material-icons" ] [ text "add_circle_outline" ] ]
         ]
 
 
-memberAsNotAmishi : String -> Html Msg
+memberAsNotAmishi : String -> Html AppMsg.Msg
 memberAsNotAmishi email =
     li [ class "not-amishi" ]
         [ i [ class "material-icons" ] [ text "perm_identity" ]
         , span [ class "email" ] [ text email ]
         , a
             [ class "remove-member"
-            , onClick (RemoveMember email)
+            , onClick (AppMsg.CotonomaModalMsg (RemoveMember email))
             ]
             [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
         ]
 
 
-memberAsAmishi : Bool -> Amishi -> Html Msg
+memberAsAmishi : Bool -> Amishi -> Html AppMsg.Msg
 memberAsAmishi isOwner amishi =
     li
         [ classList
@@ -126,7 +127,7 @@ memberAsAmishi isOwner amishi =
           else
             a
                 [ class "remove-member"
-                , onClick (RemoveMember amishi.email)
+                , onClick (AppMsg.CotonomaModalMsg (RemoveMember amishi.email))
                 ]
                 [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
         ]
