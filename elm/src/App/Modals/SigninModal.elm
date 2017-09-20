@@ -1,4 +1,4 @@
-module App.Modals.SigninModal exposing (..)
+module App.Modals.SigninModal exposing (Model, defaultModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
