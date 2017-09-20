@@ -37,7 +37,7 @@ setDefaultMembers : Session -> List Amishi -> Model -> Model
 setDefaultMembers session amishis model =
     List.foldl
         (\amishi model ->
-          addMember session (SignedUp amishi) model
+            addMember session (SignedUp amishi) model
         )
         { model | members = [] }
         amishis
@@ -46,9 +46,13 @@ setDefaultMembers session amishis model =
 addMember : Session -> Member -> Model -> Model
 addMember session member model =
     let
-        email = case member of
-            SignedUp amishi -> amishi.email
-            NotYetSignedUp email -> email
+        email =
+            case member of
+                SignedUp amishi ->
+                    amishi.email
+
+                NotYetSignedUp email ->
+                    email
 
         members =
             if (containsMember session model email) then
@@ -57,25 +61,27 @@ addMember session member model =
                 member :: model.members
     in
         { model
-        | members = members
-        , membersLoading = False
-        , memberEmail = ""
-        , memberEmailValid = False
+            | members = members
+            , membersLoading = False
+            , memberEmail = ""
+            , memberEmailValid = False
         }
 
 
 removeMember : String -> Model -> Model
 removeMember email model =
     { model
-    | members =
-        List.filter
-            (\member -> case member of
-                SignedUp amishi ->
-                    amishi.email /= email
-                NotYetSignedUp memberEmail ->
-                    memberEmail /= email
-            )
-            model.members
+        | members =
+            List.filter
+                (\member ->
+                    case member of
+                        SignedUp amishi ->
+                            amishi.email /= email
+
+                        NotYetSignedUp memberEmail ->
+                            memberEmail /= email
+                )
+                model.members
     }
 
 
@@ -85,11 +91,13 @@ containsMember session model email =
         True
     else
         List.any
-            (\member -> case member of
-                SignedUp amishi ->
-                    amishi.email == email
-                NotYetSignedUp memberEmail ->
-                    memberEmail == email
+            (\member ->
+                case member of
+                    SignedUp amishi ->
+                        amishi.email == email
+
+                    NotYetSignedUp memberEmail ->
+                        memberEmail == email
             )
             model.members
 
@@ -105,8 +113,8 @@ update msg session context model =
 
         MemberEmailInput memberEmail ->
             ( { model
-              | memberEmail = memberEmail
-              , memberEmailValid = validateEmail memberEmail
+                | memberEmail = memberEmail
+                , memberEmailValid = validateEmail memberEmail
               }
             , Cmd.none
             )
@@ -137,7 +145,9 @@ view maybeSession model =
     Modal.view
         "cotonoma-modal"
         (case maybeSession of
-            Nothing -> Nothing
+            Nothing ->
+                Nothing
+
             Just session ->
                 Just (modalConfig session model)
         )
@@ -147,40 +157,44 @@ modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
     { closeMessage = CloseModal
     , title = "Cotonoma"
-    , content = div []
-        [ div []
-            [ label [] [ text "Name" ]
-            , input
-                [ type_ "text"
-                , class "u-full-width"
-                , name "name"
-                , placeholder "Name"
-                , maxlength nameMaxlength
-                , value model.name
-                , onInput (AppMsg.CotonomaModalMsg << NameInput)
-                ] []
-            ]
-        , memberInputDiv model
-        , div
-            [ classList
-                [ ( "members", True )
-                , ( "loading", model.membersLoading )
+    , content =
+        div []
+            [ div []
+                [ label [] [ text "Name" ]
+                , input
+                    [ type_ "text"
+                    , class "u-full-width"
+                    , name "name"
+                    , placeholder "Name"
+                    , maxlength nameMaxlength
+                    , value model.name
+                    , onInput (AppMsg.CotonomaModalMsg << NameInput)
+                    ]
+                    []
+                ]
+            , memberInputDiv model
+            , div
+                [ classList
+                    [ ( "members", True )
+                    , ( "loading", model.membersLoading )
+                    ]
+                ]
+                [ ul [ class "members" ]
+                    ((memberAsAmishi True (toAmishi session))
+                        :: (List.map
+                                (\member ->
+                                    case member of
+                                        SignedUp amishi ->
+                                            memberAsAmishi False amishi
+
+                                        NotYetSignedUp email ->
+                                            memberAsNotAmishi email
+                                )
+                                model.members
+                           )
+                    )
                 ]
             ]
-            [ ul [ class "members" ]
-                ((memberAsAmishi True (toAmishi session)) ::
-                    (List.map
-                        (\member -> case member of
-                            SignedUp amishi ->
-                                memberAsAmishi False amishi
-                            NotYetSignedUp email ->
-                                memberAsNotAmishi email
-                        )
-                        model.members
-                    )
-                )
-            ]
-        ]
     , buttons =
         [ button
             [ class "button button-primary"
@@ -203,7 +217,8 @@ memberInputDiv model =
             , placeholder "Email address to invite"
             , value model.memberEmail
             , onInput (AppMsg.CotonomaModalMsg << MemberEmailInput)
-            ] []
+            ]
+            []
         , a
             [ classList
                 [ ( "add-member", True )
@@ -254,7 +269,8 @@ memberAsAmishi isOwner amishi =
 
 
 nameMaxlength : Int
-nameMaxlength = 30
+nameMaxlength =
+    30
 
 
 validateName : String -> Bool

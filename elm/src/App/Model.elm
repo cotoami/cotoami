@@ -34,7 +34,7 @@ type alias Model =
     , members : List Amishi
     , memberPresences : MemberPresences
     , modals : List Modal
-    , openedCoto: Maybe Coto
+    , openedCoto : Maybe Coto
     , confirmMessage : String
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
