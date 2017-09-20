@@ -148,6 +148,16 @@ bodyDiv maybeConnection context graph coto =
         }
 
 
+connectInboundIcon : Html msg
+connectInboundIcon =
+    i [ class "fa fa-sign-in", (attribute "aria-hidden" "true") ] []
+
+
+connectOutboundIcon : Html msg
+connectOutboundIcon =
+    i [ class "fa fa-sign-out", (attribute "aria-hidden" "true") ] []
+
+
 toolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
 toolButtonsSpan context graph config asCotonoma cotoId =
     span [ class "coto-tool-buttons" ]
@@ -165,13 +175,13 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , title "Inbound connection from the selected cotos"
                             , onLinkButtonClick (confirmConnect cotoId Inbound)
                             ]
-                            [ i [ class "material-icons" ] [ text "file_download" ] ]
+                            [ connectInboundIcon ]
                         , a
                             [ class "tool-button connect-to-selection"
                             , title "Outbound connection to the selected cotos"
                             , onLinkButtonClick (confirmConnect cotoId Outbound)
                             ]
-                            [ i [ class "material-icons" ] [ text "file_upload" ] ]
+                            [ connectOutboundIcon ]
                         ]
         , span [ class "default-buttons" ]
             [ case config.pinCoto of

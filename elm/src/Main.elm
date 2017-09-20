@@ -28,11 +28,18 @@ main =
 init : Flags -> Location -> ( Model, Cmd Msg )
 init flags location =
     let
-        route = parseLocation location
-        initialModel = initModel flags.seed route
+        route =
+            parseLocation location
+
+        initialModel =
+            initModel flags.seed route
+
         ( model, cmd ) =
             case route of
-                CotonomaRoute key -> loadCotonoma key initialModel
-                _ -> loadHome initialModel
+                CotonomaRoute key ->
+                    loadCotonoma key initialModel
+
+                _ ->
+                    loadHome initialModel
     in
-        model ! [fetchSession, cmd]
+        model ! [ fetchSession, cmd ]

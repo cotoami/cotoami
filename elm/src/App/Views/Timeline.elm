@@ -56,14 +56,13 @@ newPostEditor context model =
                             , disabled (isBlank model.newContent)
                             , onMouseDown (App.Messages.Post (Just Outbound))
                             ]
-                            [ i [ class "material-icons" ] [ text "file_upload" ]
-                            ]
+                            [ App.Views.Coto.connectOutboundIcon ]
                         , button
                             [ class "button connect-inbound"
                             , disabled (isBlank model.newContent)
                             , onMouseDown (App.Messages.Post (Just Inbound))
                             ]
-                            [ i [ class "material-icons" ] [ text "file_download" ]
+                            [ App.Views.Coto.connectInboundIcon
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
                             ]
                         ]
