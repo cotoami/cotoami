@@ -1,4 +1,4 @@
-module Components.CotonomaModal.Messages exposing (..)
+module App.Modals.CotonomaModalMsg exposing (..)
 
 import Http
 import App.Types.Amishi exposing (Amishi)

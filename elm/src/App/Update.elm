@@ -30,8 +30,7 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
-import Components.CotonomaModal.Model exposing (setDefaultMembers)
-import Components.CotonomaModal.Update
+import App.Modals.CotonomaModal exposing (setDefaultMembers)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -568,7 +567,7 @@ update msg model =
                     model ! []
 
                 Just session ->
-                    (Components.CotonomaModal.Update.update
+                    (App.Modals.CotonomaModal.update
                         subMsg
                         session
                         model.context

@@ -19,7 +19,7 @@ import App.Modals.ProfileModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.ConfirmModal
-import Components.CotonomaModal.View
+import App.Modals.CotonomaModal
 
 
 view : Model -> Html Msg
@@ -219,7 +219,7 @@ modals model =
                         App.Modals.CotoModal.view model.openedCoto
 
                     CotonomaModal ->
-                        Components.CotonomaModal.View.view model.context.session model.cotonomaModal
+                        App.Modals.CotonomaModal.view model.context.session model.cotonomaModal
 
                     ConnectModal ->
                         App.Modals.ConnectModal.view model

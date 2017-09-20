@@ -12,7 +12,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
-import Components.CotonomaModal.Messages
+import App.Modals.CotonomaModalMsg
 
 
 type Msg
@@ -101,4 +101,4 @@ type Msg
       -- Sub components
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
-    | CotonomaModalMsg Components.CotonomaModal.Messages.Msg
+    | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg

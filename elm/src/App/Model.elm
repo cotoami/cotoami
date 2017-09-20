@@ -13,7 +13,7 @@ import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
-import Components.CotonomaModal.Model
+import App.Modals.CotonomaModal
 
 
 type Modal
@@ -46,7 +46,7 @@ type alias Model =
     , cotoSelectionTitle : String
     , connectingCotoId : Maybe CotoId
     , connectingDirection : Direction
-    , cotonomaModal : Components.CotonomaModal.Model.Model
+    , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
     , traversals : Traversals
     }
@@ -74,7 +74,7 @@ initModel seed route =
     , cotoSelectionTitle = ""
     , connectingCotoId = Nothing
     , connectingDirection = App.Types.Graph.Outbound
-    , cotonomaModal = Components.CotonomaModal.Model.initModel
+    , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
     , traversals = defaultTraversals
     }

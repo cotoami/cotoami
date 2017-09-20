@@ -1,16 +1,135 @@
-module Components.CotonomaModal.View exposing (..)
+module App.Modals.CotonomaModal exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isBlank, validateEmail)
 import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
 import App.Types.Coto exposing (Member(..))
+import App.Types.Context exposing (Context)
+import App.Server.Amishi exposing (fetchAmishi)
 import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp, PostCotonoma))
-import Components.CotonomaModal.Model exposing (..)
-import Components.CotonomaModal.Messages exposing (Msg(..))
+import App.Modals.CotonomaModalMsg as CotonomaModalMsg exposing (Msg(..))
+
+
+type alias Model =
+    { name : String
+    , memberEmail : String
+    , memberEmailValid : Bool
+    , membersLoading : Bool
+    , members : List Member
+    }
+
+
+defaultModel : Model
+defaultModel =
+    { name = ""
+    , memberEmail = ""
+    , memberEmailValid = False
+    , membersLoading = False
+    , members = []
+    }
+
+
+setDefaultMembers : Session -> List Amishi -> Model -> Model
+setDefaultMembers session amishis model =
+    List.foldl
+        (\amishi model ->
+          addMember session (SignedUp amishi) model
+        )
+        { model | members = [] }
+        amishis
+
+
+addMember : Session -> Member -> Model -> Model
+addMember session member model =
+    let
+        email = case member of
+            SignedUp amishi -> amishi.email
+            NotYetSignedUp email -> email
+
+        members =
+            if (containsMember session model email) then
+                model.members
+            else
+                member :: model.members
+    in
+        { model
+        | members = members
+        , membersLoading = False
+        , memberEmail = ""
+        , memberEmailValid = False
+        }
+
+
+removeMember : String -> Model -> Model
+removeMember email model =
+    { model
+    | members =
+        List.filter
+            (\member -> case member of
+                SignedUp amishi ->
+                    amishi.email /= email
+                NotYetSignedUp memberEmail ->
+                    memberEmail /= email
+            )
+            model.members
+    }
+
+
+containsMember : Session -> Model -> String -> Bool
+containsMember session model email =
+    if (session.email == email) then
+        True
+    else
+        List.any
+            (\member -> case member of
+                SignedUp amishi ->
+                    amishi.email == email
+                NotYetSignedUp memberEmail ->
+                    memberEmail == email
+            )
+            model.members
+
+
+update : CotonomaModalMsg.Msg -> Session -> Context -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )
+update msg session context model =
+    case msg of
+        CotonomaModalMsg.NoOp ->
+            ( model, Cmd.none )
+
+        NameInput content ->
+            ( { model | name = content }, Cmd.none )
+
+        MemberEmailInput memberEmail ->
+            ( { model
+              | memberEmail = memberEmail
+              , memberEmailValid = validateEmail memberEmail
+              }
+            , Cmd.none
+            )
+
+        AddMember ->
+            ( { model | membersLoading = True }
+            , fetchAmishi AmishiFetched model.memberEmail
+            )
+
+        AmishiFetched (Ok amishi) ->
+            ( addMember session (SignedUp amishi) model
+            , Cmd.none
+            )
+
+        AmishiFetched (Err _) ->
+            ( addMember session (NotYetSignedUp model.memberEmail) model
+            , Cmd.none
+            )
+
+        RemoveMember email ->
+            ( removeMember email model
+            , Cmd.none
+            )
 
 
 view : Maybe Session -> Model -> Html AppMsg.Msg
