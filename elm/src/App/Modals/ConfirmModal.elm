@@ -1,4 +1,4 @@
-module Components.ConfirmModal.View exposing (..)
+module App.Modals.ConfirmModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
