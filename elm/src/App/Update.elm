@@ -24,7 +24,7 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
-import App.Server.Coto exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost, postCotonoma)
+import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, deleteCoto, decodePost, postCotonoma)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
@@ -743,7 +743,7 @@ post maybeDirection model =
                         Maybe.withDefault Outbound maybeDirection
                 }
                     ! [ App.Commands.scrollTimelineToBottom NoOp
-                      , App.Server.Coto.post clientId cotonoma postMsg newPost
+                      , App.Server.Post.post clientId cotonoma postMsg newPost
                       ]
 
 

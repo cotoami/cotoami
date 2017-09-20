@@ -1,4 +1,4 @@
-module App.Server.Coto exposing (..)
+module App.Server.Post exposing (..)
 
 import Http exposing (Request)
 import Json.Decode as Decode
