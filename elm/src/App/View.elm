@@ -207,7 +207,7 @@ modals model =
             (\modal ->
                 case modal of
                     ConfirmModal ->
-                        Components.ConfirmModal.View.view model.confirmModal
+                        Components.ConfirmModal.View.view model.confirmMessage
 
                     SigninModal ->
                         App.Modals.SigninModal.view model.signinModal anyAnonymousCotos

@@ -11,7 +11,7 @@ import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
-import Components.ConfirmModal.Model
+import App.Messages
 import App.Modals.SigninModal
 import Components.CotonomaModal.Model
 
@@ -35,7 +35,8 @@ type alias Model =
     , memberPresences : MemberPresences
     , modals : List Modal
     , openedCoto: Maybe Coto
-    , confirmModal : Components.ConfirmModal.Model.Model
+    , confirmMessage : String
+    , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
@@ -62,7 +63,8 @@ initModel seed route =
     , memberPresences = Dict.empty
     , modals = []
     , openedCoto = Nothing
-    , confirmModal = Components.ConfirmModal.Model.initModel
+    , confirmMessage = ""
+    , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
     , recentCotonomas = []
     , cotonomasLoading = False

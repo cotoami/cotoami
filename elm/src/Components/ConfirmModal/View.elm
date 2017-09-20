@@ -5,21 +5,20 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import App.Messages exposing (Msg(..))
-import Components.ConfirmModal.Model exposing (..)
 
 
-view : Model -> Html Msg
-view model =
+view : String -> Html Msg
+view confirmMessage =
     Modal.view
         "confirm-modal"
-        (Just (modalConfig model))
+        (Just (modalConfig confirmMessage))
 
 
-modalConfig : Model -> Modal.Config Msg
-modalConfig model =
+modalConfig : String -> Modal.Config Msg
+modalConfig confirmMessage =
     { closeMessage = CloseModal
     , title = "Confirm"
-    , content = div [] [ text model.message ]
+    , content = div [] [ text confirmMessage ]
     , buttons =
         [ button [ class "button", onClick CloseModal ] [ text "Cancel" ]
         , button [ class "button button-primary", onClick Confirm ] [ text "OK" ]
