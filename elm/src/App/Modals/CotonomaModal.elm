@@ -1,4 +1,5 @@
-module App.Modals.CotonomaModal exposing (..)
+module App.Modals.CotonomaModal
+    exposing (Model, defaultModel, setDefaultMembers, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
