@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (isNothing)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
@@ -140,28 +141,28 @@ viewSwitchContainerDiv model =
         [ id "view-switch-container" ]
         [ viewSwitchDiv
             "switch-to-timeline"
-            "fa-comments"
+            "comments"
             "Switch to timeline"
             (model.activeViewOnMobile == TimelineView)
             False
             (SwitchViewOnMobile TimelineView)
         , viewSwitchDiv
             "switch-to-pinned"
-            "fa-thumb-tack"
+            "thumb-tack"
             "Switch to pinned cotos"
             (model.activeViewOnMobile == PinnedView)
             (isStockEmpty model)
             (SwitchViewOnMobile PinnedView)
         , viewSwitchDiv
             "switch-to-traversals"
-            "fa-share-alt"
+            "share-alt"
             "Switch to traversals"
             (model.activeViewOnMobile == TraversalsView)
             (App.Types.Traversal.isEmpty model.traversals)
             (SwitchViewOnMobile TraversalsView)
         , viewSwitchDiv
             "switch-to-selection"
-            "fa-check-square-o"
+            "check-square-o"
             "Switch to coto selection"
             (model.activeViewOnMobile == SelectionView)
             (List.isEmpty model.context.selection)
@@ -171,28 +172,26 @@ viewSwitchContainerDiv model =
 
 viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
 viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
-    let
-        icon =
-            i [ class ("fa " ++ iconName), (attribute "aria-hidden" "true") ] []
-    in
-        div
-            [ id divId
-            , classList
-                [ ( "view-switch", True )
-                , ( "selected", selected )
-                , ( "empty", empty )
+    div
+        [ id divId
+        , classList
+            [ ( "view-switch", True )
+            , ( "selected", selected )
+            , ( "empty", empty )
+            ]
+        ]
+        [ if selected || empty then
+            span
+                [ class "tool-button" ]
+                [ faIcon iconName Nothing ]
+          else
+            a
+                [ class "tool-button"
+                , title buttonTitle
+                , onClick onClickMsg
                 ]
-            ]
-            [ if selected || empty then
-                span [ class "tool-button" ] [ icon ]
-              else
-                a
-                    [ class "tool-button"
-                    , title buttonTitle
-                    , onClick onClickMsg
-                    ]
-                    [ icon ]
-            ]
+                [ faIcon iconName Nothing ]
+        ]
 
 
 modals : Model -> List (Html Msg)
@@ -201,7 +200,6 @@ modals model =
         anyAnonymousCotos =
             (isNothing model.context.session)
                 && not (List.isEmpty model.timeline.posts)
-
     in
         List.map
             (\modal ->
