@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Util.HtmlUtil exposing (faIcon)
 import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
@@ -46,17 +47,9 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
                 else
                     span [] []
         , if pinned coto.id graph then
-            i
-                [ class "pinned fa fa-thumb-tack"
-                , (attribute "aria-hidden" "true")
-                ]
-                []
+            faIcon "thumb-tack" (Just "pinned")
           else if App.Types.Graph.member coto.id graph then
-            i
-                [ class "connected fa fa-share-alt"
-                , (attribute "aria-hidden" "true")
-                ]
-                []
+            faIcon "share-alt" (Just "connected")
           else
             span [] []
         ]
@@ -150,12 +143,12 @@ bodyDiv maybeConnection context graph coto =
 
 connectInboundIcon : Html msg
 connectInboundIcon =
-    i [ class "fa fa-sign-in", (attribute "aria-hidden" "true") ] []
+    faIcon "sign-in" Nothing
 
 
 connectOutboundIcon : Html msg
 connectOutboundIcon =
-    i [ class "fa fa-sign-out", (attribute "aria-hidden" "true") ] []
+    faIcon "sign-out" Nothing
 
 
 toolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
@@ -175,7 +168,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , title "Connect"
                             , onLinkButtonClick (confirmConnect cotoId Inbound)
                             ]
-                            [ i [ class "pinned fa fa-link", (attribute "aria-hidden" "true") ] [] ]
+                            [ faIcon "link" Nothing ]
                         ]
         , span [ class "default-buttons" ]
             [ case config.pinCoto of
@@ -191,7 +184,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , title "Pin this coto"
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
-                            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] [] ]
+                            [ faIcon "thumb-tack" Nothing ]
             , case config.openTraversal of
                 Nothing ->
                     span [] []
@@ -224,7 +217,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Delete connection"
                         , onLinkButtonClick deleteConnection
                         ]
-                        [ i [ class "pinned fa fa-unlink", (attribute "aria-hidden" "true") ] [] ]
+                        [ faIcon "unlink" Nothing ]
             , case config.selectCoto of
                 Nothing ->
                     span [] []
