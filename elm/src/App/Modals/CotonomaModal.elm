@@ -12,6 +12,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.StringUtil exposing (isBlank, validateEmail)
 import Util.Modal as Modal
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
 import App.Types.Coto exposing (Member(..))
@@ -250,7 +251,7 @@ memberAsNotAmishi email =
             [ class "remove-member"
             , onClick (AppMsg.CotonomaModalMsg (RemoveMember email))
             ]
-            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+            [ faIcon "times" Nothing ]
         ]
 
 
@@ -271,7 +272,7 @@ memberAsAmishi isOwner amishi =
                 [ class "remove-member"
                 , onClick (AppMsg.CotonomaModalMsg (RemoveMember amishi.email))
                 ]
-                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+                [ faIcon "times" Nothing ]
         ]
 
 
