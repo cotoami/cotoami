@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Util.Modal as Modal
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph exposing (Direction(..))
 import App.Messages exposing (..)
@@ -67,6 +68,15 @@ modalContent direction selectedCotos connectingCoto =
     in
         div []
             [ div
+                [ class "tools" ]
+                [ button
+                    [ class "button reverse-direction"
+                    ]
+                    [ faIcon "long-arrow-down" Nothing
+                    , faIcon "long-arrow-up" Nothing
+                    ]
+                ]
+            , div
                 [ class "start" ]
                 [ start ]
             , div
