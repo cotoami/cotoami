@@ -6,6 +6,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Context exposing (CotoSelection, Context, isSelected)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
@@ -60,10 +61,13 @@ connectionDiv context graph coto =
 cotoDiv : Context -> Graph -> Coto -> Html Msg
 cotoDiv context graph coto =
     let
-        elementId = "pinned-" ++ coto.id
+        elementId =
+            "pinned-" ++ coto.id
     in
         div
-            [ App.Views.Coto.cotoClassList context elementId (Just coto.id)
+            [ App.Views.Coto.cotoClassList context
+                elementId
+                (Just coto.id)
                 [ ( "pinned-coto", True )
                 , ( "animated", True )
                 , ( "fadeIn", True )
@@ -85,9 +89,9 @@ cotoDiv context graph coto =
 unpinButtonDiv : CotoId -> Html Msg
 unpinButtonDiv cotoId =
     div [ class "unpin-button" ]
-        [ a [ class "tool-button unpin"
+        [ a
+            [ class "tool-button unpin"
             , onLinkButtonClick (ConfirmUnpinCoto cotoId)
             ]
-            [ i [ class "pinned fa fa-thumb-tack", (attribute "aria-hidden" "true") ] []
-            ]
+            [ faIcon "thumb-tack" Nothing ]
         ]
