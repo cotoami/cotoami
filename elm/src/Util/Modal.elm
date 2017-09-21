@@ -5,6 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (maybe, isJust)
+import Util.HtmlUtil exposing (faIcon)
+
 
 type alias Config msg =
     { closeMessage : msg
@@ -16,7 +18,8 @@ type alias Config msg =
 
 view : String -> Maybe (Config msg) -> Html msg
 view modalId maybeConfig =
-    div [ id modalId
+    div
+        [ id modalId
         , classList
             [ ( "modal", True )
             , ( "modal-open", isJust maybeConfig )
@@ -24,8 +27,11 @@ view modalId maybeConfig =
         ]
         [ div [ class "modal-inner" ]
             [ (case maybeConfig of
-                Nothing -> div [ class "modal-content" ] []
-                Just config -> modalContent config
+                Nothing ->
+                    div [ class "modal-content" ] []
+
+                Just config ->
+                    modalContent config
               )
             ]
         ]
@@ -36,7 +42,7 @@ modalContent config =
     div [ class "modal-content" ]
         [ div [ class "modal-close-icon" ]
             [ a [ class "close-modal", onClick config.closeMessage ]
-                [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+                [ faIcon "times" Nothing ]
             ]
         , div [ class "modal-content-inner" ]
             [ h4 [] [ text config.title ]

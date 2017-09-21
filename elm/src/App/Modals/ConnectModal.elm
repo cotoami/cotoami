@@ -17,9 +17,10 @@ view : Model -> Html Msg
 view model =
     model.connectingCotoId
         |> andThen (\cotoId -> getCoto cotoId model)
-        |> Maybe.map (\coto ->
-            modalConfig model.connectingDirection (getSelectedCotos model) coto
-        )
+        |> Maybe.map
+            (\coto ->
+                modalConfig model.connectingDirection (getSelectedCotos model) coto
+            )
         |> Modal.view "connect-modal"
 
 
@@ -61,12 +62,22 @@ modalContent direction selectedCotos connectingCoto =
 
         ( start, end ) =
             case direction of
-                Outbound -> ( connectingCotoHtml, selectedCotosHtml )
-                Inbound -> ( selectedCotosHtml, connectingCotoHtml )
+                Outbound ->
+                    ( connectingCotoHtml, selectedCotosHtml )
 
+                Inbound ->
+                    ( selectedCotosHtml, connectingCotoHtml )
     in
         div []
             [ div
+                [ class "tools" ]
+                [ button
+                    [ class "button reverse-direction"
+                    , onClick ReverseDirection
+                    ]
+                    [ text "Reverse" ]
+                ]
+            , div
                 [ class "start" ]
                 [ start ]
             , div

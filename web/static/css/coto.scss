@@ -68,8 +68,9 @@ div.coto-body {
         width: 30px;
         text-align: center;
 
-        &.fa-thumb-tack {
-          font-size: 27px;
+        &.fa-thumb-tack,
+        &.fa-unlink {
+          font-size: 26px;
           vertical-align: 5px;
         }
       }

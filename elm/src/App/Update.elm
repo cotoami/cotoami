@@ -329,6 +329,18 @@ update msg model =
             }
                 |> \model -> openModal App.Model.ConnectModal model ! []
 
+        ReverseDirection ->
+            { model
+                | connectingDirection =
+                    case model.connectingDirection of
+                        Outbound ->
+                            Inbound
+
+                        Inbound ->
+                            Outbound
+            }
+                ! []
+
         Connect subject objects direction ->
             App.Model.connect direction objects subject model
                 ! [ App.Server.Graph.connect

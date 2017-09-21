@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onLinkButtonClick)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -24,9 +25,9 @@ statusBar model =
             ]
         ]
         [ a [ class "close", onClick ClearSelection ]
-            [ i [ class "fa fa-times", (attribute "aria-hidden" "true") ] [] ]
+            [ faIcon "times" Nothing ]
         , div [ class "selection-info" ]
-            [ i [ class "fa fa-check-square-o", (attribute "aria-hidden" "true") ] []
+            [ faIcon "check-square-o" Nothing
             , span
                 [ class "selection-count" ]
                 [ text (model.context.selection |> List.length |> toString) ]
@@ -34,16 +35,10 @@ statusBar model =
                 [ class "text" ]
                 [ text " cotos selected" ]
             , a [ class "toggle", onClick CotoSelectionColumnToggle ]
-                [ i
-                    [ class
-                        (if model.cotoSelectionColumnOpen then
-                            "fa fa-caret-up"
-                        else
-                            "fa fa-caret-down"
-                        )
-                    , (attribute "aria-hidden" "true")
-                    ]
-                    []
+                [ if model.cotoSelectionColumnOpen then
+                    faIcon "caret-up" Nothing
+                  else
+                    faIcon "caret-down" Nothing
                 ]
             ]
         ]
