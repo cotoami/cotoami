@@ -230,7 +230,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Delete connection"
                         , onLinkButtonClick deleteConnection
                         ]
-                        [ i [ class "material-icons" ] [ text "close" ] ]
+                        [ i [ class "pinned fa fa-unlink", (attribute "aria-hidden" "true") ] [] ]
             , case config.selectCoto of
                 Nothing ->
                     span [] []
