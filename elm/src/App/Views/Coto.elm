@@ -171,17 +171,11 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 Just confirmConnect ->
                     span [ class "connecting-buttons" ]
                         [ a
-                            [ class "tool-button connect-to-this"
-                            , title "Inbound connection from the selected cotos"
+                            [ class "tool-button connect"
+                            , title "Connect"
                             , onLinkButtonClick (confirmConnect cotoId Inbound)
                             ]
-                            [ connectInboundIcon ]
-                        , a
-                            [ class "tool-button connect-to-selection"
-                            , title "Outbound connection to the selected cotos"
-                            , onLinkButtonClick (confirmConnect cotoId Outbound)
-                            ]
-                            [ connectOutboundIcon ]
+                            [ i [ class "pinned fa fa-link", (attribute "aria-hidden" "true") ] [] ]
                         ]
         , span [ class "default-buttons" ]
             [ case config.pinCoto of
