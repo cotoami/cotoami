@@ -7,12 +7,12 @@ defmodule Cotoami.CotoTest do
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
-    changeset = Coto.changeset(%Coto{}, @valid_attrs)
+    changeset = Coto.changeset_to_insert(%Coto{}, @valid_attrs)
     assert changeset.valid?
   end
 
   test "changeset with invalid attributes" do
-    changeset = Coto.changeset(%Coto{}, @invalid_attrs)
+    changeset = Coto.changeset_to_insert(%Coto{}, @invalid_attrs)
     refute changeset.valid?
   end
 end

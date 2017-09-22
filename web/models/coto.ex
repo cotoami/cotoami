@@ -15,7 +15,7 @@ defmodule Cotoami.Coto do
     timestamps(type: :utc_datetime)
   end
 
-  def changeset(struct, params \\ %{}) do
+  def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:posted_in_id, :amishi_id, :content, :as_cotonoma])
     |> validate_required([:amishi_id, :content])

@@ -35,7 +35,7 @@ defmodule Cotoami.CotoService do
         cotonoma_id_nillable, amishi_id)
     coto =
       %Coto{}
-      |> Coto.changeset(%{
+      |> Coto.changeset_to_insert(%{
           posted_in_id: cotonoma_id_nillable,
           amishi_id: amishi_id,
           content: content,
@@ -43,6 +43,10 @@ defmodule Cotoami.CotoService do
         })
       |> Repo.insert!
     {coto, posted_in}
+  end
+
+  def update_content!(id, new_content, %Amishi{id: amishi_id}) do
+
   end
 
   def delete!(id, %Amishi{id: amishi_id}) do
