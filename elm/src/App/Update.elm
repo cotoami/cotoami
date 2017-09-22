@@ -588,20 +588,30 @@ update msg model =
                     { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
 
         CotonomaModalMsg subMsg ->
-            case model.context.session of
-                Nothing ->
-                    model ! []
-
-                Just session ->
-                    (App.Modals.CotonomaModal.update
-                        subMsg
-                        session
-                        model.context
-                        model.cotonomaModal
+            model.context.session
+                |> Maybe.map
+                    (\session ->
+                        App.Modals.CotonomaModal.update
+                            subMsg
+                            session
+                            model.context
+                            model.cotonomaModal
                     )
-                        |> \( cotonomaModal, subCmd ) ->
-                            { model | cotonomaModal = cotonomaModal }
-                                ! [ Cmd.map CotonomaModalMsg subCmd ]
+                |> Maybe.map
+                    (\( cotonomaModal, subCmd ) ->
+                        { model | cotonomaModal = cotonomaModal }
+                            ! [ Cmd.map CotonomaModalMsg subCmd ]
+                    )
+                |> withDefault (model ! [])
+
+        CotoModalMsg subMsg ->
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.update subMsg)
+                |> Maybe.map
+                    (\( cotoModal, subCmd ) ->
+                        { model | cotoModal = Just cotoModal } ! [ Cmd.map CotoModalMsg subCmd ]
+                    )
+                |> withDefault (model ! [])
 
 
 confirm : String -> Msg -> Model -> Model
