@@ -26,7 +26,7 @@ defmodule Cotoami.CotoGraphControllerTest do
   describe "a coto pinned to home" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin(bolt_conn, coto, amishi)
+      CotoGraphService.pin!(bolt_conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -130,8 +130,8 @@ defmodule Cotoami.CotoGraphControllerTest do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
       {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
-      CotoGraphService.pin(bolt_conn, coto1, amishi)
-      CotoGraphService.connect(bolt_conn, coto1, coto2, amishi)
+      CotoGraphService.pin!(bolt_conn, coto1, amishi)
+      CotoGraphService.connect!(bolt_conn, coto1, coto2, amishi)
       %{coto1: coto1, coto2: coto2}
     end
 
@@ -166,7 +166,7 @@ defmodule Cotoami.CotoGraphControllerTest do
   describe "a cotonoma pinned to an amishi" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
-      CotoGraphService.pin(bolt_conn, coto, amishi)
+      CotoGraphService.pin!(bolt_conn, coto, amishi)
       %{coto: coto}
     end
 
@@ -196,7 +196,7 @@ defmodule Cotoami.CotoGraphControllerTest do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
       {coto, _} = CotoService.create!(cotonoma.id, amishi.id, "hello")
-      CotoGraphService.pin(bolt_conn, coto, cotonoma, amishi)
+      CotoGraphService.pin!(bolt_conn, coto, cotonoma, amishi)
       %{coto: coto, cotonoma: cotonoma}
     end
 
