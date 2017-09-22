@@ -53,7 +53,7 @@ defmodule Cotoami.CotoService do
       |> Coto.changeset_to_update_content(params)
       |> Repo.update!()
 
-      CotoGraphService.sync_coto_props(Bolt.Sips.conn, get(id))
+      CotoGraphService.sync_coto_props!(Bolt.Sips.conn, get(id))
     end)
   end
 
@@ -65,7 +65,7 @@ defmodule Cotoami.CotoService do
       |> ensure_not_to_be_cotonoma()
       |> Repo.delete!()
 
-      CotoGraphService.delete_coto(Bolt.Sips.conn, id)
+      CotoGraphService.delete_coto!(Bolt.Sips.conn, id)
     end)
   end
 
