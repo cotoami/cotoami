@@ -26,8 +26,11 @@ initModel coto =
 update : CotoModalMsg.Msg -> Model -> ( Model, Cmd CotoModalMsg.Msg )
 update msg model =
     case msg of
-        ToggleEditing ->
-            { model | editing = not model.editing } ! []
+        Edit ->
+            { model | editing = True } ! []
+
+        Save ->
+            { model | editing = False } ! []
 
 
 view : Maybe Model -> Html AppMsg.Msg
@@ -47,14 +50,28 @@ modalConfig model =
             "Coto"
     , content =
         div []
-            [ div [ class "coto-content" ]
-                [ App.Markdown.markdown model.coto.content
-                ]
+            [ if model.editing then
+                div [ class "coto-editor" ]
+                    [ textarea
+                        [ class "coto"
+                        , value model.coto.content
+                        ]
+                        []
+                    ]
+              else
+                div [ class "coto-content" ]
+                    [ App.Markdown.markdown model.coto.content
+                    ]
             ]
     , buttons =
-        [ button
-            [ class "button" ]
-            [ text "Edit" ]
+        [ if model.editing then
+            button
+                [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
+                [ text "Save" ]
+          else
+            button
+                [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
+                [ text "Edit" ]
         , if model.coto.asCotonoma then
             span [] []
           else
