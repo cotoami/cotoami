@@ -17,7 +17,7 @@ defmodule Cotoami.CotoServiceTest do
       ~M{coto}
     end
 
-    test "get", ~M{conn, coto} do
+    test "get", ~M{coto} do
       assert %Coto{
         content: "hello"
       } = CotoService.get(coto.id)
