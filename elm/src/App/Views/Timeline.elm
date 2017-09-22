@@ -64,7 +64,7 @@ newPostEditor context model =
                 , button
                     [ class "button-primary post"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown (App.Messages.Post Nothing)
+                    , onMouseDown App.Messages.Post
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]

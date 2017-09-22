@@ -331,9 +331,6 @@ update msg model =
             }
                 |> \model -> openModal App.Model.ConnectModal model ! []
 
-        ConfirmPostAndConnect ->
-            confirmPostAndConnect model ! []
-
         ReverseDirection ->
             { model
                 | connectingDirection =
@@ -424,14 +421,20 @@ update msg model =
             else
                 model ! []
 
-        Post maybeDirection ->
-            post maybeDirection model
+        Post ->
+            post Nothing model
 
         Posted (Ok response) ->
             { model | timeline = setCotoSaved response model.timeline } ! []
 
         Posted (Err _) ->
             model ! []
+
+        ConfirmPostAndConnect ->
+            confirmPostAndConnect model ! []
+
+        PostAndConnect ->
+            post (Just model.connectingDirection) model
 
         PostedAndConnect (Ok response) ->
             { model | timeline = setCotoSaved response model.timeline }

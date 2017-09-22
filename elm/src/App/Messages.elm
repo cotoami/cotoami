@@ -62,7 +62,6 @@ type Msg
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
     | ConfirmConnect CotoId Direction
-    | ConfirmPostAndConnect
     | ReverseDirection
     | Connect Coto (List Coto) Direction
     | Connected (Result Http.Error (List String))
@@ -78,8 +77,10 @@ type Msg
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
-    | Post (Maybe Direction)
+    | Post
     | Posted (Result Http.Error Post)
+    | ConfirmPostAndConnect
+    | PostAndConnect
     | PostedAndConnect (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted (Result Http.Error Post)

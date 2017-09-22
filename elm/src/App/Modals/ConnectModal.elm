@@ -44,6 +44,7 @@ modalConfig direction selectedCotos subject =
             NewPost _ ->
                 [ button
                     [ class "button button-primary"
+                    , onClick PostAndConnect
                     ]
                     [ text "Post and connect" ]
                 ]
