@@ -332,12 +332,7 @@ update msg model =
                 |> \model -> openModal App.Model.ConnectModal model ! []
 
         ConfirmPostAndConnect ->
-            { model
-                | connectingSubject =
-                    Just (App.Model.NewPost model.timeline.newContent)
-                , connectingDirection = Inbound
-            }
-                |> \model -> openModal App.Model.ConnectModal model ! []
+            confirmPostAndConnect model ! []
 
         ReverseDirection ->
             { model
@@ -423,7 +418,7 @@ update msg model =
                 if isCtrlDown model.context then
                     post Nothing model
                 else if isAltDown model.context then
-                    post (Just Inbound) model
+                    confirmPostAndConnect model ! []
                 else
                     model ! []
             else
@@ -799,3 +794,13 @@ doDeselect model =
                     }
     }
         |> closeSelectionColumnIfEmpty
+
+
+confirmPostAndConnect : Model -> Model
+confirmPostAndConnect model =
+    { model
+        | connectingSubject =
+            Just (App.Model.NewPost model.timeline.newContent)
+        , connectingDirection = Inbound
+    }
+        |> \model -> openModal App.Model.ConnectModal model
