@@ -7,12 +7,12 @@ defmodule Cotoami.CotonomaTest do
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
-    changeset = Cotonoma.changeset_new(%Cotonoma{}, @valid_attrs)
+    changeset = Cotonoma.changeset_to_insert(%Cotonoma{}, @valid_attrs)
     assert changeset.valid?
   end
 
   test "changeset with invalid attributes" do
-    changeset = Cotonoma.changeset_new(%Cotonoma{}, @invalid_attrs)
+    changeset = Cotonoma.changeset_to_insert(%Cotonoma{}, @invalid_attrs)
     refute changeset.valid?
   end
 end

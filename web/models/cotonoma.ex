@@ -20,7 +20,7 @@ defmodule Cotoami.Cotonoma do
     timestamps(type: :utc_datetime)
   end
 
-  def changeset_new(struct, params \\ %{}) do
+  def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :coto_id, :owner_id])
     |> generate_key

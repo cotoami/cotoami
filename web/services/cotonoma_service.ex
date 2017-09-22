@@ -23,7 +23,7 @@ defmodule Cotoami.CotonomaService do
 
         cotonoma =
           %Cotonoma{}
-          |> Cotonoma.changeset_new(%{
+          |> Cotonoma.changeset_to_insert(%{
               name: name,
               coto_id: coto.id,
               owner_id: amishi_id
