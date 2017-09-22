@@ -62,6 +62,7 @@ type Msg
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
     | ConfirmConnect CotoId Direction
+    | ConfirmPostAndConnect
     | ReverseDirection
     | Connect Coto (List Coto) Direction
     | Connected (Result Http.Error (List String))

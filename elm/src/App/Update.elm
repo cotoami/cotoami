@@ -325,13 +325,17 @@ update msg model =
         ConfirmConnect cotoId direction ->
             { model
                 | connectingSubject =
-                    case App.Model.getCoto cotoId model of
-                        Nothing ->
-                            Nothing
-
-                        Just coto ->
-                            Just (App.Model.Coto coto)
+                    App.Model.getCoto cotoId model
+                        |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
+            }
+                |> \model -> openModal App.Model.ConnectModal model ! []
+
+        ConfirmPostAndConnect ->
+            { model
+                | connectingSubject =
+                    Just (App.Model.NewPost model.timeline.newContent)
+                , connectingDirection = Inbound
             }
                 |> \model -> openModal App.Model.ConnectModal model ! []
 
