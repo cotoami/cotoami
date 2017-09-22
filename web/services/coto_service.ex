@@ -50,7 +50,7 @@ defmodule Cotoami.CotoService do
       Coto
       |> Coto.for_amishi(amishi_id)
       |> Repo.get!(id)
-      |> Coto.changeset_to_update_content(params})
+      |> Coto.changeset_to_update_content(params)
       |> Repo.update!()
     end)
   end

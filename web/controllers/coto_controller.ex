@@ -42,10 +42,10 @@ defmodule Cotoami.CotoController do
   def update(conn, %{"id" => id, "coto" => coto_params}) do
     case conn.assigns do
       %{amishi: amishi} ->
-        update_content!(id, coto_params, amishi)
-        |> json(conn)
+        json conn, CotoService.update_content!(id, coto_params, amishi)
       _ ->
         json conn, coto_params
+    end
   end
 
   def delete(conn, %{"id" => id}) do

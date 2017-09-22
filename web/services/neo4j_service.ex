@@ -38,6 +38,20 @@ defmodule Cotoami.Neo4jService do
     node
   end
 
+  def replace_node_properties!(conn, uuid, props) do
+    query = ~s"""
+      MATCH (n { uuid: $uuid })
+      SET n = $props
+      RETURN n
+    """
+    [%{"n" => node}] =
+      Bolt.Sips.query!(conn, query, %{
+        uuid: uuid,
+        props: Map.put(props, :uuid, uuid)
+      })
+    node
+  end
+
   def get_or_create_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })

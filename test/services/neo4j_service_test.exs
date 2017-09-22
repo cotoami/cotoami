@@ -70,6 +70,14 @@ defmodule Cotoami.Neo4jServiceTest do
       assert node.id == result.id
       assert ^labels = Enum.sort(result.labels)
     end
+
+    test "replace the properties", ~M{conn, uuid}  do
+      result = Neo4jService.replace_node_properties!(conn, uuid, %{a: "updated"})
+      assert %{"a" => "updated", "uuid" => ^uuid} = result.properties
+
+      %{"a" => "updated", "uuid" => ^uuid} =
+        Neo4jService.get_node!(conn, uuid).properties
+    end
   end
 
   describe "a relationship" do
