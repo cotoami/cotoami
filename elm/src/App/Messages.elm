@@ -77,8 +77,10 @@ type Msg
     | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
-    | Post (Maybe Direction)
+    | Post
     | Posted (Result Http.Error Post)
+    | ConfirmPostAndConnect
+    | PostAndConnect
     | PostedAndConnect (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted (Result Http.Error Post)

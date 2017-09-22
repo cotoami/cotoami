@@ -25,6 +25,11 @@ type Modal
     | ConnectModal
 
 
+type ConnectingSubject
+    = Coto Coto
+    | NewPost String
+
+
 type alias Model =
     { route : Route
     , context : Context
@@ -44,7 +49,7 @@ type alias Model =
     , timeline : Timeline
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
-    , connectingCotoId : Maybe CotoId
+    , connectingSubject : Maybe ConnectingSubject
     , connectingDirection : Direction
     , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
@@ -72,7 +77,7 @@ initModel seed route =
     , timeline = defaultTimeline
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
-    , connectingCotoId = Nothing
+    , connectingSubject = Nothing
     , connectingDirection = App.Types.Graph.Outbound
     , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
@@ -171,7 +176,7 @@ connect direction objects subject model =
 
                 App.Types.Graph.Inbound ->
                     App.Types.Graph.connectManyToOne objects subject model.graph
-        , connectingCotoId = Nothing
+        , connectingSubject = Nothing
     }
 
 

@@ -324,7 +324,9 @@ update msg model =
 
         ConfirmConnect cotoId direction ->
             { model
-                | connectingCotoId = Just cotoId
+                | connectingSubject =
+                    App.Model.getCoto cotoId model
+                        |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
             }
                 |> \model -> openModal App.Model.ConnectModal model ! []
@@ -413,20 +415,26 @@ update msg model =
                 if isCtrlDown model.context then
                     post Nothing model
                 else if isAltDown model.context then
-                    post (Just Inbound) model
+                    confirmPostAndConnect model ! []
                 else
                     model ! []
             else
                 model ! []
 
-        Post maybeDirection ->
-            post maybeDirection model
+        Post ->
+            post Nothing model
 
         Posted (Ok response) ->
             { model | timeline = setCotoSaved response model.timeline } ! []
 
         Posted (Err _) ->
             model ! []
+
+        ConfirmPostAndConnect ->
+            confirmPostAndConnect model ! []
+
+        PostAndConnect ->
+            post (Just model.connectingDirection) model
 
         PostedAndConnect (Ok response) ->
             { model | timeline = setCotoSaved response model.timeline }
@@ -547,7 +555,7 @@ update msg model =
         ClearSelection ->
             { model
                 | context = clearSelection model.context
-                , connectingCotoId = Nothing
+                , connectingSubject = Nothing
                 , cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
                     case model.activeViewOnMobile of
@@ -671,7 +679,7 @@ loadHome model =
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = setLoading model.timeline
-        , connectingCotoId = Nothing
+        , connectingSubject = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -697,7 +705,7 @@ loadCotonoma key model =
         , members = []
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
-        , connectingCotoId = Nothing
+        , connectingSubject = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -789,3 +797,13 @@ doDeselect model =
                     }
     }
         |> closeSelectionColumnIfEmpty
+
+
+confirmPostAndConnect : Model -> Model
+confirmPostAndConnect model =
+    { model
+        | connectingSubject =
+            Just (App.Model.NewPost model.timeline.newContent)
+        , connectingDirection = Inbound
+    }
+        |> \model -> openModal App.Model.ConnectModal model

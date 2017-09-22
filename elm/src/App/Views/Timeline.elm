@@ -11,6 +11,7 @@ import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.StringUtil exposing (isBlank)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -52,24 +53,18 @@ newPostEditor context model =
                   else
                     span [ class "connect-buttons" ]
                         [ button
-                            [ class "button connect-outbound"
+                            [ class "button connect"
                             , disabled (isBlank model.newContent)
-                            , onMouseDown (App.Messages.Post (Just Outbound))
+                            , onMouseDown App.Messages.ConfirmPostAndConnect
                             ]
-                            [ App.Views.Coto.connectOutboundIcon ]
-                        , button
-                            [ class "button connect-inbound"
-                            , disabled (isBlank model.newContent)
-                            , onMouseDown (App.Messages.Post (Just Inbound))
-                            ]
-                            [ App.Views.Coto.connectInboundIcon
+                            [ faIcon "link" Nothing
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
                             ]
                         ]
                 , button
                     [ class "button-primary post"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown (App.Messages.Post Nothing)
+                    , onMouseDown App.Messages.Post
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]

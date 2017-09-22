@@ -117,14 +117,12 @@
 
     span.connect-buttons {
       button {
-        padding-left: 8px;
-        padding-right: 8px;
+        padding-left: 10px;
+        padding-right: 10px;
         margin-right: 5px;
         background-color: #fff;
 
         @media (#{$narrow-viewport}) {
-          padding-left: 10px;
-          padding-right: 10px;
           margin-right: 10px;
         }
 
