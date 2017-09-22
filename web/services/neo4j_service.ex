@@ -44,12 +44,15 @@ defmodule Cotoami.Neo4jService do
       SET n = $props
       RETURN n
     """
-    [%{"n" => node}] =
+    result =
       Bolt.Sips.query!(conn, query, %{
         uuid: uuid,
         props: Map.put(props, :uuid, uuid)
       })
-    node
+    case result do
+      [%{"n" => node}] -> node
+      _ -> nil
+    end
   end
 
   def get_or_create_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do

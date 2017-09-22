@@ -75,8 +75,12 @@ defmodule Cotoami.Neo4jServiceTest do
       result = Neo4jService.replace_node_properties!(conn, uuid, %{a: "updated"})
       assert %{"a" => "updated", "uuid" => ^uuid} = result.properties
 
-      %{"a" => "updated", "uuid" => ^uuid} =
+      assert %{"a" => "updated", "uuid" => ^uuid} =
         Neo4jService.get_node!(conn, uuid).properties
+    end
+
+    test "replace the properties with non-existent id", ~M{conn}  do
+      assert Neo4jService.replace_node_properties!(conn, "no-such-uuid", %{}) == nil
     end
   end
 

@@ -52,6 +52,8 @@ defmodule Cotoami.CotoService do
       |> Repo.get!(id)
       |> Coto.changeset_to_update_content(params)
       |> Repo.update!()
+
+      CotoGraphService.sync_coto_props(Bolt.Sips.conn, get(id))
     end)
   end
 

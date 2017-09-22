@@ -184,6 +184,10 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
+  def sync_coto_props(bolt_conn, %Coto{id: uuid} = coto) do
+    Neo4jService.replace_node_properties!(bolt_conn, uuid, to_coto_props(coto))
+  end
+
   def delete_coto(bolt_conn, coto_id) do
     Neo4jService.delete_node_with_relationships!(bolt_conn, coto_id)
   end
