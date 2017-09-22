@@ -193,9 +193,8 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
   end
 
-  defp register_coto(bolt_conn, coto) do
-    labels = if coto.as_cotonoma, do: [@label_coto, @label_cotonoma], else: [@label_coto]
-    props = %{
+  defp to_coto_props(%Coto{} = coto) do
+    %{
       content: coto.content,
       amishi_id: coto.amishi_id,
       cotonoma_key: (if coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
@@ -203,7 +202,11 @@ defmodule Cotoami.CotoGraphService do
       inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
     } |> drop_nil
-    Neo4jService.get_or_create_node!(bolt_conn, coto.id, labels, props)
+  end
+
+  defp register_coto(bolt_conn, coto) do
+    labels = if coto.as_cotonoma, do: [@label_coto, @label_cotonoma], else: [@label_coto]
+    Neo4jService.get_or_create_node!(bolt_conn, coto.id, labels, to_coto_props(coto))
     bolt_conn
   end
 
