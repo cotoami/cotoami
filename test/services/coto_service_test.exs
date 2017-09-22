@@ -13,7 +13,7 @@ defmodule Cotoami.CotoServiceTest do
   describe "a coto pinned to an amishi" do
     setup ~M{conn, amishi} do
       {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      CotoGraphService.pin!(conn, coto, amishi)
+      CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
