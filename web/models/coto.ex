@@ -21,6 +21,12 @@ defmodule Cotoami.Coto do
     |> validate_required([:amishi_id, :content])
   end
 
+  def changeset_to_update_content(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:content])
+    |> validate_required([:content])
+  end
+
   def for_amishi(query, amishi_id) do
     from c in query,
       where: c.amishi_id == ^amishi_id,

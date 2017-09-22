@@ -45,8 +45,14 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content!(id, new_content, %Amishi{id: amishi_id}) do
-
+  def update_content!(id, %{content: _} = params, %Amishi{id: amishi_id}) do
+    Repo.transaction(fn ->
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> Repo.get!(id)
+      |> Coto.changeset_to_update_content(params})
+      |> Repo.update!()
+    end)
   end
 
   def delete!(id, %Amishi{id: amishi_id}) do
