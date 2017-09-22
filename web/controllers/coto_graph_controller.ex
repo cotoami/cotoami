@@ -12,9 +12,9 @@ defmodule Cotoami.CotoGraphController do
   def index(conn, params, amishi) do
     case get_cotonoma_if_specified(params, amishi) do
       nil ->
-        json conn, CotoGraphService.get_graph(Sips.conn, amishi)
+        json conn, CotoGraphService.get_graph!(Sips.conn, amishi)
       cotonoma ->
-        json conn, CotoGraphService.get_graph(Sips.conn, cotonoma)
+        json conn, CotoGraphService.get_graph!(Sips.conn, cotonoma)
     end
   end
 

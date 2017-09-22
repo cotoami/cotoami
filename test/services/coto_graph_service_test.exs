@@ -85,7 +85,7 @@ defmodule Cotoami.CotoGraphServiceTest do
           }
         ],
         connections: %{}
-      } = CotoGraphService.get_graph(conn, amishi)
+      } = CotoGraphService.get_graph!(conn, amishi)
     end
   end
 
@@ -240,7 +240,7 @@ defmodule Cotoami.CotoGraphServiceTest do
           ^coto_a_id => [%{"start" => ^coto_a_id, "end" => ^coto_b_id}],
           ^coto_c_id => [%{"start" => ^coto_c_id, "end" => ^coto_a_id}]
         }
-      } = CotoGraphService.get_graph(conn, amishi)
+      } = CotoGraphService.get_graph!(conn, amishi)
     end
   end
 end

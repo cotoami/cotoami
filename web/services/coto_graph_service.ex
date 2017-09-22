@@ -18,21 +18,21 @@ defmodule Cotoami.CotoGraphService do
 
   @rel_type_has_a "HAS_A"
 
-  def get_graph(bolt_conn, %Amishi{id: amishi_id}) do
-    get_graph_from_uuid(bolt_conn, amishi_id)
+  def get_graph!(bolt_conn, %Amishi{id: amishi_id}) do
+    get_graph_from_uuid!(bolt_conn, amishi_id)
   end
 
-  def get_graph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
+  def get_graph!(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid!(bolt_conn, cotonoma_coto_id)
   end
 
-  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id, false)
+  def get_subgraph!(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid!(bolt_conn, cotonoma_coto_id, false)
   end
 
   # start with the uuid node and traverse HAS_A relationships
   # until finding the end edge or a cotonoma
-  defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
+  defp get_graph_from_uuid!(bolt_conn, uuid, from_root \\ true) do
     query = ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
         (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
