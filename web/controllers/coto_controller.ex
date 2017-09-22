@@ -3,7 +3,7 @@ defmodule Cotoami.CotoController do
   require Logger
   alias Cotoami.{RedisService, CotoService, AmishiService}
 
-  plug :scrub_params, "coto" when action in [:create]
+  plug :scrub_params, "coto" when action in [:create, :update]
 
   def index(conn, _params) do
     case conn.assigns do
@@ -37,6 +37,15 @@ defmodule Cotoami.CotoController do
         RedisService.add_coto(conn.assigns.anonymous_id, coto_params)
         json conn, coto_params
     end
+  end
+
+  def update(conn, %{"id" => id, "coto" => coto_params}) do
+    case conn.assigns do
+      %{amishi: amishi} ->
+        update_content!(id, coto_params, amishi)
+        |> json(conn)
+      _ ->
+        json conn, coto_params
   end
 
   def delete(conn, %{"id" => id}) do
