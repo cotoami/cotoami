@@ -15,32 +15,43 @@ import App.Markdown
 
 view : Model -> Html Msg
 view model =
-    model.connectingCotoId
-        |> andThen (\cotoId -> getCoto cotoId model)
+    model.connectingSubject
         |> Maybe.map
-            (\coto ->
-                modalConfig model.connectingDirection (getSelectedCotos model) coto
+            (\subject ->
+                modalConfig
+                    model.connectingDirection
+                    (getSelectedCotos model)
+                    subject
             )
         |> Modal.view "connect-modal"
 
 
-modalConfig : Direction -> List Coto -> Coto -> Modal.Config Msg
-modalConfig direction selectedCotos connectingCoto =
+modalConfig : Direction -> List Coto -> ConnectingSubject -> Modal.Config Msg
+modalConfig direction selectedCotos subject =
     { closeMessage = CloseModal
     , title = "Connect Preview"
-    , content = modalContent direction selectedCotos connectingCoto
+    , content = modalContent direction selectedCotos subject
     , buttons =
-        [ button
-            [ class "button button-primary"
-            , onClick (Connect connectingCoto selectedCotos direction)
-            ]
-            [ text "Connect" ]
-        ]
+        case subject of
+            Coto coto ->
+                [ button
+                    [ class "button button-primary"
+                    , onClick (Connect coto selectedCotos direction)
+                    ]
+                    [ text "Connect" ]
+                ]
+
+            NewPost _ ->
+                [ button
+                    [ class "button button-primary"
+                    ]
+                    [ text "Post and connect" ]
+                ]
     }
 
 
-modalContent : Direction -> List Coto -> Coto -> Html Msg
-modalContent direction selectedCotos connectingCoto =
+modalContent : Direction -> List Coto -> ConnectingSubject -> Html Msg
+modalContent direction selectedCotos subject =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -56,17 +67,23 @@ modalContent direction selectedCotos connectingCoto =
                     (List.reverse selectedCotos)
                 )
 
-        connectingCotoHtml =
-            div [ class "connecting-coto coto-content" ]
-                [ App.Markdown.markdown connectingCoto.content ]
+        subjectHtml =
+            case subject of
+                Coto coto ->
+                    div [ class "connecting-coto coto-content" ]
+                        [ App.Markdown.markdown coto.content ]
+
+                NewPost content ->
+                    div [ class "connecting-new-post coto-content" ]
+                        [ App.Markdown.markdown content ]
 
         ( start, end ) =
             case direction of
                 Outbound ->
-                    ( connectingCotoHtml, selectedCotosHtml )
+                    ( subjectHtml, selectedCotosHtml )
 
                 Inbound ->
-                    ( selectedCotosHtml, connectingCotoHtml )
+                    ( selectedCotosHtml, subjectHtml )
     in
         div []
             [ div

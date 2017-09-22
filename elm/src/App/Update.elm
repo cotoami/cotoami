@@ -324,7 +324,13 @@ update msg model =
 
         ConfirmConnect cotoId direction ->
             { model
-                | connectingCotoId = Just cotoId
+                | connectingSubject =
+                    case App.Model.getCoto cotoId model of
+                        Nothing ->
+                            Nothing
+
+                        Just coto ->
+                            Just (App.Model.Coto coto)
                 , connectingDirection = direction
             }
                 |> \model -> openModal App.Model.ConnectModal model ! []
@@ -547,7 +553,7 @@ update msg model =
         ClearSelection ->
             { model
                 | context = clearSelection model.context
-                , connectingCotoId = Nothing
+                , connectingSubject = Nothing
                 , cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
                     case model.activeViewOnMobile of
@@ -671,7 +677,7 @@ loadHome model =
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = setLoading model.timeline
-        , connectingCotoId = Nothing
+        , connectingSubject = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -697,7 +703,7 @@ loadCotonoma key model =
         , members = []
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
-        , connectingCotoId = Nothing
+        , connectingSubject = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
