@@ -14,6 +14,7 @@ import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal
+import App.Modals.CotoModal
 
 
 type Modal
@@ -39,7 +40,7 @@ type alias Model =
     , members : List Amishi
     , memberPresences : MemberPresences
     , modals : List Modal
-    , openedCoto : Maybe Coto
+    , cotoModal : Maybe App.Modals.CotoModal.Model
     , confirmMessage : String
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
@@ -67,7 +68,7 @@ initModel seed route =
     , members = []
     , memberPresences = Dict.empty
     , modals = []
-    , openedCoto = Nothing
+    , cotoModal = Nothing
     , confirmMessage = ""
     , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel

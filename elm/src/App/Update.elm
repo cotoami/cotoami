@@ -31,6 +31,7 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal exposing (setDefaultMembers)
+import App.Modals.CotoModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -182,7 +183,7 @@ update msg model =
             openModal App.Model.ProfileModal model ! []
 
         OpenCotoModal coto ->
-            openCoto (Just coto) model ! []
+            openCoto coto model ! []
 
         OpenCotonomaModal ->
             { model
@@ -241,12 +242,12 @@ update msg model =
         ConfirmDeleteCoto ->
             confirm
                 "Are you sure you want to delete this coto?"
-                (case model.openedCoto of
+                (case model.cotoModal of
                     Nothing ->
                         App.Messages.NoOp
 
-                    Just coto ->
-                        RequestDeleteCoto coto
+                    Just cotoModal ->
+                        RequestDeleteCoto cotoModal.coto
                 )
                 model
                 ! []
@@ -502,7 +503,12 @@ update msg model =
             model ! []
 
         OpenPost post ->
-            openCoto (toCoto post) model ! []
+            case toCoto post of
+                Nothing ->
+                    model ! []
+
+                Just coto ->
+                    openCoto coto model ! []
 
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
@@ -617,9 +623,9 @@ clickCoto elementId cotoId model =
     }
 
 
-openCoto : Maybe Coto -> Model -> Model
-openCoto maybeCoto model =
-    { model | openedCoto = maybeCoto }
+openCoto : Coto -> Model -> Model
+openCoto coto model =
+    { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
         |> \model -> openModal App.Model.CotoModal model
 
 
