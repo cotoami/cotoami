@@ -71,15 +71,14 @@ addCoto coto graph =
     }
 
 
+updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
+updateCoto cotoId update graph =
+    { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
+
+
 updateContent : CotoId -> String -> Graph -> Graph
 updateContent cotoId content graph =
-    { graph
-        | cotos =
-            Dict.update
-                cotoId
-                (Maybe.map (\coto -> App.Types.Coto.updateContent content coto))
-                graph.cotos
-    }
+    updateCoto cotoId (\coto -> App.Types.Coto.updateContent content coto) graph
 
 
 connected : CotoId -> CotoId -> Graph -> Bool
