@@ -32,6 +32,7 @@ import App.Channels exposing (Payload, decodePayload, decodePresenceState, decod
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal exposing (setDefaultMembers)
 import App.Modals.CotoModal
+import App.Modals.CotoModalMsg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -609,7 +610,24 @@ update msg model =
                 |> Maybe.map (App.Modals.CotoModal.update subMsg)
                 |> Maybe.map
                     (\( cotoModal, subCmd ) ->
-                        { model | cotoModal = Just cotoModal } ! [ Cmd.map CotoModalMsg subCmd ]
+                        ( { model | cotoModal = Just cotoModal }
+                        , cotoModal
+                        , Cmd.map CotoModalMsg subCmd
+                        )
+                    )
+                |> Maybe.map
+                    (\( model, cotoModal, cmd ) ->
+                        case subMsg of
+                            App.Modals.CotoModalMsg.Save ->
+                                ( updateCotoContent
+                                    cotoModal.coto.id
+                                    cotoModal.editingContent
+                                    model
+                                , cmd
+                                )
+
+                            _ ->
+                                ( model, cmd )
                     )
                 |> withDefault (model ! [])
 

@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
-import App.Types.Coto exposing (Coto)
+import App.Types.Coto exposing (Coto, updateContent)
 import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -35,7 +35,10 @@ update msg model =
             { model | editingContent = content } ! []
 
         Save ->
-            { model | editing = False } ! []
+            { model
+                | coto = updateContent model.editingContent model.coto
+                , editing = False
+            } ! []
 
 
 view : Maybe Model -> Html AppMsg.Msg
