@@ -85,17 +85,13 @@ cotoModalConfig model =
             ]
     , buttons =
         if model.editing then
-            [ button
-                [ class "button", onClick (AppMsg.CotoModalMsg CancelEditing) ]
-                [ text "Cancel" ]
+            [ cancelEditingButton
             , button
                 [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
                 [ text "Save" ]
             ]
         else
-            [ button
-                [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
-                [ text "Edit" ]
+            [ editButton
             , button
                 [ class "button", onClick ConfirmDeleteCoto ]
                 [ text "Delete" ]
@@ -129,16 +125,26 @@ cotonomaModalConfig model =
             ]
     , buttons =
         if model.editing then
-            [ button
-                [ class "button", onClick (AppMsg.CotoModalMsg CancelEditing) ]
-                [ text "Cancel" ]
+            [ cancelEditingButton
             , button
                 [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
                 [ text "Save" ]
             ]
         else
-            [ button
-                [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
-                [ text "Edit" ]
+            [ editButton
             ]
     }
+
+
+cancelEditingButton : Html AppMsg.Msg
+cancelEditingButton =
+    button
+        [ class "button", onClick (AppMsg.CotoModalMsg CancelEditing) ]
+        [ text "Cancel" ]
+
+
+editButton : Html AppMsg.Msg
+editButton =
+    button
+        [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
+        [ text "Edit" ]
