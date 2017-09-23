@@ -34,11 +34,19 @@ update msg model =
         EditorInput content ->
             { model | editingContent = content } ! []
 
+        CancelEditing ->
+            { model
+                | editing = False
+                , editingContent = model.coto.content
+            }
+                ! []
+
         Save ->
             { model
-                | coto = updateContent model.editingContent model.coto
-                , editing = False
-            } ! []
+                | editing = False
+                , coto = updateContent model.editingContent model.coto
+            }
+                ! []
 
 
 view : Maybe Model -> Html AppMsg.Msg
@@ -72,19 +80,23 @@ modalConfig model =
                     [ App.Markdown.markdown model.coto.content ]
             ]
     , buttons =
-        [ if model.editing then
-            button
+        if model.editing then
+            [ button
+                [ class "button", onClick (AppMsg.CotoModalMsg CancelEditing) ]
+                [ text "Cancel" ]
+            , button
                 [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
                 [ text "Save" ]
-          else
-            button
+            ]
+        else
+            [ button
                 [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
                 [ text "Edit" ]
-        , if model.coto.asCotonoma then
-            span [] []
-          else
-            button
-                [ class "button", onClick ConfirmDeleteCoto ]
-                [ text "Delete" ]
-        ]
+            , if model.coto.asCotonoma then
+                span [] []
+              else
+                button
+                    [ class "button", onClick ConfirmDeleteCoto ]
+                    [ text "Delete" ]
+            ]
     }
