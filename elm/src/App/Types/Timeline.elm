@@ -52,27 +52,49 @@ setLoading timeline =
     { timeline | posts = [], loading = True }
 
 
-updatePost : (Post -> Post) -> CotoId -> List Post -> List Post
-updatePost update cotoId posts =
-    List.map
-        (\post ->
-            if post.cotoId == Just cotoId then
-                update post
-            else
-                post
-        )
-        posts
+updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+updatePost predicate update timeline =
+    let
+        posts =
+            List.map
+                (\post ->
+                    if predicate post then
+                        update post
+                    else
+                        post
+                )
+                timeline.posts
+    in
+        { timeline | posts = posts }
 
 
 updateContent : CotoId -> String -> Timeline -> Timeline
 updateContent cotoId content timeline =
-    { timeline
-        | posts =
-            updatePost
-                (\post -> { post | content = content })
-                cotoId
-                timeline.posts
-    }
+    updatePost
+        (\post -> post.cotoId == Just cotoId)
+        (\post -> { post | content = content })
+        timeline
+
+
+setCotoSaved : Post -> Timeline -> Timeline
+setCotoSaved apiResponse timeline =
+    updatePost
+        (\post -> post.postId == apiResponse.postId)
+        (\post ->
+            { post
+                | cotoId = apiResponse.cotoId
+                , cotonomaKey = apiResponse.cotonomaKey
+            }
+        )
+        timeline
+
+
+setBeingDeleted : Coto -> Timeline -> Timeline
+setBeingDeleted coto timeline =
+    updatePost
+        (\post -> isSelfOrPostedIn coto post)
+        (\post -> { post | beingDeleted = True })
+        timeline
 
 
 postContent : String -> Maybe Cotonoma -> Bool -> String -> Timeline -> ( Timeline, Post )
@@ -95,25 +117,3 @@ postContent clientId maybeCotonoma asCotonoma content timeline =
                   }
                 , newPost
                 )
-
-
-setCotoSaved : Post -> Timeline -> Timeline
-setCotoSaved apiResponse timeline =
-    { timeline
-        | posts = App.Types.Post.setCotoSaved apiResponse timeline.posts
-    }
-
-
-setBeingDeleted : Coto -> Timeline -> Timeline
-setBeingDeleted coto timeline =
-    { timeline
-        | posts =
-            List.map
-                (\post ->
-                    if isSelfOrPostedIn coto post then
-                        { post | beingDeleted = True }
-                    else
-                        post
-                )
-                timeline.posts
-    }
