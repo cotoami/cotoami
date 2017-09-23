@@ -4,7 +4,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
-import App.Types.Coto exposing (Coto, updateContent, cotonomaNameMaxlength)
+import Util.StringUtil exposing (isBlank)
+import App.Types.Coto
+    exposing
+        ( Coto
+        , updateContent
+        , cotonomaNameMaxlength
+        , validateCotonomaName
+        )
 import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -87,13 +94,16 @@ cotoModalConfig model =
         if model.editing then
             [ cancelEditingButton
             , button
-                [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
+                [ class "button button-primary"
+                , disabled (isBlank model.editingContent)
+                , onClick (AppMsg.CotoModalMsg Save)
+                ]
                 [ text "Save" ]
             ]
         else
             [ editButton
             , button
-                [ class "button", onClick ConfirmDeleteCoto ]
+                [ class "button" , onClick ConfirmDeleteCoto ]
                 [ text "Delete" ]
             ]
     }
@@ -127,7 +137,10 @@ cotonomaModalConfig model =
         if model.editing then
             [ cancelEditingButton
             , button
-                [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
+                [ class "button button-primary"
+                , disabled (not (validateCotonomaName model.editingContent))
+                , onClick (AppMsg.CotoModalMsg Save)
+                ]
                 [ text "Save" ]
             ]
         else
