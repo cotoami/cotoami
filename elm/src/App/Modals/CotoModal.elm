@@ -58,43 +58,30 @@ view maybeModel =
 
 modalConfig : Model -> Modal.Config AppMsg.Msg
 modalConfig model =
+    if model.coto.asCotonoma then
+        cotonomaModalConfig model
+    else
+        cotoModalConfig model
+
+
+cotoModalConfig : Model -> Modal.Config AppMsg.Msg
+cotoModalConfig model =
     { closeMessage = CloseModal
-    , title =
-        if model.coto.asCotonoma then
-            "Cotonoma"
-        else
-            "Coto"
+    , title = "Coto"
     , content =
         div []
             [ if model.editing then
                 div [ class "coto-editor" ]
-                    [ if model.coto.asCotonoma then
-                        input
-                            [ type_ "text"
-                            , class "u-full-width"
-                            , placeholder "Cotonoma name"
-                            , maxlength cotonomaNameMaxlength
-                            , value model.editingContent
-                            , onInput (AppMsg.CotoModalMsg << EditorInput)
-                            ]
-                            []
-                      else
-                        textarea
-                            [ class "coto"
-                            , value model.editingContent
-                            , onInput (AppMsg.CotoModalMsg << EditorInput)
-                            ]
-                            []
+                    [ textarea
+                        [ class "coto"
+                        , value model.editingContent
+                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                        ]
+                        []
                     ]
               else
-                if model.coto.asCotonoma then
-                    div [ class "cotonoma" ]
-                        [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                        , span [ class "cotonoma-name" ] [ text model.coto.content ]
-                        ]
-                else
-                    div [ class "coto-content" ]
-                        [ App.Markdown.markdown model.coto.content ]
+                div [ class "coto-content" ]
+                    [ App.Markdown.markdown model.coto.content ]
             ]
     , buttons =
         if model.editing then
@@ -109,11 +96,49 @@ modalConfig model =
             [ button
                 [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
                 [ text "Edit" ]
-            , if model.coto.asCotonoma then
-                span [] []
+            , button
+                [ class "button", onClick ConfirmDeleteCoto ]
+                [ text "Delete" ]
+            ]
+    }
+
+
+cotonomaModalConfig : Model -> Modal.Config AppMsg.Msg
+cotonomaModalConfig model =
+    { closeMessage = CloseModal
+    , title = "Cotonoma"
+    , content =
+        div []
+            [ if model.editing then
+                div [ class "coto-editor" ]
+                    [ input
+                        [ type_ "text"
+                        , class "u-full-width"
+                        , placeholder "Cotonoma name"
+                        , maxlength cotonomaNameMaxlength
+                        , value model.editingContent
+                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                        ]
+                        []
+                    ]
               else
-                button
-                    [ class "button", onClick ConfirmDeleteCoto ]
-                    [ text "Delete" ]
+                div [ class "cotonoma" ]
+                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                    , span [ class "cotonoma-name" ] [ text model.coto.content ]
+                    ]
+            ]
+    , buttons =
+        if model.editing then
+            [ button
+                [ class "button", onClick (AppMsg.CotoModalMsg CancelEditing) ]
+                [ text "Cancel" ]
+            , button
+                [ class "button button-primary", onClick (AppMsg.CotoModalMsg Save) ]
+                [ text "Save" ]
+            ]
+        else
+            [ button
+                [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
+                [ text "Edit" ]
             ]
     }
