@@ -34,6 +34,11 @@ initCoto id content maybeAmishi maybePostedIn maybeCotonomaKey =
     }
 
 
+updateContent : String -> Coto -> Coto
+updateContent content coto =
+    { coto | content = content }
+
+
 type alias Cotonoma =
     { id : String
     , key : CotonomaKey

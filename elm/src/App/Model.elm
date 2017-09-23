@@ -96,6 +96,14 @@ getCoto cotoId model =
             Just coto
 
 
+updateCotoContent : CotoId -> String -> Model -> Model
+updateCotoContent cotoId content model =
+    { model
+        | timeline = App.Types.Timeline.updateContent cotoId content model.timeline
+        , graph = App.Types.Graph.updateContent cotoId content model.graph
+    }
+
+
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
     List.filterMap

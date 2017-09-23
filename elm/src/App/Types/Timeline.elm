@@ -30,54 +30,68 @@ setEditingNew editingNew timeline =
 
 
 getCoto : CotoId -> Timeline -> Maybe Coto
-getCoto cotoId model =
-    model.posts
+getCoto cotoId timeline =
+    timeline.posts
         |> List.filter (\post -> post.cotoId == Just cotoId)
         |> List.head
         |> andThen toCoto
 
 
 deleteCoto : Coto -> Timeline -> Timeline
-deleteCoto coto model =
-    { model
-    | posts = model.posts |>
-        List.filter (\post -> not (isSelfOrPostedIn coto post))
+deleteCoto coto timeline =
+    { timeline
+        | posts =
+            List.filter
+                (\post -> not (isSelfOrPostedIn coto post))
+                timeline.posts
     }
 
 
 setLoading : Timeline -> Timeline
-setLoading model =
-    { model | posts = [], loading = True }
+setLoading timeline =
+    { timeline | posts = [], loading = True }
 
 
 updatePost : (Post -> Post) -> CotoId -> List Post -> List Post
 updatePost update cotoId posts =
-     List.map
-         (\post ->
-             if post.cotoId == Just cotoId then
-                 update post
-             else
-                 post
-         )
-         posts
+    List.map
+        (\post ->
+            if post.cotoId == Just cotoId then
+                update post
+            else
+                post
+        )
+        posts
+
+
+updateContent : CotoId -> String -> Timeline -> Timeline
+updateContent cotoId content timeline =
+    { timeline
+        | posts =
+            updatePost
+                (\post -> { post | content = content })
+                cotoId
+                timeline.posts
+    }
 
 
 postContent : String -> Maybe Cotonoma -> Bool -> String -> Timeline -> ( Timeline, Post )
-postContent clientId maybeCotonoma asCotonoma content model =
+postContent clientId maybeCotonoma asCotonoma content timeline =
     let
-        postId = model.postIdCounter + 1
+        postId =
+            timeline.postIdCounter + 1
     in
         { defaultPost
-        | postId = Just postId
-        , content = content
-        , asCotonoma = asCotonoma
-        , postedIn = maybeCotonoma
+            | postId = Just postId
+            , content = content
+            , asCotonoma = asCotonoma
+            , postedIn = maybeCotonoma
         }
             |> \newPost ->
-                ( { model
-                  | posts = newPost :: model.posts
-                  , postIdCounter = postId
-                  , newContent = ""
+                ( { timeline
+                    | posts = newPost :: timeline.posts
+                    , postIdCounter = postId
+                    , newContent = ""
                   }
                 , newPost
                 )
@@ -86,7 +100,7 @@ postContent clientId maybeCotonoma asCotonoma content model =
 setCotoSaved : Post -> Timeline -> Timeline
 setCotoSaved apiResponse timeline =
     { timeline
-    | posts = App.Types.Post.setCotoSaved apiResponse timeline.posts
+        | posts = App.Types.Post.setCotoSaved apiResponse timeline.posts
     }
 
 
