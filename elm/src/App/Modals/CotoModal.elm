@@ -2,7 +2,7 @@ module App.Modals.CotoModal exposing (Model, initModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Markdown
@@ -13,6 +13,7 @@ import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 type alias Model =
     { coto : Coto
     , editing : Bool
+    , editingContent : String
     }
 
 
@@ -20,6 +21,7 @@ initModel : Coto -> Model
 initModel coto =
     { coto = coto
     , editing = False
+    , editingContent = coto.content
     }
 
 
@@ -28,6 +30,9 @@ update msg model =
     case msg of
         Edit ->
             { model | editing = True } ! []
+
+        EditorInput content ->
+            { model | editingContent = content } ! []
 
         Save ->
             { model | editing = False } ! []
@@ -54,14 +59,14 @@ modalConfig model =
                 div [ class "coto-editor" ]
                     [ textarea
                         [ class "coto"
-                        , value model.coto.content
+                        , value model.editingContent
+                        , onInput (AppMsg.CotoModalMsg << EditorInput)
                         ]
                         []
                     ]
               else
                 div [ class "coto-content" ]
-                    [ App.Markdown.markdown model.coto.content
-                    ]
+                    [ App.Markdown.markdown model.coto.content ]
             ]
     , buttons =
         [ if model.editing then
