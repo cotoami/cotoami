@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
-import App.Types.Coto exposing (Coto, updateContent)
+import App.Types.Coto exposing (Coto, updateContent, cotonomaNameMaxlength)
 import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -68,16 +68,33 @@ modalConfig model =
         div []
             [ if model.editing then
                 div [ class "coto-editor" ]
-                    [ textarea
-                        [ class "coto"
-                        , value model.editingContent
-                        , onInput (AppMsg.CotoModalMsg << EditorInput)
-                        ]
-                        []
+                    [ if model.coto.asCotonoma then
+                        input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , placeholder "Cotonoma name"
+                            , maxlength cotonomaNameMaxlength
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
+                      else
+                        textarea
+                            [ class "coto"
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
                     ]
               else
-                div [ class "coto-content" ]
-                    [ App.Markdown.markdown model.coto.content ]
+                if model.coto.asCotonoma then
+                    div [ class "cotonoma" ]
+                        [ i [ class "material-icons" ] [ text "exit_to_app" ]
+                        , span [ class "cotonoma-name" ] [ text model.coto.content ]
+                        ]
+                else
+                    div [ class "coto-content" ]
+                        [ App.Markdown.markdown model.coto.content ]
             ]
     , buttons =
         if model.editing then

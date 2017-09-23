@@ -2,15 +2,19 @@ module App.Types.Coto exposing (..)
 
 import Exts.Maybe exposing (isJust, isNothing)
 import App.Types.Amishi exposing (Amishi)
+import Util.StringUtil exposing (isBlank)
 
 
-type alias ElementId = String
+type alias ElementId =
+    String
 
 
-type alias CotoId = String
+type alias CotoId =
+    String
 
 
-type alias CotonomaKey = String
+type alias CotonomaKey =
+    String
 
 
 type alias Coto =
@@ -48,15 +52,31 @@ type alias Cotonoma =
     }
 
 
+cotonomaNameMaxlength : Int
+cotonomaNameMaxlength =
+    30
+
+
+validateCotonomaName : String -> Bool
+validateCotonomaName string =
+    not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
+
+
 isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool
 isPostedInCotonoma maybeCotonoma coto =
     case maybeCotonoma of
         Nothing ->
             isNothing coto.postedIn
+
         Just cotonoma ->
             case coto.postedIn of
-                Nothing -> False
-                Just postedIn -> postedIn.id == cotonoma.id
+                Nothing ->
+                    False
+
+                Just postedIn ->
+                    postedIn.id == cotonoma.id
 
 
-type Member = SignedUp Amishi | NotYetSignedUp String
+type Member
+    = SignedUp Amishi
+    | NotYetSignedUp String

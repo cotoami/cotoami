@@ -15,7 +15,7 @@ import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session, toAmishi)
-import App.Types.Coto exposing (Member(..))
+import App.Types.Coto exposing (Member(..), cotonomaNameMaxlength, validateCotonomaName)
 import App.Types.Context exposing (Context)
 import App.Server.Amishi exposing (fetchAmishi)
 import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp, PostCotonoma))
@@ -174,7 +174,7 @@ modalConfig session model =
                     , class "u-full-width"
                     , name "name"
                     , placeholder "Name"
-                    , maxlength nameMaxlength
+                    , maxlength cotonomaNameMaxlength
                     , value model.name
                     , onInput (AppMsg.CotonomaModalMsg << NameInput)
                     ]
@@ -206,7 +206,7 @@ modalConfig session model =
     , buttons =
         [ button
             [ class "button button-primary"
-            , disabled (not (validateName model.name))
+            , disabled (not (validateCotonomaName model.name))
             , onClick PostCotonoma
             ]
             [ text "Create" ]
@@ -274,13 +274,3 @@ memberAsAmishi isOwner amishi =
                 ]
                 [ faIcon "times" Nothing ]
         ]
-
-
-nameMaxlength : Int
-nameMaxlength =
-    30
-
-
-validateName : String -> Bool
-validateName string =
-    not (isBlank string) && (String.length string) <= nameMaxlength
