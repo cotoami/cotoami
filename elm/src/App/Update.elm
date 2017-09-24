@@ -283,8 +283,14 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
-        ContentUpdated (Ok _) ->
-            model ! []
+        ContentUpdated (Ok coto) ->
+            model
+                ! if coto.asCotonoma then
+                    [ fetchRecentCotonomas
+                    , fetchSubCotonomas model.context.cotonoma
+                    ]
+                  else
+                    []
 
         ContentUpdated (Err _) ->
             model ! []
