@@ -13,7 +13,7 @@ defmodule Cotoami.CotonomaService do
       Repo.transaction(fn ->
         coto =
           %Coto{}
-          |> Coto.changeset(%{
+          |> Coto.changeset_to_insert(%{
               posted_in_id: cotonoma_id_nillable,
               amishi_id: amishi_id,
               content: name,
@@ -23,7 +23,7 @@ defmodule Cotoami.CotonomaService do
 
         cotonoma =
           %Cotonoma{}
-          |> Cotonoma.changeset_new(%{
+          |> Cotonoma.changeset_to_insert(%{
               name: name,
               coto_id: coto.id,
               owner_id: amishi_id

@@ -20,7 +20,8 @@ type alias Connection =
 initConnection : Maybe CotoId -> CotoId -> Connection
 initConnection maybeStart end =
     let
-        key = (withDefault "root" maybeStart) ++ " -> " ++ end
+        key =
+            (withDefault "root" maybeStart) ++ " -> " ++ end
     in
         Connection key maybeStart end
 
@@ -43,8 +44,8 @@ defaultGraph =
 mergeSubgraph : Graph -> Graph -> Graph
 mergeSubgraph subgraph graph =
     { graph
-    | cotos = Dict.union subgraph.cotos graph.cotos
-    , connections = Dict.union subgraph.connections graph.connections
+        | cotos = Dict.union subgraph.cotos graph.cotos
+        , connections = Dict.union subgraph.connections graph.connections
     }
 
 
@@ -66,15 +67,28 @@ getCoto cotoId graph =
 addCoto : Coto -> Graph -> Graph
 addCoto coto graph =
     { graph
-    | cotos = Dict.insert coto.id coto graph.cotos
+        | cotos = Dict.insert coto.id coto graph.cotos
     }
+
+
+updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
+updateCoto cotoId update graph =
+    { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
+
+
+updateContent : CotoId -> String -> Graph -> Graph
+updateContent cotoId content graph =
+    updateCoto cotoId (\coto -> App.Types.Coto.updateContent content coto) graph
 
 
 connected : CotoId -> CotoId -> Graph -> Bool
 connected startId endId graph =
     case Dict.get startId graph.connections of
-        Nothing -> False
-        Just conns -> List.any (\conn -> conn.end == endId) conns
+        Nothing ->
+            False
+
+        Just conns ->
+            List.any (\conn -> conn.end == endId) conns
 
 
 inGraph : CotoId -> Graph -> Bool
@@ -82,10 +96,11 @@ inGraph cotoId graph =
     (graph.rootConnections |> List.any (\conn -> conn.end == cotoId))
         || (graph.connections |> Dict.member cotoId)
         || (graph.connections
-            |> Dict.values
-            |> List.any (\conns ->
-                conns |> List.any (\conn -> conn.end == cotoId)
-            )
+                |> Dict.values
+                |> List.any
+                    (\conns ->
+                        conns |> List.any (\conn -> conn.end == cotoId)
+                    )
            )
 
 
@@ -110,18 +125,18 @@ pinCoto coto graph =
         graph
     else
         { graph
-        | cotos = Dict.insert coto.id coto graph.cotos
-        , rootConnections =
-            (initConnection Nothing coto.id) :: graph.rootConnections
+            | cotos = Dict.insert coto.id coto graph.cotos
+            , rootConnections =
+                (initConnection Nothing coto.id) :: graph.rootConnections
         }
 
 
 unpinCoto : CotoId -> Graph -> Graph
 unpinCoto cotoId graph =
     { graph
-    | rootConnections =
-        graph.rootConnections
-        |> List.filter (\conn -> conn.end /= cotoId)
+        | rootConnections =
+            graph.rootConnections
+                |> List.filter (\conn -> conn.end /= cotoId)
     }
 
 
@@ -149,19 +164,20 @@ connect start end graph =
                         case maybeConns of
                             Nothing ->
                                 Just [ (initConnection (Just start.id) end.id) ]
+
                             Just conns ->
                                 Just ((initConnection (Just start.id) end.id) :: conns)
                     )
                     graph.connections
     in
         { graph
-        | cotos = cotos
-        , rootConnections = rootConnections
-        , connections = connections
+            | cotos = cotos
+            , rootConnections = rootConnections
+            , connections = connections
         }
 
 
-connectOneToMany : Coto -> (List Coto) -> Graph -> Graph
+connectOneToMany : Coto -> List Coto -> Graph -> Graph
 connectOneToMany startCoto endCotos graph =
     List.foldr
         (\endCoto graph ->
@@ -171,7 +187,7 @@ connectOneToMany startCoto endCotos graph =
         endCotos
 
 
-connectManyToOne : (List Coto) -> Coto -> Graph -> Graph
+connectManyToOne : List Coto -> Coto -> Graph -> Graph
 connectManyToOne startCotos endCoto graph =
     List.foldr
         (\startCoto graph ->
@@ -184,35 +200,38 @@ connectManyToOne startCotos endCoto graph =
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
     { graph
-    | connections = graph.connections |> doDisconnect ( fromId, toId )
+        | connections = graph.connections |> doDisconnect ( fromId, toId )
     }
         |> \graph ->
             { graph
-            | cotos =
-                -- remove the coto (toId) if it's an orphan
-                if inGraph toId graph then
-                    graph.cotos
-                else
-                    graph.cotos |> Dict.remove toId
+                | cotos =
+                    -- remove the coto (toId) if it's an orphan
+                    if inGraph toId graph then
+                        graph.cotos
+                    else
+                        graph.cotos |> Dict.remove toId
             }
+
 
 doDisconnect : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
 doDisconnect ( fromId, toId ) connections =
     connections
-    |> Dict.update
-        fromId
-        (\maybeChildren ->
-            case maybeChildren of
-                Nothing -> Nothing
-                Just children ->
-                    children
-                        |> List.filter (\conn -> conn.end /= toId)
-                        |> \children ->
-                            if List.isEmpty children then
-                                Nothing
-                            else
-                                Just children
-        )
+        |> Dict.update
+            fromId
+            (\maybeChildren ->
+                case maybeChildren of
+                    Nothing ->
+                        Nothing
+
+                    Just children ->
+                        children
+                            |> List.filter (\conn -> conn.end /= toId)
+                            |> \children ->
+                                if List.isEmpty children then
+                                    Nothing
+                                else
+                                    Just children
+            )
 
 
 removeCoto : CotoId -> Graph -> ( Graph, List Connection )
@@ -226,6 +245,7 @@ removeCoto cotoId graph =
             case graph.connections |> Dict.get cotoId of
                 Nothing ->
                     ( graph.connections, [] )
+
                 Just removedConns ->
                     ( Dict.remove cotoId graph.connections, removedConns )
 
@@ -241,9 +261,9 @@ removeCoto cotoId graph =
                 connectionDict1
     in
         ( { graph
-          | cotos = graph.cotos |> Dict.remove cotoId
-          , rootConnections = remainedRoots
-          , connections = connectionDict2
+            | cotos = graph.cotos |> Dict.remove cotoId
+            , rootConnections = remainedRoots
+            , connections = connectionDict2
           }
         , removedRoots ++ startMissingConns ++ endMissingConns
         )

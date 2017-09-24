@@ -31,6 +31,8 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal exposing (setDefaultMembers)
+import App.Modals.CotoModal
+import App.Modals.CotoModalMsg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -182,7 +184,7 @@ update msg model =
             openModal App.Model.ProfileModal model ! []
 
         OpenCotoModal coto ->
-            openCoto (Just coto) model ! []
+            openCoto coto model ! []
 
         OpenCotonomaModal ->
             { model
@@ -241,12 +243,12 @@ update msg model =
         ConfirmDeleteCoto ->
             confirm
                 "Are you sure you want to delete this coto?"
-                (case model.openedCoto of
+                (case model.cotoModal of
                     Nothing ->
                         App.Messages.NoOp
 
-                    Just coto ->
-                        RequestDeleteCoto coto
+                    Just cotoModal ->
+                        RequestDeleteCoto cotoModal.coto
                 )
                 model
                 ! []
@@ -279,6 +281,18 @@ update msg model =
                   )
 
         CotoDeleted _ ->
+            model ! []
+
+        ContentUpdated (Ok coto) ->
+            model
+                ! if coto.asCotonoma then
+                    [ fetchRecentCotonomas
+                    , fetchSubCotonomas model.context.cotonoma
+                    ]
+                  else
+                    []
+
+        ContentUpdated (Err _) ->
             model ! []
 
         PinCoto cotoId ->
@@ -502,7 +516,12 @@ update msg model =
             model ! []
 
         OpenPost post ->
-            openCoto (toCoto post) model ! []
+            case toCoto post of
+                Nothing ->
+                    model ! []
+
+                Just coto ->
+                    openCoto coto model ! []
 
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
@@ -582,20 +601,50 @@ update msg model =
                     { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
 
         CotonomaModalMsg subMsg ->
-            case model.context.session of
-                Nothing ->
-                    model ! []
-
-                Just session ->
-                    (App.Modals.CotonomaModal.update
-                        subMsg
-                        session
-                        model.context
-                        model.cotonomaModal
+            model.context.session
+                |> Maybe.map
+                    (\session ->
+                        App.Modals.CotonomaModal.update
+                            subMsg
+                            session
+                            model.context
+                            model.cotonomaModal
                     )
-                        |> \( cotonomaModal, subCmd ) ->
-                            { model | cotonomaModal = cotonomaModal }
-                                ! [ Cmd.map CotonomaModalMsg subCmd ]
+                |> Maybe.map
+                    (\( cotonomaModal, subCmd ) ->
+                        { model | cotonomaModal = cotonomaModal }
+                            ! [ Cmd.map CotonomaModalMsg subCmd ]
+                    )
+                |> withDefault (model ! [])
+
+        CotoModalMsg subMsg ->
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.update subMsg)
+                |> Maybe.map
+                    (\( cotoModal, subCmd ) ->
+                        ( { model | cotoModal = Just cotoModal }
+                        , cotoModal
+                        , Cmd.map CotoModalMsg subCmd
+                        )
+                    )
+                |> Maybe.map
+                    (\( model, cotoModal, cmd ) ->
+                        case subMsg of
+                            App.Modals.CotoModalMsg.Save ->
+                                updateCotoContent
+                                    cotoModal.coto.id
+                                    cotoModal.editingContent
+                                    model
+                                    ! [ cmd
+                                      , App.Server.Coto.updateContent
+                                            cotoModal.coto.id
+                                            cotoModal.editingContent
+                                      ]
+
+                            _ ->
+                                ( model, cmd )
+                    )
+                |> withDefault (model ! [])
 
 
 confirm : String -> Msg -> Model -> Model
@@ -617,9 +666,9 @@ clickCoto elementId cotoId model =
     }
 
 
-openCoto : Maybe Coto -> Model -> Model
-openCoto maybeCoto model =
-    { model | openedCoto = maybeCoto }
+openCoto : Coto -> Model -> Model
+openCoto coto model =
+    { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
         |> \model -> openModal App.Model.CotoModal model
 
 

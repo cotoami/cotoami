@@ -109,8 +109,8 @@ defmodule Cotoami.CotoGraphControllerTest do
       put(conn, "/api/graph/connection/#{coto.id}", %{"end_ids" => [coto2.id]})
 
       amishi_id = amishi.id
-      coto_node_id = Neo4jService.get_node!(bolt_conn, coto.id).id
-      coto2_node_id = Neo4jService.get_node!(bolt_conn, coto2.id).id
+      coto_node_id = Neo4jService.get_node(bolt_conn, coto.id).id
+      coto2_node_id = Neo4jService.get_node(bolt_conn, coto2.id).id
       assert [
         %Relationship{
           start: ^coto_node_id,
@@ -122,7 +122,7 @@ defmodule Cotoami.CotoGraphControllerTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships!(bolt_conn, coto.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(bolt_conn, coto.id, "HAS_A")
     end
   end
 

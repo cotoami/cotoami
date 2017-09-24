@@ -6,6 +6,8 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
+
+
 type alias Post =
     { postId : Maybe Int
     , cotoId : Maybe CotoId
@@ -36,6 +38,7 @@ toCoto post =
     case post.cotoId of
         Nothing ->
             Nothing
+
         Just cotoId ->
             Just
                 (Coto
@@ -51,19 +54,27 @@ toCoto post =
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
 isPostedInCotonoma maybeCotonoma post =
     case maybeCotonoma of
-        Nothing -> isNothing post.postedIn
+        Nothing ->
+            isNothing post.postedIn
+
         Just cotonoma ->
             case post.postedIn of
-                Nothing -> False
-                Just postedIn -> postedIn.id == cotonoma.id
+                Nothing ->
+                    False
+
+                Just postedIn ->
+                    postedIn.id == cotonoma.id
 
 
 isPostedInCoto : Coto -> Post -> Bool
 isPostedInCoto coto post =
     if coto.asCotonoma then
         case post.postedIn of
-            Nothing -> False
-            Just postedIn -> (Just postedIn.key) == coto.cotonomaKey
+            Nothing ->
+                False
+
+            Just postedIn ->
+                (Just postedIn.key) == coto.cotonomaKey
     else
         False
 
@@ -71,18 +82,3 @@ isPostedInCoto coto post =
 isSelfOrPostedIn : Coto -> Post -> Bool
 isSelfOrPostedIn coto post =
     post.cotoId == Just coto.id || (isPostedInCoto coto post)
-
-
-setCotoSaved : Post -> List Post -> List Post
-setCotoSaved apiResponse posts =
-    List.map
-        (\post ->
-            if post.postId == apiResponse.postId then
-                { post
-                | cotoId = apiResponse.cotoId
-                , cotonomaKey = apiResponse.cotonomaKey
-                }
-            else
-                post
-        )
-        posts

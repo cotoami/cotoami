@@ -9,7 +9,7 @@ defmodule Cotoami.Neo4jService do
 
   def rel_prop_order, do: @rel_prop_order
 
-  def get_node!(conn, uuid) do
+  def get_node(conn, uuid) do
     query = ~s"""
       MATCH (n { uuid: $uuid })
       RETURN n
@@ -20,7 +20,7 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def get_or_create_node!(conn, uuid, labels \\ [], props \\ %{}) do
+  def get_or_create_node(conn, uuid, labels \\ [], props \\ %{}) do
     set_labels =
       if length(labels) > 0,
         do: ", n :" <> Enum.join(labels, ":"),
@@ -38,7 +38,24 @@ defmodule Cotoami.Neo4jService do
     node
   end
 
-  def get_or_create_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do
+  def replace_node_properties(conn, uuid, props) do
+    query = ~s"""
+      MATCH (n { uuid: $uuid })
+      SET n = $props
+      RETURN n
+    """
+    result =
+      Bolt.Sips.query!(conn, query, %{
+        uuid: uuid,
+        props: Map.put(props, :uuid, uuid)
+      })
+    case result do
+      [%{"n" => node}] -> {:ok, node}
+      _ -> {:error, "not-found"}
+    end
+  end
+
+  def get_or_create_relationship(conn, source_uuid, target_uuid, type, props \\ %{}) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid }),(target { uuid: $target_uuid })
       MERGE (source)-[r:#{type}]->(target)
@@ -57,7 +74,7 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def get_relationship!(conn, source_uuid, target_uuid, type) do
+  def get_relationship(conn, source_uuid, target_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
       RETURN r
@@ -73,18 +90,23 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
-  def delete_relationship!(conn, source_uuid, target_uuid, type) do
+  def delete_relationship(conn, source_uuid, target_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
       DELETE r
     """
-    Bolt.Sips.query!(conn, query, %{
-      source_uuid: source_uuid,
-      target_uuid: target_uuid
-    })
+    result =
+      Bolt.Sips.query!(conn, query, %{
+        source_uuid: source_uuid,
+        target_uuid: target_uuid
+      })
+    case result do
+      %{stats: %{"relationships-deleted" => 1}, type: "w"} -> {:ok, nil}
+      _ -> {:error, "error"}
+    end
   end
 
-  def get_ordered_relationships!(conn, source_uuid, type) do
+  def get_ordered_relationships(conn, source_uuid, type) do
     query = ~s"""
       MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target)
       RETURN r
@@ -95,9 +117,9 @@ defmodule Cotoami.Neo4jService do
     |> Enum.map(&(&1["r"]))
   end
 
-  def get_or_create_ordered_relationship!(conn, source_uuid, target_uuid, type, props \\ %{}) do
+  def get_or_create_ordered_relationship(conn, source_uuid, target_uuid, type, props \\ %{}) do
     next_order =
-      case get_ordered_relationships!(conn, source_uuid, type) do
+      case get_ordered_relationships(conn, source_uuid, type) do
         [] -> 1
         rels ->
           case List.last(rels).properties[@rel_prop_order] do
@@ -105,19 +127,22 @@ defmodule Cotoami.Neo4jService do
             last_order -> last_order + 1
           end
       end
-    get_or_create_relationship!(conn, source_uuid, target_uuid, type,
+    get_or_create_relationship(conn, source_uuid, target_uuid, type,
       props |> Map.put(@rel_prop_order, next_order))
   end
 
-  def delete_node_with_relationships!(conn, uuid) do
+  def delete_node_with_relationships(conn, uuid) do
     query = ~s"""
       MATCH (n { uuid: $uuid })
       DETACH DELETE n
     """
-    Bolt.Sips.query!(conn, query, %{uuid: uuid})
+    case Bolt.Sips.query!(conn, query, %{uuid: uuid}) do
+      %{stats: %{"nodes-deleted" => 1}, type: "w"} -> {:ok, nil}
+      _ -> {:error, "error"}
+    end
   end
 
-  def get_paths!(conn, start_uuid, end_uuid) do
+  def get_paths(conn, start_uuid, end_uuid) do
     query = ~s"""
       MATCH path = ({ uuid: $start_uuid })-[*]->({ uuid: $end_uuid })
       RETURN path

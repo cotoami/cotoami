@@ -23,12 +23,12 @@ defmodule Cotoami.CotoGraphServiceTest do
       amishi_id = amishi.id
       coto_id = coto.id
 
-      amishi_node = Neo4jService.get_or_create_node!(conn, amishi.id)
+      amishi_node = Neo4jService.get_or_create_node(conn, amishi.id)
       amishi_node_id = amishi_node.id
       assert ["Amishi"] == amishi_node.labels
       assert %{"uuid" => amishi.id} == amishi_node.properties
 
-      coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
+      coto_node = Neo4jService.get_or_create_node(conn, coto.id)
       coto_node_id = coto_node.id
       assert ["Coto"] == coto_node.labels
       assert %{
@@ -50,12 +50,12 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, amishi.id, "HAS_A")
     end
 
     test "unpin", ~M{conn, amishi, coto} do
       CotoGraphService.unpin(conn, coto, amishi)
-      assert [] == Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
+      assert [] == Neo4jService.get_ordered_relationships(conn, amishi.id, "HAS_A")
     end
 
     test "graph", ~M{conn, amishi, coto} do
@@ -97,12 +97,12 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "pin", ~M{conn, amishi, coto} do
-      amishi_node = Neo4jService.get_or_create_node!(conn, amishi.id)
+      amishi_node = Neo4jService.get_or_create_node(conn, amishi.id)
       amishi_node_id = amishi_node.id
 
       coto_id = coto.id
       cotonoma_key = coto.cotonoma.key
-      coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
+      coto_node = Neo4jService.get_or_create_node(conn, coto.id)
       coto_node_id = coto_node.id
       assert ["Coto", "Cotonoma"] == Enum.sort(coto_node.labels)
       assert %{
@@ -116,7 +116,7 @@ defmodule Cotoami.CotoGraphServiceTest do
           start: ^amishi_node_id,
           end: ^coto_node_id
         }
-      ] = Neo4jService.get_ordered_relationships!(conn, amishi.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, amishi.id, "HAS_A")
     end
   end
 
@@ -133,10 +133,10 @@ defmodule Cotoami.CotoGraphServiceTest do
       cotonoma_id = cotonoma.id
       cotonoma_coto_id = cotonoma.coto.id
 
-      coto_node = Neo4jService.get_or_create_node!(conn, coto.id)
+      coto_node = Neo4jService.get_or_create_node(conn, coto.id)
       coto_node_id = coto_node.id
 
-      cotonoma_node = Neo4jService.get_or_create_node!(conn, cotonoma.coto.id)
+      cotonoma_node = Neo4jService.get_or_create_node(conn, cotonoma.coto.id)
       cotonoma_node_id = cotonoma_node.id
       assert ["Coto", "Cotonoma"] == Enum.sort(cotonoma_node.labels)
       assert %{
@@ -159,12 +159,12 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
     end
 
     test "unpin", ~M{conn, coto, cotonoma} do
       CotoGraphService.unpin(conn, coto, cotonoma)
-      assert [] == Neo4jService.get_ordered_relationships!(conn, cotonoma.coto.id, "HAS_A")
+      assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
     end
   end
 
@@ -178,9 +178,9 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "connection", ~M{conn, amishi, coto1, coto2} do
       amishi_id = amishi.id
-      amishi_node_id = Neo4jService.get_or_create_node!(conn, amishi.id).id
-      coto1_node_id = Neo4jService.get_or_create_node!(conn, coto1.id).id
-      coto2_node_id = Neo4jService.get_or_create_node!(conn, coto2.id).id
+      amishi_node_id = Neo4jService.get_or_create_node(conn, amishi.id).id
+      coto1_node_id = Neo4jService.get_or_create_node(conn, coto1.id).id
+      coto2_node_id = Neo4jService.get_or_create_node(conn, coto2.id).id
 
       assert [
         %Relationship{
@@ -193,7 +193,7 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
 
       # the source node should be pinned
       assert [
@@ -206,12 +206,12 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships!(conn, amishi_id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, amishi_id, "HAS_A")
     end
 
     test "disconnect", ~M{conn, amishi, coto1, coto2} do
       CotoGraphService.disconnect(conn, coto1, coto2, amishi)
-      assert [] = Neo4jService.get_ordered_relationships!(conn, coto1.id, "HAS_A")
+      assert [] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
     end
   end
 

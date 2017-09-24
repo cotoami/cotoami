@@ -5,7 +5,9 @@ defmodule Cotoami.CotoService do
 
   require Logger
   import Ecto.Query
-  alias Cotoami.{Repo, Coto, Amishi, CotonomaService, CotoGraphService}
+  alias Cotoami.{
+    Repo, Coto, Cotonoma, Amishi, CotonomaService, CotoGraphService
+  }
   alias Cotoami.Exceptions.InvalidOperation
 
   def get(id) do
@@ -35,7 +37,7 @@ defmodule Cotoami.CotoService do
         cotonoma_id_nillable, amishi_id)
     coto =
       %Coto{}
-      |> Coto.changeset(%{
+      |> Coto.changeset_to_insert(%{
           posted_in_id: cotonoma_id_nillable,
           amishi_id: amishi_id,
           content: content,
@@ -45,7 +47,27 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def delete!(id, %Amishi{id: amishi_id}) do
+  def update_content(id, %{"content" => _} = params, %Amishi{id: amishi_id}) do
+    Repo.transaction(fn ->
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> Repo.get!(id)
+      |> Coto.changeset_to_update_content(params)
+      |> Repo.update!()
+
+      updated_coto = get(id)  # updated struct with the related structs
+      if updated_coto.as_cotonoma do
+        updated_coto.cotonoma
+        |> Cotonoma.changeset_to_update_name(%{name: updated_coto.content})
+        |> Repo.update!()
+      end
+
+      CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
+      updated_coto
+    end)
+  end
+
+  def delete(id, %Amishi{id: amishi_id}) do
     Repo.transaction(fn ->
       Coto
       |> Coto.for_amishi(amishi_id)

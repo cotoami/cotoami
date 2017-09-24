@@ -12,7 +12,7 @@ defmodule Cotoami.Neo4jServiceTest do
   describe "a basic node" do
     setup ~M{conn} do
       uuid = UUID.uuid4()
-      node = Neo4jService.get_or_create_node!(conn, uuid)
+      node = Neo4jService.get_or_create_node(conn, uuid)
       ~M{uuid, node}
     end
 
@@ -28,19 +28,18 @@ defmodule Cotoami.Neo4jServiceTest do
         id: ^existing_node_id,
         labels: [],
         properties:  %{"uuid" => ^uuid}
-      } = Neo4jService.get_node!(conn, uuid)
+      } = Neo4jService.get_node(conn, uuid)
 
       assert %Node{
         id: ^existing_node_id,
         labels: [],
         properties:  %{"uuid" => ^uuid}
-      } = Neo4jService.get_or_create_node!(conn, uuid)
+      } = Neo4jService.get_or_create_node(conn, uuid)
     end
 
     test "delete", ~M{conn, uuid} do
-      assert %{stats: %{"nodes-deleted" => 1}, type: "w"} =
-        Neo4jService.delete_node_with_relationships!(conn, uuid)
-      assert nil == Neo4jService.get_node!(conn, uuid)
+      assert {:ok, nil} = Neo4jService.delete_node_with_relationships(conn, uuid)
+      assert nil == Neo4jService.get_node(conn, uuid)
     end
   end
 
@@ -49,7 +48,7 @@ defmodule Cotoami.Neo4jServiceTest do
       uuid = UUID.uuid4()
       labels = ["A", "B"]
       props = %{a: "hello", b: 1}
-      node = Neo4jService.get_or_create_node!(conn, uuid, labels, props)
+      node = Neo4jService.get_or_create_node(conn, uuid, labels, props)
       ~M{uuid, node, labels, props}
     end
 
@@ -59,32 +58,43 @@ defmodule Cotoami.Neo4jServiceTest do
     end
 
     test "get with uuid", ~M{conn, uuid, node, labels} do
-      result = Neo4jService.get_or_create_node!(conn, uuid)
+      result = Neo4jService.get_or_create_node(conn, uuid)
       assert node.id == result.id
       assert ^labels = Enum.sort(result.labels)
       assert %{"a" => "hello", "b" => 1, "uuid" => ^uuid} = result.properties
     end
 
     test "get with uuid (labels and props will be ignored)", ~M{conn, uuid, node, labels} do
-      result = Neo4jService.get_or_create_node!(conn, uuid, ["C"], %{c: "bye"})
+      result = Neo4jService.get_or_create_node(conn, uuid, ["C"], %{c: "bye"})
       assert node.id == result.id
       assert ^labels = Enum.sort(result.labels)
+    end
+
+    test "replace the properties", ~M{conn, uuid}  do
+      {:ok, node} = Neo4jService.replace_node_properties(conn, uuid, %{a: "updated"})
+      assert %{"a" => "updated", "uuid" => ^uuid} = node.properties
+      assert %{"a" => "updated", "uuid" => ^uuid} = Neo4jService.get_node(conn, uuid).properties
+    end
+
+    test "replace the properties with non-existent id", ~M{conn}  do
+      assert {:error, "not-found"} =
+        Neo4jService.replace_node_properties(conn, "no-such-uuid", %{})
     end
   end
 
   describe "a relationship" do
     setup ~M{conn} do
       uuid1 = UUID.uuid4()
-      %Node{id: node1_id} = Neo4jService.get_or_create_node!(conn, uuid1)
+      %Node{id: node1_id} = Neo4jService.get_or_create_node(conn, uuid1)
       uuid2 = UUID.uuid4()
-      %Node{id: node2_id} = Neo4jService.get_or_create_node!(conn, uuid2)
-      rel = Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "A")
+      %Node{id: node2_id} = Neo4jService.get_or_create_node(conn, uuid2)
+      rel = Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "A")
       ~M{uuid1, node1_id, uuid2, node2_id, rel}
     end
 
     test "get nil when the nodes are not found", ~M{conn} do
       assert nil ==
-        Neo4jService.get_or_create_relationship!(conn, "no-such-uuid", "no-such-uuid", "RELTYPE")
+        Neo4jService.get_or_create_relationship(conn, "no-such-uuid", "no-such-uuid", "RELTYPE")
     end
 
     test "create", ~M{node1_id, node2_id, rel} do
@@ -97,35 +107,34 @@ defmodule Cotoami.Neo4jServiceTest do
     test "get", ~M{conn, uuid1, uuid2, rel} do
       relationship_id = rel.id
       assert %Relationship{id: ^relationship_id} =
-        Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "A")
+        Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "A")
       assert %Relationship{id: ^relationship_id} =
-        Neo4jService.get_relationship!(conn, uuid1, uuid2, "A")
+        Neo4jService.get_relationship(conn, uuid1, uuid2, "A")
     end
 
     test "create a relationship of another type", ~M{conn, uuid1, uuid2, rel} do
       %Relationship{id: relationship_id} =
-        Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "B")
+        Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "B")
       assert rel.id != relationship_id
     end
 
     test "get an non-existing relationship", ~M{conn, uuid1, uuid2} do
-      assert nil == Neo4jService.get_relationship!(conn, uuid1, uuid2, "C")
+      assert nil == Neo4jService.get_relationship(conn, uuid1, uuid2, "C")
     end
 
     test "delete", ~M{conn, uuid1, uuid2} do
-      assert %{stats: %{"relationships-deleted" => 1}, type: "w"} =
-        Neo4jService.delete_relationship!(conn, uuid1, uuid2, "A")
-      assert nil == Neo4jService.get_relationship!(conn, uuid1, uuid2, "A")
+      assert {:ok, nil} = Neo4jService.delete_relationship(conn, uuid1, uuid2, "A")
+      assert nil == Neo4jService.get_relationship(conn, uuid1, uuid2, "A")
     end
   end
 
   describe "a relationship with properties" do
     setup ~M{conn} do
       uuid1 = UUID.uuid4()
-      %Node{id: node1_id} = Neo4jService.get_or_create_node!(conn, uuid1)
+      %Node{id: node1_id} = Neo4jService.get_or_create_node(conn, uuid1)
       uuid2 = UUID.uuid4()
-      %Node{id: node2_id} = Neo4jService.get_or_create_node!(conn, uuid2)
-      rel = Neo4jService.get_or_create_relationship!(conn, uuid1, uuid2, "A", %{a: "hello", b: 1})
+      %Node{id: node2_id} = Neo4jService.get_or_create_node(conn, uuid2)
+      rel = Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "A", %{a: "hello", b: 1})
       ~M{uuid1, node1_id, uuid2, node2_id, rel}
     end
 
@@ -140,14 +149,14 @@ defmodule Cotoami.Neo4jServiceTest do
   describe "ordered relationships" do
     setup ~M{conn} do
       uuid1 = UUID.uuid4()
-      Neo4jService.get_or_create_node!(conn, uuid1)
+      Neo4jService.get_or_create_node(conn, uuid1)
       uuid2 = UUID.uuid4()
-      Neo4jService.get_or_create_node!(conn, uuid2)
+      Neo4jService.get_or_create_node(conn, uuid2)
       uuid3 = UUID.uuid4()
-      Neo4jService.get_or_create_node!(conn, uuid3)
+      Neo4jService.get_or_create_node(conn, uuid3)
 
-      rel1 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid2, "A")
-      rel2 = Neo4jService.get_or_create_ordered_relationship!(conn, uuid1, uuid3, "A")
+      rel1 = Neo4jService.get_or_create_ordered_relationship(conn, uuid1, uuid2, "A")
+      rel2 = Neo4jService.get_or_create_ordered_relationship(conn, uuid1, uuid3, "A")
       ~M{uuid1, uuid2, uuid3, rel1, rel2}
     end
 
@@ -161,7 +170,7 @@ defmodule Cotoami.Neo4jServiceTest do
       assert [
         %Relationship{id: ^rel1_id, properties: %{"order" => 1}},
         %Relationship{id: ^rel2_id, properties: %{"order" => 2}}
-      ] = Neo4jService.get_ordered_relationships!(conn, uuid1, "A")
+      ] = Neo4jService.get_ordered_relationships(conn, uuid1, "A")
     end
   end
 
@@ -170,11 +179,11 @@ defmodule Cotoami.Neo4jServiceTest do
       [uuid_a, uuid_b, uuid_c, uuid_d] =
         1..4 |> Enum.to_list() |> Enum.map(fn(_) ->
           uuid = UUID.uuid4()
-          Neo4jService.get_or_create_node!(conn, uuid)
+          Neo4jService.get_or_create_node(conn, uuid)
           uuid
         end)
-      rel_a_b = Neo4jService.get_or_create_ordered_relationship!(conn, uuid_a, uuid_b, "A")
-      rel_b_c = Neo4jService.get_or_create_ordered_relationship!(conn, uuid_b, uuid_c, "A")
+      rel_a_b = Neo4jService.get_or_create_ordered_relationship(conn, uuid_a, uuid_b, "A")
+      rel_b_c = Neo4jService.get_or_create_ordered_relationship(conn, uuid_b, uuid_c, "A")
       ~M{uuid_a, uuid_b, uuid_c, uuid_d, rel_a_b, rel_b_c}
     end
 
@@ -188,7 +197,7 @@ defmodule Cotoami.Neo4jServiceTest do
           ],
           relationships: [%Bolt.Sips.Types.UnboundRelationship{id: ^rel_a_b_id}]
         }}
-      ] = Neo4jService.get_paths!(conn, uuid_a, uuid_b)
+      ] = Neo4jService.get_paths(conn, uuid_a, uuid_b)
     end
 
     test "get paths from A to C", ~M{conn, uuid_a, uuid_b, uuid_c, rel_a_b, rel_b_c} do
@@ -205,11 +214,11 @@ defmodule Cotoami.Neo4jServiceTest do
             %Bolt.Sips.Types.UnboundRelationship{id: ^rel_b_c_id}
           ]
         }}
-      ] = Neo4jService.get_paths!(conn, uuid_a, uuid_c)
+      ] = Neo4jService.get_paths(conn, uuid_a, uuid_c)
     end
 
     test "get paths from A to D", ~M{conn, uuid_a, uuid_d} do
-      assert [] == Neo4jService.get_paths!(conn, uuid_a, uuid_d)
+      assert [] == Neo4jService.get_paths(conn, uuid_a, uuid_d)
     end
   end
 end

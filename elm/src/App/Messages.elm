@@ -13,6 +13,7 @@ import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
 import App.Modals.CotonomaModalMsg
+import App.Modals.CotoModalMsg
 
 
 type Msg
@@ -56,6 +57,7 @@ type Msg
     | RequestDeleteCoto Coto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
+    | ContentUpdated (Result Http.Error Coto)
     | PinCoto CotoId
     | CotoPinned (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
@@ -105,3 +107,4 @@ type Msg
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
+    | CotoModalMsg App.Modals.CotoModalMsg.Msg
