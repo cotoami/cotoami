@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import 'variables';
 
 #coto-modal {
   .modal-content {
@@ -14,10 +14,10 @@
 
   div.coto-editor {
     textarea.coto {
-      margin: 0;
       width: 100%;
       height: 50vh;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      margin: 0;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 
       @media (#{$narrow-viewport}) {
         // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
@@ -35,8 +35,8 @@
 
     span.cotonoma-name {
       margin-left: 3px;
-      vertical-align: middle;
       font-weight: bold;
+      vertical-align: middle;
     }
   }
 }
