@@ -42,7 +42,10 @@ defmodule Cotoami.CotoController do
   def update(conn, %{"id" => id, "coto" => coto_params}) do
     case conn.assigns do
       %{amishi: amishi} ->
-        json conn, CotoService.update_content!(id, coto_params, amishi)
+        case CotoService.update_content(id, coto_params, amishi) do
+          {:ok, coto} -> render(conn, "coto.json", coto: coto)
+          {:error, _} -> send_resp(conn, :internal_server_error, "")
+        end
       _ ->
         json conn, coto_params
     end
@@ -51,7 +54,7 @@ defmodule Cotoami.CotoController do
   def delete(conn, %{"id" => id}) do
     case conn.assigns do
       %{amishi: amishi} ->
-        CotoService.delete!(id, amishi)
+        CotoService.delete(id, amishi)
         send_resp(conn, :no_content, "")
       _ ->
         send_resp(conn, :no_content, "")

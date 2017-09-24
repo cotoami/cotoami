@@ -45,19 +45,21 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content!(id, %{content: _} = params, %Amishi{id: amishi_id}) do
+  def update_content(id, %{"content" => _} = params, %Amishi{id: amishi_id}) do
     Repo.transaction(fn ->
-      Coto
-      |> Coto.for_amishi(amishi_id)
-      |> Repo.get!(id)
-      |> Coto.changeset_to_update_content(params)
-      |> Repo.update!()
+      updated_coto =
+        Coto
+        |> Coto.for_amishi(amishi_id)
+        |> Repo.get!(id)
+        |> Coto.changeset_to_update_content(params)
+        |> Repo.update!()
 
-      CotoGraphService.sync_coto_props(Bolt.Sips.conn, get(id))
+      CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
+      updated_coto
     end)
   end
 
-  def delete!(id, %Amishi{id: amishi_id}) do
+  def delete(id, %Amishi{id: amishi_id}) do
     Repo.transaction(fn ->
       Coto
       |> Coto.for_amishi(amishi_id)

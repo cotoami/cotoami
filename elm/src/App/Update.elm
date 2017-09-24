@@ -283,6 +283,12 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
+        ContentUpdated (Ok _) ->
+            model ! []
+
+        ContentUpdated (Err _) ->
+            model ! []
+
         PinCoto cotoId ->
             App.Model.getCoto cotoId model
                 |> Maybe.map
@@ -619,12 +625,15 @@ update msg model =
                     (\( model, cotoModal, cmd ) ->
                         case subMsg of
                             App.Modals.CotoModalMsg.Save ->
-                                ( updateCotoContent
+                                updateCotoContent
                                     cotoModal.coto.id
                                     cotoModal.editingContent
                                     model
-                                , cmd
-                                )
+                                    ! [ cmd
+                                      , App.Server.Coto.updateContent
+                                            cotoModal.coto.id
+                                            cotoModal.editingContent
+                                      ]
 
                             _ ->
                                 ( model, cmd )
