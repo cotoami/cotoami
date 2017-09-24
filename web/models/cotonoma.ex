@@ -27,6 +27,12 @@ defmodule Cotoami.Cotonoma do
     |> validate_required([:key, :name, :coto_id, :owner_id])
   end
 
+  def changeset_to_update_name(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:name])
+    |> validate_required([:name])
+  end
+
   defp generate_key(changeset) do
     key =
       @key_length
