@@ -62,6 +62,7 @@ defmodule Cotoami.Web do
   def router do
     quote do
       use Phoenix.Router
+      import Cotoami.Auth, only: [require_auth: 2]
     end
   end
 

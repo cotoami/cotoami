@@ -40,6 +40,11 @@ initContext seed =
     }
 
 
+setSession : Session -> Context -> Context
+setSession session context =
+    { context | session = Just session }
+
+
 setElementFocus : Maybe String -> Context -> Context
 setElementFocus maybeElementId context =
     { context | elementFocus = maybeElementId }

@@ -19,4 +19,4 @@ decodeSession =
 
 fetchSession : Cmd Msg
 fetchSession =
-    Http.send SessionFetched (Http.get "/api/session" decodeSession)
+    Http.send SessionFetched (Http.get "/api/public/session" decodeSession)

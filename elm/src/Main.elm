@@ -4,7 +4,7 @@ import Navigation exposing (Location)
 import App.Route exposing (parseLocation, Route(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
-import App.Update exposing (update, loadHome, loadCotonoma)
+import App.Update exposing (update)
 import App.Server.Session exposing (fetchSession)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
@@ -30,16 +30,5 @@ init flags location =
     let
         route =
             parseLocation location
-
-        initialModel =
-            initModel flags.seed route
-
-        ( model, cmd ) =
-            case route of
-                CotonomaRoute key ->
-                    loadCotonoma key initialModel
-
-                _ ->
-                    loadHome initialModel
     in
-        model ! [ fetchSession, cmd ]
+        initModel flags.seed route ! [ fetchSession ]

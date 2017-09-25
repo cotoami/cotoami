@@ -10,10 +10,6 @@ defmodule Cotoami.Router do
     plug Cotoami.Auth
   end
 
-  pipeline :api_public do
-    plug :accepts, ["json"]
-  end
-
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
@@ -31,26 +27,26 @@ defmodule Cotoami.Router do
     pipe_through :browser # Use the default browser stack
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
-    get "/signin/:token/:anonymous_id", SigninController, :signin
+    get "/signin/:token", SigninController, :signin
     get "/signout", SessionController, :signout
   end
 
   scope "/api/public", Cotoami do
-    pipe_through :api_public
+    pipe_through :api
 
     get "/", PublicController, :index
     get "/info", PublicController, :info
+    get "/session", SessionController, :index
+    get "/signin/request/:email", SigninController, :request
   end
 
   scope "/api", Cotoami do
-    pipe_through :api
+    pipe_through [:api, :require_auth]
 
-    get "/session", SessionController, :index
     get "/amishis/email/:email", AmishiController, :show_by_email
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
-    get "/signin/request/:email/:save_anonymous", SigninController, :request
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph

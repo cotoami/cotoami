@@ -6,47 +6,6 @@ defmodule Cotoami.RedisService do
   require Logger
 
   #
-  # Anonymous posts
-  #
-
-  @anonymous_key_expire_seconds 60 * 60 * 24 * 30
-
-  def anonymous_key(anonymous_id), do: "anonymous:" <> anonymous_id
-
-  def get_cotos(anonymous_id) do
-    cotos =
-      case Cotoami.Redix.command(["LRANGE", anonymous_key(anonymous_id), "0", "1000"]) do
-        {:ok, cotos} ->
-          if cotos do
-            Enum.map(cotos, fn coto ->
-              Map.merge(Poison.decode!(coto), %{
-                as_cotonoma: false,
-                cotonoma_key: ""
-              })
-            end)
-          else
-            []
-          end
-        {:error, reason} ->
-          Logger.error "Redis error #{reason}"
-          []
-      end
-    cotos
-  end
-
-  def add_coto(anonymous_id, coto) do
-    coto_as_json = Poison.encode!(coto)
-    count = Cotoami.Redix.command!(["LPUSH", anonymous_key(anonymous_id), coto_as_json])
-    if count == 1 do
-      Cotoami.Redix.command!(["EXPIRE", anonymous_key(anonymous_id), @anonymous_key_expire_seconds])
-    end
-  end
-
-  def clear_cotos(anonymous_id) do
-    Cotoami.Redix.command!(["DEL", anonymous_key(anonymous_id)])
-  end
-
-  #
   # Sign-in keys
   #
 
