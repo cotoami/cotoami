@@ -20,7 +20,7 @@ defaultTimeline =
     , newContent = ""
     , postIdCounter = 0
     , posts = []
-    , loading = True
+    , loading = False
     }
 
 
