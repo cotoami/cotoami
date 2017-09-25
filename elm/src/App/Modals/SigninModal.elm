@@ -47,7 +47,7 @@ requestSignin : String -> Cmd SigninModalMsg.Msg
 requestSignin email =
     let
         url =
-            "/api/signin/request/" ++ email
+            "/api/public/signin/request/" ++ email
     in
         Http.send RequestDone (Http.get url Decode.string)
 
