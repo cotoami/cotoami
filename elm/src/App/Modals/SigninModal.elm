@@ -93,9 +93,6 @@ signinModalConfig model =
                 ]
         , buttons =
             [ button
-                [ class "button close", onClick CloseModal ]
-                [ text "Try it out w/o signing up" ]
-            , button
                 [ class "button button-primary"
                 , disabled (not (validateEmail model.email) || model.requestProcessing)
                 , onClick (AppMsg.SigninModalMsg RequestClick)
@@ -103,7 +100,7 @@ signinModalConfig model =
                 [ if model.requestProcessing then
                     text "Sending..."
                   else
-                    text "OK"
+                    text "Sign in/up"
                 ]
             ]
         }
