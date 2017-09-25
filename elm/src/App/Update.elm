@@ -103,12 +103,15 @@ update msg model =
         -- Fetched
         --
         SessionFetched (Ok session) ->
-            { model
-                | context =
-                    model.context
-                        |> \context -> { context | session = Just session }
-            }
-                ! []
+            { model | context = setSession session model.context }
+                |> (\model ->
+                        case model.route of
+                            CotonomaRoute key ->
+                                loadCotonoma key model
+
+                            _ ->
+                                loadHome model
+                   )
 
         SessionFetched (Err error) ->
             case error of
