@@ -3,7 +3,6 @@ module App.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Exts.Maybe exposing (isNothing)
 import Util.HtmlUtil exposing (faIcon)
 import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
@@ -196,30 +195,25 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
 
 modals : Model -> List (Html Msg)
 modals model =
-    let
-        anyAnonymousCotos =
-            (isNothing model.context.session)
-                && not (List.isEmpty model.timeline.posts)
-    in
-        List.map
-            (\modal ->
-                case modal of
-                    ConfirmModal ->
-                        App.Modals.ConfirmModal.view model.confirmMessage
+    List.map
+        (\modal ->
+            case modal of
+                ConfirmModal ->
+                    App.Modals.ConfirmModal.view model.confirmMessage
 
-                    SigninModal ->
-                        App.Modals.SigninModal.view model.signinModal anyAnonymousCotos
+                SigninModal ->
+                    App.Modals.SigninModal.view model.signinModal
 
-                    ProfileModal ->
-                        App.Modals.ProfileModal.view model.context.session
+                ProfileModal ->
+                    App.Modals.ProfileModal.view model.context.session
 
-                    CotoModal ->
-                        App.Modals.CotoModal.view model.cotoModal
+                CotoModal ->
+                    App.Modals.CotoModal.view model.cotoModal
 
-                    CotonomaModal ->
-                        App.Modals.CotonomaModal.view model.context.session model.cotonomaModal
+                CotonomaModal ->
+                    App.Modals.CotonomaModal.view model.context.session model.cotonomaModal
 
-                    ConnectModal ->
-                        App.Modals.ConnectModal.view model
-            )
-            (List.reverse model.modals)
+                ConnectModal ->
+                    App.Modals.ConnectModal.view model
+        )
+        (List.reverse model.modals)

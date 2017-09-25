@@ -13,7 +13,6 @@ import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 type alias Model =
     { email : String
-    , saveAnonymousCotos : Bool
     , requestProcessing : Bool
     , requestDone : Bool
     }
@@ -22,7 +21,6 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { email = ""
-    , saveAnonymousCotos = False
     , requestProcessing = False
     , requestDone = False
     }
@@ -34,12 +32,9 @@ update msg model =
         EmailInput content ->
             ( { model | email = content }, Cmd.none )
 
-        SaveAnonymousCotosCheck checked ->
-            ( { model | saveAnonymousCotos = checked }, Cmd.none )
-
         RequestClick ->
             { model | requestProcessing = True }
-                ! [ requestSignin model.email model.saveAnonymousCotos ]
+                ! [ requestSignin model.email ]
 
         RequestDone (Ok message) ->
             ( { model | email = "", requestProcessing = False, requestDone = True }, Cmd.none )
@@ -48,30 +43,24 @@ update msg model =
             ( { model | requestProcessing = False }, Cmd.none )
 
 
-requestSignin : String -> Bool -> Cmd SigninModalMsg.Msg
-requestSignin email saveAnonymous =
+requestSignin : String -> Cmd SigninModalMsg.Msg
+requestSignin email =
     let
         url =
-            "/api/signin/request/"
-                ++ email
-                ++ (if saveAnonymous then
-                        "/yes"
-                    else
-                        "/no"
-                   )
+            "/api/signin/request/" ++ email
     in
         Http.send RequestDone (Http.get url Decode.string)
 
 
-view : Model -> Bool -> Html AppMsg.Msg
-view model showAnonymousOption =
-    signinModalConfig model showAnonymousOption
+view : Model -> Html AppMsg.Msg
+view model =
+    signinModalConfig model
         |> Just
         |> Modal.view "signin-modal"
 
 
-signinModalConfig : Model -> Bool -> Modal.Config AppMsg.Msg
-signinModalConfig model showAnonymousOption =
+signinModalConfig : Model -> Modal.Config AppMsg.Msg
+signinModalConfig model =
     (if model.requestDone then
         { closeMessage = CloseModal
         , title = "Check your inbox!"
@@ -100,21 +89,6 @@ signinModalConfig model showAnonymousOption =
                             ]
                             []
                         ]
-                    , (if showAnonymousOption then
-                        div [ class "save-anonymous-cotos-option" ]
-                            [ label []
-                                [ input
-                                    [ type_ "checkbox"
-                                    , onCheck (AppMsg.SigninModalMsg << SaveAnonymousCotosCheck)
-                                    ]
-                                    []
-                                , span [ class "label-body" ]
-                                    [ text "Save the anonymous cotos (posts) into your account" ]
-                                ]
-                            ]
-                       else
-                        div [] []
-                      )
                     ]
                 ]
         , buttons =
