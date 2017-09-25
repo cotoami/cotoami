@@ -135,7 +135,7 @@ defmodule Cotoami.CotoGraphService do
   end
   def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi, %Cotonoma{} = cotonoma) do
     # Pin the source node if it doesn't belong to the graph
-    if Enum.empty? Neo4jService.get_paths(bolt_conn, cotonoma.id, source.id) do
+    if Enum.empty? Neo4jService.get_paths(bolt_conn, cotonoma.coto_id, source.id) do
       pin(bolt_conn, source, cotonoma, amishi)
     end
     do_connect(bolt_conn, source, target, amishi.id, cotonoma.id)
