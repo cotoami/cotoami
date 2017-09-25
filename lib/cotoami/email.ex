@@ -5,7 +5,7 @@ defmodule Cotoami.Email do
 
   use Bamboo.Phoenix, view: Cotoami.EmailView
 
-  def signin_link(email_address, token, anonymous_id, host_url) do
+  def signin_link(email_address, token, host_url) do
     new_email()
     |> to(email_address)
     |> from({"Cotoami", from()})
@@ -13,7 +13,6 @@ defmodule Cotoami.Email do
     |> put_text_layout({Cotoami.LayoutView, "email.text"})
     |> render("signin_link.text",
       token: token,
-      anonymous_id: anonymous_id,
       host_url: host_url)
   end
 

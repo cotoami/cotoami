@@ -1,7 +1,5 @@
 Here’s the link you requested to get into Cotoami:
 
-<%= @host_url %>/signin/<%= @token %>/<%= @anonymous_id %>
+<%= @host_url %>/signin/<%= @token %>
 
 For your security, this link expires in 10 minutes and can only be used once.
-
-NOTE: Cotoami is still in an experimental phase, so this account is for trial & demo purpose only.

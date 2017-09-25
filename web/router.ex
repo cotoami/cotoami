@@ -31,7 +31,7 @@ defmodule Cotoami.Router do
     pipe_through :browser # Use the default browser stack
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
-    get "/signin/:token/:anonymous_id", SigninController, :signin
+    get "/signin/:token", SigninController, :signin
     get "/signout", SessionController, :signout
   end
 
@@ -50,7 +50,7 @@ defmodule Cotoami.Router do
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
-    get "/signin/request/:email/:save_anonymous", SigninController, :request
+    get "/signin/request/:email", SigninController, :request
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph

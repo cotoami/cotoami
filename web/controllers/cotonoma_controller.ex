@@ -5,8 +5,6 @@ defmodule Cotoami.CotonomaController do
 
   plug :scrub_params, "cotonoma" when action in [:create]
 
-  # TODO: check if amishi exists
-
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end

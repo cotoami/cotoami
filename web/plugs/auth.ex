@@ -7,25 +7,17 @@ defmodule Cotoami.Auth do
   require Logger
   alias Cotoami.AmishiService
 
-  @cookie_for_anonymous_id "cotoami_anonymous_id"
-  @anonymous_max_age 60 * 60 * 24 * 365 * 10
   @session_key_amishi_id :amishi_id
+  @assign_key_amishi :amishi
 
   def init(options) do
     options
   end
 
   def call(conn, _opts) do
-    cond do
-      amishi = get_amishi_from_session(conn) ->
-        assign_amishi(conn, amishi)
-      anonymous_id = get_anonymous_id(conn) ->
-        assign_anonymous_id(conn, anonymous_id)
-      true ->
-        new_id = generate_anonymous_id()
-        conn
-        |> put_resp_cookie(@cookie_for_anonymous_id, new_id, max_age: @anonymous_max_age)
-        |> assign_anonymous_id(new_id)
+    case get_amishi_from_session(conn) do
+      nil -> conn
+      amishi -> assign_amishi(conn, amishi)
     end
   end
 
@@ -39,25 +31,21 @@ defmodule Cotoami.Auth do
 
   defp assign_amishi(conn, amishi) do
     Logger.info "assign_amishi: #{inspect amishi}"
-    Logger.metadata(user_token: amishi.email)
-    assign(conn, :amishi, amishi)
-  end
-
-  def get_anonymous_id(conn) do
-    conn.cookies[@cookie_for_anonymous_id]
-  end
-
-  defp generate_anonymous_id do
-    30 |> :crypto.strong_rand_bytes() |> Base.hex_encode32(case: :lower)
-  end
-
-  defp assign_anonymous_id(conn, anonymous_id) do
-    Logger.info "assign_anonymous_id: #{anonymous_id}"
-    Logger.metadata(user_token: anonymous_id)
-    assign(conn, :anonymous_id, anonymous_id)
+    Logger.metadata(user_token: (if amishi, do: amishi.email, else: nil))
+    assign(conn, @assign_key_amishi, amishi)
   end
 
   def start_session(conn, amishi) do
     conn |> put_session(@session_key_amishi_id, amishi.id)
+  end
+
+  def require_auth(conn, _opts) do
+    if conn.assigns[@assign_key_amishi] do
+      conn
+    else
+      conn
+      |> send_resp(:unauthorized, "")
+      |> halt()
+    end
   end
 end
