@@ -13,6 +13,7 @@ import App.Types.Coto
         , validateCotonomaName
         )
 import App.Markdown
+import App.Types.Session exposing (Session)
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
@@ -56,23 +57,26 @@ update msg model =
                 ! []
 
 
-view : Maybe Model -> Html AppMsg.Msg
-view maybeModel =
+view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
+view maybeSession maybeModel =
     maybeModel
-        |> Maybe.map modalConfig
+        |> Maybe.andThen
+            (\model ->
+                maybeSession |> Maybe.map (\session -> modalConfig session model)
+            )
         |> Modal.view "coto-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
+modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig session model =
     if model.coto.asCotonoma then
-        cotonomaModalConfig model
+        cotonomaModalConfig session model
     else
-        cotoModalConfig model
+        cotoModalConfig session model
 
 
-cotoModalConfig : Model -> Modal.Config AppMsg.Msg
-cotoModalConfig model =
+cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
+cotoModalConfig session model =
     { closeMessage = CloseModal
     , title = "Coto"
     , content =
@@ -101,16 +105,19 @@ cotoModalConfig model =
                 [ text "Save" ]
             ]
         else
-            [ editButton
-            , button
-                [ class "button" , onClick ConfirmDeleteCoto ]
-                [ text "Delete" ]
-            ]
+            if checkWritePermission session model then
+                [ editButton
+                , button
+                    [ class "button", onClick ConfirmDeleteCoto ]
+                    [ text "Delete" ]
+                ]
+            else
+                []
     }
 
 
-cotonomaModalConfig : Model -> Modal.Config AppMsg.Msg
-cotonomaModalConfig model =
+cotonomaModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
+cotonomaModalConfig session model =
     { closeMessage = CloseModal
     , title = "Cotonoma"
     , content =
@@ -144,8 +151,10 @@ cotonomaModalConfig model =
                 [ text "Save" ]
             ]
         else
-            [ editButton
-            ]
+            if checkWritePermission session model then
+                [ editButton ]
+            else
+                []
     }
 
 
@@ -161,3 +170,8 @@ editButton =
     button
         [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
         [ text "Edit" ]
+
+
+checkWritePermission : Session -> Model -> Bool
+checkWritePermission session model =
+    (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
