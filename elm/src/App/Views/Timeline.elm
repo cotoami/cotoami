@@ -5,7 +5,6 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events
 import Html.Events exposing (..)
-import Html.Lazy exposing (lazy2)
 import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
@@ -27,26 +26,23 @@ view : Context -> Graph -> Timeline -> Html Msg
 view context graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
         [ timelineDiv context graph model
-        , lazy2 newPostEditor context model
+        , case context.session of
+            Nothing ->
+                div [] []
+
+            Just session ->
+                postEditor session context model
         ]
 
 
-newPostEditor : Context -> Timeline -> Html Msg
-newPostEditor context model =
+postEditor : Session -> Context -> Timeline -> Html Msg
+postEditor session context model =
     div [ id "new-coto" ]
         [ div [ class "toolbar", hidden (not model.editingNew) ]
-            [ (case context.session of
-                  Nothing ->
-                      span [ class "user anonymous" ]
-                          [ i [ class "material-icons" ] [ text "perm_identity" ]
-                          , text "Anonymous"
-                          ]
-                  Just session ->
-                      span [ class "user session" ]
-                          [ img [ class "avatar", src session.avatarUrl ] []
-                          , span [ class "name" ] [ text session.displayName ]
-                          ]
-              )
+            [ span [ class "user session" ]
+                [ img [ class "avatar", src session.avatarUrl ] []
+                , span [ class "name" ] [ text session.displayName ]
+                ]
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then
                     span [] []
@@ -102,31 +98,41 @@ timelineDiv context graph model =
 getKey : Post -> String
 getKey post =
     case post.cotoId of
-        Just cotoId -> toString cotoId
+        Just cotoId ->
+            toString cotoId
+
         Nothing ->
             case post.postId of
-                Just postId -> toString postId
-                Nothing -> ""
+                Just postId ->
+                    toString postId
+
+                Nothing ->
+                    ""
 
 
 postDiv : Context -> Graph -> Post -> Html Msg
 postDiv context graph post =
     let
-        elementId = "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
+        elementId =
+            "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (App.Views.Coto.cotoClassList context elementId post.cotoId
+            (App.Views.Coto.cotoClassList context
+                elementId
+                post.cotoId
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
-                ] ::
-                    (case post.cotoId of
-                        Nothing -> []
+                ]
+                :: (case post.cotoId of
+                        Nothing ->
+                            []
+
                         Just cotoId ->
                             [ onClick (CotoClick elementId cotoId)
                             , onMouseEnter (CotoMouseEnter elementId cotoId)
                             , onMouseLeave (CotoMouseLeave elementId cotoId)
                             ]
-                    )
+                   )
             )
             [ div
                 [ class "coto-inner" ]
@@ -143,6 +149,7 @@ headerDiv maybeCotonoma graph post =
     case toCoto post of
         Nothing ->
             div [ class "coto-header" ] []
+
         Just coto ->
             App.Views.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
 
@@ -150,10 +157,14 @@ headerDiv maybeCotonoma graph post =
 authorDiv : Maybe Session -> Post -> Html Msg
 authorDiv maybeSession post =
     case maybeSession of
-        Nothing -> span [] []
+        Nothing ->
+            span [] []
+
         Just session ->
             case post.amishi of
-                Nothing -> span [] []
+                Nothing ->
+                    span [] []
+
                 Just author ->
                     if author.id == session.id then
                         span [] []
@@ -188,20 +199,22 @@ bodyDiv context graph post =
 markdown : String -> Html Msg
 markdown markdownText =
     markdownText
-    |> Block.parse (Just App.Markdown.markdownOptions)
-    |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
-    |> List.concat
-    |> div [ class "content" ]
+        |> Block.parse (Just App.Markdown.markdownOptions)
+        |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
+        |> List.concat
+        |> div [ class "content" ]
 
 
 customHtmlInline : Inline i -> Html Msg
 customHtmlInline inline =
     case inline of
         Image source maybeTitle inlines ->
-            img [ src source
+            img
+                [ src source
                 , title (Maybe.withDefault "" maybeTitle)
                 , onLoad ImageLoaded
-                ] (List.map customHtmlInline inlines)
+                ]
+                (List.map customHtmlInline inlines)
 
         _ ->
             App.Markdown.customHtmlInline inline
