@@ -132,6 +132,7 @@ bodyDiv context graph coto =
         }
         { cotoId = Just coto.id
         , content = coto.content
+        , amishi = coto.amishi
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }

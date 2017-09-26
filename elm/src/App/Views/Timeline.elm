@@ -191,6 +191,7 @@ bodyDiv context graph post =
         }
         { cotoId = post.cotoId
         , content = post.content
+        , amishi = post.amishi
         , asCotonoma = post.asCotonoma
         , cotonomaKey = post.cotonomaKey
         }

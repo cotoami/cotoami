@@ -131,18 +131,22 @@ div.coto.selectable {
   }
 }
 
-div.coto-as-cotonoma {
-  a {
-    text-decoration: none;
+a.cotonoma-link {
+  text-decoration: none;
 
-    i {
-      vertical-align: middle;
-    }
+  img.avatar {
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 3px;
+    border-radius: 4px;
+    vertical-align: middle;
+  }
 
-    span.cotonoma-name {
-      margin-left: 3px;
-      vertical-align: middle;
-      font-weight: bold;
-    }
+  span.cotonoma-name {
+    margin-left: 3px;
+    vertical-align: middle;
+    font-weight: bold;
   }
 }
