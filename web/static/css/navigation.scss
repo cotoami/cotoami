@@ -1,3 +1,5 @@
+@import 'variables';
+
 #navigation-content {
   div.navigation-title {
     margin-bottom: 4px;
@@ -40,6 +42,10 @@
   a.traverse-cotonoma {
     display: none;
     margin-left: 5px;
+
+    @media (#{$narrow-viewport}) {
+      margin-left: 10px;
+    }
 
     i {
       font-size: 20px;
