@@ -5,7 +5,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Coto exposing (Cotonoma)
-import App.Messages exposing (Msg(CotonomaClick))
+import App.Messages exposing (Msg(CotonomaClick, OpenTraversal))
 
 
 view : List Cotonoma -> Html Msg
@@ -34,6 +34,7 @@ cotonomaDiv cotonoma =
         , a
             [ class "tool-button traverse-cotonoma"
             , title "Traverse from this cotonoma"
+            , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
             ]
             [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
         ]
