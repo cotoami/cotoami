@@ -3,10 +3,11 @@ module App.Views.Cotonomas exposing (..)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
-import Util.EventUtil exposing (onLinkButtonClick)
+import Html.Events exposing (..)
+import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
-import App.Messages exposing (Msg(CotonomaClick, OpenTraversal))
+import App.Messages exposing (Msg(..))
 
 
 view : Context -> String -> List Cotonoma -> Html Msg
@@ -36,6 +37,9 @@ cotonomaDiv context listTitle cotonoma =
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
                 , ( "selected", isSelected (Just cotonoma.cotoId) context )
                 ]
+            , onClickWithoutPropagation (CotoClick elementId cotonoma.cotoId)
+            , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)
+            , onMouseLeave (CotoMouseLeave elementId cotonoma.cotoId)
             ]
             [ a
                 [ href ("/cotonomas/" ++ cotonoma.key)

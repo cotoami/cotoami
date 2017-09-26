@@ -48,6 +48,7 @@
 
   div.coto-as-cotonoma {
     border: 2px solid #fff;
+    padding: 1px;
 
     &.coto-focus {
       border: 2px solid #ffdd33;
@@ -57,7 +58,7 @@
       border: 2px solid #ffa500 !important;
     }
 
-    &:hover a.traverse-cotonoma {
+    &.element-focus a.traverse-cotonoma {
       display: inline;
     }
   }
