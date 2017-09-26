@@ -46,7 +46,19 @@
     }
   }
 
-  div.coto-as-cotonoma:hover a.traverse-cotonoma {
-    display: inline;
+  div.coto-as-cotonoma {
+    border: 2px solid #fff;
+
+    &.coto-focus {
+      border: 2px solid #ffdd33;
+    }
+
+    &.selected {
+      border: 2px solid #ffa500 !important;
+    }
+
+    &:hover a.traverse-cotonoma {
+      display: inline;
+    }
   }
 }
