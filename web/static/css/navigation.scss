@@ -53,15 +53,15 @@
   }
 
   div.coto-as-cotonoma {
+    margin-bottom: 1px;
     border: 2px solid #fff;
-    padding: 1px;
 
     &.coto-focus {
-      border: 2px solid #ffdd33;
+      border: 2px solid #fd3;
     }
 
     &.selected {
-      border: 2px solid #ffa500 !important;
+      border: 2px solid #ffa500;
     }
 
     &.element-focus a.traverse-cotonoma {
