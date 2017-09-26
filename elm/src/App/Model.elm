@@ -10,7 +10,7 @@ import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
-import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
+import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal
@@ -88,12 +88,20 @@ initModel seed route =
 
 getCoto : CotoId -> Model -> Maybe Coto
 getCoto cotoId model =
-    case Dict.get cotoId model.graph.cotos of
-        Nothing ->
-            App.Types.Timeline.getCoto cotoId model.timeline
+    Exts.Maybe.oneOf
+        [ Dict.get cotoId model.graph.cotos
+        , App.Types.Timeline.getCoto cotoId model.timeline
+        , getCotoFromCotonomaList cotoId model.recentCotonomas
+        , getCotoFromCotonomaList cotoId model.subCotonomas
+        ]
 
-        Just coto ->
-            Just coto
+
+getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
+getCotoFromCotonomaList cotoId cotonomas =
+    cotonomas
+        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
+        |> List.head
+        |> Maybe.map App.Types.Coto.toCoto
 
 
 updateCotoContent : CotoId -> String -> Model -> Model
@@ -153,8 +161,8 @@ getOwnerAndMembers model =
                     owner :: model.members
 
 
-openTraversal : Description -> CotoId -> Model -> Model
-openTraversal description cotoId model =
+openTraversal : CotoId -> Model -> Model
+openTraversal cotoId model =
     { model
         | graph =
             if App.Types.Graph.member cotoId model.graph then
@@ -167,10 +175,7 @@ openTraversal description cotoId model =
                     Just coto ->
                         App.Types.Graph.addCoto coto model.graph
         , traversals =
-            App.Types.Traversal.openTraversal
-                description
-                cotoId
-                model.traversals
+            App.Types.Traversal.openTraversal cotoId model.traversals
         , activeViewOnMobile = TraversalsView
     }
 

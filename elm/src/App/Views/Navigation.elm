@@ -6,6 +6,7 @@ import Html.Keyed
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.MemberPresences exposing (MemberPresences, isPresent)
+import App.Types.Context exposing (Context)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg)
 import App.Views.Cotonomas
@@ -21,10 +22,10 @@ view model =
             Just cotonoma ->
                 cotonomaNav model.memberPresences model.members cotonoma
         , if not (List.isEmpty model.subCotonomas) then
-            subCotonomasNav model.subCotonomas
+            subCotonomasNav model.context model.subCotonomas
           else
             div [] []
-        , recentCotonomasNav model.recentCotonomas
+        , recentCotonomasNav model.context model.recentCotonomas
         ]
     ]
 
@@ -70,17 +71,17 @@ cotonomaNav memberPresences members cotonoma =
         ]
 
 
-subCotonomasNav : List Cotonoma -> Html Msg
-subCotonomasNav cotonomas =
+subCotonomasNav : Context -> List Cotonoma -> Html Msg
+subCotonomasNav context cotonomas =
     div [ class "sub" ]
         [ div [ class "navigation-title" ] [ text "Sub" ]
-        , App.Views.Cotonomas.view cotonomas
+        , App.Views.Cotonomas.view context "sub-cotonomas" cotonomas
         ]
 
 
-recentCotonomasNav : List Cotonoma -> Html Msg
-recentCotonomasNav cotonomas =
+recentCotonomasNav : Context -> List Cotonoma -> Html Msg
+recentCotonomasNav context cotonomas =
     div [ class "recent" ]
         [ div [ class "navigation-title" ] [ text "Recent" ]
-        , App.Views.Cotonomas.view cotonomas
+        , App.Views.Cotonomas.view context "recent-cotonomas" cotonomas
         ]

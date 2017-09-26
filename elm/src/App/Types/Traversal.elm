@@ -4,14 +4,8 @@ import Dict
 import App.Types.Coto exposing (CotoId)
 
 
-type Description
-    = Connected
-    | Opened
-
-
 type alias Traversal =
-    { description : Description
-    , start : CotoId
+    { start : CotoId
     , steps : List CotoId
     }
 
@@ -23,10 +17,9 @@ type alias Traverse =
     }
 
 
-initTraversal : Description -> CotoId -> Traversal
-initTraversal description start =
-    { description = description
-    , start = start
+initTraversal : CotoId -> Traversal
+initTraversal start =
+    { start = start
     , steps = []
     }
 
@@ -82,10 +75,10 @@ size traversals =
     Dict.size traversals.entries
 
 
-openTraversal : Description -> CotoId -> Traversals -> Traversals
-openTraversal description cotoId traversals =
+openTraversal : CotoId -> Traversals -> Traversals
+openTraversal cotoId traversals =
     { traversals
-    | entries = Dict.insert cotoId (initTraversal description cotoId) traversals.entries
+    | entries = Dict.insert cotoId (initTraversal cotoId) traversals.entries
     , order =
         traversals.order
         |> List.filter (\id -> id /= cotoId)

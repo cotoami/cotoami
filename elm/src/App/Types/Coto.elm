@@ -52,6 +52,17 @@ type alias Cotonoma =
     }
 
 
+toCoto : Cotonoma -> Coto
+toCoto cotonoma =
+    Coto
+        cotonoma.cotoId
+        cotonoma.name
+        cotonoma.owner
+        Nothing
+        True
+        (Just cotonoma.key)
+
+
 cotonomaNameMaxlength : Int
 cotonomaNameMaxlength =
     30

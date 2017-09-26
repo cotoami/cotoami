@@ -1,21 +1,23 @@
+@import 'variables';
+
 #navigation-content {
   div.navigation-title {
     margin-bottom: 4px;
     color: #ccc;
     font-weight: bold;
   }
-  
+
   div.members {
     margin-bottom: 20px;
-    
+
     div.member {
       opacity: 0.3;
       margin-bottom: 5px;
-      
+
       &.online {
         opacity: 1;
       }
-      
+
       img.avatar {
         margin: 0;
         padding: 0;
@@ -25,15 +27,45 @@
         border-radius: 4px;
         vertical-align: middle;
       }
-      
+
       span.name {
         color: #666;
         font-weight: bold;
       }
     }
   }
-  
+
   div.sub {
     margin-bottom: 20px;
+  }
+
+  a.traverse-cotonoma {
+    display: none;
+    margin-left: 5px;
+
+    @media (#{$narrow-viewport}) {
+      margin-left: 10px;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  div.coto-as-cotonoma {
+    margin-bottom: 1px;
+    border: 2px solid #fff;
+
+    &.coto-focus {
+      border: 2px solid #fd3;
+    }
+
+    &.selected {
+      border: 2px solid #ffa500;
+    }
+
+    &.element-focus a.traverse-cotonoma {
+      display: inline;
+    }
   }
 }
