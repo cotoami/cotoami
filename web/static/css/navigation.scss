@@ -4,18 +4,18 @@
     color: #ccc;
     font-weight: bold;
   }
-  
+
   div.members {
     margin-bottom: 20px;
-    
+
     div.member {
       opacity: 0.3;
       margin-bottom: 5px;
-      
+
       &.online {
         opacity: 1;
       }
-      
+
       img.avatar {
         margin: 0;
         padding: 0;
@@ -25,15 +25,28 @@
         border-radius: 4px;
         vertical-align: middle;
       }
-      
+
       span.name {
         color: #666;
         font-weight: bold;
       }
     }
   }
-  
+
   div.sub {
     margin-bottom: 20px;
+  }
+
+  a.traverse-cotonoma {
+    display: none;
+    margin-left: 5px;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  div.coto-as-cotonoma:hover a.traverse-cotonoma {
+    display: inline;
   }
 }

@@ -15,17 +15,25 @@ view cotonomas =
         [ class "cotonomas" ]
         (List.map
             (\cotonoma ->
-                ( toString cotonoma.id
-                , div [ class "coto-as-cotonoma" ]
-                    [ a
-                        [ href ("/cotonomas/" ++ cotonoma.key)
-                        , onLinkButtonClick (CotonomaClick cotonoma.key)
-                        ]
-                        [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                        , span [ class "cotonoma-name" ] [ text cotonoma.name ]
-                        ]
-                    ]
-                )
+                ( toString cotonoma.id, cotonomaDiv cotonoma )
             )
             cotonomas
         )
+
+
+cotonomaDiv : Cotonoma -> Html Msg
+cotonomaDiv cotonoma =
+    div [ class "coto-as-cotonoma" ]
+        [ a
+            [ href ("/cotonomas/" ++ cotonoma.key)
+            , onLinkButtonClick (CotonomaClick cotonoma.key)
+            ]
+            [ i [ class "material-icons" ] [ text "exit_to_app" ]
+            , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+            ]
+        , a
+            [ class "tool-button traverse-cotonoma"
+            , title "Traverse from this cotonoma"
+            ]
+            [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+        ]
