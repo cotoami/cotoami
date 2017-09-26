@@ -10,7 +10,7 @@ import App.Types.Amishi exposing (Amishi, AmishiId)
 import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
-import App.Types.Traversal exposing (Description, Traversals, defaultTraversals)
+import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
 import App.Modals.CotonomaModal
@@ -153,8 +153,8 @@ getOwnerAndMembers model =
                     owner :: model.members
 
 
-openTraversal : Description -> CotoId -> Model -> Model
-openTraversal description cotoId model =
+openTraversal : CotoId -> Model -> Model
+openTraversal cotoId model =
     { model
         | graph =
             if App.Types.Graph.member cotoId model.graph then
@@ -167,10 +167,7 @@ openTraversal description cotoId model =
                     Just coto ->
                         App.Types.Graph.addCoto coto model.graph
         , traversals =
-            App.Types.Traversal.openTraversal
-                description
-                cotoId
-                model.traversals
+            App.Types.Traversal.openTraversal cotoId model.traversals
         , activeViewOnMobile = TraversalsView
     }
 
