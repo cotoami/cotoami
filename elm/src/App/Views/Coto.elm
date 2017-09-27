@@ -319,6 +319,13 @@ cotonomaLink cotonomaClick maybeOwner cotonomaKey name =
         , href ("/cotonomas/" ++ cotonomaKey)
         , onLinkButtonClick (cotonomaClick cotonomaKey)
         ]
+        [ cotonomaLabel maybeOwner name ]
+
+
+cotonomaLabel : Maybe Amishi -> String -> Html msg
+cotonomaLabel maybeOwner name =
+    span
+        [ class "cotonoma-label" ]
         [ case maybeOwner of
             Nothing ->
                 span [] []
