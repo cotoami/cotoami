@@ -8,8 +8,9 @@ defmodule Cotoami.CotoGraphService do
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
   alias Cotoami.{
-    Repo, Coto, Amishi, Cotonoma, Neo4jService, CotoGraph, AmishiView,
-    CotonomaView
+    Repo, Coto, Amishi, Cotonoma, CotoGraph,
+    Neo4jService, AmishiService,
+    AmishiView, CotonomaView
   }
 
   @label_amishi "Amishi"
@@ -66,39 +67,43 @@ defmodule Cotoami.CotoGraphService do
           %{graph | connections: connections}
         end
       end)
-    |> (fn(graph) -> %{graph | cotos: set_relations(graph.cotos)} end).()
+    |> (fn(graph) -> %{graph | cotos: complement_relations(graph.cotos)} end).()
   end
 
-  defp set_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
-    amishis =
+  defp complement_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
+    id_to_amishi_json =
       id_to_coto_nodes
       |> Map.values()
       |> Enum.map(&(&1["amishi_id"]))
-      |> to_id_model_map(Amishi, &(View.render_one &1, AmishiView, "amishi.json"))
-    cotonomas =
+      |> get_structs_by_ids(Amishi)
+      |> Enum.map(&(AmishiService.append_gravatar_profile(&1)))
+      |> Enum.map(&({&1.id, View.render_one(&1, AmishiView, "amishi.json")}))
+      |> Map.new()
+
+    id_to_cotonoma_json =
       id_to_coto_nodes
       |> Map.values()
       |> Enum.map(&(&1["posted_in_id"]))
-      |> to_id_model_map(Cotonoma, &(View.render_one &1, CotonomaView, "cotonoma.json"))
+      |> get_structs_by_ids(Cotonoma)
+      |> Enum.map(&({&1.id, View.render_one(&1, CotonomaView, "cotonoma.json")}))
+      |> Map.new()
+
     id_to_coto_nodes
     |> Enum.map(fn({id, node}) ->
         {id,
           node
-          |> Map.put("amishi", amishis[node["amishi_id"]])
-          |> Map.put("posted_in", cotonomas[node["posted_in_id"]])
+          |> Map.put("amishi", id_to_amishi_json[node["amishi_id"]])
+          |> Map.put("posted_in", id_to_cotonoma_json[node["posted_in_id"]])
         }
       end)
     |> Map.new()
   end
 
-  defp to_id_model_map(ids, queryable, to_json) do
+  defp get_structs_by_ids(ids, struct_name) do
     ids
-    |> Enum.filter(&(&1))
+    |> Enum.filter(&(&1))   # filter out nil IDs
     |> Enum.uniq()
-    |> (fn(ids) -> Repo.all(from q in queryable, where: q.id in ^ids) end).()
-    |> Enum.filter(&(&1))
-    |> Enum.map(&({&1.id, to_json.(&1)}))
-    |> Map.new()
+    |> (fn(ids) -> Repo.all(from q in struct_name, where: q.id in ^ids) end).()
   end
 
   def pin(bolt_conn, %Coto{} = coto, %Amishi{} = amishi) do
