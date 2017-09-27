@@ -487,8 +487,7 @@ update msg model =
         PostCotonoma ->
             model.timeline
                 |> postContent
-                    model.context.clientId
-                    model.context.cotonoma
+                    model.context
                     True
                     model.cotonomaModal.name
                 |> \( timeline, _ ) ->
@@ -807,7 +806,7 @@ post maybeDirection model =
                     PostedAndConnect
     in
         model.timeline
-            |> postContent clientId cotonoma False newContent
+            |> postContent model.context False newContent
             |> \( timeline, newPost ) ->
                 { model
                     | timeline = timeline

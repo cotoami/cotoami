@@ -3,6 +3,8 @@ module App.Types.Timeline exposing (..)
 import Maybe exposing (andThen)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, defaultPost, toCoto, isSelfOrPostedIn)
+import App.Types.Context exposing (Context)
+import App.Types.Session
 
 
 type alias Timeline =
@@ -97,8 +99,8 @@ setBeingDeleted coto timeline =
         timeline
 
 
-postContent : String -> Maybe Cotonoma -> Bool -> String -> Timeline -> ( Timeline, Post )
-postContent clientId maybeCotonoma asCotonoma content timeline =
+postContent : Context -> Bool -> String -> Timeline -> ( Timeline, Post )
+postContent context asCotonoma content timeline =
     let
         postId =
             timeline.postIdCounter + 1
@@ -106,8 +108,9 @@ postContent clientId maybeCotonoma asCotonoma content timeline =
         { defaultPost
             | postId = Just postId
             , content = content
+            , amishi = Maybe.map App.Types.Session.toAmishi context.session
             , asCotonoma = asCotonoma
-            , postedIn = maybeCotonoma
+            , postedIn = context.cotonoma
         }
             |> \newPost ->
                 ( { timeline

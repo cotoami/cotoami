@@ -6,7 +6,8 @@ defmodule Cotoami.CotoService do
   require Logger
   import Ecto.Query
   alias Cotoami.{
-    Repo, Coto, Cotonoma, Amishi, CotonomaService, CotoGraphService
+    Repo, Coto, Cotonoma, Amishi,
+    CotonomaService, CotoGraphService
   }
   alias Cotoami.Exceptions.InvalidOperation
 
@@ -23,12 +24,13 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
-  def get_cotos_by_amishi(amishi_id) do
+  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi) do
     Coto
     |> Coto.for_amishi(amishi_id)
-    |> preload([:amishi, :posted_in, :cotonoma])
+    |> preload([:posted_in, :cotonoma])
     |> limit(100)
     |> Repo.all
+    |> Enum.map(&(%{&1 | :amishi => amishi}))
   end
 
   def create!(cotonoma_id_nillable, amishi_id, content) do

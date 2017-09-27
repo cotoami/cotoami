@@ -10,6 +10,7 @@ import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon)
 import App.Markdown
 import App.Types.Context exposing (Context, isSelected)
+import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasChildren)
 import App.Messages exposing (..)
@@ -58,6 +59,7 @@ headerDiv cotonomaClick maybeCotonoma graph coto =
 type alias BodyModel =
     { cotoId : Maybe CotoId
     , content : String
+    , amishi : Maybe Amishi
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     }
@@ -104,27 +106,12 @@ bodyDivWithConfig context graph config model =
             Just cotoId ->
                 toolButtonsSpan context graph config model.asCotonoma cotoId
           )
-        , if model.asCotonoma then
-            let
-                content =
-                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                    , span [ class "cotonoma-name" ] [ text model.content ]
-                    ]
-            in
-                div [ class "coto-as-cotonoma" ]
-                    [ case model.cotonomaKey of
-                        Nothing ->
-                            span [] content
+        , case model.cotonomaKey of
+            Nothing ->
+                config.markdown model.content
 
-                        Just cotonomaKey ->
-                            a
-                                [ href ("/cotonomas/" ++ cotonomaKey)
-                                , onLinkButtonClick (config.cotonomaClick cotonomaKey)
-                                ]
-                                content
-                    ]
-          else
-            config.markdown model.content
+            Just cotonomaKey ->
+                cotonomaLink config.cotonomaClick model.amishi cotonomaKey model.content
         ]
 
 
@@ -136,6 +123,7 @@ bodyDiv maybeConnection context graph coto =
         (defaultBodyConfig maybeConnection coto)
         { cotoId = Just coto.id
         , content = coto.content
+        , amishi = coto.amishi
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
         }
@@ -322,3 +310,27 @@ subCotoDiv context graph parentElementId parentCotoId coto =
                 , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
                 ]
             ]
+
+
+cotonomaLink : (CotonomaKey -> msg) -> Maybe Amishi -> CotonomaKey -> String -> Html msg
+cotonomaLink cotonomaClick maybeOwner cotonomaKey name =
+    a
+        [ class "cotonoma-link"
+        , href ("/cotonomas/" ++ cotonomaKey)
+        , onLinkButtonClick (cotonomaClick cotonomaKey)
+        ]
+        [ cotonomaLabel maybeOwner name ]
+
+
+cotonomaLabel : Maybe Amishi -> String -> Html msg
+cotonomaLabel maybeOwner name =
+    span
+        [ class "cotonoma-label" ]
+        [ case maybeOwner of
+            Nothing ->
+                span [] []
+
+            Just owner ->
+                img [ class "avatar", src owner.avatarUrl ] []
+        , span [ class "cotonoma-name" ] [ text name ]
+        ]

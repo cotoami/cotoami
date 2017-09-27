@@ -15,6 +15,7 @@ import App.Types.Coto
 import App.Markdown
 import App.Types.Session exposing (Session)
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
+import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
 
@@ -136,9 +137,7 @@ cotonomaModalConfig session model =
                     ]
               else
                 div [ class "cotonoma" ]
-                    [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                    , span [ class "cotonoma-name" ] [ text model.coto.content ]
-                    ]
+                    [ cotonomaLabel model.coto.amishi model.coto.content ]
             ]
     , buttons =
         if model.editing then

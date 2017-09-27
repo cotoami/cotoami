@@ -8,6 +8,7 @@ import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
 import App.Messages exposing (Msg(..))
+import App.Views.Coto
 
 
 view : Context -> String -> List Cotonoma -> Html Msg
@@ -31,7 +32,8 @@ cotonomaDiv context listTitle cotonoma =
         elementId =
             listTitle ++ cotonoma.cotoId
     in
-        div [ classList
+        div
+            [ classList
                 [ ( "coto-as-cotonoma", True )
                 , ( "element-focus", Just elementId == context.elementFocus )
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
@@ -41,13 +43,11 @@ cotonomaDiv context listTitle cotonoma =
             , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)
             , onMouseLeave (CotoMouseLeave elementId cotonoma.cotoId)
             ]
-            [ a
-                [ href ("/cotonomas/" ++ cotonoma.key)
-                , onLinkButtonClick (CotonomaClick cotonoma.key)
-                ]
-                [ i [ class "material-icons" ] [ text "exit_to_app" ]
-                , span [ class "cotonoma-name" ] [ text cotonoma.name ]
-                ]
+            [ App.Views.Coto.cotonomaLink
+                CotonomaClick
+                cotonoma.owner
+                cotonoma.key
+                cotonoma.name
             , a
                 [ class "tool-button traverse-cotonoma"
                 , title "Traverse from this cotonoma"

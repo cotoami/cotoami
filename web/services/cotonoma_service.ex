@@ -5,7 +5,7 @@ defmodule Cotoami.CotonomaService do
 
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
-  alias Cotoami.{Repo, Coto, Cotonoma, Member, AmishiService}
+  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, Member, AmishiService}
 
   def create!(cotonoma_id_nillable, amishi_id, name, member_params \\ []) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
@@ -135,7 +135,7 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(&AmishiService.append_gravatar_profile(&1))
   end
 
-  def get_cotos(key, amishi_id) do
+  def get_cotos(key, %Amishi{id: amishi_id} = amishi) do
     case get_by_key(key, amishi_id) do
       nil -> nil
       cotonoma ->
@@ -146,19 +146,21 @@ defmodule Cotoami.CotonomaService do
             |> preload([:amishi, :posted_in, :cotonoma])
             |> limit(100)
             |> Repo.all
-            |> Enum.map(fn(coto) ->
-              if coto.amishi.id != amishi_id do
-                another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
-                %{coto | :amishi => another_amishi}
-              else
-                coto
-              end
-            end)
+            |> Enum.map(&(complement_gravatar(&1, amishi)))
           members = get_members(cotonoma.id)
           {cotos, cotonoma, members}
         else
           nil
         end
+    end
+  end
+
+  defp complement_gravatar(coto, %Amishi{id: amishi_id} = amishi) do
+    if coto.amishi.id == amishi_id do
+      %{coto | :amishi => amishi}
+    else
+      another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
+      %{coto | :amishi => another_amishi}
     end
   end
 end
