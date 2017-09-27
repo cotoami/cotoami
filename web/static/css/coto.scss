@@ -137,18 +137,18 @@ a.cotonoma-link {
 
 span.cotonoma-label {
   img.avatar {
-    margin: 0;
-    padding: 0;
     width: 20px;
     height: 20px;
+    padding: 0;
+    margin: 0;
     margin-right: 3px;
-    border-radius: 4px;
     vertical-align: middle;
+    border-radius: 4px;
   }
 
   span.cotonoma-name {
     margin-left: 3px;
-    vertical-align: middle;
     font-weight: bold;
+    vertical-align: middle;
   }
 }
