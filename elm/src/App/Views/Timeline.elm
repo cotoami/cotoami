@@ -137,7 +137,10 @@ postDiv context graph post =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context.cotonoma graph post
-                , authorDiv context.session post
+                , if post.asCotonoma then
+                    div [] []
+                  else
+                    authorDiv context.session post
                 , bodyDiv context graph post
                 , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
                 ]
