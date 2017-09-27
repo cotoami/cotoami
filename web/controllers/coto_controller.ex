@@ -10,7 +10,7 @@ defmodule Cotoami.CotoController do
   end
 
   def index(conn, _params, amishi) do
-    cotos = CotoService.get_cotos_by_amishi(amishi.id)
+    cotos = CotoService.get_cotos_by_amishi(amishi)
     render(conn, "index.json", %{rows: cotos})
   end
 

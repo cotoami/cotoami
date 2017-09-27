@@ -10,14 +10,19 @@ defmodule Cotoami.AmishiService do
   @gravatar_user_agent "Cotoami"
 
   def get(id) do
-    Amishi |> Repo.get(id)
+    Amishi
+    |> Repo.get(id)
+    |> append_gravatar_profile()
   end
 
   def get_by_email(email) do
-    Amishi |> Repo.get_by(email: email)
+    Amishi
+    |> Repo.get_by(email: email)
+    |> append_gravatar_profile()
   end
 
-  def append_gravatar_profile(amishi) do
+  def append_gravatar_profile(nil), do: nil
+  def append_gravatar_profile(%Amishi{} = amishi) do
     gravatar_profile = get_gravatar_profile(amishi.email) || %{}
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
@@ -30,8 +35,8 @@ defmodule Cotoami.AmishiService do
     })
   end
 
-  def get_default_display_name(amishi) do
-    amishi.email |> String.split("@") |> List.first()
+  def get_default_display_name(%Amishi{email: email}) do
+    email |> String.split("@") |> List.first()
   end
 
   def create!(email) do
