@@ -25,7 +25,8 @@ defmodule Cotoami.AmishiController do
           amishi:
             Phoenix.View.render_one(amishi, AmishiView, "amishi.json"),
           cotos:
-            CotoService.export_by_amishi(amishi)
+            amishi
+            |> CotoService.export_by_amishi()
             |> Phoenix.View.render_many(CotoView, "coto.json"),
           connections:
             CotoGraphService.export_connections_by_amishi(Sips.conn, amishi)
