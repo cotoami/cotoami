@@ -54,6 +54,9 @@ modalConfig session =
                 ]
             ]
     , buttons =
-        [ a [ class "button", href "/signout" ] [ text "Sign out" ]
+        [ a [ class "button", href "/export" ]
+            [ text "Export my data" ]
+        , a [ class "button", href "/signout" ]
+            [ text "Sign out" ]
         ]
     }

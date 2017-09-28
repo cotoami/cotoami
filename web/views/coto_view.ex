@@ -25,10 +25,10 @@ defmodule Cotoami.CotoView do
         posted_in ->
           render_one(posted_in, CotonomaView, "cotonoma.json")
       end
-    cotonoma_key =
+    {cotonoma_id, cotonoma_key} =
       case coto.cotonoma do
-        %Cotonoma{key: key} -> key
-        _ -> nil
+        %Cotonoma{id: id, key: key} -> {id, key}
+        _ -> {nil, nil}
       end
     %{
       id: coto.id,
@@ -36,6 +36,7 @@ defmodule Cotoami.CotoView do
       amishi: amishi_as_json,
       posted_in: posted_in_as_json,
       as_cotonoma: coto.as_cotonoma,
+      cotonoma_id: cotonoma_id,
       cotonoma_key: cotonoma_key,
       inserted_at: coto.inserted_at |> DateTime.to_unix(:microsecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:microsecond)

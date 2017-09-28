@@ -106,6 +106,20 @@ defmodule Cotoami.CotoGraphService do
     |> (fn(ids) -> Repo.all(from q in struct_name, where: q.id in ^ids) end).()
   end
 
+  def export_connections_by_amishi(bolt_conn, %Amishi{id: amishi_id}) do
+    query = ~s"""
+      MATCH (parent)-[has:#{@rel_type_has_a} { created_by: $amishi_id }]->(child)
+      RETURN DISTINCT parent, has, child
+    """
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{amishi_id: amishi_id})
+    |> Enum.map(fn(%{"parent" => parent, "has" => has, "child" => child}) ->
+      has.properties
+      |> Map.put("start", parent.properties["uuid"])
+      |> Map.put("end", child.properties["uuid"])
+    end)
+  end
+
   def pin(bolt_conn, %Coto{} = coto, %Amishi{} = amishi) do
     bolt_conn
     |> register_amishi(amishi)
