@@ -29,8 +29,15 @@ defmodule Cotoami.CotoService do
     |> Coto.for_amishi(amishi_id)
     |> preload([:posted_in, :cotonoma])
     |> limit(100)
-    |> Repo.all
+    |> Repo.all()
     |> Enum.map(&(%{&1 | :amishi => amishi}))
+  end
+
+  def export_by_amishi(%Amishi{id: amishi_id} = amishi) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> preload([:posted_in, :cotonoma])
+    |> Repo.all()
   end
 
   def create!(cotonoma_id_nillable, amishi_id, content) do
