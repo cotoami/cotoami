@@ -1,7 +1,11 @@
 defmodule Cotoami.AmishiController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{AmishiService, CotoService, CotoView}
+  alias Bolt.Sips
+  alias Cotoami.{
+    AmishiService, CotoService, CotoGraphService,
+    CotoView, AmishiView
+  }
 
   def show_by_email(conn, %{"email" => email}) do
     case AmishiService.get_by_email(email) do
@@ -18,9 +22,13 @@ defmodule Cotoami.AmishiController do
     case conn.assigns do
       %{amishi: amishi} ->
         data = %{
+          amishi:
+            Phoenix.View.render_one(amishi, AmishiView, "amishi.json"),
           cotos:
             CotoService.export_by_amishi(amishi)
-            |> Phoenix.View.render_many(CotoView, "coto.json")
+            |> Phoenix.View.render_many(CotoView, "coto.json"),
+          connections:
+            CotoGraphService.export_connections_by_amishi(Sips.conn, amishi)
         }
 
         conn
