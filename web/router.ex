@@ -29,7 +29,7 @@ defmodule Cotoami.Router do
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token", SigninController, :signin
     get "/signout", SessionController, :signout
-    get "/export", AmishiController, :signout
+    get "/export", AmishiController, :export
   end
 
   scope "/api/public", Cotoami do

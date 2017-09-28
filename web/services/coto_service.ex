@@ -33,7 +33,7 @@ defmodule Cotoami.CotoService do
     |> Enum.map(&(%{&1 | :amishi => amishi}))
   end
 
-  def export_by_amishi(%Amishi{id: amishi_id} = amishi) do
+  def export_by_amishi(%Amishi{id: amishi_id}) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> preload([:posted_in, :cotonoma])

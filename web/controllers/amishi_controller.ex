@@ -14,13 +14,13 @@ defmodule Cotoami.AmishiController do
     end
   end
 
-  def export(conn, _params, amishi) do
+  def export(conn, _params) do
     case conn.assigns do
       %{amishi: amishi} ->
         data = %{
           cotos:
             CotoService.export_by_amishi(amishi)
-            |> Phoenix.View.render_many(cotos, Cotoami.CotoView, "coto.json")
+            |> Phoenix.View.render_many(CotoView, "coto.json")
         }
 
         conn
@@ -28,7 +28,7 @@ defmodule Cotoami.AmishiController do
         |> put_resp_header(
           "content-disposition",
           ~s[attachment; filename="cotoami-export.json"])
-        |> send_resp(200, Poison.encode!(data))
+        |> send_resp(200, Poison.encode!(data, pretty: true))
 
       _ ->
         send_resp(conn, :unauthorized, "")
