@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -19,7 +19,8 @@ import App.Views.Coto
 
 statusBar : Model -> Html Msg
 statusBar model =
-    div [ id "coto-selection-bar"
+    div
+        [ id "coto-selection-bar"
         , classList
             [ ( "empty", List.isEmpty model.context.selection )
             ]
@@ -57,7 +58,8 @@ cotoSelectionColumnDiv model =
 
 
 titleMaxlength : Int
-titleMaxlength = 30
+titleMaxlength =
+    30
 
 
 validateTitle : String -> Bool
@@ -73,15 +75,18 @@ selectedCotosDiv model =
         (List.filterMap
             (\cotoId ->
                 case getCoto cotoId model of
-                    Nothing -> Nothing
-                    Just coto -> Just
-                        ( toString cotoId
-                        , cotoDiv
-                            (model.context.deselecting |> Set.member cotoId)
-                            model.context
-                            model.graph
-                            coto
-                        )
+                    Nothing ->
+                        Nothing
+
+                    Just coto ->
+                        Just
+                            ( toString cotoId
+                            , cotoDiv
+                                (model.context.deselecting |> Set.member cotoId)
+                                model.context
+                                model.graph
+                                coto
+                            )
             )
             (List.reverse model.context.selection)
         )
@@ -98,16 +103,18 @@ cotoDiv beingDeselected context graph coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ a [ class "tool-button deselect-coto"
+            [ a
+                [ class "tool-button deselect-coto"
                 , title "Deselect coto"
                 , onLinkButtonClick (DeselectingCoto coto.id)
                 ]
-                [ i [ class "material-icons" ]
-                    [ if beingDeselected then
-                        text "check_box_outline_blank"
-                      else
-                        text "check_box"
-                    ]
+                [ materialIcon
+                    (if beingDeselected then
+                        "check_box_outline_blank"
+                     else
+                        "check_box"
+                    )
+                    Nothing
                 ]
             , App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
             , bodyDiv context graph coto

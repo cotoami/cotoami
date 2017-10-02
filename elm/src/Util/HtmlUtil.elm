@@ -1,4 +1,4 @@
-module Util.HtmlUtil exposing (faIcon)
+module Util.HtmlUtil exposing (faIcon, materialIcon)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -20,3 +20,19 @@ faIcon name maybeAdditionalClass =
         , (attribute "aria-hidden" "true")
         ]
         []
+
+
+materialIcon : String -> Maybe String -> Html msg
+materialIcon name maybeAdditionalClass =
+    i
+        [ classList
+            [ ( "material-icons", True )
+            , case maybeAdditionalClass of
+                Nothing ->
+                    ( "", False )
+
+                Just additionalClass ->
+                    ( additionalClass, True )
+            ]
+        ]
+        [ text name ]

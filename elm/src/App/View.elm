@@ -3,7 +3,7 @@ module App.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
@@ -70,7 +70,7 @@ view model =
                 , target "_blank"
                 , hidden (model.timeline.editingNew)
                 ]
-                [ i [ class "material-icons" ] [ text "info" ] ]
+                [ materialIcon "info" Nothing ]
             , div [] (modals model)
             ]
 

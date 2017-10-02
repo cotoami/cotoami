@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Util.Modal as Modal
+import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph exposing (Direction(..))
 import App.Messages exposing (..)
@@ -100,7 +101,7 @@ modalContent direction selectedCotos subject =
                 [ start ]
             , div
                 [ class "arrow" ]
-                [ i [ class "material-icons" ] [ text "arrow_downward" ] ]
+                [ materialIcon "arrow_downward" Nothing ]
             , div
                 [ class "end" ]
                 [ end ]
