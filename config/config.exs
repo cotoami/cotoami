@@ -40,7 +40,9 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
   duration_unit: :microseconds
 
 config :cotoami, Cotoami.AmishiService,
-  owner_email: System.get_env("COTOAMI_OWNER_EMAIL") || ""
+  owner_emails:
+    (System.get_env("COTOAMI_OWNER_EMAILS") || "")
+    |> String.split(",", trim: true)
 
 config :cotoami, Cotoami.Redix,
   host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",

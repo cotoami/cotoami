@@ -9,10 +9,10 @@ defmodule Cotoami.AmishiService do
   @gravatar_url_prefix "https://secure.gravatar.com/"
   @gravatar_user_agent "Cotoami"
 
-  def owner_email do
+  def owner_emails do
     :cotoami
     |> Application.get_env(__MODULE__, [])
-    |> Keyword.get(:owner_email)
+    |> Keyword.get(:owner_emails)
   end
 
   def get(id) do
@@ -31,7 +31,7 @@ defmodule Cotoami.AmishiService do
 
   def append_owner_flag(nil), do: nil
   def append_owner_flag(%Amishi{} = amishi) do
-    Map.put(amishi, :owner, amishi.email == owner_email())
+    Map.put(amishi, :owner, amishi.email in owner_emails())
   end
 
   def append_gravatar_profile(nil), do: nil
