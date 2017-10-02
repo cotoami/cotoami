@@ -7,9 +7,10 @@ import App.Types.Amishi exposing(Amishi)
 
 decodeAmishi : Decode.Decoder Amishi
 decodeAmishi =
-    Decode.map4 Amishi
+    Decode.map5 Amishi
         (Decode.field "id" Decode.string)
         (Decode.field "email" Decode.string)
+        (Decode.field "owner" Decode.bool)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
 
