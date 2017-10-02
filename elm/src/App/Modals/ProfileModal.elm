@@ -28,11 +28,13 @@ modalConfig session =
         div []
             [ div [ class "profile container" ]
                 [ div [ class "row" ]
-                    [ div [ class "avatar-box three columns" ]
+                    [ div
+                        [ class "avatar-box three columns" ]
                         [ a [ href "https://gravatar.com/", target "_blank" ]
                             [ img [ class "avatar", src session.avatarUrl ] [] ]
                         ]
-                    , div [ class "profile-info nine columns" ]
+                    , div
+                        [ class "profile-info nine columns" ]
                         [ label [] [ text "Name" ]
                         , input
                             [ type_ "text"
