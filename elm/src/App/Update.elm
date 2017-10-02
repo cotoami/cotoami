@@ -13,9 +13,9 @@ import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
+import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
-import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
@@ -30,9 +30,9 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal
-import App.Modals.CotonomaModal exposing (setDefaultMembers)
 import App.Modals.CotoModal
 import App.Modals.CotoModalMsg
+import App.Modals.CotonomaModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -91,13 +91,13 @@ update msg model =
             changeLocationToHome model
 
         CotonomaPresenceState payload ->
-            { model | memberPresences = decodePresenceState payload } ! []
+            { model | presences = decodePresenceState payload } ! []
 
         CotonomaPresenceDiff payload ->
             decodePresenceDiff payload
                 |> \diff ->
-                    applyPresenceDiff diff model.memberPresences
-                        |> \presences -> { model | memberPresences = presences } ! []
+                    applyPresenceDiff diff model.presences
+                        |> \presences -> { model | presences = presences } ! []
 
         --
         -- Fetched
@@ -140,12 +140,11 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        CotonomaFetched (Ok ( cotonoma, members, posts )) ->
+        CotonomaFetched (Ok ( cotonoma, posts )) ->
             { model
                 | context =
                     model.context
                         |> \context -> { context | cotonoma = Just cotonoma }
-                , members = members
                 , navigationOpen = False
                 , timeline =
                     model.timeline
@@ -190,18 +189,7 @@ update msg model =
             openCoto coto model ! []
 
         OpenCotonomaModal ->
-            { model
-                | cotonomaModal =
-                    case model.context.session of
-                        Nothing ->
-                            model.cotonomaModal
-
-                        Just session ->
-                            setDefaultMembers
-                                session
-                                (getOwnerAndMembers model)
-                                App.Modals.CotonomaModal.defaultModel
-            }
+            { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
                 |> \model -> openModal App.Model.CotonomaModal model ! []
 
         --
@@ -498,7 +486,6 @@ update msg model =
                             model.context.clientId
                             model.context.cotonoma
                             timeline.postIdCounter
-                            model.cotonomaModal.members
                             model.cotonomaModal.name
                         ]
                     )
@@ -674,7 +661,7 @@ openCoto coto model =
         |> \model -> openModal App.Model.CotoModal model
 
 
-applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
+applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
     (Dict.foldl
@@ -726,7 +713,6 @@ loadHome model =
             model.context
                 |> clearCotonoma
                 |> clearSelection
-        , members = []
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = setLoading model.timeline
@@ -753,7 +739,6 @@ loadCotonoma key model =
             model.context
                 |> clearCotonoma
                 |> clearSelection
-        , members = []
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
         , connectingSubject = Nothing

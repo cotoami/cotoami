@@ -15,7 +15,6 @@ defmodule Cotoami.Cotonoma do
     belongs_to :owner, Cotoami.Amishi
 
     has_many :cotos, Cotoami.Coto
-    has_many :members, Cotoami.Member
 
     timestamps(type: :utc_datetime)
   end
@@ -41,12 +40,8 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def for_amishi(query, amishi_id) do
-    from c in query,
-      distinct: true,
-      left_join: m in assoc(c, :members),
-      where: c.owner_id == ^amishi_id or m.amishi_id == ^amishi_id,
-      order_by: [desc: c.updated_at]
+  def for_amishi(query, _amishi_id) do
+    from c in query, order_by: [desc: c.updated_at]
   end
 
   def in_cotonoma_if_specified(query, cotonoma_id_nillable) do

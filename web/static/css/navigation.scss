@@ -7,16 +7,11 @@
     font-weight: bold;
   }
 
-  div.members {
+  div.owner {
     margin-bottom: 20px;
 
-    div.member {
-      opacity: 0.3;
+    div.amishi {
       margin-bottom: 5px;
-
-      &.online {
-        opacity: 1;
-      }
 
       img.avatar {
         margin: 0;

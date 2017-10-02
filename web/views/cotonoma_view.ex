@@ -6,11 +6,10 @@ defmodule Cotoami.CotonomaView do
     render_many(rows, __MODULE__, "cotonoma.json")
   end
 
-  def render("cotos.json", %{cotos: cotos, cotonoma: cotonoma, members: members}) do
+  def render("cotos.json", %{cotos: cotos, cotonoma: cotonoma}) do
     %{
       cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
-      cotos: render_many(cotos, CotoView, "coto.json"),
-      members: render_many(members, AmishiView, "amishi.json")
+      cotos: render_many(cotos, CotoView, "coto.json")
     }
   end
 

@@ -265,7 +265,6 @@ defmodule Cotoami.CotoGraphControllerTest do
     test "PUT /api/graph/:cotonoma_key/pin (a coto by another amishi)",
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
       amishi2 = AmishiService.create!("amishi2@example.com")
-      CotonomaService.add_member(cotonoma, %{"amishi_id" => amishi2.id})
       {coto2, _posted_in} = CotoService.create!(cotonoma.id, amishi2.id, "bye")
 
       put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id]})

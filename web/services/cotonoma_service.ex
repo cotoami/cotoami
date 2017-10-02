@@ -5,9 +5,9 @@ defmodule Cotoami.CotonomaService do
 
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
-  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, Member, AmishiService}
+  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService}
 
-  def create!(cotonoma_id_nillable, amishi_id, name, member_params \\ []) do
+  def create!(cotonoma_id_nillable, amishi_id, name) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
     {:ok, {coto, cotonoma}} =
       Repo.transaction(fn ->
@@ -32,44 +32,9 @@ defmodule Cotoami.CotonomaService do
         cotonoma = %{cotonoma | coto: coto}
         coto = %{coto | cotonoma: cotonoma}
 
-        members =
-          member_params
-          |> Enum.map(&add_member(cotonoma, &1))
-          |> Enum.filter(&(&1 != nil))
-        cotonoma = %{cotonoma | members: members}
-
         {coto, cotonoma}
       end)
     {{coto, cotonoma}, posted_in}
-  end
-
-  def add_member(cotonoma, member_param) do
-    case member_param do
-      %{"amishi_id" => amishi_id} ->
-        case AmishiService.get(amishi_id) do
-          nil ->
-            nil
-          amishi ->
-            %Member{}
-            |> Member.changeset(%{
-                cotonoma_id: cotonoma.id,
-                amishi_id: amishi.id,
-                email: amishi.email
-              })
-            |> Repo.insert!
-        end
-
-      %{"email" => email} ->
-        %Member{}
-        |> Member.changeset(%{
-            cotonoma_id: cotonoma.id,
-            email: email
-          })
-        |> Repo.insert!
-
-      _ ->
-        nil
-    end
   end
 
   defp base_query_for_amishi(amishi_id) do
@@ -126,15 +91,6 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(&append_gravatar_profile_to_owner(&1))
   end
 
-  def get_members(cotonoma_id) do
-    Member
-    |> Member.for_cotonoma(cotonoma_id)
-    |> preload([:amishi])
-    |> Repo.all()
-    |> Enum.map(&(&1.amishi))
-    |> Enum.map(&AmishiService.append_gravatar_profile(&1))
-  end
-
   def get_cotos(key, %Amishi{id: amishi_id} = amishi) do
     case get_by_key(key, amishi_id) do
       nil -> nil
@@ -147,8 +103,7 @@ defmodule Cotoami.CotonomaService do
             |> limit(100)
             |> Repo.all
             |> Enum.map(&(complement_gravatar(&1, amishi)))
-          members = get_members(cotonoma.id)
-          {cotos, cotonoma, members}
+          {cotos, cotonoma}
         else
           nil
         end

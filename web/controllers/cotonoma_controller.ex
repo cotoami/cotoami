@@ -18,11 +18,10 @@ defmodule Cotoami.CotonomaController do
   def create(conn, %{"clientId" => clientId, "cotonoma" => cotonoma_params}, amishi) do
     cotonoma_id = cotonoma_params["cotonoma_id"]
     name = cotonoma_params["name"]
-    members = cotonoma_params["members"] || []
     post_id = cotonoma_params["postId"]
 
     {{coto, cotonoma}, posted_in} =
-      CotonomaService.create!(cotonoma_id, amishi.id, name, members)
+      CotonomaService.create!(cotonoma_id, amishi.id, name)
 
     full_fledged_coto = %{coto |
       :posted_in => posted_in,
@@ -44,10 +43,8 @@ defmodule Cotoami.CotonomaController do
     case CotonomaService.get_cotos(key, amishi) do
       nil ->
         send_resp(conn, :not_found, "")
-      {cotos, cotonoma, members} ->
-        render(conn, "cotos.json",
-          %{cotos: cotos, cotonoma: cotonoma, members: members}
-        )
+      {cotos, cotonoma} ->
+        render(conn, "cotos.json", %{cotos: cotos, cotonoma: cotonoma})
     end
   end
 end
