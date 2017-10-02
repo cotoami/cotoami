@@ -5,7 +5,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey, Member(..))
+import App.Types.Coto exposing (Cotonoma, CotonomaKey)
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
@@ -35,8 +35,8 @@ fetchSubCotonomas maybeCotonoma =
                 <| Decode.list decodeCotonoma
 
 
-encodeCotonoma : String -> Maybe Cotonoma -> Int -> List Member -> String -> Encode.Value
-encodeCotonoma clientId maybeCotonoma postId members name =
+encodeCotonoma : String -> Maybe Cotonoma -> Int -> String -> Encode.Value
+encodeCotonoma clientId maybeCotonoma postId name =
     Encode.object
         [ ( "clientId", Encode.string clientId )
         , ( "cotonoma",
@@ -48,21 +48,7 @@ encodeCotonoma clientId maybeCotonoma postId members name =
                   )
                 , ( "postId", Encode.int postId )
                 , ( "name", Encode.string name )
-                , ( "members"
-                  , Encode.list (members |> List.map (\m -> encodeMember m))
-                  )
                 ]
             )
           )
-        ]
-
-
-encodeMember : Member -> Encode.Value
-encodeMember member =
-    Encode.object
-        [ case member of
-            SignedUp amishi ->
-                ( "amishi_id", Encode.string amishi.id )
-            NotYetSignedUp email ->
-                ( "email", Encode.string email )
         ]

@@ -2,10 +2,7 @@ module App.Views.Navigation exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Keyed
 import App.Types.Coto exposing (Cotonoma)
-import App.Types.Amishi exposing (Amishi)
-import App.Types.MemberPresences exposing (MemberPresences, isPresent)
 import App.Types.Context exposing (Context)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg)
@@ -20,7 +17,7 @@ view model =
                 div [] []
 
             Just cotonoma ->
-                cotonomaNav model.memberPresences model.members cotonoma
+                cotonomaNav cotonoma
         , if not (List.isEmpty model.subCotonomas) then
             subCotonomasNav model.context model.subCotonomas
           else
@@ -30,44 +27,20 @@ view model =
     ]
 
 
-cotonomaNav : MemberPresences -> List Amishi -> Cotonoma -> Html Msg
-cotonomaNav memberPresences members cotonoma =
-    div [ class "members" ]
-        [ div [ class "navigation-title" ] [ text "Members" ]
+cotonomaNav : Cotonoma -> Html Msg
+cotonomaNav cotonoma =
+    div [ class "owner" ]
+        [ div [ class "navigation-title" ] [ text "Owner" ]
         , case cotonoma.owner of
             Nothing ->
                 div [] []
 
             Just owner ->
                 div
-                    [ classList
-                        [ ( "member", True )
-                        , ( "owner", True )
-                        , ( "online", isPresent owner.id memberPresences )
-                        ]
-                    ]
+                    [ class "amishi" ]
                     [ img [ class "avatar", src owner.avatarUrl ] []
                     , span [ class "name" ] [ text owner.displayName ]
                     ]
-        , Html.Keyed.node
-            "div"
-            [ class "members" ]
-            (List.map
-                (\member ->
-                    ( toString member.id
-                    , div
-                        [ classList
-                            [ ( "member", True )
-                            , ( "online", isPresent member.id memberPresences )
-                            ]
-                        ]
-                        [ img [ class "avatar", src member.avatarUrl ] []
-                        , span [ class "name" ] [ text member.displayName ]
-                        ]
-                    )
-                )
-                members
-            )
         ]
 
 

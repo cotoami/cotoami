@@ -86,8 +86,3 @@ isPostedInCotonoma maybeCotonoma coto =
 
                 Just postedIn ->
                     postedIn.id == cotonoma.id
-
-
-type Member
-    = SignedUp Amishi
-    | NotYetSignedUp String

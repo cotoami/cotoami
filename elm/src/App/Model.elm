@@ -6,8 +6,7 @@ import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Amishi exposing (Amishi, AmishiId)
-import App.Types.MemberPresences exposing (MemberPresences)
+import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
@@ -37,8 +36,7 @@ type alias Model =
     , activeViewOnMobile : ActiveViewOnMobile
     , navigationToggled : Bool
     , navigationOpen : Bool
-    , members : List Amishi
-    , memberPresences : MemberPresences
+    , presences : Presences
     , modals : List Modal
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , confirmMessage : String
@@ -65,8 +63,7 @@ initModel seed route =
     , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
-    , members = []
-    , memberPresences = Dict.empty
+    , presences = Dict.empty
     , modals = []
     , cotoModal = Nothing
     , confirmMessage = ""
@@ -144,21 +141,6 @@ isNavigationEmpty model =
 isStockEmpty : Model -> Bool
 isStockEmpty model =
     List.isEmpty model.graph.rootConnections
-
-
-getOwnerAndMembers : Model -> List Amishi
-getOwnerAndMembers model =
-    case model.context.cotonoma of
-        Nothing ->
-            []
-
-        Just cotonoma ->
-            case cotonoma.owner of
-                Nothing ->
-                    model.members
-
-                Just owner ->
-                    owner :: model.members
 
 
 openTraversal : CotoId -> Model -> Model
