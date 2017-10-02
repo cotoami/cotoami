@@ -5,6 +5,7 @@ defmodule Cotoami.AmishiView do
     %{
       id: amishi.id,
       email: amishi.email,
+      owner: Map.get(amishi, :owner, false),
       avatar_url: Map.get(amishi, :avatar_url, ""),
       display_name: Map.get(amishi, :display_name, ""),
       inserted_at: amishi.inserted_at |> DateTime.to_unix(:microsecond),

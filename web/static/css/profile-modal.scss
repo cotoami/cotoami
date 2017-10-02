@@ -1,27 +1,36 @@
-#profile-modal {  
+#profile-modal {
   div.profile {
     width: 100%;
-    
+
     @media (min-width: 550px) {
       width: 455px;
     }
-    
-    div.avatar-box {
-      padding-top: 5px;
-         
+  }
+
+  div.profile-sidebar {
+    padding-top: 5px;
+
+    img.avatar {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 550px) {
+      text-align: center;
+
       img.avatar {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        border-radius: 4px;
+        width: 60% !important;
       }
-      
-      @media (max-width: 550px) {
-        text-align: center;
-        
-        img.avatar {
-          width: 60% !important;
-        }
+    }
+
+    div.owner-label {
+      color: #888;
+      text-align: center;
+
+      .owner-icon {
+        margin-right: 2px;
       }
     }
   }

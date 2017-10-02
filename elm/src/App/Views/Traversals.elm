@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
@@ -20,16 +21,20 @@ view activeOnMobile context graph model =
         |> List.filterMap
             (\cotoId ->
                 case Dict.get cotoId model.entries of
-                    Nothing -> Nothing
+                    Nothing ->
+                        Nothing
+
                     Just traversal ->
                         traversal |> maybeTraversalDiv context graph
             )
         |> List.indexedMap
             (\index traversalDiv ->
                 let
-                    visibleOnMobile = activeOnMobile && (isActiveIndex index model)
+                    visibleOnMobile =
+                        activeOnMobile && (isActiveIndex index model)
                 in
-                    div [ classList
+                    div
+                        [ classList
                             [ ( "main-column", True )
                             , ( "main-traversal", True )
                             , ( "main-traversal-" ++ (toString index), True )
@@ -48,30 +53,33 @@ view activeOnMobile context graph model =
 maybeTraversalDiv : Context -> Graph -> Traversal -> Maybe (Html Msg)
 maybeTraversalDiv context graph traversal =
     case Dict.get traversal.start graph.cotos of
-        Nothing -> Nothing
+        Nothing ->
+            Nothing
+
         Just startCoto ->
             Just <|
-              traversalDiv
-                  context
-                  graph
-                  traversal
-                  (Dict.get startCoto.id graph.connections
-                   |> Maybe.withDefault []
-                  )
-                  startCoto
+                traversalDiv
+                    context
+                    graph
+                    traversal
+                    (Dict.get startCoto.id graph.connections
+                        |> Maybe.withDefault []
+                    )
+                    startCoto
 
 
 traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
-traversalDiv context graph traversal connections startCoto  =
+traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
             [ span [ class "description" ] []
-            , a [ class "tool-button close-traversal"
+            , a
+                [ class "tool-button close-traversal"
                 , href "/"
                 , onLinkButtonClick (CloseTraversal traversal.start)
                 ]
-                [ i [ class "material-icons" ] [ text "close" ] ]
+                [ materialIcon "close" Nothing ]
             ]
         , div
             [ class "column-body" ]
@@ -80,8 +88,9 @@ traversalDiv context graph traversal connections startCoto  =
                 ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
-                |> List.indexedMap (\index step -> traversalStepDiv context graph step  ( traversal, index ))
-                |> List.filterMap identity)
+                    |> List.indexedMap (\index step -> traversalStepDiv context graph step ( traversal, index ))
+                    |> List.filterMap identity
+                )
             ]
         ]
 
@@ -89,23 +98,28 @@ traversalDiv context graph traversal connections startCoto  =
 traversalStepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
 traversalStepDiv context graph cotoId traversalStep =
     case Dict.get cotoId graph.cotos of
-        Nothing -> Nothing
-        Just coto -> Just
-            (div [ class "step" ]
-                [ div [ class "arrow" ]
-                    [ i [ class "material-icons" ] [ text "arrow_downward" ]
+        Nothing ->
+            Nothing
+
+        Just coto ->
+            Just
+                (div [ class "step" ]
+                    [ div [ class "arrow" ]
+                        [ materialIcon "arrow_downward" Nothing ]
+                    , traversalStepCotoDiv
+                        context
+                        graph
+                        traversalStep
+                        (case Dict.get cotoId graph.connections of
+                            Nothing ->
+                                []
+
+                            Just connections ->
+                                connections
+                        )
+                        coto
                     ]
-                , traversalStepCotoDiv
-                    context
-                    graph
-                    traversalStep
-                    (case Dict.get cotoId graph.connections of
-                        Nothing -> []
-                        Just connections -> connections
-                    )
-                    coto
-                ]
-            )
+                )
 
 
 traversalStepCotoDiv : Context -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
@@ -114,17 +128,18 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
         elementId =
             "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
     in
-        div [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
+        div
+            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
             , onClickWithoutPropagation (CotoClick elementId coto.id)
             , onMouseEnter (CotoMouseEnter elementId coto.id)
             , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
             [ div [ class "coto-inner" ]
-                  [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                  , App.Views.Coto.bodyDiv Nothing context graph coto
-                  , div [ class "main-sub-border" ] []
-                  , connectionsDiv ( traversal, index ) coto.id connections context graph
-                  ]
+                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                , App.Views.Coto.bodyDiv Nothing context graph coto
+                , div [ class "main-sub-border" ] []
+                , connectionsDiv ( traversal, index ) coto.id connections context graph
+                ]
             ]
 
 
@@ -136,11 +151,15 @@ connectionsDiv traversalStep parentId connections context graph =
         (List.filterMap
             (\conn ->
                 case Dict.get conn.end graph.cotos of
-                    Nothing -> Nothing  -- Missing the end node
-                    Just coto -> Just
-                        ( conn.key
-                        , connectionDiv traversalStep context graph parentId coto
-                        )
+                    Nothing ->
+                        Nothing
+
+                    -- Missing the end node
+                    Just coto ->
+                        Just
+                            ( conn.key
+                            , connectionDiv traversalStep context graph parentId coto
+                            )
             )
             (List.reverse connections)
         )
@@ -148,7 +167,8 @@ connectionsDiv traversalStep parentId connections context graph =
 
 connectionDiv : ( Traversal, Int ) -> Context -> Graph -> CotoId -> Coto -> Html Msg
 connectionDiv ( traversal, index ) context graph parentId coto =
-    div [ classList
+    div
+        [ classList
             [ ( "outbound-conn", True )
             , ( "traversed", traversed index coto.id traversal )
             ]
@@ -192,18 +212,17 @@ traversalsPaginationDiv model =
                             [ text (toString (index + 1)) ]
                         ]
                 )
-            |> div [ id "traversals-pagination"]
+            |> div [ id "traversals-pagination" ]
     else
         div [] []
 
 
-traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph-> Html msg
+traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph -> Html msg
 traverseButtonDiv buttonClick index cotoId traversal graph =
     if hasChildren cotoId graph then
         div [ class "sub-cotos-button" ]
             [ a [ onLinkButtonClick (buttonClick (Traverse traversal index cotoId)) ]
-                [ i [ class "material-icons" ] [ text "arrow_downward" ]
-                ]
+                [ materialIcon "arrow_downward" Nothing ]
             ]
     else
         div [] []

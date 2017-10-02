@@ -8,6 +8,7 @@ type alias AmishiId = String
 type alias Amishi =
     { id : AmishiId
     , email : String
+    , owner : Bool
     , avatarUrl : String
     , displayName : String
     }

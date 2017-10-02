@@ -3,6 +3,7 @@ module App.Modals.ProfileModal exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Util.Modal as Modal
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Session exposing (Session)
 import App.Messages exposing (Msg(CloseModal))
 
@@ -28,11 +29,24 @@ modalConfig session =
         div []
             [ div [ class "profile container" ]
                 [ div [ class "row" ]
-                    [ div [ class "avatar-box three columns" ]
-                        [ a [ href "https://gravatar.com/", target "_blank" ]
-                            [ img [ class "avatar", src session.avatarUrl ] [] ]
+                    [ div
+                        [ class "profile-sidebar three columns" ]
+                        [ div
+                            [ class "avatar-box" ]
+                            [ a [ href "https://gravatar.com/", target "_blank" ]
+                                [ img [ class "avatar", src session.avatarUrl ] [] ]
+                            ]
+                        , if session.owner then
+                            div
+                                [ class "owner-label" ]
+                                [ faIcon "key" (Just "owner-icon")
+                                , text "Owner"
+                                ]
+                          else
+                            div [] []
                         ]
-                    , div [ class "profile-info nine columns" ]
+                    , div
+                        [ class "profile-content nine columns" ]
                         [ label [] [ text "Name" ]
                         , input
                             [ type_ "text"
