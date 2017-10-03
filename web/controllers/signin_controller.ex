@@ -3,6 +3,12 @@ defmodule Cotoami.SigninController do
   require Logger
   alias Cotoami.{RedisService, AmishiService}
 
+  def signup_enabled do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:signup_enabled)
+  end
+
   def request(conn, %{"email" => email}) do
     token = RedisService.generate_signin_token(email)
     host_url = Cotoami.Router.Helpers.url(conn)
