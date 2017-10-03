@@ -15,6 +15,12 @@ defmodule Cotoami.AmishiService do
     |> Keyword.get(:owner_emails)
   end
 
+  def signup_enabled do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:signup_enabled)
+  end
+
   def get(id) do
     Amishi
     |> Repo.get(id)

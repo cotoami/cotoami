@@ -1,7 +1,7 @@
 defmodule Cotoami.SessionController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.SigninController
+  alias Cotoami.AmishiService
 
   def index(conn, _params) do
     case conn.assigns do
@@ -15,7 +15,7 @@ defmodule Cotoami.SessionController do
         conn
         |> put_status(:not_found)
         |> json(%{
-          signup_enabled: SigninController.signup_enabled
+          signup_enabled: AmishiService.signup_enabled
         })
     end
   end

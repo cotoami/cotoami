@@ -42,9 +42,7 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
 config :cotoami, Cotoami.AmishiService,
   owner_emails:
     (System.get_env("COTOAMI_OWNER_EMAILS") || "")
-    |> String.split(",", trim: true)
-
-config :cotoami, Cotoami.SigninController,
+    |> String.split(",", trim: true),
   signup_enabled:
     (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
     |> String.to_existing_atom()
