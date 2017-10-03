@@ -23,13 +23,14 @@ import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTr
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
+import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import App.Modals.SigninModal
+import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.CotoModal
 import App.Modals.CotoModalMsg
 import App.Modals.CotonomaModal
@@ -61,18 +62,17 @@ update msg model =
 
         OnLocationChange location ->
             parseLocation location
-                |> \route ->
-                    ( route, { model | route = route } )
-                        |> \( route, model ) ->
-                            case route of
-                                HomeRoute ->
-                                    loadHome model
+                |> (\route -> ( route, { model | route = route } ))
+                |> \( route, model ) ->
+                    case route of
+                        HomeRoute ->
+                            loadHome model
 
-                                CotonomaRoute key ->
-                                    loadCotonoma key model
+                        CotonomaRoute key ->
+                            loadCotonoma key model
 
-                                NotFoundRoute ->
-                                    ( model, Cmd.none )
+                        NotFoundRoute ->
+                            ( model, Cmd.none )
 
         NavigationToggle ->
             { model
@@ -95,9 +95,8 @@ update msg model =
 
         CotonomaPresenceDiff payload ->
             decodePresenceDiff payload
-                |> \diff ->
-                    applyPresenceDiff diff model.presences
-                        |> \presences -> { model | presences = presences } ! []
+                |> (\diff -> applyPresenceDiff diff model.presences)
+                |> \presences -> { model | presences = presences } ! []
 
         --
         -- Fetched
@@ -117,7 +116,11 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openModal App.Model.SigninModal model ! []
+                        decodeSessionNotFoundBodyString response.body
+                            |> (\body -> setSignupEnabled body.signupEnabled model.signinModal)
+                            |> (\signinModal -> { model | signinModal = signinModal })
+                            |> openModal App.Model.SigninModal
+                            |> \model -> model ! []
                     else
                         model ! []
 
@@ -250,9 +253,7 @@ update msg model =
             )
                 ! [ deleteCoto coto.id
                   , Process.sleep (1 * Time.second)
-                        -- Wait for CSS animation finish.
-                        |>
-                            Task.andThen (\_ -> Task.succeed ())
+                        |> Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeleteCoto coto)
                   ]
 

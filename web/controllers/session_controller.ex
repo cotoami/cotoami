@@ -14,7 +14,9 @@ defmodule Cotoami.SessionController do
       _ ->
         conn
         |> put_status(:not_found)
-        |> json(%{signup_enabled: SigninController.signup_enabled})
+        |> json(%{
+          signup_enabled: SigninController.signup_enabled
+        })
     end
   end
 

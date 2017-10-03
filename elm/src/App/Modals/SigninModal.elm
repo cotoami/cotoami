@@ -1,4 +1,11 @@
-module App.Modals.SigninModal exposing (Model, defaultModel, update, view)
+module App.Modals.SigninModal
+    exposing
+        ( Model
+        , defaultModel
+        , update
+        , view
+        , setSignupEnabled
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -26,6 +33,11 @@ defaultModel =
     , requestProcessing = False
     , requestDone = False
     }
+
+
+setSignupEnabled : Bool -> Model -> Model
+setSignupEnabled signupEnabled model =
+    { model | signupEnabled = signupEnabled }
 
 
 update : SigninModalMsg.Msg -> Model -> ( Model, Cmd SigninModalMsg.Msg )
