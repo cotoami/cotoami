@@ -49,7 +49,25 @@ jobs:
           paths:
             - ~/cotoami
 
-  release:
+  release-develop:
+    docker:
+      - image: docker:17.06
+    working_directory: ~/cotoami
+    steps:
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - work-dir-{{ .Revision }}
+      - run:
+          name: Build docker image
+          command: docker build -t cotoami/cotoami:develop .
+      - run:
+          name: Release docker images
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push cotoami/cotoami:develop
+
+  release-master:
     docker:
       - image: docker:17.06
     working_directory: ~/cotoami
@@ -69,7 +87,7 @@ jobs:
             docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
-  deploy:
+  deploy-master:
     docker:
       - image: python:3.6
     steps:
@@ -89,15 +107,21 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - release:
+      - release-develop:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+      - release-master:
           requires:
             - build
           filters:
             branches:
               only: master
-      - deploy:
+      - deploy-master:
           requires:
-            - release
+            - release-master
           filters:
             branches:
               only: master
