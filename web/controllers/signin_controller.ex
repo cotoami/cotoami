@@ -4,12 +4,16 @@ defmodule Cotoami.SigninController do
   alias Cotoami.{RedisService, AmishiService}
 
   def request(conn, %{"email" => email}) do
-    token = RedisService.generate_signin_token(email)
-    host_url = Cotoami.Router.Helpers.url(conn)
-    email
-    |> Cotoami.Email.signin_link(token, host_url)
-    |> Cotoami.Mailer.deliver_now
-    json conn, "ok"
+    if AmishiService.is_allowed_to_signin?(email) do
+      token = RedisService.generate_signin_token(email)
+      host_url = Cotoami.Router.Helpers.url(conn)
+      email
+      |> Cotoami.Email.signin_link(token, host_url)
+      |> Cotoami.Mailer.deliver_now
+      json conn, "ok"
+    else
+      send_resp(conn, :unauthorized, "")
+    end
   end
 
   def signin(conn, %{"token" => token}) do

@@ -1,4 +1,11 @@
-module App.Modals.SigninModal exposing (Model, defaultModel, update, view)
+module App.Modals.SigninModal
+    exposing
+        ( Model
+        , defaultModel
+        , update
+        , view
+        , setSignupEnabled
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -11,19 +18,32 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
+type RequestStatus
+    = None
+    | Approved
+    | Rejected
+
+
 type alias Model =
-    { email : String
+    { signupEnabled : Bool
+    , email : String
     , requestProcessing : Bool
-    , requestDone : Bool
+    , requestStatus : RequestStatus
     }
 
 
 defaultModel : Model
 defaultModel =
-    { email = ""
+    { signupEnabled = False
+    , email = ""
     , requestProcessing = False
-    , requestDone = False
+    , requestStatus = None
     }
+
+
+setSignupEnabled : Bool -> Model -> Model
+setSignupEnabled signupEnabled model =
+    { model | signupEnabled = signupEnabled }
 
 
 update : SigninModalMsg.Msg -> Model -> ( Model, Cmd SigninModalMsg.Msg )
@@ -36,11 +56,22 @@ update msg model =
             { model | requestProcessing = True }
                 ! [ requestSignin model.email ]
 
-        RequestDone (Ok message) ->
-            ( { model | email = "", requestProcessing = False, requestDone = True }, Cmd.none )
+        RequestDone (Ok _) ->
+            ( { model
+                | email = ""
+                , requestProcessing = False
+                , requestStatus = Approved
+              }
+            , Cmd.none
+            )
 
         RequestDone (Err _) ->
-            ( { model | requestProcessing = False }, Cmd.none )
+            ( { model
+                | requestProcessing = False
+                , requestStatus = Rejected
+              }
+            , Cmd.none
+            )
 
 
 requestSignin : String -> Cmd SigninModalMsg.Msg
@@ -61,7 +92,7 @@ view model =
 
 signinModalConfig : Model -> Modal.Config AppMsg.Msg
 signinModalConfig model =
-    (if model.requestDone then
+    if model.requestStatus == Approved then
         { closeMessage = CloseModal
         , title = "Check your inbox!"
         , content =
@@ -70,38 +101,74 @@ signinModalConfig model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
-     else
-        { closeMessage = CloseModal
-        , title = "Sign in/up with your email"
-        , content =
-            div []
-                [ p [] [ text "Welcome to Cotoami!" ]
-                , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-                , Html.form [ name "signin" ]
-                    [ div []
-                        [ input
-                            [ type_ "email"
-                            , class "u-full-width"
-                            , name "email"
-                            , placeholder "you@example.com"
-                            , value model.email
-                            , onInput (AppMsg.SigninModalMsg << EmailInput)
-                            ]
-                            []
-                        ]
-                    ]
-                ]
-        , buttons =
-            [ button
-                [ class "button button-primary"
-                , disabled (not (validateEmail model.email) || model.requestProcessing)
-                , onClick (AppMsg.SigninModalMsg RequestClick)
-                ]
-                [ if model.requestProcessing then
-                    text "Sending..."
-                  else
-                    text "Sign in/up"
-                ]
+    else
+        if model.signupEnabled then
+            modalConfigWithSignupEnabled model
+        else
+            modalConfigOnlyForSignin model
+
+
+modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg
+modalConfigWithSignupEnabled model =
+    { closeMessage = CloseModal
+    , title = "Sign in/up with your email"
+    , content =
+        div []
+            [ p [] [ text "Welcome to Cotoami!" ]
+            , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+            , signinForm model
             ]
-        }
-    )
+    , buttons =
+        [ signinButton "Sign in/up" model ]
+    }
+
+
+modalConfigOnlyForSignin : Model -> Modal.Config AppMsg.Msg
+modalConfigOnlyForSignin model =
+    { closeMessage = CloseModal
+    , title = "Sign in with your email"
+    , content =
+        div []
+            [ p [] [ text "Welcome to Cotoami!" ]
+            , p [] [ text "Just enter your email address and we'll send you a sign-in link." ]
+            , signinForm model
+            ]
+    , buttons =
+        [ signinButton "Sign in" model ]
+    }
+
+
+signinForm : Model -> Html AppMsg.Msg
+signinForm model =
+    Html.form [ name "signin" ]
+        [ div []
+            [ input
+                [ type_ "email"
+                , class "email u-full-width"
+                , name "email"
+                , placeholder "you@example.com"
+                , value model.email
+                , onInput (AppMsg.SigninModalMsg << EmailInput)
+                ]
+                []
+            ]
+        , if model.requestStatus == Rejected then
+            div [ class "errors" ]
+                [ span [ class "rejected" ] [ text "The email is not allowed to sign in." ] ]
+          else
+            div [] []
+        ]
+
+
+signinButton : String -> Model -> Html AppMsg.Msg
+signinButton label model =
+    button
+        [ class "button button-primary"
+        , disabled (not (validateEmail model.email) || model.requestProcessing)
+        , onClick (AppMsg.SigninModalMsg RequestClick)
+        ]
+        [ if model.requestProcessing then
+            text "Sending..."
+          else
+            text label
+        ]

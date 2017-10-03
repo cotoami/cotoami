@@ -1,6 +1,7 @@
 defmodule Cotoami.SessionController do
   use Cotoami.Web, :controller
   require Logger
+  alias Cotoami.AmishiService
 
   def index(conn, _params) do
     case conn.assigns do
@@ -11,7 +12,11 @@ defmodule Cotoami.SessionController do
           websocket_url: get_websocket_url()
         )
       _ ->
-        send_resp(conn, :not_found, "")
+        conn
+        |> put_status(:not_found)
+        |> json(%{
+          signup_enabled: AmishiService.signup_enabled
+        })
     end
   end
 
