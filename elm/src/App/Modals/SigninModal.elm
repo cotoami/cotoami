@@ -18,11 +18,17 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
+type RequestStatus
+    = None
+    | Approved
+    | Rejected
+
+
 type alias Model =
     { signupEnabled : Bool
     , email : String
     , requestProcessing : Bool
-    , requestDone : Bool
+    , requestStatus : RequestStatus
     }
 
 
@@ -31,7 +37,7 @@ defaultModel =
     { signupEnabled = False
     , email = ""
     , requestProcessing = False
-    , requestDone = False
+    , requestStatus = None
     }
 
 
@@ -50,11 +56,22 @@ update msg model =
             { model | requestProcessing = True }
                 ! [ requestSignin model.email ]
 
-        RequestDone (Ok message) ->
-            ( { model | email = "", requestProcessing = False, requestDone = True }, Cmd.none )
+        RequestDone (Ok _) ->
+            ( { model
+                | email = ""
+                , requestProcessing = False
+                , requestStatus = Approved
+              }
+            , Cmd.none
+            )
 
         RequestDone (Err _) ->
-            ( { model | requestProcessing = False }, Cmd.none )
+            ( { model
+                | requestProcessing = False
+                , requestStatus = Rejected
+              }
+            , Cmd.none
+            )
 
 
 requestSignin : String -> Cmd SigninModalMsg.Msg
@@ -75,7 +92,7 @@ view model =
 
 signinModalConfig : Model -> Modal.Config AppMsg.Msg
 signinModalConfig model =
-    (if model.requestDone then
+    if model.requestStatus == Approved then
         { closeMessage = CloseModal
         , title = "Check your inbox!"
         , content =
@@ -84,11 +101,11 @@ signinModalConfig model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
-     else if model.signupEnabled then
-        modalConfigWithSignupEnabled model
-     else
-        modalConfigOnlyForSignin model
-    )
+    else
+        if model.signupEnabled then
+            modalConfigWithSignupEnabled model
+        else
+            modalConfigOnlyForSignin model
 
 
 modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg
@@ -127,7 +144,7 @@ signinForm model =
         [ div []
             [ input
                 [ type_ "email"
-                , class "u-full-width"
+                , class "email u-full-width"
                 , name "email"
                 , placeholder "you@example.com"
                 , value model.email
@@ -135,6 +152,11 @@ signinForm model =
                 ]
                 []
             ]
+        , if model.requestStatus == Rejected then
+            div [ class "errors" ]
+                [ span [ class "rejected" ] [ text "The email is not allowed to sign in." ] ]
+          else
+            div [] []
         ]
 
 

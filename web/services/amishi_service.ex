@@ -21,6 +21,10 @@ defmodule Cotoami.AmishiService do
     |> Keyword.get(:signup_enabled)
   end
 
+  def is_allowed_to_signin?(email) do
+    signup_enabled() || email in owner_emails() || get_by_email(email)
+  end
+
   def get(id) do
     Amishi
     |> Repo.get(id)
