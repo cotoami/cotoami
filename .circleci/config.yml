@@ -87,6 +87,26 @@ jobs:
             docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
+  deploy-develop:
+    docker:
+      - image: python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl
+          command: ./ci/install-kubectl.sh
+          environment:
+            KUBE_VERSION: 1.4.6
+      - deploy:
+          command: |
+            ~/.kube/kubectl config use-context $KUBE_CONTEXT
+            BUILD_TIMESTAMP="$(date +"%Y.%m.%d.%H.%M")"
+            PATCH='{"spec":{"template":{"spec":{"containers":[{"name":"cotoami","env":[{"name":"CHANGE_THIS_TO_FORCE_UPDATE","value":"'"${BUILD_TIMESTAMP}"'"}]}]}}}}'
+            for dep in $DEPLOYMENTS_FOR_DEV
+            do
+              ~/.kube/kubectl --namespace='prod-cotoami' patch deployment $dep -p $PATCH
+            done
+
   deploy-master:
     docker:
       - image: python:3.6
@@ -110,6 +130,12 @@ workflows:
       - release-develop:
           requires:
             - build
+          filters:
+            branches:
+              only: develop
+      - deploy-develop:
+          requires:
+            - release-develop
           filters:
             branches:
               only: develop
