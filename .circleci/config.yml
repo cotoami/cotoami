@@ -95,8 +95,6 @@ jobs:
       - run:
           name: Install kubectl
           command: ./ci/install-kubectl.sh
-          environment:
-            KUBE_VERSION: 1.4.6
       - deploy:
           command: ./ci/deploy-develop.sh
 
@@ -108,8 +106,6 @@ jobs:
       - run:
           name: Install kubectl
           command: ./ci/install-kubectl.sh
-          environment:
-            KUBE_VERSION: 1.4.6
       - deploy:
           command: |
             ~/.kube/kubectl config use-context $KUBE_CONTEXT
