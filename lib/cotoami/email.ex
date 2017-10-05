@@ -18,7 +18,7 @@ defmodule Cotoami.Email do
   end
 
   def invitation(email_address, token, host_url,
-      %Amishi{email: inviter_email, display_name: inviter_name}) do
+      %{email: inviter_email, display_name: inviter_name}) do
     new_email()
     |> to(email_address)
     |> from({"Cotoami", from()})
