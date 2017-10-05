@@ -66,7 +66,15 @@ modalConfig session =
                 ]
             , div [ class "tools" ]
                 [ a
-                    [ class "tool-button traverse-coto"
+                    [ class "tool-button"
+                    , title "Invite an amishi"
+                    ]
+                    [ materialIcon "person_add" Nothing
+                    , br [] []
+                    , span [ class "label" ] [ text "Invite" ]
+                    ]
+                , a
+                    [ class "tool-button"
                     , title "Export my data"
                     , href "/export"
                     ]
