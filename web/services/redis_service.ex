@@ -11,13 +11,18 @@ defmodule Cotoami.RedisService do
 
   # @signin_key_expire_seconds 60 * 10
   @signin_key_expire_seconds 60 * 60 * 24   # for test
+  @invite_key_expire_seconds 60 * 60 * 24 * 7
 
   def signin_key(token), do: "signin:" <> token
 
-  def generate_signin_token(email) do
+  def generate_signin_token(email, expire_seconds \\ @signin_key_expire_seconds) do
     token = put_signin_token(email)
-    Cotoami.Redix.command!(["EXPIRE", signin_key(token), @signin_key_expire_seconds])
+    Cotoami.Redix.command!(["EXPIRE", signin_key(token), expire_seconds])
     token
+  end
+
+  def generate_invite_token(email) do
+    generate_signin_token(email, @invite_key_expire_seconds)
   end
 
   # Ensure the newly generated signin token is unique

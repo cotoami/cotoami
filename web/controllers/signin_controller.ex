@@ -19,7 +19,7 @@ defmodule Cotoami.SigninController do
   def signin(conn, %{"token" => token}) do
     case RedisService.get_signin_email(token) do
       nil ->
-        text conn, "Invalid token: #{token}"
+        text conn, "The signin token has been expired."
       email ->
         amishi =
           case AmishiService.get_by_email(email) do

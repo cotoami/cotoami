@@ -4,7 +4,6 @@ defmodule Cotoami.Email do
   """
 
   use Bamboo.Phoenix, view: Cotoami.EmailView
-  alias Cotoami.Amishi
 
   def signin_link(email_address, token, host_url) do
     new_email()
