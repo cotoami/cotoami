@@ -23,6 +23,7 @@ type alias Model =
     { email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
+    , acceptedEmail : String
     , invitee : Maybe Amishi
     }
 
@@ -32,6 +33,7 @@ defaultModel =
     { email = ""
     , requestProcessing = False
     , requestStatus = None
+    , acceptedEmail = ""
     , invitee = Nothing
     }
 
@@ -51,6 +53,8 @@ update msg model =
                 | email = ""
                 , requestProcessing = False
                 , requestStatus = Approved
+                , acceptedEmail = model.email
+                , invitee = Nothing
               }
             , Cmd.none
             )
@@ -69,6 +73,7 @@ update msg model =
                     ( { model
                         | requestProcessing = False
                         , requestStatus = Rejected
+                        , acceptedEmail = ""
                         , invitee = invitee
                       }
                     , Cmd.none
@@ -98,7 +103,12 @@ modalConfig model =
         { closeMessage = CloseModal
         , title = "Invite an amishi"
         , content =
-            div [] [ text ("Your invitation has been sent to: " ++ model.email) ]
+            div []
+                [ p []
+                    [ text ("Your invitation has been sent to: ")
+                    , span [ class "accepted-email" ] [ text model.acceptedEmail ]
+                    ]
+                ]
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
