@@ -3,10 +3,12 @@ module App.Modals.InviteModal exposing (Model, defaultModel, update, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Http
+import Http exposing (Error(..))
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
 import Util.Modal as Modal
+import App.Types.Amishi exposing (Amishi)
+import App.Server.Amishi exposing (decodeAmishi)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
@@ -21,6 +23,7 @@ type alias Model =
     { email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
+    , invitee : Maybe Amishi
     }
 
 
@@ -29,6 +32,7 @@ defaultModel =
     { email = ""
     , requestProcessing = False
     , requestStatus = None
+    , invitee = Nothing
     }
 
 
@@ -51,13 +55,25 @@ update msg model =
             , Cmd.none
             )
 
-        SendInviteDone (Err _) ->
-            ( { model
-                | requestProcessing = False
-                , requestStatus = Rejected
-              }
-            , Cmd.none
+        SendInviteDone (Err error) ->
+            (case error of
+                BadStatus response ->
+                    Just response.body
+
+                _ ->
+                    Nothing
             )
+                |> Maybe.map (Decode.decodeString decodeAmishi)
+                |> Maybe.andThen Result.toMaybe
+                |> (\invitee ->
+                    ( { model
+                        | requestProcessing = False
+                        , requestStatus = Rejected
+                        , invitee = invitee
+                      }
+                    , Cmd.none
+                    )
+                )
 
 
 sendInvite : String -> Cmd InviteModalMsg.Msg
@@ -106,7 +122,16 @@ modalConfig model =
                         ]
                     , if model.requestStatus == Rejected then
                         div [ class "errors" ]
-                            [ span [ class "rejected" ] [ text "The amishi already exists." ]
+                            [ span [ class "rejected" ] [ text "The amishi already exists: " ]
+                            , case model.invitee of
+                                Nothing ->
+                                    span [] []
+
+                                Just invitee ->
+                                    span [ class "invitee" ]
+                                        [ img [ class "avatar", src invitee.avatarUrl ] []
+                                        , span [ class "name" ] [ text invitee.displayName ]
+                                        ]
                             ]
                       else
                         div [] []
