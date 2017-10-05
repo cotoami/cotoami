@@ -45,6 +45,7 @@ defmodule Cotoami.Router do
     pipe_through [:api, :require_auth]
 
     get "/amishis/email/:email", AmishiController, :show_by_email
+    get "/amishis/invite/:email", AmishiController, :invite
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
