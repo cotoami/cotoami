@@ -12,6 +12,7 @@ import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
+import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
 
@@ -20,6 +21,7 @@ type Modal
     = ConfirmModal
     | SigninModal
     | ProfileModal
+    | InviteModal
     | CotoModal
     | CotonomaModal
     | ConnectModal
@@ -42,6 +44,7 @@ type alias Model =
     , confirmMessage : String
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
+    , inviteModal : App.Modals.InviteModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -69,6 +72,7 @@ initModel seed route =
     , confirmMessage = ""
     , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
+    , inviteModal = App.Modals.InviteModal.defaultModel
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []

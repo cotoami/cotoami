@@ -85,13 +85,13 @@ requestSignin email =
 
 view : Model -> Html AppMsg.Msg
 view model =
-    signinModalConfig model
+    modalConfig model
         |> Just
         |> Modal.view "signin-modal"
 
 
-signinModalConfig : Model -> Modal.Config AppMsg.Msg
-signinModalConfig model =
+modalConfig : Model -> Modal.Config AppMsg.Msg
+modalConfig model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
         , title = "Check your inbox!"

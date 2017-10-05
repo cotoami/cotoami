@@ -40,6 +40,7 @@ type Msg
     | CloseModal
     | Confirm
     | OpenSigninModal
+    | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
     | OpenCotoModal Coto

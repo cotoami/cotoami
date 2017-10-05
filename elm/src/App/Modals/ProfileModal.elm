@@ -2,10 +2,11 @@ module App.Modals.ProfileModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
-import App.Messages exposing (Msg(CloseModal))
+import App.Messages exposing (Msg(CloseModal, OpenInviteModal))
 
 
 view : Maybe Session -> Html Msg
@@ -68,6 +69,7 @@ modalConfig session =
                 [ a
                     [ class "tool-button"
                     , title "Invite an amishi"
+                    , onClick OpenInviteModal
                     ]
                     [ materialIcon "person_add" Nothing
                     , br [] []
