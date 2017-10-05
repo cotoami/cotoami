@@ -1,4 +1,8 @@
 #profile-modal {
+  .modal-content {
+    max-height: 90%;
+  }
+
   div.profile {
     width: 100%;
 
@@ -21,7 +25,7 @@
       text-align: center;
 
       img.avatar {
-        width: 60% !important;
+        width: 50% !important;
       }
     }
 
