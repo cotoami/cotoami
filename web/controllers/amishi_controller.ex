@@ -21,15 +21,18 @@ defmodule Cotoami.AmishiController do
   end
 
   def invite(conn, %{"email" => email}, amishi) do
-    if AmishiService.get_by_email(email) do
-      send_resp(conn, :conflict, "")
-    else
-      token = RedisService.generate_invite_token(email)
-      host_url = Cotoami.Router.Helpers.url(conn)
-      email
-      |> Cotoami.Email.invitation(token, host_url, amishi)
-      |> Cotoami.Mailer.deliver_now
-      json conn, "ok"
+    case AmishiService.get_by_email(email) do
+      nil ->
+        token = RedisService.generate_invite_token(email)
+        host_url = Cotoami.Router.Helpers.url(conn)
+        email
+        |> Cotoami.Email.invitation(token, host_url, amishi)
+        |> Cotoami.Mailer.deliver_now
+        json conn, "ok"
+      invitee ->
+        conn
+        |> put_status(:conflict)
+        |> json(Phoenix.View.render_one(invitee, AmishiView, "amishi.json"))
     end
   end
 

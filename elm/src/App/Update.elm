@@ -595,6 +595,11 @@ update msg model =
                 |> \( signinModal, subCmd ) ->
                     { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
 
+        InviteModalMsg subMsg ->
+            App.Modals.InviteModal.update subMsg model.inviteModal
+                |> \( inviteModal, subCmd ) ->
+                    { model | inviteModal = inviteModal } ! [ Cmd.map InviteModalMsg subCmd ]
+
         CotonomaModalMsg subMsg ->
             model.context.session
                 |> Maybe.map

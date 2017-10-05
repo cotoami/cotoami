@@ -5,5 +5,18 @@
 
   form {
     margin: 0;
+    margin-bottom: 12px;
+
+    input.email {
+      margin-bottom: 0;
+    }
+  }
+
+  div.errors {
+    padding-top: 6px;
+
+    span.rejected {
+      color: #f00;
+    }
   }
 }

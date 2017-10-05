@@ -9,7 +9,7 @@ module App.Modals.SigninModal
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onCheck)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
