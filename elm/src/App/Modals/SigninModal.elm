@@ -9,7 +9,7 @@ module App.Modals.SigninModal
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onCheck)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
@@ -85,13 +85,13 @@ requestSignin email =
 
 view : Model -> Html AppMsg.Msg
 view model =
-    signinModalConfig model
+    modalConfig model
         |> Just
         |> Modal.view "signin-modal"
 
 
-signinModalConfig : Model -> Modal.Config AppMsg.Msg
-signinModalConfig model =
+modalConfig : Model -> Modal.Config AppMsg.Msg
+modalConfig model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
         , title = "Check your inbox!"

@@ -16,6 +16,7 @@ import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
+import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.ConfirmModal
@@ -206,6 +207,9 @@ modals model =
 
                 ProfileModal ->
                     App.Modals.ProfileModal.view model.context.session
+
+                InviteModal ->
+                    App.Modals.InviteModal.view model.inviteModal
 
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal

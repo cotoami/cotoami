@@ -1,0 +1,5 @@
+<%= @inviter_name %> (<%= @inviter_email %>) has invited you to join the Cotoami workspace.
+
+<%= @host_url %>/signin/<%= @token %>
+
+Cotoami workspace: <%= @host_url %>

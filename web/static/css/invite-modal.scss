@@ -1,0 +1,48 @@
+#invite-modal {
+  p {
+    margin-bottom: 1rem;
+  }
+
+  form {
+    margin: 0;
+    margin-bottom: 12px;
+
+    input.email {
+      margin-bottom: 0;
+    }
+  }
+
+  span.accepted-email {
+    margin-left: 3px;
+    color: #aaa;
+  }
+
+  div.errors {
+    padding-top: 6px;
+    vertical-align: middle;
+
+    span.rejected {
+      color: #f00;
+    }
+
+    span.invitee {
+      margin-left: 5px;
+      white-space: nowrap;
+
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        margin-right: 4px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+
+      span.name {
+        color: #666;
+        font-weight: bold;
+      }
+    }
+  }
+}
