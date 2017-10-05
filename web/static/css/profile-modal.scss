@@ -34,4 +34,22 @@
       }
     }
   }
+
+  div.tools {
+    text-align: center;
+
+    a.tool-button {
+      text-decoration: none;
+    }
+
+    i {
+      font-size: 30px;
+      vertical-align: bottom;
+    }
+
+    span.label {
+      font-size: 12px;
+      vertical-align: top;
+    }
+  }
 }
