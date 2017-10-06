@@ -25,13 +25,21 @@
   }
 
   div.posts-on-day {
-    margin-top: 12px;
+    margin-top: 20px;
 
     div.date-header {
+      z-index: 10;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      left: 0;
       padding: 10px;
+      padding-left: 0;
 
       span.date {
         color: #999;
+        background-color: rgba(248, 248, 248, .9);
+        padding: 10px;
       }
     }
   }
