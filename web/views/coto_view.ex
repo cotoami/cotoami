@@ -38,8 +38,8 @@ defmodule Cotoami.CotoView do
       as_cotonoma: coto.as_cotonoma,
       cotonoma_id: cotonoma_id,
       cotonoma_key: cotonoma_key,
-      inserted_at: coto.inserted_at |> DateTime.to_unix(:microsecond),
-      updated_at: coto.updated_at |> DateTime.to_unix(:microsecond)
+      inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
+      updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
     }
   end
 end

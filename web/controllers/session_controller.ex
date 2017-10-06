@@ -9,7 +9,8 @@ defmodule Cotoami.SessionController do
         render(conn, "session.json",
           amishi: amishi,
           token: Phoenix.Token.sign(conn, "amishi", amishi.id),
-          websocket_url: get_websocket_url()
+          websocket_url: get_websocket_url(),
+          lang: conn.assigns[:lang]
         )
       _ ->
         conn

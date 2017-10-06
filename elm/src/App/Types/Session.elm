@@ -11,6 +11,7 @@ type alias Session =
     , owner : Bool
     , avatarUrl : String
     , displayName : String
+    , lang : String
     }
 
 

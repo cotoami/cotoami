@@ -9,8 +9,10 @@ import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
+import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
+import Util.DateUtil exposing (sameDay, formatDay)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -82,16 +84,50 @@ postEditor session context model =
 
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
+    model.posts
+        |> List.reverse
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
+        |> List.map
+            (\postsOnDay ->
+                let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
+                    postDateString =
+                        List.head postsOnDay
+                            |> Maybe.andThen (\post -> post.postedAt)
+                            |> Maybe.map (formatDay lang)
+                            |> Maybe.withDefault ""
+                in
+                    ( postDateString
+                    , div
+                        [ class "posts-on-day" ]
+                        [ div
+                            [ class "date-header" ]
+                            [ span [ class "date" ] [ text postDateString ] ]
+                        , postsDiv context graph postsOnDay
+                        ]
+                    )
+            )
+        |> Html.Keyed.node
+            "div"
+            [ id "timeline", classList [ ( "loading", model.loading ) ] ]
+
+
+postsDiv : Context -> Graph -> List Post -> Html Msg
+postsDiv context graph posts =
     Html.Keyed.node
         "div"
-        [ id "timeline", classList [ ( "loading", model.loading ) ] ]
+        [ class "posts" ]
         (List.map
             (\post ->
                 ( getKey post
                 , postDiv context graph post
                 )
             )
-            (List.reverse model.posts)
+            posts
         )
 
 
@@ -142,6 +178,7 @@ postDiv context graph post =
                   else
                     authorDiv context.session post
                 , bodyDiv context graph post
+                , footerDiv post
                 , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
                 ]
             ]
@@ -207,6 +244,21 @@ markdown markdownText =
         |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
         |> List.concat
         |> div [ class "content" ]
+
+
+footerDiv : Post -> Html Msg
+footerDiv post =
+    div
+        [ class "post-footer" ]
+        [ case post.postedAt of
+            Nothing ->
+                span [] []
+
+            Just postedAt ->
+                span
+                    [ class "posted-at" ]
+                    [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
+        ]
 
 
 customHtmlInline : Inline i -> Html Msg

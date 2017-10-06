@@ -85,6 +85,7 @@ setCotoSaved apiResponse timeline =
         (\post ->
             { post
                 | cotoId = apiResponse.cotoId
+                , postedAt = apiResponse.postedAt
                 , cotonomaKey = apiResponse.cotonomaKey
             }
         )

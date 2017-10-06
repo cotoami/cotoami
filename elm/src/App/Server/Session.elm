@@ -8,7 +8,7 @@ import App.Types.Session exposing (Session)
 
 decodeSession : Decode.Decoder Session
 decodeSession =
-    Decode.map7 Session
+    Decode.map8 Session
         (Decode.field "token" Decode.string)
         (Decode.field "websocket_url" Decode.string)
         (Decode.field "id" Decode.string)
@@ -16,6 +16,7 @@ decodeSession =
         (Decode.field "owner" Decode.bool)
         (Decode.field "avatar_url" Decode.string)
         (Decode.field "display_name" Decode.string)
+        (Decode.field "lang" Decode.string)
 
 
 fetchSession : Cmd Msg
