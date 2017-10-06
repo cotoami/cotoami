@@ -3,6 +3,7 @@ defmodule Cotoami.Router do
 
   pipeline :browser do
     plug :accepts, ["html"]
+    plug Cotoami.Language, "en_US"
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
@@ -12,6 +13,7 @@ defmodule Cotoami.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Cotoami.Language, "en_US"
     plug :fetch_session
     plug :put_secure_browser_headers
     plug Cotoami.ApiCsrfProtection
