@@ -11,6 +11,7 @@ import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
+import Util.DateUtil
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -142,6 +143,7 @@ postDiv context graph post =
                   else
                     authorDiv context.session post
                 , bodyDiv context graph post
+                , footerDiv post
                 , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
                 ]
             ]
@@ -207,6 +209,21 @@ markdown markdownText =
         |> List.map (App.Markdown.customHtmlBlock customHtmlInline)
         |> List.concat
         |> div [ class "content" ]
+
+
+footerDiv : Post -> Html Msg
+footerDiv post =
+    div
+        [ class "post-footer" ]
+        [ case post.postedAt of
+            Nothing ->
+                span [] []
+
+            Just postedAt ->
+                span
+                    [ class "posted-at" ]
+                    [ text (Util.DateUtil.format "%H:%M:%S" postedAt) ]
+        ]
 
 
 customHtmlInline : Inline i -> Html Msg
