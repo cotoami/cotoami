@@ -83,17 +83,41 @@ postEditor session context model =
 
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
-    Html.Keyed.node
-        "div"
-        [ id "timeline", classList [ ( "loading", model.loading ) ] ]
-        (List.map
-            (\post ->
-                ( getKey post
-                , postDiv context graph post
+    (List.foldr
+        (\post ( date, divs ) ->
+            let
+                postDate =
+                    post.postedAt
+                        |> Maybe.map (Util.DateUtil.format "%Y / %m / %d")
+                        |> Maybe.withDefault ""
+
+                divsWithDate =
+                    if postDate == date then
+                        divs
+                    else
+                        ( postDate, dateSeparatorDiv postDate ) :: divs
+            in
+                ( postDate
+                , ( getKey post
+                  , postDiv context graph post
+                  )
+                    :: divsWithDate
                 )
-            )
-            (List.reverse model.posts)
         )
+        ( "", [] )
+        model.posts
+    )
+        |> Tuple.second
+        |> List.reverse
+        |> Html.Keyed.node
+            "div"
+            [ id "timeline", classList [ ( "loading", model.loading ) ] ]
+
+
+dateSeparatorDiv : String -> Html Msg
+dateSeparatorDiv dateString =
+    div [ class "date-separator" ]
+        [ span [ class "date" ] [ text dateString ] ]
 
 
 getKey : Post -> String

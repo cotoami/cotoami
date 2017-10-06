@@ -24,6 +24,14 @@
     background: url(../images/loading.gif) center no-repeat #fff;
   }
 
+  div.date-separator {
+    padding: 10px;
+
+    span.date {
+      color: #999;
+    }
+  }
+
   div.coto {
     position: relative;
     margin-bottom: 6px;
