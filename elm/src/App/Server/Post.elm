@@ -1,7 +1,8 @@
 module App.Server.Post exposing (..)
 
 import Http exposing (Request)
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (maybe, int, string, float, bool)
+import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
 import Util.HttpUtil exposing (httpPost)
 import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
@@ -13,15 +14,16 @@ import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
 
 decodePost : Decode.Decoder Post
 decodePost =
-    Decode.map8 Post
-        (Decode.maybe (Decode.field "postId" Decode.int))
-        (Decode.maybe (Decode.field "id" Decode.string))
-        (Decode.field "content" Decode.string)
-        (Decode.maybe (Decode.field "amishi" decodeAmishi))
-        (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
-        (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
-        (Decode.succeed False)
+    Json.Decode.Pipeline.decode Post
+        |> optional "postId" (maybe int) Nothing
+        |> optional "id" (maybe string) Nothing
+        |> required "content" string
+        |> optional "amishi" (maybe decodeAmishi) Nothing
+        |> optional "posted_in" (maybe decodeCotonoma) Nothing
+        |> optional "inserted_at" (maybe float) Nothing
+        |> required "as_cotonoma" bool
+        |> optional "cotonoma_key" (maybe string) Nothing
+        |> hardcoded False
 
 
 fetchPosts : Cmd Msg

@@ -1,5 +1,6 @@
 module App.Types.Post exposing (..)
 
+import Time exposing (Time)
 import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
@@ -14,6 +15,7 @@ type alias Post =
     , content : String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
+    , postedAt : Maybe Time
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     , beingDeleted : Bool
@@ -27,6 +29,7 @@ defaultPost =
     , content = ""
     , amishi = Nothing
     , postedIn = Nothing
+    , postedAt = Nothing
     , asCotonoma = False
     , cotonomaKey = Nothing
     , beingDeleted = False
