@@ -12,7 +12,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
-import Util.DateUtil exposing (sameDay)
+import Util.DateUtil exposing (sameDay, formatDay)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -93,7 +93,7 @@ timelineDiv context graph model =
                     postDateString =
                         List.head postsOnDay
                             |> Maybe.andThen (\post -> post.postedAt)
-                            |> Maybe.map (Util.DateUtil.format "%Y - %m - %d")
+                            |> Maybe.map (formatDay "en_us")
                             |> Maybe.withDefault ""
                 in
                     ( postDateString
@@ -252,7 +252,7 @@ footerDiv post =
             Just postedAt ->
                 span
                     [ class "posted-at" ]
-                    [ text (Util.DateUtil.format "%H:%M:%S" postedAt) ]
+                    [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
         ]
 
 

@@ -1,13 +1,24 @@
-module Util.DateUtil exposing (format, sameDay)
+module Util.DateUtil exposing (format, formatDay, sameDay)
 
 import Date exposing (Date, year, month, day)
 import Date.Extra.Format
-import Date.Extra.Config.Config_en_us as Config_en_us
+import Date.Extra.Config.Configs as Configs
 
 
-format : String -> Date -> String
-format format date =
-    Date.Extra.Format.format Config_en_us.config format date
+format : String -> String -> Date -> String
+format localeId format date =
+    let
+        config = Configs.getConfig localeId
+    in
+        Date.Extra.Format.format config format date
+
+
+formatDay : String -> Date -> String
+formatDay localeId date =
+    let
+        config = Configs.getConfig localeId
+    in
+        Date.Extra.Format.format config config.format.longDate date
 
 
 sameDay : Maybe Date -> Maybe Date -> Bool
