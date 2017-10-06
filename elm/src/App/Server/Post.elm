@@ -1,5 +1,6 @@
 module App.Server.Post exposing (..)
 
+import Date exposing (Date)
 import Http exposing (Request)
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
@@ -20,7 +21,7 @@ decodePost =
         |> required "content" string
         |> optional "amishi" (maybe decodeAmishi) Nothing
         |> optional "posted_in" (maybe decodeCotonoma) Nothing
-        |> optional "inserted_at" (maybe float) Nothing
+        |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing
         |> required "as_cotonoma" bool
         |> optional "cotonoma_key" (maybe string) Nothing
         |> hardcoded False
