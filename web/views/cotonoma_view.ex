@@ -30,8 +30,8 @@ defmodule Cotoami.CotonomaView do
           coto -> coto.id
         end,
       owner: owner_as_json,
-      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:microsecond),
-      updated_at: cotonoma.updated_at |> DateTime.to_unix(:microsecond)
+      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:millisecond),
+      updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
     }
   end
 end
