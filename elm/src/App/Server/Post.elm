@@ -33,11 +33,11 @@ fetchPosts =
 
 fetchCotonomaPosts : CotonomaKey -> Cmd Msg
 fetchCotonomaPosts key =
-    Http.send CotonomaFetched
-        <| Http.get ("/api/cotonomas/" ++ key ++ "/cotos")
-        <| Decode.map2 (,)
-            (Decode.field "cotonoma" decodeCotonoma)
-            (Decode.field "cotos" (Decode.list decodePost))
+    Http.send CotonomaFetched <|
+        Http.get ("/api/cotonomas/" ++ key ++ "/cotos") <|
+            Decode.map2 (,)
+                (Decode.field "cotonoma" decodeCotonoma)
+                (Decode.field "cotos" (Decode.list decodePost))
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
@@ -48,16 +48,16 @@ postRequest clientId maybeCotonoma post =
         decodePost
 
 
-post : String -> Maybe Cotonoma -> ((Result Http.Error Post) -> msg) -> Post -> Cmd msg
+post : String -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
 post clientId maybeCotonoma msgAfterPosted post =
     postRequest clientId maybeCotonoma post
-    |> Http.send msgAfterPosted
+        |> Http.send msgAfterPosted
 
 
 postCotonoma : String -> Maybe Cotonoma -> Int -> String -> Cmd Msg
 postCotonoma clientId maybeCotonoma postId name =
-    Http.send CotonomaPosted
-        <| httpPost
+    Http.send CotonomaPosted <|
+        httpPost
             "/api/cotonomas"
             (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId name))
             decodePost
@@ -71,13 +71,19 @@ encodePost clientId maybeCotonoma post =
           , (Encode.object
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
-                        Nothing -> Encode.null
-                        Just cotonoma -> Encode.string cotonoma.id
+                        Nothing ->
+                            Encode.null
+
+                        Just cotonoma ->
+                            Encode.string cotonoma.id
                   )
                 , ( "postId"
                   , case post.postId of
-                        Nothing -> Encode.null
-                        Just postId -> Encode.int postId
+                        Nothing ->
+                            Encode.null
+
+                        Just postId ->
+                            Encode.int postId
                   )
                 , ( "content", Encode.string post.content )
                 ]
