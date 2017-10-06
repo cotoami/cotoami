@@ -86,14 +86,19 @@ timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
     model.posts
         |> List.reverse
-        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt )
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
         |> List.map
             (\postsOnDay ->
                 let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
                     postDateString =
                         List.head postsOnDay
                             |> Maybe.andThen (\post -> post.postedAt)
-                            |> Maybe.map (formatDay "en_us")
+                            |> Maybe.map (formatDay lang)
                             |> Maybe.withDefault ""
                 in
                     ( postDateString

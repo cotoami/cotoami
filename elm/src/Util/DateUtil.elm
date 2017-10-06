@@ -5,18 +5,28 @@ import Date.Extra.Format
 import Date.Extra.Config.Configs as Configs
 
 
+langToLocaleId : String -> String
+langToLocaleId lang =
+    case lang of
+        "ja" ->
+            "ja_jp"
+
+        _ ->
+            lang
+
+
 format : String -> String -> Date -> String
-format localeId format date =
+format lang format date =
     let
-        config = Configs.getConfig localeId
+        config = Configs.getConfig (langToLocaleId lang)
     in
         Date.Extra.Format.format config format date
 
 
 formatDay : String -> Date -> String
-formatDay localeId date =
+formatDay lang date =
     let
-        config = Configs.getConfig localeId
+        config = Configs.getConfig (langToLocaleId lang)
     in
         Date.Extra.Format.format config config.format.longDate date
 
