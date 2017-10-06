@@ -9,9 +9,10 @@ import Json.Decode as Decode
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
+import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
-import Util.DateUtil
+import Util.DateUtil exposing (sameDay)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -83,41 +84,46 @@ postEditor session context model =
 
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
-    (List.foldr
-        (\post ( date, divs ) ->
-            let
-                postDate =
-                    post.postedAt
-                        |> Maybe.map (Util.DateUtil.format "%Y / %m / %d")
-                        |> Maybe.withDefault ""
-
-                divsWithDate =
-                    if postDate == date then
-                        divs
-                    else
-                        ( postDate, dateSeparatorDiv postDate ) :: divs
-            in
-                ( postDate
-                , ( getKey post
-                  , postDiv context graph post
-                  )
-                    :: divsWithDate
-                )
-        )
-        ( "", [] )
-        model.posts
-    )
-        |> Tuple.second
+    model.posts
         |> List.reverse
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt )
+        |> List.map
+            (\postsOnDay ->
+                let
+                    postDateString =
+                        List.head postsOnDay
+                            |> Maybe.andThen (\post -> post.postedAt)
+                            |> Maybe.map (Util.DateUtil.format "%Y - %m - %d")
+                            |> Maybe.withDefault ""
+                in
+                    ( postDateString
+                    , div
+                        [ class "posts-on-day" ]
+                        [ div
+                            [ class "date-header" ]
+                            [ span [ class "date" ] [ text postDateString ] ]
+                        , postsDiv context graph postsOnDay
+                        ]
+                    )
+            )
         |> Html.Keyed.node
             "div"
             [ id "timeline", classList [ ( "loading", model.loading ) ] ]
 
 
-dateSeparatorDiv : String -> Html Msg
-dateSeparatorDiv dateString =
-    div [ class "date-separator" ]
-        [ span [ class "date" ] [ text dateString ] ]
+postsDiv : Context -> Graph -> List Post -> Html Msg
+postsDiv context graph posts =
+    Html.Keyed.node
+        "div"
+        [ class "posts" ]
+        (List.map
+            (\post ->
+                ( getKey post
+                , postDiv context graph post
+                )
+            )
+            posts
+        )
 
 
 getKey : Post -> String

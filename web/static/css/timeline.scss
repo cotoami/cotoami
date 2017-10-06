@@ -24,21 +24,23 @@
     background: url(../images/loading.gif) center no-repeat #fff;
   }
 
-  div.date-separator {
-    padding: 10px;
+  div.posts-on-day {
+    &:first-child {
+      margin-top: 12px;
+    }
 
-    span.date {
-      color: #999;
+    div.date-header {
+      padding: 10px;
+
+      span.date {
+        color: #999;
+      }
     }
   }
 
   div.coto {
     position: relative;
     margin-bottom: 6px;
-
-    &:first-child {
-      margin-top: 12px;
-    }
 
     &.posting {
       opacity: 0.3;
