@@ -1,4 +1,4 @@
-module App.Modals.ImportModal exposing (Model)
+module App.Modals.ImportModal exposing (Model, defaultModel, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -19,6 +19,21 @@ type alias Model =
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+defaultModel : Model
+defaultModel =
+    { data = ""
+    , requestProcessing = False
+    , requestStatus = None
+    }
+
+
+view : Model -> Html AppMsg.Msg
+view model =
+    modalConfig model
+        |> Just
+        |> Modal.view "import-modal"
 
 
 modalConfig : Model -> Modal.Config AppMsg.Msg
@@ -48,7 +63,7 @@ modalConfig model =
             , title = "Import cotos and connections"
             , content =
                 div []
-                    [ p [] [ text "Paste the content of an exported file in the input box below." ]
+                    [ p [] [ text "Paste the content of an exported file in the input box below and click the IMPORT button." ]
                     , Html.form [ name "import" ]
                         [ div []
                             [ textarea

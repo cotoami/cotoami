@@ -45,6 +45,7 @@ type Msg
     | OpenProfileModal
     | OpenCotonomaModal
     | OpenCotoModal Coto
+    | OpenImportModal
       --
       -- Coto
       --

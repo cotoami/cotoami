@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
-import App.Messages exposing (Msg(CloseModal, OpenInviteModal))
+import App.Messages exposing (Msg(CloseModal, OpenInviteModal, OpenImportModal))
 
 
 view : Maybe Session -> Html Msg
@@ -77,6 +77,7 @@ modalConfig session =
                 , if session.owner then
                     toolButton "Import" "cloud_upload"
                         [ title "Import cotos and connections"
+                        , onClick OpenImportModal
                         ]
                   else
                     span [] []

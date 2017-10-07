@@ -15,6 +15,7 @@ import App.Modals.SigninModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
+import App.Modals.ImportModal
 
 
 type Modal
@@ -25,6 +26,7 @@ type Modal
     | CotoModal
     | CotonomaModal
     | ConnectModal
+    | ImportModal
 
 
 type ConnectingSubject
@@ -56,6 +58,7 @@ type alias Model =
     , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
     , traversals : Traversals
+    , importModal : App.Modals.ImportModal.Model
     }
 
 
@@ -84,6 +87,7 @@ initModel seed route =
     , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
     , traversals = defaultTraversals
+    , importModal = App.Modals.ImportModal.defaultModel
     }
 
 
