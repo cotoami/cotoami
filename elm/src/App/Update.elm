@@ -651,6 +651,11 @@ update msg model =
                     )
                 |> withDefault (model ! [])
 
+        ImportModalMsg subMsg ->
+            App.Modals.ImportModal.update subMsg model.importModal
+                |> \( importModal, subCmd ) ->
+                    { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
+
 
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =

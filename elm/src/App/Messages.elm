@@ -14,6 +14,7 @@ import App.Modals.SigninModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.CotonomaModalMsg
 import App.Modals.CotoModalMsg
+import App.Modals.ImportModalMsg
 
 
 type Msg
@@ -111,3 +112,4 @@ type Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
     | CotoModalMsg App.Modals.CotoModalMsg.Msg
+    | ImportModalMsg App.Modals.ImportModalMsg.Msg

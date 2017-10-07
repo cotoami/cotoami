@@ -1,8 +1,8 @@
-module App.Modals.ImportModal exposing (Model, defaultModel, view)
+module App.Modals.ImportModal exposing (Model, defaultModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
@@ -108,6 +108,7 @@ modalConfig model =
                             [ textarea
                                 [ class "data"
                                 , value model.data
+                                , onInput (AppMsg.ImportModalMsg << DataInput)
                                 ]
                                 []
                             ]
