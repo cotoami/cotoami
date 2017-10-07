@@ -59,11 +59,12 @@ defmodule Cotoami.AmishiController do
   def import(conn, %{"data" => data}, amishi) do
     case Poison.decode(data) do
       {:ok, json_data} ->
+        IO.puts inspect(json_data)
         json conn, %{cotos: 1, connections: 2}
-      {:error, %{message: message}} ->
+      {:error, _} ->
         conn
         |> put_status(:bad_request)
-        |> json(message)
+        |> text("Invalid JSON text.")
     end
   end
 end

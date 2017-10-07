@@ -4,8 +4,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
+import Json.Encode as Encode
+import Json.Decode as Decode
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
+import Util.HttpUtil exposing (httpPost)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg exposing (Msg(..))
 
@@ -39,7 +42,7 @@ update msg model =
 
         ImportClick ->
             { model | requestProcessing = True }
-                ! []
+                ! [ importData model.data ]
 
         ImportDone (Ok results) ->
             ( { model
@@ -66,6 +69,21 @@ update msg model =
                         , Cmd.none
                         )
                    )
+
+
+importData : String -> Cmd ImportModalMsg.Msg
+importData data =
+    let
+        requestBody =
+            Http.jsonBody <|
+                Encode.object [ ( "data", Encode.string data ) ]
+
+        decodeResult =
+            Decode.map2 (,)
+                (Decode.field "cotos" Decode.int)
+                (Decode.field "connections" Decode.int)
+    in
+        Http.send ImportDone (httpPost "/api/import" requestBody decodeResult)
 
 
 view : Model -> Html AppMsg.Msg
@@ -125,6 +143,7 @@ modalConfig model =
                 [ button
                     [ class "button button-primary"
                     , disabled (isBlank model.data || model.requestProcessing)
+                    , onClick (AppMsg.ImportModalMsg ImportClick)
                     ]
                     [ if model.requestProcessing then
                         text "Importing..."

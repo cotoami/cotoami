@@ -13,4 +13,20 @@
     height: 35vh;
     margin-bottom: 0;
   }
+
+  span.rejected {
+    color: #f00;
+  }
+
+  span.import-results {
+    color: #666;
+
+    span.imported-cotos,
+    span.imported-connections {
+      margin-left: 6px;
+      margin-right: 3px;
+      font-size: 120%;
+      font-weight: bold;
+    }
+  }
 }
