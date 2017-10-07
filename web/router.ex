@@ -37,7 +37,7 @@ defmodule Cotoami.Router do
   scope "/export", Cotoami do
     pipe_through [:browser, :require_auth]
 
-    get "/", AmishiController, :export
+    get "/", DatabaseController, :export
   end
 
   scope "/api/public", Cotoami do
@@ -52,8 +52,8 @@ defmodule Cotoami.Router do
   scope "/api", Cotoami do
     pipe_through [:api, :require_auth]
 
+    post "/import", DatabaseController, :import
     get "/invite/:email", AmishiController, :invite
-    post "/import", AmishiController, :import
     get "/amishis/email/:email", AmishiController, :show_by_email
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
