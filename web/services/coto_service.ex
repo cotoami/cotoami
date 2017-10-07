@@ -44,9 +44,17 @@ defmodule Cotoami.CotoService do
     Repo.transaction(fn ->
       {coto_inserts, coto_updates} =
         Enum.reduce(cotos, {0, 0}, fn(coto, {inserts, updates}) ->
-          %Coto{}
-          |> Coto.changeset_to_import_new(coto, amishi)
-          |> Repo.insert!
+          {changeset, results} =
+            case Repo.get(Coto, coto["id"]) do
+              nil ->
+                {Coto.changeset_to_import(%Coto{}, coto, amishi),
+                  {inserts + 1, updates}}
+              coto ->
+                {Coto.changeset_to_import(coto, coto, amishi),
+                  {inserts, updates + 1}}
+            end
+          Repo.insert_or_update!(changeset)
+          results
         end)
       %{cotos: %{inserts: coto_inserts, updates: coto_updates}}
     end)
