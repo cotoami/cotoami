@@ -3,9 +3,11 @@ module App.Modals.ImportModal exposing (Model, defaultModel, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ImportModalMsg as ImportModalMsg exposing (Msg(..))
 
 
 type RequestStatus
@@ -27,6 +29,43 @@ defaultModel =
     , requestProcessing = False
     , requestStatus = None
     }
+
+
+update : ImportModalMsg.Msg -> Model -> ( Model, Cmd ImportModalMsg.Msg )
+update msg model =
+    case msg of
+        DataInput data ->
+            ( { model | data = data }, Cmd.none )
+
+        ImportClick ->
+            { model | requestProcessing = True }
+                ! []
+
+        ImportDone (Ok results) ->
+            ( { model
+                | data = ""
+                , requestProcessing = False
+                , requestStatus = Imported results
+              }
+            , Cmd.none
+            )
+
+        ImportDone (Err error) ->
+            (case error of
+                BadStatus response ->
+                    response.body
+
+                _ ->
+                    "Error"
+            )
+                |> (\message ->
+                        ( { model
+                            | requestProcessing = False
+                            , requestStatus = Rejected message
+                          }
+                        , Cmd.none
+                        )
+                   )
 
 
 view : Model -> Html AppMsg.Msg
@@ -65,11 +104,20 @@ modalConfig model =
                 div []
                     [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
                     , Html.form [ name "import" ]
-                        [ textarea
-                            [ class "data"
-                            , value model.data
+                        [ div []
+                            [ textarea
+                                [ class "data"
+                                , value model.data
+                                ]
+                                []
                             ]
-                            []
+                        , case model.requestStatus of
+                            Rejected message ->
+                                div [ class "errors" ]
+                                    [ span [ class "rejected" ] [ text message ] ]
+
+                            _ ->
+                                div [] []
                         ]
                     ]
             , buttons =
