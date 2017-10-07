@@ -4,6 +4,7 @@ defmodule Cotoami.Coto do
   """
 
   use Cotoami.Web, :model
+  alias Cotoami.Amishi
 
   schema "cotos" do
     field :content, :string
@@ -25,6 +26,24 @@ defmodule Cotoami.Coto do
     struct
     |> cast(params, [:content])
     |> validate_required([:content])
+  end
+
+  def changeset_to_import_new(struct, json, %Amishi{id: amishi_id}) do
+    data = Map.merge(json, %{
+      "posted_in_id" => json["posted_in"]["id"],
+      "amishi_id" => amishi_id
+    })
+    struct
+    |> cast(data, [
+      :id,
+      :content,
+      :as_cotonoma,
+      :posted_in_id,
+      :amishi_id,
+      :inserted_at,
+      :updated_at
+    ])
+    |> validate_required([:content, :amishi_id])
   end
 
   def for_amishi(query, amishi_id) do

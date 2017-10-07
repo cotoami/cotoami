@@ -40,6 +40,18 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
+  def import_by_amishi(cotos, connections, %Amishi{} = amishi) do
+    Repo.transaction(fn ->
+      {coto_inserts, coto_updates} =
+        Enum.reduce(cotos, {0, 0}, fn(coto, {inserts, updates}) ->
+          %Coto{}
+          |> Coto.changeset_to_import_new(coto, amishi)
+          |> Repo.insert!
+        end)
+      %{cotos: %{inserts: coto_inserts, updates: coto_updates}}
+    end)
+  end
+
   def create!(cotonoma_id_nillable, amishi_id, content) do
     posted_in =
       CotonomaService.check_permission!(

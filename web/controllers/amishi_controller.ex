@@ -56,11 +56,18 @@ defmodule Cotoami.AmishiController do
     |> send_resp(200, Poison.encode!(data, pretty: true))
   end
 
-  def import(conn, %{"data" => data}, amishi) do
+  def import(conn, %{"data" => data}, %{owner: true} = amishi) do
     case Poison.decode(data) do
       {:ok, json_data} ->
-        IO.puts inspect(json_data)
-        json conn, %{cotos: 1, connections: 2}
+        case json_data do
+          %{"cotos" => cotos, "connections" => connections} ->
+            CotoService.import_by_amishi(cotos, connections, amishi)
+            json conn, %{cotos: 1, connections: 2}
+          _ ->
+            conn
+            |> put_status(:bad_request)
+            |> text("Invalid data structure.")
+        end
       {:error, _} ->
         conn
         |> put_status(:bad_request)
