@@ -84,11 +84,8 @@ update msg model =
 
 sendInvite : String -> Cmd InviteModalMsg.Msg
 sendInvite email =
-    let
-        url =
-            "/api/amishis/invite/" ++ email
-    in
-        Http.send SendInviteDone (Http.get url Decode.string)
+    Http.send SendInviteDone <|
+        Http.get ("/api/invite/" ++ email) Decode.string
 
 
 view : Model -> Html AppMsg.Msg

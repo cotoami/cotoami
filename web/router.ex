@@ -26,12 +26,18 @@ defmodule Cotoami.Router do
   ]
 
   scope "/", Cotoami do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token", SigninController, :signin
     get "/signout", SessionController, :signout
-    get "/export", AmishiController, :export
+
+  end
+
+  scope "/export", Cotoami do
+    pipe_through [:browser, :require_auth]
+
+    get "/", AmishiController, :export
   end
 
   scope "/api/public", Cotoami do
@@ -46,8 +52,9 @@ defmodule Cotoami.Router do
   scope "/api", Cotoami do
     pipe_through [:api, :require_auth]
 
+    get "/invite/:email", AmishiController, :invite
+    post "/import", AmishiController, :import
     get "/amishis/email/:email", AmishiController, :show_by_email
-    get "/amishis/invite/:email", AmishiController, :invite
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos

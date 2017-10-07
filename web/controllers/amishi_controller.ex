@@ -55,4 +55,15 @@ defmodule Cotoami.AmishiController do
       ~s[attachment; filename="cotoami-export.json"])
     |> send_resp(200, Poison.encode!(data, pretty: true))
   end
+
+  def import(conn, %{"data" => data}, amishi) do
+    case Poison.decode(data) do
+      {:ok, json_data} ->
+        json conn, %{cotos: 1, connections: 2}
+      {:error, %{message: message}} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(message)
+    end
+  end
 end
