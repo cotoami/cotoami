@@ -112,7 +112,8 @@ modalConfig model =
                         ]
                     ]
             , buttons =
-                [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
+                [ a [ class "button" , href "/" ] [ text "Reload browser" ]
+                ]
             }
 
         _ ->
