@@ -42,8 +42,20 @@ defmodule Cotoami.CotoService do
 
   def import_by_amishi(cotos, connections, %Amishi{} = amishi) do
     Repo.transaction(fn ->
-      {coto_inserts, coto_updates} =
-        Enum.reduce(cotos, {0, 0}, fn(coto, {inserts, updates}) ->
+      {coto_inserts, coto_updates} = import_cotos(cotos, {0, 0}, amishi)
+      %{
+        cotos: %{inserts: coto_inserts, updates: coto_updates},
+        connections: %{ok: 0, coto_not_found: 0}
+      }
+    end)
+  end
+
+  defp import_cotos(cotos, {_, _} = results, %Amishi{} = amishi) do
+    {pendings, results} =
+      Enum.reduce(cotos, {[], results},
+        fn(coto, {pendings, {inserts, updates}}) ->
+          # cotonoma exists?
+
           {changeset, results} =
             case Repo.get(Coto, coto["id"]) do
               nil ->
@@ -54,10 +66,15 @@ defmodule Cotoami.CotoService do
                   {inserts, updates + 1}}
             end
           Repo.insert_or_update!(changeset)
-          results
-        end)
-      %{cotos: %{inserts: coto_inserts, updates: coto_updates}}
-    end)
+          {pendings, results}
+        end
+      )
+
+    if Enum.empty?(pendings) do
+      results
+    else
+      import_cotos(pendings, results, amishi)
+    end
   end
 
   def create!(cotonoma_id_nillable, amishi_id, content) do
