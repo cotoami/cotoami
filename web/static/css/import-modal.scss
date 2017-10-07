@@ -1,0 +1,16 @@
+#import-modal {
+  .modal-content {
+    width: 80vw;
+    max-width: 40em;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  textarea.data {
+    width: 100%;
+    height: 35vh;
+    margin-bottom: 0;
+  }
+}

@@ -63,16 +63,13 @@ modalConfig model =
             , title = "Import cotos and connections"
             , content =
                 div []
-                    [ p [] [ text "Paste the content of an exported file in the input box below and click the IMPORT button." ]
+                    [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
                     , Html.form [ name "import" ]
-                        [ div []
-                            [ textarea
-                                [ class "data"
-                                , placeholder "Exported data in JSON format"
-                                , value model.data
-                                ]
-                                []
+                        [ textarea
+                            [ class "data"
+                            , value model.data
                             ]
+                            []
                         ]
                     ]
             , buttons =
