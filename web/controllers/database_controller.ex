@@ -3,7 +3,7 @@ defmodule Cotoami.DatabaseController do
   require Logger
   alias Bolt.Sips
   alias Cotoami.{
-    Amishi, Coto,
+    Amishi, Coto, Cotonoma,
     CotoService, CotoGraphService,
     AmishiView, CotoView
   }
@@ -61,23 +61,16 @@ defmodule Cotoami.DatabaseController do
     end)
   end
 
-  defp import_cotos(cotos, {_, _} = results, %Amishi{} = amishi) do
+  defp import_cotos(cotos, {_inserts, _updates} = results, %Amishi{} = amishi) do
     {pendings, results} =
       Enum.reduce(cotos, {[], results},
-        fn(coto, {pendings, {inserts, updates}}) ->
-          # cotonoma exists?
-
-          {changeset, results} =
-            case Repo.get(Coto, coto["id"]) do
-              nil ->
-                {Coto.changeset_to_import(%Coto{}, coto, amishi),
-                  {inserts + 1, updates}}
-              coto ->
-                {Coto.changeset_to_import(coto, coto, amishi),
-                  {inserts, updates + 1}}
-            end
-          Repo.insert_or_update!(changeset)
-          {pendings, results}
+        fn(coto, {pendings, results}) ->
+          posted_in_id = coto["posted_in"]["id"]
+          if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
+            {[coto | pendings], results}
+          else
+            {pendings, import_coto(coto, results, amishi)}
+          end
         end
       )
 
@@ -86,5 +79,19 @@ defmodule Cotoami.DatabaseController do
     else
       import_cotos(pendings, results, amishi)
     end
+  end
+
+  defp import_coto(coto, {inserts, updates}, %Amishi{} = amishi) do
+    {changeset, results} =
+      case Repo.get(Coto, coto["id"]) do
+        nil ->
+          {Coto.changeset_to_import(%Coto{}, coto, amishi),
+            {inserts + 1, updates}}
+        coto ->
+          {Coto.changeset_to_import(coto, coto, amishi),
+            {inserts, updates + 1}}
+      end
+    Repo.insert_or_update!(changeset)
+    results
   end
 end
