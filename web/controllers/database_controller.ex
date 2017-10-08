@@ -73,8 +73,12 @@ defmodule Cotoami.DatabaseController do
           posted_in_id = coto["posted_in"]["id"]
           if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
             if Enum.any?(cotos, &(&1["cotonoma_id"] == posted_in_id)) do
+              # put this coto in pending until the posted_in cotonoma, which is
+              # found in the import data, is imported
               {[coto | pendings], results}
             else
+              # reject this coto because the posted_in cotonoma is not found in
+              # both the db and import data
               reject = %{id: coto["id"], reason: "cotonoma not found: #{posted_in_id}"}
               {pendings, {inserts, updates, [reject | rejected]}}
             end
