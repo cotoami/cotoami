@@ -53,21 +53,31 @@ defmodule Cotoami.DatabaseController do
 
   defp import_by_amishi(cotos, _connections, %Amishi{} = amishi) do
     Repo.transaction(fn ->
-      {coto_inserts, coto_updates} = import_cotos(cotos, {0, 0}, amishi)
+      {coto_inserts, coto_updates, coto_rejected} =
+        import_cotos(cotos, {0, 0, []}, amishi)
       %{
-        cotos: %{inserts: coto_inserts, updates: coto_updates},
-        connections: %{ok: 0, coto_not_found: 0}
+        cotos: %{
+          inserts: coto_inserts,
+          updates: coto_updates,
+          rejected: coto_rejected
+        },
+        connections: %{ok: 0, rejected: []}
       }
     end)
   end
 
-  defp import_cotos(cotos, {_inserts, _updates} = results, %Amishi{} = amishi) do
+  defp import_cotos(cotos, {_inserts, _updates, _rejected} = results, %Amishi{} = amishi) do
     {pendings, results} =
       Enum.reduce(cotos, {[], results},
-        fn(coto, {pendings, results}) ->
+        fn(coto, {pendings, {inserts, updates, rejected} = results}) ->
           posted_in_id = coto["posted_in"]["id"]
           if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
-            {[coto | pendings], results}
+            if Enum.any?(cotos, &(&1["cotonoma_id"] == posted_in_id)) do
+              {[coto | pendings], results}
+            else
+              reject = %{id: coto["id"], reason: "cotonoma not found: #{posted_in_id}"}
+              {pendings, {inserts, updates, [reject | rejected]}}
+            end
           else
             {pendings, import_coto(coto, results, amishi)}
           end
@@ -81,17 +91,25 @@ defmodule Cotoami.DatabaseController do
     end
   end
 
-  defp import_coto(coto, {inserts, updates}, %Amishi{} = amishi) do
-    {changeset, results} =
-      case Repo.get(Coto, coto["id"]) do
-        nil ->
-          {Coto.changeset_to_import(%Coto{}, coto, amishi),
-            {inserts + 1, updates}}
-        coto ->
-          {Coto.changeset_to_import(coto, coto, amishi),
-            {inserts, updates + 1}}
-      end
-    Repo.insert_or_update!(changeset)
-    results
+  defp import_coto(coto, {inserts, updates, rejected}, %Amishi{} = amishi) do
+    coto_id = coto["id"]
+    case Repo.get(Coto, coto_id) do
+      nil ->
+        changeset = Coto.changeset_to_import(%Coto{}, coto, amishi)
+        case Repo.insert(changeset) do
+          {:ok, _} -> {inserts + 1, updates, rejected}
+          {:error, changeset} ->
+            reject = %{id: coto_id, reason: inspect(changeset.errors)}
+            {inserts, updates, [reject | rejected]}
+        end
+      coto ->
+        changeset = Coto.changeset_to_import(coto, coto, amishi)
+        case Repo.update(changeset) do
+          {:ok, _} -> {inserts, updates + 1, rejected}
+          {:error, changeset} ->
+            reject = %{id: coto_id, reason: inspect(changeset.errors)}
+            {inserts, updates, [reject | rejected]}
+        end
+    end
   end
 end
