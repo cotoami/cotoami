@@ -1,7 +1,6 @@
 defmodule Cotoami.AmishiController do
   use Cotoami.Web, :controller
   require Logger
-  alias Bolt.Sips
   alias Cotoami.{AmishiService, RedisService, AmishiView}
 
   def action(conn, _) do

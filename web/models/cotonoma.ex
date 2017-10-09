@@ -33,8 +33,31 @@ defmodule Cotoami.Cotonoma do
     |> validate_required([:name])
   end
 
-  def changeset_to_import(struct, json, %Amishi{id: amishi_id}) do
-    # TODO
+  def changeset_to_import(
+    struct,
+    %{"as_cotonoma" => true} = coto_json,
+    %Amishi{id: amishi_id}
+  ) do
+    data = %{
+      "id" => coto_json["cotonoma_id"],
+      "key" => coto_json["cotonoma_key"],
+      "name" => coto_json["content"],
+      "coto_id" => coto_json["id"],
+      "owner_id" => amishi_id,
+      "inserted_at" => DateTime.from_unix!(coto_json["inserted_at"], :millisecond),
+      "updated_at" => DateTime.from_unix!(coto_json["updated_at"], :millisecond)
+    }
+    struct
+    |> cast(data, [
+      :id,
+      :key,
+      :name,
+      :coto_id,
+      :owner_id,
+      :inserted_at,
+      :updated_at
+    ])
+    |> validate_required([:key, :name, :coto_id, :owner_id])
   end
 
   defp generate_key(changeset) do
