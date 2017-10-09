@@ -4,6 +4,7 @@ defmodule Cotoami.Cotonoma do
   """
 
   use Cotoami.Web, :model
+  import Cotoami.Helpers
   alias Cotoami.Amishi
 
   @key_length 10
@@ -44,8 +45,8 @@ defmodule Cotoami.Cotonoma do
       name: coto_json["content"],
       coto_id: coto_json["id"],
       owner_id: amishi_id,
-      inserted_at: DateTime.from_unix!(coto_json["inserted_at"], :millisecond),
-      updated_at: DateTime.from_unix!(coto_json["updated_at"], :millisecond)
+      inserted_at: unixtime_to_datetime!(coto_json["inserted_at"]),
+      updated_at: unixtime_to_datetime!(coto_json["updated_at"])
     }
     struct
     |> cast(data, Map.keys(data))

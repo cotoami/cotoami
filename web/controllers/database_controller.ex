@@ -49,7 +49,10 @@ defmodule Cotoami.DatabaseController do
                   send_resp(conn, :internal_server_error, "Transaction error.")
               end
             rescue
-              e -> send_resp(conn, :internal_server_error, Exception.message(e))
+              e ->
+                stacktrace = System.stacktrace() |> List.first() |> inspect()
+                message = Exception.message(e)
+                send_resp(conn, :internal_server_error, "#{message} #{stacktrace}")
             end
           _ ->
             send_resp(conn, :bad_request, "Invalid data structure.")
@@ -172,8 +175,8 @@ defmodule Cotoami.DatabaseController do
     Enum.reduce(connections_json, results,
       fn(connection_json, {ok, rejected}) ->
         {start_id, end_id} = {connection_json["start"], connection_json["end"]}
-        source = Repo.get(Coto, start_id)
-        target = Repo.get(Coto, end_id)
+        source = CotoService.get(start_id)
+        target = CotoService.get(end_id)
         cond do
           target && start_id == amishi_json["id"] ->
             CotoGraphService.import_connection(

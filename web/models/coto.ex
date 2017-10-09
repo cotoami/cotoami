@@ -4,6 +4,7 @@ defmodule Cotoami.Coto do
   """
 
   use Cotoami.Web, :model
+  import Cotoami.Helpers
   alias Cotoami.Amishi
 
   schema "cotos" do
@@ -32,8 +33,8 @@ defmodule Cotoami.Coto do
     data = Map.merge(json, %{
       "posted_in_id" => json["posted_in"]["id"],
       "amishi_id" => amishi_id,
-      "inserted_at" => DateTime.from_unix!(json["inserted_at"], :millisecond),
-      "updated_at" => DateTime.from_unix!(json["updated_at"], :millisecond)
+      "inserted_at" => unixtime_to_datetime!(json["inserted_at"]),
+      "updated_at" => unixtime_to_datetime!(json["updated_at"])
     })
     struct
     |> cast(data, [
