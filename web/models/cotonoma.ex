@@ -39,24 +39,16 @@ defmodule Cotoami.Cotonoma do
     %Amishi{id: amishi_id}
   ) do
     data = %{
-      "id" => coto_json["cotonoma_id"],
-      "key" => coto_json["cotonoma_key"],
-      "name" => coto_json["content"],
-      "coto_id" => coto_json["id"],
-      "owner_id" => amishi_id,
-      "inserted_at" => DateTime.from_unix!(coto_json["inserted_at"], :millisecond),
-      "updated_at" => DateTime.from_unix!(coto_json["updated_at"], :millisecond)
+      id: coto_json["cotonoma_id"],
+      key: coto_json["cotonoma_key"],
+      name: coto_json["content"],
+      coto_id: coto_json["id"],
+      owner_id: amishi_id,
+      inserted_at: DateTime.from_unix!(coto_json["inserted_at"], :millisecond),
+      updated_at: DateTime.from_unix!(coto_json["updated_at"], :millisecond)
     }
     struct
-    |> cast(data, [
-      :id,
-      :key,
-      :name,
-      :coto_id,
-      :owner_id,
-      :inserted_at,
-      :updated_at
-    ])
+    |> cast(data, Map.keys(data))
     |> validate_required([:key, :name, :coto_id, :owner_id])
   end
 
