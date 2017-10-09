@@ -165,8 +165,10 @@ defmodule Cotoami.DatabaseController do
       e in Ecto.ConstraintError ->
         case e.constraint do
           "cotonomas_name_owner_id_index" ->
+            # credo:disable-for-next-line Credo.Check.Warning.RaiseInsideRescue
             raise "Cotonoma \"#{coto_json["content"]}\" already exists."
           constraint ->
+            # credo:disable-for-next-line Credo.Check.Warning.RaiseInsideRescue
             raise "#{constraint}: #{inspect coto_json}"
         end
     end

@@ -12,7 +12,7 @@ defmodule Cotoami.Helpers do
   # old export data uses microseconds unixtime
   def unixtime_to_datetime!(unixtime) do
     case DateTime.from_unix!(unixtime, :millisecond) do
-      %DateTime{year: year} = datetime when year < 10000 -> datetime
+      %DateTime{year: year} = datetime when year < 10_000 -> datetime
       _ -> DateTime.from_unix!(unixtime, :microsecond)
     end
   end
