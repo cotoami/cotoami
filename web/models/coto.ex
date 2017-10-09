@@ -45,7 +45,7 @@ defmodule Cotoami.Coto do
       :inserted_at,
       :updated_at
     ])
-    |> validate_required([:content, :amishi_id])
+    |> validate_required([:id, :content, :amishi_id])
   end
 
   def for_amishi(query, amishi_id) do

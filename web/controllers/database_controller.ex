@@ -37,12 +37,16 @@ defmodule Cotoami.DatabaseController do
       {:ok, json_data} ->
         case json_data do
           %{"cotos" => cotos_json, "connections" => connections_json} ->
-            case import_by_amishi(cotos_json, connections_json, amishi) do
-              {:ok, result} -> json conn, result
-              _ ->
-                conn
-                |> put_status(:internal_server_error)
-                |> text("Transaction error.")
+            try do
+              case import_by_amishi(cotos_json, connections_json, amishi) do
+                {:ok, result} -> json conn, result
+                _ ->
+                  conn
+                  |> put_status(:internal_server_error)
+                  |> text("Transaction error.")
+              end
+            rescue
+              e -> send_resp(conn, :internal_server_error, Exception.message(e))
             end
           _ ->
             conn

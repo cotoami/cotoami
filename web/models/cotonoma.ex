@@ -49,7 +49,7 @@ defmodule Cotoami.Cotonoma do
     }
     struct
     |> cast(data, Map.keys(data))
-    |> validate_required([:key, :name, :coto_id, :owner_id])
+    |> validate_required([:id, :key, :name, :coto_id, :owner_id])
   end
 
   defp generate_key(changeset) do
