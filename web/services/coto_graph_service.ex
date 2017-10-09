@@ -163,11 +163,30 @@ defmodule Cotoami.CotoGraphService do
     rel_props = if cotonoma_id,
       do: common_rel_props(amishi_id, cotonoma_id),
       else: common_rel_props(amishi_id)
+    do_connect_with_props(bolt_conn, source, target, rel_props)
+  end
+  defp do_connect_with_props(bolt_conn, %Coto{} = source, %Coto{} = target, rel_props) do
     bolt_conn
     |> register_coto(source)
     |> register_coto(target)
     |> Neo4jService.get_or_create_ordered_relationship(
       source.id, target.id, @rel_type_has_a, rel_props)
+  end
+
+  def import_connection(
+    bolt_conn,
+    %Coto{id: _} = source,
+    %Coto{id: _} = target,
+    connection_json,
+    %Amishi{id: amishi_id}
+  ) do
+    rel_props =
+      %{
+        created_by: amishi_id,
+        created_at: connection_json["created_at"],
+        created_in: connection_json["created_in"]
+      } |> drop_nil
+    do_connect_with_props(bolt_conn, source, target, rel_props)
   end
 
   def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do
