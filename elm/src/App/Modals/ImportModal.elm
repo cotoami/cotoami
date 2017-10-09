@@ -191,10 +191,13 @@ importResultDiv { cotos, connections } =
                 , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
                 , text "rejected"
                 ]
-            , div [ class "rejected" ]
-                ((List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected)
-                    ++ (List.map (rejectInfoSpan "A connection rejected: ") connections.rejected)
-                )
+            , if (List.isEmpty cotos.rejected) && (List.isEmpty connections.rejected) then
+                div [] []
+              else
+                div [ class "rejected" ]
+                    ((List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected)
+                        ++ (List.map (rejectInfoSpan "A connection rejected: ") connections.rejected)
+                    )
             ]
         ]
 
