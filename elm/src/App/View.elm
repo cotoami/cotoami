@@ -21,6 +21,7 @@ import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.ConfirmModal
 import App.Modals.CotonomaModal
+import App.Modals.ImportModal
 
 
 view : Model -> Html Msg
@@ -219,5 +220,9 @@ modals model =
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model
+
+                ImportModal ->
+                    App.Modals.ImportModal.view model.importModal
+
         )
         (List.reverse model.modals)

@@ -35,6 +35,7 @@ import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotoModalMsg
 import App.Modals.CotonomaModal
+import App.Modals.ImportModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -199,6 +200,10 @@ update msg model =
         OpenCotonomaModal ->
             { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
                 |> \model -> openModal App.Model.CotonomaModal model ! []
+
+        OpenImportModal ->
+            { model | importModal = App.Modals.ImportModal.defaultModel }
+                |> \model -> openModal App.Model.ImportModal model ! []
 
         --
         -- Coto
@@ -645,6 +650,11 @@ update msg model =
                                 ( model, cmd )
                     )
                 |> withDefault (model ! [])
+
+        ImportModalMsg subMsg ->
+            App.Modals.ImportModal.update subMsg model.importModal
+                |> \( importModal, subCmd ) ->
+                    { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
 
 
 confirm : String -> Msg -> Model -> Model

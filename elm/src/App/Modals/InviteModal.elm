@@ -15,7 +15,8 @@ import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
 type RequestStatus
     = None
-    | Approved
+    | Approved String
+    | Conflict Amishi
     | Rejected
 
 
@@ -23,8 +24,6 @@ type alias Model =
     { email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
-    , acceptedEmail : String
-    , invitee : Maybe Amishi
     }
 
 
@@ -33,8 +32,6 @@ defaultModel =
     { email = ""
     , requestProcessing = False
     , requestStatus = None
-    , acceptedEmail = ""
-    , invitee = Nothing
     }
 
 
@@ -52,9 +49,7 @@ update msg model =
             ( { model
                 | email = ""
                 , requestProcessing = False
-                , requestStatus = Approved
-                , acceptedEmail = model.email
-                , invitee = Nothing
+                , requestStatus = Approved model.email
               }
             , Cmd.none
             )
@@ -69,25 +64,28 @@ update msg model =
             )
                 |> Maybe.map (Decode.decodeString decodeAmishi)
                 |> Maybe.andThen Result.toMaybe
-                |> (\invitee ->
+                |> Maybe.map
+                    (\invitee ->
+                        ( { model
+                            | requestProcessing = False
+                            , requestStatus = Conflict invitee
+                          }
+                        , Cmd.none
+                        )
+                    )
+                |> Maybe.withDefault
                     ( { model
                         | requestProcessing = False
                         , requestStatus = Rejected
-                        , acceptedEmail = ""
-                        , invitee = invitee
                       }
                     , Cmd.none
                     )
-                )
 
 
 sendInvite : String -> Cmd InviteModalMsg.Msg
 sendInvite email =
-    let
-        url =
-            "/api/amishis/invite/" ++ email
-    in
-        Http.send SendInviteDone (Http.get url Decode.string)
+    Http.send SendInviteDone <|
+        Http.get ("/api/invite/" ++ email) Decode.string
 
 
 view : Model -> Html AppMsg.Msg
@@ -99,64 +97,63 @@ view model =
 
 modalConfig : Model -> Modal.Config AppMsg.Msg
 modalConfig model =
-    if model.requestStatus == Approved then
-        { closeMessage = CloseModal
-        , title = "Invite an amishi"
-        , content =
-            div []
-                [ p []
-                    [ text ("Your invitation has been sent to: ")
-                    , span [ class "accepted-email" ] [ text model.acceptedEmail ]
-                    ]
-                ]
-        , buttons =
-            [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
-        }
-    else
-        { closeMessage = CloseModal
-        , title = "Invite an amishi"
-        , content =
-            div []
-                [ p [] [ text "Enter an email address to send an invitation." ]
-                , Html.form [ name "signin" ]
-                    [ div []
-                        [ input
-                            [ type_ "email"
-                            , class "email u-full-width"
-                            , name "email"
-                            , placeholder "amishi@example.com"
-                            , value model.email
-                            , onInput (AppMsg.InviteModalMsg << EmailInput)
-                            ]
-                            []
+    case model.requestStatus of
+        Approved acceptedEmail ->
+            { closeMessage = CloseModal
+            , title = "Invite an amishi"
+            , content =
+                div []
+                    [ p []
+                        [ text ("Your invitation has been sent to: ")
+                        , span [ class "accepted-email" ] [ text acceptedEmail ]
                         ]
-                    , if model.requestStatus == Rejected then
-                        div [ class "errors" ]
-                            [ span [ class "rejected" ] [ text "The amishi already exists: " ]
-                            , case model.invitee of
-                                Nothing ->
-                                    span [] []
+                    ]
+            , buttons =
+                [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
+            }
 
-                                Just invitee ->
-                                    span [ class "invitee" ]
+        _ ->
+            { closeMessage = CloseModal
+            , title = "Invite an amishi"
+            , content =
+                div []
+                    [ p [] [ text "Enter an email address to send an invitation." ]
+                    , Html.form [ name "signin" ]
+                        [ div []
+                            [ input
+                                [ type_ "email"
+                                , class "email u-full-width"
+                                , name "email"
+                                , placeholder "amishi@example.com"
+                                , value model.email
+                                , onInput (AppMsg.InviteModalMsg << EmailInput)
+                                ]
+                                []
+                            ]
+                        , case model.requestStatus of
+                            Conflict invitee ->
+                                div [ class "errors" ]
+                                    [ span [ class "rejected" ] [ text "The amishi already exists: " ]
+                                    , span [ class "invitee" ]
                                         [ img [ class "avatar", src invitee.avatarUrl ] []
                                         , span [ class "name" ] [ text invitee.displayName ]
                                         ]
-                            ]
+                                    ]
+
+                            _ ->
+                                div [] []
+                        ]
+                    ]
+            , buttons =
+                [ button
+                    [ class "button button-primary"
+                    , disabled (not (validateEmail model.email) || model.requestProcessing)
+                    , onClick (AppMsg.InviteModalMsg SendInviteClick)
+                    ]
+                    [ if model.requestProcessing then
+                        text "Sending..."
                       else
-                        div [] []
+                        text "Send an invite"
                     ]
                 ]
-        , buttons =
-            [ button
-                [ class "button button-primary"
-                , disabled (not (validateEmail model.email) || model.requestProcessing)
-                , onClick (AppMsg.InviteModalMsg SendInviteClick)
-                ]
-                [ if model.requestProcessing then
-                    text "Sending..."
-                  else
-                    text "Send an invite"
-                ]
-            ]
-        }
+            }

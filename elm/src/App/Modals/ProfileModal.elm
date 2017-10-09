@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
-import App.Messages exposing (Msg(CloseModal, OpenInviteModal))
+import App.Messages exposing (Msg(CloseModal, OpenInviteModal, OpenImportModal))
 
 
 view : Maybe Session -> Html Msg
@@ -66,24 +66,21 @@ modalConfig session =
                     ]
                 ]
             , div [ class "tools" ]
-                [ a
-                    [ class "tool-button"
-                    , title "Invite an amishi"
+                [ toolButton "Invite" "person_add"
+                    [ title "Invite an amishi"
                     , onClick OpenInviteModal
                     ]
-                    [ materialIcon "person_add" Nothing
-                    , br [] []
-                    , span [ class "label" ] [ text "Invite" ]
-                    ]
-                , a
-                    [ class "tool-button"
-                    , title "Export my data"
+                , toolButton "Export" "cloud_download"
+                    [ title "Export my data"
                     , href "/export"
                     ]
-                    [ materialIcon "cloud_download" Nothing
-                    , br [] []
-                    , span [ class "label" ] [ text "Export" ]
-                    ]
+                , if session.owner then
+                    toolButton "Import" "cloud_upload"
+                        [ title "Import cotos and connections"
+                        , onClick OpenImportModal
+                        ]
+                  else
+                    span [] []
                 ]
             ]
     , buttons =
@@ -91,3 +88,13 @@ modalConfig session =
             [ text "Sign out" ]
         ]
     }
+
+
+toolButton : String -> String -> List (Attribute Msg) -> Html Msg
+toolButton label icon attrs =
+    a
+        ([ class "tool-button" ] ++ attrs)
+        [ materialIcon icon Nothing
+        , br [] []
+        , span [ class "label" ] [ text label ]
+        ]

@@ -4,6 +4,8 @@ defmodule Cotoami.Cotonoma do
   """
 
   use Cotoami.Web, :model
+  import Cotoami.Helpers
+  alias Cotoami.Amishi
 
   @key_length 10
 
@@ -30,6 +32,25 @@ defmodule Cotoami.Cotonoma do
     struct
     |> cast(params, [:name])
     |> validate_required([:name])
+  end
+
+  def changeset_to_import(
+    struct,
+    %{"as_cotonoma" => true} = coto_json,
+    %Amishi{id: amishi_id}
+  ) do
+    data = %{
+      id: coto_json["cotonoma_id"],
+      key: coto_json["cotonoma_key"],
+      name: coto_json["content"],
+      coto_id: coto_json["id"],
+      owner_id: amishi_id,
+      inserted_at: unixtime_to_datetime!(coto_json["inserted_at"]),
+      updated_at: unixtime_to_datetime!(coto_json["updated_at"])
+    }
+    struct
+    |> cast(data, Map.keys(data))
+    |> validate_required([:id, :key, :name, :coto_id, :owner_id])
   end
 
   defp generate_key(changeset) do

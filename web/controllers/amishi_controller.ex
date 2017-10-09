@@ -1,11 +1,7 @@
 defmodule Cotoami.AmishiController do
   use Cotoami.Web, :controller
   require Logger
-  alias Bolt.Sips
-  alias Cotoami.{
-    AmishiService, CotoService, CotoGraphService, RedisService,
-    CotoView, AmishiView
-  }
+  alias Cotoami.{AmishiService, RedisService, AmishiView}
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
@@ -34,25 +30,5 @@ defmodule Cotoami.AmishiController do
         |> put_status(:conflict)
         |> json(Phoenix.View.render_one(invitee, AmishiView, "amishi.json"))
     end
-  end
-
-  def export(conn, _params, amishi) do
-    data = %{
-      amishi:
-        Phoenix.View.render_one(amishi, AmishiView, "amishi.json"),
-      cotos:
-        amishi
-        |> CotoService.export_by_amishi()
-        |> Phoenix.View.render_many(CotoView, "coto.json"),
-      connections:
-        CotoGraphService.export_connections_by_amishi(Sips.conn, amishi)
-    }
-
-    conn
-    |> put_resp_content_type("application/octet-stream", nil)
-    |> put_resp_header(
-      "content-disposition",
-      ~s[attachment; filename="cotoami-export.json"])
-    |> send_resp(200, Poison.encode!(data, pretty: true))
   end
 end
