@@ -4,6 +4,7 @@ defmodule Cotoami.Cotonoma do
   """
 
   use Cotoami.Web, :model
+  alias Cotoami.Amishi
 
   @key_length 10
 
@@ -30,6 +31,10 @@ defmodule Cotoami.Cotonoma do
     struct
     |> cast(params, [:name])
     |> validate_required([:name])
+  end
+
+  def changeset_to_import(struct, json, %Amishi{id: amishi_id}) do
+    # TODO
   end
 
   defp generate_key(changeset) do
