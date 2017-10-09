@@ -41,22 +41,16 @@ defmodule Cotoami.DatabaseController do
               case import_by_amishi(cotos_json, connections_json, amishi) do
                 {:ok, result} -> json conn, result
                 _ ->
-                  conn
-                  |> put_status(:internal_server_error)
-                  |> text("Transaction error.")
+                  send_resp(conn, :internal_server_error, "Transaction error.")
               end
             rescue
               e -> send_resp(conn, :internal_server_error, Exception.message(e))
             end
           _ ->
-            conn
-            |> put_status(:bad_request)
-            |> text("Invalid data structure.")
+            send_resp(conn, :bad_request, "Invalid data structure.")
         end
       {:error, _} ->
-        conn
-        |> put_status(:bad_request)
-        |> text("Invalid JSON text.")
+        send_resp(conn, :bad_request, "Invalid JSON text.")
     end
   end
 
