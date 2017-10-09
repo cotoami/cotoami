@@ -172,23 +172,38 @@ defmodule Cotoami.CotoGraphService do
 
   def import_connection(
     bolt_conn,
+    %Coto{id: _} = target,
+    connection_json,
+    %Amishi{id: _} = amishi
+  ) do
+    rel_props = rel_props_from_json(connection_json, amishi)
+    bolt_conn
+    |> register_amishi(amishi)
+    |> register_coto(target)
+    |> Neo4jService.get_or_create_relationship(
+      amishi.id, target.id, @rel_type_has_a, rel_props)
+  end
+  def import_connection(
+    bolt_conn,
     %Coto{id: _} = source,
     %Coto{id: _} = target,
     connection_json,
-    %Amishi{id: amishi_id}
+    %Amishi{id: _} = amishi
   ) do
-    rel_props =
-      %{
-        created_by: amishi_id,
-        created_at: connection_json["created_at"],
-        created_in: connection_json["created_in"],
-        order: connection_json["order"]
-      } |> drop_nil
+    rel_props = rel_props_from_json(connection_json, amishi)
     bolt_conn
     |> register_coto(source)
     |> register_coto(target)
     |> Neo4jService.get_or_create_relationship(
       source.id, target.id, @rel_type_has_a, rel_props)
+  end
+  defp rel_props_from_json(connection_json, %Amishi{id: amishi_id}) do
+    %{
+      created_by: amishi_id,
+      created_at: connection_json["created_at"],
+      created_in: connection_json["created_in"],
+      order: connection_json["order"]
+    } |> drop_nil
   end
 
   def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do

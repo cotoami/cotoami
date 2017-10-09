@@ -36,10 +36,15 @@ defmodule Cotoami.DatabaseController do
     case Poison.decode(data) do
       {:ok, json_data} ->
         case json_data do
-          %{"cotos" => cotos_json, "connections" => connections_json} ->
+          %{
+            "cotos" => cotos_json,
+            "connections" => connections_json,
+            "amishi" => %{"id" => _} = amishi_json
+          } ->
             try do
-              case import_by_amishi(cotos_json, connections_json, amishi) do
-                {:ok, result} -> json conn, result
+              case import_by_amishi(cotos_json, connections_json, amishi_json, amishi) do
+                {:ok, result} ->
+                  json conn, result
                 _ ->
                   send_resp(conn, :internal_server_error, "Transaction error.")
               end
@@ -54,12 +59,12 @@ defmodule Cotoami.DatabaseController do
     end
   end
 
-  defp import_by_amishi(cotos_json, connections_json, %Amishi{} = amishi) do
+  defp import_by_amishi(cotos_json, connections_json, amishi_json, %Amishi{} = amishi) do
     Repo.transaction(fn ->
       {coto_inserts, coto_updates, cotonomas, coto_rejected} =
         import_cotos(cotos_json, {0, 0, 0, []}, amishi)
       {connection_ok, connection_rejected} =
-        import_connections(connections_json, {0, []}, amishi)
+        import_connections(connections_json, amishi_json, {0, []}, amishi)
       %{
         cotos: %{
           inserts: coto_inserts,
@@ -159,6 +164,7 @@ defmodule Cotoami.DatabaseController do
 
   defp import_connections(
     connections_json,
+    amishi_json,
     {_ok, _rejected} = results,
     %Amishi{} = amishi
   ) do
@@ -168,13 +174,20 @@ defmodule Cotoami.DatabaseController do
         {start_id, end_id} = {connection_json["start"], connection_json["end"]}
         source = Repo.get(Coto, start_id)
         target = Repo.get(Coto, end_id)
-        if source && target do
-          CotoGraphService.import_connection(
-            bolt_conn, source, target, connection_json, amishi)
-          {ok + 1, rejected}
-        else
-          reject = %{id: "#{start_id} => #{end_id}", reason: "coto not found"}
-          {ok, [reject | rejected]}
+        cond do
+          target && start_id == amishi_json["id"] ->
+            CotoGraphService.import_connection(
+              bolt_conn, target, connection_json, amishi)
+            {ok + 1, rejected}
+
+          target && source ->
+            CotoGraphService.import_connection(
+              bolt_conn, source, target, connection_json, amishi)
+            {ok + 1, rejected}
+
+          true ->
+            reject = %{id: "#{start_id} => #{end_id}", reason: "coto not found"}
+            {ok, [reject | rejected]}
         end
       end
     )
