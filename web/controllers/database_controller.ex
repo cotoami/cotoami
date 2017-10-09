@@ -49,10 +49,7 @@ defmodule Cotoami.DatabaseController do
                   send_resp(conn, :internal_server_error, "Transaction error.")
               end
             rescue
-              e ->
-                stacktrace = System.stacktrace() |> List.first() |> inspect()
-                message = Exception.message(e)
-                send_resp(conn, :internal_server_error, "#{message} #{stacktrace}")
+              e -> send_resp(conn, :bad_request, Exception.message(e))
             end
           _ ->
             send_resp(conn, :bad_request, "Invalid data structure.")
@@ -161,8 +158,18 @@ defmodule Cotoami.DatabaseController do
         nil -> Cotonoma.changeset_to_import(%Cotonoma{}, coto_json, amishi)
         cotonoma -> Cotonoma.changeset_to_import(cotonoma, coto_json, amishi)
       end
-    Repo.insert_or_update!(changeset)
-    cotonomas + 1
+    try do
+      Repo.insert_or_update!(changeset)
+      cotonomas + 1
+    rescue
+      e in Ecto.ConstraintError ->
+        case e.constraint do
+          "cotonomas_name_owner_id_index" ->
+            raise "Cotonoma \"#{coto_json["content"]}\" already exists."
+          constraint ->
+            raise "#{constraint}: #{inspect coto_json}"
+        end
+    end
   end
 
   defp import_connections(
