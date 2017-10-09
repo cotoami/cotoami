@@ -58,12 +58,13 @@ defmodule Cotoami.DatabaseController do
 
   defp import_by_amishi(cotos_json, _connections_json, %Amishi{} = amishi) do
     Repo.transaction(fn ->
-      {coto_inserts, coto_updates, coto_rejected} =
-        import_cotos(cotos_json, {0, 0, []}, amishi)
+      {coto_inserts, coto_updates, cotonomas, coto_rejected} =
+        import_cotos(cotos_json, {0, 0, 0, []}, amishi)
       %{
         cotos: %{
           inserts: coto_inserts,
           updates: coto_updates,
+          cotonomas: cotonomas,
           rejected: coto_rejected
         },
         connections: %{ok: 0, rejected: []}
@@ -73,23 +74,24 @@ defmodule Cotoami.DatabaseController do
 
   defp import_cotos(
     cotos_json,
-    {_inserts, _updates, _rejected} = results,
+    {_inserts, _updates, _cotonomas, _rejected} = results,
     %Amishi{} = amishi
   ) do
     {pendings, results} =
       Enum.reduce(cotos_json, {[], results},
-        fn(coto_json, {pendings, {inserts, updates, rejected} = results}) ->
+        fn(coto_json, {pendings, results}) ->
+          # check if the posted_in cotonoma exists before importing a coto_json
           posted_in_id = coto_json["posted_in"]["id"]
           if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
             if Enum.any?(cotos_json, &(&1["cotonoma_id"] == posted_in_id)) do
-              # put this coto_json in pending until the posted_in cotonoma, which is
-              # found in the import data, is imported
+              # put this coto_json in pending until the posted_in cotonoma is imported
               {[coto_json | pendings], results}
             else
               # reject this coto_json because the posted_in cotonoma is not found in
               # both the db and import data
               reject = %{id: coto_json["id"], reason: "cotonoma not found: #{posted_in_id}"}
-              {pendings, {inserts, updates, [reject | rejected]}}
+              {inserts, updates, cotonomas, rejected} = results
+              {pendings, {inserts, updates, cotonomas, [reject | rejected]}}
             end
           else
             {pendings, import_coto(coto_json, results, amishi)}
@@ -104,35 +106,44 @@ defmodule Cotoami.DatabaseController do
     end
   end
 
-  defp import_coto(coto_json, {inserts, updates, rejected}, %Amishi{} = amishi) do
+  defp import_coto(
+    coto_json,
+    {inserts, updates, cotonomas, rejected},
+    %Amishi{} = amishi
+  ) do
     coto_id = coto_json["id"]
     case Repo.get(Coto, coto_id) do
       nil ->
         changeset = Coto.changeset_to_import(%Coto{}, coto_json, amishi)
         case Repo.insert(changeset) do
           {:ok, _} ->
-            import_cotonoma(coto_json, amishi)
-            {inserts + 1, updates, rejected}
+            cotonomas = import_cotonoma(coto_json, cotonomas, amishi)
+            {inserts + 1, updates, cotonomas, rejected}
           {:error, changeset} ->
             reject = %{id: coto_id, reason: inspect(changeset.errors)}
-            {inserts, updates, [reject | rejected]}
+            {inserts, updates, cotonomas, [reject | rejected]}
         end
       coto ->
         changeset = Coto.changeset_to_import(coto, coto_json, amishi)
         case Repo.update(changeset) do
           {:ok, _} ->
-            import_cotonoma(coto_json, amishi)
-            {inserts, updates + 1, rejected}
+            cotonomas = import_cotonoma(coto_json, cotonomas, amishi)
+            {inserts, updates + 1, cotonomas, rejected}
           {:error, changeset} ->
             reject = %{id: coto_id, reason: inspect(changeset.errors)}
-            {inserts, updates, [reject | rejected]}
+            {inserts, updates, cotonomas, [reject | rejected]}
         end
     end
   end
 
-  defp import_cotonoma(%{"as_cotonoma" => false} = coto_json, %Amishi{} = amishi) do
+  defp import_cotonoma(%{"as_cotonoma" => false} = coto_json, cotonomas, _) do
+    cotonomas
   end
-  defp import_cotonoma(%{"as_cotonoma" => true} = coto_json, %Amishi{} = amishi) do
+  defp import_cotonoma(
+    %{"as_cotonoma" => true} = coto_json,
+    cotonomas,
+    %Amishi{} = amishi
+  ) do
     cotonoma_id = coto_json["cotonoma_id"]
     changeset =
       case Repo.get(Cotonoma, cotonoma_id) do
@@ -140,5 +151,6 @@ defmodule Cotoami.DatabaseController do
         cotonoma -> Cotonoma.changeset_to_import(cotonoma, coto_json, amishi)
       end
     Repo.insert_or_update!(changeset)
+    cotonomas + 1
   end
 end

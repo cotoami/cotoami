@@ -93,9 +93,10 @@ importData data =
         decodeResult =
             Decode.map2 ImportResult
                 (Decode.field "cotos"
-                    (Decode.map3 ImportCotosResult
+                    (Decode.map4 ImportCotosResult
                         (Decode.field "inserts" Decode.int)
                         (Decode.field "updates" Decode.int)
+                        (Decode.field "cotonomas" Decode.int)
                         (Decode.field "rejected" (Decode.list decodeReject))
                     )
                 )
@@ -178,6 +179,8 @@ importResultDiv { cotos, connections } =
                 , text "inserts"
                 , span [ class "number" ] [ text (toString cotos.updates) ]
                 , text "updates"
+                , span [ class "number" ] [ text (toString cotos.cotonomas) ]
+                , text "cotonomas"
                 , span [ class "number" ] [ text (List.length cotos.rejected |> toString) ]
                 , text "rejected"
                 ]

@@ -19,6 +19,7 @@ type alias ImportResult =
 type alias ImportCotosResult =
     { inserts : Int
     , updates : Int
+    , cotonomas : Int
     , rejected : List Reject
     }
 
