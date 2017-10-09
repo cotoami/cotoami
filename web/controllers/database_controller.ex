@@ -56,10 +56,12 @@ defmodule Cotoami.DatabaseController do
     end
   end
 
-  defp import_by_amishi(cotos_json, _connections_json, %Amishi{} = amishi) do
+  defp import_by_amishi(cotos_json, connections_json, %Amishi{} = amishi) do
     Repo.transaction(fn ->
       {coto_inserts, coto_updates, cotonomas, coto_rejected} =
         import_cotos(cotos_json, {0, 0, 0, []}, amishi)
+      {connection_ok, connection_rejected} =
+        import_connections(connections_json, {0, []}, amishi)
       %{
         cotos: %{
           inserts: coto_inserts,
@@ -67,7 +69,10 @@ defmodule Cotoami.DatabaseController do
           cotonomas: cotonomas,
           rejected: coto_rejected
         },
-        connections: %{ok: 0, rejected: []}
+        connections: %{
+          ok: connection_ok,
+          rejected: connection_rejected
+        }
       }
     end)
   end
@@ -136,7 +141,7 @@ defmodule Cotoami.DatabaseController do
     end
   end
 
-  defp import_cotonoma(%{"as_cotonoma" => false} = coto_json, cotonomas, _) do
+  defp import_cotonoma(%{"as_cotonoma" => false}, cotonomas, _) do
     cotonomas
   end
   defp import_cotonoma(
@@ -152,5 +157,28 @@ defmodule Cotoami.DatabaseController do
       end
     Repo.insert_or_update!(changeset)
     cotonomas + 1
+  end
+
+  defp import_connections(
+    connections_json,
+    {_ok, _rejected} = results,
+    %Amishi{} = amishi
+  ) do
+    bolt_conn = Sips.conn
+    Enum.reduce(connections_json, results,
+      fn(connection_json, {ok, rejected}) ->
+        {start_id, end_id} = {connection_json["start"], connection_json["end"]}
+        source = Repo.get(Coto, start_id)
+        target = Repo.get(Coto, end_id)
+        if source && target do
+          CotoGraphService.import_connection(
+            bolt_conn, source, target, connection_json, amishi)
+          {ok + 1, rejected}
+        else
+          reject = %{id: "#{start_id} => #{end_id}", reason: "coto not found"}
+          {ok, [reject | rejected]}
+        end
+      end
+    )
   end
 end
