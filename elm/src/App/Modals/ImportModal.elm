@@ -10,12 +10,19 @@ import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.HttpUtil exposing (httpPost)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ImportModalMsg as ImportModalMsg exposing (Msg(..))
+import App.Modals.ImportModalMsg as ImportModalMsg
+    exposing
+        ( ImportResult
+        , ImportCotosResult
+        , ImportConnectionsResult
+        , Reject
+        , Msg(..)
+        )
 
 
 type RequestStatus
     = None
-    | Imported ( Int, Int )
+    | Imported ImportResult
     | Rejected String
 
 
@@ -78,10 +85,26 @@ importData data =
             Http.jsonBody <|
                 Encode.object [ ( "data", Encode.string data ) ]
 
+        decodeReject =
+            Decode.map2 Reject
+                (Decode.field "id" Decode.string)
+                (Decode.field "reason" Decode.string)
+
         decodeResult =
-            Decode.map2 (,)
-                (Decode.field "cotos" Decode.int)
-                (Decode.field "connections" Decode.int)
+            Decode.map2 ImportResult
+                (Decode.field "cotos"
+                    (Decode.map3 ImportCotosResult
+                        (Decode.field "inserts" Decode.int)
+                        (Decode.field "updates" Decode.int)
+                        (Decode.field "rejected" (Decode.list decodeReject))
+                    )
+                )
+                (Decode.field "connections"
+                    (Decode.map2 ImportConnectionsResult
+                        (Decode.field "ok" Decode.int)
+                        (Decode.field "rejected" (Decode.list decodeReject))
+                    )
+                )
     in
         Http.send ImportDone (httpPost "/api/import" requestBody decodeResult)
 
@@ -96,21 +119,10 @@ view model =
 modalConfig : Model -> Modal.Config AppMsg.Msg
 modalConfig model =
     case model.requestStatus of
-        Imported ( cotos, connections ) ->
+        Imported result ->
             { closeMessage = CloseModal
             , title = "Import cotos and connections"
-            , content =
-                div []
-                    [ p []
-                        [ text "The data has been successfully imported: "
-                        , span [ class "import-results" ]
-                            [ span [ class "imported-cotos" ] [ text (toString cotos) ]
-                            , text "cotos and"
-                            , span [ class "imported-connections" ] [ text (toString connections) ]
-                            , text "connections"
-                            ]
-                        ]
-                    ]
+            , content = importResultDiv result
             , buttons =
                 [ a [ class "button" , href "/" ] [ text "Reload browser" ]
                 ]
@@ -153,3 +165,28 @@ modalConfig model =
                     ]
                 ]
             }
+
+
+importResultDiv : ImportResult -> Html AppMsg.Msg
+importResultDiv { cotos, connections } =
+    div []
+        [ div [] [ text "The data has been successfully imported: " ]
+        , div [ class "import-result" ]
+            [ div [ class "cotos-result" ]
+                [ div [ class "result-caption" ] [ text "Cotos:"]
+                , span [ class "number" ] [ text (toString cotos.inserts) ]
+                , text "inserts"
+                , span [ class "number" ] [ text (toString cotos.updates) ]
+                , text "updates"
+                , span [ class "number" ] [ text (List.length cotos.rejected |> toString) ]
+                , text "rejected"
+                ]
+            , div [ class "connections-result" ]
+                [ div [ class "result-caption" ] [ text "Connections:"]
+                , span [ class "number" ] [ text (toString connections.ok) ]
+                , text "imported"
+                , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
+                , text "rejected"
+                ]
+            ]
+        ]
