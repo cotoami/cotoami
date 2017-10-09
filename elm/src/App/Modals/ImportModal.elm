@@ -125,7 +125,7 @@ modalConfig model =
             , title = "Import cotos and connections"
             , content = importResultDiv result
             , buttons =
-                [ a [ class "button" , href "/" ] [ text "Reload browser" ]
+                [ a [ class "button", href "/" ] [ text "Reload browser" ]
                 ]
             }
 
@@ -174,7 +174,7 @@ importResultDiv { cotos, connections } =
         [ div [] [ text "The data has been successfully imported: " ]
         , div [ class "import-result" ]
             [ div [ class "cotos-result" ]
-                [ div [ class "result-caption" ] [ text "Cotos:"]
+                [ div [ class "result-caption" ] [ text "Cotos:" ]
                 , span [ class "number" ] [ text (toString cotos.inserts) ]
                 , text "inserts"
                 , span [ class "number" ] [ text (toString cotos.updates) ]
@@ -185,11 +185,25 @@ importResultDiv { cotos, connections } =
                 , text "rejected"
                 ]
             , div [ class "connections-result" ]
-                [ div [ class "result-caption" ] [ text "Connections:"]
+                [ div [ class "result-caption" ] [ text "Connections:" ]
                 , span [ class "number" ] [ text (toString connections.ok) ]
                 , text "imported"
                 , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
                 , text "rejected"
                 ]
+            , div [ class "rejected" ]
+                ((List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected)
+                    ++ (List.map (rejectInfoSpan "A connection rejected: ") connections.rejected)
+                )
             ]
+        ]
+
+
+rejectInfoSpan : String -> Reject -> Html AppMsg.Msg
+rejectInfoSpan caption reject =
+    span
+        [ class "reject" ]
+        [ span [ class "reject-caption" ] [ text caption ]
+        , span [ class "reject-reason" ] [ text reject.reason ]
+        , text ("(ID: " ++ reject.id ++ ")")
         ]
