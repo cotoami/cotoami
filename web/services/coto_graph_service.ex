@@ -46,6 +46,11 @@ defmodule Cotoami.CotoGraphService do
     """
     bolt_conn
     |> Bolt.Sips.query!(query, %{uuid: uuid})
+    |> build_graph_from_query_result(uuid, from_root)
+  end
+
+  defp build_graph_from_query_result(query_result, uuid, from_root) do
+    query_result
     |> Enum.reduce(%CotoGraph{}, fn(%{"parent" => parent, "has" => has, "child" => child}, graph) ->
         parent_id = parent.properties["uuid"]
         child_id = child.properties["uuid"]
