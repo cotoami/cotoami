@@ -43,6 +43,19 @@ div.coto-header {
   }
 }
 
+div.parents {
+  color: #999;
+  font-size: 80%;
+  margin-top: 3px;
+  margin-bottom: 12px;
+
+  div.parent {
+    padding: 3px 6px;
+    margin-bottom: 3px;
+    background-color: #f8f8f8;
+  }
+}
+
 div.coto-body {
   position: relative;
 

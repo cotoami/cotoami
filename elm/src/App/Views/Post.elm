@@ -12,7 +12,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction(..), Graph, member)
+import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
 import App.Messages exposing (..)
 import App.Markdown
 import App.Views.Coto
@@ -45,6 +45,7 @@ view context graph post =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context.cotonoma graph post
+                , parentsDiv graph post
                 , if post.asCotonoma then
                     div [] []
                   else
@@ -64,6 +65,27 @@ headerDiv maybeCotonoma graph post =
 
         Just coto ->
             App.Views.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+
+
+parentsDiv : Graph -> Post -> Html Msg
+parentsDiv graph post =
+    let
+        parents =
+            post.cotoId
+                |> Maybe.map (\cotoId -> getParents cotoId graph)
+                |> Maybe.withDefault []
+    in
+        if List.isEmpty parents then
+            div [] []
+        else
+            div [ class "parents" ]
+                (List.map
+                    (\parent ->
+                        div [ class "parent" ]
+                            [ text parent.content ]
+                    )
+                    parents
+                )
 
 
 authorDiv : Maybe Session -> Post -> Html Msg
