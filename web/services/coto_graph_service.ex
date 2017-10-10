@@ -34,7 +34,14 @@ defmodule Cotoami.CotoGraphService do
   # start with the uuid node and traverse HAS_A relationships
   # until finding the end edge or a cotonoma
   defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
-    query = ~s"""
+    query = query_graph_from_uuid()
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{uuid: uuid})
+    |> build_graph_from_query_result(uuid, from_root)
+  end
+
+  defp query_graph_from_uuid do
+    ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
         (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
       WITH size(filter(n IN tail(nodes(path)) WHERE n:#{@label_cotonoma}))
@@ -44,9 +51,6 @@ defmodule Cotoami.CotoGraphService do
       RETURN DISTINCT parent, has, child
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
-    bolt_conn
-    |> Bolt.Sips.query!(query, %{uuid: uuid})
-    |> build_graph_from_query_result(uuid, from_root)
   end
 
   defp build_graph_from_query_result(query_result, uuid, from_root) do
