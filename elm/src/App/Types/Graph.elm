@@ -161,12 +161,6 @@ connect start end graph =
                 |> Dict.insert start.id start
                 |> Dict.insert end.id end
 
-        rootConnections =
-            if member start.id graph then
-                graph.rootConnections
-            else
-                (initConnection Nothing start.id) :: graph.rootConnections
-
         connections =
             if connected start.id end.id graph then
                 graph.connections
@@ -183,11 +177,7 @@ connect start end graph =
                     )
                     graph.connections
     in
-        { graph
-            | cotos = cotos
-            , rootConnections = rootConnections
-            , connections = connections
-        }
+        { graph | cotos = cotos, connections = connections }
 
 
 connectOneToMany : Coto -> List Coto -> Graph -> Graph
