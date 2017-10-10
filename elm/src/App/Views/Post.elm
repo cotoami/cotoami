@@ -81,7 +81,9 @@ parentsDiv graph post =
             div [ class "parents" ]
                 (List.map
                     (\parent ->
-                        div [ class "parent" ]
+                        div [ class "parent"
+                            , onClick (OpenTraversal parent.id)
+                            ]
                             [ text parent.content ]
                     )
                     parents
