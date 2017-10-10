@@ -273,6 +273,8 @@ div.main-traversal {
     top: auto;
     overflow-y: hidden;
     background-color: #e8e8e8;
+    border-left: solid 1px #ddd;
+    box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
 
     &.empty,
     &.hidden {
