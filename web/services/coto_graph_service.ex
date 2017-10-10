@@ -7,6 +7,7 @@ defmodule Cotoami.CotoGraphService do
   import Cotoami.Helpers
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
+  alias Bolt.Sips.Types.Node
   alias Cotoami.{
     Repo, Coto, Amishi, Cotonoma, CotoGraph,
     Neo4jService, AmishiService,
@@ -19,23 +20,50 @@ defmodule Cotoami.CotoGraphService do
 
   @rel_type_has_a "HAS_A"
 
-  def get_graph(bolt_conn, %Amishi{id: amishi_id}) do
-    get_graph_from_uuid(bolt_conn, amishi_id)
+  def get_graph(bolt_conn, %Amishi{id: _} = amishi) do
+    do_get_graph(bolt_conn, amishi)
   end
 
-  def get_graph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
+  def get_graph(bolt_conn, %Cotonoma{id: _, coto: %Coto{id: _}} = cotonoma) do
+    do_get_graph(bolt_conn, cotonoma)
   end
 
-  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id, false)
+  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: _}} = cotonoma) do
+    do_get_subgraph(bolt_conn, cotonoma)
   end
 
-  defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
-    query = query_graph_from_uuid()
+  defp do_get_graph(bolt_conn, %Amishi{id: amishi_id}) do
+    query = query_graph_from_uuid() <>
+      ~s"""
+        UNION
+        MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          { created_by: $created_by }]->(child:#{@label_coto})
+        WHERE NOT exists(has.created_in)
+        RETURN DISTINCT parent, has, child
+        ORDER BY has.#{Neo4jService.rel_prop_order()}
+      """
     bolt_conn
-    |> Bolt.Sips.query!(query, %{uuid: uuid})
-    |> build_graph_from_query_result(uuid, from_root)
+    |> Bolt.Sips.query!(query, %{uuid: amishi_id, created_by: amishi_id})
+    |> build_graph_from_query_result(amishi_id, true)
+  end
+  defp do_get_graph(bolt_conn, %Cotonoma{id: cotonom_id, coto: %Coto{id: cotonoma_coto_id}}) do
+    query = query_graph_from_uuid() <>
+      ~s"""
+        UNION
+        MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          { created_in: $created_in }]->(child:#{@label_coto})
+        RETURN DISTINCT parent, has, child
+        ORDER BY has.#{Neo4jService.rel_prop_order()}
+      """
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonom_id})
+    |> build_graph_from_query_result(cotonoma_coto_id, true)
+  end
+
+  defp do_get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    bolt_conn
+    |> Bolt.Sips.query!(query_graph_from_uuid(), %{uuid: cotonoma_coto_id})
+    |> build_graph_from_query_result(cotonoma_coto_id, false)
   end
 
   # start with the uuid node and traverse HAS_A relationships
@@ -53,21 +81,25 @@ defmodule Cotoami.CotoGraphService do
     """
   end
 
-  defp build_graph_from_query_result(query_result, uuid, from_root) do
+  defp build_graph_from_query_result(query_result, start_uuid, from_root) do
     query_result
     |> Enum.reduce(%CotoGraph{}, fn(%{"parent" => parent, "has" => has, "child" => child}, graph) ->
+        graph = %{graph |
+          cotos:
+            graph.cotos
+            |> add_coto(parent)
+            |> add_coto(child)
+        }
+
         parent_id = parent.properties["uuid"]
         child_id = child.properties["uuid"]
-
-        graph = %{graph | cotos: Map.put(graph.cotos, child_id, child.properties)}
-
         connection =
           has.properties
           |> Map.put("id", has.id)
           |> Map.put("start", parent_id)
           |> Map.put("end", child_id)
 
-        if from_root && parent_id == uuid do
+        if from_root && parent_id == start_uuid do
           %{graph | root_connections: [connection | graph.root_connections]}
         else
           parent_connections =
@@ -77,6 +109,15 @@ defmodule Cotoami.CotoGraphService do
         end
       end)
     |> (fn(graph) -> %{graph | cotos: complement_relations(graph.cotos)} end).()
+  end
+
+  defp add_coto(%{} = cotos, %Node{labels: labels, properties: properties}) do
+    if @label_coto in labels do
+      coto_id = properties["uuid"]
+      Map.put(cotos, coto_id, properties)
+    else
+      cotos
+    end
   end
 
   defp complement_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
