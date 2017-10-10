@@ -8,7 +8,7 @@ import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
-import App.Markdown
+import App.Markdown exposing (extractTextFromMarkdown)
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
@@ -27,6 +27,14 @@ cotoClassList context elementId maybeCotoId additionalClasses =
          ]
             ++ additionalClasses
         )
+
+
+headline : { r | content : String } -> String
+headline { content } =
+    extractTextFromMarkdown content
+        |> List.head
+        |> Maybe.withDefault ""
+        |> String.left 100
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -219,7 +227,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         [ materialIcon
                             (if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
                                 "check_box"
-                              else
+                             else
                                 "check_box_outline_blank"
                             )
                             Nothing

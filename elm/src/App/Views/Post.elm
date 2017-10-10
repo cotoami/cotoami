@@ -14,7 +14,7 @@ import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
 import App.Messages exposing (..)
-import App.Markdown
+import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto
 
 
@@ -81,10 +81,11 @@ parentsDiv graph post =
             div [ class "parents" ]
                 (List.map
                     (\parent ->
-                        div [ class "parent"
+                        div
+                            [ class "parent"
                             , onClick (OpenTraversal parent.id)
                             ]
-                            [ text (String.left 100 parent.content) ]
+                            [ text (App.Views.Coto.headline parent) ]
                     )
                     parents
                 )
