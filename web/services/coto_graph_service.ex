@@ -31,8 +31,6 @@ defmodule Cotoami.CotoGraphService do
     get_graph_from_uuid(bolt_conn, cotonoma_coto_id, false)
   end
 
-  # start with the uuid node and traverse HAS_A relationships
-  # until finding the end edge or a cotonoma
   defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
     query = query_graph_from_uuid()
     bolt_conn
@@ -40,6 +38,8 @@ defmodule Cotoami.CotoGraphService do
     |> build_graph_from_query_result(uuid, from_root)
   end
 
+  # start with the uuid node and traverse HAS_A relationships
+  # until finding the end edge or a cotonoma
   defp query_graph_from_uuid do
     ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
