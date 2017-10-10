@@ -84,7 +84,7 @@ parentsDiv graph post =
                         div [ class "parent"
                             , onClick (OpenTraversal parent.id)
                             ]
-                            [ text parent.content ]
+                            [ text (String.left 100 parent.content) ]
                     )
                     parents
                 )
