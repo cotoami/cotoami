@@ -2,6 +2,7 @@ module App.Types.Graph exposing (..)
 
 import Dict
 import Maybe exposing (withDefault)
+import List.Extra
 import App.Types.Coto exposing (Coto, CotoId)
 
 
@@ -102,6 +103,18 @@ inGraph cotoId graph =
                         conns |> List.any (\conn -> conn.end == cotoId)
                     )
            )
+
+
+getParents : CotoId -> Graph -> List Coto
+getParents cotoId graph =
+    List.filterMap
+        (\parentId ->
+            graph.connections
+                |> Dict.get parentId
+                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
+                |> Maybe.andThen (\_ -> getCoto parentId graph)
+        )
+        (Dict.keys graph.connections)
 
 
 hasChildren : CotoId -> Graph -> Bool
