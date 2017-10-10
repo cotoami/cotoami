@@ -24,6 +24,6 @@ scrollPinnedCotosToBottom msg =
 
 scrollToBottom : String -> msg -> Cmd msg
 scrollToBottom elementId msg =
-    Process.sleep (1 * Time.millisecond)
+    Process.sleep (100 * Time.millisecond)
         |> andThen (\_ -> (Dom.Scroll.toBottom elementId))
         |> attempt (\_ -> msg)
