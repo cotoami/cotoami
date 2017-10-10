@@ -51,18 +51,15 @@ view model =
             [ App.Views.AppHeader.view model
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
-                    (List.concat
-                        [ defaultColumnDivs model
-                        , App.Views.Traversals.view
-                            (model.activeViewOnMobile == TraversalsView)
-                            model.context
-                            model.graph
-                            model.traversals
-                        , [ selectionColumnDiv model
-                          , viewSwitchContainerDiv model
-                          ]
-                        ]
-                    )
+                    [ navColumn model
+                    , div [ id "main-content" ]
+                        ([ timelineColumn model
+                         , pinnedCotosColumn model
+                         ] ++ (traversalColumns model)
+                        )
+                    , selectionColumn model
+                    , viewSwitchContainerDiv model
+                    ]
                 ]
             , App.Views.CotoSelection.statusBar model
             , a
@@ -77,9 +74,9 @@ view model =
             ]
 
 
-defaultColumnDivs : Model -> List (Html Msg)
-defaultColumnDivs model =
-    [ div
+navColumn : Model -> Html Msg
+navColumn model =
+    div
         [ id "main-nav"
         , classList
             [ ( "neverToggled", not model.navigationToggled )
@@ -91,7 +88,11 @@ defaultColumnDivs model =
             ]
         ]
         (App.Views.Navigation.view model)
-    , div
+
+
+timelineColumn : Model -> Html Msg
+timelineColumn model =
+    div
         [ id "main-timeline"
         , classList
             [ ( "main-column", True )
@@ -105,7 +106,11 @@ defaultColumnDivs model =
             model.graph
             model.timeline
         ]
-    , div
+
+
+pinnedCotosColumn : Model -> Html Msg
+pinnedCotosColumn model =
+    div
         [ id "main-stock"
         , classList
             [ ( "main-column", True )
@@ -116,11 +121,19 @@ defaultColumnDivs model =
         ]
         [ App.Views.PinnedCotos.view model.context model.graph
         ]
-    ]
 
 
-selectionColumnDiv : Model -> Html Msg
-selectionColumnDiv model =
+traversalColumns : Model -> List (Html Msg)
+traversalColumns model =
+    App.Views.Traversals.view
+            (model.activeViewOnMobile == TraversalsView)
+            model.context
+            model.graph
+            model.traversals
+
+
+selectionColumn : Model -> Html Msg
+selectionColumn model =
     div
         [ id "main-selection"
         , classList
@@ -223,6 +236,5 @@ modals model =
 
                 ImportModal ->
                     App.Modals.ImportModal.view model.importModal
-
         )
         (List.reverse model.modals)

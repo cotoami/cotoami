@@ -104,6 +104,11 @@ $tool-button-color: #3572A5 !default;
   }
 }
 
+#main-content {
+  flex: 1;
+  display: flex;
+}
+
 #main-timeline {
   flex: 1;
   display: flex;
@@ -119,7 +124,7 @@ $tool-button-color: #3572A5 !default;
 
 #main-stock,
 #main-selection {
-  display: flex;
+  flex: 1;
   position: absolute;
   z-index: 3;
   top: 35px;
@@ -138,7 +143,6 @@ $tool-button-color: #3572A5 !default;
 
 div.main-traversal {
   flex: 1;
-  display: flex;
   padding: 0 5px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -189,6 +193,7 @@ div.main-traversal {
   }
 
   #app-layout {
+    display: flex;
     flex-direction: row;
     width: 100%;
     margin: 0 auto !important;
@@ -196,6 +201,7 @@ div.main-traversal {
 
     div.main-column {
       display: flex;
+      min-width: 450px;
     }
   }
 
@@ -228,16 +234,21 @@ div.main-traversal {
     }
   }
 
+  #main-content {
+    flex: 1;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
   #main-timeline {
     flex: 1;
-    height: 100%;
     padding: 0;
     background-color: #f8f8f8;
   }
 
   #main-stock {
     flex: 1;
-    display: flex !important;
     position: relative;
     top: auto;
     animation-name: none;
@@ -255,12 +266,14 @@ div.main-traversal {
   }
 
   #main-selection {
-    flex: 1;
+    max-width: 450px;
     display: flex !important;
     position: relative;
     top: auto;
     overflow-y: hidden;
     background-color: #e8e8e8;
+    border-left: solid 1px #ddd;
+    box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
 
     &.empty,
     &.hidden {
