@@ -12,6 +12,18 @@ sendMsg msg =
     Task.succeed msg |> Task.perform identity
 
 
+scrollMainContentToRight : msg -> Cmd msg
+scrollMainContentToRight msg =
+    scrollToRight "main-content" msg
+
+
+scrollToRight : String -> msg -> Cmd msg
+scrollToRight elementId msg =
+    Process.sleep (100 * Time.millisecond)
+        |> andThen (\_ -> (Dom.Scroll.toRight elementId))
+        |> attempt (\_ -> msg)
+
+
 scrollTimelineToBottom : msg -> Cmd msg
 scrollTimelineToBottom msg =
     scrollToBottom "timeline" msg

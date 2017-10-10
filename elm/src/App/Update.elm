@@ -239,7 +239,10 @@ update msg model =
 
         OpenTraversal cotoId ->
             openTraversal cotoId model
-                |> \model -> model ! [ fetchSubgraphIfCotonoma model.graph cotoId ]
+                |> flip (!)
+                    [ App.Commands.scrollMainContentToRight NoOp
+                    , fetchSubgraphIfCotonoma model.graph cotoId
+                    ]
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
