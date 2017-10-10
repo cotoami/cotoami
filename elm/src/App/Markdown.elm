@@ -45,3 +45,30 @@ customHtmlInline inline =
 
         _ ->
             Inline.defaultHtml (Just customHtmlInline) inline
+
+
+extractTextFromMarkdown : String -> List String
+extractTextFromMarkdown markdownText =
+    markdownText
+        |> Block.parse Nothing
+        |> List.map
+            (\block ->
+                (Block.queryInlines
+                    (\inline ->
+                        case inline of
+                            Text str ->
+                                [ str ]
+
+                            HardLineBreak ->
+                                [ " " ]
+
+                            CodeInline str ->
+                                [ str ]
+
+                            _ ->
+                                [ "" ]
+                    )
+                    block
+                )
+                    |> String.join ""
+            )
