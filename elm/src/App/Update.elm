@@ -402,6 +402,18 @@ update msg model =
             model ! []
 
         --
+        -- Cotonoma
+        --
+        PinOrUnpinCotonoma cotonomaKey pin ->
+            model ! []
+
+        CotonomaPinnedOrUnpinned (Ok _) ->
+            model ! []
+
+        CotonomaPinnedOrUnpinned (Err _) ->
+            model ! []
+
+        --
         -- Timeline
         --
         PostsFetched (Ok posts) ->

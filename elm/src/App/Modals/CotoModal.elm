@@ -24,6 +24,7 @@ type alias Model =
     , cotonomaPinned : Bool
     , editing : Bool
     , editingContent : String
+    , updatingCotonomaPin : Bool
     }
 
 
@@ -33,6 +34,7 @@ initModel cotonomaPinned coto =
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingContent = coto.content
+    , updatingCotonomaPin = False
     }
 
 
@@ -153,9 +155,13 @@ cotonomaModalConfig session model =
         else
             [ if session.owner then
                 button
-                    [ class "button" ]
+                    [ class "button"
+                    , disabled model.updatingCotonomaPin
+                    ]
                     [ text
-                        (if model.cotonomaPinned then
+                        (if model.updatingCotonomaPin then
+                            "Processing..."
+                         else if model.cotonomaPinned then
                             "Unpin"
                          else
                             "Pin"

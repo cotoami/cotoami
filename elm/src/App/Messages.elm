@@ -74,6 +74,11 @@ type Msg
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
       --
+      -- Cotonoma
+      --
+    | PinOrUnpinCotonoma CotonomaKey Bool
+    | CotonomaPinnedOrUnpinned (Result Http.Error String)
+      --
       -- Timeline
       --
     | PostsFetched (Result Http.Error (List Post))
