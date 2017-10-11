@@ -18,7 +18,6 @@ type alias Post =
     , postedAt : Maybe Date
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
-    , cotonomaPinned : Bool
     , beingDeleted : Bool
     }
 
@@ -33,7 +32,6 @@ defaultPost =
     , postedAt = Nothing
     , asCotonoma = False
     , cotonomaKey = Nothing
-    , cotonomaPinned = False
     , beingDeleted = False
     }
 
@@ -50,7 +48,6 @@ toCoto post =
                     post.postedIn
                     post.asCotonoma
                     post.cotonomaKey
-                    post.cotonomaPinned
             )
 
 

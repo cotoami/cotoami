@@ -12,14 +12,13 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map7 Coto
+    Decode.map6 Coto
         (Decode.field "id" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "as_cotonoma" Decode.bool)
         (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
-        (Decode.field "cotonoma_pinned" Decode.bool)
 
 
 deleteCoto : CotoId -> Cmd Msg

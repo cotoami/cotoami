@@ -24,7 +24,6 @@ decodePost =
         |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing
         |> required "as_cotonoma" bool
         |> optional "cotonoma_key" (maybe string) Nothing
-        |> required "cotonoma_pinned" bool
         |> hardcoded False
 
 

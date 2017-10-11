@@ -1,7 +1,7 @@
 module App.Types.Coto exposing (..)
 
 import Date exposing (Date)
-import Exts.Maybe exposing (isJust, isNothing)
+import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import Util.StringUtil exposing (isBlank)
 
@@ -25,7 +25,6 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
-    , cotonomaPinned : Bool
     }
 
 
@@ -54,7 +53,6 @@ toCoto cotonoma =
         Nothing
         True
         (Just cotonoma.key)
-        cotonoma.pinned
 
 
 cotonomaNameMaxlength : Int
