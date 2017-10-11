@@ -33,7 +33,8 @@ defmodule Cotoami.CotonomaController do
           {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
           {{coto, cotonoma}, posted_in} ->
             CotonomaService.increment_timeline_revision(posted_in)
-            {{coto, cotonoma}, CotonomaService.get(posted_in.id, amishi.id)}
+            |> CotonomaService.complement_owner()
+            |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
         end
       end)
     coto = %{coto |
