@@ -55,13 +55,13 @@ defmodule Cotoami.CotonomaController do
     render(conn, CotoView, "created.json", coto: coto, postId: post_id)
   end
 
-  def pin(conn, %{"cotonoma_id" => cotonoma_id}, %{owner: true}) do
-    Cotonoma |> Repo.get!(cotonoma_id) |> CotonomaService.pin()
+  def pin(conn, %{"key" => key}, %{owner: true}) do
+    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.pin()
     send_resp(conn, :ok, "")
   end
 
-  def unpin(conn, %{"cotonoma_id" => cotonoma_id}, %{owner: true}) do
-    Cotonoma |> Repo.get!(cotonoma_id) |> CotonomaService.unpin()
+  def unpin(conn, %{"key" => key}, %{owner: true}) do
+    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.unpin()
     send_resp(conn, :ok, "")
   end
 
