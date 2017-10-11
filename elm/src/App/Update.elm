@@ -491,22 +491,27 @@ update msg model =
             model ! []
 
         PostCotonoma ->
-            model.timeline
-                |> postContent
-                    model.context
-                    True
-                    model.cotonomaModal.name
-                |> \( timeline, _ ) ->
-                    ( { model | timeline = timeline }
-                    , Cmd.batch
-                        [ App.Commands.scrollTimelineToBottom NoOp
-                        , postCotonoma
+            let
+                timeline =
+                    model.timeline
+                        |> postContent model.context True model.cotonomaModal.name
+                        |> \( timeline, _ ) -> timeline
+
+                cotonomaModal =
+                    model.cotonomaModal
+                        |> (\modal -> { modal | requestProcessing = True })
+            in
+                { model
+                    | timeline = timeline
+                    , cotonomaModal = cotonomaModal
+                }
+                    ! [ App.Commands.scrollTimelineToBottom NoOp
+                      , postCotonoma
                             model.context.clientId
                             model.context.cotonoma
                             timeline.postIdCounter
                             model.cotonomaModal.name
-                        ]
-                    )
+                      ]
 
         CotonomaPosted (Ok response) ->
             ({ model

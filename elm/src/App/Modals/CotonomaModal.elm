@@ -19,12 +19,14 @@ import App.Modals.CotonomaModalMsg as CotonomaModalMsg exposing (Msg(..))
 
 type alias Model =
     { name : String
+    , requestProcessing : Bool
     }
 
 
 defaultModel : Model
 defaultModel =
     { name = ""
+    , requestProcessing = False
     }
 
 
@@ -74,9 +76,16 @@ modalConfig session model =
     , buttons =
         [ button
             [ class "button button-primary"
-            , disabled (not (validateCotonomaName model.name))
+            , disabled
+                (not (validateCotonomaName model.name)
+                    || model.requestProcessing
+                )
             , onClick PostCotonoma
             ]
-            [ text "Create" ]
+            [ if model.requestProcessing then
+                text "Creating..."
+              else
+                text "Create"
+            ]
         ]
     }
