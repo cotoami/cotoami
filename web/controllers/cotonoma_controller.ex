@@ -9,11 +9,16 @@ defmodule Cotoami.CotonomaController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, params, _amishi) do
-    cotonoma_id = params["cotonoma_id"]
+  def index(conn, _params, _amishi) do
     render(conn, "index.json", %{
       pinned: CotonomaService.pinned_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(cotonoma_id),
+      recent: CotonomaService.recent_cotonomas(),
+    })
+  end
+
+  def sub(conn, %{"cotonoma_id" => cotonoma_id}, _amishi) do
+    render(conn, "sub.json", %{
+      rows: CotonomaService.recent_cotonomas(cotonoma_id)
     })
   end
 

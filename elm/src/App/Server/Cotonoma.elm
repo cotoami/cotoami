@@ -31,14 +31,14 @@ fetchCotonomas =
 
 fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
 fetchSubCotonomas maybeCotonoma =
-    case maybeCotonoma of
-        Nothing ->
-            Cmd.none
-
-        Just cotonoma ->
-            Http.send SubCotonomasFetched <|
-                Http.get ("/api/cotonomas?cotonoma_id=" ++ cotonoma.id) <|
-                    Decode.list decodeCotonoma
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                Decode.list decodeCotonoma
+                    |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/cotonomas")
+                    |> Http.send SubCotonomasFetched
+            )
+        |> Maybe.withDefault Cmd.none
 
 
 encodeCotonoma : String -> Maybe Cotonoma -> Int -> String -> Encode.Value
