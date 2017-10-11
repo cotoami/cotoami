@@ -782,11 +782,11 @@ loadCotonoma key model =
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
-        { model
-            | timeline =
-                model.timeline
-                    |> \t -> { t | posts = payload.body :: t.posts }
-        }
+        (model.timeline
+            |> (\timeline -> ( timeline, payload.body :: timeline.posts ))
+            |> (\( timeline, posts ) -> { timeline | posts = posts })
+            |> (\timeline -> { model | timeline = timeline })
+        )
             ! if payload.body.asCotonoma then
                 [ App.Commands.scrollTimelineToBottom NoOp
                 , sendMsg (CotonomaPushed payload.body)
