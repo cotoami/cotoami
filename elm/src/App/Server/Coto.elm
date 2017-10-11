@@ -5,19 +5,21 @@ import Json.Encode as Encode
 import Json.Decode as Decode
 import Util.HttpUtil exposing (httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, ContentUpdated))
-import App.Types.Coto exposing (CotoId, Coto, initCoto)
+import App.Types.Coto exposing (CotoId, Coto, Cotonoma)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map5 initCoto
+    Decode.map7 Coto
         (Decode.field "id" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
+        (Decode.field "as_cotonoma" Decode.bool)
         (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
+        (Decode.field "cotonoma_pinned" Decode.bool)
 
 
 deleteCoto : CotoId -> Cmd Msg

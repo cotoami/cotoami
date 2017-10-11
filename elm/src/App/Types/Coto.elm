@@ -25,17 +25,7 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
-    }
-
-
-initCoto : CotoId -> String -> Maybe Amishi -> Maybe Cotonoma -> Maybe CotonomaKey -> Coto
-initCoto id content maybeAmishi maybePostedIn maybeCotonomaKey =
-    { id = id
-    , content = content
-    , amishi = maybeAmishi
-    , postedIn = maybePostedIn
-    , asCotonoma = isJust maybeCotonomaKey
-    , cotonomaKey = maybeCotonomaKey
+    , cotonomaPinned : Bool
     }
 
 
@@ -48,6 +38,7 @@ type alias Cotonoma =
     { id : String
     , key : CotonomaKey
     , name : String
+    , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
     , updatedAt : Date
@@ -63,6 +54,7 @@ toCoto cotonoma =
         Nothing
         True
         (Just cotonoma.key)
+        cotonoma.pinned
 
 
 cotonomaNameMaxlength : Int

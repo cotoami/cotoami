@@ -31,6 +31,7 @@ defmodule Cotoami.CotonomaView do
       id: cotonoma.id,
       key: cotonoma.key,
       name: cotonoma.name,
+      pinned: cotonoma.pinned,
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,
       coto_id:

@@ -11,10 +11,11 @@ import App.Types.Coto exposing (Cotonoma, CotonomaKey)
 
 decodeCotonoma : Decode.Decoder Cotonoma
 decodeCotonoma =
-    Decode.map6 Cotonoma
+    Decode.map7 Cotonoma
         (Decode.field "id" Decode.string)
         (Decode.field "key" Decode.string)
         (Decode.field "name" Decode.string)
+        (Decode.field "pinned" Decode.bool)
         (Decode.field "coto_id" Decode.string)
         (Decode.maybe (Decode.field "owner" decodeAmishi))
         (Decode.field "updated_at" (Decode.map Date.fromTime Decode.float))
