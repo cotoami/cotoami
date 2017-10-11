@@ -1,11 +1,14 @@
 module App.Model exposing (..)
 
 import Dict
+import Date
 import Exts.Maybe exposing (isNothing)
+import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
@@ -122,6 +125,23 @@ getSelectedCotos model =
     List.filterMap
         (\cotoId -> getCoto cotoId model)
         model.context.selection
+
+
+updateRecentCotonomas : Cotonoma -> Model -> Model
+updateRecentCotonomas cotonoma model =
+    model.recentCotonomas
+        |> (::) cotonoma
+        |> List.Extra.uniqueBy (\c -> c.id)
+        |> List.sortBy (\c -> Date.toTime c.updatedAt)
+        |> List.reverse
+        |> (\cotonomas -> { model | recentCotonomas = cotonomas })
+
+
+updateRecentCotonomasByPost : Post -> Model -> Model
+updateRecentCotonomasByPost post model =
+    post.postedIn
+        |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
+        |> Maybe.withDefault model
 
 
 openModal : Modal -> Model -> Model

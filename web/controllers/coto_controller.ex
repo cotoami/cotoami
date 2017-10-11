@@ -28,19 +28,17 @@ defmodule Cotoami.CotoController do
   ) do
     {:ok, {coto, posted_in}} =
       Repo.transaction(fn ->
-        {coto, posted_in} = CotoService.create!(cotonoma_id, amishi.id, content)
-        if posted_in do
-          {coto, CotonomaService.increment_timeline_revision(posted_in)}
-        else
-          {coto, posted_in}
+        case CotoService.create!(cotonoma_id, amishi.id, content) do
+          {coto, nil} -> {coto, nil}
+          {coto, posted_in} ->
+            CotonomaService.increment_timeline_revision(posted_in)
+            {coto, CotonomaService.get(posted_in.id, amishi.id)}
         end
       end)
-
+    coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
-      %{coto | posted_in: posted_in, amishi: amishi}
-      |> broadcast_post(posted_in.key, clientId)
+      broadcast_post(coto, posted_in.key, clientId)
     end
-
     render(conn, "created.json", coto: coto, postId: post_id)
   end
 

@@ -444,7 +444,10 @@ update msg model =
             post Nothing model
 
         Posted (Ok response) ->
-            { model | timeline = setCotoSaved response model.timeline } ! []
+            ( { model | timeline = setCotoSaved response model.timeline }
+                |> updateRecentCotonomasByPost response
+            , Cmd.none
+            )
 
         Posted (Err _) ->
             model ! []
