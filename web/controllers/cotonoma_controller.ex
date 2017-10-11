@@ -9,9 +9,9 @@ defmodule Cotoami.CotonomaController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, params, amishi) do
+  def index(conn, params, _amishi) do
     cotonoma_id = params["cotonoma_id"]
-    cotonomas = CotonomaService.find_by_amishi(amishi.id, cotonoma_id)
+    cotonomas = CotonomaService.recent_cotonoma(cotonoma_id)
     render(conn, "index.json", %{rows: cotonomas})
   end
 
