@@ -24,7 +24,7 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
-import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
+import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
@@ -129,14 +129,14 @@ update msg model =
                 _ ->
                     model ! []
 
-        RecentCotonomasFetched (Ok cotonomas) ->
+        CotonomasFetched (Ok ( pinned, recent )) ->
             { model
-                | recentCotonomas = cotonomas
+                | recentCotonomas = recent
                 , cotonomasLoading = False
             }
                 ! []
 
-        RecentCotonomasFetched (Err _) ->
+        CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } ! []
 
         SubCotonomasFetched (Ok cotonomas) ->
@@ -278,7 +278,7 @@ update msg model =
                 , context = deleteSelection coto.id model.context
             }
                 ! (if coto.asCotonoma then
-                    [ fetchRecentCotonomas
+                    [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
                    else
@@ -291,7 +291,7 @@ update msg model =
         ContentUpdated (Ok coto) ->
             updateRecentCotonomasByCoto coto model
                 ! if coto.asCotonoma then
-                    [ fetchRecentCotonomas
+                    [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
                   else
@@ -514,7 +514,7 @@ update msg model =
              }
                 |> closeModal
             )
-                ! [ fetchRecentCotonomas
+                ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
@@ -539,7 +539,7 @@ update msg model =
 
         CotonomaPushed post ->
             model
-                ! [ fetchRecentCotonomas
+                ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
@@ -749,7 +749,7 @@ loadHome model =
         , activeViewOnMobile = TimelineView
     }
         ! [ fetchPosts
-          , fetchRecentCotonomas
+          , fetchCotonomas
           , fetchGraph Nothing
           ]
 
@@ -773,7 +773,7 @@ loadCotonoma key model =
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
     }
-        ! [ fetchRecentCotonomas
+        ! [ fetchCotonomas
           , fetchCotonomaPosts key
           , fetchGraph (Just key)
           ]

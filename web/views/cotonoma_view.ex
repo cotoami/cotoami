@@ -2,8 +2,11 @@ defmodule Cotoami.CotonomaView do
   use Cotoami.Web, :view
   alias Cotoami.{CotoView, AmishiView}
 
-  def render("index.json", %{rows: rows}) do
-    render_many(rows, __MODULE__, "cotonoma.json")
+  def render("index.json", %{pinned: pinned, recent: recent}) do
+    %{
+      pinned: render_many(pinned, __MODULE__, "cotonoma.json"),
+      recent: render_many(recent, __MODULE__, "cotonoma.json")
+    }
   end
 
   def render("cotos.json", %{cotos: cotos, cotonoma: cotonoma}) do

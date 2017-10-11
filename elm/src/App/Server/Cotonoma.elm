@@ -20,33 +20,40 @@ decodeCotonoma =
         (Decode.field "updated_at" (Decode.map Date.fromTime Decode.float))
 
 
-fetchRecentCotonomas : Cmd Msg
-fetchRecentCotonomas =
-    Http.send RecentCotonomasFetched
-        <| Http.get "/api/cotonomas"
-        <| Decode.list decodeCotonoma
+fetchCotonomas : Cmd Msg
+fetchCotonomas =
+    Http.send CotonomasFetched <|
+        Http.get "/api/cotonomas" <|
+            Decode.map2 (,)
+                (Decode.field "pinned" (Decode.list decodeCotonoma))
+                (Decode.field "recent" (Decode.list decodeCotonoma))
 
 
 fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
 fetchSubCotonomas maybeCotonoma =
     case maybeCotonoma of
-        Nothing -> Cmd.none
+        Nothing ->
+            Cmd.none
+
         Just cotonoma ->
-            Http.send SubCotonomasFetched
-                <| Http.get ("/api/cotonomas?cotonoma_id=" ++ cotonoma.id)
-                <| Decode.list decodeCotonoma
+            Http.send SubCotonomasFetched <|
+                Http.get ("/api/cotonomas?cotonoma_id=" ++ cotonoma.id) <|
+                    Decode.list decodeCotonoma
 
 
 encodeCotonoma : String -> Maybe Cotonoma -> Int -> String -> Encode.Value
 encodeCotonoma clientId maybeCotonoma postId name =
     Encode.object
         [ ( "clientId", Encode.string clientId )
-        , ( "cotonoma",
-            (Encode.object
+        , ( "cotonoma"
+          , (Encode.object
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
-                        Nothing -> Encode.null
-                        Just cotonoma -> Encode.string cotonoma.id
+                        Nothing ->
+                            Encode.null
+
+                        Just cotonoma ->
+                            Encode.string cotonoma.id
                   )
                 , ( "postId", Encode.int postId )
                 , ( "name", Encode.string name )

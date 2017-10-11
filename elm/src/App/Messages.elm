@@ -31,7 +31,7 @@ type Msg
       -- Fetched
       --
     | SessionFetched (Result Http.Error Session)
-    | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomaFetched (Result Http.Error ( Cotonoma, List Post ))
     | GraphFetched (Result Http.Error Graph)

@@ -11,12 +11,10 @@ defmodule Cotoami.CotonomaController do
 
   def index(conn, params, _amishi) do
     cotonoma_id = params["cotonoma_id"]
-    cotonomas = CotonomaService.recent_cotonomas(cotonoma_id)
-    render(conn, "index.json", %{rows: cotonomas})
-  end
-
-  def pinned(conn, params, _amishi) do
-    render(conn, "index.json", %{rows: CotonomaService.pinned_cotonomas()})
+    render(conn, "index.json", %{
+      pinned: CotonomaService.pinned_cotonomas(),
+      recent: CotonomaService.recent_cotonomas(cotonoma_id),
+    })
   end
 
   def create(
@@ -52,15 +50,6 @@ defmodule Cotoami.CotonomaController do
     render(conn, CotoView, "created.json", coto: coto, postId: post_id)
   end
 
-  def cotos(conn, %{"key" => key}, amishi) do
-    case CotonomaService.get_cotos(key, amishi) do
-      nil ->
-        send_resp(conn, :not_found, "")
-      {cotos, cotonoma} ->
-        render(conn, "cotos.json", %{cotos: cotos, cotonoma: cotonoma})
-    end
-  end
-
   def pin(conn, %{"cotonoma_id" => cotonoma_id}, %{owner: true}) do
     Cotonoma |> Repo.get!(cotonoma_id) |> CotonomaService.pin()
     send_resp(conn, :ok, "")
@@ -69,5 +58,14 @@ defmodule Cotoami.CotonomaController do
   def unpin(conn, %{"cotonoma_id" => cotonoma_id}, %{owner: true}) do
     Cotonoma |> Repo.get!(cotonoma_id) |> CotonomaService.unpin()
     send_resp(conn, :ok, "")
+  end
+
+  def cotos(conn, %{"key" => key}, amishi) do
+    case CotonomaService.get_cotos(key, amishi) do
+      nil ->
+        send_resp(conn, :not_found, "")
+      {cotos, cotonoma} ->
+        render(conn, "cotos.json", %{cotos: cotos, cotonoma: cotonoma})
+    end
   end
 end
