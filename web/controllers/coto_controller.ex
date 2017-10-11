@@ -50,7 +50,8 @@ defmodule Cotoami.CotoController do
           %Coto{posted_in: nil} = coto -> coto
           %Coto{posted_in: posted_in} = coto ->
             CotonomaService.increment_timeline_revision(posted_in)
-            %{coto | posted_in: CotonomaService.get(posted_in.id, amishi.id)}
+            |> CotonomaService.complement_owner()
+            |> (fn (posted_in) -> %{coto | posted_in: posted_in} end).()
         end
       end)
     render(conn, "coto.json", coto: coto)
