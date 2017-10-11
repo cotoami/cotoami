@@ -38,37 +38,37 @@ defmodule Cotoami.CotonomaService do
     {{coto, cotonoma}, posted_in}
   end
 
-  defp base_query_for_amishi(amishi_id) do
-    Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
-    |> preload([:coto, :owner])
-  end
-
-  defp append_gravatar_profile_to_owner(cotonoma) do
-    if cotonoma do
-      %{cotonoma | :owner => AmishiService.append_gravatar_profile(cotonoma.owner)}
-    else
-      nil
-    end
-  end
-
   def get(id, amishi_id) do
     amishi_id
     |> base_query_for_amishi()
     |> Repo.get(id)
-    |> append_gravatar_profile_to_owner()
+    |> complement_owner()
   end
 
   def get_by_key(key, amishi_id) do
     amishi_id
     |> base_query_for_amishi()
     |> Repo.get_by(key: key)
-    |> append_gravatar_profile_to_owner()
+    |> complement_owner()
   end
 
-  def check_permission!(nil, _amishi_id) do
-    nil
+  defp base_query_for_amishi(amishi_id) do
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> preload([:coto, :owner])
   end
+
+  def complement_owner(nil), do: nil
+  def complement_owner(%Cotonoma{} = cotonoma) do
+    case cotonoma.owner do
+      %Ecto.Association.NotLoaded{} ->
+        %{cotonoma | owner: AmishiService.get(cotonoma.owner_id)}
+      owner ->
+        %{cotonoma | owner: AmishiService.append_gravatar_profile(owner)}
+    end
+  end
+
+  def check_permission!(nil, _amishi_id), do: nil
   def check_permission!(cotonoma_id, amishi_id) do
     case check_permission(cotonoma_id, amishi_id) do
       nil -> raise "Forbidden cotonoma: #{cotonoma_id}"
@@ -89,7 +89,7 @@ defmodule Cotoami.CotonomaService do
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
     |> limit(100)
     |> Repo.all()
-    |> Enum.map(&append_gravatar_profile_to_owner(&1))
+    |> Enum.map(&complement_owner(&1))
   end
 
   def get_cotos(key, %Amishi{id: amishi_id} = amishi) do
