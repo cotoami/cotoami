@@ -103,7 +103,7 @@ defmodule Cotoami.CotonomaService do
             |> preload([:amishi, :posted_in, :cotonoma])
             |> limit(100)
             |> Repo.all
-            |> Enum.map(&(complement_gravatar(&1, amishi)))
+            |> Enum.map(&(complement_author_gravatar(&1, amishi)))
           {cotos, cotonoma}
         else
           nil
@@ -111,12 +111,11 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
-  defp complement_gravatar(coto, %Amishi{id: amishi_id} = amishi) do
+  defp complement_author_gravatar(coto, %Amishi{id: amishi_id} = amishi) do
     if coto.amishi.id == amishi_id do
-      %{coto | :amishi => amishi}
+      %{coto | amishi: amishi}
     else
-      another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
-      %{coto | :amishi => another_amishi}
+      %{coto | amishi: AmishiService.append_gravatar_profile(coto.amishi)}
     end
   end
 
