@@ -4,7 +4,7 @@ defmodule Cotoami.CotonomaService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, limit: 2, order_by: 2]
+  import Ecto.Query, only: [preload: 2, where: 3, limit: 2, order_by: 2]
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
@@ -70,6 +70,15 @@ defmodule Cotoami.CotonomaService do
     |> Cotonoma.in_cotonoma(cotonoma_id)
     |> order_by(desc: :updated_at)
     |> limit(100)
+    |> Repo.all()
+    |> Enum.map(&complement_owner(&1))
+  end
+
+  def pinned_cotonomas() do
+    Cotonoma
+    |> preload([:coto, :owner])
+    |> where([c], c.pinned == true)
+    |> order_by(desc: :updated_at)
     |> Repo.all()
     |> Enum.map(&complement_owner(&1))
   end

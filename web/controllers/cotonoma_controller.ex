@@ -15,6 +15,10 @@ defmodule Cotoami.CotonomaController do
     render(conn, "index.json", %{rows: cotonomas})
   end
 
+  def pinned(conn, params, _amishi) do
+    render(conn, "index.json", %{rows: CotonomaService.pinned_cotonomas()})
+  end
+
   def create(
     conn,
     %{
