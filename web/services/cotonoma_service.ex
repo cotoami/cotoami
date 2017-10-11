@@ -4,7 +4,7 @@ defmodule Cotoami.CotonomaService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
+  import Ecto.Query, only: [preload: 2, where: 3, limit: 2, order_by: 2]
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
@@ -40,7 +40,6 @@ defmodule Cotoami.CotonomaService do
 
   def get(id, amishi_id) do
     Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
     |> preload([:coto, :owner])
     |> Repo.get(id)
     |> complement_owner()
@@ -48,7 +47,6 @@ defmodule Cotoami.CotonomaService do
 
   def get_by_key(key, amishi_id) do
     Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)
     |> complement_owner()
@@ -74,16 +72,15 @@ defmodule Cotoami.CotonomaService do
 
   def check_permission(cotonoma_id, amishi_id) do
     Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
     |> where([c], c.id == ^cotonoma_id)
     |> Repo.one()
   end
 
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
     Cotonoma
-    |> Cotonoma.for_amishi(amishi_id)
     |> preload([:coto, :owner])
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
+    |> order_by(desc: :updated_at)
     |> limit(100)
     |> Repo.all()
     |> Enum.map(&complement_owner(&1))

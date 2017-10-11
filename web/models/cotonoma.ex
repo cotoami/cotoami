@@ -64,10 +64,6 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def for_amishi(query, _amishi_id) do
-    from c in query, order_by: [desc: c.updated_at]
-  end
-
   def in_cotonoma_if_specified(query, cotonoma_id_nillable) do
     if cotonoma_id_nillable do
       from c in query,
