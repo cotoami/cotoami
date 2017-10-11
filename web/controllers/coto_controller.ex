@@ -1,7 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotoService, AmishiService}
+  alias Cotoami.{CotoService}
 
   plug :scrub_params, "coto" when action in [:create, :update]
 
@@ -22,10 +22,8 @@ defmodule Cotoami.CotoController do
     {coto, posted_in} = CotoService.create!(cotonoma_id, amishi.id, content)
 
     if posted_in do
-      %{coto |
-        :posted_in => posted_in,
-        :amishi => AmishiService.append_gravatar_profile(amishi)
-      } |> broadcast_post(posted_in.key, clientId)
+      %{coto | posted_in: posted_in, amishi: amishi}
+      |> broadcast_post(posted_in.key, clientId)
     end
 
     render(conn, "created.json", coto: coto, postId: post_id)
