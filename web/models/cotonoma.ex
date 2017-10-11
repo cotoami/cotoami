@@ -64,13 +64,10 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def in_cotonoma_if_specified(query, cotonoma_id_nillable) do
-    if cotonoma_id_nillable do
-      from c in query,
-        join: coto in assoc(c, :coto),
-        where: coto.posted_in_id == ^cotonoma_id_nillable
-    else
-      query
-    end
+  def in_cotonoma(query, nil), do: query
+  def in_cotonoma(query, cotonoma_id) do
+    from c in query,
+      join: coto in assoc(c, :coto),
+      where: coto.posted_in_id == ^cotonoma_id
   end
 end

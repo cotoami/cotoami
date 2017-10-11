@@ -79,7 +79,7 @@ defmodule Cotoami.CotonomaService do
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
     Cotonoma
     |> preload([:coto, :owner])
-    |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
+    |> Cotonoma.in_cotonoma(cotonoma_id_nillable)
     |> order_by(desc: :updated_at)
     |> limit(100)
     |> Repo.all()
