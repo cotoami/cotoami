@@ -4,7 +4,7 @@ defmodule Cotoami.CotonomaService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, where: 3, limit: 2, order_by: 2]
+  import Ecto.Query, only: [preload: 2, limit: 2, order_by: 2]
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
@@ -40,14 +40,14 @@ defmodule Cotoami.CotonomaService do
     {{coto, cotonoma}, posted_in}
   end
 
-  def get(id, amishi_id) do
+  def get(id) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get(id)
     |> complement_owner()
   end
 
-  def get_by_key(key, amishi_id) do
+  def get_by_key(key) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)
@@ -64,18 +64,18 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
-  def find_by_amishi(amishi_id, cotonoma_id_nillable) do
+  def find_by_amishi(amishi_id, cotonoma_id \\ nil) do
     Cotonoma
     |> preload([:coto, :owner])
-    |> Cotonoma.in_cotonoma(cotonoma_id_nillable)
+    |> Cotonoma.in_cotonoma(cotonoma_id)
     |> order_by(desc: :updated_at)
     |> limit(100)
     |> Repo.all()
     |> Enum.map(&complement_owner(&1))
   end
 
-  def get_cotos(key, %Amishi{id: amishi_id} = amishi) do
-    case get_by_key(key, amishi_id) do
+  def get_cotos(key, %Amishi{} = amishi) do
+    case get_by_key(key) do
       nil -> nil
       cotonoma ->
         cotos =
