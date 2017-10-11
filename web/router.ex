@@ -58,6 +58,8 @@ defmodule Cotoami.Router do
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
+    put "/cotonomas/pin", CotonomaController, :pin
+    delete "/cotonomas/pin/:cotonoma_id", CotonomaController, :unpin
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph
