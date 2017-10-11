@@ -105,15 +105,14 @@ cotoModalConfig session model =
                 ]
                 [ text "Save" ]
             ]
+        else if checkWritePermission session model then
+            [ editButton
+            , button
+                [ class "button", onClick ConfirmDeleteCoto ]
+                [ text "Delete" ]
+            ]
         else
-            if checkWritePermission session model then
-                [ editButton
-                , button
-                    [ class "button", onClick ConfirmDeleteCoto ]
-                    [ text "Delete" ]
-                ]
-            else
-                []
+            []
     }
 
 
@@ -150,10 +149,17 @@ cotonomaModalConfig session model =
                 [ text "Save" ]
             ]
         else
-            if checkWritePermission session model then
-                [ editButton ]
-            else
-                []
+            [ if session.owner then
+                button
+                    [ class "button" ]
+                    [ text "Pin" ]
+              else
+                span [] []
+            , if checkWritePermission session model then
+                editButton
+              else
+                span [] []
+            ]
     }
 
 
