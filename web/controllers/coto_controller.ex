@@ -28,7 +28,7 @@ defmodule Cotoami.CotoController do
   ) do
     {:ok, {coto, posted_in}} =
       Repo.transaction(fn ->
-        case CotoService.create!(cotonoma_id, amishi.id, content) do
+        case CotoService.create!(content, amishi.id, cotonoma_id) do
           {coto, nil} -> {coto, nil}
           {coto, posted_in} ->
             CotonomaService.increment_timeline_revision(posted_in)

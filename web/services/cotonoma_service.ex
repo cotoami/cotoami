@@ -8,33 +8,35 @@ defmodule Cotoami.CotonomaService do
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
-  def create!(cotonoma_id_nillable, amishi_id, name) do
-    posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
-    {:ok, {coto, cotonoma}} =
-      Repo.transaction(fn ->
-        coto =
-          %Coto{}
-          |> Coto.changeset_to_insert(%{
-              posted_in_id: cotonoma_id_nillable,
-              amishi_id: amishi_id,
-              content: name,
-              as_cotonoma: true
-            })
-          |> Repo.insert!
+  def create!(name, amishi_id, cotonoma_id \\ nil) do
+    posted_in =
+      case cotonoma_id do
+        nil -> nil
+        cotonoma_id -> Repo.get!(Cotonoma, cotonoma_id)
+      end
 
-        cotonoma =
-          %Cotonoma{}
-          |> Cotonoma.changeset_to_insert(%{
-              name: name,
-              coto_id: coto.id,
-              owner_id: amishi_id
-            })
-          |> Repo.insert!
-        cotonoma = %{cotonoma | coto: coto}
-        coto = %{coto | cotonoma: cotonoma}
+    coto =
+      %Coto{}
+      |> Coto.changeset_to_insert(%{
+          posted_in_id: cotonoma_id,
+          amishi_id: amishi_id,
+          content: name,
+          as_cotonoma: true
+        })
+      |> Repo.insert!
 
-        {coto, cotonoma}
-      end)
+    cotonoma =
+      %Cotonoma{}
+      |> Cotonoma.changeset_to_insert(%{
+          name: name,
+          coto_id: coto.id,
+          owner_id: amishi_id
+        })
+      |> Repo.insert!
+
+    cotonoma = %{cotonoma | coto: coto}
+    coto = %{coto | cotonoma: cotonoma}
+
     {{coto, cotonoma}, posted_in}
   end
 
@@ -62,20 +64,6 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
-  def check_permission!(nil, _amishi_id), do: nil
-  def check_permission!(cotonoma_id, amishi_id) do
-    case check_permission(cotonoma_id, amishi_id) do
-      nil -> raise "Forbidden cotonoma: #{cotonoma_id}"
-      cotonoma -> cotonoma
-    end
-  end
-
-  def check_permission(cotonoma_id, amishi_id) do
-    Cotonoma
-    |> where([c], c.id == ^cotonoma_id)
-    |> Repo.one()
-  end
-
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
     Cotonoma
     |> preload([:coto, :owner])
@@ -90,18 +78,14 @@ defmodule Cotoami.CotonomaService do
     case get_by_key(key, amishi_id) do
       nil -> nil
       cotonoma ->
-        if check_permission(cotonoma.id, amishi_id) do
-          cotos =
-            Coto
-            |> Coto.in_cotonoma(cotonoma.id)
-            |> preload([:amishi, :posted_in, :cotonoma])
-            |> limit(100)
-            |> Repo.all
-            |> Enum.map(&(CotoService.complement_amishi(&1, amishi)))
-          {cotos, cotonoma}
-        else
-          nil
-        end
+        cotos =
+          Coto
+          |> Coto.in_cotonoma(cotonoma.id)
+          |> preload([:amishi, :posted_in, :cotonoma])
+          |> limit(100)
+          |> Repo.all
+          |> Enum.map(&(CotoService.complement_amishi(&1, amishi)))
+        {cotos, cotonoma}
     end
   end
 
