@@ -64,7 +64,7 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
-  def recent_cotonoma(cotonoma_id \\ nil) do
+  def recent_cotonomas(cotonoma_id \\ nil) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Cotonoma.in_cotonoma(cotonoma_id)

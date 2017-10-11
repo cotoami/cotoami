@@ -11,7 +11,7 @@ defmodule Cotoami.CotonomaController do
 
   def index(conn, params, _amishi) do
     cotonoma_id = params["cotonoma_id"]
-    cotonomas = CotonomaService.recent_cotonoma(cotonoma_id)
+    cotonomas = CotonomaService.recent_cotonomas(cotonoma_id)
     render(conn, "index.json", %{rows: cotonomas})
   end
 
