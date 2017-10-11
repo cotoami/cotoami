@@ -39,23 +39,19 @@ defmodule Cotoami.CotonomaService do
   end
 
   def get(id, amishi_id) do
-    amishi_id
-    |> base_query_for_amishi()
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> preload([:coto, :owner])
     |> Repo.get(id)
     |> complement_owner()
   end
 
   def get_by_key(key, amishi_id) do
-    amishi_id
-    |> base_query_for_amishi()
-    |> Repo.get_by(key: key)
-    |> complement_owner()
-  end
-
-  defp base_query_for_amishi(amishi_id) do
     Cotonoma
     |> Cotonoma.for_amishi(amishi_id)
     |> preload([:coto, :owner])
+    |> Repo.get_by(key: key)
+    |> complement_owner()
   end
 
   def complement_owner(nil), do: nil
@@ -84,8 +80,9 @@ defmodule Cotoami.CotonomaService do
   end
 
   def find_by_amishi(amishi_id, cotonoma_id_nillable) do
-    amishi_id
-    |> base_query_for_amishi()
+    Cotonoma
+    |> Cotonoma.for_amishi(amishi_id)
+    |> preload([:coto, :owner])
     |> Cotonoma.in_cotonoma_if_specified(cotonoma_id_nillable)
     |> limit(100)
     |> Repo.all()
