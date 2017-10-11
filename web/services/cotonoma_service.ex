@@ -120,13 +120,19 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
-  def increment_timeline_revision(%Cotonoma{id: _} = cotonoma) do
+  def pin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, true)
+  def unpin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, false)
+  defp set_pinned(cotonoma, pinned) do
+    cotonoma |> change(pinned: pinned) |> Repo.update!()
+  end
+
+  def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
   end
 
-  def increment_graph_revision(%Cotonoma{id: _} = cotonoma) do
+  def increment_graph_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
