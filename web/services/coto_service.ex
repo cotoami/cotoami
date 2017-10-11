@@ -30,7 +30,20 @@ defmodule Cotoami.CotoService do
     |> preload([:posted_in, :cotonoma])
     |> limit(100)
     |> Repo.all()
-    |> Enum.map(&(%{&1 | :amishi => amishi}))
+    |> Enum.map(&(complement_amishi(&1, amishi)))
+  end
+
+  def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
+    if coto.amishi_id == amishi_id do
+      %{coto | amishi: amishi}
+    else
+      case coto.amishi do
+        %Ecto.Association.NotLoaded{} ->
+          %{coto | amishi: AmishiService.get(coto.amishi_id)}
+        amishi ->
+          %{coto | amishi: AmishiService.append_gravatar_profile(amishi)}
+      end
+    end
   end
 
   def export_by_amishi(%Amishi{id: amishi_id}) do

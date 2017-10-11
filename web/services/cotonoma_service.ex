@@ -6,7 +6,7 @@ defmodule Cotoami.CotonomaService do
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
   import Ecto.Changeset, only: [change: 2]
-  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService}
+  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
   def create!(cotonoma_id_nillable, amishi_id, name) do
     posted_in = check_permission!(cotonoma_id_nillable, amishi_id)
@@ -103,19 +103,11 @@ defmodule Cotoami.CotonomaService do
             |> preload([:amishi, :posted_in, :cotonoma])
             |> limit(100)
             |> Repo.all
-            |> Enum.map(&(complement_author_gravatar(&1, amishi)))
+            |> Enum.map(&(CotoService.complement_amishi(&1, amishi)))
           {cotos, cotonoma}
         else
           nil
         end
-    end
-  end
-
-  defp complement_author_gravatar(coto, %Amishi{id: amishi_id} = amishi) do
-    if coto.amishi.id == amishi_id do
-      %{coto | amishi: amishi}
-    else
-      %{coto | amishi: AmishiService.append_gravatar_profile(coto.amishi)}
     end
   end
 
