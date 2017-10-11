@@ -1,5 +1,6 @@
 module App.Types.Coto exposing (..)
 
+import Date exposing (Date)
 import Exts.Maybe exposing (isJust, isNothing)
 import App.Types.Amishi exposing (Amishi)
 import Util.StringUtil exposing (isBlank)
@@ -49,6 +50,7 @@ type alias Cotonoma =
     , name : String
     , cotoId : CotoId
     , owner : Maybe Amishi
+    , updatedAt : Date
     }
 
 

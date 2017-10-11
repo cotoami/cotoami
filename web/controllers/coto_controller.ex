@@ -1,7 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotoService, AmishiService}
+  alias Cotoami.{Coto, CotoService, CotonomaService}
 
   plug :scrub_params, "coto" when action in [:create, :update]
 
@@ -14,28 +14,45 @@ defmodule Cotoami.CotoController do
     render(conn, "index.json", %{rows: cotos})
   end
 
-  def create(conn, %{"clientId" => clientId, "coto" => coto_params}, amishi) do
-    cotonoma_id = coto_params["cotonoma_id"]
-    content = coto_params["content"]
-    post_id = coto_params["postId"]
-
-    {coto, posted_in} = CotoService.create!(cotonoma_id, amishi.id, content)
-
+  def create(
+    conn,
+    %{
+      "clientId" => clientId,
+      "coto" => %{
+        "cotonoma_id" => cotonoma_id,
+        "content" => content,
+        "postId" => post_id
+      }
+    },
+    amishi
+  ) do
+    {:ok, {coto, posted_in}} =
+      Repo.transaction(fn ->
+        case CotoService.create!(cotonoma_id, amishi.id, content) do
+          {coto, nil} -> {coto, nil}
+          {coto, posted_in} ->
+            CotonomaService.increment_timeline_revision(posted_in)
+            {coto, CotonomaService.get(posted_in.id, amishi.id)}
+        end
+      end)
+    coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
-      %{coto |
-        :posted_in => posted_in,
-        :amishi => AmishiService.append_gravatar_profile(amishi)
-      } |> broadcast_post(posted_in.key, clientId)
+      broadcast_post(coto, posted_in.key, clientId)
     end
-
     render(conn, "created.json", coto: coto, postId: post_id)
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
-    case CotoService.update_content(id, coto_params, amishi) do
-      {:ok, coto} -> render(conn, "coto.json", coto: coto)
-      {:error, _} -> send_resp(conn, :internal_server_error, "")
-    end
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        case CotoService.update_content!(id, coto_params, amishi) do
+          %Coto{posted_in: nil} = coto -> coto
+          %Coto{posted_in: posted_in} = coto ->
+            CotonomaService.increment_timeline_revision(posted_in)
+            %{coto | posted_in: CotonomaService.get(posted_in.id, amishi.id)}
+        end
+      end)
+    render(conn, "coto.json", coto: coto)
   end
 
   def delete(conn, %{"id" => id}, amishi) do

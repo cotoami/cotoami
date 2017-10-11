@@ -5,6 +5,7 @@ defmodule Cotoami.CotonomaService do
 
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2]
+  import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService}
 
   def create!(cotonoma_id_nillable, amishi_id, name) do
@@ -117,5 +118,17 @@ defmodule Cotoami.CotonomaService do
       another_amishi = AmishiService.append_gravatar_profile(coto.amishi)
       %{coto | :amishi => another_amishi}
     end
+  end
+
+  def increment_timeline_revision(%Cotonoma{id: _} = cotonoma) do
+    cotonoma
+    |> change(timeline_revision: cotonoma.timeline_revision + 1)
+    |> Repo.update!()
+  end
+
+  def increment_graph_revision(%Cotonoma{id: _} = cotonoma) do
+    cotonoma
+    |> change(graph_revision: cotonoma.graph_revision + 1)
+    |> Repo.update!()
   end
 end

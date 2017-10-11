@@ -1,7 +1,9 @@
 module App.Model exposing (..)
 
 import Dict
+import Date
 import Exts.Maybe exposing (isNothing)
+import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
@@ -122,6 +124,23 @@ getSelectedCotos model =
     List.filterMap
         (\cotoId -> getCoto cotoId model)
         model.context.selection
+
+
+updateRecentCotonomas : Cotonoma -> Model -> Model
+updateRecentCotonomas cotonoma model =
+    model.recentCotonomas
+        |> (::) cotonoma
+        |> List.Extra.uniqueBy (\c -> c.id)
+        |> List.sortBy (\c -> Date.toTime c.updatedAt)
+        |> List.reverse
+        |> (\cotonomas -> { model | recentCotonomas = cotonomas })
+
+
+updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
+updateRecentCotonomasByCoto post model =
+    post.postedIn
+        |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
+        |> Maybe.withDefault model
 
 
 openModal : Modal -> Model -> Model

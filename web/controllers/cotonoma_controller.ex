@@ -1,7 +1,7 @@
 defmodule Cotoami.CotonomaController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotonomaService, CotoView, AmishiService}
+  alias Cotoami.{CotonomaService, CotoView}
 
   plug :scrub_params, "cotonoma" when action in [:create]
 
@@ -15,28 +15,36 @@ defmodule Cotoami.CotonomaController do
     render(conn, "index.json", %{rows: cotonomas})
   end
 
-  def create(conn, %{"clientId" => clientId, "cotonoma" => cotonoma_params}, amishi) do
-    cotonoma_id = cotonoma_params["cotonoma_id"]
-    name = cotonoma_params["name"]
-    post_id = cotonoma_params["postId"]
-
-    {{coto, cotonoma}, posted_in} =
-      CotonomaService.create!(cotonoma_id, amishi.id, name)
-
-    full_fledged_coto = %{coto |
+  def create(
+    conn,
+    %{
+      "clientId" => clientId,
+      "cotonoma" => %{
+        "cotonoma_id" => cotonoma_id,
+        "name" => name,
+        "postId" => post_id
+      }
+    },
+    amishi
+  ) do
+    {:ok, {{coto, cotonoma}, posted_in}} =
+      Repo.transaction(fn ->
+        case CotonomaService.create!(cotonoma_id, amishi.id, name) do
+          {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
+          {{coto, cotonoma}, posted_in} ->
+            CotonomaService.increment_timeline_revision(posted_in)
+            {{coto, cotonoma}, CotonomaService.get(posted_in.id, amishi.id)}
+        end
+      end)
+    coto = %{coto |
       :posted_in => posted_in,
-      :amishi => AmishiService.append_gravatar_profile(amishi),
+      :amishi => amishi,
       :cotonoma => cotonoma
     }
-
     if posted_in do
-      full_fledged_coto |> broadcast_post(posted_in.key, clientId)
+      broadcast_post(coto, posted_in.key, clientId)
     end
-
-    render(conn, CotoView, "created.json",
-      coto: full_fledged_coto,
-      postId: post_id
-    )
+    render(conn, CotoView, "created.json", coto: coto, postId: post_id)
   end
 
   def cotos(conn, %{"key" => key}, amishi) do

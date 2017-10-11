@@ -12,6 +12,8 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
+    field :timeline_revision, :integer
+    field :graph_revision, :integer
 
     belongs_to :coto, Cotoami.Coto
     belongs_to :owner, Cotoami.Amishi
