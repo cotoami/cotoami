@@ -8,7 +8,6 @@ import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Post exposing (Post)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
@@ -137,8 +136,8 @@ updateRecentCotonomas cotonoma model =
         |> (\cotonomas -> { model | recentCotonomas = cotonomas })
 
 
-updateRecentCotonomasByPost : Post -> Model -> Model
-updateRecentCotonomasByPost post model =
+updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
+updateRecentCotonomasByCoto post model =
     post.postedIn
         |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
         |> Maybe.withDefault model

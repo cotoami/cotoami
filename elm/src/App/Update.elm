@@ -289,7 +289,7 @@ update msg model =
             model ! []
 
         ContentUpdated (Ok coto) ->
-            model
+            updateRecentCotonomasByCoto coto model
                 ! if coto.asCotonoma then
                     [ fetchRecentCotonomas
                     , fetchSubCotonomas model.context.cotonoma
@@ -445,7 +445,7 @@ update msg model =
 
         Posted (Ok response) ->
             ( { model | timeline = setCotoSaved response model.timeline }
-                |> updateRecentCotonomasByPost response
+                |> updateRecentCotonomasByCoto response
             , Cmd.none
             )
 
