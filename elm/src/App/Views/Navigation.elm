@@ -12,12 +12,9 @@ import App.Views.Cotonomas
 view : Model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
-        [ case model.context.cotonoma of
-            Nothing ->
-                div [] []
-
-            Just cotonoma ->
-                cotonomaNav cotonoma
+        [ model.context.cotonoma
+            |> Maybe.map cotonomaNav
+            |> Maybe.withDefault (div [] [])
         , if not (List.isEmpty model.subCotonomas) then
             subCotonomasNav model.context model.subCotonomas
           else

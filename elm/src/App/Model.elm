@@ -49,6 +49,7 @@ type alias Model =
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
+    , pinnedCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -78,6 +79,7 @@ initModel seed route =
     , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
+    , pinnedCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []

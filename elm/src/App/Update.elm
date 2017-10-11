@@ -131,7 +131,8 @@ update msg model =
 
         CotonomasFetched (Ok ( pinned, recent )) ->
             { model
-                | recentCotonomas = recent
+                | pinnedCotonomas = pinned
+                , recentCotonomas = recent
                 , cotonomasLoading = False
             }
                 ! []
