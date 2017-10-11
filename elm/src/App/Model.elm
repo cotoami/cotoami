@@ -172,6 +172,14 @@ isStockEmpty model =
     List.isEmpty model.graph.rootConnections
 
 
+isCotonomaAndPinned : Coto -> Model -> Bool
+isCotonomaAndPinned coto model =
+    coto.cotonomaKey
+        |> Maybe.map
+            (\key -> List.any (\c -> c.key == key) model.pinnedCotonomas)
+        |> Maybe.withDefault False
+
+
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     { model

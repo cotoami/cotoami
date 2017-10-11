@@ -685,7 +685,13 @@ clickCoto elementId cotoId model =
 
 openCoto : Coto -> Model -> Model
 openCoto coto model =
-    { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
+    { model
+        | cotoModal =
+            Just <|
+                App.Modals.CotoModal.initModel
+                    (isCotonomaAndPinned coto model)
+                    coto
+    }
         |> \model -> openModal App.Model.CotoModal model
 
 

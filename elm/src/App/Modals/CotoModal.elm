@@ -21,14 +21,16 @@ import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
 type alias Model =
     { coto : Coto
+    , cotonomaPinned : Bool
     , editing : Bool
     , editingContent : String
     }
 
 
-initModel : Coto -> Model
-initModel coto =
+initModel : Bool -> Coto -> Model
+initModel cotonomaPinned coto =
     { coto = coto
+    , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingContent = coto.content
     }
@@ -152,7 +154,13 @@ cotonomaModalConfig session model =
             [ if session.owner then
                 button
                     [ class "button" ]
-                    [ text "Pin" ]
+                    [ text
+                        (if model.cotonomaPinned then
+                            "Unpin"
+                         else
+                            "Pin"
+                        )
+                    ]
               else
                 span [] []
             , if checkWritePermission session model then
