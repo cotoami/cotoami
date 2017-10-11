@@ -1,7 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotoService, CotonomaService}
+  alias Cotoami.{Coto, CotoService, CotonomaService}
 
   plug :scrub_params, "coto" when action in [:create, :update]
 
@@ -43,10 +43,16 @@ defmodule Cotoami.CotoController do
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
-    case CotoService.update_content(id, coto_params, amishi) do
-      {:ok, coto} -> render(conn, "coto.json", coto: coto)
-      {:error, _} -> send_resp(conn, :internal_server_error, "")
-    end
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        case CotoService.update_content!(id, coto_params, amishi) do
+          %Coto{posted_in: nil} = coto -> coto
+          %Coto{posted_in: posted_in} = coto ->
+            CotonomaService.increment_timeline_revision(posted_in)
+            %{coto | posted_in: CotonomaService.get(posted_in.id, amishi.id)}
+        end
+      end)
+    render(conn, "coto.json", coto: coto)
   end
 
   def delete(conn, %{"id" => id}, amishi) do

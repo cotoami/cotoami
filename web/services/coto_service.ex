@@ -56,24 +56,22 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content(id, %{"content" => _} = params, %Amishi{id: amishi_id}) do
-    Repo.transaction(fn ->
-      Coto
-      |> Coto.for_amishi(amishi_id)
-      |> Repo.get!(id)
-      |> Coto.changeset_to_update_content(params)
+  def update_content!(id, %{"content" => _} = params, %Amishi{id: amishi_id}) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> Repo.get!(id)
+    |> Coto.changeset_to_update_content(params)
+    |> Repo.update!()
+
+    updated_coto = get(id)  # updated struct with the relations
+    if updated_coto.as_cotonoma do
+      updated_coto.cotonoma
+      |> Cotonoma.changeset_to_update_name(%{name: updated_coto.content})
       |> Repo.update!()
+    end
 
-      updated_coto = get(id)  # updated struct with the related structs
-      if updated_coto.as_cotonoma do
-        updated_coto.cotonoma
-        |> Cotonoma.changeset_to_update_name(%{name: updated_coto.content})
-        |> Repo.update!()
-      end
-
-      CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
-      updated_coto
-    end)
+    CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
+    updated_coto
   end
 
   def delete(id, %Amishi{id: amishi_id}) do
