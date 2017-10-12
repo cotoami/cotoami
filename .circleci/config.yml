@@ -78,7 +78,7 @@ jobs:
       - deploy:
           command: ./ci/deploy-develop.sh
 
-  release-master:
+  release:
     docker:
       - image: docker:17.06
     working_directory: ~/cotoami
@@ -98,7 +98,7 @@ jobs:
             docker tag cotoami/cotoami:$CIRCLE_TAG cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
-  deploy-master:
+  deploy:
     docker:
       - image: python:3.6
     steps:
@@ -128,15 +128,15 @@ workflows:
           filters:
             branches:
               only: develop
-      - release-master:
+      - release:
           requires:
             - build
           filters:
-            branches:
-              only: master
-      - deploy-master:
+            tags:
+              only: /^v.*/
+      - deploy:
           requires:
-            - release-master
+            - release
           filters:
-            branches:
-              only: master
+            tags:
+              only: /^v.*/
