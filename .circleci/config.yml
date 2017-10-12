@@ -115,7 +115,10 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
       - release-develop:
           requires:
             - build
@@ -134,9 +137,13 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
       - deploy:
           requires:
             - release
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
