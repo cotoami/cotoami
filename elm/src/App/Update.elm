@@ -24,7 +24,7 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
-import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas)
+import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
@@ -404,11 +404,16 @@ update msg model =
         --
         -- Cotonoma
         --
-        PinOrUnpinCotonoma cotonomaKey pin ->
-            model ! []
+        PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
+            model.cotoModal
+                |> Maybe.map (\modal -> { modal | updatingCotonomaPin = True })
+                |> (\modal -> { model | cotoModal = modal })
+                |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
+
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            model ! []
+            ({ model | cotonomasLoading = True } |> closeModal)
+                ! [ fetchCotonomas ]
 
         CotonomaPinnedOrUnpinned (Err _) ->
             model ! []
@@ -417,10 +422,10 @@ update msg model =
         -- Timeline
         --
         PostsFetched (Ok posts) ->
-            { model
-                | timeline = model.timeline |> \t -> { t | posts = posts, loading = False }
-            }
-                ! [ App.Commands.scrollTimelineToBottom NoOp ]
+            model.timeline
+                |> (\timeline -> { timeline | posts = posts, loading = False })
+                |> (\timeline -> { model | timeline = timeline })
+                |> (\model -> model ! [ App.Commands.scrollTimelineToBottom NoOp ])
 
         PostsFetched (Err _) ->
             model ! []

@@ -8,13 +8,17 @@ import Util.StringUtil exposing (isBlank)
 import App.Types.Coto
     exposing
         ( Coto
+        , CotonomaKey
         , updateContent
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
 import App.Markdown
 import App.Types.Session exposing (Session)
-import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
+import App.Messages as AppMsg
+    exposing
+        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
+        )
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
@@ -74,10 +78,12 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    if model.coto.asCotonoma then
-        cotonomaModalConfig session model
-    else
-        cotoModalConfig session model
+    case model.coto.cotonomaKey of
+        Nothing ->
+            cotoModalConfig session model
+
+        Just cotonomaKey ->
+            cotonomaModalConfig cotonomaKey session model
 
 
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
@@ -120,8 +126,8 @@ cotoModalConfig session model =
     }
 
 
-cotonomaModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
-cotonomaModalConfig session model =
+cotonomaModalConfig : CotonomaKey -> Session -> Model -> Modal.Config AppMsg.Msg
+cotonomaModalConfig cotonomaKey session model =
     { closeMessage = CloseModal
     , title = "Cotonoma"
     , content =
@@ -157,6 +163,7 @@ cotonomaModalConfig session model =
                 button
                     [ class "button"
                     , disabled model.updatingCotonomaPin
+                    , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
                     ]
                     [ text
                         (if model.updatingCotonomaPin then

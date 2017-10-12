@@ -4,6 +4,7 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Date
+import Util.HttpUtil exposing (httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey)
@@ -62,3 +63,17 @@ encodeCotonoma clientId maybeCotonoma postId name =
             )
           )
         ]
+
+
+pinOrUnpinCotonoma : Bool -> CotonomaKey -> Cmd Msg
+pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
+    let
+        url =
+            "/api/cotonomas/pin/" ++ cotonomaKey
+    in
+        Http.send CotonomaPinnedOrUnpinned
+            (if pinOrUnpin then
+                Http.getString url
+             else
+                httpDelete url
+            )

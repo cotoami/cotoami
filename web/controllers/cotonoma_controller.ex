@@ -1,7 +1,7 @@
 defmodule Cotoami.CotonomaController do
   use Cotoami.Web, :controller
   require Logger
-  alias Cotoami.{CotonomaService, CotoView}
+  alias Cotoami.{Cotonoma, CotonomaService, CotoView}
 
   plug :scrub_params, "cotonoma" when action in [:create]
 
