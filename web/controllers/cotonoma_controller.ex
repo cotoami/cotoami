@@ -39,7 +39,8 @@ defmodule Cotoami.CotonomaController do
         case CotonomaService.create!(name, amishi.id, cotonoma_id) do
           {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
           {{coto, cotonoma}, posted_in} ->
-            CotonomaService.increment_timeline_revision(posted_in)
+            posted_in
+            |> CotonomaService.increment_timeline_revision()
             |> CotonomaService.complement_owner()
             |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
         end

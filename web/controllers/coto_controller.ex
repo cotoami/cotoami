@@ -31,7 +31,8 @@ defmodule Cotoami.CotoController do
         case CotoService.create!(content, amishi.id, cotonoma_id) do
           {coto, nil} -> {coto, nil}
           {coto, posted_in} ->
-            CotonomaService.increment_timeline_revision(posted_in)
+            posted_in
+            |> CotonomaService.increment_timeline_revision()
             |> CotonomaService.complement_owner()
             |> (fn (posted_in) -> {coto, posted_in} end).()
         end
@@ -49,7 +50,8 @@ defmodule Cotoami.CotoController do
         case CotoService.update_content!(id, coto_params, amishi) do
           %Coto{posted_in: nil} = coto -> coto
           %Coto{posted_in: posted_in} = coto ->
-            CotonomaService.increment_timeline_revision(posted_in)
+            posted_in
+            |> CotonomaService.increment_timeline_revision()
             |> CotonomaService.complement_owner()
             |> (fn (posted_in) -> %{coto | posted_in: posted_in} end).()
         end
