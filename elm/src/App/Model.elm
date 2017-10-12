@@ -49,6 +49,7 @@ type alias Model =
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
+    , pinnedCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -78,6 +79,7 @@ initModel seed route =
     , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
+    , pinnedCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -168,6 +170,14 @@ isNavigationEmpty model =
 isStockEmpty : Model -> Bool
 isStockEmpty model =
     List.isEmpty model.graph.rootConnections
+
+
+isCotonomaAndPinned : Coto -> Model -> Bool
+isCotonomaAndPinned coto model =
+    coto.cotonomaKey
+        |> Maybe.map
+            (\key -> List.any (\c -> c.key == key) model.pinnedCotonomas)
+        |> Maybe.withDefault False
 
 
 openTraversal : CotoId -> Model -> Model

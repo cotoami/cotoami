@@ -53,11 +53,18 @@ defmodule Cotoami.Router do
     pipe_through [:api, :require_auth]
 
     post "/import", DatabaseController, :import
+
     get "/invite/:email", AmishiController, :invite
     get "/amishis/email/:email", AmishiController, :show_by_email
+
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
+
     resources "/cotonomas", CotonomaController, only: [:index, :create]
+    get "/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub
+    get "/cotonomas/pin/:key", CotonomaController, :pin
+    delete "/cotonomas/pin/:key", CotonomaController, :unpin
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
+
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph

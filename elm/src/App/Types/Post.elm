@@ -38,20 +38,17 @@ defaultPost =
 
 toCoto : Post -> Maybe Coto
 toCoto post =
-    case post.cotoId of
-        Nothing ->
-            Nothing
-
-        Just cotoId ->
-            Just
-                (Coto
+    post.cotoId
+        |> Maybe.map
+            (\cotoId ->
+                Coto
                     cotoId
                     post.content
                     post.amishi
                     post.postedIn
                     post.asCotonoma
                     post.cotonomaKey
-                )
+            )
 
 
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool

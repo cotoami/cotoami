@@ -2,7 +2,14 @@ defmodule Cotoami.CotonomaView do
   use Cotoami.Web, :view
   alias Cotoami.{CotoView, AmishiView}
 
-  def render("index.json", %{rows: rows}) do
+  def render("index.json", %{pinned: pinned, recent: recent}) do
+    %{
+      pinned: render_many(pinned, __MODULE__, "cotonoma.json"),
+      recent: render_many(recent, __MODULE__, "cotonoma.json")
+    }
+  end
+
+  def render("sub.json", %{rows: rows}) do
     render_many(rows, __MODULE__, "cotonoma.json")
   end
 
@@ -24,6 +31,7 @@ defmodule Cotoami.CotonomaView do
       id: cotonoma.id,
       key: cotonoma.key,
       name: cotonoma.name,
+      pinned: cotonoma.pinned,
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,
       coto_id:

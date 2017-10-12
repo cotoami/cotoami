@@ -31,7 +31,7 @@ type Msg
       -- Fetched
       --
     | SessionFetched (Result Http.Error Session)
-    | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomaFetched (Result Http.Error ( Cotonoma, List Post ))
     | GraphFetched (Result Http.Error Graph)
@@ -73,6 +73,11 @@ type Msg
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
+      --
+      -- Cotonoma
+      --
+    | PinOrUnpinCotonoma CotonomaKey Bool
+    | CotonomaPinnedOrUnpinned (Result Http.Error String)
       --
       -- Timeline
       --

@@ -7,8 +7,7 @@ defmodule Cotoami.CotonomaChannel do
   alias Cotoami.{Presence, CotonomaService}
 
   def join("cotonomas:" <> cotonoma_key, _params, socket) do
-    amishi_id = socket.assigns.amishi.id
-    case CotonomaService.get_by_key(cotonoma_key, amishi_id) do
+    case CotonomaService.get_by_key(cotonoma_key) do
       nil ->
         {:error, %{reason: "unauthorized"}}
       _cotonoma ->

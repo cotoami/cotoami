@@ -12,6 +12,7 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
+    field :pinned, :boolean
     field :timeline_revision, :integer
     field :graph_revision, :integer
 
@@ -63,17 +64,10 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def for_amishi(query, _amishi_id) do
-    from c in query, order_by: [desc: c.updated_at]
-  end
-
-  def in_cotonoma_if_specified(query, cotonoma_id_nillable) do
-    if cotonoma_id_nillable do
-      from c in query,
-        join: coto in assoc(c, :coto),
-        where: coto.posted_in_id == ^cotonoma_id_nillable
-    else
-      query
-    end
+  def in_cotonoma(query, nil), do: query
+  def in_cotonoma(query, cotonoma_id) do
+    from c in query,
+      join: coto in assoc(c, :coto),
+      where: coto.posted_in_id == ^cotonoma_id
   end
 end
