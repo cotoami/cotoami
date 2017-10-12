@@ -14,7 +14,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
+      {coto, _posted_in} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -91,7 +91,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a cotonoma pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
+      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -122,8 +122,8 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to a cotonoma" do
     setup ~M{conn, amishi} do
-      {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
-      {coto, _} = CotoService.create!(nil, amishi.id, "hello")
+      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi.id)
+      {coto, _} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
       ~M{coto, cotonoma}
     end
@@ -170,8 +170,8 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "two cotos with a connection" do
     setup ~M{conn, amishi} do
-      {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+      {coto1, _posted_in} = CotoService.create!("hello", amishi.id)
+      {coto2, _posted_in} = CotoService.create!("bye", amishi.id)
       CotoGraphService.connect(conn, coto1, coto2, amishi)
       ~M{coto1, coto2}
     end
@@ -205,9 +205,9 @@ defmodule Cotoami.CotoGraphServiceTest do
     # a -> b
     # c -> a -> b
     setup ~M{conn, amishi} do
-      {coto_a, _posted_in} = CotoService.create!(nil, amishi.id, "a")
-      {coto_b, _posted_in} = CotoService.create!(nil, amishi.id, "b")
-      {coto_c, _posted_in} = CotoService.create!(nil, amishi.id, "c")
+      {coto_a, _posted_in} = CotoService.create!("a", amishi.id)
+      {coto_b, _posted_in} = CotoService.create!("b", amishi.id)
+      {coto_c, _posted_in} = CotoService.create!("c", amishi.id)
       CotoGraphService.connect(conn, coto_a, coto_b, amishi)
       CotoGraphService.connect(conn, coto_c, coto_a, amishi)
       ~M{coto_a, coto_b, coto_c}
