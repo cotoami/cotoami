@@ -8,29 +8,37 @@ import Util.StringUtil exposing (isBlank)
 import App.Types.Coto
     exposing
         ( Coto
+        , CotonomaKey
         , updateContent
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
 import App.Markdown
 import App.Types.Session exposing (Session)
-import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmDeleteCoto))
+import App.Messages as AppMsg
+    exposing
+        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
+        )
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
 
 type alias Model =
     { coto : Coto
+    , cotonomaPinned : Bool
     , editing : Bool
     , editingContent : String
+    , updatingCotonomaPin : Bool
     }
 
 
-initModel : Coto -> Model
-initModel coto =
+initModel : Bool -> Coto -> Model
+initModel cotonomaPinned coto =
     { coto = coto
+    , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingContent = coto.content
+    , updatingCotonomaPin = False
     }
 
 
@@ -70,10 +78,12 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    if model.coto.asCotonoma then
-        cotonomaModalConfig session model
-    else
-        cotoModalConfig session model
+    case model.coto.cotonomaKey of
+        Nothing ->
+            cotoModalConfig session model
+
+        Just cotonomaKey ->
+            cotonomaModalConfig cotonomaKey session model
 
 
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
@@ -105,20 +115,19 @@ cotoModalConfig session model =
                 ]
                 [ text "Save" ]
             ]
+        else if checkWritePermission session model then
+            [ editButton
+            , button
+                [ class "button", onClick ConfirmDeleteCoto ]
+                [ text "Delete" ]
+            ]
         else
-            if checkWritePermission session model then
-                [ editButton
-                , button
-                    [ class "button", onClick ConfirmDeleteCoto ]
-                    [ text "Delete" ]
-                ]
-            else
-                []
+            []
     }
 
 
-cotonomaModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
-cotonomaModalConfig session model =
+cotonomaModalConfig : CotonomaKey -> Session -> Model -> Modal.Config AppMsg.Msg
+cotonomaModalConfig cotonomaKey session model =
     { closeMessage = CloseModal
     , title = "Cotonoma"
     , content =
@@ -150,10 +159,28 @@ cotonomaModalConfig session model =
                 [ text "Save" ]
             ]
         else
-            if checkWritePermission session model then
-                [ editButton ]
-            else
-                []
+            [ if session.owner then
+                button
+                    [ class "button"
+                    , disabled model.updatingCotonomaPin
+                    , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
+                    ]
+                    [ text
+                        (if model.updatingCotonomaPin then
+                            "Processing..."
+                         else if model.cotonomaPinned then
+                            "Unpin from nav"
+                         else
+                            "Pin to nav"
+                        )
+                    ]
+              else
+                span [] []
+            , if checkWritePermission session model then
+                editButton
+              else
+                span [] []
+            ]
     }
 
 

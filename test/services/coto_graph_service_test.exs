@@ -14,7 +14,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {coto, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
+      {coto, _posted_in} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -91,7 +91,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a cotonoma pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {{coto, _}, _} = CotonomaService.create!(nil, amishi.id, "cotonoma coto")
+      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -122,8 +122,8 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to a cotonoma" do
     setup ~M{conn, amishi} do
-      {{_, cotonoma}, _} = CotonomaService.create!(nil, amishi.id, "test")
-      {coto, _} = CotoService.create!(nil, amishi.id, "hello")
+      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi.id)
+      {coto, _} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
       ~M{coto, cotonoma}
     end
@@ -170,15 +170,14 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "two cotos with a connection" do
     setup ~M{conn, amishi} do
-      {coto1, _posted_in} = CotoService.create!(nil, amishi.id, "hello")
-      {coto2, _posted_in} = CotoService.create!(nil, amishi.id, "bye")
+      {coto1, _posted_in} = CotoService.create!("hello", amishi.id)
+      {coto2, _posted_in} = CotoService.create!("bye", amishi.id)
       CotoGraphService.connect(conn, coto1, coto2, amishi)
       ~M{coto1, coto2}
     end
 
     test "connection", ~M{conn, amishi, coto1, coto2} do
       amishi_id = amishi.id
-      amishi_node_id = Neo4jService.get_or_create_node(conn, amishi.id).id
       coto1_node_id = Neo4jService.get_or_create_node(conn, coto1.id).id
       coto2_node_id = Neo4jService.get_or_create_node(conn, coto2.id).id
 
@@ -194,19 +193,6 @@ defmodule Cotoami.CotoGraphServiceTest do
           type: "HAS_A"
         }
       ] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
-
-      # the source node should be pinned
-      assert [
-        %Relationship{
-          start: ^amishi_node_id,
-          end: ^coto1_node_id,
-          properties: %{
-            "created_by" => ^amishi_id,
-            "order" => 1
-          },
-          type: "HAS_A"
-        }
-      ] = Neo4jService.get_ordered_relationships(conn, amishi_id, "HAS_A")
     end
 
     test "disconnect", ~M{conn, amishi, coto1, coto2} do
@@ -219,9 +205,9 @@ defmodule Cotoami.CotoGraphServiceTest do
     # a -> b
     # c -> a -> b
     setup ~M{conn, amishi} do
-      {coto_a, _posted_in} = CotoService.create!(nil, amishi.id, "a")
-      {coto_b, _posted_in} = CotoService.create!(nil, amishi.id, "b")
-      {coto_c, _posted_in} = CotoService.create!(nil, amishi.id, "c")
+      {coto_a, _posted_in} = CotoService.create!("a", amishi.id)
+      {coto_b, _posted_in} = CotoService.create!("b", amishi.id)
+      {coto_c, _posted_in} = CotoService.create!("c", amishi.id)
       CotoGraphService.connect(conn, coto_a, coto_b, amishi)
       CotoGraphService.connect(conn, coto_c, coto_a, amishi)
       ~M{coto_a, coto_b, coto_c}
@@ -229,13 +215,9 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "graph (ensure no duplicate connections)",
         ~M{conn, amishi, coto_a, coto_b, coto_c} do
-      {amishi_id, coto_a_id, coto_b_id, coto_c_id} =
-        {amishi.id, coto_a.id, coto_b.id, coto_c.id}
+      {coto_a_id, coto_b_id, coto_c_id} = {coto_a.id, coto_b.id, coto_c.id}
       assert %CotoGraph{
-        root_connections: [
-          %{"start" => ^amishi_id, "end" => ^coto_c_id, "order" => 2},
-          %{"start" => ^amishi_id, "end" => ^coto_a_id, "order" => 1}
-        ],
+        root_connections: [],
         connections: %{
           ^coto_a_id => [%{"start" => ^coto_a_id, "end" => ^coto_b_id}],
           ^coto_c_id => [%{"start" => ^coto_c_id, "end" => ^coto_a_id}]

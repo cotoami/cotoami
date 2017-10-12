@@ -49,7 +49,7 @@ jobs:
           paths:
             - ~/cotoami
 
-  release:
+  release-develop:
     docker:
       - image: docker:17.06
     working_directory: ~/cotoami
@@ -60,16 +60,14 @@ jobs:
             - work-dir-{{ .Revision }}
       - run:
           name: Build docker image
-          command: docker build -t cotoami/cotoami:$CIRCLE_SHA1 .
+          command: docker build -t cotoami/cotoami:develop .
       - run:
           name: Release docker images
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push cotoami/cotoami:$CIRCLE_SHA1
-            docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
-            docker push cotoami/cotoami:latest
+            docker push cotoami/cotoami:develop
 
-  deploy:
+  deploy-develop:
     docker:
       - image: python:3.6
     steps:
@@ -77,27 +75,68 @@ jobs:
       - run:
           name: Install kubectl
           command: ./ci/install-kubectl.sh
-          environment:
-            KUBE_VERSION: 1.4.6
+      - deploy:
+          command: ./ci/deploy-develop.sh
+
+  release-master:
+    docker:
+      - image: docker:17.06
+    working_directory: ~/cotoami
+    steps:
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - work-dir-{{ .Revision }}
+      - run:
+          name: Build docker image
+          command: docker build -t cotoami/cotoami:$CIRCLE_TAG .
+      - run:
+          name: Release docker images
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push cotoami/cotoami:$CIRCLE_TAG
+            docker tag cotoami/cotoami:$CIRCLE_TAG cotoami/cotoami:latest
+            docker push cotoami/cotoami:latest
+
+  deploy-master:
+    docker:
+      - image: python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl
+          command: ./ci/install-kubectl.sh
       - deploy:
           command: |
             ~/.kube/kubectl config use-context $KUBE_CONTEXT
-            ~/.kube/kubectl --namespace='prod-app' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_TAG
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
       - build
-      - release:
+      - release-develop:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+      - deploy-develop:
+          requires:
+            - release-develop
+          filters:
+            branches:
+              only: develop
+      - release-master:
           requires:
             - build
           filters:
             branches:
               only: master
-      - deploy:
+      - deploy-master:
           requires:
-            - release
+            - release-master
           filters:
             branches:
               only: master

@@ -8,8 +8,10 @@ type alias Session =
     , websocketUrl : String
     , id : AmishiId
     , email : String
+    , owner : Bool
     , avatarUrl : String
     , displayName : String
+    , lang : String
     }
 
 
@@ -18,5 +20,6 @@ toAmishi session =
     Amishi
         session.id
         session.email
+        session.owner
         session.avatarUrl
         session.displayName

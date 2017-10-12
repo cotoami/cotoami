@@ -5,6 +5,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
+import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
 import App.Messages exposing (Msg(..))
@@ -38,20 +39,29 @@ cotonomaDiv context listTitle cotonoma =
                 , ( "element-focus", Just elementId == context.elementFocus )
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
                 , ( "selected", isSelected (Just cotonoma.cotoId) context )
+                , ( "in"
+                  , context.cotonoma
+                        |> Maybe.map (\current -> current.id == cotonoma.id)
+                        |> Maybe.withDefault False
+                  )
                 ]
             , onClickWithoutPropagation (CotoClick elementId cotonoma.cotoId)
             , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)
             , onMouseLeave (CotoMouseLeave elementId cotonoma.cotoId)
             ]
-            [ App.Views.Coto.cotonomaLink
-                CotonomaClick
-                cotonoma.owner
-                cotonoma.key
-                cotonoma.name
-            , a
-                [ class "tool-button traverse-cotonoma"
-                , title "Traverse from this cotonoma"
-                , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
+            [ div [ class "cotonoma-link" ]
+                [ App.Views.Coto.cotonomaLink
+                    CotonomaClick
+                    cotonoma.owner
+                    cotonoma.key
+                    cotonoma.name
                 ]
-                [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+            , div [ class "traverse" ]
+                [ a
+                    [ class "tool-button traverse-cotonoma"
+                    , title "Traverse from this cotonoma"
+                    , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
+                    ]
+                    [ materialIcon "arrow_forward" Nothing ]
+                ]
             ]

@@ -3,7 +3,7 @@ module App.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Traversal
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
@@ -16,10 +16,12 @@ import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
+import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.ConfirmModal
 import App.Modals.CotonomaModal
+import App.Modals.ImportModal
 
 
 view : Model -> Html Msg
@@ -49,18 +51,15 @@ view model =
             [ App.Views.AppHeader.view model
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
-                    (List.concat
-                        [ defaultColumnDivs model
-                        , App.Views.Traversals.view
-                            (model.activeViewOnMobile == TraversalsView)
-                            model.context
-                            model.graph
-                            model.traversals
-                        , [ selectionColumnDiv model
-                          , viewSwitchContainerDiv model
-                          ]
-                        ]
-                    )
+                    [ navColumn model
+                    , div [ id "main-content" ]
+                        ([ timelineColumn model
+                         , pinnedCotosColumn model
+                         ] ++ (traversalColumns model)
+                        )
+                    , selectionColumn model
+                    , viewSwitchContainerDiv model
+                    ]
                 ]
             , App.Views.CotoSelection.statusBar model
             , a
@@ -70,14 +69,14 @@ view model =
                 , target "_blank"
                 , hidden (model.timeline.editingNew)
                 ]
-                [ i [ class "material-icons" ] [ text "info" ] ]
+                [ materialIcon "info" Nothing ]
             , div [] (modals model)
             ]
 
 
-defaultColumnDivs : Model -> List (Html Msg)
-defaultColumnDivs model =
-    [ div
+navColumn : Model -> Html Msg
+navColumn model =
+    div
         [ id "main-nav"
         , classList
             [ ( "neverToggled", not model.navigationToggled )
@@ -89,7 +88,11 @@ defaultColumnDivs model =
             ]
         ]
         (App.Views.Navigation.view model)
-    , div
+
+
+timelineColumn : Model -> Html Msg
+timelineColumn model =
+    div
         [ id "main-timeline"
         , classList
             [ ( "main-column", True )
@@ -103,7 +106,11 @@ defaultColumnDivs model =
             model.graph
             model.timeline
         ]
-    , div
+
+
+pinnedCotosColumn : Model -> Html Msg
+pinnedCotosColumn model =
+    div
         [ id "main-stock"
         , classList
             [ ( "main-column", True )
@@ -114,11 +121,19 @@ defaultColumnDivs model =
         ]
         [ App.Views.PinnedCotos.view model.context model.graph
         ]
-    ]
 
 
-selectionColumnDiv : Model -> Html Msg
-selectionColumnDiv model =
+traversalColumns : Model -> List (Html Msg)
+traversalColumns model =
+    App.Views.Traversals.view
+            (model.activeViewOnMobile == TraversalsView)
+            model.context
+            model.graph
+            model.traversals
+
+
+selectionColumn : Model -> Html Msg
+selectionColumn model =
     div
         [ id "main-selection"
         , classList
@@ -207,6 +222,9 @@ modals model =
                 ProfileModal ->
                     App.Modals.ProfileModal.view model.context.session
 
+                InviteModal ->
+                    App.Modals.InviteModal.view model.inviteModal
+
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal
 
@@ -215,5 +233,8 @@ modals model =
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model
+
+                ImportModal ->
+                    App.Modals.ImportModal.view model.importModal
         )
         (List.reverse model.modals)

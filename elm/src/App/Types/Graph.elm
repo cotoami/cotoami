@@ -2,6 +2,7 @@ module App.Types.Graph exposing (..)
 
 import Dict
 import Maybe exposing (withDefault)
+import List.Extra
 import App.Types.Coto exposing (Coto, CotoId)
 
 
@@ -104,6 +105,18 @@ inGraph cotoId graph =
            )
 
 
+getParents : CotoId -> Graph -> List Coto
+getParents cotoId graph =
+    List.filterMap
+        (\parentId ->
+            graph.connections
+                |> Dict.get parentId
+                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
+                |> Maybe.andThen (\_ -> getCoto parentId graph)
+        )
+        (Dict.keys graph.connections)
+
+
 hasChildren : CotoId -> Graph -> Bool
 hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
@@ -148,12 +161,6 @@ connect start end graph =
                 |> Dict.insert start.id start
                 |> Dict.insert end.id end
 
-        rootConnections =
-            if member start.id graph then
-                graph.rootConnections
-            else
-                (initConnection Nothing start.id) :: graph.rootConnections
-
         connections =
             if connected start.id end.id graph then
                 graph.connections
@@ -170,11 +177,7 @@ connect start end graph =
                     )
                     graph.connections
     in
-        { graph
-            | cotos = cotos
-            , rootConnections = rootConnections
-            , connections = connections
-        }
+        { graph | cotos = cotos, connections = connections }
 
 
 connectOneToMany : Coto -> List Coto -> Graph -> Graph

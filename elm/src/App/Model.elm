@@ -1,29 +1,34 @@
 module App.Model exposing (..)
 
 import Dict
+import Date
 import Exts.Maybe exposing (isNothing)
+import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Amishi exposing (Amishi, AmishiId)
-import App.Types.MemberPresences exposing (MemberPresences)
+import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Messages
 import App.Modals.SigninModal
+import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
+import App.Modals.ImportModal
 
 
 type Modal
     = ConfirmModal
     | SigninModal
     | ProfileModal
+    | InviteModal
     | CotoModal
     | CotonomaModal
     | ConnectModal
+    | ImportModal
 
 
 type ConnectingSubject
@@ -37,13 +42,14 @@ type alias Model =
     , activeViewOnMobile : ActiveViewOnMobile
     , navigationToggled : Bool
     , navigationOpen : Bool
-    , members : List Amishi
-    , memberPresences : MemberPresences
+    , presences : Presences
     , modals : List Modal
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , confirmMessage : String
     , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
+    , inviteModal : App.Modals.InviteModal.Model
+    , pinnedCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -55,6 +61,7 @@ type alias Model =
     , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
     , traversals : Traversals
+    , importModal : App.Modals.ImportModal.Model
     }
 
 
@@ -65,13 +72,14 @@ initModel seed route =
     , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
-    , members = []
-    , memberPresences = Dict.empty
+    , presences = Dict.empty
     , modals = []
     , cotoModal = Nothing
     , confirmMessage = ""
     , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
+    , inviteModal = App.Modals.InviteModal.defaultModel
+    , pinnedCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -83,6 +91,7 @@ initModel seed route =
     , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
     , traversals = defaultTraversals
+    , importModal = App.Modals.ImportModal.defaultModel
     }
 
 
@@ -119,6 +128,23 @@ getSelectedCotos model =
         model.context.selection
 
 
+updateRecentCotonomas : Cotonoma -> Model -> Model
+updateRecentCotonomas cotonoma model =
+    model.recentCotonomas
+        |> (::) cotonoma
+        |> List.Extra.uniqueBy (\c -> c.id)
+        |> List.sortBy (\c -> Date.toTime c.updatedAt)
+        |> List.reverse
+        |> (\cotonomas -> { model | recentCotonomas = cotonomas })
+
+
+updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
+updateRecentCotonomasByCoto post model =
+    post.postedIn
+        |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
+        |> Maybe.withDefault model
+
+
 openModal : Modal -> Model -> Model
 openModal modal model =
     { model | modals = modal :: model.modals }
@@ -146,19 +172,12 @@ isStockEmpty model =
     List.isEmpty model.graph.rootConnections
 
 
-getOwnerAndMembers : Model -> List Amishi
-getOwnerAndMembers model =
-    case model.context.cotonoma of
-        Nothing ->
-            []
-
-        Just cotonoma ->
-            case cotonoma.owner of
-                Nothing ->
-                    model.members
-
-                Just owner ->
-                    owner :: model.members
+isCotonomaAndPinned : Coto -> Model -> Bool
+isCotonomaAndPinned coto model =
+    coto.cotonomaKey
+        |> Maybe.map
+            (\key -> List.any (\c -> c.key == key) model.pinnedCotonomas)
+        |> Maybe.withDefault False
 
 
 openTraversal : CotoId -> Model -> Model

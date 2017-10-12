@@ -1,5 +1,6 @@
 module App.Types.Post exposing (..)
 
+import Date exposing (Date)
 import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
@@ -14,6 +15,7 @@ type alias Post =
     , content : String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
+    , postedAt : Maybe Date
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     , beingDeleted : Bool
@@ -27,6 +29,7 @@ defaultPost =
     , content = ""
     , amishi = Nothing
     , postedIn = Nothing
+    , postedAt = Nothing
     , asCotonoma = False
     , cotonomaKey = Nothing
     , beingDeleted = False
@@ -35,20 +38,17 @@ defaultPost =
 
 toCoto : Post -> Maybe Coto
 toCoto post =
-    case post.cotoId of
-        Nothing ->
-            Nothing
-
-        Just cotoId ->
-            Just
-                (Coto
+    post.cotoId
+        |> Maybe.map
+            (\cotoId ->
+                Coto
                     cotoId
                     post.content
                     post.amishi
                     post.postedIn
                     post.asCotonoma
                     post.cotonomaKey
-                )
+            )
 
 
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool

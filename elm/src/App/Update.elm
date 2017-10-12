@@ -13,9 +13,9 @@ import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
+import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
-import App.Types.MemberPresences exposing (MemberPresences)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
@@ -23,16 +23,19 @@ import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTr
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Route exposing (parseLocation, Route(..))
-import App.Server.Cotonoma exposing (fetchRecentCotonomas, fetchSubCotonomas)
+import App.Server.Session exposing (decodeSessionNotFoundBodyString)
+import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import App.Modals.SigninModal
-import App.Modals.CotonomaModal exposing (setDefaultMembers)
+import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotoModalMsg
+import App.Modals.CotonomaModal
+import App.Modals.ImportModal
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,18 +64,17 @@ update msg model =
 
         OnLocationChange location ->
             parseLocation location
-                |> \route ->
-                    ( route, { model | route = route } )
-                        |> \( route, model ) ->
-                            case route of
-                                HomeRoute ->
-                                    loadHome model
+                |> (\route -> ( route, { model | route = route } ))
+                |> \( route, model ) ->
+                    case route of
+                        HomeRoute ->
+                            loadHome model
 
-                                CotonomaRoute key ->
-                                    loadCotonoma key model
+                        CotonomaRoute key ->
+                            loadCotonoma key model
 
-                                NotFoundRoute ->
-                                    ( model, Cmd.none )
+                        NotFoundRoute ->
+                            ( model, Cmd.none )
 
         NavigationToggle ->
             { model
@@ -91,13 +93,12 @@ update msg model =
             changeLocationToHome model
 
         CotonomaPresenceState payload ->
-            { model | memberPresences = decodePresenceState payload } ! []
+            { model | presences = decodePresenceState payload } ! []
 
         CotonomaPresenceDiff payload ->
             decodePresenceDiff payload
-                |> \diff ->
-                    applyPresenceDiff diff model.memberPresences
-                        |> \presences -> { model | memberPresences = presences } ! []
+                |> (\diff -> applyPresenceDiff diff model.presences)
+                |> \presences -> { model | presences = presences } ! []
 
         --
         -- Fetched
@@ -117,21 +118,26 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        openModal App.Model.SigninModal model ! []
+                        decodeSessionNotFoundBodyString response.body
+                            |> (\body -> setSignupEnabled body.signupEnabled model.signinModal)
+                            |> (\signinModal -> { model | signinModal = signinModal })
+                            |> openModal App.Model.SigninModal
+                            |> \model -> model ! []
                     else
                         model ! []
 
                 _ ->
                     model ! []
 
-        RecentCotonomasFetched (Ok cotonomas) ->
+        CotonomasFetched (Ok ( pinned, recent )) ->
             { model
-                | recentCotonomas = cotonomas
+                | pinnedCotonomas = pinned
+                , recentCotonomas = recent
                 , cotonomasLoading = False
             }
                 ! []
 
-        RecentCotonomasFetched (Err _) ->
+        CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } ! []
 
         SubCotonomasFetched (Ok cotonomas) ->
@@ -140,12 +146,11 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        CotonomaFetched (Ok ( cotonoma, members, posts )) ->
+        CotonomaFetched (Ok ( cotonoma, posts )) ->
             { model
                 | context =
                     model.context
                         |> \context -> { context | cotonoma = Just cotonoma }
-                , members = members
                 , navigationOpen = False
                 , timeline =
                     model.timeline
@@ -183,6 +188,10 @@ update msg model =
             { model | signinModal = App.Modals.SigninModal.defaultModel }
                 |> \model -> openModal App.Model.SigninModal model ! []
 
+        OpenInviteModal ->
+            { model | inviteModal = App.Modals.InviteModal.defaultModel }
+                |> \model -> openModal App.Model.InviteModal model ! []
+
         OpenProfileModal ->
             openModal App.Model.ProfileModal model ! []
 
@@ -190,19 +199,12 @@ update msg model =
             openCoto coto model ! []
 
         OpenCotonomaModal ->
-            { model
-                | cotonomaModal =
-                    case model.context.session of
-                        Nothing ->
-                            model.cotonomaModal
-
-                        Just session ->
-                            setDefaultMembers
-                                session
-                                (getOwnerAndMembers model)
-                                App.Modals.CotonomaModal.defaultModel
-            }
+            { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
                 |> \model -> openModal App.Model.CotonomaModal model ! []
+
+        OpenImportModal ->
+            { model | importModal = App.Modals.ImportModal.defaultModel }
+                |> \model -> openModal App.Model.ImportModal model ! []
 
         --
         -- Coto
@@ -237,8 +239,15 @@ update msg model =
             )
 
         OpenTraversal cotoId ->
-            openTraversal cotoId model
-                |> \model -> model ! [ fetchSubgraphIfCotonoma model.graph cotoId ]
+            model
+                |> openTraversal cotoId
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ App.Commands.scrollMainContentToRight NoOp
+                        , fetchSubgraphIfCotonoma model.graph cotoId
+                        ]
+                    )
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
@@ -262,9 +271,7 @@ update msg model =
             )
                 ! [ deleteCoto coto.id
                   , Process.sleep (1 * Time.second)
-                        -- Wait for CSS animation finish.
-                        |>
-                            Task.andThen (\_ -> Task.succeed ())
+                        |> Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeleteCoto coto)
                   ]
 
@@ -276,7 +283,7 @@ update msg model =
                 , context = deleteSelection coto.id model.context
             }
                 ! (if coto.asCotonoma then
-                    [ fetchRecentCotonomas
+                    [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
                    else
@@ -287,9 +294,9 @@ update msg model =
             model ! []
 
         ContentUpdated (Ok coto) ->
-            model
+            updateRecentCotonomasByCoto coto model
                 ! if coto.asCotonoma then
-                    [ fetchRecentCotonomas
+                    [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
                   else
@@ -399,13 +406,29 @@ update msg model =
             model ! []
 
         --
+        -- Cotonoma
+        --
+        PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
+            model.cotoModal
+                |> Maybe.map (\modal -> { modal | updatingCotonomaPin = True })
+                |> (\modal -> { model | cotoModal = modal })
+                |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
+
+        CotonomaPinnedOrUnpinned (Ok _) ->
+            ({ model | cotonomasLoading = True } |> closeModal)
+                ! [ fetchCotonomas ]
+
+        CotonomaPinnedOrUnpinned (Err _) ->
+            model ! []
+
+        --
         -- Timeline
         --
         PostsFetched (Ok posts) ->
-            { model
-                | timeline = model.timeline |> \t -> { t | posts = posts, loading = False }
-            }
-                ! [ App.Commands.scrollTimelineToBottom NoOp ]
+            model.timeline
+                |> (\timeline -> { timeline | posts = posts, loading = False })
+                |> (\timeline -> { model | timeline = timeline })
+                |> (\model -> model ! [ App.Commands.scrollTimelineToBottom NoOp ])
 
         PostsFetched (Err _) ->
             model ! []
@@ -442,7 +465,10 @@ update msg model =
             post Nothing model
 
         Posted (Ok response) ->
-            { model | timeline = setCotoSaved response model.timeline } ! []
+            ( { model | timeline = setCotoSaved response model.timeline }
+                |> updateRecentCotonomasByCoto response
+            , Cmd.none
+            )
 
         Posted (Err _) ->
             model ! []
@@ -485,23 +511,27 @@ update msg model =
             model ! []
 
         PostCotonoma ->
-            model.timeline
-                |> postContent
-                    model.context
-                    True
-                    model.cotonomaModal.name
-                |> \( timeline, _ ) ->
-                    ( { model | timeline = timeline }
-                    , Cmd.batch
-                        [ App.Commands.scrollTimelineToBottom NoOp
-                        , postCotonoma
+            let
+                timeline =
+                    model.timeline
+                        |> postContent model.context True model.cotonomaModal.name
+                        |> \( timeline, _ ) -> timeline
+
+                cotonomaModal =
+                    model.cotonomaModal
+                        |> (\modal -> { modal | requestProcessing = True })
+            in
+                { model
+                    | timeline = timeline
+                    , cotonomaModal = cotonomaModal
+                }
+                    ! [ App.Commands.scrollTimelineToBottom NoOp
+                      , postCotonoma
                             model.context.clientId
                             model.context.cotonoma
                             timeline.postIdCounter
-                            model.cotonomaModal.members
                             model.cotonomaModal.name
-                        ]
-                    )
+                      ]
 
         CotonomaPosted (Ok response) ->
             ({ model
@@ -510,7 +540,7 @@ update msg model =
              }
                 |> closeModal
             )
-                ! [ fetchRecentCotonomas
+                ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
@@ -535,7 +565,7 @@ update msg model =
 
         CotonomaPushed post ->
             model
-                ! [ fetchRecentCotonomas
+                ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
@@ -602,6 +632,11 @@ update msg model =
                 |> \( signinModal, subCmd ) ->
                     { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
 
+        InviteModalMsg subMsg ->
+            App.Modals.InviteModal.update subMsg model.inviteModal
+                |> \( inviteModal, subCmd ) ->
+                    { model | inviteModal = inviteModal } ! [ Cmd.map InviteModalMsg subCmd ]
+
         CotonomaModalMsg subMsg ->
             model.context.session
                 |> Maybe.map
@@ -648,6 +683,11 @@ update msg model =
                     )
                 |> withDefault (model ! [])
 
+        ImportModalMsg subMsg ->
+            App.Modals.ImportModal.update subMsg model.importModal
+                |> \( importModal, subCmd ) ->
+                    { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
+
 
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =
@@ -670,11 +710,17 @@ clickCoto elementId cotoId model =
 
 openCoto : Coto -> Model -> Model
 openCoto coto model =
-    { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
+    { model
+        | cotoModal =
+            Just <|
+                App.Modals.CotoModal.initModel
+                    (isCotonomaAndPinned coto model)
+                    coto
+    }
         |> \model -> openModal App.Model.CotoModal model
 
 
-applyPresenceDiff : ( MemberPresences, MemberPresences ) -> MemberPresences -> MemberPresences
+applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
     (Dict.foldl
@@ -726,7 +772,6 @@ loadHome model =
             model.context
                 |> clearCotonoma
                 |> clearSelection
-        , members = []
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = setLoading model.timeline
@@ -736,7 +781,7 @@ loadHome model =
         , activeViewOnMobile = TimelineView
     }
         ! [ fetchPosts
-          , fetchRecentCotonomas
+          , fetchCotonomas
           , fetchGraph Nothing
           ]
 
@@ -753,7 +798,6 @@ loadCotonoma key model =
             model.context
                 |> clearCotonoma
                 |> clearSelection
-        , members = []
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
         , connectingSubject = Nothing
@@ -761,7 +805,7 @@ loadCotonoma key model =
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
     }
-        ! [ fetchRecentCotonomas
+        ! [ fetchCotonomas
           , fetchCotonomaPosts key
           , fetchGraph (Just key)
           ]
@@ -770,11 +814,11 @@ loadCotonoma key model =
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
 handlePushedPost clientId payload model =
     if payload.clientId /= clientId then
-        { model
-            | timeline =
-                model.timeline
-                    |> \t -> { t | posts = payload.body :: t.posts }
-        }
+        (model.timeline
+            |> (\timeline -> ( timeline, payload.body :: timeline.posts ))
+            |> (\( timeline, posts ) -> { timeline | posts = posts })
+            |> (\timeline -> { model | timeline = timeline })
+        )
             ! if payload.body.asCotonoma then
                 [ App.Commands.scrollTimelineToBottom NoOp
                 , sendMsg (CotonomaPushed payload.body)

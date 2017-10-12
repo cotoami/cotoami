@@ -7,8 +7,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
-import App.Markdown
+import Util.HtmlUtil exposing (faIcon, materialIcon)
+import App.Markdown exposing (extractTextFromMarkdown)
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
@@ -27,6 +27,14 @@ cotoClassList context elementId maybeCotoId additionalClasses =
          ]
             ++ additionalClasses
         )
+
+
+headline : { r | content : String } -> String
+headline { content } =
+    extractTextFromMarkdown content
+        |> List.head
+        |> Maybe.withDefault ""
+        |> String.left 100
 
 
 headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
@@ -183,7 +191,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Traverse from this coto"
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
-                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+                        [ materialIcon "arrow_forward" Nothing ]
             , case config.openCoto of
                 Nothing ->
                     span [] []
@@ -194,7 +202,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Open coto view"
                         , onLinkButtonClick openCoto
                         ]
-                        [ i [ class "material-icons" ] [ text "settings" ] ]
+                        [ materialIcon "settings" Nothing ]
             , case config.deleteConnection of
                 Nothing ->
                     span [] []
@@ -216,12 +224,13 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Select this coto"
                         , onLinkButtonClick (selectCoto cotoId)
                         ]
-                        [ i [ class "material-icons" ]
-                            [ if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
-                                text "check_box"
-                              else
-                                text "check_box_outline_blank"
-                            ]
+                        [ materialIcon
+                            (if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
+                                "check_box"
+                             else
+                                "check_box_outline_blank"
+                            )
+                            Nothing
                         ]
             ]
         ]
@@ -237,7 +246,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ i [ class "material-icons" ] [ text "arrow_forward" ] ]
+                        [ materialIcon "arrow_forward" Nothing ]
                     ]
             else
                 div [] []

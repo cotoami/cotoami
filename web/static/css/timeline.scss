@@ -24,36 +24,67 @@
     background: url(../images/loading.gif) center no-repeat #fff;
   }
 
+  div.posts-on-day {
+    margin-top: 20px;
+
+    div.date-header {
+      z-index: 10;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      left: 0;
+      padding: 10px;
+      padding-left: 0;
+
+      span.date {
+        color: #999;
+        background-color: #f8f8f8;
+        padding: 10px;
+      }
+    }
+  }
+
   div.coto {
     position: relative;
     margin-bottom: 6px;
-
-    &:first-child {
-      margin-top: 12px;
-    }
 
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
     }
+  }
 
-    div.author {
-      margin-bottom: 8px;
+  div.coto-inner {
+    padding-bottom: 3px;
+  }
 
-      img.avatar {
-        margin: 0;
-        padding: 0;
-        width: 24px;
-        height: 24px;
-        margin-right: 8px;
-        border-radius: 4px;
-        vertical-align: middle;
-      }
+  div.author {
+    margin-bottom: 8px;
 
-      span.name {
-        color: #aaa;
-        font-weight: bold;
-      }
+    img.avatar {
+      margin: 0;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      border-radius: 4px;
+      vertical-align: middle;
+    }
+
+    span.name {
+      color: #aaa;
+      font-weight: bold;
+    }
+  }
+
+  div.post-footer {
+    min-height: 10px;
+    text-align: right;
+
+    span.posted-at {
+      font-size: 12px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #ccc;
     }
   }
 }

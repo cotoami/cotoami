@@ -7,6 +7,7 @@ defmodule Cotoami.CotoGraphService do
   import Cotoami.Helpers
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
+  alias Bolt.Sips.Types.Node
   alias Cotoami.{
     Repo, Coto, Amishi, Cotonoma, CotoGraph,
     Neo4jService, AmishiService,
@@ -19,22 +20,56 @@ defmodule Cotoami.CotoGraphService do
 
   @rel_type_has_a "HAS_A"
 
-  def get_graph(bolt_conn, %Amishi{id: amishi_id}) do
-    get_graph_from_uuid(bolt_conn, amishi_id)
+  def get_graph(bolt_conn, %Amishi{id: _} = amishi) do
+    do_get_graph(bolt_conn, amishi)
   end
 
-  def get_graph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
+  def get_graph(bolt_conn, %Cotonoma{id: _, coto: %Coto{id: _}} = cotonoma) do
+    do_get_graph(bolt_conn, cotonoma)
   end
 
-  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id, false)
+  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: _}} = cotonoma) do
+    do_get_subgraph(bolt_conn, cotonoma)
+  end
+
+  defp do_get_graph(bolt_conn, %Amishi{id: amishi_id}) do
+    query = query_graph_from_uuid() <>
+      ~s"""
+        UNION
+        MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          { created_by: $created_by }]->(child:#{@label_coto})
+        WHERE NOT exists(has.created_in)
+        RETURN DISTINCT parent, has, child
+        ORDER BY has.#{Neo4jService.rel_prop_order()}
+      """
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{uuid: amishi_id, created_by: amishi_id})
+    |> build_graph_from_query_result(amishi_id, true)
+  end
+  defp do_get_graph(bolt_conn, %Cotonoma{id: cotonom_id, coto: %Coto{id: cotonoma_coto_id}}) do
+    query = query_graph_from_uuid() <>
+      ~s"""
+        UNION
+        MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          { created_in: $created_in }]->(child:#{@label_coto})
+        RETURN DISTINCT parent, has, child
+        ORDER BY has.#{Neo4jService.rel_prop_order()}
+      """
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonom_id})
+    |> build_graph_from_query_result(cotonoma_coto_id, true)
+  end
+
+  defp do_get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    bolt_conn
+    |> Bolt.Sips.query!(query_graph_from_uuid(), %{uuid: cotonoma_coto_id})
+    |> build_graph_from_query_result(cotonoma_coto_id, false)
   end
 
   # start with the uuid node and traverse HAS_A relationships
   # until finding the end edge or a cotonoma
-  defp get_graph_from_uuid(bolt_conn, uuid, from_root \\ true) do
-    query = ~s"""
+  defp query_graph_from_uuid do
+    ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
         (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
       WITH size(filter(n IN tail(nodes(path)) WHERE n:#{@label_cotonoma}))
@@ -44,21 +79,27 @@ defmodule Cotoami.CotoGraphService do
       RETURN DISTINCT parent, has, child
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
-    bolt_conn
-    |> Bolt.Sips.query!(query, %{uuid: uuid})
+  end
+
+  defp build_graph_from_query_result(query_result, start_uuid, from_root) do
+    query_result
     |> Enum.reduce(%CotoGraph{}, fn(%{"parent" => parent, "has" => has, "child" => child}, graph) ->
+        graph = %{graph |
+          cotos:
+            graph.cotos
+            |> add_coto(parent)
+            |> add_coto(child)
+        }
+
         parent_id = parent.properties["uuid"]
         child_id = child.properties["uuid"]
-
-        graph = %{graph | cotos: Map.put(graph.cotos, child_id, child.properties)}
-
         connection =
           has.properties
           |> Map.put("id", has.id)
           |> Map.put("start", parent_id)
           |> Map.put("end", child_id)
 
-        if from_root && parent_id == uuid do
+        if from_root && parent_id == start_uuid do
           %{graph | root_connections: [connection | graph.root_connections]}
         else
           parent_connections =
@@ -68,6 +109,15 @@ defmodule Cotoami.CotoGraphService do
         end
       end)
     |> (fn(graph) -> %{graph | cotos: complement_relations(graph.cotos)} end).()
+  end
+
+  defp add_coto(%{} = cotos, %Node{labels: labels, properties: properties}) do
+    if @label_coto in labels do
+      coto_id = properties["uuid"]
+      Map.put(cotos, coto_id, properties)
+    else
+      cotos
+    end
   end
 
   defp complement_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
@@ -146,17 +196,9 @@ defmodule Cotoami.CotoGraphService do
   end
 
   def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
-    # Pin the source node if it doesn't belong to the graph
-    if Enum.empty? Neo4jService.get_paths(bolt_conn, amishi.id, source.id) do
-      pin(bolt_conn, source, amishi)
-    end
     do_connect(bolt_conn, source, target, amishi.id, nil)
   end
   def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi, %Cotonoma{} = cotonoma) do
-    # Pin the source node if it doesn't belong to the graph
-    if Enum.empty? Neo4jService.get_paths(bolt_conn, cotonoma.coto_id, source.id) do
-      pin(bolt_conn, source, cotonoma, amishi)
-    end
     do_connect(bolt_conn, source, target, amishi.id, cotonoma.id)
   end
   defp do_connect(bolt_conn, %Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
@@ -168,6 +210,42 @@ defmodule Cotoami.CotoGraphService do
     |> register_coto(target)
     |> Neo4jService.get_or_create_ordered_relationship(
       source.id, target.id, @rel_type_has_a, rel_props)
+  end
+
+  def import_connection(
+    bolt_conn,
+    %Coto{id: _} = target,
+    connection_json,
+    %Amishi{id: _} = amishi
+  ) do
+    rel_props = rel_props_from_json(connection_json, amishi)
+    bolt_conn
+    |> register_amishi(amishi)
+    |> register_coto(target)
+    |> Neo4jService.get_or_create_relationship(
+      amishi.id, target.id, @rel_type_has_a, rel_props)
+  end
+  def import_connection(
+    bolt_conn,
+    %Coto{id: _} = source,
+    %Coto{id: _} = target,
+    connection_json,
+    %Amishi{id: _} = amishi
+  ) do
+    rel_props = rel_props_from_json(connection_json, amishi)
+    bolt_conn
+    |> register_coto(source)
+    |> register_coto(target)
+    |> Neo4jService.get_or_create_relationship(
+      source.id, target.id, @rel_type_has_a, rel_props)
+  end
+  defp rel_props_from_json(connection_json, %Amishi{id: amishi_id}) do
+    %{
+      created_by: amishi_id,
+      created_at: connection_json["created_at"],
+      created_in: connection_json["created_in"],
+      order: connection_json["order"]
+    } |> drop_nil
   end
 
   def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do

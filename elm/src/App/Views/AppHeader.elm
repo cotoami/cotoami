@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Util.EventUtil exposing (onLinkButtonClick)
+import Util.HtmlUtil exposing (materialIcon)
 import App.Model exposing (Model, isNavigationEmpty)
 import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
 
@@ -14,14 +15,14 @@ view model =
         [ div [ class "location" ]
             (case model.context.cotonoma of
                 Nothing ->
-                    [ i [ class "at-home material-icons" ] [ text "home" ]
+                    [ materialIcon "home" (Just "at-home")
                     , navigationToggle model
                     ]
 
                 Just cotonoma ->
                     [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
-                        [ i [ class "material-icons" ] [ text "home" ] ]
-                    , i [ class "arrow material-icons" ] [ text "navigate_next" ]
+                        [ materialIcon "home" Nothing ]
+                    , materialIcon "navigate_next" (Just "arrow")
                     , span [ class "cotonoma-name" ] [ text cotonoma.name ]
                     , navigationToggle model
                     ]
@@ -36,7 +37,7 @@ view model =
                     , title "Add Cotonoma"
                     , onClick OpenCotonomaModal
                     ]
-                    [ i [ class "material-icons" ] [ text "add_circle_outline" ] ]
+                    [ materialIcon "add_circle_outline" Nothing ]
           )
         , div [ class "user" ]
             (case model.context.session of
@@ -46,7 +47,7 @@ view model =
                         , title "Sign in"
                         , onClick OpenSigninModal
                         ]
-                        [ i [ class "material-icons" ] [ text "perm_identity" ] ]
+                        [ materialIcon "perm_identity" Nothing ]
                     ]
 
                 Just session ->
@@ -67,12 +68,11 @@ navigationToggle model =
             ]
         , onClick NavigationToggle
         ]
-        [ i [ class "material-icons" ]
-            [ text
-                (if model.navigationOpen then
-                    "arrow_drop_up"
-                 else
-                    "arrow_drop_down"
-                )
-            ]
+        [ materialIcon
+            (if model.navigationOpen then
+                "arrow_drop_up"
+             else
+                "arrow_drop_down"
+            )
+            Nothing
         ]

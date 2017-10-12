@@ -3,6 +3,7 @@ defmodule Cotoami.Router do
 
   pipeline :browser do
     plug :accepts, ["html"]
+    plug Cotoami.Language, "en_US"
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
@@ -12,6 +13,7 @@ defmodule Cotoami.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Cotoami.Language, "en_US"
     plug :fetch_session
     plug :put_secure_browser_headers
     plug Cotoami.ApiCsrfProtection
@@ -24,12 +26,18 @@ defmodule Cotoami.Router do
   ]
 
   scope "/", Cotoami do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token", SigninController, :signin
     get "/signout", SessionController, :signout
-    get "/export", AmishiController, :export
+
+  end
+
+  scope "/export", Cotoami do
+    pipe_through [:browser, :require_auth]
+
+    get "/", DatabaseController, :export
   end
 
   scope "/api/public", Cotoami do
@@ -44,10 +52,19 @@ defmodule Cotoami.Router do
   scope "/api", Cotoami do
     pipe_through [:api, :require_auth]
 
+    post "/import", DatabaseController, :import
+
+    get "/invite/:email", AmishiController, :invite
     get "/amishis/email/:email", AmishiController, :show_by_email
+
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
+
     resources "/cotonomas", CotonomaController, only: [:index, :create]
+    get "/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub
+    get "/cotonomas/pin/:key", CotonomaController, :pin
+    delete "/cotonomas/pin/:key", CotonomaController, :unpin
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
+
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index
     get "/graph/subgraph/:cotonoma_key", CotoGraphController, :subgraph

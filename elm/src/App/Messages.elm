@@ -7,13 +7,14 @@ import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post)
-import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
+import App.Modals.InviteModalMsg
 import App.Modals.CotonomaModalMsg
 import App.Modals.CotoModalMsg
+import App.Modals.ImportModalMsg
 
 
 type Msg
@@ -30,9 +31,9 @@ type Msg
       -- Fetched
       --
     | SessionFetched (Result Http.Error Session)
-    | RecentCotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaFetched (Result Http.Error ( Cotonoma, List Amishi, List Post ))
+    | CotonomaFetched (Result Http.Error ( Cotonoma, List Post ))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
       --
@@ -41,9 +42,11 @@ type Msg
     | CloseModal
     | Confirm
     | OpenSigninModal
+    | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
     | OpenCotoModal Coto
+    | OpenImportModal
       --
       -- Coto
       --
@@ -70,6 +73,11 @@ type Msg
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
+      --
+      -- Cotonoma
+      --
+    | PinOrUnpinCotonoma CotonomaKey Bool
+    | CotonomaPinnedOrUnpinned (Result Http.Error String)
       --
       -- Timeline
       --
@@ -106,5 +114,7 @@ type Msg
       -- Sub components
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
+    | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
     | CotoModalMsg App.Modals.CotoModalMsg.Msg
+    | ImportModalMsg App.Modals.ImportModalMsg.Msg

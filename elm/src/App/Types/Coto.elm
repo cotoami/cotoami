@@ -1,6 +1,7 @@
 module App.Types.Coto exposing (..)
 
-import Exts.Maybe exposing (isJust, isNothing)
+import Date exposing (Date)
+import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import Util.StringUtil exposing (isBlank)
 
@@ -27,17 +28,6 @@ type alias Coto =
     }
 
 
-initCoto : CotoId -> String -> Maybe Amishi -> Maybe Cotonoma -> Maybe CotonomaKey -> Coto
-initCoto id content maybeAmishi maybePostedIn maybeCotonomaKey =
-    { id = id
-    , content = content
-    , amishi = maybeAmishi
-    , postedIn = maybePostedIn
-    , asCotonoma = isJust maybeCotonomaKey
-    , cotonomaKey = maybeCotonomaKey
-    }
-
-
 updateContent : String -> Coto -> Coto
 updateContent content coto =
     { coto | content = content }
@@ -47,8 +37,10 @@ type alias Cotonoma =
     { id : String
     , key : CotonomaKey
     , name : String
+    , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
+    , updatedAt : Date
     }
 
 
@@ -86,8 +78,3 @@ isPostedInCotonoma maybeCotonoma coto =
 
                 Just postedIn ->
                     postedIn.id == cotonoma.id
-
-
-type Member
-    = SignedUp Amishi
-    | NotYetSignedUp String

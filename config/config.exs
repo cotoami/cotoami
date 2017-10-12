@@ -39,6 +39,14 @@ config :prometheus, Cotoami.Endpoint.PipelineInstrumenter,
   registry: :default,
   duration_unit: :microseconds
 
+config :cotoami, Cotoami.AmishiService,
+  owner_emails:
+    (System.get_env("COTOAMI_OWNER_EMAILS") || "")
+    |> String.split(",", trim: true),
+  signup_enabled:
+    (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
+    |> String.to_existing_atom()
+
 config :cotoami, Cotoami.Redix,
   host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
   port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer

@@ -4,10 +4,11 @@ import Http
 import Task exposing (Task, andThen)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Exts.Maybe exposing (isJust)
 import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Direction, Connection, initConnection, Graph, getCoto)
-import App.Types.Coto exposing (Coto, CotoId, initCoto, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
 
@@ -21,12 +22,18 @@ decodeConnection =
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map5 initCoto
+    Decode.map6 Coto
         (Decode.field "uuid" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
-        (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
+        (Decode.map isJust decodeCotonomaKeyField)
+        decodeCotonomaKeyField
+
+
+decodeCotonomaKeyField : Decode.Decoder (Maybe String)
+decodeCotonomaKeyField =
+    Decode.maybe (Decode.field "cotonoma_key" Decode.string)
 
 
 decodeGraph : Decode.Decoder Graph
@@ -60,17 +67,11 @@ fetchSubgraph cotonomaKey =
 
 fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
 fetchSubgraphIfCotonoma graph cotoId =
-    case getCoto cotoId graph of
-        Nothing ->
-            Cmd.none
-
-        Just coto ->
-            case coto.cotonomaKey of
-                Nothing ->
-                    Cmd.none
-
-                Just cotonomaKey ->
-                    fetchSubgraph cotonomaKey
+    graph
+        |> getCoto cotoId
+        |> Maybe.andThen (\coto -> coto.cotonomaKey)
+        |> Maybe.map fetchSubgraph
+        |> Maybe.withDefault Cmd.none
 
 
 pinUrl : Maybe CotonomaKey -> String
