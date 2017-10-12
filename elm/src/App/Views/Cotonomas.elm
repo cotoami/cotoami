@@ -39,6 +39,11 @@ cotonomaDiv context listTitle cotonoma =
                 , ( "element-focus", Just elementId == context.elementFocus )
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
                 , ( "selected", isSelected (Just cotonoma.cotoId) context )
+                , ( "in"
+                  , context.cotonoma
+                        |> Maybe.map (\current -> current.id == cotonoma.id)
+                        |> Maybe.withDefault False
+                  )
                 ]
             , onClickWithoutPropagation (CotoClick elementId cotonoma.cotoId)
             , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)

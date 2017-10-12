@@ -42,6 +42,11 @@
     margin-bottom: 1px;
     border: 2px solid #fff;
 
+    &.in {
+      background-color: #f8f8f8;
+      border: 2px solid #f8f8f8;
+    }
+
     &.coto-focus {
       border: 2px solid #fd3;
     }
