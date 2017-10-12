@@ -109,7 +109,7 @@ jobs:
       - deploy:
           command: |
             ~/.kube/kubectl config use-context $KUBE_CONTEXT
-            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_TAG
 
 workflows:
   version: 2
