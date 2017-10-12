@@ -169,9 +169,9 @@ cotonomaModalConfig cotonomaKey session model =
                         (if model.updatingCotonomaPin then
                             "Processing..."
                          else if model.cotonomaPinned then
-                            "Unpin"
+                            "Unpin from nav"
                          else
-                            "Pin"
+                            "Pin to nav"
                         )
                     ]
               else
