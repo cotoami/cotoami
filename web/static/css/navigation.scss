@@ -36,20 +36,8 @@
     margin-bottom: 20px;
   }
 
-  a.traverse-cotonoma {
-    display: none;
-    margin-left: 5px;
-
-    @media (#{$narrow-viewport}) {
-      margin-left: 10px;
-    }
-
-    i {
-      font-size: 20px;
-    }
-  }
-
   div.coto-as-cotonoma {
+    display: flex;
     padding-left: 1px;
     margin-bottom: 1px;
     border: 2px solid #fff;
@@ -62,12 +50,25 @@
       border: 2px solid #ffa500;
     }
 
-    &.element-focus a.traverse-cotonoma {
-      display: inline;
-    }
-
     i {
       vertical-align: middle;
+    }
+
+    div.cotonoma-link {
+      flex: 1;
+    }
+
+    div.traverse {
+      width: 20px;
+
+      a.traverse-cotonoma i {
+        font-size: 20px;
+        opacity: .3;
+      }
+    }
+
+    &.element-focus div.traverse a.traverse-cotonoma i {
+      opacity: 1;
     }
   }
 }

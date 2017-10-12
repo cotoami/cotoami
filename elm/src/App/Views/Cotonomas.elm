@@ -44,15 +44,19 @@ cotonomaDiv context listTitle cotonoma =
             , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)
             , onMouseLeave (CotoMouseLeave elementId cotonoma.cotoId)
             ]
-            [ App.Views.Coto.cotonomaLink
-                CotonomaClick
-                cotonoma.owner
-                cotonoma.key
-                cotonoma.name
-            , a
-                [ class "tool-button traverse-cotonoma"
-                , title "Traverse from this cotonoma"
-                , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
+            [ div [ class "cotonoma-link" ]
+                [ App.Views.Coto.cotonomaLink
+                    CotonomaClick
+                    cotonoma.owner
+                    cotonoma.key
+                    cotonoma.name
                 ]
-                [ materialIcon "arrow_forward" Nothing ]
+            , div [ class "traverse" ]
+                [ a
+                    [ class "tool-button traverse-cotonoma"
+                    , title "Traverse from this cotonoma"
+                    , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
+                    ]
+                    [ materialIcon "arrow_forward" Nothing ]
+                ]
             ]

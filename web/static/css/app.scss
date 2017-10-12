@@ -208,7 +208,7 @@ div.main-traversal {
   #main-nav {
     position: relative;
     top: auto;
-    width: 160px;
+    width: 180px;
     border-right: solid 1px #eee;
     padding: 0;
     animation-name: none;
@@ -223,6 +223,7 @@ div.main-traversal {
       bottom: 0;
       left: 0;
       right: 0;
+      padding: 0;
       padding-top: 10px;
       padding-left: 10px;
       max-height: none;
