@@ -239,11 +239,15 @@ update msg model =
             )
 
         OpenTraversal cotoId ->
-            openTraversal cotoId model
-                |> flip (!)
-                    [ App.Commands.scrollMainContentToRight NoOp
-                    , fetchSubgraphIfCotonoma model.graph cotoId
-                    ]
+            model
+                |> openTraversal cotoId
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ App.Commands.scrollMainContentToRight NoOp
+                        , fetchSubgraphIfCotonoma model.graph cotoId
+                        ]
+                    )
 
         CotonomaClick key ->
             changeLocationToCotonoma key model
@@ -409,7 +413,6 @@ update msg model =
                 |> Maybe.map (\modal -> { modal | updatingCotonomaPin = True })
                 |> (\modal -> { model | cotoModal = modal })
                 |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
-
 
         CotonomaPinnedOrUnpinned (Ok _) ->
             ({ model | cotonomasLoading = True } |> closeModal)
