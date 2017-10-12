@@ -67,17 +67,11 @@ fetchSubgraph cotonomaKey =
 
 fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
 fetchSubgraphIfCotonoma graph cotoId =
-    case getCoto cotoId graph of
-        Nothing ->
-            Cmd.none
-
-        Just coto ->
-            case coto.cotonomaKey of
-                Nothing ->
-                    Cmd.none
-
-                Just cotonomaKey ->
-                    fetchSubgraph cotonomaKey
+    graph
+        |> getCoto cotoId
+        |> Maybe.andThen (\coto -> coto.cotonomaKey)
+        |> Maybe.map fetchSubgraph
+        |> Maybe.withDefault Cmd.none
 
 
 pinUrl : Maybe CotonomaKey -> String
