@@ -78,7 +78,7 @@ jobs:
       - deploy:
           command: ./ci/deploy-develop.sh
 
-  release-master:
+  release:
     docker:
       - image: docker:17.06
     working_directory: ~/cotoami
@@ -89,16 +89,16 @@ jobs:
             - work-dir-{{ .Revision }}
       - run:
           name: Build docker image
-          command: docker build -t cotoami/cotoami:$CIRCLE_SHA1 .
+          command: docker build -t cotoami/cotoami:$CIRCLE_TAG .
       - run:
           name: Release docker images
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push cotoami/cotoami:$CIRCLE_SHA1
-            docker tag cotoami/cotoami:$CIRCLE_SHA1 cotoami/cotoami:latest
+            docker push cotoami/cotoami:$CIRCLE_TAG
+            docker tag cotoami/cotoami:$CIRCLE_TAG cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
-  deploy-master:
+  deploy:
     docker:
       - image: python:3.6
     steps:
@@ -109,13 +109,16 @@ jobs:
       - deploy:
           command: |
             ~/.kube/kubectl config use-context $KUBE_CONTEXT
-            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_SHA1
+            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_TAG
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
       - release-develop:
           requires:
             - build
@@ -128,15 +131,19 @@ workflows:
           filters:
             branches:
               only: develop
-      - release-master:
+      - release:
           requires:
             - build
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
-      - deploy-master:
+              ignore: /.*/
+      - deploy:
           requires:
-            - release-master
+            - release
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/
