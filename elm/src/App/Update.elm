@@ -801,6 +801,7 @@ loadCotonoma key model =
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
+        , navigationOpen = False
     }
         ! [ fetchCotonomas
           , fetchCotonomaPosts key
