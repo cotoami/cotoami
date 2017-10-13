@@ -39,8 +39,8 @@ homeTimelineHelp context timeline =
             && (App.Types.Timeline.isEmpty timeline)
     then
         div [ class "home-timeline-help" ]
-            [ p []
-                [ text "This is your home timeline." ]
+            [ p [] [ text "Welcome to Cotoami!" ]
+            , p [] [ text "This is your home timeline." ]
             , p []
                 [ text
                     ("Cotos posted here are private to you "
