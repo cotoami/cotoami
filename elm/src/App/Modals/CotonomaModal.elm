@@ -59,7 +59,13 @@ modalConfig session model =
     , title = "Cotonoma"
     , content =
         div []
-            [ div []
+            [ p []
+                [ text
+                    ("A cotonoma is a unit of shared space where you can "
+                        ++ "discuss a topic with other signed-in amishis (users)."
+                    )
+                ]
+            , div []
                 [ label [] [ text "Name" ]
                 , input
                     [ type_ "text"

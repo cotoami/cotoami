@@ -7,7 +7,7 @@ defmodule Cotoami.CotoService do
   import Ecto.Query
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
-    CotonomaService, CotoGraphService, AmishiService
+    CotoGraphService, AmishiService
   }
   alias Cotoami.Exceptions.InvalidOperation
 
