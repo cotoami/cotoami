@@ -148,13 +148,9 @@ update msg model =
 
         CotonomaFetched (Ok ( cotonoma, posts )) ->
             { model
-                | context =
-                    model.context
-                        |> \context -> { context | cotonoma = Just cotonoma }
+                | context = setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline =
-                    model.timeline
-                        |> \t -> { t | posts = posts, loading = False }
+                , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
                 ! [ App.Commands.scrollTimelineToBottom NoOp
                   , fetchSubCotonomas (Just cotonoma)
@@ -425,10 +421,11 @@ update msg model =
         -- Timeline
         --
         PostsFetched (Ok posts) ->
-            model.timeline
-                |> (\timeline -> { timeline | posts = posts, loading = False })
-                |> (\timeline -> { model | timeline = timeline })
-                |> (\model -> model ! [ App.Commands.scrollTimelineToBottom NoOp ])
+            { model
+                | context = setCotonoma Nothing model.context
+                , timeline = App.Types.Timeline.setPosts posts model.timeline
+            }
+                ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         PostsFetched (Err _) ->
             model ! []
@@ -770,7 +767,7 @@ loadHome model =
     { model
         | context =
             model.context
-                |> clearCotonoma
+                |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
         , subCotonomas = []
@@ -796,7 +793,7 @@ loadCotonoma key model =
     { model
         | context =
             model.context
-                |> clearCotonoma
+                |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
         , timeline = setLoading model.timeline

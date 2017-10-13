@@ -16,6 +16,7 @@ type alias Context =
     { clientId : String
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
+    , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
@@ -32,6 +33,7 @@ initContext seed =
             |> \( uuid, _ ) -> Uuid.toString uuid
     , session = Nothing
     , cotonoma = Nothing
+    , cotonomaLoading = False
     , elementFocus = Nothing
     , cotoFocus = Nothing
     , selection = []
@@ -73,9 +75,14 @@ updateSelection cotoId context =
     }
 
 
-clearCotonoma : Context -> Context
-clearCotonoma context =
-    { context | cotonoma = Nothing }
+setCotonomaLoading : Context -> Context
+setCotonomaLoading context =
+    { context | cotonoma = Nothing, cotonomaLoading = True }
+
+
+setCotonoma : Maybe Cotonoma -> Context -> Context
+setCotonoma maybeCotonoma context =
+    { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
 
 
 clearSelection : Context -> Context

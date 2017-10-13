@@ -36,6 +36,11 @@ setEditingNew editingNew timeline =
     { timeline | editingNew = editingNew }
 
 
+setPosts : List Post -> Timeline -> Timeline
+setPosts posts timeline =
+    { timeline | posts = posts, loading = False }
+
+
 getCoto : CotoId -> Timeline -> Maybe Coto
 getCoto cotoId timeline =
     timeline.posts

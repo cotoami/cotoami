@@ -34,6 +34,7 @@ homeTimelineHelp : Context -> Timeline -> Html Msg
 homeTimelineHelp context timeline =
     if
         (isJust context.session)
+            && (not context.cotonomaLoading)
             && (isNothing context.cotonoma)
             && (App.Types.Timeline.isEmpty timeline)
     then
