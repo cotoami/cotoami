@@ -22,12 +22,9 @@ view : Context -> Graph -> Timeline -> Html Msg
 view context graph model =
     div [ id "input-and-timeline", class (timelineClass model) ]
         [ timelineDiv context graph model
-        , case context.session of
-            Nothing ->
-                div [] []
-
-            Just session ->
-                postEditor session context model
+        , context.session
+            |> Maybe.map (\session -> postEditor session context model)
+            |> Maybe.withDefault (div [] [])
         ]
 
 
