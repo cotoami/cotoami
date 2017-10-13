@@ -26,6 +26,11 @@ defaultTimeline =
     }
 
 
+isEmpty : Timeline -> Bool
+isEmpty timeline =
+    List.isEmpty timeline.posts
+
+
 setEditingNew : Bool -> Timeline -> Timeline
 setEditingNew editingNew timeline =
     { timeline | editingNew = editingNew }
