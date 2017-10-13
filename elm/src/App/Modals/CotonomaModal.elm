@@ -14,6 +14,7 @@ import App.Types.Session exposing (Session, toAmishi)
 import App.Types.Coto exposing (cotonomaNameMaxlength, validateCotonomaName)
 import App.Types.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal, NoOp, PostCotonoma))
+import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotonomaModalMsg as CotonomaModalMsg exposing (Msg(..))
 
 
@@ -40,21 +41,15 @@ update msg session context model =
             ( { model | name = content }, Cmd.none )
 
 
-view : Maybe Session -> Model -> Html AppMsg.Msg
-view maybeSession model =
+view : Context -> Model -> Html AppMsg.Msg
+view context model =
     Modal.view
         "cotonoma-modal"
-        (case maybeSession of
-            Nothing ->
-                Nothing
-
-            Just session ->
-                Just (modalConfig session model)
-        )
+        (Maybe.map (\session -> modalConfig session context model) context.session)
 
 
-modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
-modalConfig session model =
+modalConfig : Session -> Context -> Model -> Modal.Config AppMsg.Msg
+modalConfig session context model =
     { closeMessage = CloseModal
     , title = "Cotonoma"
     , content =
@@ -65,6 +60,15 @@ modalConfig session model =
                         ++ "discuss a topic with other signed-in amishis (users)."
                     )
                 ]
+            , context.cotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        div [ class "target-cotonoma" ]
+                            [ label [] [ text "Post to" ]
+                            , cotonomaLabel cotonoma.owner cotonoma.name
+                            ]
+                    )
+                |> Maybe.withDefault (div [] [])
             , div []
                 [ label [] [ text "Name" ]
                 , input

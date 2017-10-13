@@ -229,7 +229,7 @@ modals model =
                     App.Modals.CotoModal.view model.context.session model.cotoModal
 
                 CotonomaModal ->
-                    App.Modals.CotonomaModal.view model.context.session model.cotonomaModal
+                    App.Modals.CotonomaModal.view model.context model.cotonomaModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model

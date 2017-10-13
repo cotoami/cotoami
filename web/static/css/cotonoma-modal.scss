@@ -16,4 +16,17 @@
   p {
     margin-bottom: 1rem;
   }
+
+  div.target-cotonoma {
+    margin-bottom: 1rem;
+
+    span.cotonoma-label {
+      margin-left: 1rem;
+    }
+
+    span.cotonoma-name {
+      margin-left: 2px;
+      font-weight: normal;
+    }
+  }
 }
