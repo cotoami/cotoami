@@ -34,21 +34,35 @@ defmodule Cotoami.CotonomaController do
     },
     amishi
   ) do
-    {:ok, {{coto, _cotonoma}, posted_in}} =
-      Repo.transaction(fn ->
-        case CotonomaService.create!(name, amishi, cotonoma_id) do
-          {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
-          {{coto, cotonoma}, posted_in} ->
-            posted_in
-            |> CotonomaService.increment_timeline_revision()
-            |> CotonomaService.complement_owner()
-            |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
-        end
-      end)
-    if posted_in do
-      broadcast_post(coto, posted_in.key, clientId)
+    try do
+      {:ok, {{coto, _cotonoma}, posted_in}} =
+        do_create!(name, amishi, cotonoma_id)
+      if posted_in do
+        broadcast_post(coto, posted_in.key, clientId)
+      end
+      render(conn, CotoView, "created.json", coto: coto, postId: post_id)
+    rescue
+        e in Ecto.ConstraintError ->
+          case e.constraint do
+            "cotonomas_name_owner_id_index" ->
+              send_resp(conn, :conflict, "")
+            constraint ->
+              send_resp(conn, :bad_request, constraint)
+          end
     end
-    render(conn, CotoView, "created.json", coto: coto, postId: post_id)
+  end
+
+  defp do_create!(name, amishi, cotonoma_id) do
+    Repo.transaction(fn ->
+      case CotonomaService.create!(name, amishi, cotonoma_id) do
+        {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
+        {{coto, cotonoma}, posted_in} ->
+          posted_in
+          |> CotonomaService.increment_timeline_revision()
+          |> CotonomaService.complement_owner()
+          |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
+      end
+    end)
   end
 
   def pin(conn, %{"key" => key}, %{owner: true}) do
