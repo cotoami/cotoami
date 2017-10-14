@@ -20,22 +20,6 @@ import App.Modals.CotoModal
 import App.Modals.ImportModal
 
 
-type Modal
-    = ConfirmModal
-    | SigninModal
-    | ProfileModal
-    | InviteModal
-    | CotoModal
-    | CotonomaModal
-    | ConnectModal
-    | ImportModal
-
-
-type ConnectingSubject
-    = Coto Coto
-    | NewPost String
-
-
 type alias Model =
     { route : Route
     , context : Context
@@ -63,6 +47,22 @@ type alias Model =
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
     }
+
+
+type Modal
+    = ConfirmModal
+    | SigninModal
+    | ProfileModal
+    | InviteModal
+    | CotoModal
+    | CotonomaModal
+    | ConnectModal
+    | ImportModal
+
+
+type ConnectingSubject
+    = Coto Coto
+    | NewPost String
 
 
 initModel : Int -> Route -> Model
@@ -147,7 +147,10 @@ updateRecentCotonomasByCoto post model =
 
 openModal : Modal -> Model -> Model
 openModal modal model =
-    { model | modals = modal :: model.modals }
+    if List.member modal model.modals then
+        model
+    else
+        { model | modals = modal :: model.modals }
 
 
 closeModal : Model -> Model
