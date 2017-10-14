@@ -20,17 +20,17 @@ import App.Modals.ImportModalMsg as ImportModalMsg
         )
 
 
-type RequestStatus
-    = None
-    | Imported ImportResult
-    | Rejected String
-
-
 type alias Model =
     { data : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Imported ImportResult
+    | Rejected String
 
 
 defaultModel : Model

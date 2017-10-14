@@ -18,18 +18,18 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
-type RequestStatus
-    = None
-    | Approved
-    | Rejected
-
-
 type alias Model =
     { signupEnabled : Bool
     , email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Approved
+    | Rejected
 
 
 defaultModel : Model

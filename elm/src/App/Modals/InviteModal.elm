@@ -13,18 +13,18 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
 
-type RequestStatus
-    = None
-    | Approved String
-    | Conflict Amishi
-    | Rejected
-
-
 type alias Model =
     { email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Approved String
+    | Conflict Amishi
+    | Rejected
 
 
 defaultModel : Model
