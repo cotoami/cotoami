@@ -298,11 +298,25 @@ update msg model =
             model ! []
 
         UpdateContent cotoId content ->
-            updateCotoContent cotoId content model
-                ! [ App.Server.Coto.updateContent cotoId content ]
+            model.cotoModal
+                |> Maybe.map (\cotoModal -> { cotoModal | updatingContent = True })
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! [ App.Server.Coto.updateContent cotoId content ]
 
         ContentUpdated (Ok coto) ->
-            updateRecentCotonomasByCoto coto model
+            (model.cotoModal
+                |> Maybe.map
+                    (\cotoModal ->
+                        { cotoModal
+                            | coto = coto
+                            , editing = False
+                            , updatingContent = False
+                        }
+                    )
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> updateCotoContent coto.id coto.content
+                |> updateRecentCotonomasByCoto coto
+            )
                 ! if coto.asCotonoma then
                     [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
