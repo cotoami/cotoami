@@ -5,12 +5,12 @@ defmodule Cotoami.ControllerHelpers do
 
   import Plug.Conn, only: [send_resp: 3]
 
-  def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e)  do
+  def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil)  do
     case e.constraint do
       "cotonomas_name_owner_id_index" ->
-        send_resp(conn, :conflict, "")
+        send_resp(conn, :conflict, content || "")
       constraint ->
-        send_resp(conn, :bad_request, constraint)
+        send_resp(conn, :bad_request, content || constraint)
     end
   end
 

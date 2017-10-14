@@ -51,12 +51,9 @@ getCoto cotoId timeline =
 
 deleteCoto : Coto -> Timeline -> Timeline
 deleteCoto coto timeline =
-    { timeline
-        | posts =
-            List.filter
-                (\post -> not (isSelfOrPostedIn coto post))
-                timeline.posts
-    }
+    timeline.posts
+        |> List.filter (\post -> not (isSelfOrPostedIn coto post))
+        |> (\posts -> { timeline | posts = posts })
 
 
 setLoading : Timeline -> Timeline
@@ -66,18 +63,15 @@ setLoading timeline =
 
 updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
 updatePost predicate update timeline =
-    let
-        posts =
-            List.map
-                (\post ->
-                    if predicate post then
-                        update post
-                    else
-                        post
-                )
-                timeline.posts
-    in
-        { timeline | posts = posts }
+    timeline.posts
+        |> List.map
+            (\post ->
+                if predicate post then
+                    update post
+                else
+                    post
+            )
+        |> (\posts -> { timeline | posts = posts })
 
 
 updateContent : CotoId -> String -> Timeline -> Timeline

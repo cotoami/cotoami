@@ -114,6 +114,12 @@ modalConfig session context model =
                             [ text "You already have this cotonoma." ]
                         ]
 
+                Rejected ->
+                    div [ class "error" ]
+                        [ span [ class "message" ]
+                            [ text "An unexpected error has occurred." ]
+                        ]
+
                 _ ->
                     div [] []
             ]
