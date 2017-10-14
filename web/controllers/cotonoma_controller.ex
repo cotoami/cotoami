@@ -35,8 +35,7 @@ defmodule Cotoami.CotonomaController do
     amishi
   ) do
     try do
-      {:ok, {{coto, _cotonoma}, posted_in}} =
-        do_create!(name, amishi, cotonoma_id)
+      {:ok, {{coto, _}, posted_in}} = do_create!(name, amishi, cotonoma_id)
       if posted_in do
         broadcast_post(coto, posted_in.key, clientId)
       end
