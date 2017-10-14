@@ -22,7 +22,10 @@ cotoClassList context elementId maybeCotoId additionalClasses =
         ([ ( "coto", True )
          , ( "selectable", True )
          , ( "element-focus", Just elementId == context.elementFocus )
-         , ( "coto-focus", maybeCotoId == context.cotoFocus )
+         , ( "coto-focus"
+           , Maybe.map2 (==) maybeCotoId context.cotoFocus
+                |> Maybe.withDefault False
+           )
          , ( "selected", isSelected maybeCotoId context )
          ]
             ++ additionalClasses
