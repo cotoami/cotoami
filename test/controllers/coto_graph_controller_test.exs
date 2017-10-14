@@ -63,7 +63,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
     test "PUT /api/graph/pin", %{conn: conn, amishi: amishi, coto: coto} do
       {coto2, _} = CotoService.create!("plain coto", amishi.id)
-      {{coto3, cotonoma3}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
+      {{coto3, cotonoma3}, _} = CotonomaService.create!("cotonoma coto", amishi)
 
       put(conn, "/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
@@ -165,7 +165,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
   describe "a cotonoma pinned to an amishi" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
+      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi)
       CotoGraphService.pin(bolt_conn, coto, amishi)
       %{coto: coto}
     end
@@ -194,7 +194,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
   describe "a coto pinned to a cotonoma" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi.id)
+      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi)
       {coto, _} = CotoService.create!("hello", amishi.id, cotonoma.id)
       CotoGraphService.pin(bolt_conn, coto, cotonoma, amishi)
       %{coto: coto, cotonoma: cotonoma}
