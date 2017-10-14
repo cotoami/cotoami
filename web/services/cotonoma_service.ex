@@ -27,17 +27,16 @@ defmodule Cotoami.CotonomaService do
 
     cotonoma = create_cotonoma(cotonoma_coto, name, amishi.id)
 
-    cotonoma = %{cotonoma |
-      owner: amishi,
-      coto: cotonoma_coto
-    }
     cotonoma_coto = %{cotonoma_coto |
       amishi: amishi,
       posted_in: posted_in,
-      cotonoma: cotonoma
+      cotonoma: %{cotonoma |
+        owner: amishi,
+        coto: cotonoma_coto
+      }
     }
 
-    {{cotonoma_coto, cotonoma}, posted_in}
+    {cotonoma_coto, posted_in}
   end
 
   defp create_cotonoma(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
