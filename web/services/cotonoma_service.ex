@@ -60,17 +60,14 @@ defmodule Cotoami.CotonomaService do
 
     cotonoma = create_cotonoma(cotonoma_coto, cotonoma_name, amishi.id)
 
-    cotonoma = %{cotonoma |
-      owner: amishi,
-      coto: cotonoma_coto
-    }
-    cotonoma_coto = %{cotonoma_coto |
+    %{cotonoma_coto |
       amishi: amishi,
       posted_in: coto.posted_in,
-      cotonoma: cotonoma
+      cotonoma: %{cotonoma |
+        owner: amishi,
+        coto: cotonoma_coto
+      }
     }
-
-    {cotonoma_coto, cotonoma}
   end
 
   def get(id) do
