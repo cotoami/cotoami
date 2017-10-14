@@ -1,8 +1,18 @@
-module App.Modals.CotoModal exposing (Model, initModel, update, view)
+module App.Modals.CotoModal
+    exposing
+        ( Model
+        , initModel
+        , setContentUpdating
+        , setContentUpdated
+        , setContentUpdateError
+        , update
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
 import App.Types.Coto
@@ -29,8 +39,15 @@ type alias Model =
     , editing : Bool
     , editingContent : String
     , updatingContent : Bool
+    , contentUpdateStatus : ContentUpdateStatus
     , updatingCotonomaPin : Bool
     }
+
+
+type ContentUpdateStatus
+    = None
+    | Conflict
+    | Rejected
 
 
 initModel : Bool -> Coto -> Model
@@ -40,8 +57,42 @@ initModel cotonomaPinned coto =
     , editing = False
     , editingContent = coto.content
     , updatingContent = False
+    , contentUpdateStatus = None
     , updatingCotonomaPin = False
     }
+
+
+setContentUpdating : Model -> Model
+setContentUpdating model =
+    { model
+        | updatingContent = True
+        , contentUpdateStatus = None
+    }
+
+
+setContentUpdated : Coto -> Model -> Model
+setContentUpdated coto model =
+    { model
+        | coto = coto
+        , editing = False
+        , updatingContent = False
+        , contentUpdateStatus = None
+    }
+
+
+setContentUpdateError : Http.Error -> Model -> Model
+setContentUpdateError error model =
+    (case error of
+        BadStatus response ->
+            if response.status.code == 409 then
+                { model | contentUpdateStatus = Conflict }
+            else
+                { model | contentUpdateStatus = Rejected }
+
+        _ ->
+            { model | contentUpdateStatus = Rejected }
+    )
+        |> \model -> { model | updatingContent = False }
 
 
 update : CotoModalMsg.Msg -> Model -> ( Model, Cmd CotoModalMsg.Msg )
@@ -57,6 +108,7 @@ update msg model =
             { model
                 | editing = False
                 , editingContent = model.coto.content
+                , contentUpdateStatus = None
             }
                 ! []
 
@@ -88,13 +140,16 @@ cotoModalConfig session model =
     , content =
         div []
             [ if model.editing then
-                div [ class "coto-editor" ]
-                    [ textarea
-                        [ class "coto"
-                        , value model.editingContent
-                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                div []
+                    [ div [ class "coto-editor" ]
+                        [ textarea
+                            [ class "coto"
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
                         ]
-                        []
+                    , errorDiv model
                     ]
               else
                 div [ class "coto-content" ]
@@ -127,16 +182,19 @@ cotonomaModalConfig cotonomaKey session model =
     , content =
         div []
             [ if model.editing then
-                div [ class "coto-editor" ]
-                    [ input
-                        [ type_ "text"
-                        , class "u-full-width"
-                        , placeholder "Cotonoma name"
-                        , maxlength cotonomaNameMaxlength
-                        , value model.editingContent
-                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                div []
+                    [ div [ class "coto-editor" ]
+                        [ input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , placeholder "Cotonoma name"
+                            , maxlength cotonomaNameMaxlength
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
                         ]
-                        []
+                    , errorDiv model
                     ]
               else
                 div [ class "cotonoma" ]
@@ -210,3 +268,22 @@ saveButton enabled model =
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
+
+
+errorDiv : Model -> Html AppMsg.Msg
+errorDiv model =
+    case model.contentUpdateStatus of
+        Conflict ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "You already have this cotonoma." ]
+                ]
+
+        Rejected ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "An unexpected error has occurred." ]
+                ]
+
+        _ ->
+            div [] []

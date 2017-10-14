@@ -299,20 +299,13 @@ update msg model =
 
         UpdateContent cotoId content ->
             model.cotoModal
-                |> Maybe.map (\cotoModal -> { cotoModal | updatingContent = True })
+                |> Maybe.map App.Modals.CotoModal.setContentUpdating
                 |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
                 |> \model -> model ! [ App.Server.Coto.updateContent cotoId content ]
 
         ContentUpdated (Ok coto) ->
             (model.cotoModal
-                |> Maybe.map
-                    (\cotoModal ->
-                        { cotoModal
-                            | coto = coto
-                            , editing = False
-                            , updatingContent = False
-                        }
-                    )
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
                 |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
                 |> updateCotoContent coto.id coto.content
                 |> updateRecentCotonomasByCoto coto
@@ -324,8 +317,11 @@ update msg model =
                   else
                     []
 
-        ContentUpdated (Err _) ->
-            model ! []
+        ContentUpdated (Err error) ->
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! []
 
         PinCoto cotoId ->
             App.Model.getCoto cotoId model
