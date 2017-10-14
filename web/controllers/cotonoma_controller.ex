@@ -43,12 +43,7 @@ defmodule Cotoami.CotonomaController do
       render(conn, CotoView, "created.json", coto: coto, postId: post_id)
     rescue
         e in Ecto.ConstraintError ->
-          case e.constraint do
-            "cotonomas_name_owner_id_index" ->
-              send_resp(conn, :conflict, "")
-            constraint ->
-              send_resp(conn, :bad_request, constraint)
-          end
+          send_resp_by_constraint_error(conn, e)
     end
   end
 
