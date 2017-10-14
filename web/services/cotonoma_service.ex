@@ -8,7 +8,7 @@ defmodule Cotoami.CotonomaService do
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
 
-  def create!(name, amishi_id, cotonoma_id \\ nil) do
+  def create!(name, %Amishi{} = amishi, cotonoma_id \\ nil) do
     posted_in =
       case cotonoma_id do
         nil -> nil
@@ -19,7 +19,7 @@ defmodule Cotoami.CotonomaService do
       %Coto{}
       |> Coto.changeset_to_insert(%{
           posted_in_id: cotonoma_id,
-          amishi_id: amishi_id,
+          amishi_id: amishi.id,
           content: name,
           as_cotonoma: true
         })
@@ -30,12 +30,19 @@ defmodule Cotoami.CotonomaService do
       |> Cotonoma.changeset_to_insert(%{
           name: name,
           coto_id: coto.id,
-          owner_id: amishi_id
+          owner_id: amishi.id
         })
       |> Repo.insert!
 
-    cotonoma = %{cotonoma | coto: coto}
-    coto = %{coto | cotonoma: cotonoma}
+    coto = %{coto |
+      amishi: amishi,
+      posted_in: posted_in,
+      cotonoma: cotonoma
+    }
+    cotonoma = %{cotonoma |
+      owner: amishi,
+      coto: coto
+    }
 
     {{coto, cotonoma}, posted_in}
   end

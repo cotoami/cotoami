@@ -34,9 +34,9 @@ defmodule Cotoami.CotonomaController do
     },
     amishi
   ) do
-    {:ok, {{coto, cotonoma}, posted_in}} =
+    {:ok, {{coto, _cotonoma}, posted_in}} =
       Repo.transaction(fn ->
-        case CotonomaService.create!(name, amishi.id, cotonoma_id) do
+        case CotonomaService.create!(name, amishi, cotonoma_id) do
           {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
           {{coto, cotonoma}, posted_in} ->
             posted_in
@@ -45,11 +45,6 @@ defmodule Cotoami.CotonomaController do
             |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
         end
       end)
-    coto = %{coto |
-      :posted_in => posted_in,
-      :amishi => amishi,
-      :cotonoma => cotonoma
-    }
     if posted_in do
       broadcast_post(coto, posted_in.key, clientId)
     end
