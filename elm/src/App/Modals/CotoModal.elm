@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isNotBlank)
 import App.Types.Coto
     exposing
         ( Coto
@@ -17,7 +17,7 @@ import App.Markdown
 import App.Types.Session exposing (Session)
 import App.Messages as AppMsg
     exposing
-        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
+        ( Msg(CloseModal, ConfirmDeleteCoto, UpdateContent, PinOrUnpinCotonoma)
         )
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -28,6 +28,7 @@ type alias Model =
     , cotonomaPinned : Bool
     , editing : Bool
     , editingContent : String
+    , updatingContent : Bool
     , updatingCotonomaPin : Bool
     }
 
@@ -38,6 +39,7 @@ initModel cotonomaPinned coto =
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingContent = coto.content
+    , updatingContent = False
     , updatingCotonomaPin = False
     }
 
@@ -55,13 +57,6 @@ update msg model =
             { model
                 | editing = False
                 , editingContent = model.coto.content
-            }
-                ! []
-
-        Save ->
-            { model
-                | editing = False
-                , coto = updateContent model.editingContent model.coto
             }
                 ! []
 
@@ -108,12 +103,11 @@ cotoModalConfig session model =
     , buttons =
         if model.editing then
             [ cancelEditingButton
-            , button
-                [ class "button button-primary"
-                , disabled (isBlank model.editingContent)
-                , onClick (AppMsg.CotoModalMsg Save)
-                ]
-                [ text "Save" ]
+            , saveButton
+                (isNotBlank model.editingContent
+                    && not model.updatingContent
+                )
+                model
             ]
         else if checkWritePermission session model then
             [ editButton
@@ -151,12 +145,11 @@ cotonomaModalConfig cotonomaKey session model =
     , buttons =
         if model.editing then
             [ cancelEditingButton
-            , button
-                [ class "button button-primary"
-                , disabled (not (validateCotonomaName model.editingContent))
-                , onClick (AppMsg.CotoModalMsg Save)
-                ]
-                [ text "Save" ]
+            , saveButton
+                (validateCotonomaName model.editingContent
+                    && not model.updatingContent
+                )
+                model
             ]
         else
             [ if session.owner then
@@ -196,6 +189,22 @@ editButton =
     button
         [ class "button", onClick (AppMsg.CotoModalMsg Edit) ]
         [ text "Edit" ]
+
+
+saveButton : Bool -> Model -> Html AppMsg.Msg
+saveButton enabled model =
+    button
+        [ class "button button-primary"
+        , disabled (not enabled)
+        , onClick (UpdateContent model.coto.id model.editingContent)
+        ]
+        [ text
+            (if model.updatingContent then
+                "Updating..."
+             else
+                "Save"
+            )
+        ]
 
 
 checkWritePermission : Session -> Model -> Bool

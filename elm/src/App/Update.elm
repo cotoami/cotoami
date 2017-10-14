@@ -42,7 +42,6 @@ import App.Channels exposing (Payload, decodePayload, decodePresenceState, decod
 import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.InviteModal
 import App.Modals.CotoModal
-import App.Modals.CotoModalMsg
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
@@ -297,6 +296,10 @@ update msg model =
 
         CotoDeleted _ ->
             model ! []
+
+        UpdateContent cotoId content ->
+            updateCotoContent cotoId content model
+                ! [ App.Server.Coto.updateContent cotoId content ]
 
         ContentUpdated (Ok coto) ->
             updateRecentCotonomasByCoto coto model
@@ -674,26 +677,8 @@ update msg model =
                 |> Maybe.map
                     (\( cotoModal, subCmd ) ->
                         ( { model | cotoModal = Just cotoModal }
-                        , cotoModal
                         , Cmd.map CotoModalMsg subCmd
                         )
-                    )
-                |> Maybe.map
-                    (\( model, cotoModal, cmd ) ->
-                        case subMsg of
-                            App.Modals.CotoModalMsg.Save ->
-                                updateCotoContent
-                                    cotoModal.coto.id
-                                    cotoModal.editingContent
-                                    model
-                                    ! [ cmd
-                                      , App.Server.Coto.updateContent
-                                            cotoModal.coto.id
-                                            cotoModal.editingContent
-                                      ]
-
-                            _ ->
-                                ( model, cmd )
                     )
                 |> withDefault (model ! [])
 
