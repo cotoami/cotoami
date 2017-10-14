@@ -516,7 +516,7 @@ update msg model =
 
                 cotonomaModal =
                     model.cotonomaModal
-                        |> (\modal -> { modal | requestProcessing = True })
+                        |> \modal -> { modal | requestProcessing = True }
             in
                 { model
                     | timeline = timeline
@@ -541,8 +541,9 @@ update msg model =
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
-        CotonomaPosted (Err _) ->
-            model ! []
+        CotonomaPosted (Err error) ->
+            App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
+                |> \modal -> { model | cotonomaModal = modal } ! []
 
         OpenPost post ->
             case toCoto post of

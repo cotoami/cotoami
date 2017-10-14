@@ -2,6 +2,7 @@ module App.Modals.CotonomaModal
     exposing
         ( Model
         , defaultModel
+        , updateRequestStatus
         , update
         , view
         )
@@ -9,6 +10,7 @@ module App.Modals.CotonomaModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http exposing (Error(..))
 import Util.Modal as Modal
 import App.Types.Session exposing (Session, toAmishi)
 import App.Types.Coto exposing (cotonomaNameMaxlength, validateCotonomaName)
@@ -21,14 +23,37 @@ import App.Modals.CotonomaModalMsg as CotonomaModalMsg exposing (Msg(..))
 type alias Model =
     { name : String
     , requestProcessing : Bool
+    , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Conflict
+    | Rejected
 
 
 defaultModel : Model
 defaultModel =
     { name = ""
     , requestProcessing = False
+    , requestStatus = None
     }
+
+
+updateRequestStatus : Http.Error -> Model -> Model
+updateRequestStatus error model =
+    (case error of
+        BadStatus response ->
+            if response.status.code == 409 then
+                { model | requestStatus = Conflict }
+            else
+                { model | requestStatus = Rejected }
+
+        _ ->
+            { model | requestStatus = Rejected }
+    )
+        |> \model -> { model | requestProcessing = False }
 
 
 update : CotonomaModalMsg.Msg -> Session -> Context -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )
@@ -82,6 +107,15 @@ modalConfig session context model =
                     ]
                     []
                 ]
+            , case model.requestStatus of
+                Conflict ->
+                    div [ class "error" ]
+                        [ span [ class "message" ]
+                            [ text "You already have this cotonoma." ]
+                        ]
+
+                _ ->
+                    div [] []
             ]
     , buttons =
         [ button
