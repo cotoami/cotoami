@@ -1,10 +1,20 @@
-module App.Modals.CotoModal exposing (Model, initModel, update, view)
+module App.Modals.CotoModal
+    exposing
+        ( Model
+        , initModel
+        , setContentUpdating
+        , setContentUpdated
+        , setContentUpdateError
+        , update
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http exposing (Error(..))
 import Util.Modal as Modal
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isNotBlank)
 import App.Types.Coto
     exposing
         ( Coto
@@ -17,7 +27,7 @@ import App.Markdown
 import App.Types.Session exposing (Session)
 import App.Messages as AppMsg
     exposing
-        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
+        ( Msg(CloseModal, ConfirmDeleteCoto, UpdateContent, PinOrUnpinCotonoma)
         )
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -28,8 +38,16 @@ type alias Model =
     , cotonomaPinned : Bool
     , editing : Bool
     , editingContent : String
+    , updatingContent : Bool
+    , contentUpdateStatus : ContentUpdateStatus
     , updatingCotonomaPin : Bool
     }
+
+
+type ContentUpdateStatus
+    = None
+    | Conflict
+    | Rejected
 
 
 initModel : Bool -> Coto -> Model
@@ -38,8 +56,43 @@ initModel cotonomaPinned coto =
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingContent = coto.content
+    , updatingContent = False
+    , contentUpdateStatus = None
     , updatingCotonomaPin = False
     }
+
+
+setContentUpdating : Model -> Model
+setContentUpdating model =
+    { model
+        | updatingContent = True
+        , contentUpdateStatus = None
+    }
+
+
+setContentUpdated : Coto -> Model -> Model
+setContentUpdated coto model =
+    { model
+        | coto = coto
+        , editing = False
+        , updatingContent = False
+        , contentUpdateStatus = None
+    }
+
+
+setContentUpdateError : Http.Error -> Model -> Model
+setContentUpdateError error model =
+    (case error of
+        BadStatus response ->
+            if response.status.code == 409 then
+                { model | contentUpdateStatus = Conflict }
+            else
+                { model | contentUpdateStatus = Rejected }
+
+        _ ->
+            { model | contentUpdateStatus = Rejected }
+    )
+        |> \model -> { model | updatingContent = False }
 
 
 update : CotoModalMsg.Msg -> Model -> ( Model, Cmd CotoModalMsg.Msg )
@@ -55,13 +108,7 @@ update msg model =
             { model
                 | editing = False
                 , editingContent = model.coto.content
-            }
-                ! []
-
-        Save ->
-            { model
-                | editing = False
-                , coto = updateContent model.editingContent model.coto
+                , contentUpdateStatus = None
             }
                 ! []
 
@@ -93,13 +140,16 @@ cotoModalConfig session model =
     , content =
         div []
             [ if model.editing then
-                div [ class "coto-editor" ]
-                    [ textarea
-                        [ class "coto"
-                        , value model.editingContent
-                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                div []
+                    [ div [ class "coto-editor" ]
+                        [ textarea
+                            [ class "coto"
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
                         ]
-                        []
+                    , errorDiv model
                     ]
               else
                 div [ class "coto-content" ]
@@ -108,12 +158,11 @@ cotoModalConfig session model =
     , buttons =
         if model.editing then
             [ cancelEditingButton
-            , button
-                [ class "button button-primary"
-                , disabled (isBlank model.editingContent)
-                , onClick (AppMsg.CotoModalMsg Save)
-                ]
-                [ text "Save" ]
+            , saveButton
+                (isNotBlank model.editingContent
+                    && not model.updatingContent
+                )
+                model
             ]
         else if checkWritePermission session model then
             [ editButton
@@ -133,16 +182,19 @@ cotonomaModalConfig cotonomaKey session model =
     , content =
         div []
             [ if model.editing then
-                div [ class "coto-editor" ]
-                    [ input
-                        [ type_ "text"
-                        , class "u-full-width"
-                        , placeholder "Cotonoma name"
-                        , maxlength cotonomaNameMaxlength
-                        , value model.editingContent
-                        , onInput (AppMsg.CotoModalMsg << EditorInput)
+                div []
+                    [ div [ class "coto-editor" ]
+                        [ input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , placeholder "Cotonoma name"
+                            , maxlength cotonomaNameMaxlength
+                            , value model.editingContent
+                            , onInput (AppMsg.CotoModalMsg << EditorInput)
+                            ]
+                            []
                         ]
-                        []
+                    , errorDiv model
                     ]
               else
                 div [ class "cotonoma" ]
@@ -151,12 +203,11 @@ cotonomaModalConfig cotonomaKey session model =
     , buttons =
         if model.editing then
             [ cancelEditingButton
-            , button
-                [ class "button button-primary"
-                , disabled (not (validateCotonomaName model.editingContent))
-                , onClick (AppMsg.CotoModalMsg Save)
-                ]
-                [ text "Save" ]
+            , saveButton
+                (validateCotonomaName model.editingContent
+                    && not model.updatingContent
+                )
+                model
             ]
         else
             [ if session.owner then
@@ -198,6 +249,41 @@ editButton =
         [ text "Edit" ]
 
 
+saveButton : Bool -> Model -> Html AppMsg.Msg
+saveButton enabled model =
+    button
+        [ class "button button-primary"
+        , disabled (not enabled)
+        , onClick (UpdateContent model.coto.id model.editingContent)
+        ]
+        [ text
+            (if model.updatingContent then
+                "Updating..."
+             else
+                "Save"
+            )
+        ]
+
+
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
+
+
+errorDiv : Model -> Html AppMsg.Msg
+errorDiv model =
+    case model.contentUpdateStatus of
+        Conflict ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "You already have this cotonoma." ]
+                ]
+
+        Rejected ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "An unexpected error has occurred." ]
+                ]
+
+        _ ->
+            div [] []

@@ -4,7 +4,7 @@
   }
 
   input.email {
-    margin-bottom: 0;
+    margin-bottom: 1rem;
   }
 
   span.accepted-email {
@@ -12,32 +12,23 @@
     color: #aaa;
   }
 
-  div.errors {
-    padding-top: 6px;
-    vertical-align: middle;
+  span.invitee {
+    margin-left: 5px;
+    white-space: nowrap;
 
-    span.rejected {
-      color: #f00;
+    img.avatar {
+      margin: 0;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      margin-right: 4px;
+      border-radius: 4px;
+      vertical-align: middle;
     }
 
-    span.invitee {
-      margin-left: 5px;
-      white-space: nowrap;
-
-      img.avatar {
-        margin: 0;
-        padding: 0;
-        width: 20px;
-        height: 20px;
-        margin-right: 4px;
-        border-radius: 4px;
-        vertical-align: middle;
-      }
-
-      span.name {
-        color: #666;
-        font-weight: bold;
-      }
+    span.name {
+      color: #666;
+      font-weight: bold;
     }
   }
 }

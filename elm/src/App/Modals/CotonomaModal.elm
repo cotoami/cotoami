@@ -2,6 +2,7 @@ module App.Modals.CotonomaModal
     exposing
         ( Model
         , defaultModel
+        , updateRequestStatus
         , update
         , view
         )
@@ -9,6 +10,7 @@ module App.Modals.CotonomaModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http exposing (Error(..))
 import Util.Modal as Modal
 import App.Types.Session exposing (Session, toAmishi)
 import App.Types.Coto exposing (cotonomaNameMaxlength, validateCotonomaName)
@@ -21,14 +23,49 @@ import App.Modals.CotonomaModalMsg as CotonomaModalMsg exposing (Msg(..))
 type alias Model =
     { name : String
     , requestProcessing : Bool
+    , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Conflict
+    | Rejected
 
 
 defaultModel : Model
 defaultModel =
     { name = ""
     , requestProcessing = False
+    , requestStatus = None
     }
+
+
+updateRequestStatus : Http.Error -> Model -> ( Model, Int )
+updateRequestStatus error model =
+    let
+        ( requestStatus, postId ) =
+            case error of
+                BadStatus response ->
+                    let
+                        postId =
+                            String.toInt response.body
+                                |> Result.withDefault 0
+                    in
+                        if response.status.code == 409 then
+                            ( Conflict, postId )
+                        else
+                            ( Rejected, postId )
+
+                _ ->
+                    ( Rejected, 0 )
+    in
+        ( { model
+            | requestProcessing = False
+            , requestStatus = requestStatus
+          }
+        , postId
+        )
 
 
 update : CotonomaModalMsg.Msg -> Session -> Context -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )
@@ -82,6 +119,21 @@ modalConfig session context model =
                     ]
                     []
                 ]
+            , case model.requestStatus of
+                Conflict ->
+                    div [ class "error" ]
+                        [ span [ class "message" ]
+                            [ text "You already have this cotonoma." ]
+                        ]
+
+                Rejected ->
+                    div [ class "error" ]
+                        [ span [ class "message" ]
+                            [ text "An unexpected error has occurred." ]
+                        ]
+
+                _ ->
+                    div [] []
             ]
     , buttons =
         [ button

@@ -18,7 +18,16 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
+import App.Types.Timeline
+    exposing
+        ( setEditingNew
+        , updatePost
+        , setLoading
+        , postContent
+        , setCotoSaved
+        , setBeingDeleted
+        , deletePendingPost
+        )
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -33,7 +42,6 @@ import App.Channels exposing (Payload, decodePayload, decodePresenceState, decod
 import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.InviteModal
 import App.Modals.CotoModal
-import App.Modals.CotoModalMsg
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
@@ -289,8 +297,19 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
+        UpdateContent cotoId content ->
+            model.cotoModal
+                |> Maybe.map App.Modals.CotoModal.setContentUpdating
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! [ App.Server.Coto.updateContent cotoId content ]
+
         ContentUpdated (Ok coto) ->
-            updateRecentCotonomasByCoto coto model
+            (model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> updateCotoContent coto.id coto.content
+                |> updateRecentCotonomasByCoto coto
+            )
                 ! if coto.asCotonoma then
                     [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
@@ -298,8 +317,11 @@ update msg model =
                   else
                     []
 
-        ContentUpdated (Err _) ->
-            model ! []
+        ContentUpdated (Err error) ->
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! []
 
         PinCoto cotoId ->
             App.Model.getCoto cotoId model
@@ -516,7 +538,7 @@ update msg model =
 
                 cotonomaModal =
                     model.cotonomaModal
-                        |> (\modal -> { modal | requestProcessing = True })
+                        |> \modal -> { modal | requestProcessing = True }
             in
                 { model
                     | timeline = timeline
@@ -541,8 +563,16 @@ update msg model =
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
-        CotonomaPosted (Err _) ->
-            model ! []
+        CotonomaPosted (Err error) ->
+            App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
+                |> (\( modal, postId ) ->
+                        ( { model
+                            | cotonomaModal = modal
+                            , timeline = deletePendingPost postId model.timeline
+                          }
+                        , Cmd.none
+                        )
+                   )
 
         OpenPost post ->
             case toCoto post of
@@ -657,26 +687,8 @@ update msg model =
                 |> Maybe.map
                     (\( cotoModal, subCmd ) ->
                         ( { model | cotoModal = Just cotoModal }
-                        , cotoModal
                         , Cmd.map CotoModalMsg subCmd
                         )
-                    )
-                |> Maybe.map
-                    (\( model, cotoModal, cmd ) ->
-                        case subMsg of
-                            App.Modals.CotoModalMsg.Save ->
-                                updateCotoContent
-                                    cotoModal.coto.id
-                                    cotoModal.editingContent
-                                    model
-                                    ! [ cmd
-                                      , App.Server.Coto.updateContent
-                                            cotoModal.coto.id
-                                            cotoModal.editingContent
-                                      ]
-
-                            _ ->
-                                ( model, cmd )
                     )
                 |> withDefault (model ! [])
 
