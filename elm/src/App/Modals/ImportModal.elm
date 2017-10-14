@@ -135,23 +135,21 @@ modalConfig model =
             , content =
                 div []
                     [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
-                    , Html.form [ name "import" ]
-                        [ div []
-                            [ textarea
-                                [ class "data"
-                                , value model.data
-                                , onInput (AppMsg.ImportModalMsg << DataInput)
-                                ]
-                                []
+                    , div []
+                        [ textarea
+                            [ class "data"
+                            , value model.data
+                            , onInput (AppMsg.ImportModalMsg << DataInput)
                             ]
-                        , case model.requestStatus of
-                            Rejected message ->
-                                div [ class "errors" ]
-                                    [ span [ class "rejected" ] [ text message ] ]
-
-                            _ ->
-                                div [] []
+                            []
                         ]
+                    , case model.requestStatus of
+                        Rejected message ->
+                            div [ class "error" ]
+                                [ span [ class "message" ] [ text message ] ]
+
+                        _ ->
+                            div [] []
                     ]
             , buttons =
                 [ button

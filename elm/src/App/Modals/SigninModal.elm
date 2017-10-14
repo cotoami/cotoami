@@ -153,8 +153,8 @@ signinForm model =
                 []
             ]
         , if model.requestStatus == Rejected then
-            div [ class "errors" ]
-                [ span [ class "rejected" ] [ text "The email is not allowed to sign in." ] ]
+            div [ class "error" ]
+                [ span [ class "message" ] [ text "The email is not allowed to sign in." ] ]
           else
             div [] []
         ]
