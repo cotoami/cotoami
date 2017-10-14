@@ -34,16 +34,14 @@ defmodule Cotoami.CotonomaController do
     },
     amishi
   ) do
-    try do
-      {:ok, {{coto, _}, posted_in}} = do_create!(name, amishi, cotonoma_id)
-      if posted_in do
-        broadcast_post(coto, posted_in.key, clientId)
-      end
-      render(conn, CotoView, "created.json", coto: coto, postId: post_id)
-    rescue
-        e in Ecto.ConstraintError ->
-          send_resp_by_constraint_error(conn, e, Integer.to_string(post_id))
+    {:ok, {{coto, _}, posted_in}} = do_create!(name, amishi, cotonoma_id)
+    if posted_in do
+      broadcast_post(coto, posted_in.key, clientId)
     end
+    render(conn, CotoView, "created.json", coto: coto, postId: post_id)
+  rescue
+    e in Ecto.ConstraintError ->
+      send_resp_by_constraint_error(conn, e, Integer.to_string(post_id))
   end
 
   defp do_create!(name, amishi, cotonoma_id) do

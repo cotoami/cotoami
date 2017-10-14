@@ -45,12 +45,10 @@ defmodule Cotoami.CotoController do
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
-    try do
-      {:ok, coto} = do_update!(id, coto_params, amishi)
-      render(conn, "coto.json", coto: coto)
-    rescue
-        e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
-    end
+    {:ok, coto} = do_update!(id, coto_params, amishi)
+    render(conn, "coto.json", coto: coto)
+  rescue
+    e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
   end
 
   defp do_update!(id, coto_params, amishi) do
