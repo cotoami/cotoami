@@ -118,31 +118,29 @@ modalConfig model =
             , content =
                 div []
                     [ p [] [ text "Enter an email address to send an invitation." ]
-                    , Html.form [ name "signin" ]
-                        [ div []
-                            [ input
-                                [ type_ "email"
-                                , class "email u-full-width"
-                                , name "email"
-                                , placeholder "amishi@example.com"
-                                , value model.email
-                                , onInput (AppMsg.InviteModalMsg << EmailInput)
-                                ]
-                                []
+                    , div []
+                        [ input
+                            [ type_ "email"
+                            , class "email u-full-width"
+                            , name "email"
+                            , placeholder "amishi@example.com"
+                            , value model.email
+                            , onInput (AppMsg.InviteModalMsg << EmailInput)
                             ]
-                        , case model.requestStatus of
-                            Conflict invitee ->
-                                div [ class "errors" ]
-                                    [ span [ class "rejected" ] [ text "The amishi already exists: " ]
-                                    , span [ class "invitee" ]
-                                        [ img [ class "avatar", src invitee.avatarUrl ] []
-                                        , span [ class "name" ] [ text invitee.displayName ]
-                                        ]
-                                    ]
-
-                            _ ->
-                                div [] []
+                            []
                         ]
+                    , case model.requestStatus of
+                        Conflict invitee ->
+                            div [ class "error" ]
+                                [ span [ class "message" ] [ text "The amishi already exists: " ]
+                                , span [ class "invitee" ]
+                                    [ img [ class "avatar", src invitee.avatarUrl ] []
+                                    , span [ class "name" ] [ text invitee.displayName ]
+                                    ]
+                                ]
+
+                        _ ->
+                            div [] []
                     ]
             , buttons =
                 [ button
