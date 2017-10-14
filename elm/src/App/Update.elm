@@ -18,7 +18,16 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
+import App.Types.Timeline
+    exposing
+        ( setEditingNew
+        , updatePost
+        , setLoading
+        , postContent
+        , setCotoSaved
+        , setBeingDeleted
+        , deletePendingPost
+        )
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -543,7 +552,14 @@ update msg model =
 
         CotonomaPosted (Err error) ->
             App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
-                |> \modal -> { model | cotonomaModal = modal } ! []
+                |> (\( modal, postId ) ->
+                        ( { model
+                            | cotonomaModal = modal
+                            , timeline = deletePendingPost postId model.timeline
+                          }
+                        , Cmd.none
+                        )
+                   )
 
         OpenPost post ->
             case toCoto post of

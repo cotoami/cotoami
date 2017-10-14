@@ -1,6 +1,7 @@
 module App.Types.Timeline exposing (..)
 
-import Maybe exposing (andThen)
+import Maybe
+import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, defaultPost, toCoto, isSelfOrPostedIn)
 import App.Types.Context exposing (Context)
@@ -46,13 +47,21 @@ getCoto cotoId timeline =
     timeline.posts
         |> List.filter (\post -> post.cotoId == Just cotoId)
         |> List.head
-        |> andThen toCoto
+        |> Maybe.andThen toCoto
 
 
 deleteCoto : Coto -> Timeline -> Timeline
 deleteCoto coto timeline =
     timeline.posts
         |> List.filter (\post -> not (isSelfOrPostedIn coto post))
+        |> (\posts -> { timeline | posts = posts })
+
+
+deletePendingPost : Int -> Timeline -> Timeline
+deletePendingPost postId timeline =
+    timeline.posts
+        |> List.filter
+            (\post -> (isJust post.cotoId) || post.postId /= (Just postId))
         |> (\posts -> { timeline | posts = posts })
 
 

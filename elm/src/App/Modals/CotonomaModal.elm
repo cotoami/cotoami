@@ -41,19 +41,31 @@ defaultModel =
     }
 
 
-updateRequestStatus : Http.Error -> Model -> Model
+updateRequestStatus : Http.Error -> Model -> ( Model, Int )
 updateRequestStatus error model =
-    (case error of
-        BadStatus response ->
-            if response.status.code == 409 then
-                { model | requestStatus = Conflict }
-            else
-                { model | requestStatus = Rejected }
+    let
+        ( requestStatus, postId ) =
+            case error of
+                BadStatus response ->
+                    let
+                        postId =
+                            String.toInt response.body
+                                |> Result.withDefault 0
+                    in
+                        if response.status.code == 409 then
+                            ( Conflict, postId )
+                        else
+                            ( Rejected, postId )
 
-        _ ->
-            { model | requestStatus = Rejected }
-    )
-        |> \model -> { model | requestProcessing = False }
+                _ ->
+                    ( Rejected, 0 )
+    in
+        ( { model
+            | requestProcessing = False
+            , requestStatus = requestStatus
+          }
+        , postId
+        )
 
 
 update : CotonomaModalMsg.Msg -> Session -> Context -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )

@@ -43,7 +43,7 @@ defmodule Cotoami.CotonomaController do
       render(conn, CotoView, "created.json", coto: coto, postId: post_id)
     rescue
         e in Ecto.ConstraintError ->
-          send_resp_by_constraint_error(conn, e)
+          send_resp_by_constraint_error(conn, e, Integer.to_string(post_id))
     end
   end
 
