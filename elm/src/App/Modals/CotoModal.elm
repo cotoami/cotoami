@@ -4,6 +4,7 @@ module App.Modals.CotoModal
         , initModel
         , setContentUpdated
         , setContentUpdateError
+        , setCotonomatized
         , update
         , view
         )
@@ -97,6 +98,14 @@ setContentUpdateError error model =
             { model | contentUpdateStatus = Rejected }
     )
         |> \model -> { model | updatingContent = False }
+
+
+setCotonomatized : Coto -> Model -> Model
+setCotonomatized coto model =
+    { model
+        | coto = coto
+        , cotonomatizing = False
+    }
 
 
 update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Msg )

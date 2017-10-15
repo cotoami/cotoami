@@ -7,7 +7,7 @@ import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction(..), Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
@@ -117,6 +117,18 @@ updateCotoContent cotoId content model =
         | timeline = App.Types.Timeline.updateContent cotoId content model.timeline
         , graph = App.Types.Graph.updateContent cotoId content model.graph
     }
+
+
+cotonomatize : CotoId -> Maybe CotonomaKey -> Model -> Model
+cotonomatize cotoId maybeCotonomaKey model =
+    maybeCotonomaKey
+        |> Maybe.map (\key ->
+            { model
+                | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
+                , graph = App.Types.Graph.cotonomatize cotoId key model.graph
+            }
+        )
+        |> Maybe.withDefault model
 
 
 getSelectedCotos : Model -> List Coto

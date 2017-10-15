@@ -318,7 +318,15 @@ update msg model =
                 |> \model -> model ! []
 
         Cotonomatized (Ok coto) ->
-            model ! []
+            ( model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setCotonomatized coto)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> App.Model.cotonomatize coto.id coto.cotonomaKey
+            , Cmd.batch
+                [ fetchCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
+            )
 
         Cotonomatized (Err error) ->
             model ! []
