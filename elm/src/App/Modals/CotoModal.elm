@@ -41,7 +41,7 @@ type alias Model =
     , cotonomaPinned : Bool
     , editing : Bool
     , editingToCotonomatize : Bool
-    , editingContent : String
+    , editorContent : String
     , waitingToUpdateContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
     , waitingToPinOrUnpinCotonoma : Bool
@@ -61,7 +61,7 @@ initModel cotonomaPinned coto =
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingToCotonomatize = False
-    , editingContent = coto.content
+    , editorContent = coto.content
     , waitingToUpdateContent = False
     , contentUpdateStatus = None
     , waitingToPinOrUnpinCotonoma = False
@@ -117,12 +117,12 @@ update msg model =
             ( { model | editing = True }, Nothing, Cmd.none )
 
         EditorInput content ->
-            ( { model | editingContent = content }, Nothing, Cmd.none )
+            ( { model | editorContent = content }, Nothing, Cmd.none )
 
         CancelEditing ->
             ( { model
                 | editing = False
-                , editingContent = model.coto.content
+                , editorContent = model.coto.content
                 , contentUpdateStatus = None
               }
             , Nothing
@@ -134,7 +134,7 @@ update msg model =
             , Nothing
             , App.Server.Coto.updateContent
                 model.coto.id
-                model.editingContent
+                model.editorContent
             )
 
         ConfirmCotonomatize ->
@@ -207,7 +207,7 @@ cotoModalConfig session model =
                     [ div [ class "coto-editor" ]
                         [ textarea
                             [ class "coto"
-                            , value model.editingContent
+                            , value model.editorContent
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -222,7 +222,7 @@ cotoModalConfig session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (isNotBlank model.editingContent
+                (isNotBlank model.editorContent
                     && not model.waitingToUpdateContent
                 )
                 model
@@ -252,7 +252,7 @@ cotonomaModalConfig cotonomaKey session model =
                             , class "u-full-width"
                             , placeholder "Cotonoma name"
                             , maxlength cotonomaNameMaxlength
-                            , value model.editingContent
+                            , value model.editorContent
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -267,7 +267,7 @@ cotonomaModalConfig cotonomaKey session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (validateCotonomaName model.editingContent
+                (validateCotonomaName model.editorContent
                     && not model.waitingToUpdateContent
                 )
                 model
