@@ -2,8 +2,8 @@ defmodule Cotoami.CotoGraphControllerTest do
   use Cotoami.ConnCase
   alias Bolt.Sips.Types.Relationship
   alias Cotoami.{
-    AmishiService, CotoService, CotonomaService, CotoGraphService,
-    Neo4jService
+    Coto,
+    AmishiService, CotoService, CotonomaService, CotoGraphService, Neo4jService
   }
 
   setup do
@@ -63,14 +63,14 @@ defmodule Cotoami.CotoGraphControllerTest do
 
     test "PUT /api/graph/pin", %{conn: conn, amishi: amishi, coto: coto} do
       {coto2, _} = CotoService.create!("plain coto", amishi.id)
-      {{coto3, cotonoma3}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
+      {coto3, _} = CotonomaService.create!("cotonoma coto", amishi)
 
       put(conn, "/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
       conn = http_get("/api/graph", amishi)
 
       {coto_id, coto2_id, coto3_id, cotonoma3_key} =
-        {coto.id, coto2.id, coto3.id, cotonoma3.key}
+        {coto.id, coto2.id, coto3.id, coto3.cotonoma.key}
       assert %{
         "cotos" => %{
           ^coto_id => %{"uuid" => ^coto_id, "content" => "hello"},
@@ -165,7 +165,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
   describe "a cotonoma pinned to an amishi" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
+      {coto, _} = CotonomaService.create!("cotonoma coto", amishi)
       CotoGraphService.pin(bolt_conn, coto, amishi)
       %{coto: coto}
     end
@@ -194,7 +194,7 @@ defmodule Cotoami.CotoGraphControllerTest do
 
   describe "a coto pinned to a cotonoma" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi.id)
+      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", amishi)
       {coto, _} = CotoService.create!("hello", amishi.id, cotonoma.id)
       CotoGraphService.pin(bolt_conn, coto, cotonoma, amishi)
       %{coto: coto, cotonoma: cotonoma}

@@ -18,18 +18,18 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
-type RequestStatus
-    = None
-    | Approved
-    | Rejected
-
-
 type alias Model =
     { signupEnabled : Bool
     , email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Approved
+    | Rejected
 
 
 defaultModel : Model
@@ -94,7 +94,7 @@ modalConfig : Model -> Modal.Config AppMsg.Msg
 modalConfig model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
-        , title = "Check your inbox!"
+        , title = text "Check your inbox!"
         , content =
             div [ id "signin-modal-content" ]
                 [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
@@ -111,7 +111,7 @@ modalConfig model =
 modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg
 modalConfigWithSignupEnabled model =
     { closeMessage = CloseModal
-    , title = "Sign in/up with your email"
+    , title = text "Sign in/up with your email"
     , content =
         div []
             [ p [] [ text "Welcome to Cotoami!" ]
@@ -126,7 +126,7 @@ modalConfigWithSignupEnabled model =
 modalConfigOnlyForSignin : Model -> Modal.Config AppMsg.Msg
 modalConfigOnlyForSignin model =
     { closeMessage = CloseModal
-    , title = "Sign in with your email"
+    , title = text "Sign in with your email"
     , content =
         div []
             [ p [] [ text "Welcome to Cotoami!" ]
@@ -153,8 +153,8 @@ signinForm model =
                 []
             ]
         , if model.requestStatus == Rejected then
-            div [ class "errors" ]
-                [ span [ class "rejected" ] [ text "The email is not allowed to sign in." ] ]
+            div [ class "error" ]
+                [ span [ class "message" ] [ text "The email is not allowed to sign in." ] ]
           else
             div [] []
         ]

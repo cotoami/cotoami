@@ -8,6 +8,7 @@ defmodule Cotoami.Cotonoma do
   alias Cotoami.Amishi
 
   @key_length 10
+  @name_max_length 30
 
   schema "cotonomas" do
     field :key, :string
@@ -24,17 +25,23 @@ defmodule Cotoami.Cotonoma do
     timestamps(type: :utc_datetime)
   end
 
+  def validate_name(changeset) do
+    validate_length(changeset, :name, max: @name_max_length)
+  end
+
   def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :coto_id, :owner_id])
     |> generate_key
     |> validate_required([:key, :name, :coto_id, :owner_id])
+    |> validate_name()
   end
 
   def changeset_to_update_name(struct, params \\ %{}) do
     struct
     |> cast(params, [:name])
     |> validate_required([:name])
+    |> validate_name()
   end
 
   def changeset_to_import(
@@ -54,6 +61,7 @@ defmodule Cotoami.Cotonoma do
     struct
     |> cast(data, Map.keys(data))
     |> validate_required([:id, :key, :name, :coto_id, :owner_id])
+    |> validate_name()
   end
 
   defp generate_key(changeset) do
@@ -69,5 +77,9 @@ defmodule Cotoami.Cotonoma do
     from c in query,
       join: coto in assoc(c, :coto),
       where: coto.posted_in_id == ^cotonoma_id
+  end
+
+  def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
+    %{target | coto: from.coto, owner: from.owner}
   end
 end

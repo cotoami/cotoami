@@ -3,6 +3,28 @@
 #input-and-timeline {
   position: relative;
   flex: 1;
+
+  div.home-timeline-help {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 400px;
+    height: 300px;
+    color: #ccc;
+    font-size: 18px;
+    text-shadow: 0 1px 0 #fff;
+
+    @media (#{$narrow-viewport}) {
+      width: 90%;
+    }
+
+    i {
+      margin-right: 4px;
+    }
+  }
 }
 
 #timeline {

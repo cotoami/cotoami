@@ -1,6 +1,6 @@
 #cotonoma-modal {
   div.modal-content {
-    width: 60%;
+    width: 80vw;
 
     @media (min-width: 550px) {
       width: 455px;
@@ -10,6 +10,27 @@
       label {
         display: none;
       }
+    }
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  input {
+    margin-bottom: 1rem;
+  }
+
+  div.target-cotonoma {
+    margin-bottom: 1rem;
+
+    span.cotonoma-label {
+      margin-left: 1rem;
+    }
+
+    span.cotonoma-name {
+      margin-left: 2px;
+      font-weight: normal;
     }
   }
 }

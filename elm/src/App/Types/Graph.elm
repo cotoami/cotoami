@@ -3,7 +3,7 @@ module App.Types.Graph exposing (..)
 import Dict
 import Maybe exposing (withDefault)
 import List.Extra
-import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 
 
 type Direction
@@ -79,7 +79,20 @@ updateCoto cotoId update graph =
 
 updateContent : CotoId -> String -> Graph -> Graph
 updateContent cotoId content graph =
-    updateCoto cotoId (\coto -> App.Types.Coto.updateContent content coto) graph
+    updateCoto cotoId (App.Types.Coto.updateContent content) graph
+
+
+cotonomatize : CotoId -> CotonomaKey -> Graph -> Graph
+cotonomatize cotoId cotonomaKey graph =
+    updateCoto
+        cotoId
+        (\coto ->
+            { coto
+                | asCotonoma = True
+                , cotonomaKey = Just cotonomaKey
+            }
+        )
+        graph
 
 
 connected : CotoId -> CotoId -> Graph -> Bool

@@ -5,6 +5,7 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List.Extra exposing (groupWhile)
+import Exts.Maybe exposing (isJust, isNothing)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
@@ -19,16 +20,36 @@ import App.Views.Post
 
 
 view : Context -> Graph -> Timeline -> Html Msg
-view context graph model =
-    div [ id "input-and-timeline", class (timelineClass model) ]
-        [ timelineDiv context graph model
-        , case context.session of
-            Nothing ->
-                div [] []
-
-            Just session ->
-                postEditor session context model
+view context graph timeline =
+    div [ id "input-and-timeline", class (timelineClass timeline) ]
+        [ timelineDiv context graph timeline
+        , homeTimelineHelp context timeline
+        , context.session
+            |> Maybe.map (\session -> postEditor session context timeline)
+            |> Maybe.withDefault (div [] [])
         ]
+
+
+homeTimelineHelp : Context -> Timeline -> Html Msg
+homeTimelineHelp context timeline =
+    if
+        (isJust context.session)
+            && (not context.cotonomaLoading)
+            && (isNothing context.cotonoma)
+            && (App.Types.Timeline.isEmpty timeline)
+    then
+        div [ class "home-timeline-help" ]
+            [ p [] [ text "Welcome to Cotoami!" ]
+            , p [] [ text "This is your home timeline." ]
+            , p []
+                [ text
+                    ("Cotos posted here are private to you "
+                        ++ "as long as they are not connected to cotonomas."
+                    )
+                ]
+            ]
+    else
+        div [] []
 
 
 postEditor : Session -> Context -> Timeline -> Html Msg

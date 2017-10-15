@@ -22,7 +22,10 @@ cotoClassList context elementId maybeCotoId additionalClasses =
         ([ ( "coto", True )
          , ( "selectable", True )
          , ( "element-focus", Just elementId == context.elementFocus )
-         , ( "coto-focus", maybeCotoId == context.cotoFocus )
+         , ( "coto-focus"
+           , Maybe.map2 (==) maybeCotoId context.cotoFocus
+                |> Maybe.withDefault False
+           )
          , ( "selected", isSelected maybeCotoId context )
          ]
             ++ additionalClasses
@@ -335,11 +338,8 @@ cotonomaLabel : Maybe Amishi -> String -> Html msg
 cotonomaLabel maybeOwner name =
     span
         [ class "cotonoma-label" ]
-        [ case maybeOwner of
-            Nothing ->
-                span [] []
-
-            Just owner ->
-                img [ class "avatar", src owner.avatarUrl ] []
+        [ maybeOwner
+            |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
+            |> Maybe.withDefault (span [] [])
         , span [ class "cotonoma-name" ] [ text name ]
         ]

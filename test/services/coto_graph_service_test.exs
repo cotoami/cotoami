@@ -2,8 +2,8 @@ defmodule Cotoami.CotoGraphServiceTest do
   use Cotoami.ModelCase
   import ShorterMaps
   alias Cotoami.{
-    CotoGraphService, Neo4jService, AmishiService, CotoService,
-    CotonomaService, CotoGraph
+    Coto, CotoGraph,
+    CotoGraphService, Neo4jService, AmishiService, CotoService, CotonomaService
   }
   alias Bolt.Sips.Types.Relationship
 
@@ -91,7 +91,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a cotonoma pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {{coto, _}, _} = CotonomaService.create!("cotonoma coto", amishi.id)
+      {coto, _} = CotonomaService.create!("cotonoma coto", amishi)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -122,7 +122,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to a cotonoma" do
     setup ~M{conn, amishi} do
-      {{_, cotonoma}, _} = CotonomaService.create!("test", amishi.id)
+      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", amishi)
       {coto, _} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
       ~M{coto, cotonoma}

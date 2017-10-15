@@ -13,18 +13,18 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
 
-type RequestStatus
-    = None
-    | Approved String
-    | Conflict Amishi
-    | Rejected
-
-
 type alias Model =
     { email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Approved String
+    | Conflict Amishi
+    | Rejected
 
 
 defaultModel : Model
@@ -100,7 +100,7 @@ modalConfig model =
     case model.requestStatus of
         Approved acceptedEmail ->
             { closeMessage = CloseModal
-            , title = "Invite an amishi"
+            , title = text "Invite an amishi"
             , content =
                 div []
                     [ p []
@@ -114,35 +114,33 @@ modalConfig model =
 
         _ ->
             { closeMessage = CloseModal
-            , title = "Invite an amishi"
+            , title = text "Invite an amishi"
             , content =
                 div []
                     [ p [] [ text "Enter an email address to send an invitation." ]
-                    , Html.form [ name "signin" ]
-                        [ div []
-                            [ input
-                                [ type_ "email"
-                                , class "email u-full-width"
-                                , name "email"
-                                , placeholder "amishi@example.com"
-                                , value model.email
-                                , onInput (AppMsg.InviteModalMsg << EmailInput)
-                                ]
-                                []
+                    , div []
+                        [ input
+                            [ type_ "email"
+                            , class "email u-full-width"
+                            , name "email"
+                            , placeholder "amishi@example.com"
+                            , value model.email
+                            , onInput (AppMsg.InviteModalMsg << EmailInput)
                             ]
-                        , case model.requestStatus of
-                            Conflict invitee ->
-                                div [ class "errors" ]
-                                    [ span [ class "rejected" ] [ text "The amishi already exists: " ]
-                                    , span [ class "invitee" ]
-                                        [ img [ class "avatar", src invitee.avatarUrl ] []
-                                        , span [ class "name" ] [ text invitee.displayName ]
-                                        ]
-                                    ]
-
-                            _ ->
-                                div [] []
+                            []
                         ]
+                    , case model.requestStatus of
+                        Conflict invitee ->
+                            div [ class "error" ]
+                                [ span [ class "message" ] [ text "The amishi already exists: " ]
+                                , span [ class "invitee" ]
+                                    [ img [ class "avatar", src invitee.avatarUrl ] []
+                                    , span [ class "name" ] [ text invitee.displayName ]
+                                    ]
+                                ]
+
+                        _ ->
+                            div [] []
                     ]
             , buttons =
                 [ button

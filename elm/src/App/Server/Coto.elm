@@ -4,7 +4,7 @@ import Http exposing (Request)
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Util.HttpUtil exposing (httpDelete, httpPut)
-import App.Messages exposing (Msg(CotoDeleted, ContentUpdated))
+import App.Messages exposing (Msg(CotoDeleted, ContentUpdated, Cotonomatized))
 import App.Types.Coto exposing (CotoId, Coto, Cotonoma)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
@@ -41,3 +41,12 @@ updateContent cotoId content =
                     ]
     in
         Http.send ContentUpdated (httpPut url body decodeCoto)
+
+
+cotonomatize : CotoId -> Cmd Msg
+cotonomatize cotoId =
+    Http.send Cotonomatized <|
+        httpPut
+            ("/api/cotos/" ++ cotoId ++ "/cotonomatize")
+            Http.emptyBody
+            decodeCoto

@@ -20,17 +20,17 @@ import App.Modals.ImportModalMsg as ImportModalMsg
         )
 
 
-type RequestStatus
-    = None
-    | Imported ImportResult
-    | Rejected String
-
-
 type alias Model =
     { data : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Imported ImportResult
+    | Rejected String
 
 
 defaultModel : Model
@@ -122,7 +122,7 @@ modalConfig model =
     case model.requestStatus of
         Imported result ->
             { closeMessage = CloseModal
-            , title = "Import cotos and connections"
+            , title = text "Import cotos and connections"
             , content = importResultDiv result
             , buttons =
                 [ a [ class "button", href "/" ] [ text "Reload browser" ]
@@ -131,27 +131,25 @@ modalConfig model =
 
         _ ->
             { closeMessage = CloseModal
-            , title = "Import cotos and connections"
+            , title = text "Import cotos and connections"
             , content =
                 div []
                     [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
-                    , Html.form [ name "import" ]
-                        [ div []
-                            [ textarea
-                                [ class "data"
-                                , value model.data
-                                , onInput (AppMsg.ImportModalMsg << DataInput)
-                                ]
-                                []
+                    , div []
+                        [ textarea
+                            [ class "data"
+                            , value model.data
+                            , onInput (AppMsg.ImportModalMsg << DataInput)
                             ]
-                        , case model.requestStatus of
-                            Rejected message ->
-                                div [ class "errors" ]
-                                    [ span [ class "rejected" ] [ text message ] ]
-
-                            _ ->
-                                div [] []
+                            []
                         ]
+                    , case model.requestStatus of
+                        Rejected message ->
+                            div [ class "error" ]
+                                [ span [ class "message" ] [ text message ] ]
+
+                        _ ->
+                            div [] []
                     ]
             , buttons =
                 [ button

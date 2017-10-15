@@ -1,6 +1,7 @@
 defmodule Cotoami.CotonomaController do
   use Cotoami.Web, :controller
   require Logger
+  import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
   alias Cotoami.{Cotonoma, CotonomaService, CotoView}
 
   plug :scrub_params, "cotonoma" when action in [:create]
@@ -34,36 +35,31 @@ defmodule Cotoami.CotonomaController do
     },
     amishi
   ) do
-    {:ok, {{coto, cotonoma}, posted_in}} =
+    {:ok, {cotonoma_coto, posted_in}} =
       Repo.transaction(fn ->
-        case CotonomaService.create!(name, amishi.id, cotonoma_id) do
-          {{coto, cotonoma}, nil} -> {{coto, cotonoma}, nil}
-          {{coto, cotonoma}, posted_in} ->
-            posted_in
-            |> CotonomaService.increment_timeline_revision()
-            |> CotonomaService.complement_owner()
-            |> (fn (posted_in) -> {{coto, cotonoma}, posted_in} end).()
+        case CotonomaService.create!(name, amishi, cotonoma_id) do
+          {cotonoma_coto, nil} -> {cotonoma_coto, nil}
+          {cotonoma_coto, posted_in} ->
+            {cotonoma_coto, increment_timeline_revision(posted_in)}
         end
       end)
-    coto = %{coto |
-      :posted_in => posted_in,
-      :amishi => amishi,
-      :cotonoma => cotonoma
-    }
     if posted_in do
-      broadcast_post(coto, posted_in.key, clientId)
+      broadcast_post(cotonoma_coto, posted_in.key, clientId)
     end
-    render(conn, CotoView, "created.json", coto: coto, postId: post_id)
+    render(conn, CotoView, "created.json", coto: cotonoma_coto, postId: post_id)
+  rescue
+    e in Ecto.ConstraintError ->
+      send_resp_by_constraint_error(conn, e, Integer.to_string(post_id))
   end
 
   def pin(conn, %{"key" => key}, %{owner: true}) do
     Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.pin()
-    send_resp(conn, :ok, "")
+    conn |> put_status(:ok) |> json("")
   end
 
   def unpin(conn, %{"key" => key}, %{owner: true}) do
     Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.unpin()
-    send_resp(conn, :ok, "")
+    conn |> put_status(:ok) |> json("")
   end
 
   def cotos(conn, %{"key" => key}, amishi) do

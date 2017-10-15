@@ -1,7 +1,6 @@
 module App.Update exposing (..)
 
 import Set
-import Dict
 import Task
 import Process
 import Time
@@ -13,15 +12,25 @@ import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Amishi exposing (Presences)
+import App.Types.Amishi exposing (Presences, applyPresenceDiff)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
-import App.Types.Timeline exposing (setEditingNew, updatePost, setLoading, postContent, setCotoSaved, setBeingDeleted)
+import App.Types.Timeline
+    exposing
+        ( setEditingNew
+        , updatePost
+        , setLoading
+        , postContent
+        , setCotoSaved
+        , setBeingDeleted
+        , deletePendingPost
+        )
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
@@ -33,7 +42,6 @@ import App.Channels exposing (Payload, decodePayload, decodePresenceState, decod
 import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.InviteModal
 import App.Modals.CotoModal
-import App.Modals.CotoModalMsg
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
@@ -148,13 +156,9 @@ update msg model =
 
         CotonomaFetched (Ok ( cotonoma, posts )) ->
             { model
-                | context =
-                    model.context
-                        |> \context -> { context | cotonoma = Just cotonoma }
+                | context = setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline =
-                    model.timeline
-                        |> \t -> { t | posts = posts, loading = False }
+                , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
                 ! [ App.Commands.scrollTimelineToBottom NoOp
                   , fetchSubCotonomas (Just cotonoma)
@@ -182,7 +186,7 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         Confirm ->
-            ( closeModal model, sendMsg model.msgOnConfirm )
+            ( closeModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -253,17 +257,17 @@ update msg model =
             changeLocationToCotonoma key model
 
         ConfirmDeleteCoto ->
-            confirm
-                "Are you sure you want to delete this coto?"
-                (case model.cotoModal of
-                    Nothing ->
-                        App.Messages.NoOp
-
-                    Just cotoModal ->
-                        RequestDeleteCoto cotoModal.coto
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to delete this coto?"
+                    (model.cotoModal
+                        |> Maybe.map (\cotoModal -> RequestDeleteCoto cotoModal.coto)
+                        |> Maybe.withDefault App.Messages.NoOp
+                    )
                 )
                 model
-                ! []
+            , Cmd.none
+            )
 
         RequestDeleteCoto coto ->
             ({ model | timeline = setBeingDeleted coto model.timeline }
@@ -294,7 +298,12 @@ update msg model =
             model ! []
 
         ContentUpdated (Ok coto) ->
-            updateRecentCotonomasByCoto coto model
+            (model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> updateCotoContent coto.id coto.content
+                |> updateRecentCotonomasByCoto coto
+            )
                 ! if coto.asCotonoma then
                     [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
@@ -302,7 +311,24 @@ update msg model =
                   else
                     []
 
-        ContentUpdated (Err _) ->
+        ContentUpdated (Err error) ->
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! []
+
+        Cotonomatized (Ok coto) ->
+            ( model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setCotonomatized coto)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> App.Model.cotonomatize coto.id coto.cotonomaKey
+            , Cmd.batch
+                [ fetchCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
+            )
+
+        Cotonomatized (Err error) ->
             model ! []
 
         PinCoto cotoId ->
@@ -327,11 +353,14 @@ update msg model =
             model ! []
 
         ConfirmUnpinCoto cotoId ->
-            confirm
-                "Are you sure you want to unpin this coto?"
-                (UnpinCoto cotoId)
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to unpin this coto?"
+                    (UnpinCoto cotoId)
+                )
                 model
-                ! []
+            , Cmd.none
+            )
 
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId }
@@ -383,11 +412,14 @@ update msg model =
             model ! []
 
         ConfirmDeleteConnection conn ->
-            confirm
-                ("Are you sure you want to delete this connection?")
-                (DeleteConnection conn)
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to delete this connection?"
+                    (DeleteConnection conn)
+                )
                 model
-                ! []
+            , Cmd.none
+            )
 
         DeleteConnection ( startId, endId ) ->
             { model
@@ -410,7 +442,7 @@ update msg model =
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
             model.cotoModal
-                |> Maybe.map (\modal -> { modal | updatingCotonomaPin = True })
+                |> Maybe.map (\modal -> { modal | waitingToPinOrUnpinCotonoma = True })
                 |> (\modal -> { model | cotoModal = modal })
                 |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
 
@@ -425,10 +457,11 @@ update msg model =
         -- Timeline
         --
         PostsFetched (Ok posts) ->
-            model.timeline
-                |> (\timeline -> { timeline | posts = posts, loading = False })
-                |> (\timeline -> { model | timeline = timeline })
-                |> (\model -> model ! [ App.Commands.scrollTimelineToBottom NoOp ])
+            { model
+                | context = setCotonoma Nothing model.context
+                , timeline = App.Types.Timeline.setPosts posts model.timeline
+            }
+                ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         PostsFetched (Err _) ->
             model ! []
@@ -519,7 +552,7 @@ update msg model =
 
                 cotonomaModal =
                     model.cotonomaModal
-                        |> (\modal -> { modal | requestProcessing = True })
+                        |> \modal -> { modal | requestProcessing = True }
             in
                 { model
                     | timeline = timeline
@@ -544,8 +577,16 @@ update msg model =
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
-        CotonomaPosted (Err _) ->
-            model ! []
+        CotonomaPosted (Err error) ->
+            App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
+                |> (\( modal, postId ) ->
+                        ( { model
+                            | cotonomaModal = modal
+                            , timeline = deletePendingPost postId model.timeline
+                          }
+                        , Cmd.none
+                        )
+                   )
 
         OpenPost post ->
             case toCoto post of
@@ -601,7 +642,10 @@ update msg model =
                   ]
 
         DeselectCoto ->
-            doDeselect model ! []
+            ( { model | context = finishBeingDeselected model.context }
+                |> closeSelectionColumnIfEmpty
+            , Cmd.none
+            )
 
         ClearSelection ->
             { model
@@ -658,28 +702,10 @@ update msg model =
             model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.update subMsg)
                 |> Maybe.map
-                    (\( cotoModal, subCmd ) ->
-                        ( { model | cotoModal = Just cotoModal }
-                        , cotoModal
-                        , Cmd.map CotoModalMsg subCmd
-                        )
-                    )
-                |> Maybe.map
-                    (\( model, cotoModal, cmd ) ->
-                        case subMsg of
-                            App.Modals.CotoModalMsg.Save ->
-                                updateCotoContent
-                                    cotoModal.coto.id
-                                    cotoModal.editingContent
-                                    model
-                                    ! [ cmd
-                                      , App.Server.Coto.updateContent
-                                            cotoModal.coto.id
-                                            cotoModal.editingContent
-                                      ]
-
-                            _ ->
-                                ( model, cmd )
+                    (\( cotoModal, maybeConfirmation, cmd ) ->
+                        { model | cotoModal = Just cotoModal }
+                            |> maybeConfirm maybeConfirmation
+                            |> (\model -> ( model, cmd ))
                     )
                 |> withDefault (model ! [])
 
@@ -687,77 +713,6 @@ update msg model =
             App.Modals.ImportModal.update subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
-
-
-confirm : String -> Msg -> Model -> Model
-confirm message msgOnConfirm model =
-    { model
-        | confirmMessage = message
-        , msgOnConfirm = msgOnConfirm
-    }
-        |> \model -> openModal App.Model.ConfirmModal model
-
-
-clickCoto : ElementId -> CotoId -> Model -> Model
-clickCoto elementId cotoId model =
-    { model
-        | context =
-            model.context
-                |> setElementFocus (Just elementId)
-                |> setCotoFocus (Just cotoId)
-    }
-
-
-openCoto : Coto -> Model -> Model
-openCoto coto model =
-    { model
-        | cotoModal =
-            Just <|
-                App.Modals.CotoModal.initModel
-                    (isCotonomaAndPinned coto model)
-                    coto
-    }
-        |> \model -> openModal App.Model.CotoModal model
-
-
-applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
-applyPresenceDiff ( joins, leaves ) presences =
-    -- Join
-    (Dict.foldl
-        (\amishiId count presences ->
-            Dict.update
-                amishiId
-                (\maybeValue ->
-                    case maybeValue of
-                        Nothing ->
-                            Just count
-
-                        Just value ->
-                            Just (value + count)
-                )
-                presences
-        )
-        presences
-        joins
-    )
-        |> \presences ->
-            -- Leave
-            Dict.foldl
-                (\amishiId count presences ->
-                    Dict.update
-                        amishiId
-                        (\maybeValue ->
-                            case maybeValue of
-                                Nothing ->
-                                    Nothing
-
-                                Just value ->
-                                    Just (value - count)
-                        )
-                        presences
-                )
-                presences
-                leaves
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
@@ -770,7 +725,7 @@ loadHome model =
     { model
         | context =
             model.context
-                |> clearCotonoma
+                |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
         , subCotonomas = []
@@ -796,7 +751,7 @@ loadCotonoma key model =
     { model
         | context =
             model.context
-                |> clearCotonoma
+                |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
@@ -804,6 +759,7 @@ loadCotonoma key model =
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
+        , navigationOpen = False
     }
         ! [ fetchCotonomas
           , fetchCotonomaPosts key
@@ -860,45 +816,3 @@ post maybeDirection model =
                     ! [ App.Commands.scrollTimelineToBottom NoOp
                       , App.Server.Post.post clientId cotonoma postMsg newPost
                       ]
-
-
-pinSelectedCotos : Model -> Model
-pinSelectedCotos model =
-    model.context.selection
-        |> List.filterMap (\cotoId -> App.Model.getCoto cotoId model)
-        |> \cotos ->
-            model.graph
-                |> pinCotos cotos
-                |> \graph ->
-                    { model
-                        | graph = graph
-                        , context = clearSelection model.context
-                        , activeViewOnMobile = PinnedView
-                    }
-
-
-doDeselect : Model -> Model
-doDeselect model =
-    { model
-        | context =
-            model.context
-                |> \context ->
-                    { context
-                        | selection =
-                            List.filter
-                                (\id -> not (Set.member id context.deselecting))
-                                context.selection
-                        , deselecting = Set.empty
-                    }
-    }
-        |> closeSelectionColumnIfEmpty
-
-
-confirmPostAndConnect : Model -> Model
-confirmPostAndConnect model =
-    { model
-        | connectingSubject =
-            Just (App.Model.NewPost model.timeline.newContent)
-        , connectingDirection = Inbound
-    }
-        |> \model -> openModal App.Model.ConnectModal model

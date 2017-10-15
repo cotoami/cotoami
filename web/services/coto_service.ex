@@ -7,7 +7,7 @@ defmodule Cotoami.CotoService do
   import Ecto.Query
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
-    CotonomaService, CotoGraphService, AmishiService
+    CotoGraphService, AmishiService
   }
   alias Cotoami.Exceptions.InvalidOperation
 
@@ -22,6 +22,18 @@ defmodule Cotoami.CotoService do
     |> where([c], c.id in ^coto_ids)
     |> preload([:amishi, :posted_in, :cotonoma])
     |> Repo.all()
+  end
+
+  def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
+    coto =
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> preload([:posted_in, :cotonoma])
+      |> Repo.get(id)
+    case coto do
+      nil -> nil
+      coto -> %{coto | amishi: amishi}
+    end
   end
 
   def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi) do
@@ -71,7 +83,7 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content!(id, %{"content" => _} = params, %Amishi{id: amishi_id}) do
+  def update_content!(id, %{"content" => _} = params, %Amishi{id: amishi_id} = amishi) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> Repo.get!(id)
@@ -86,7 +98,8 @@ defmodule Cotoami.CotoService do
     end
 
     CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
-    updated_coto
+
+    complement_amishi(updated_coto, amishi)
   end
 
   def delete(id, %Amishi{id: amishi_id}) do
