@@ -707,12 +707,10 @@ confirm message msgOnConfirm model =
 
 clickCoto : ElementId -> CotoId -> Model -> Model
 clickCoto elementId cotoId model =
-    { model
-        | context =
-            model.context
-                |> setElementFocus (Just elementId)
-                |> setCotoFocus (Just cotoId)
-    }
+    model.context
+        |> setElementFocus (Just elementId)
+        |> setCotoFocus (Just cotoId)
+        |> \context -> { model | context = context }
 
 
 openCoto : Coto -> Model -> Model
