@@ -1,7 +1,6 @@
 module App.Update exposing (..)
 
 import Set
-import Dict
 import Task
 import Process
 import Time
@@ -13,7 +12,7 @@ import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Amishi exposing (Presences)
+import App.Types.Amishi exposing (Presences, applyPresenceDiff)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
 import App.Types.Graph exposing (..)
@@ -702,46 +701,6 @@ confirm message msgOnConfirm model =
         |> (\request -> { request | message = message, msgOnConfirm = msgOnConfirm })
         |> (\request -> { model | confirmRequest = request })
         |> openModal App.Model.ConfirmModal
-
-
-applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
-applyPresenceDiff ( joins, leaves ) presences =
-    -- Join
-    (Dict.foldl
-        (\amishiId count presences ->
-            Dict.update
-                amishiId
-                (\maybeValue ->
-                    case maybeValue of
-                        Nothing ->
-                            Just count
-
-                        Just value ->
-                            Just (value + count)
-                )
-                presences
-        )
-        presences
-        joins
-    )
-        |> \presences ->
-            -- Leave
-            Dict.foldl
-                (\amishiId count presences ->
-                    Dict.update
-                        amishiId
-                        (\maybeValue ->
-                            case maybeValue of
-                                Nothing ->
-                                    Nothing
-
-                                Just value ->
-                                    Just (value - count)
-                        )
-                        presences
-                )
-                presences
-                leaves
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
