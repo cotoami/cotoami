@@ -43,6 +43,7 @@ type alias Model =
     , updatingContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
     , updatingCotonomaPin : Bool
+    , cotonomatizing : Bool
     }
 
 
@@ -61,6 +62,7 @@ initModel cotonomaPinned coto =
     , updatingContent = False
     , contentUpdateStatus = None
     , updatingCotonomaPin = False
+    , cotonomatizing = False
     }
 
 
@@ -129,7 +131,7 @@ update msg model =
                 ( model
                 , Just <|
                     Confirmation
-                        "Are you sure you want to this coto into a cotonoma?"
+                        "Are you sure you want to convert this coto into a cotonoma?"
                         (AppMsg.CotoModalMsg Cotonomatize)
                 , Cmd.none
                 )
@@ -137,7 +139,10 @@ update msg model =
                 ( model, Nothing, Cmd.none )
 
         Cotonomatize ->
-            ( model, Nothing, Cmd.none )
+            ( { model | cotonomatizing = True }
+            , Nothing
+            , App.Server.Coto.cotonomatize model.coto.id
+            )
 
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
@@ -173,9 +178,13 @@ cotoModalConfig session model =
                     [ class "button"
                     , onClick (AppMsg.CotoModalMsg ConfirmCotonomatize)
                     ]
-                    [ faIcon "long-arrow-right" Nothing
-                    , text "Convert into a cotonoma"
-                    ]
+                    (if model.cotonomatizing then
+                        [ text "Converting..." ]
+                     else
+                        [ faIcon "long-arrow-right" Nothing
+                        , text "Convert into a cotonoma"
+                        ]
+                    )
             ]
     , content =
         div []

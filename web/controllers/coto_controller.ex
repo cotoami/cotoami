@@ -57,7 +57,7 @@ defmodule Cotoami.CotoController do
   end
 
   def cotonomatize(conn, %{"id" => id}, amishi) do
-    case Coto |> Coto.for_amishi(amishi.id) |> Repo.get(id) do
+    case CotoService.get_by_amishi(id, amishi) do
       %Coto{as_cotonoma: false} = coto ->
         {:ok, coto} =
           Repo.transaction(fn ->
