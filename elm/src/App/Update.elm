@@ -697,9 +697,9 @@ update msg model =
                     (\( cotoModal, maybeConfirmation, cmd ) ->
                         { model | cotoModal = Just cotoModal }
                             |> (\model ->
-                                Maybe.map2 confirm maybeConfirmation (Just model)
-                                    |> Maybe.withDefault model
-                            )
+                                    Maybe.map2 confirm maybeConfirmation (Just model)
+                                        |> Maybe.withDefault model
+                               )
                             |> (\model -> ( model, cmd ))
                     )
                 |> withDefault (model ! [])
