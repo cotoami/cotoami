@@ -82,6 +82,7 @@ setContentUpdated coto model =
     { model
         | coto = coto
         , editing = False
+        , editingToCotonomatize = False
         , waitingToUpdateContent = False
         , contentUpdateStatus = None
     }
@@ -122,6 +123,7 @@ update msg model =
         CancelEditing ->
             ( { model
                 | editing = False
+                , editingToCotonomatize = False
                 , editorContent = model.coto.content
                 , contentUpdateStatus = None
               }
@@ -147,7 +149,7 @@ update msg model =
                 , Cmd.none
                 )
             else
-                ( { model | editing = True }
+                ( { model | editing = True, editingToCotonomatize = True }
                 , Nothing
                 , Cmd.none
                 )
@@ -204,7 +206,8 @@ cotoModalConfig session model =
         div []
             [ if model.editing then
                 div []
-                    [ div [ class "coto-editor" ]
+                    [ adviceOnCotonomaNameDiv model
+                    , div [ class "coto-editor" ]
                         [ textarea
                             [ class "coto"
                             , value model.editorContent
@@ -331,6 +334,33 @@ saveButton enabled model =
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
+
+
+adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
+adviceOnCotonomaNameDiv model =
+    if model.editingToCotonomatize then
+        let
+            contentLength =
+                String.length model.editorContent
+        in
+            div [ class "advice-on-cotonoma-name" ]
+                [ text
+                    ("A cotonoma name have to be under "
+                        ++ (toString cotonomaNameMaxlength)
+                        ++ " characters, currently: "
+                    )
+                , span
+                    [ class
+                        (if contentLength > cotonomaNameMaxlength then
+                            "too-long"
+                         else
+                            "ok"
+                        )
+                    ]
+                    [ text (toString contentLength) ]
+                ]
+    else
+        div [] []
 
 
 errorDiv : Model -> Html AppMsg.Msg
