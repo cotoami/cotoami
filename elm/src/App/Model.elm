@@ -167,6 +167,13 @@ confirm confirmation model =
         |> openModal ConfirmModal
 
 
+maybeConfirm : Maybe Confirmation -> Model -> Model
+maybeConfirm maybeConfirmation model =
+    maybeConfirmation
+        |> Maybe.map (\confirmation -> confirm confirmation model)
+        |> Maybe.withDefault model
+
+
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto

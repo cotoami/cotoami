@@ -124,6 +124,21 @@ update msg model =
                 model.editingContent
             )
 
+        ConfirmCotonomatize ->
+            if String.length model.coto.content <= cotonomaNameMaxlength then
+                ( model
+                , Just <|
+                    Confirmation
+                        "Are you sure you want to this coto into a cotonoma?"
+                        (AppMsg.CotoModalMsg Cotonomatize)
+                , Cmd.none
+                )
+            else
+                ( model, Nothing, Cmd.none )
+
+        Cotonomatize ->
+            ( model, Nothing, Cmd.none )
+
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
 view maybeSession maybeModel =
@@ -155,7 +170,9 @@ cotoModalConfig session model =
                 span [] []
               else
                 button
-                    [ class "button" ]
+                    [ class "button"
+                    , onClick (AppMsg.CotoModalMsg ConfirmCotonomatize)
+                    ]
                     [ faIcon "long-arrow-right" Nothing
                     , text "Convert into a cotonoma"
                     ]

@@ -6,3 +6,5 @@ type Msg
     | EditorInput String
     | CancelEditing
     | Save
+    | ConfirmCotonomatize
+    | Cotonomatize
