@@ -15,6 +15,7 @@ import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
 import Util.HtmlUtil exposing (faIcon)
+import App.Markdown
 import App.Types.Coto
     exposing
         ( Coto
@@ -23,7 +24,6 @@ import App.Types.Coto
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
-import App.Markdown
 import App.Types.Session exposing (Session)
 import App.Server.Coto
 import App.Messages as AppMsg
