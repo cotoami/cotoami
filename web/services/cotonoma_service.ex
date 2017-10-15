@@ -15,7 +15,7 @@ defmodule Cotoami.CotonomaService do
         cotonoma_id -> Repo.get!(Cotonoma, cotonoma_id)
       end
 
-    coto =
+    cotonoma_coto =
       %Coto{}
       |> Coto.changeset_to_insert(%{
           posted_in_id: cotonoma_id,
@@ -23,28 +23,51 @@ defmodule Cotoami.CotonomaService do
           content: name,
           as_cotonoma: true
         })
-      |> Repo.insert!
+      |> Repo.insert!()
 
-    cotonoma =
-      %Cotonoma{}
-      |> Cotonoma.changeset_to_insert(%{
-          name: name,
-          coto_id: coto.id,
-          owner_id: amishi.id
-        })
-      |> Repo.insert!
+    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id)
 
-    coto = %{coto |
+    cotonoma_coto = %{cotonoma_coto |
       amishi: amishi,
       posted_in: posted_in,
-      cotonoma: cotonoma
-    }
-    cotonoma = %{cotonoma |
-      owner: amishi,
-      coto: coto
+      cotonoma: %{cotonoma |
+        owner: amishi,
+        coto: cotonoma_coto
+      }
     }
 
-    {{coto, cotonoma}, posted_in}
+    {cotonoma_coto, posted_in}
+  end
+
+  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
+    %Cotonoma{}
+    |> Cotonoma.changeset_to_insert(%{
+        name: name,
+        coto_id: coto.id,
+        owner_id: amishi_id
+      })
+    |> Repo.insert!()
+  end
+
+  def cotonomatize!(%Coto{as_cotonoma: false} = coto, %Amishi{} = amishi, name \\ nil) do
+    cotonoma_name = name || coto.content
+
+    cotonoma_coto =
+      coto
+      |> change(as_cotonoma: true)
+      |> change(content: cotonoma_name)
+      |> Repo.update!()
+
+    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id)
+
+    %{cotonoma_coto |
+      amishi: amishi,
+      posted_in: coto.posted_in,
+      cotonoma: %{cotonoma |
+        owner: amishi,
+        coto: cotonoma_coto
+      }
+    }
   end
 
   def get(id) do
@@ -115,11 +138,13 @@ defmodule Cotoami.CotonomaService do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
+    |> Cotonoma.copy_belongings(cotonoma)
   end
 
   def increment_graph_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
+    |> Cotonoma.copy_belongings(cotonoma)
   end
 end

@@ -122,7 +122,7 @@ modalConfig model =
     case model.requestStatus of
         Imported result ->
             { closeMessage = CloseModal
-            , title = "Import cotos and connections"
+            , title = text "Import cotos and connections"
             , content = importResultDiv result
             , buttons =
                 [ a [ class "button", href "/" ] [ text "Reload browser" ]
@@ -131,7 +131,7 @@ modalConfig model =
 
         _ ->
             { closeMessage = CloseModal
-            , title = "Import cotos and connections"
+            , title = text "Import cotos and connections"
             , content =
                 div []
                     [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]

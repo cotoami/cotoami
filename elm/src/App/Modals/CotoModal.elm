@@ -2,9 +2,9 @@ module App.Modals.CotoModal
     exposing
         ( Model
         , initModel
-        , setContentUpdating
         , setContentUpdated
         , setContentUpdateError
+        , setCotonomatized
         , update
         , view
         )
@@ -15,6 +15,8 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
+import Util.HtmlUtil exposing (faIcon)
+import App.Markdown
 import App.Types.Coto
     exposing
         ( Coto
@@ -23,12 +25,13 @@ import App.Types.Coto
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
-import App.Markdown
 import App.Types.Session exposing (Session)
+import App.Server.Coto
 import App.Messages as AppMsg
     exposing
-        ( Msg(CloseModal, ConfirmDeleteCoto, UpdateContent, PinOrUnpinCotonoma)
+        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
         )
+import App.Confirmation exposing (Confirmation)
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
@@ -37,10 +40,12 @@ type alias Model =
     { coto : Coto
     , cotonomaPinned : Bool
     , editing : Bool
-    , editingContent : String
-    , updatingContent : Bool
+    , editingToCotonomatize : Bool
+    , editorContent : String
+    , waitingToUpdateContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
-    , updatingCotonomaPin : Bool
+    , waitingToPinOrUnpinCotonoma : Bool
+    , waitingToCotonomatize : Bool
     }
 
 
@@ -55,17 +60,19 @@ initModel cotonomaPinned coto =
     { coto = coto
     , cotonomaPinned = cotonomaPinned
     , editing = False
-    , editingContent = coto.content
-    , updatingContent = False
+    , editingToCotonomatize = False
+    , editorContent = coto.content
+    , waitingToUpdateContent = False
     , contentUpdateStatus = None
-    , updatingCotonomaPin = False
+    , waitingToPinOrUnpinCotonoma = False
+    , waitingToCotonomatize = False
     }
 
 
 setContentUpdating : Model -> Model
 setContentUpdating model =
     { model
-        | updatingContent = True
+        | waitingToUpdateContent = True
         , contentUpdateStatus = None
     }
 
@@ -75,7 +82,8 @@ setContentUpdated coto model =
     { model
         | coto = coto
         , editing = False
-        , updatingContent = False
+        , editingToCotonomatize = False
+        , waitingToUpdateContent = False
         , contentUpdateStatus = None
     }
 
@@ -92,25 +100,68 @@ setContentUpdateError error model =
         _ ->
             { model | contentUpdateStatus = Rejected }
     )
-        |> \model -> { model | updatingContent = False }
+        |> \model -> { model | waitingToUpdateContent = False }
 
 
-update : CotoModalMsg.Msg -> Model -> ( Model, Cmd CotoModalMsg.Msg )
+setCotonomatized : Coto -> Model -> Model
+setCotonomatized coto model =
+    { model
+        | coto = coto
+        , waitingToCotonomatize = False
+    }
+
+
+update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         Edit ->
-            { model | editing = True } ! []
+            ( { model | editing = True, editingToCotonomatize = False }
+            , Nothing
+            , Cmd.none
+            )
 
         EditorInput content ->
-            { model | editingContent = content } ! []
+            ( { model | editorContent = content }, Nothing, Cmd.none )
 
         CancelEditing ->
-            { model
+            ( { model
                 | editing = False
-                , editingContent = model.coto.content
+                , editingToCotonomatize = False
+                , editorContent = model.coto.content
                 , contentUpdateStatus = None
-            }
-                ! []
+              }
+            , Nothing
+            , Cmd.none
+            )
+
+        Save ->
+            ( setContentUpdating model
+            , Nothing
+            , App.Server.Coto.updateContent
+                model.coto.id
+                model.editorContent
+            )
+
+        ConfirmCotonomatize ->
+            if String.length model.coto.content <= cotonomaNameMaxlength then
+                ( model
+                , Just <|
+                    Confirmation
+                        "Are you sure you want to convert this coto into a cotonoma?"
+                        (AppMsg.CotoModalMsg Cotonomatize)
+                , Cmd.none
+                )
+            else
+                ( { model | editing = True, editingToCotonomatize = True }
+                , Nothing
+                , Cmd.none
+                )
+
+        Cotonomatize ->
+            ( { model | waitingToCotonomatize = True }
+            , Nothing
+            , App.Server.Coto.cotonomatize model.coto.id
+            )
 
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
@@ -136,15 +187,33 @@ modalConfig session model =
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 cotoModalConfig session model =
     { closeMessage = CloseModal
-    , title = "Coto"
+    , title =
+        span [ class "coto-modal-title" ]
+            [ text "Coto"
+            , if checkWritePermission session model && (not model.editing) then
+                button
+                    [ class "button"
+                    , onClick (AppMsg.CotoModalMsg ConfirmCotonomatize)
+                    ]
+                    (if model.waitingToCotonomatize then
+                        [ text "Converting..." ]
+                     else
+                        [ faIcon "long-arrow-right" Nothing
+                        , text "Cotonomatize"
+                        ]
+                    )
+              else
+                span [] []
+            ]
     , content =
         div []
             [ if model.editing then
                 div []
-                    [ div [ class "coto-editor" ]
+                    [ adviceOnCotonomaNameDiv model
+                    , div [ class "coto-editor" ]
                         [ textarea
                             [ class "coto"
-                            , value model.editingContent
+                            , value model.editorContent
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -159,8 +228,8 @@ cotoModalConfig session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (isNotBlank model.editingContent
-                    && not model.updatingContent
+                (isNotBlank model.editorContent
+                    && not model.waitingToUpdateContent
                 )
                 model
             ]
@@ -178,7 +247,7 @@ cotoModalConfig session model =
 cotonomaModalConfig : CotonomaKey -> Session -> Model -> Modal.Config AppMsg.Msg
 cotonomaModalConfig cotonomaKey session model =
     { closeMessage = CloseModal
-    , title = "Cotonoma"
+    , title = text "Cotonoma"
     , content =
         div []
             [ if model.editing then
@@ -189,7 +258,7 @@ cotonomaModalConfig cotonomaKey session model =
                             , class "u-full-width"
                             , placeholder "Cotonoma name"
                             , maxlength cotonomaNameMaxlength
-                            , value model.editingContent
+                            , value model.editorContent
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -204,8 +273,8 @@ cotonomaModalConfig cotonomaKey session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (validateCotonomaName model.editingContent
-                    && not model.updatingContent
+                (validateCotonomaName model.editorContent
+                    && not model.waitingToUpdateContent
                 )
                 model
             ]
@@ -213,11 +282,11 @@ cotonomaModalConfig cotonomaKey session model =
             [ if session.owner then
                 button
                     [ class "button"
-                    , disabled model.updatingCotonomaPin
+                    , disabled model.waitingToPinOrUnpinCotonoma
                     , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
                     ]
                     [ text
-                        (if model.updatingCotonomaPin then
+                        (if model.waitingToPinOrUnpinCotonoma then
                             "Processing..."
                          else if model.cotonomaPinned then
                             "Unpin from nav"
@@ -254,10 +323,10 @@ saveButton enabled model =
     button
         [ class "button button-primary"
         , disabled (not enabled)
-        , onClick (UpdateContent model.coto.id model.editingContent)
+        , onClick (AppMsg.CotoModalMsg Save)
         ]
         [ text
-            (if model.updatingContent then
+            (if model.waitingToUpdateContent then
                 "Updating..."
              else
                 "Save"
@@ -268,6 +337,33 @@ saveButton enabled model =
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
+
+
+adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
+adviceOnCotonomaNameDiv model =
+    if model.editingToCotonomatize then
+        let
+            contentLength =
+                String.length model.editorContent
+        in
+            div [ class "advice-on-cotonoma-name" ]
+                [ text
+                    ("A cotonoma name have to be under "
+                        ++ (toString cotonomaNameMaxlength)
+                        ++ " characters, currently: "
+                    )
+                , span
+                    [ class
+                        (if contentLength > cotonomaNameMaxlength then
+                            "too-long"
+                         else
+                            "ok"
+                        )
+                    ]
+                    [ text (toString contentLength) ]
+                ]
+    else
+        div [] []
 
 
 errorDiv : Model -> Html AppMsg.Msg

@@ -91,6 +91,19 @@ updateContent cotoId content timeline =
         timeline
 
 
+cotonomatize : CotoId -> CotonomaKey -> Timeline -> Timeline
+cotonomatize cotoId cotonomaKey timeline =
+    updatePost
+        (\post -> post.cotoId == Just cotoId)
+        (\post ->
+            { post
+                | asCotonoma = True
+                , cotonomaKey = Just cotonomaKey
+            }
+        )
+        timeline
+
+
 setCotoSaved : Post -> Timeline -> Timeline
 setCotoSaved apiResponse timeline =
     updatePost

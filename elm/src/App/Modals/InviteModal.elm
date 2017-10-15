@@ -100,7 +100,7 @@ modalConfig model =
     case model.requestStatus of
         Approved acceptedEmail ->
             { closeMessage = CloseModal
-            , title = "Invite an amishi"
+            , title = text "Invite an amishi"
             , content =
                 div []
                     [ p []
@@ -114,7 +114,7 @@ modalConfig model =
 
         _ ->
             { closeMessage = CloseModal
-            , title = "Invite an amishi"
+            , title = text "Invite an amishi"
             , content =
                 div []
                     [ p [] [ text "Enter an email address to send an invitation." ]

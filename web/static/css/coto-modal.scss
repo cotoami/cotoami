@@ -9,11 +9,42 @@
     margin-bottom: 1rem;
   }
 
+  span.coto-modal-title {
+    button {
+      margin: 0;
+      margin-left: 10px;
+      margin-bottom: 3px;
+      vertical-align: middle;
+      padding: 0 10px;
+      height: 26px;
+      line-height: 26px;
+      font-size: 10px;
+      letter-spacing: normal;
+
+      i {
+        margin-right: 3px;
+      }
+    }
+  }
+
   div.content {
     max-height: 55vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     margin-bottom: 8px;
+  }
+
+  div.advice-on-cotonoma-name {
+    margin-bottom: 6px;
+
+    .too-long {
+      color: #f00;
+      font-weight: bold;
+    }
+    .ok {
+      color: #008000;
+      font-weight: bold;
+    }
   }
 
   div.coto-editor {

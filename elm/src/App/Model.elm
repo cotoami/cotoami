@@ -7,46 +7,17 @@ import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
-import App.Types.Graph exposing (Direction, Graph, defaultGraph)
+import App.Types.Graph exposing (Direction(..), Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
-import App.Messages
+import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
-
-
-type alias Model =
-    { route : Route
-    , context : Context
-    , activeViewOnMobile : ActiveViewOnMobile
-    , navigationToggled : Bool
-    , navigationOpen : Bool
-    , presences : Presences
-    , modals : List Modal
-    , cotoModal : Maybe App.Modals.CotoModal.Model
-    , confirmMessage : String
-    , msgOnConfirm : App.Messages.Msg
-    , signinModal : App.Modals.SigninModal.Model
-    , inviteModal : App.Modals.InviteModal.Model
-    , pinnedCotonomas : List Cotonoma
-    , recentCotonomas : List Cotonoma
-    , cotonomasLoading : Bool
-    , subCotonomas : List Cotonoma
-    , timeline : Timeline
-    , cotoSelectionColumnOpen : Bool
-    , cotoSelectionTitle : String
-    , connectingSubject : Maybe ConnectingSubject
-    , connectingDirection : Direction
-    , cotonomaModal : App.Modals.CotonomaModal.Model
-    , graph : Graph
-    , traversals : Traversals
-    , importModal : App.Modals.ImportModal.Model
-    }
 
 
 type Modal
@@ -65,6 +36,34 @@ type ConnectingSubject
     | NewPost String
 
 
+type alias Model =
+    { route : Route
+    , context : Context
+    , activeViewOnMobile : ActiveViewOnMobile
+    , navigationToggled : Bool
+    , navigationOpen : Bool
+    , presences : Presences
+    , modals : List Modal
+    , confirmation : Confirmation
+    , cotoModal : Maybe App.Modals.CotoModal.Model
+    , signinModal : App.Modals.SigninModal.Model
+    , inviteModal : App.Modals.InviteModal.Model
+    , pinnedCotonomas : List Cotonoma
+    , recentCotonomas : List Cotonoma
+    , cotonomasLoading : Bool
+    , subCotonomas : List Cotonoma
+    , timeline : Timeline
+    , cotoSelectionColumnOpen : Bool
+    , cotoSelectionTitle : String
+    , connectingSubject : Maybe ConnectingSubject
+    , connectingDirection : Direction
+    , cotonomaModal : App.Modals.CotonomaModal.Model
+    , graph : Graph
+    , traversals : Traversals
+    , importModal : App.Modals.ImportModal.Model
+    }
+
+
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
@@ -74,9 +73,8 @@ initModel seed route =
     , navigationOpen = False
     , presences = Dict.empty
     , modals = []
+    , confirmation = defaultConfirmation
     , cotoModal = Nothing
-    , confirmMessage = ""
-    , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
     , pinnedCotonomas = []
@@ -121,6 +119,18 @@ updateCotoContent cotoId content model =
     }
 
 
+cotonomatize : CotoId -> Maybe CotonomaKey -> Model -> Model
+cotonomatize cotoId maybeCotonomaKey model =
+    maybeCotonomaKey
+        |> Maybe.map (\key ->
+            { model
+                | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
+                , graph = App.Types.Graph.cotonomatize cotoId key model.graph
+            }
+        )
+        |> Maybe.withDefault model
+
+
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
     List.filterMap
@@ -161,6 +171,37 @@ closeModal model =
 clearModals : Model -> Model
 clearModals model =
     { model | modals = [] }
+
+
+confirm : Confirmation -> Model -> Model
+confirm confirmation model =
+    { model | confirmation = confirmation }
+        |> openModal ConfirmModal
+
+
+maybeConfirm : Maybe Confirmation -> Model -> Model
+maybeConfirm maybeConfirmation model =
+    maybeConfirmation
+        |> Maybe.map (\confirmation -> confirm confirmation model)
+        |> Maybe.withDefault model
+
+
+openCoto : Coto -> Model -> Model
+openCoto coto model =
+    coto
+        |> App.Modals.CotoModal.initModel (isCotonomaAndPinned coto model)
+        |> Just
+        |> (\modal -> { model | cotoModal = modal })
+        |> openModal CotoModal
+
+
+confirmPostAndConnect : Model -> Model
+confirmPostAndConnect model =
+    { model
+        | connectingSubject = Just (NewPost model.timeline.newContent)
+        , connectingDirection = Inbound
+    }
+        |> \model -> openModal ConnectModal model
 
 
 isNavigationEmpty : Model -> Bool
@@ -222,3 +263,11 @@ closeSelectionColumnIfEmpty model =
         { model | cotoSelectionColumnOpen = False }
     else
         model
+
+
+clickCoto : ElementId -> CotoId -> Model -> Model
+clickCoto elementId cotoId model =
+    model.context
+        |> setElementFocus (Just elementId)
+        |> setCotoFocus (Just cotoId)
+        |> \context -> { model | context = context }

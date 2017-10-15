@@ -1,6 +1,7 @@
 defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
+  import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
   alias Cotoami.{Coto, CotoService, CotonomaService}
 
   plug :scrub_params, "coto" when action in [:create, :update]
@@ -31,10 +32,7 @@ defmodule Cotoami.CotoController do
         case CotoService.create!(content, amishi.id, cotonoma_id) do
           {coto, nil} -> {coto, nil}
           {coto, posted_in} ->
-            posted_in
-            |> CotonomaService.increment_timeline_revision()
-            |> CotonomaService.complement_owner()
-            |> (fn (posted_in) -> {coto, posted_in} end).()
+            {coto, increment_timeline_revision(posted_in)}
         end
       end)
     coto = %{coto | posted_in: posted_in, amishi: amishi}
@@ -45,23 +43,36 @@ defmodule Cotoami.CotoController do
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
-    {:ok, coto} = do_update!(id, coto_params, amishi)
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        case CotoService.update_content!(id, coto_params, amishi) do
+          %Coto{posted_in: nil} = coto -> coto
+          %Coto{posted_in: posted_in} = coto ->
+            %{coto | posted_in: increment_timeline_revision(posted_in)}
+        end
+      end)
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
   end
 
-  defp do_update!(id, coto_params, amishi) do
-    Repo.transaction(fn ->
-      case CotoService.update_content!(id, coto_params, amishi) do
-        %Coto{posted_in: nil} = coto -> coto
-        %Coto{posted_in: posted_in} = coto ->
-          posted_in
-          |> CotonomaService.increment_timeline_revision()
-          |> CotonomaService.complement_owner()
-          |> (fn (posted_in) -> %{coto | posted_in: posted_in} end).()
-      end
-    end)
+  def cotonomatize(conn, %{"id" => id}, amishi) do
+    case CotoService.get_by_amishi(id, amishi) do
+      %Coto{as_cotonoma: false} = coto ->
+        {:ok, coto} =
+          Repo.transaction(fn ->
+            case CotonomaService.cotonomatize!(coto, amishi) do
+              %Coto{posted_in: nil} = coto -> coto
+              %Coto{posted_in: posted_in} = coto ->
+                %{coto | posted_in: increment_timeline_revision(posted_in)}
+            end
+          end)
+        render(conn, "coto.json", coto: coto)
+      _ ->
+        send_resp(conn, :not_found, "")
+    end
+  rescue
+    e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
   end
 
   def delete(conn, %{"id" => id}, amishi) do

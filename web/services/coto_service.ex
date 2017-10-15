@@ -24,6 +24,18 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
+  def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
+    coto =
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> preload([:posted_in, :cotonoma])
+      |> Repo.get(id)
+    case coto do
+      nil -> nil
+      coto -> %{coto | amishi: amishi}
+    end
+  end
+
   def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi) do
     Coto
     |> Coto.for_amishi(amishi_id)

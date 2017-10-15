@@ -17,7 +17,7 @@ view confirmMessage =
 modalConfig : String -> Modal.Config Msg
 modalConfig confirmMessage =
     { closeMessage = CloseModal
-    , title = "Confirm"
+    , title = text "Confirm"
     , content = div [] [ text confirmMessage ]
     , buttons =
         [ button [ class "button", onClick CloseModal ] [ text "Cancel" ]

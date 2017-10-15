@@ -25,7 +25,7 @@ view maybeSession =
 modalConfig : Session -> Modal.Config Msg
 modalConfig session =
     { closeMessage = CloseModal
-    , title = "Amishi Profile"
+    , title = text "Amishi Profile"
     , content =
         div [ class "profile container" ]
             [ div [ class "row" ]
