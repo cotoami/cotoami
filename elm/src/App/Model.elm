@@ -12,7 +12,7 @@ import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
-import App.Messages
+import App.Modals.ConfirmModal exposing (ConfirmRequest, defaultConfirmRequest)
 import App.Modals.SigninModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
@@ -28,9 +28,8 @@ type alias Model =
     , navigationOpen : Bool
     , presences : Presences
     , modals : List Modal
+    , confirmRequest : ConfirmRequest
     , cotoModal : Maybe App.Modals.CotoModal.Model
-    , confirmMessage : String
-    , msgOnConfirm : App.Messages.Msg
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     , pinnedCotonomas : List Cotonoma
@@ -74,9 +73,8 @@ initModel seed route =
     , navigationOpen = False
     , presences = Dict.empty
     , modals = []
+    , confirmRequest = defaultConfirmRequest
     , cotoModal = Nothing
-    , confirmMessage = ""
-    , msgOnConfirm = App.Messages.NoOp
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
     , pinnedCotonomas = []

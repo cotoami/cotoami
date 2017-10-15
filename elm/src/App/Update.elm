@@ -186,7 +186,7 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         Confirm ->
-            ( closeModal model, sendMsg model.msgOnConfirm )
+            ( closeModal model, sendMsg model.confirmRequest.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -698,11 +698,10 @@ update msg model =
 
 confirm : String -> Msg -> Model -> Model
 confirm message msgOnConfirm model =
-    { model
-        | confirmMessage = message
-        , msgOnConfirm = msgOnConfirm
-    }
-        |> \model -> openModal App.Model.ConfirmModal model
+    model.confirmRequest
+        |> (\request -> { request | message = message, msgOnConfirm = msgOnConfirm })
+        |> (\request -> { model | confirmRequest = request })
+        |> openModal App.Model.ConfirmModal
 
 
 clickCoto : ElementId -> CotoId -> Model -> Model
