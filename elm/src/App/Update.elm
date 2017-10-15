@@ -30,6 +30,7 @@ import App.Types.Timeline
 import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
@@ -185,7 +186,7 @@ update msg model =
             ( closeModal model, Cmd.none )
 
         Confirm ->
-            ( closeModal model, sendMsg model.confirmRequest.msgOnConfirm )
+            ( closeModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -256,17 +257,17 @@ update msg model =
             changeLocationToCotonoma key model
 
         ConfirmDeleteCoto ->
-            confirm
-                "Are you sure you want to delete this coto?"
-                (case model.cotoModal of
-                    Nothing ->
-                        App.Messages.NoOp
-
-                    Just cotoModal ->
-                        RequestDeleteCoto cotoModal.coto
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to delete this coto?"
+                    (model.cotoModal
+                        |> Maybe.map (\cotoModal -> RequestDeleteCoto cotoModal.coto)
+                        |> Maybe.withDefault App.Messages.NoOp
+                    )
                 )
                 model
-                ! []
+            , Cmd.none
+            )
 
         RequestDeleteCoto coto ->
             ({ model | timeline = setBeingDeleted coto model.timeline }
@@ -344,11 +345,14 @@ update msg model =
             model ! []
 
         ConfirmUnpinCoto cotoId ->
-            confirm
-                "Are you sure you want to unpin this coto?"
-                (UnpinCoto cotoId)
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to unpin this coto?"
+                    (UnpinCoto cotoId)
+                )
                 model
-                ! []
+            , Cmd.none
+            )
 
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId }
@@ -400,11 +404,14 @@ update msg model =
             model ! []
 
         ConfirmDeleteConnection conn ->
-            confirm
-                ("Are you sure you want to delete this connection?")
-                (DeleteConnection conn)
+            ( confirm
+                (Confirmation
+                    "Are you sure you want to delete this connection?"
+                    (DeleteConnection conn)
+                )
                 model
-                ! []
+            , Cmd.none
+            )
 
         DeleteConnection ( startId, endId ) ->
             { model
@@ -687,8 +694,13 @@ update msg model =
             model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.update subMsg)
                 |> Maybe.map
-                    (\( cotoModal, cmd ) ->
-                        ( { model | cotoModal = Just cotoModal }, cmd )
+                    (\( cotoModal, maybeConfirmation, cmd ) ->
+                        { model | cotoModal = Just cotoModal }
+                            |> (\model ->
+                                Maybe.map2 confirm maybeConfirmation (Just model)
+                                    |> Maybe.withDefault model
+                            )
+                            |> (\model -> ( model, cmd ))
                     )
                 |> withDefault (model ! [])
 
@@ -696,14 +708,6 @@ update msg model =
             App.Modals.ImportModal.update subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
-
-
-confirm : String -> Msg -> Model -> Model
-confirm message msgOnConfirm model =
-    model.confirmRequest
-        |> (\request -> { request | message = message, msgOnConfirm = msgOnConfirm })
-        |> (\request -> { model | confirmRequest = request })
-        |> openModal App.Model.ConfirmModal
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )

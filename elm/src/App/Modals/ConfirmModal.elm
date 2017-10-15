@@ -1,23 +1,10 @@
-module App.Modals.ConfirmModal exposing (ConfirmRequest, defaultConfirmRequest, view)
+module App.Modals.ConfirmModal exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Util.Modal as Modal
 import App.Messages exposing (Msg(..))
-
-
-type alias ConfirmRequest =
-    { message : String
-    , msgOnConfirm : App.Messages.Msg
-    }
-
-
-defaultConfirmRequest : ConfirmRequest
-defaultConfirmRequest =
-    { message = ""
-    , msgOnConfirm = App.Messages.NoOp
-    }
 
 
 view : String -> Html Msg

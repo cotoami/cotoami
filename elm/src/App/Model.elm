@@ -12,12 +12,28 @@ import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction(..), Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
-import App.Modals.ConfirmModal exposing (ConfirmRequest, defaultConfirmRequest)
+import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
+
+
+type Modal
+    = ConfirmModal
+    | SigninModal
+    | ProfileModal
+    | InviteModal
+    | CotoModal
+    | CotonomaModal
+    | ConnectModal
+    | ImportModal
+
+
+type ConnectingSubject
+    = Coto Coto
+    | NewPost String
 
 
 type alias Model =
@@ -28,7 +44,7 @@ type alias Model =
     , navigationOpen : Bool
     , presences : Presences
     , modals : List Modal
-    , confirmRequest : ConfirmRequest
+    , confirmation : Confirmation
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
@@ -48,22 +64,6 @@ type alias Model =
     }
 
 
-type Modal
-    = ConfirmModal
-    | SigninModal
-    | ProfileModal
-    | InviteModal
-    | CotoModal
-    | CotonomaModal
-    | ConnectModal
-    | ImportModal
-
-
-type ConnectingSubject
-    = Coto Coto
-    | NewPost String
-
-
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
@@ -73,7 +73,7 @@ initModel seed route =
     , navigationOpen = False
     , presences = Dict.empty
     , modals = []
-    , confirmRequest = defaultConfirmRequest
+    , confirmation = defaultConfirmation
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
@@ -159,6 +159,12 @@ closeModal model =
 clearModals : Model -> Model
 clearModals model =
     { model | modals = [] }
+
+
+confirm : Confirmation -> Model -> Model
+confirm confirmation model =
+    { model | confirmation = confirmation }
+        |> openModal ConfirmModal
 
 
 openCoto : Coto -> Model -> Model

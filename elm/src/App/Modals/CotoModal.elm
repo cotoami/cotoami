@@ -30,6 +30,7 @@ import App.Messages as AppMsg
     exposing
         ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
         )
+import App.Confirmation exposing (Confirmation)
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
@@ -96,29 +97,32 @@ setContentUpdateError error model =
         |> \model -> { model | updatingContent = False }
 
 
-update : CotoModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         Edit ->
-            { model | editing = True } ! []
+            ( { model | editing = True }, Nothing, Cmd.none )
 
         EditorInput content ->
-            { model | editingContent = content } ! []
+            ( { model | editingContent = content }, Nothing, Cmd.none )
 
         CancelEditing ->
-            { model
+            ( { model
                 | editing = False
                 , editingContent = model.coto.content
                 , contentUpdateStatus = None
-            }
-                ! []
+              }
+            , Nothing
+            , Cmd.none
+            )
 
         Save ->
-            setContentUpdating model
-                ! [ App.Server.Coto.updateContent
-                        model.coto.id
-                        model.editingContent
-                  ]
+            ( setContentUpdating model
+            , Nothing
+            , App.Server.Coto.updateContent
+                model.coto.id
+                model.editingContent
+            )
 
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
