@@ -7,7 +7,7 @@ import List.Extra
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction, Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
@@ -161,6 +161,15 @@ clearModals model =
     { model | modals = [] }
 
 
+openCoto : Coto -> Model -> Model
+openCoto coto model =
+    coto
+        |> App.Modals.CotoModal.initModel (isCotonomaAndPinned coto model)
+        |> Just
+        |> (\modal -> { model | cotoModal = modal })
+        |> openModal CotoModal
+
+
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
     (isNothing model.context.cotonoma)
@@ -220,3 +229,11 @@ closeSelectionColumnIfEmpty model =
         { model | cotoSelectionColumnOpen = False }
     else
         model
+
+
+clickCoto : ElementId -> CotoId -> Model -> Model
+clickCoto elementId cotoId model =
+    model.context
+        |> setElementFocus (Just elementId)
+        |> setCotoFocus (Just cotoId)
+        |> \context -> { model | context = context }

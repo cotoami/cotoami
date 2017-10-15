@@ -704,26 +704,6 @@ confirm message msgOnConfirm model =
         |> openModal App.Model.ConfirmModal
 
 
-clickCoto : ElementId -> CotoId -> Model -> Model
-clickCoto elementId cotoId model =
-    model.context
-        |> setElementFocus (Just elementId)
-        |> setCotoFocus (Just cotoId)
-        |> \context -> { model | context = context }
-
-
-openCoto : Coto -> Model -> Model
-openCoto coto model =
-    { model
-        | cotoModal =
-            Just <|
-                App.Modals.CotoModal.initModel
-                    (isCotonomaAndPinned coto model)
-                    coto
-    }
-        |> \model -> openModal App.Model.CotoModal model
-
-
 applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
