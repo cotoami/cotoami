@@ -2,7 +2,6 @@ module App.Modals.CotoModal
     exposing
         ( Model
         , initModel
-        , setContentUpdating
         , setContentUpdated
         , setContentUpdateError
         , update
@@ -26,9 +25,10 @@ import App.Types.Coto
         )
 import App.Markdown
 import App.Types.Session exposing (Session)
+import App.Server.Coto
 import App.Messages as AppMsg
     exposing
-        ( Msg(CloseModal, ConfirmDeleteCoto, UpdateContent, PinOrUnpinCotonoma)
+        ( Msg(CloseModal, ConfirmDeleteCoto, PinOrUnpinCotonoma)
         )
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
@@ -96,7 +96,7 @@ setContentUpdateError error model =
         |> \model -> { model | updatingContent = False }
 
 
-update : CotoModalMsg.Msg -> Model -> ( Model, Cmd CotoModalMsg.Msg )
+update : CotoModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         Edit ->
@@ -112,6 +112,13 @@ update msg model =
                 , contentUpdateStatus = None
             }
                 ! []
+
+        Save ->
+            setContentUpdating model
+                ! [ App.Server.Coto.updateContent
+                        model.coto.id
+                        model.editingContent
+                  ]
 
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
@@ -263,7 +270,7 @@ saveButton enabled model =
     button
         [ class "button button-primary"
         , disabled (not enabled)
-        , onClick (UpdateContent model.coto.id model.editingContent)
+        , onClick (AppMsg.CotoModalMsg Save)
         ]
         [ text
             (if model.updatingContent then

@@ -297,12 +297,6 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
-        UpdateContent cotoId content ->
-            model.cotoModal
-                |> Maybe.map App.Modals.CotoModal.setContentUpdating
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> \model -> model ! [ App.Server.Coto.updateContent cotoId content ]
-
         ContentUpdated (Ok coto) ->
             (model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
@@ -685,10 +679,8 @@ update msg model =
             model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.update subMsg)
                 |> Maybe.map
-                    (\( cotoModal, subCmd ) ->
-                        ( { model | cotoModal = Just cotoModal }
-                        , Cmd.map CotoModalMsg subCmd
-                        )
+                    (\( cotoModal, cmd ) ->
+                        ( { model | cotoModal = Just cotoModal }, cmd )
                     )
                 |> withDefault (model ! [])
 

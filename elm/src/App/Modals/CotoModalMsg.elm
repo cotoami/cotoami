@@ -5,3 +5,4 @@ type Msg
     = Edit
     | EditorInput String
     | CancelEditing
+    | Save
