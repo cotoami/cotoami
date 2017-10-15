@@ -25,7 +25,7 @@ defmodule Cotoami.CotonomaService do
         })
       |> Repo.insert!()
 
-    cotonoma = create_cotonoma(cotonoma_coto, name, amishi.id)
+    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id)
 
     cotonoma_coto = %{cotonoma_coto |
       amishi: amishi,
@@ -39,7 +39,7 @@ defmodule Cotoami.CotonomaService do
     {cotonoma_coto, posted_in}
   end
 
-  defp create_cotonoma(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
+  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
     %Cotonoma{}
     |> Cotonoma.changeset_to_insert(%{
         name: name,
@@ -58,7 +58,7 @@ defmodule Cotoami.CotonomaService do
       |> change(content: cotonoma_name)
       |> Repo.update!()
 
-    cotonoma = create_cotonoma(cotonoma_coto, cotonoma_name, amishi.id)
+    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id)
 
     %{cotonoma_coto |
       amishi: amishi,

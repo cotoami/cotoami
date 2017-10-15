@@ -64,6 +64,12 @@ defmodule Cotoami.CotoController do
     end)
   end
 
+  def cotonomatize(conn, %{"id" => id}, amishi) do
+
+  rescue
+    e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
+  end
+
   def delete(conn, %{"id" => id}, amishi) do
     CotoService.delete(id, amishi)
     send_resp(conn, :no_content, "")
