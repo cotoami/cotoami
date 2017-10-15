@@ -191,7 +191,7 @@ cotoModalConfig session model =
                         [ text "Converting..." ]
                      else
                         [ faIcon "long-arrow-right" Nothing
-                        , text "Convert into a cotonoma"
+                        , text "Cotonomatize"
                         ]
                     )
             ]
