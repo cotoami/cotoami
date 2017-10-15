@@ -9,6 +9,24 @@
     margin-bottom: 1rem;
   }
 
+  span.coto-modal-title {
+    button {
+      margin: 0;
+      margin-left: 10px;
+      margin-bottom: 3px;
+      vertical-align: middle;
+      padding: 0 10px;
+      height: 26px;
+      line-height: 26px;
+      font-size: 10px;
+      letter-spacing: normal;
+
+      i {
+        margin-right: 3px;
+      }
+    }
+  }
+
   div.content {
     max-height: 55vh;
     overflow-y: auto;

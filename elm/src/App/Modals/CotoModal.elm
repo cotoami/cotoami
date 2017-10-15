@@ -15,6 +15,7 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Coto
     exposing
         ( Coto
@@ -136,7 +137,15 @@ modalConfig session model =
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 cotoModalConfig session model =
     { closeMessage = CloseModal
-    , title = text "Coto"
+    , title =
+        span [ class "coto-modal-title" ]
+            [ text "Coto"
+            , button
+                [ class "button" ]
+                [ faIcon "long-arrow-right" Nothing
+                , text "Convert into a cotonoma"
+                ]
+            ]
     , content =
         div []
             [ if model.editing then
