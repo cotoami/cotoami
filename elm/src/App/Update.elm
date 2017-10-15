@@ -821,13 +821,3 @@ doDeselect model =
                     }
     }
         |> closeSelectionColumnIfEmpty
-
-
-confirmPostAndConnect : Model -> Model
-confirmPostAndConnect model =
-    { model
-        | connectingSubject =
-            Just (App.Model.NewPost model.timeline.newContent)
-        , connectingDirection = Inbound
-    }
-        |> \model -> openModal App.Model.ConnectModal model

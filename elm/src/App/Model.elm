@@ -9,7 +9,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
-import App.Types.Graph exposing (Direction, Graph, defaultGraph)
+import App.Types.Graph exposing (Direction(..), Graph, defaultGraph)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Modals.ConfirmModal exposing (ConfirmRequest, defaultConfirmRequest)
@@ -168,6 +168,15 @@ openCoto coto model =
         |> Just
         |> (\modal -> { model | cotoModal = modal })
         |> openModal CotoModal
+
+
+confirmPostAndConnect : Model -> Model
+confirmPostAndConnect model =
+    { model
+        | connectingSubject = Just (NewPost model.timeline.newContent)
+        , connectingDirection = Inbound
+    }
+        |> \model -> openModal ConnectModal model
 
 
 isNavigationEmpty : Model -> Bool
