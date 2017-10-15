@@ -190,9 +190,7 @@ cotoModalConfig session model =
     , title =
         span [ class "coto-modal-title" ]
             [ text "Coto"
-            , if model.editing then
-                span [] []
-              else
+            , if checkWritePermission session model && (not model.editing) then
                 button
                     [ class "button"
                     , onClick (AppMsg.CotoModalMsg ConfirmCotonomatize)
@@ -204,6 +202,8 @@ cotoModalConfig session model =
                         , text "Cotonomatize"
                         ]
                     )
+              else
+                span [] []
             ]
     , content =
         div []
