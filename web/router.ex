@@ -58,6 +58,7 @@ defmodule Cotoami.Router do
     get "/amishis/email/:email", AmishiController, :show_by_email
 
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
+    put "/cotos/:id/cotonomatize", CotoController, :cotonomatize
 
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub
