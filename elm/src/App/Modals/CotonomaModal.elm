@@ -88,7 +88,7 @@ view context model =
 modalConfig : Session -> Context -> Model -> Modal.Config AppMsg.Msg
 modalConfig session context model =
     { closeMessage = CloseModal
-    , title = "Cotonoma"
+    , title = text "Cotonoma"
     , content =
         div []
             [ p []

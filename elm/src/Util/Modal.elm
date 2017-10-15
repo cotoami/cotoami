@@ -10,7 +10,7 @@ import Util.HtmlUtil exposing (faIcon)
 
 type alias Config msg =
     { closeMessage : msg
-    , title : String
+    , title : Html msg
     , content : Html msg
     , buttons : List (Html msg)
     }
@@ -45,7 +45,7 @@ modalContent config =
                 [ faIcon "times" Nothing ]
             ]
         , div [ class "modal-content-inner" ]
-            [ h4 [] [ text config.title ]
+            [ h4 [] [ config.title ]
             , config.content
             ]
         , hr [ class "modal-buttons-seperator" ] []

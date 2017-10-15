@@ -136,7 +136,7 @@ modalConfig session model =
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 cotoModalConfig session model =
     { closeMessage = CloseModal
-    , title = "Coto"
+    , title = text "Coto"
     , content =
         div []
             [ if model.editing then
@@ -178,7 +178,7 @@ cotoModalConfig session model =
 cotonomaModalConfig : CotonomaKey -> Session -> Model -> Modal.Config AppMsg.Msg
 cotonomaModalConfig cotonomaKey session model =
     { closeMessage = CloseModal
-    , title = "Cotonoma"
+    , title = text "Cotonoma"
     , content =
         div []
             [ if model.editing then

@@ -30,7 +30,7 @@ view model =
 modalConfig : Direction -> List Coto -> ConnectingSubject -> Modal.Config Msg
 modalConfig direction selectedCotos subject =
     { closeMessage = CloseModal
-    , title = "Connect Preview"
+    , title = text "Connect Preview"
     , content = modalContent direction selectedCotos subject
     , buttons =
         case subject of
