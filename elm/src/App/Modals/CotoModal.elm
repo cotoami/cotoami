@@ -40,11 +40,12 @@ type alias Model =
     { coto : Coto
     , cotonomaPinned : Bool
     , editing : Bool
+    , editingToCotonomatize : Bool
     , editingContent : String
-    , updatingContent : Bool
+    , waitingToUpdateContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
-    , updatingCotonomaPin : Bool
-    , cotonomatizing : Bool
+    , waitingToPinOrUnpinCotonoma : Bool
+    , waitingToCotonomatize : Bool
     }
 
 
@@ -59,18 +60,19 @@ initModel cotonomaPinned coto =
     { coto = coto
     , cotonomaPinned = cotonomaPinned
     , editing = False
+    , editingToCotonomatize = False
     , editingContent = coto.content
-    , updatingContent = False
+    , waitingToUpdateContent = False
     , contentUpdateStatus = None
-    , updatingCotonomaPin = False
-    , cotonomatizing = False
+    , waitingToPinOrUnpinCotonoma = False
+    , waitingToCotonomatize = False
     }
 
 
 setContentUpdating : Model -> Model
 setContentUpdating model =
     { model
-        | updatingContent = True
+        | waitingToUpdateContent = True
         , contentUpdateStatus = None
     }
 
@@ -80,7 +82,7 @@ setContentUpdated coto model =
     { model
         | coto = coto
         , editing = False
-        , updatingContent = False
+        , waitingToUpdateContent = False
         , contentUpdateStatus = None
     }
 
@@ -97,14 +99,14 @@ setContentUpdateError error model =
         _ ->
             { model | contentUpdateStatus = Rejected }
     )
-        |> \model -> { model | updatingContent = False }
+        |> \model -> { model | waitingToUpdateContent = False }
 
 
 setCotonomatized : Coto -> Model -> Model
 setCotonomatized coto model =
     { model
         | coto = coto
-        , cotonomatizing = False
+        , waitingToCotonomatize = False
     }
 
 
@@ -145,10 +147,13 @@ update msg model =
                 , Cmd.none
                 )
             else
-                ( model, Nothing, Cmd.none )
+                ( { model | editing = True }
+                , Nothing
+                , Cmd.none
+                )
 
         Cotonomatize ->
-            ( { model | cotonomatizing = True }
+            ( { model | waitingToCotonomatize = True }
             , Nothing
             , App.Server.Coto.cotonomatize model.coto.id
             )
@@ -187,7 +192,7 @@ cotoModalConfig session model =
                     [ class "button"
                     , onClick (AppMsg.CotoModalMsg ConfirmCotonomatize)
                     ]
-                    (if model.cotonomatizing then
+                    (if model.waitingToCotonomatize then
                         [ text "Converting..." ]
                      else
                         [ faIcon "long-arrow-right" Nothing
@@ -218,7 +223,7 @@ cotoModalConfig session model =
             [ cancelEditingButton
             , saveButton
                 (isNotBlank model.editingContent
-                    && not model.updatingContent
+                    && not model.waitingToUpdateContent
                 )
                 model
             ]
@@ -263,7 +268,7 @@ cotonomaModalConfig cotonomaKey session model =
             [ cancelEditingButton
             , saveButton
                 (validateCotonomaName model.editingContent
-                    && not model.updatingContent
+                    && not model.waitingToUpdateContent
                 )
                 model
             ]
@@ -271,11 +276,11 @@ cotonomaModalConfig cotonomaKey session model =
             [ if session.owner then
                 button
                     [ class "button"
-                    , disabled model.updatingCotonomaPin
+                    , disabled model.waitingToPinOrUnpinCotonoma
                     , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
                     ]
                     [ text
-                        (if model.updatingCotonomaPin then
+                        (if model.waitingToPinOrUnpinCotonoma then
                             "Processing..."
                          else if model.cotonomaPinned then
                             "Unpin from nav"
@@ -315,7 +320,7 @@ saveButton enabled model =
         , onClick (AppMsg.CotoModalMsg Save)
         ]
         [ text
-            (if model.updatingContent then
+            (if model.waitingToUpdateContent then
                 "Updating..."
              else
                 "Save"

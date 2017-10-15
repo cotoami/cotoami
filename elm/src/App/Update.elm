@@ -442,7 +442,7 @@ update msg model =
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
             model.cotoModal
-                |> Maybe.map (\modal -> { modal | updatingCotonomaPin = True })
+                |> Maybe.map (\modal -> { modal | waitingToPinOrUnpinCotonoma = True })
                 |> (\modal -> { model | cotoModal = modal })
                 |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
 
