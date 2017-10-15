@@ -115,7 +115,10 @@ update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Ms
 update msg model =
     case msg of
         Edit ->
-            ( { model | editing = True }, Nothing, Cmd.none )
+            ( { model | editing = True, editingToCotonomatize = False }
+            , Nothing
+            , Cmd.none
+            )
 
         EditorInput content ->
             ( { model | editorContent = content }, Nothing, Cmd.none )
