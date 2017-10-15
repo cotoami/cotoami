@@ -627,7 +627,10 @@ update msg model =
                   ]
 
         DeselectCoto ->
-            doDeselect model ! []
+            ( { model | context = finishBeingDeselected model.context }
+                |> closeSelectionColumnIfEmpty
+            , Cmd.none
+            )
 
         ClearSelection ->
             { model
@@ -804,20 +807,3 @@ post maybeDirection model =
                     ! [ App.Commands.scrollTimelineToBottom NoOp
                       , App.Server.Post.post clientId cotonoma postMsg newPost
                       ]
-
-
-doDeselect : Model -> Model
-doDeselect model =
-    { model
-        | context =
-            model.context
-                |> \context ->
-                    { context
-                        | selection =
-                            List.filter
-                                (\id -> not (Set.member id context.deselecting))
-                                context.selection
-                        , deselecting = Set.empty
-                    }
-    }
-        |> closeSelectionColumnIfEmpty

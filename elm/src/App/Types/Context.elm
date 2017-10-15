@@ -9,7 +9,8 @@ import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, CotoId, Cotonoma)
 
 
-type alias CotoSelection = List CotoId
+type alias CotoSelection =
+    List CotoId
 
 
 type alias Context =
@@ -60,18 +61,21 @@ setCotoFocus maybeCotoId context =
 isSelected : Maybe CotoId -> Context -> Bool
 isSelected maybeCotoId context =
     case maybeCotoId of
-        Nothing -> False
-        Just cotoId -> List.member cotoId context.selection
+        Nothing ->
+            False
+
+        Just cotoId ->
+            List.member cotoId context.selection
 
 
 updateSelection : CotoId -> Context -> Context
 updateSelection cotoId context =
     { context
-    | selection =
-        if context.selection |> List.member cotoId  then
-            List.filter (\id -> cotoId /= id) context.selection
-        else
-            cotoId :: context.selection
+        | selection =
+            if context.selection |> List.member cotoId then
+                List.filter (\id -> cotoId /= id) context.selection
+            else
+                cotoId :: context.selection
     }
 
 
@@ -98,8 +102,19 @@ deleteSelection cotoId context =
 setBeingDeselected : CotoId -> Context -> Context
 setBeingDeselected cotoId context =
     { context
-    | deselecting =
-        context.deselecting |> Set.insert cotoId
+        | deselecting =
+            context.deselecting |> Set.insert cotoId
+    }
+
+
+finishBeingDeselected : Context -> Context
+finishBeingDeselected context =
+    { context
+        | selection =
+            List.filter
+                (\id -> not (Set.member id context.deselecting))
+                context.selection
+        , deselecting = Set.empty
     }
 
 
@@ -107,7 +122,7 @@ keyDown : KeyCode -> Context -> Context
 keyDown keyCode context =
     if isModifier keyCode then
         { context
-        | modifierKeys = Set.insert keyCode context.modifierKeys
+            | modifierKeys = Set.insert keyCode context.modifierKeys
         }
     else
         context
@@ -117,7 +132,7 @@ keyUp : KeyCode -> Context -> Context
 keyUp keyCode context =
     if isModifier keyCode then
         { context
-        | modifierKeys = Set.remove keyCode context.modifierKeys
+            | modifierKeys = Set.remove keyCode context.modifierKeys
         }
     else
         context
@@ -127,26 +142,40 @@ isCtrlDown : Context -> Bool
 isCtrlDown context =
     context.modifierKeys
         |> Set.toList
-        |> List.any (\keyCode ->
-            case toModifier keyCode of
-                Nothing -> False
-                Just modifier ->
-                    case modifier of
-                        Ctrl -> True
-                        Meta -> True
-                        _ -> False
-        )
+        |> List.any
+            (\keyCode ->
+                case toModifier keyCode of
+                    Nothing ->
+                        False
+
+                    Just modifier ->
+                        case modifier of
+                            Ctrl ->
+                                True
+
+                            Meta ->
+                                True
+
+                            _ ->
+                                False
+            )
 
 
 isAltDown : Context -> Bool
 isAltDown context =
     context.modifierKeys
         |> Set.toList
-        |> List.any (\keyCode ->
-            case toModifier keyCode of
-                Nothing -> False
-                Just modifier ->
-                    case modifier of
-                        Alt -> True
-                        _ -> False
-        )
+        |> List.any
+            (\keyCode ->
+                case toModifier keyCode of
+                    Nothing ->
+                        False
+
+                    Just modifier ->
+                        case modifier of
+                            Alt ->
+                                True
+
+                            _ ->
+                                False
+            )
