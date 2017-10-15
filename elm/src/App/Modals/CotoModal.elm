@@ -147,11 +147,14 @@ cotoModalConfig session model =
     , title =
         span [ class "coto-modal-title" ]
             [ text "Coto"
-            , button
-                [ class "button" ]
-                [ faIcon "long-arrow-right" Nothing
-                , text "Convert into a cotonoma"
-                ]
+            , if model.editing then
+                span [] []
+              else
+                button
+                    [ class "button" ]
+                    [ faIcon "long-arrow-right" Nothing
+                    , text "Convert into a cotonoma"
+                    ]
             ]
     , content =
         div []
