@@ -317,6 +317,12 @@ update msg model =
                 |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
                 |> \model -> model ! []
 
+        Cotonomatized (Ok coto) ->
+            model ! []
+
+        Cotonomatized (Err error) ->
+            model ! []
+
         PinCoto cotoId ->
             App.Model.getCoto cotoId model
                 |> Maybe.map

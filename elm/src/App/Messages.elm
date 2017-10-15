@@ -61,6 +61,7 @@ type Msg
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
     | ContentUpdated (Result Http.Error Coto)
+    | Cotonomatized (Result Http.Error Coto)
     | PinCoto CotoId
     | CotoPinned (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
