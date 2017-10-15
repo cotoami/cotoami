@@ -54,12 +54,12 @@ defmodule Cotoami.CotonomaController do
 
   def pin(conn, %{"key" => key}, %{owner: true}) do
     Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.pin()
-    send_resp(conn, :ok, "")
+    conn |> put_status(:ok) |> json("")
   end
 
   def unpin(conn, %{"key" => key}, %{owner: true}) do
     Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.unpin()
-    send_resp(conn, :ok, "")
+    conn |> put_status(:ok) |> json("")
   end
 
   def cotos(conn, %{"key" => key}, amishi) do

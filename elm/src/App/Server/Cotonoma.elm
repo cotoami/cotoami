@@ -4,7 +4,8 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Date
-import Util.HttpUtil exposing (httpDelete)
+import Http
+import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey)
@@ -73,7 +74,7 @@ pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
     in
         Http.send CotonomaPinnedOrUnpinned
             (if pinOrUnpin then
-                Http.getString url
+                httpPut url Http.emptyBody Decode.string
              else
                 httpDelete url
             )
