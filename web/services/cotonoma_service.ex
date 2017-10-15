@@ -138,11 +138,13 @@ defmodule Cotoami.CotonomaService do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
+    |> Cotonoma.copy_belongings(cotonoma)
   end
 
   def increment_graph_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
+    |> Cotonoma.copy_belongings(cotonoma)
   end
 end

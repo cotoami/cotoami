@@ -78,4 +78,8 @@ defmodule Cotoami.Cotonoma do
       join: coto in assoc(c, :coto),
       where: coto.posted_in_id == ^cotonoma_id
   end
+
+  def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
+    %{target | coto: from.coto, owner: from.owner}
+  end
 end
