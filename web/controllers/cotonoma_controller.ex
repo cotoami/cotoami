@@ -1,6 +1,7 @@
 defmodule Cotoami.CotonomaController do
   use Cotoami.Web, :controller
   require Logger
+  import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
   alias Cotoami.{Cotonoma, CotonomaService, CotoView}
 
   plug :scrub_params, "cotonoma" when action in [:create]
@@ -39,9 +40,7 @@ defmodule Cotoami.CotonomaController do
         case CotonomaService.create!(name, amishi, cotonoma_id) do
           {cotonoma_coto, nil} -> {cotonoma_coto, nil}
           {cotonoma_coto, posted_in} ->
-            {cotonoma_coto,
-              CotonomaService.increment_timeline_revision(posted_in)
-            }
+            {cotonoma_coto, increment_timeline_revision(posted_in)}
         end
       end)
     if posted_in do
