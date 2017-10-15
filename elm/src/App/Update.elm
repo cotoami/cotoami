@@ -806,21 +806,6 @@ post maybeDirection model =
                       ]
 
 
-pinSelectedCotos : Model -> Model
-pinSelectedCotos model =
-    model.context.selection
-        |> List.filterMap (\cotoId -> App.Model.getCoto cotoId model)
-        |> \cotos ->
-            model.graph
-                |> pinCotos cotos
-                |> \graph ->
-                    { model
-                        | graph = graph
-                        , context = clearSelection model.context
-                        , activeViewOnMobile = PinnedView
-                    }
-
-
 doDeselect : Model -> Model
 doDeselect model =
     { model
