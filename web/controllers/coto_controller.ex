@@ -2,7 +2,7 @@ defmodule Cotoami.CotoController do
   use Cotoami.Web, :controller
   require Logger
   import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
-  alias Cotoami.{Coto, CotoService, CotonomaService}
+  alias Cotoami.{Coto, CotoService, CotonomaService, CotoGraphService}
 
   plug :scrub_params, "coto" when action in [:create, :update]
 
@@ -68,6 +68,12 @@ defmodule Cotoami.CotoController do
             end
           end)
         render(conn, "coto.json", coto: coto)
+
+      # Fix inconsistent state caused by the cotonomatizing-won't-affect-graph bug
+      %Coto{as_cotonoma: true} = coto ->
+        CotoGraphService.sync_coto_props(Bolt.Sips.conn, coto)
+        render(conn, "coto.json", coto: coto)
+
       _ ->
         send_resp(conn, :not_found, "")
     end
