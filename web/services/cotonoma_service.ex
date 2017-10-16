@@ -6,7 +6,10 @@ defmodule Cotoami.CotonomaService do
   require Logger
   import Ecto.Query, only: [preload: 2, where: 3, limit: 2, order_by: 2]
   import Ecto.Changeset, only: [change: 2]
-  alias Cotoami.{Repo, Coto, Cotonoma, Amishi, AmishiService, CotoService}
+  alias Cotoami.{
+    Repo, Coto, Cotonoma, Amishi,
+    AmishiService, CotoService, CotoGraphService
+  }
 
   def create!(name, %Amishi{} = amishi, cotonoma_id \\ nil) do
     posted_in =
@@ -60,14 +63,19 @@ defmodule Cotoami.CotonomaService do
 
     cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id)
 
-    %{cotonoma_coto |
-      amishi: amishi,
-      posted_in: coto.posted_in,
-      cotonoma: %{cotonoma |
-        owner: amishi,
-        coto: cotonoma_coto
+    cotonoma_coto =
+      %{cotonoma_coto |
+        amishi: amishi,
+        posted_in: coto.posted_in,
+        cotonoma: %{cotonoma |
+          owner: amishi,
+          coto: cotonoma_coto
+        }
       }
-    }
+
+    CotoGraphService.sync_coto_props(Bolt.Sips.conn, cotonoma_coto)
+
+    cotonoma_coto
   end
 
   def get(id) do
