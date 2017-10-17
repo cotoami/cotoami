@@ -100,7 +100,12 @@ setContentUpdateError error model =
         _ ->
             { model | contentUpdateStatus = Rejected }
     )
-        |> \model -> { model | waitingToUpdateContent = False }
+        |> \model ->
+            { model
+                | waitingToUpdateContent = False
+                , waitingToCotonomatize = False
+                , editing = True
+            }
 
 
 setCotonomatized : Coto -> Model -> Model
@@ -372,7 +377,7 @@ errorDiv model =
         Conflict ->
             div [ class "error" ]
                 [ span [ class "message" ]
-                    [ text "You already have this cotonoma." ]
+                    [ text "You already have a cotonoma with this name." ]
                 ]
 
         Rejected ->
