@@ -87,10 +87,7 @@ defmodule Cotoami.CotoGraphController do
   defp get_cotonoma_if_specified(params) do
     case params do
       %{"cotonoma_key" => cotonoma_key} ->
-        case CotonomaService.get_by_key(cotonoma_key) do
-          nil -> raise NotFound, "cotonoma: #{cotonoma_key}"
-          cotonoma -> cotonoma
-        end
+        CotonomaService.get_by_key!(cotonoma_key)
       _ -> nil
     end
   end

@@ -10,13 +10,10 @@ defmodule Cotoami.CotonomaService do
     Repo, Coto, Cotonoma, Amishi,
     AmishiService, CotoService, CotoGraphService
   }
+  alias Cotoami.Exceptions.NotFound
 
   def create!(name, %Amishi{} = amishi, cotonoma_id \\ nil) do
-    posted_in =
-      case cotonoma_id do
-        nil -> nil
-        cotonoma_id -> Repo.get!(Cotonoma, cotonoma_id)
-      end
+    posted_in = get!(cotonoma_id)
 
     cotonoma_coto =
       %Coto{}
@@ -85,11 +82,27 @@ defmodule Cotoami.CotonomaService do
     |> complement_owner()
   end
 
+  def get!(nil), do: nil
+  def get!(id) do
+    case get(id) do
+      nil -> raise NotFound, "cotonoma: id<#{id}>"
+      cotonoma -> cotonoma
+    end
+  end
+
   def get_by_key(key) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)
     |> complement_owner()
+  end
+
+  def get_by_key!(nil), do: nil
+  def get_by_key!(key) do
+    case get_by_key(key) do
+      nil -> raise NotFound, "cotonoma: key<#{key}>"
+      cotonoma -> cotonoma
+    end
   end
 
   def complement_owner(nil), do: nil
