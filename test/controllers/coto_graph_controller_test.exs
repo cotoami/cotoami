@@ -7,7 +7,9 @@ defmodule Cotoami.CotoGraphControllerTest do
   }
 
   setup do
-    amishi = AmishiService.create!("amishi@example.com")
+    amishi =
+      AmishiService.create!("amishi@example.com")
+      |> Map.put(:owner, false)
     conn =
       build_conn()
       |> put_req_header("host", "localhost")

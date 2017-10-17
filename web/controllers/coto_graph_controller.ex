@@ -70,16 +70,10 @@ defmodule Cotoami.CotoGraphController do
     json conn, result
   end
 
-  def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id} = params, amishi) do
-    cotonoma = get_cotonoma_if_specified(params)
+  def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id}, amishi) do
     start_coto = ensure_to_get_coto(start_id)
     end_coto = ensure_to_get_coto(end_id)
-    case cotonoma do
-      nil ->
-        CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
-      cotonoma ->
-        CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
-    end
+    CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
     text conn, "ok"
   end
 

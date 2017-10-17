@@ -196,7 +196,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "disconnect", ~M{conn, amishi, coto1, coto2} do
-      CotoGraphService.disconnect(conn, coto1, coto2, amishi)
+      CotoGraphService.disconnect(conn, %{coto1 | amishi: amishi}, coto2, amishi)
       assert [] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
     end
   end
