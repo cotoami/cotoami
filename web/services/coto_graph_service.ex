@@ -196,6 +196,7 @@ defmodule Cotoami.CotoGraphService do
     %Cotonoma{coto: %Coto{} = cotonoma_coto, owner: cotonoma_owner},
     %Amishi{} = amishi
   ) do
+    # expect the associations of cotonoma.coto to be missing
     cotonoma_coto = %{cotonoma_coto | amishi: cotonoma_owner}
     bolt_conn
     |> ensure_disconnectable(cotonoma_coto, coto, amishi)
