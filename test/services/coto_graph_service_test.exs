@@ -96,27 +96,31 @@ defmodule Cotoami.CotoGraphServiceTest do
       ~M{coto}
     end
 
-    test "pin", ~M{conn, amishi, coto} do
-      amishi_node = Neo4jService.get_or_create_node(conn, amishi.id)
-      amishi_node_id = amishi_node.id
+    test "reflects in the neo4j", %{
+      conn: conn,
+      amishi: %{id: amishi_id},
+      coto: %{id: coto_id, cotonoma: %{key: cotonoma_key}}
+    } do
+      assert %Node{id: amishi_node_id} =
+        Neo4jService.get_or_create_node(conn, amishi_id)
 
-      coto_id = coto.id
-      cotonoma_key = coto.cotonoma.key
-      coto_node = Neo4jService.get_or_create_node(conn, coto.id)
-      coto_node_id = coto_node.id
-      assert ["Coto", "Cotonoma"] == Enum.sort(coto_node.labels)
-      assert %{
-        "uuid" => ^coto_id,
-        "content" => "cotonoma coto",
-        "cotonoma_key" => ^cotonoma_key
-      } = coto_node.properties
+      assert %Node{
+        id: coto_node_id,
+        labels: labels,
+        properties: %{
+          "uuid" => ^coto_id,
+          "content" => "cotonoma coto",
+          "cotonoma_key" => ^cotonoma_key
+        }
+      } = Neo4jService.get_or_create_node(conn, coto_id)
+      assert ["Coto", "Cotonoma"] == Enum.sort(labels)
 
       assert [
         %Relationship{
           start: ^amishi_node_id,
           end: ^coto_node_id
         }
-      ] = Neo4jService.get_ordered_relationships(conn, amishi.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, amishi_id, "HAS_A")
     end
   end
 
