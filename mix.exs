@@ -50,7 +50,8 @@ defmodule Cotoami.Mixfile do
       {:httpotion, "~> 3.0.2"},
       {:bolt_sips, "~> 0.3"},
       {:uuid, "~> 1.1"},
-      {:shorter_maps, "~> 2.2"}
+      {:shorter_maps, "~> 2.2"},
+      {:logster, "~> 0.6"}
     ]
   end
 
