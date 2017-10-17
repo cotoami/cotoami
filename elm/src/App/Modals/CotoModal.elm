@@ -213,12 +213,11 @@ cotoModalConfig session model =
     , content =
         div []
             [ if model.editing then
-                div []
+                div [ class "coto-editor" ]
                     [ adviceOnCotonomaNameDiv model
-                    , div [ class "coto-editor" ]
+                    , div [ class "content-input" ]
                         [ textarea
-                            [ class "coto"
-                            , value model.editorContent
+                            [ value model.editorContent
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -256,8 +255,8 @@ cotonomaModalConfig cotonomaKey session model =
     , content =
         div []
             [ if model.editing then
-                div []
-                    [ div [ class "coto-editor" ]
+                div [ class "cotonoma-editor" ]
+                    [ div [ class "name-input" ]
                         [ input
                             [ type_ "text"
                             , class "u-full-width"
