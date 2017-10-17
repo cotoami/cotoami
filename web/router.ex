@@ -44,7 +44,6 @@ defmodule Cotoami.Router do
     pipe_through :api
 
     get "/", PublicController, :index
-    get "/info", PublicController, :info
     get "/session", SessionController, :index
     get "/signin/request/:email", SigninController, :request
   end

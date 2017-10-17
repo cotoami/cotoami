@@ -14,8 +14,8 @@ use Mix.Config
 config :cotoami, Cotoami.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [
-    scheme: System.get_env("COTOAMI_URL_SCHEME"), 
-    host: System.get_env("COTOAMI_URL_HOST"), 
+    scheme: System.get_env("COTOAMI_URL_SCHEME"),
+    host: System.get_env("COTOAMI_URL_HOST"),
     port: (System.get_env("COTOAMI_URL_PORT") || "80") |> String.to_integer
   ],
   cache_static_manifest: "priv/static/manifest.json"
@@ -26,7 +26,6 @@ config :logger, level: :info
 # Configure your database
 config :cotoami, Cotoami.Repo,
   adapter: Ecto.Adapters.Postgres,
-  loggers: [Cotoami.Repo.Instrumenter],
   username: System.get_env("COTOAMI_REPO_USER"),
   password: System.get_env("COTOAMI_REPO_PASSWORD"),
   database: System.get_env("COTOAMI_REPO_DATABASE"),

@@ -4,7 +4,7 @@ defmodule Cotoami.Mixfile do
   def project do
     [
       app: :cotoami,
-      version: "0.2.1",
+      version: "0.2.2",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -45,17 +45,13 @@ defmodule Cotoami.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:redix, "~> 0.4"},
-      {:prometheus_ex, "~> 1.0"},
-      {:prometheus_ecto, "~> 1.0"},
-      {:prometheus_phoenix, "~> 1.0"},
-      {:prometheus_plugs, "~> 1.0"},
-      {:prometheus_process_collector, "~> 1.0"},
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
       {:httpotion, "~> 3.0.2"},
       {:bolt_sips, "~> 0.3"},
       {:uuid, "~> 1.1"},
-      {:shorter_maps, "~> 2.2"}
+      {:shorter_maps, "~> 2.2"},
+      {:logster, "~> 0.6"}
     ]
   end
 

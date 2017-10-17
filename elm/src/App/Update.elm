@@ -329,7 +329,10 @@ update msg model =
             )
 
         Cotonomatized (Err error) ->
-            model ! []
+            model.cotoModal
+                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
+                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+                |> \model -> model ! []
 
         PinCoto cotoId ->
             App.Model.getCoto cotoId model

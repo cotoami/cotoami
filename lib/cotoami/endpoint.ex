@@ -1,6 +1,6 @@
 defmodule Cotoami.Endpoint do
   use Phoenix.Endpoint, otp_app: :cotoami
-  
+
   @session_max_age 60 * 60 * 24 * 30
 
   socket "/socket", Cotoami.UserSocket
@@ -22,7 +22,8 @@ defmodule Cotoami.Endpoint do
   end
 
   plug Plug.RequestId
-  plug Plug.Logger
+  # plug Plug.Logger
+  plug Logster.Plugs.Logger
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
@@ -40,10 +41,6 @@ defmodule Cotoami.Endpoint do
     key: "_cotoami_key",
     signing_salt: "oY7grqxI",
     max_age: @session_max_age
-
-  # Prometheus
-  plug Cotoami.PrometheusExporter   # makes the /metrics URL happen
-  plug Cotoami.Endpoint.PipelineInstrumenter   # measures pipeline exec times  
 
   plug Cotoami.Router
 end
