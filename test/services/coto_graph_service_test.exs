@@ -162,8 +162,8 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
     end
 
-    test "unpin", ~M{conn, coto, cotonoma} do
-      CotoGraphService.unpin(conn, coto, cotonoma)
+    test "unpin", ~M{conn, amishi, coto, cotonoma} do
+      CotoGraphService.unpin(conn, coto, cotonoma, amishi)
       assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
     end
   end
