@@ -30,10 +30,14 @@ initConnection amishiId maybeStart end =
         Connection key amishiId maybeStart end
 
 
+type alias ConnectionDict =
+    Dict.Dict CotoId (List Connection)
+
+
 type alias Graph =
     { cotos : Dict.Dict CotoId Coto
     , rootConnections : List Connection
-    , connections : Dict.Dict CotoId (List Connection)
+    , connections : ConnectionDict
     }
 
 
@@ -220,37 +224,25 @@ batchConnect session direction objects subject graph =
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
     { graph
-        | connections = graph.connections |> doDisconnect ( fromId, toId )
+        | connections = deleteConnection ( fromId, toId ) graph.connections
     }
-        |> \graph ->
-            { graph
-                | cotos =
-                    -- remove the coto (toId) if it's an orphan
-                    if inGraph toId graph then
-                        graph.cotos
-                    else
-                        graph.cotos |> Dict.remove toId
-            }
 
 
-doDisconnect : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
-doDisconnect ( fromId, toId ) connections =
+deleteConnection : ( CotoId, CotoId ) -> ConnectionDict -> ConnectionDict
+deleteConnection ( fromId, toId ) connections =
     connections
         |> Dict.update
             fromId
-            (\maybeChildren ->
-                case maybeChildren of
-                    Nothing ->
-                        Nothing
-
-                    Just children ->
-                        children
-                            |> List.filter (\conn -> conn.end /= toId)
-                            |> \children ->
-                                if List.isEmpty children then
-                                    Nothing
-                                else
-                                    Just children
+            (\maybeConns ->
+                maybeConns
+                    |> Maybe.map (List.filter (\conn -> conn.end /= toId))
+                    |> Maybe.andThen
+                        (\conns ->
+                            if List.isEmpty conns then
+                                Nothing
+                            else
+                                Just conns
+                        )
             )
 
 
