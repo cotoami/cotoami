@@ -209,21 +209,25 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "two cotos with a connection" do
     setup ~M{conn, amishi} do
-      {coto1, _posted_in} = CotoService.create!("hello", amishi.id)
-      {coto2, _posted_in} = CotoService.create!("bye", amishi.id)
-      CotoGraphService.connect(conn, coto1, coto2, amishi)
-      ~M{coto1, coto2}
+      source_amishi = AmishiService.create!("source@example.com")
+      {source, _} = CotoService.create!("hello", source_amishi.id)
+
+      target_amishi = AmishiService.create!("target@example.com")
+      {target, _} = CotoService.create!("bye", target_amishi.id)
+
+      CotoGraphService.connect(conn, source, target, amishi)
+      ~M{source, source_amishi, target, target_amishi}
     end
 
-    test "reflects in the neo4j", ~M{conn, amishi, coto1, coto2} do
+    test "reflects in the neo4j", ~M{conn, amishi, source, target} do
       amishi_id = amishi.id
-      coto1_node_id = Neo4jService.get_or_create_node(conn, coto1.id).id
-      coto2_node_id = Neo4jService.get_or_create_node(conn, coto2.id).id
+      source_node_id = Neo4jService.get_or_create_node(conn, source.id).id
+      target_node_id = Neo4jService.get_or_create_node(conn, target.id).id
 
       assert [
         %Relationship{
-          start: ^coto1_node_id,
-          end: ^coto2_node_id,
+          start: ^source_node_id,
+          end: ^target_node_id,
           properties: %{
             "created_at" => _created_at,
             "created_by" => ^amishi_id,
@@ -231,12 +235,12 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
 
-    test "can be disconnected", ~M{conn, amishi, coto1, coto2} do
-      CotoGraphService.disconnect(conn, %{coto1 | amishi: amishi}, coto2, amishi)
-      assert [] = Neo4jService.get_ordered_relationships(conn, coto1.id, "HAS_A")
+    test "can be disconnected", ~M{conn, amishi, source, target} do
+      CotoGraphService.disconnect(conn, %{source | amishi: amishi}, target, amishi)
+      assert [] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
   end
 
