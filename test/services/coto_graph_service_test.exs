@@ -126,20 +126,36 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "a coto pinned to a cotonoma" do
     setup ~M{conn, amishi} do
-      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", amishi)
-      {coto, _} = CotoService.create!("hello", amishi.id)
+      cotonoma_owner = AmishiService.create!("cotonoma@example.com")
+      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", cotonoma_owner)
+
+      coto_amishi = AmishiService.create!("coto@example.com")
+      {coto, _} = CotoService.create!("hello", coto_amishi.id)
+
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
-      ~M{coto, cotonoma}
+
+      ~M{coto, coto_amishi, cotonoma}
     end
 
     test "reflects in the neo4j", %{
       conn: conn,
-      amishi: %{id: amishi_id} = amishi,
-      coto: %{id: coto_id},
-      cotonoma: %{id: cotonoma_id, coto: %{id: cotonoma_coto_id}}
+      amishi: %{id: amishi_id},
+      coto: %{id: coto_id, amishi_id: coto_amishi_id},
+      cotonoma: %{
+        id: cotonoma_id,
+        owner: %{id: cotonoma_owner_id},
+        coto: %{id: cotonoma_coto_id}
+      }
     } do
-      assert %Node{id: coto_node_id} =
-        Neo4jService.get_or_create_node(conn, coto_id)
+      assert %Node{
+        id: coto_node_id,
+        labels: ["Coto"],
+        properties: %{
+          "uuid" => ^coto_id,
+          "content" => "hello",
+          "amishi_id" => ^coto_amishi_id
+        }
+      } = Neo4jService.get_or_create_node(conn, coto_id)
 
       assert %Node{
         id: cotonoma_node_id,
@@ -147,9 +163,7 @@ defmodule Cotoami.CotoGraphServiceTest do
         properties: %{
           "uuid" => ^cotonoma_coto_id,
           "content" => "test",
-          "amishi_id" => ^amishi_id,
-          "inserted_at" => _inserted_at,
-          "updated_at" => _updated_at
+          "amishi_id" => ^cotonoma_owner_id
         }
       } = Neo4jService.get_or_create_node(conn, cotonoma_coto_id)
       assert ["Coto", "Cotonoma"] == Enum.sort(labels)
@@ -172,6 +186,24 @@ defmodule Cotoami.CotoGraphServiceTest do
     test "can be unpinned by the amishi who pinned", ~M{conn, amishi, coto, cotonoma} do
       CotoGraphService.unpin(conn, coto, cotonoma, amishi)
       assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
+    end
+
+    test "can be unpinned by the cotonoma owner", ~M{conn, coto, cotonoma} do
+      CotoGraphService.unpin(conn, coto, cotonoma, cotonoma.owner)
+      assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
+    end
+
+    test "can't be unpinned by the coto amishi", ~M{conn, coto, coto_amishi, cotonoma} do
+      assert_raise Cotoami.Exceptions.NoPermission, fn ->
+        CotoGraphService.unpin(conn, coto, cotonoma, coto_amishi)
+      end
+    end
+
+    test "can't be unpinned by an unrelated amishi", ~M{conn, coto, cotonoma} do
+      unrelated_amishi = AmishiService.create!("unrelated@example.com")
+      assert_raise Cotoami.Exceptions.NoPermission, fn ->
+        CotoGraphService.unpin(conn, coto, cotonoma, unrelated_amishi)
+      end
     end
   end
 
