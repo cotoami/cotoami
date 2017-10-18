@@ -276,10 +276,9 @@ subCotosDiv context graph parentElementId coto =
 
 connectionsDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
 connectionsDiv context graph parentElementId parentCotoId connections =
-    Html.Keyed.node
-        "div"
-        [ class "sub-cotos" ]
-        (List.filterMap
+    connections
+        |> List.reverse
+        |> List.filterMap
             (\conn ->
                 graph.cotos
                     |> Dict.get conn.end
@@ -298,8 +297,7 @@ connectionsDiv context graph parentElementId parentCotoId connections =
                             )
                         )
             )
-            (List.reverse connections)
-        )
+        |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
 subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
