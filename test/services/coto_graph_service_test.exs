@@ -132,24 +132,27 @@ defmodule Cotoami.CotoGraphServiceTest do
       ~M{coto, cotonoma}
     end
 
-    test "pin", ~M{conn, amishi, coto, cotonoma} do
-      amishi_id = amishi.id
-      cotonoma_id = cotonoma.id
-      cotonoma_coto_id = cotonoma.coto.id
+    test "reflects in the neo4j", %{
+      conn: conn,
+      amishi: %{id: amishi_id} = amishi,
+      coto: %{id: coto_id},
+      cotonoma: %{id: cotonoma_id, coto: %{id: cotonoma_coto_id}}
+    } do
+      assert %Node{id: coto_node_id} =
+        Neo4jService.get_or_create_node(conn, coto_id)
 
-      coto_node = Neo4jService.get_or_create_node(conn, coto.id)
-      coto_node_id = coto_node.id
-
-      cotonoma_node = Neo4jService.get_or_create_node(conn, cotonoma.coto.id)
-      cotonoma_node_id = cotonoma_node.id
-      assert ["Coto", "Cotonoma"] == Enum.sort(cotonoma_node.labels)
-      assert %{
-        "uuid" => ^cotonoma_coto_id,
-        "content" => "test",
-        "amishi_id" => ^amishi_id,
-        "inserted_at" => _inserted_at,
-        "updated_at" => _updated_at
-      } = cotonoma_node.properties
+      assert %Node{
+        id: cotonoma_node_id,
+        labels: labels,
+        properties: %{
+          "uuid" => ^cotonoma_coto_id,
+          "content" => "test",
+          "amishi_id" => ^amishi_id,
+          "inserted_at" => _inserted_at,
+          "updated_at" => _updated_at
+        }
+      } = Neo4jService.get_or_create_node(conn, cotonoma_coto_id)
+      assert ["Coto", "Cotonoma"] == Enum.sort(labels)
 
       assert [
         %Relationship{
@@ -163,10 +166,10 @@ defmodule Cotoami.CotoGraphServiceTest do
           },
           type: "HAS_A"
         }
-      ] = Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
+      ] = Neo4jService.get_ordered_relationships(conn, cotonoma_coto_id, "HAS_A")
     end
 
-    test "unpin", ~M{conn, amishi, coto, cotonoma} do
+    test "can be unpinned by the amishi who pinned", ~M{conn, amishi, coto, cotonoma} do
       CotoGraphService.unpin(conn, coto, cotonoma, amishi)
       assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
     end
