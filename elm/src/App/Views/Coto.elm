@@ -257,20 +257,21 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
-    case Dict.get coto.id graph.connections of
-        Nothing ->
-            div [] []
-
-        Just connections ->
-            div []
-                [ div [ class "main-sub-border" ] []
-                , connectionsDiv
-                    context
-                    graph
-                    parentElementId
-                    coto.id
-                    connections
-                ]
+    graph.connections
+        |> Dict.get coto.id
+        |> Maybe.map
+            (\connections ->
+                div []
+                    [ div [ class "main-sub-border" ] []
+                    , connectionsDiv
+                        context
+                        graph
+                        parentElementId
+                        coto.id
+                        connections
+                    ]
+            )
+        |> Maybe.withDefault (div [] [])
 
 
 connectionsDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
