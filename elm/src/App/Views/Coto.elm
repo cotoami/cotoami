@@ -281,13 +281,10 @@ connectionsDiv context graph parentElementId parentCotoId connections =
         [ class "sub-cotos" ]
         (List.filterMap
             (\conn ->
-                case Dict.get conn.end graph.cotos of
-                    Nothing ->
-                        Nothing
-
-                    -- Missing the end node
-                    Just coto ->
-                        Just
+                graph.cotos
+                    |> Dict.get conn.end
+                    |> Maybe.map
+                        (\coto ->
                             ( conn.key
                             , div
                                 [ class "outbound-conn" ]
@@ -299,6 +296,7 @@ connectionsDiv context graph parentElementId parentCotoId connections =
                                     coto
                                 ]
                             )
+                        )
             )
             (List.reverse connections)
         )
