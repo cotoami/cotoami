@@ -211,6 +211,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     setup ~M{conn, amishi} do
       source_amishi = AmishiService.create!("source@example.com")
       {source, _} = CotoService.create!("hello", source_amishi.id)
+      source = %{source | amishi: source_amishi}
 
       target_amishi = AmishiService.create!("target@example.com")
       {target, _} = CotoService.create!("bye", target_amishi.id)
@@ -238,9 +239,27 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
 
-    test "can be disconnected", ~M{conn, amishi, source, target} do
-      CotoGraphService.disconnect(conn, %{source | amishi: amishi}, target, amishi)
+    test "can be disconnected by the amishi who connected", ~M{conn, amishi, source, target} do
+      CotoGraphService.disconnect(conn, source, target, amishi)
       assert [] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
+    end
+
+    test "can be disconnected by the source amishi", ~M{conn, source, source_amishi, target} do
+      CotoGraphService.disconnect(conn, source, target, source_amishi)
+      assert [] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
+    end
+
+    test "can't be disconnected by the target amishi", ~M{conn, source, target, target_amishi} do
+      assert_raise Cotoami.Exceptions.NoPermission, fn ->
+        CotoGraphService.disconnect(conn, source, target, target_amishi)
+      end
+    end
+
+    test "can't be disconnected by an unrelated amishi", ~M{conn, source, target} do
+      unrelated_amishi = AmishiService.create!("unrelated@example.com")
+      assert_raise Cotoami.Exceptions.NoPermission, fn ->
+        CotoGraphService.disconnect(conn, source, target, unrelated_amishi)
+      end
     end
   end
 
