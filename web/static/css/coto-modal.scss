@@ -52,14 +52,20 @@
     margin-bottom: 8px;
     text-align: right;
 
-    span.author {
+    span.preposition {
+      margin-left: 6px;
       margin-right: 6px;
+      color: #ccc;
+    }
+
+    span.author {
+      white-space: nowrap;
 
       img.avatar {
         margin: 0;
         padding: 0;
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         margin-right: 6px;
         border-radius: 4px;
         vertical-align: middle;
@@ -68,6 +74,16 @@
       span.name {
         color: #aaa;
         font-weight: bold;
+      }
+    }
+
+    span.posted-at {
+      white-space: nowrap;
+
+      span.datetime {
+        color: #aaa;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 90%;
       }
     }
   }

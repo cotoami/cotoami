@@ -16,6 +16,7 @@ import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
 import Util.HtmlUtil exposing (faIcon)
+import Util.DateUtil
 import App.Markdown
 import App.Types.Coto
     exposing
@@ -226,11 +227,10 @@ cotoModalConfig session model =
                     [ div [ class "coto-content" ]
                         [ App.Markdown.markdown model.coto.content ]
                     , div [ class "coto-info" ]
-                        [ authorSpan model
-                        , text "posted at"
+                        [ authorSpan model.coto
+                        , postedAtSpan model.coto
                         ]
                     ]
-
             ]
     , buttons =
         if model.editing then
@@ -278,7 +278,9 @@ cotonomaModalConfig cotonomaKey session model =
                     [ div [ class "cotonoma" ]
                         [ cotonomaLabel model.coto.amishi model.coto.content ]
                     , div [ class "cotonoma-info" ]
-                        []
+                        [ authorSpan model.coto
+                        , postedAtSpan model.coto
+                        ]
                     ]
             ]
     , buttons =
@@ -316,17 +318,27 @@ cotonomaModalConfig cotonomaKey session model =
     }
 
 
-authorSpan : Model -> Html AppMsg.Msg
-authorSpan model =
-    model.coto.amishi
+authorSpan : Coto -> Html AppMsg.Msg
+authorSpan coto =
+    coto.amishi
         |> Maybe.map
             (\author ->
                 span [ class "amishi author" ]
-                    [ img [ class "avatar", src author.avatarUrl ] []
+                    [ span [ class "preposition" ] [ text "by" ]
+                    , img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
                     ]
             )
         |> Maybe.withDefault (span [] [])
+
+
+postedAtSpan : Coto -> Html AppMsg.Msg
+postedAtSpan coto =
+    span [ class "posted-at" ]
+        [ span [ class "preposition" ] [ text "at" ]
+        , span [ class "datetime" ]
+            [ text (Util.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
+        ]
 
 
 cancelEditingButton : Html AppMsg.Msg
