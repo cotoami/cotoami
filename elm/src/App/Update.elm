@@ -335,18 +335,18 @@ update msg model =
                 |> \model -> model ! []
 
         PinCoto cotoId ->
-            App.Model.getCoto cotoId model
-                |> Maybe.map
-                    (\coto ->
-                        { model
-                            | graph = pinCoto coto model.graph
-                        }
-                            ! [ App.Server.Graph.pinCotos
-                                    (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                    [ cotoId ]
-                              , App.Commands.scrollPinnedCotosToBottom NoOp
-                              ]
-                    )
+            (Maybe.map2
+                (\session coto ->
+                    { model | graph = pinCoto session coto model.graph }
+                        ! [ App.Server.Graph.pinCotos
+                                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                                [ cotoId ]
+                          , App.Commands.scrollPinnedCotosToBottom NoOp
+                          ]
+                )
+                model.context.session
+                (App.Model.getCoto cotoId model)
+            )
                 |> withDefault (model ! [])
 
         CotoPinned (Ok _) ->

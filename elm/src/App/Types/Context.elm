@@ -48,6 +48,13 @@ setSession session context =
     { context | session = Just session }
 
 
+isServerOwner : Context -> Bool
+isServerOwner context =
+    context.session
+        |> Maybe.map (\session -> session.owner)
+        |> Maybe.withDefault False
+
+
 setElementFocus : Maybe String -> Context -> Context
 setElementFocus maybeElementId context =
     { context | elementFocus = maybeElementId }
@@ -144,20 +151,20 @@ isCtrlDown context =
         |> Set.toList
         |> List.any
             (\keyCode ->
-                case toModifier keyCode of
-                    Nothing ->
-                        False
+                toModifier keyCode
+                    |> Maybe.map
+                        (\modifier ->
+                            case modifier of
+                                Ctrl ->
+                                    True
 
-                    Just modifier ->
-                        case modifier of
-                            Ctrl ->
-                                True
+                                Meta ->
+                                    True
 
-                            Meta ->
-                                True
-
-                            _ ->
-                                False
+                                _ ->
+                                    False
+                        )
+                    |> Maybe.withDefault False
             )
 
 
@@ -167,15 +174,15 @@ isAltDown context =
         |> Set.toList
         |> List.any
             (\keyCode ->
-                case toModifier keyCode of
-                    Nothing ->
-                        False
+                toModifier keyCode
+                    |> Maybe.map
+                        (\modifier ->
+                            case modifier of
+                                Alt ->
+                                    True
 
-                    Just modifier ->
-                        case modifier of
-                            Alt ->
-                                True
-
-                            _ ->
-                                False
+                                _ ->
+                                    False
+                        )
+                    |> Maybe.withDefault False
             )

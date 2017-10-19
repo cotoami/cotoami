@@ -59,14 +59,7 @@ defmodule Cotoami.CotoController do
   def cotonomatize(conn, %{"id" => id}, amishi) do
     case CotoService.get_by_amishi(id, amishi) do
       %Coto{as_cotonoma: false} = coto ->
-        {:ok, coto} =
-          Repo.transaction(fn ->
-            case CotonomaService.cotonomatize!(coto, amishi) do
-              %Coto{posted_in: nil} = coto -> coto
-              %Coto{posted_in: posted_in} = coto ->
-                %{coto | posted_in: increment_timeline_revision(posted_in)}
-            end
-          end)
+        {:ok, coto} = do_cotonomatize(coto, amishi)
         render(conn, "coto.json", coto: coto)
 
       # Fix inconsistent state caused by the cotonomatizing-won't-affect-graph bug
@@ -79,6 +72,16 @@ defmodule Cotoami.CotoController do
     end
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
+  end
+
+  defp do_cotonomatize(coto, amishi) do
+    Repo.transaction(fn ->
+      case CotonomaService.cotonomatize!(coto, amishi) do
+        %Coto{posted_in: nil} = coto -> coto
+        %Coto{posted_in: posted_in} = coto ->
+          %{coto | posted_in: increment_timeline_revision(posted_in)}
+      end
+    end)
   end
 
   def delete(conn, %{"id" => id}, amishi) do

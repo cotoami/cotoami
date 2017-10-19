@@ -190,15 +190,29 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
     |> Neo4jService.delete_relationship(amishi_id, coto_id, @rel_type_has_a)
   end
-  def unpin(bolt_conn, %Coto{id: coto_id}, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+  def unpin(
+    bolt_conn,
+    %Coto{} = coto,
+    %Cotonoma{coto: %Coto{} = cotonoma_coto, owner: cotonoma_owner},
+    %Amishi{} = amishi
+  ) do
+    # expect the associations of cotonoma.coto to be missing
+    cotonoma_coto = %{cotonoma_coto | amishi: cotonoma_owner}
     bolt_conn
-    |> Neo4jService.delete_relationship(cotonoma_coto_id, coto_id, @rel_type_has_a)
+    |> ensure_disconnectable(cotonoma_coto, coto, amishi)
+    |> Neo4jService.delete_relationship(cotonoma_coto.id, coto.id, @rel_type_has_a)
   end
 
   def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
     do_connect(bolt_conn, source, target, amishi.id, nil)
   end
-  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi, %Cotonoma{} = cotonoma) do
+  def connect(
+    bolt_conn,
+    %Coto{} = source,
+    %Coto{} = target,
+    %Amishi{} = amishi,
+    %Cotonoma{} = cotonoma
+  ) do
     do_connect(bolt_conn, source, target, amishi.id, cotonoma.id)
   end
   defp do_connect(bolt_conn, %Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
@@ -248,36 +262,38 @@ defmodule Cotoami.CotoGraphService do
     } |> drop_nil
   end
 
-  def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}) do
+  def disconnect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
     bolt_conn
-    |> ensure_disconnectable(source_id, target_id, amishi_id)
-    |> Neo4jService.delete_relationship(source_id, target_id, @rel_type_has_a)
-  end
-  def disconnect(bolt_conn, %Coto{id: source_id}, %Coto{id: target_id}, %Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
-    bolt_conn
-    |> ensure_disconnectable(source_id, target_id, amishi_id, cotonoma_id)
-    |> Neo4jService.delete_relationship(source_id, target_id, @rel_type_has_a)
+    |> ensure_disconnectable(source, target, amishi)
+    |> Neo4jService.delete_relationship(source.id, target.id, @rel_type_has_a)
   end
 
-  defp ensure_disconnectable(bolt_conn, source_id, target_id, amishi_id, cotonoma_id \\ nil) do
-    if disconnectable?(bolt_conn, source_id, target_id, amishi_id, cotonoma_id) do
+  defp ensure_disconnectable(
+    bolt_conn,
+    %Coto{} = source,
+    %Coto{} = target,
+    %Amishi{} = amishi
+  ) do
+    if disconnectable?(bolt_conn, source, target, amishi) do
       bolt_conn
     else
       raise Cotoami.Exceptions.NoPermission
     end
   end
 
-  defp disconnectable?(bolt_conn, source_id, target_id, amishi_id, cotonoma_id) do
-    case Neo4jService.get_relationship(bolt_conn, source_id, target_id, @rel_type_has_a) do
-      nil -> true
-      rel ->
-        case cotonoma_id do
-          nil ->
-            rel.properties["created_by"] == amishi_id
-          cotonoma_id ->
-            rel.properties["created_by"] == amishi_id or
-              rel.properties["created_in"] == cotonoma_id
-        end
+  def disconnectable?(
+    bolt_conn,
+    %Coto{id: source_id, amishi: %Amishi{id: source_amishi_id}},
+    %Coto{id: target_id},
+    %Amishi{id: amishi_id} = amishi
+  ) do
+    if Map.get(amishi, :owner) || source_amishi_id == amishi_id do
+      true
+    else
+      case Neo4jService.get_relationship(bolt_conn, source_id, target_id, @rel_type_has_a) do
+        nil -> true
+        rel -> rel.properties["created_by"] == amishi_id
+      end
     end
   end
 

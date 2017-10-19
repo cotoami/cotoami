@@ -4,7 +4,9 @@ defmodule Cotoami.PublicController do
 
   plug Logster.Plugs.ChangeLogLevel, to: :debug
 
+  @version Mix.Project.config[:version]
+
   def index(conn, _params) do
-    text conn, "≡≡≡≡≡≡≡≡≡≡c⌒っﾟДﾟ)っ ｽﾞｻｰｯ!!"
+    text conn, @version
   end
 end

@@ -15,7 +15,8 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeConnection : Decode.Decoder Connection
 decodeConnection =
-    Decode.map2 initConnection
+    Decode.map3 initConnection
+        (Decode.field "created_by" Decode.string)
         (Decode.maybe (Decode.field "start" Decode.string))
         (Decode.field "end" Decode.string)
 
