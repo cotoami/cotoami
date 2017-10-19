@@ -47,6 +47,31 @@
     }
   }
 
+  div.coto-info,
+  div.cotonoma-info {
+    margin-bottom: 8px;
+    text-align: right;
+
+    span.author {
+      margin-right: 6px;
+
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        margin-right: 6px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+
+      span.name {
+        color: #aaa;
+        font-weight: bold;
+      }
+    }
+  }
+
   div.coto-editor {
     height: 50vh;
     display: flex;

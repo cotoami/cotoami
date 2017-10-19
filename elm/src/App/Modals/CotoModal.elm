@@ -222,8 +222,15 @@ cotoModalConfig session model =
                     , errorDiv model
                     ]
               else
-                div [ class "coto-content" ]
-                    [ App.Markdown.markdown model.coto.content ]
+                div [ class "coto-view" ]
+                    [ div [ class "coto-content" ]
+                        [ App.Markdown.markdown model.coto.content ]
+                    , div [ class "coto-info" ]
+                        [ authorSpan model
+                        , text "posted at"
+                        ]
+                    ]
+
             ]
     , buttons =
         if model.editing then
@@ -267,8 +274,12 @@ cotonomaModalConfig cotonomaKey session model =
                     , errorDiv model
                     ]
               else
-                div [ class "cotonoma" ]
-                    [ cotonomaLabel model.coto.amishi model.coto.content ]
+                div [ class "cotonoma-view" ]
+                    [ div [ class "cotonoma" ]
+                        [ cotonomaLabel model.coto.amishi model.coto.content ]
+                    , div [ class "cotonoma-info" ]
+                        []
+                    ]
             ]
     , buttons =
         if model.editing then
@@ -303,6 +314,19 @@ cotonomaModalConfig cotonomaKey session model =
                 span [] []
             ]
     }
+
+
+authorSpan : Model -> Html AppMsg.Msg
+authorSpan model =
+    model.coto.amishi
+        |> Maybe.map
+            (\author ->
+                span [ class "amishi author" ]
+                    [ img [ class "avatar", src author.avatarUrl ] []
+                    , span [ class "name" ] [ text author.displayName ]
+                    ]
+            )
+        |> Maybe.withDefault (span [] [])
 
 
 cancelEditingButton : Html AppMsg.Msg
