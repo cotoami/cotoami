@@ -131,19 +131,15 @@ isDisconnectable session parent connection child =
 bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
 bodyDivWithConfig context graph config model =
     div [ class "coto-body" ]
-        [ (case model.cotoId of
-            Nothing ->
-                span [] []
-
-            Just cotoId ->
-                toolButtonsSpan context graph config model.asCotonoma cotoId
-          )
-        , case model.cotonomaKey of
-            Nothing ->
-                config.markdown model.content
-
-            Just cotonomaKey ->
-                cotonomaLink config.cotonomaClick model.amishi cotonomaKey model.content
+        [ model.cotoId
+            |> Maybe.map (toolButtonsSpan context graph config model.asCotonoma)
+            |> Maybe.withDefault (span [] [])
+        , model.cotonomaKey
+            |> Maybe.map
+                (\cotonomaKey ->
+                    cotonomaLink config.cotonomaClick model.amishi cotonomaKey model.content
+                )
+            |> Maybe.withDefault (config.markdown model.content)
         ]
 
 
