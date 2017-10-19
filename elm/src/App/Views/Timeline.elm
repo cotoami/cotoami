@@ -43,8 +43,8 @@ homeTimelineHelp context timeline =
             , p [] [ text "This is your home timeline." ]
             , p []
                 [ text
-                    ("Cotos posted here are private to you "
-                        ++ "as long as they are not connected to cotonomas."
+                    ("Posts here are private to you as long as "
+                        ++ "they are not cotonomas or connected from cotonomas."
                     )
                 ]
             ]
