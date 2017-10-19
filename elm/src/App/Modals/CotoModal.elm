@@ -181,12 +181,9 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    case model.coto.cotonomaKey of
-        Nothing ->
-            cotoModalConfig session model
-
-        Just cotonomaKey ->
-            cotonomaModalConfig cotonomaKey session model
+    model.coto.cotonomaKey
+        |> Maybe.map (\key -> cotonomaModalConfig key session model)
+        |> Maybe.withDefault (cotoModalConfig session model)
 
 
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
