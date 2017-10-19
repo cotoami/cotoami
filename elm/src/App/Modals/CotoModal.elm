@@ -16,6 +16,7 @@ import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isNotBlank)
 import Util.HtmlUtil exposing (faIcon)
+import Util.DateUtil
 import App.Markdown
 import App.Types.Coto
     exposing
@@ -181,12 +182,9 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    case model.coto.cotonomaKey of
-        Nothing ->
-            cotoModalConfig session model
-
-        Just cotonomaKey ->
-            cotonomaModalConfig cotonomaKey session model
+    model.coto.cotonomaKey
+        |> Maybe.map (\key -> cotonomaModalConfig key session model)
+        |> Maybe.withDefault (cotoModalConfig session model)
 
 
 cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
@@ -225,8 +223,10 @@ cotoModalConfig session model =
                     , errorDiv model
                     ]
               else
-                div [ class "coto-content" ]
-                    [ App.Markdown.markdown model.coto.content ]
+                div [ class "coto-view" ]
+                    [ App.Markdown.markdown model.coto.content
+                    , cotoInfo model.coto
+                    ]
             ]
     , buttons =
         if model.editing then
@@ -270,8 +270,11 @@ cotonomaModalConfig cotonomaKey session model =
                     , errorDiv model
                     ]
               else
-                div [ class "cotonoma" ]
-                    [ cotonomaLabel model.coto.amishi model.coto.content ]
+                div [ class "cotonoma-view" ]
+                    [ div [ class "cotonoma" ]
+                        [ cotonomaLabel model.coto.amishi model.coto.content ]
+                    , cotoInfo model.coto
+                    ]
             ]
     , buttons =
         if model.editing then
@@ -306,6 +309,53 @@ cotonomaModalConfig cotonomaKey session model =
                 span [] []
             ]
     }
+
+
+cotoInfo : Coto -> Html AppMsg.Msg
+cotoInfo coto =
+    div [ class "coto-info" ]
+        [ authorSpan coto
+        , text " "
+        , postedAtSpan coto
+        , text " "
+        , postedInSpan coto
+        ]
+
+
+authorSpan : Coto -> Html AppMsg.Msg
+authorSpan coto =
+    coto.amishi
+        |> Maybe.map
+            (\author ->
+                span [ class "amishi author" ]
+                    [ span [ class "preposition" ] [ text "by" ]
+                    , img [ class "avatar", src author.avatarUrl ] []
+                    , span [ class "name" ] [ text author.displayName ]
+                    ]
+            )
+        |> Maybe.withDefault (span [] [])
+
+
+postedAtSpan : Coto -> Html AppMsg.Msg
+postedAtSpan coto =
+    span [ class "posted-at" ]
+        [ span [ class "preposition" ] [ text "at" ]
+        , span [ class "datetime" ]
+            [ text (Util.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
+        ]
+
+
+postedInSpan : Coto -> Html AppMsg.Msg
+postedInSpan coto =
+    coto.postedIn
+        |> Maybe.map
+            (\postedIn ->
+                span [ class "posted-in" ]
+                    [ span [ class "preposition" ] [ text "in" ]
+                    , span [ class "cotonoma-name" ] [ text postedIn.name ]
+                    ]
+            )
+        |> Maybe.withDefault (span [] [])
 
 
 cancelEditingButton : Html AppMsg.Msg

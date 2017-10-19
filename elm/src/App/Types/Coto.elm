@@ -1,7 +1,6 @@
 module App.Types.Coto exposing (..)
 
 import Date exposing (Date)
-import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import Util.StringUtil exposing (isBlank)
 
@@ -23,6 +22,7 @@ type alias Coto =
     , content : String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
+    , postedAt : Date
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     }
@@ -40,6 +40,7 @@ type alias Cotonoma =
     , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
+    , postedAt : Date
     , updatedAt : Date
     }
 
@@ -51,6 +52,7 @@ toCoto cotonoma =
         cotonoma.name
         cotonoma.owner
         Nothing
+        cotonoma.postedAt
         True
         (Just cotonoma.key)
 
@@ -63,18 +65,3 @@ cotonomaNameMaxlength =
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
     not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
-
-
-isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool
-isPostedInCotonoma maybeCotonoma coto =
-    case maybeCotonoma of
-        Nothing ->
-            isNothing coto.postedIn
-
-        Just cotonoma ->
-            case coto.postedIn of
-                Nothing ->
-                    False
-
-                Just postedIn ->
-                    postedIn.id == cotonoma.id

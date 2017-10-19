@@ -116,7 +116,7 @@ cotoDiv beingDeselected context graph coto =
                     )
                     Nothing
                 ]
-            , App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+            , App.Views.Coto.headerDiv CotonomaClick context graph coto
             , bodyDiv context graph coto
             , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
             ]

@@ -1,5 +1,6 @@
 module App.Server.Coto exposing (..)
 
+import Date
 import Http exposing (Request)
 import Json.Encode as Encode
 import Json.Decode as Decode
@@ -12,11 +13,12 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map6 Coto
+    Decode.map7 Coto
         (Decode.field "id" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
+        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
         (Decode.field "as_cotonoma" Decode.bool)
         (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
 

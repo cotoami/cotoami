@@ -1,10 +1,9 @@
 module App.Server.Cotonoma exposing (..)
 
+import Date
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Date
-import Http
 import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
@@ -13,13 +12,14 @@ import App.Types.Coto exposing (Cotonoma, CotonomaKey)
 
 decodeCotonoma : Decode.Decoder Cotonoma
 decodeCotonoma =
-    Decode.map7 Cotonoma
+    Decode.map8 Cotonoma
         (Decode.field "id" Decode.string)
         (Decode.field "key" Decode.string)
         (Decode.field "name" Decode.string)
         (Decode.field "pinned" Decode.bool)
         (Decode.field "coto_id" Decode.string)
         (Decode.maybe (Decode.field "owner" decodeAmishi))
+        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
         (Decode.field "updated_at" (Decode.map Date.fromTime Decode.float))
 
 

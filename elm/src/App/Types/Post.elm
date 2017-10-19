@@ -38,17 +38,19 @@ defaultPost =
 
 toCoto : Post -> Maybe Coto
 toCoto post =
-    post.cotoId
-        |> Maybe.map
-            (\cotoId ->
-                Coto
-                    cotoId
-                    post.content
-                    post.amishi
-                    post.postedIn
-                    post.asCotonoma
-                    post.cotonomaKey
-            )
+    Maybe.map2
+        (\cotoId postedAt ->
+            Coto
+                cotoId
+                post.content
+                post.amishi
+                post.postedIn
+                postedAt
+                post.asCotonoma
+                post.cotonomaKey
+        )
+        post.cotoId
+        post.postedAt
 
 
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool

@@ -4,9 +4,10 @@ import Set exposing (Set)
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Keyboard exposing (KeyCode)
+import Exts.Maybe exposing (isNothing)
 import Util.Keys exposing (Modifier(..), isModifier, toModifier)
 import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (ElementId, CotoId, Cotonoma)
+import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma)
 
 
 type alias CotoSelection =
@@ -46,6 +47,13 @@ initContext seed =
 setSession : Session -> Context -> Context
 setSession session context =
     { context | session = Just session }
+
+
+isServerOwner : Context -> Bool
+isServerOwner context =
+    context.session
+        |> Maybe.map (\session -> session.owner)
+        |> Maybe.withDefault False
 
 
 setElementFocus : Maybe String -> Context -> Context
@@ -144,20 +152,20 @@ isCtrlDown context =
         |> Set.toList
         |> List.any
             (\keyCode ->
-                case toModifier keyCode of
-                    Nothing ->
-                        False
+                toModifier keyCode
+                    |> Maybe.map
+                        (\modifier ->
+                            case modifier of
+                                Ctrl ->
+                                    True
 
-                    Just modifier ->
-                        case modifier of
-                            Ctrl ->
-                                True
+                                Meta ->
+                                    True
 
-                            Meta ->
-                                True
-
-                            _ ->
-                                False
+                                _ ->
+                                    False
+                        )
+                    |> Maybe.withDefault False
             )
 
 
@@ -167,15 +175,28 @@ isAltDown context =
         |> Set.toList
         |> List.any
             (\keyCode ->
-                case toModifier keyCode of
-                    Nothing ->
-                        False
+                toModifier keyCode
+                    |> Maybe.map
+                        (\modifier ->
+                            case modifier of
+                                Alt ->
+                                    True
 
-                    Just modifier ->
-                        case modifier of
-                            Alt ->
-                                True
+                                _ ->
+                                    False
+                        )
+                    |> Maybe.withDefault False
+            )
 
-                            _ ->
-                                False
+
+orignatedHere : Context -> Coto -> Bool
+orignatedHere context coto =
+    (Maybe.map2
+        (\here postedIn -> here.id == postedIn.id)
+        context.cotonoma
+        coto.postedIn
+    )
+        |> Maybe.withDefault
+            ((isNothing context.cotonoma)
+                && (isNothing coto.postedIn)
             )

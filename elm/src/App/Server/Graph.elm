@@ -1,5 +1,6 @@
 module App.Server.Graph exposing (..)
 
+import Date
 import Http
 import Task exposing (Task, andThen)
 import Json.Decode as Decode
@@ -15,18 +16,20 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeConnection : Decode.Decoder Connection
 decodeConnection =
-    Decode.map2 initConnection
+    Decode.map3 initConnection
+        (Decode.field "created_by" Decode.string)
         (Decode.maybe (Decode.field "start" Decode.string))
         (Decode.field "end" Decode.string)
 
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map6 Coto
+    Decode.map7 Coto
         (Decode.field "uuid" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
+        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
         (Decode.map isJust decodeCotonomaKeyField)
         decodeCotonomaKeyField
 

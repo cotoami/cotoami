@@ -93,8 +93,8 @@ modalConfig session context model =
         div []
             [ p []
                 [ text
-                    ("A cotonoma is a unit of shared space where you can "
-                        ++ "discuss a topic with other amishis (users)."
+                    ("A cotonoma is a unit of shared space where everyone can "
+                        ++ "see the content and join the conversation."
                     )
                 ]
             , context.cotonoma

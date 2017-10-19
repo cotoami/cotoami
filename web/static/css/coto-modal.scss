@@ -27,11 +27,17 @@
     }
   }
 
-  div.content {
+  div.coto-view {
     max-height: 55vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+
+    div.content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 8px;
+    }
   }
 
   div.advice-on-cotonoma-name {
@@ -44,6 +50,54 @@
     .ok {
       color: #008000;
       font-weight: bold;
+    }
+  }
+
+  div.coto-info {
+    text-align: right;
+
+    span.preposition {
+      margin-left: 3px;
+      margin-right: 6px;
+      color: #ccc;
+    }
+
+    span.author {
+      white-space: nowrap;
+
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+
+      span.name {
+        color: #aaa;
+        font-weight: bold;
+      }
+    }
+
+    span.posted-at {
+      white-space: nowrap;
+
+      span.datetime {
+        color: #aaa;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 90%;
+      }
+    }
+
+    span.posted-in {
+      white-space: nowrap;
+
+      span.cotonoma-name {
+        color: #aaa;
+        font-size: 90%;
+      }
     }
   }
 

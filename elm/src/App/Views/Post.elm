@@ -9,7 +9,6 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.EventUtil exposing (onLoad)
 import App.Types.Context exposing (Context)
-import App.Types.Coto exposing (Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
@@ -23,28 +22,31 @@ view context graph post =
     let
         elementId =
             "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
-    in
-        div
-            (App.Views.Coto.cotoClassList context
+
+        classAttr =
+            App.Views.Coto.cotoClassList context
                 elementId
                 post.cotoId
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 ]
-                :: (case post.cotoId of
-                        Nothing ->
-                            []
 
-                        Just cotoId ->
-                            [ onClick (CotoClick elementId cotoId)
-                            , onMouseEnter (CotoMouseEnter elementId cotoId)
-                            , onMouseLeave (CotoMouseLeave elementId cotoId)
-                            ]
-                   )
-            )
+        eventAttrs =
+            post.cotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        [ onClick (CotoClick elementId cotoId)
+                        , onMouseEnter (CotoMouseEnter elementId cotoId)
+                        , onMouseLeave (CotoMouseLeave elementId cotoId)
+                        ]
+                    )
+                |> Maybe.withDefault []
+    in
+        div
+            (classAttr :: eventAttrs)
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context.cotonoma graph post
+                [ headerDiv context graph post
                 , parentsDiv graph post
                 , if post.asCotonoma then
                     div [] []
@@ -57,14 +59,12 @@ view context graph post =
             ]
 
 
-headerDiv : Maybe Cotonoma -> Graph -> Post -> Html Msg
-headerDiv maybeCotonoma graph post =
-    case toCoto post of
-        Nothing ->
-            div [ class "coto-header" ] []
-
-        Just coto ->
-            App.Views.Coto.headerDiv CotonomaClick maybeCotonoma graph coto
+headerDiv : Context -> Graph -> Post -> Html Msg
+headerDiv context graph post =
+    post
+        |> toCoto
+        |> Maybe.map (App.Views.Coto.headerDiv CotonomaClick context graph)
+        |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
 parentsDiv : Graph -> Post -> Html Msg
