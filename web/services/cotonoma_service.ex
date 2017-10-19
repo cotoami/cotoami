@@ -116,7 +116,11 @@ defmodule Cotoami.CotonomaService do
   end
 
   defp complement_owners(cotonomas) when is_list(cotonomas) do
-
+    cotonomas
+    |> Enum.map(&(&1.owner))
+    |> AmishiService.append_gravatar_profiles()
+    |> Enum.zip(cotonomas)
+    |> Enum.map(fn({owner, cotonoma}) -> %{cotonoma | owner: owner} end)
   end
 
   def recent_cotonomas(cotonoma_id \\ nil) do
@@ -126,7 +130,7 @@ defmodule Cotoami.CotonomaService do
     |> order_by(desc: :updated_at)
     |> limit(100)
     |> Repo.all()
-    |> Enum.map(&complement_owner(&1))
+    |> complement_owners()
   end
 
   def pinned_cotonomas() do
@@ -135,7 +139,7 @@ defmodule Cotoami.CotonomaService do
     |> where([c], c.pinned == true)
     |> order_by(desc: :updated_at)
     |> Repo.all()
-    |> Enum.map(&complement_owner(&1))
+    |> complement_owners()
   end
 
   def get_cotos(key, %Amishi{} = amishi) do

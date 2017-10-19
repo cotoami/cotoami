@@ -47,6 +47,9 @@ defmodule Cotoami.AmishiService do
   def append_gravatar_profile(nil), do: nil
   def append_gravatar_profile(%Amishi{} = amishi) do
     gravatar_profile = get_gravatar_profile(amishi.email) || %{}
+    append_gravatar_profile(%Amishi{} = amishi, gravatar_profile)
+  end
+  def append_gravatar_profile(%Amishi{} = amishi, gravatar_profile) do
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
       display_name:
@@ -56,6 +59,18 @@ defmodule Cotoami.AmishiService do
           get_default_display_name(amishi)
         )
     })
+  end
+
+  def append_gravatar_profiles(amishis) when is_list(amishis) do
+    profiles =
+      amishis
+      |> Enum.map(&(&1.email))
+      |> Enum.uniq()
+      |> RedisService.get_gravatar_profiles()
+      |> Map.to_list()
+      |> Enum.map(fn({email, json}) -> {email, decode_gravatar_profile_json(json)} end)
+      |> Enum.into(%{})
+    Enum.map(amishis, &(append_gravatar_profile(&1, profiles[&1.email])))
   end
 
   def get_default_display_name(%Amishi{email: email}) do

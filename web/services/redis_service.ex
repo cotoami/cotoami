@@ -52,6 +52,7 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["GET", gravatar_key(email)])
   end
 
+  def get_gravatar_profiles([]), do: %{}
   def get_gravatar_profiles(emails) when is_list(emails) do
     gravatar_keys = Enum.map(emails, &gravatar_key(&1))
     profiles = Cotoami.Redix.command!(["MGET" | gravatar_keys])
