@@ -97,29 +97,23 @@ traversalDiv context graph traversal connections startCoto =
 
 traversalStepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
 traversalStepDiv context graph cotoId traversalStep =
-    case Dict.get cotoId graph.cotos of
-        Nothing ->
-            Nothing
-
-        Just coto ->
-            Just
-                (div [ class "step" ]
+    graph.cotos
+        |> Dict.get cotoId
+        |> Maybe.map
+            (\coto ->
+                div [ class "step" ]
                     [ div [ class "arrow" ]
                         [ materialIcon "arrow_downward" Nothing ]
                     , traversalStepCotoDiv
                         context
                         graph
                         traversalStep
-                        (case Dict.get cotoId graph.connections of
-                            Nothing ->
-                                []
-
-                            Just connections ->
-                                connections
+                        (Dict.get cotoId graph.connections
+                            |> Maybe.withDefault []
                         )
                         coto
                     ]
-                )
+            )
 
 
 traversalStepCotoDiv : Context -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
