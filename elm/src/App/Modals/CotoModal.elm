@@ -224,12 +224,8 @@ cotoModalConfig session model =
                     ]
               else
                 div [ class "coto-view" ]
-                    [ div [ class "coto-content" ]
-                        [ App.Markdown.markdown model.coto.content ]
-                    , div [ class "coto-info" ]
-                        [ authorSpan model.coto
-                        , postedAtSpan model.coto
-                        ]
+                    [ App.Markdown.markdown model.coto.content
+                    , cotoInfo model.coto
                     ]
             ]
     , buttons =
@@ -277,10 +273,7 @@ cotonomaModalConfig cotonomaKey session model =
                 div [ class "cotonoma-view" ]
                     [ div [ class "cotonoma" ]
                         [ cotonomaLabel model.coto.amishi model.coto.content ]
-                    , div [ class "cotonoma-info" ]
-                        [ authorSpan model.coto
-                        , postedAtSpan model.coto
-                        ]
+                    , cotoInfo model.coto
                     ]
             ]
     , buttons =
@@ -318,6 +311,17 @@ cotonomaModalConfig cotonomaKey session model =
     }
 
 
+cotoInfo : Coto -> Html AppMsg.Msg
+cotoInfo coto =
+    div [ class "coto-info" ]
+        [ authorSpan coto
+        , text " "
+        , postedAtSpan coto
+        , text " "
+        , postedInSpan coto
+        ]
+
+
 authorSpan : Coto -> Html AppMsg.Msg
 authorSpan coto =
     coto.amishi
@@ -339,6 +343,19 @@ postedAtSpan coto =
         , span [ class "datetime" ]
             [ text (Util.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
         ]
+
+
+postedInSpan : Coto -> Html AppMsg.Msg
+postedInSpan coto =
+    coto.postedIn
+        |> Maybe.map
+            (\postedIn ->
+                span [ class "posted-in" ]
+                    [ span [ class "preposition" ] [ text "in" ]
+                    , span [ class "cotonoma-name" ] [ text postedIn.name ]
+                    ]
+            )
+        |> Maybe.withDefault (span [] [])
 
 
 cancelEditingButton : Html AppMsg.Msg
