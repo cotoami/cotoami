@@ -8,7 +8,7 @@ import Html.Events exposing (..)
 import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon)
-import App.Types.Context exposing (CotoSelection, Context, isSelected)
+import App.Types.Context exposing (CotoSelection, Context, isSelected, isServerOwner)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
 import App.Messages exposing (..)
@@ -79,7 +79,7 @@ cotoDiv context graph connection coto =
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context connection coto.id
                 , App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
-                , App.Views.Coto.bodyDiv Nothing context graph coto
+                , App.Views.Coto.bodyDiv context graph Nothing coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
                 ]
             ]
@@ -88,11 +88,6 @@ cotoDiv context graph connection coto =
 unpinButtonDiv : Context -> Connection -> CotoId -> Html Msg
 unpinButtonDiv context connection cotoId =
     let
-        isServerOwner =
-            context.session
-                |> Maybe.map (\session -> session.owner)
-                |> Maybe.withDefault False
-
         maybeAmishiId =
             context.session
                 |> Maybe.map (\session -> session.id)
@@ -103,7 +98,7 @@ unpinButtonDiv context connection cotoId =
                 |> Maybe.map (\owner -> owner.id)
 
         unpinnable =
-            isServerOwner
+            isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || ((isJust maybeAmishiId) && maybeAmishiId == maybeCotonomaOwnerId)
     in

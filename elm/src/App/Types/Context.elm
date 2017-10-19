@@ -48,6 +48,13 @@ setSession session context =
     { context | session = Just session }
 
 
+isServerOwner : Context -> Bool
+isServerOwner context =
+    context.session
+        |> Maybe.map (\session -> session.owner)
+        |> Maybe.withDefault False
+
+
 setElementFocus : Maybe String -> Context -> Context
 setElementFocus maybeElementId context =
     { context | elementFocus = maybeElementId }
