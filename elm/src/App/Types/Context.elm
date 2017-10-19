@@ -4,9 +4,10 @@ import Set exposing (Set)
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Keyboard exposing (KeyCode)
+import Exts.Maybe exposing (isNothing)
 import Util.Keys exposing (Modifier(..), isModifier, toModifier)
 import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (ElementId, CotoId, Cotonoma)
+import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma)
 
 
 type alias CotoSelection =
@@ -185,4 +186,17 @@ isAltDown context =
                                     False
                         )
                     |> Maybe.withDefault False
+            )
+
+
+orignatedHere : Context -> Coto -> Bool
+orignatedHere context coto =
+    (Maybe.map2
+        (\here postedIn -> here.id == postedIn.id)
+        context.cotonoma
+        coto.postedIn
+    )
+        |> Maybe.withDefault
+            ((isNothing context.cotonoma)
+                && (isNothing coto.postedIn)
             )

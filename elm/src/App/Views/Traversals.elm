@@ -129,7 +129,7 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
             , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
             [ div [ class "coto-inner" ]
-                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                [ App.Views.Coto.headerDiv CotonomaClick context graph coto
                 , App.Views.Coto.bodyDiv context graph Nothing coto
                 , div [ class "main-sub-border" ] []
                 , connectionsDiv ( traversal, index ) coto connections context graph
@@ -183,7 +183,7 @@ subCotoDiv ( traversal, index ) context graph connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ App.Views.Coto.headerDiv CotonomaClick context.cotonoma graph coto
+                [ App.Views.Coto.headerDiv CotonomaClick context graph coto
                 , App.Views.Coto.bodyDiv context graph (Just connection) coto
                 , traverseButtonDiv TraverseClick index coto.id traversal graph
                 ]

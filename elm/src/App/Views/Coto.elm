@@ -9,10 +9,10 @@ import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
-import App.Types.Context exposing (Context, isSelected)
+import App.Types.Context exposing (Context, isSelected, orignatedHere)
 import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasChildren)
 import App.Messages exposing (..)
 
@@ -41,24 +41,24 @@ headline { content } =
         |> String.left 100
 
 
-headerDiv : (CotonomaKey -> msg) -> Maybe Cotonoma -> Graph -> Coto -> Html msg
-headerDiv cotonomaClick maybeCotonoma graph coto =
+headerDiv : (CotonomaKey -> msg) -> Context -> Graph -> Coto -> Html msg
+headerDiv cotonomaClick context graph coto =
     div
         [ class "coto-header" ]
-        [ case coto.postedIn of
-            Nothing ->
-                span [] []
-
-            Just postedIn ->
-                if not (isPostedInCotonoma maybeCotonoma coto) then
-                    a
-                        [ class "posted-in"
-                        , href ("/cotonomas/" ++ postedIn.key)
-                        , onLinkButtonClick (cotonomaClick postedIn.key)
-                        ]
-                        [ text postedIn.name ]
-                else
-                    span [] []
+        [ coto.postedIn
+            |> Maybe.map
+                (\postedIn ->
+                    if orignatedHere context coto then
+                        span [] []
+                    else
+                        a
+                            [ class "posted-in"
+                            , href ("/cotonomas/" ++ postedIn.key)
+                            , onLinkButtonClick (cotonomaClick postedIn.key)
+                            ]
+                            [ text postedIn.name ]
+                )
+            |> Maybe.withDefault (span [] [])
         , if pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
           else if App.Types.Graph.member coto.id graph then
@@ -124,10 +124,8 @@ defaultBodyConfig context maybeConnection coto =
 isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
 isDisconnectable session parent connection child =
     session.owner
-        || session.id
-        == connection.amishiId
-        || (Just session.id)
-        == Maybe.map (\amishi -> amishi.id) parent.amishi
+        || (session.id == connection.amishiId)
+        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
 bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
@@ -337,7 +335,7 @@ subCotoDiv context graph parentElementId connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv CotonomaClick context.cotonoma graph coto
+                [ headerDiv CotonomaClick context graph coto
                 , bodyDiv context graph (Just connection) coto
                 , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
                 ]

@@ -1,7 +1,6 @@
 module App.Types.Coto exposing (..)
 
 import Date exposing (Date)
-import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import Util.StringUtil exposing (isBlank)
 
@@ -63,18 +62,3 @@ cotonomaNameMaxlength =
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
     not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
-
-
-isPostedInCotonoma : Maybe Cotonoma -> Coto -> Bool
-isPostedInCotonoma maybeCotonoma coto =
-    case maybeCotonoma of
-        Nothing ->
-            isNothing coto.postedIn
-
-        Just cotonoma ->
-            case coto.postedIn of
-                Nothing ->
-                    False
-
-                Just postedIn ->
-                    postedIn.id == cotonoma.id
