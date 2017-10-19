@@ -152,15 +152,12 @@ connectOutboundIcon =
 
 toolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
 toolButtonsSpan context graph config asCotonoma cotoId =
-    span [ class "coto-tool-buttons" ]
-        [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
-            span [] []
-          else
-            case config.confirmConnect of
-                Nothing ->
-                    span [] []
-
-                Just confirmConnect ->
+    [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
+        Nothing
+      else
+        config.confirmConnect
+            |> Maybe.map
+                (\confirmConnect ->
                     span [ class "connecting-buttons" ]
                         [ a
                             [ class "tool-button connect"
@@ -169,12 +166,10 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             ]
                             [ faIcon "link" Nothing ]
                         ]
-        , span [ class "default-buttons" ]
-            [ case config.pinCoto of
-                Nothing ->
-                    span [] []
-
-                Just pinCoto ->
+                )
+    , [ config.pinCoto
+            |> Maybe.map
+                (\pinCoto ->
                     if pinned cotoId graph then
                         span [] []
                     else
@@ -184,59 +179,64 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ faIcon "thumb-tack" Nothing ]
-            , case config.openTraversal of
-                Nothing ->
-                    span [] []
-
-                Just openTraversal ->
+                )
+      , config.openTraversal
+            |> Maybe.map
+                (\openTraversal ->
                     a
                         [ class "tool-button traverse-coto"
                         , title "Traverse from this coto"
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
                         [ materialIcon "arrow_forward" Nothing ]
-            , case config.openCoto of
-                Nothing ->
-                    span [] []
-
-                Just openCoto ->
+                )
+      , config.openCoto
+            |> Maybe.map
+                (\openCoto ->
                     a
                         [ class "tool-button open-coto"
                         , title "Open coto view"
                         , onLinkButtonClick openCoto
                         ]
                         [ materialIcon "settings" Nothing ]
-            , case config.deleteConnection of
-                Nothing ->
-                    span [] []
-
-                Just deleteConnection ->
+                )
+      , config.deleteConnection
+            |> Maybe.map
+                (\deleteConnection ->
                     a
                         [ class "tool-button delete-connection"
                         , title "Delete connection"
                         , onLinkButtonClick deleteConnection
                         ]
                         [ faIcon "unlink" Nothing ]
-            , case config.selectCoto of
-                Nothing ->
-                    span [] []
-
-                Just selectCoto ->
+                )
+      , config.selectCoto
+            |> Maybe.map
+                (\selectCoto ->
                     a
                         [ class "tool-button select-coto"
                         , title "Select this coto"
                         , onLinkButtonClick (selectCoto cotoId)
                         ]
                         [ materialIcon
-                            (if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
+                            (if
+                                isSelected (Just cotoId) context
+                                    && not (Set.member cotoId context.deselecting)
+                             then
                                 "check_box"
                              else
                                 "check_box_outline_blank"
                             )
                             Nothing
                         ]
-            ]
-        ]
+                )
+      ]
+        |> List.filterMap identity
+        |> span [ class "default-buttons" ]
+        |> Just
+    ]
+        |> List.filterMap identity
+        |> span [ class "coto-tool-buttons" ]
 
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
