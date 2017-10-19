@@ -9,7 +9,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
-import App.Types.Graph exposing (Direction(..), Graph, defaultGraph)
+import App.Types.Graph exposing (Direction(..), Graph, defaultGraph, batchConnect)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Confirmation exposing (Confirmation, defaultConfirmation)
@@ -122,12 +122,13 @@ updateCotoContent cotoId content model =
 cotonomatize : CotoId -> Maybe CotonomaKey -> Model -> Model
 cotonomatize cotoId maybeCotonomaKey model =
     maybeCotonomaKey
-        |> Maybe.map (\key ->
-            { model
-                | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
-                , graph = App.Types.Graph.cotonomatize cotoId key model.graph
-            }
-        )
+        |> Maybe.map
+            (\key ->
+                { model
+                    | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
+                    , graph = App.Types.Graph.cotonomatize cotoId key model.graph
+                }
+            )
         |> Maybe.withDefault model
 
 
@@ -245,16 +246,18 @@ openTraversal cotoId model =
 
 connect : Direction -> List Coto -> Coto -> Model -> Model
 connect direction objects subject model =
-    { model
-        | graph =
-            case direction of
-                App.Types.Graph.Outbound ->
-                    App.Types.Graph.connectOneToMany subject objects model.graph
-
-                App.Types.Graph.Inbound ->
-                    App.Types.Graph.connectManyToOne objects subject model.graph
-        , connectingSubject = Nothing
-    }
+    model.context.session
+        |> Maybe.map
+            (\session ->
+                batchConnect session direction objects subject model.graph
+                    |> (\graph ->
+                        { model
+                            | graph = graph
+                            , connectingSubject = Nothing
+                        }
+                    )
+            )
+        |> Maybe.withDefault model
 
 
 closeSelectionColumnIfEmpty : Model -> Model

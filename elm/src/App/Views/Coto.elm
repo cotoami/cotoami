@@ -10,6 +10,7 @@ import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Types.Context exposing (Context, isSelected)
+import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, isPostedInCotonoma)
 import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasChildren)
@@ -88,23 +89,45 @@ type alias BodyConfig msg =
     }
 
 
-defaultBodyConfig : Maybe ( CotoId, CotoId ) -> Coto -> BodyConfig Msg
-defaultBodyConfig maybeConnection coto =
-    { openCoto = Just (OpenCotoModal coto)
-    , selectCoto = Just SelectCoto
-    , pinCoto = Just PinCoto
-    , openTraversal = Just OpenTraversal
-    , cotonomaClick = CotonomaClick
-    , confirmConnect = Just ConfirmConnect
-    , deleteConnection =
-        case maybeConnection of
-            Nothing ->
-                Nothing
+defaultBodyConfig : Context -> Maybe ( Coto, Connection ) -> Coto -> BodyConfig Msg
+defaultBodyConfig context maybeConnection coto =
+    let
+        deleteConnection =
+            (Maybe.map2
+                (\session ( parent, connection ) ->
+                    ( ( parent.id, coto.id )
+                    , isDisconnectable session parent connection coto
+                    )
+                )
+                context.session
+                maybeConnection
+            )
+                |> Maybe.andThen
+                    (\( cotoIdPair, disconnectable ) ->
+                        if disconnectable then
+                            Just (ConfirmDeleteConnection cotoIdPair)
+                        else
+                            Nothing
+                    )
+    in
+        { openCoto = Just (OpenCotoModal coto)
+        , selectCoto = Just SelectCoto
+        , pinCoto = Just PinCoto
+        , openTraversal = Just OpenTraversal
+        , cotonomaClick = CotonomaClick
+        , confirmConnect = Just ConfirmConnect
+        , deleteConnection = deleteConnection
+        , markdown = App.Markdown.markdown
+        }
 
-            Just connection ->
-                Just (ConfirmDeleteConnection connection)
-    , markdown = App.Markdown.markdown
-    }
+
+isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
+isDisconnectable session parent connection child =
+    session.owner
+        || session.id
+        == connection.amishiId
+        || (Just session.id)
+        == Maybe.map (\amishi -> amishi.id) parent.amishi
 
 
 bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
@@ -126,12 +149,12 @@ bodyDivWithConfig context graph config model =
         ]
 
 
-bodyDiv : Maybe ( CotoId, CotoId ) -> Context -> Graph -> Coto -> Html Msg
-bodyDiv maybeConnection context graph coto =
+bodyDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> Coto -> Html Msg
+bodyDiv context graph maybeConnection coto =
     bodyDivWithConfig
         context
         graph
-        (defaultBodyConfig maybeConnection coto)
+        (defaultBodyConfig context maybeConnection coto)
         { cotoId = Just coto.id
         , content = coto.content
         , amishi = coto.amishi
@@ -152,15 +175,12 @@ connectOutboundIcon =
 
 toolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
 toolButtonsSpan context graph config asCotonoma cotoId =
-    span [ class "coto-tool-buttons" ]
-        [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
-            span [] []
-          else
-            case config.confirmConnect of
-                Nothing ->
-                    span [] []
-
-                Just confirmConnect ->
+    [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
+        Nothing
+      else
+        config.confirmConnect
+            |> Maybe.map
+                (\confirmConnect ->
                     span [ class "connecting-buttons" ]
                         [ a
                             [ class "tool-button connect"
@@ -169,12 +189,10 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             ]
                             [ faIcon "link" Nothing ]
                         ]
-        , span [ class "default-buttons" ]
-            [ case config.pinCoto of
-                Nothing ->
-                    span [] []
-
-                Just pinCoto ->
+                )
+    , [ config.pinCoto
+            |> Maybe.map
+                (\pinCoto ->
                     if pinned cotoId graph then
                         span [] []
                     else
@@ -184,59 +202,64 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ faIcon "thumb-tack" Nothing ]
-            , case config.openTraversal of
-                Nothing ->
-                    span [] []
-
-                Just openTraversal ->
+                )
+      , config.openTraversal
+            |> Maybe.map
+                (\openTraversal ->
                     a
                         [ class "tool-button traverse-coto"
                         , title "Traverse from this coto"
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
                         [ materialIcon "arrow_forward" Nothing ]
-            , case config.openCoto of
-                Nothing ->
-                    span [] []
-
-                Just openCoto ->
+                )
+      , config.openCoto
+            |> Maybe.map
+                (\openCoto ->
                     a
                         [ class "tool-button open-coto"
                         , title "Open coto view"
                         , onLinkButtonClick openCoto
                         ]
                         [ materialIcon "settings" Nothing ]
-            , case config.deleteConnection of
-                Nothing ->
-                    span [] []
-
-                Just deleteConnection ->
+                )
+      , config.deleteConnection
+            |> Maybe.map
+                (\deleteConnection ->
                     a
                         [ class "tool-button delete-connection"
                         , title "Delete connection"
                         , onLinkButtonClick deleteConnection
                         ]
                         [ faIcon "unlink" Nothing ]
-            , case config.selectCoto of
-                Nothing ->
-                    span [] []
-
-                Just selectCoto ->
+                )
+      , config.selectCoto
+            |> Maybe.map
+                (\selectCoto ->
                     a
                         [ class "tool-button select-coto"
                         , title "Select this coto"
                         , onLinkButtonClick (selectCoto cotoId)
                         ]
                         [ materialIcon
-                            (if isSelected (Just cotoId) context && not (Set.member cotoId context.deselecting) then
+                            (if
+                                isSelected (Just cotoId) context
+                                    && not (Set.member cotoId context.deselecting)
+                             then
                                 "check_box"
                              else
                                 "check_box_outline_blank"
                             )
                             Nothing
                         ]
-            ]
-        ]
+                )
+      ]
+        |> List.filterMap identity
+        |> span [ class "default-buttons" ]
+        |> Just
+    ]
+        |> List.filterMap identity
+        |> span [ class "coto-tool-buttons" ]
 
 
 openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
@@ -257,54 +280,51 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
-    case Dict.get coto.id graph.connections of
-        Nothing ->
-            div [] []
+    graph.connections
+        |> Dict.get coto.id
+        |> Maybe.map
+            (\connections ->
+                div []
+                    [ div [ class "main-sub-border" ] []
+                    , connectionsDiv
+                        context
+                        graph
+                        parentElementId
+                        coto
+                        connections
+                    ]
+            )
+        |> Maybe.withDefault (div [] [])
 
-        Just connections ->
-            div []
-                [ div [ class "main-sub-border" ] []
-                , connectionsDiv
-                    context
-                    graph
-                    parentElementId
-                    coto.id
-                    connections
-                ]
 
-
-connectionsDiv : Context -> Graph -> ElementId -> CotoId -> List Connection -> Html Msg
-connectionsDiv context graph parentElementId parentCotoId connections =
-    Html.Keyed.node
-        "div"
-        [ class "sub-cotos" ]
-        (List.filterMap
-            (\conn ->
-                case Dict.get conn.end graph.cotos of
-                    Nothing ->
-                        Nothing
-
-                    -- Missing the end node
-                    Just coto ->
-                        Just
-                            ( conn.key
+connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
+connectionsDiv context graph parentElementId parentCoto connections =
+    connections
+        |> List.reverse
+        |> List.filterMap
+            (\connection ->
+                graph.cotos
+                    |> Dict.get connection.end
+                    |> Maybe.map
+                        (\coto ->
+                            ( connection.key
                             , div
                                 [ class "outbound-conn" ]
                                 [ subCotoDiv
                                     context
                                     graph
                                     parentElementId
-                                    parentCotoId
+                                    ( parentCoto, connection )
                                     coto
                                 ]
                             )
+                        )
             )
-            (List.reverse connections)
-        )
+        |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context -> Graph -> ElementId -> CotoId -> Coto -> Html Msg
-subCotoDiv context graph parentElementId parentCotoId coto =
+subCotoDiv : Context -> Graph -> ElementId -> ( Coto, Connection ) -> Coto -> Html Msg
+subCotoDiv context graph parentElementId connection coto =
     let
         elementId =
             parentElementId ++ "-" ++ coto.id
@@ -318,7 +338,7 @@ subCotoDiv context graph parentElementId parentCotoId coto =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv CotonomaClick context.cotonoma graph coto
-                , bodyDiv (Just ( parentCotoId, coto.id )) context graph coto
+                , bodyDiv context graph (Just connection) coto
                 , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
                 ]
             ]

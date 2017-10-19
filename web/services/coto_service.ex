@@ -7,7 +7,7 @@ defmodule Cotoami.CotoService do
   import Ecto.Query
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
-    CotoGraphService, AmishiService
+    AmishiService, CotonomaService, CotoGraphService
   }
   alias Cotoami.Exceptions.InvalidOperation
 
@@ -66,11 +66,7 @@ defmodule Cotoami.CotoService do
   end
 
   def create!(content, amishi_id, cotonoma_id \\ nil) do
-    posted_in =
-      case cotonoma_id do
-        nil -> nil
-        cotonoma_id -> Repo.get!(Cotonoma, cotonoma_id)
-      end
+    posted_in = CotonomaService.get!(cotonoma_id)
     coto =
       %Coto{}
       |> Coto.changeset_to_insert(%{

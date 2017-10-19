@@ -3,6 +3,8 @@ module App.Types.Graph exposing (..)
 import Dict
 import Maybe exposing (withDefault)
 import List.Extra
+import App.Types.Amishi exposing (AmishiId)
+import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 
 
@@ -13,24 +15,29 @@ type Direction
 
 type alias Connection =
     { key : String
+    , amishiId : AmishiId
     , start : Maybe CotoId
     , end : CotoId
     }
 
 
-initConnection : Maybe CotoId -> CotoId -> Connection
-initConnection maybeStart end =
+initConnection : AmishiId -> Maybe CotoId -> CotoId -> Connection
+initConnection amishiId maybeStart end =
     let
         key =
             (withDefault "root" maybeStart) ++ " -> " ++ end
     in
-        Connection key maybeStart end
+        Connection key amishiId maybeStart end
+
+
+type alias ConnectionDict =
+    Dict.Dict CotoId (List Connection)
 
 
 type alias Graph =
     { cotos : Dict.Dict CotoId Coto
     , rootConnections : List Connection
-    , connections : Dict.Dict CotoId (List Connection)
+    , connections : ConnectionDict
     }
 
 
@@ -135,25 +142,15 @@ hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
 
 
-pinCotos : List Coto -> Graph -> Graph
-pinCotos cotos model =
-    List.foldr
-        (\coto model ->
-            pinCoto coto model
-        )
-        model
-        cotos
-
-
-pinCoto : Coto -> Graph -> Graph
-pinCoto coto graph =
+pinCoto : Session -> Coto -> Graph -> Graph
+pinCoto session coto graph =
     if pinned coto.id graph then
         graph
     else
         { graph
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
-                (initConnection Nothing coto.id) :: graph.rootConnections
+                (initConnection session.id Nothing coto.id) :: graph.rootConnections
         }
 
 
@@ -166,13 +163,16 @@ unpinCoto cotoId graph =
     }
 
 
-connect : Coto -> Coto -> Graph -> Graph
-connect start end graph =
+connect : Session -> Coto -> Coto -> Graph -> Graph
+connect session start end graph =
     let
         cotos =
             graph.cotos
                 |> Dict.insert start.id start
                 |> Dict.insert end.id end
+
+        newConnection =
+            initConnection session.id (Just start.id) end.id
 
         connections =
             if connected start.id end.id graph then
@@ -181,72 +181,68 @@ connect start end graph =
                 Dict.update
                     start.id
                     (\maybeConns ->
-                        case maybeConns of
-                            Nothing ->
-                                Just [ (initConnection (Just start.id) end.id) ]
-
-                            Just conns ->
-                                Just ((initConnection (Just start.id) end.id) :: conns)
+                        maybeConns
+                            |> Maybe.map ((::) newConnection)
+                            |> Maybe.withDefault [ newConnection ]
+                            |> Just
                     )
                     graph.connections
     in
         { graph | cotos = cotos, connections = connections }
 
 
-connectOneToMany : Coto -> List Coto -> Graph -> Graph
-connectOneToMany startCoto endCotos graph =
+connectOneToMany : Session -> Coto -> List Coto -> Graph -> Graph
+connectOneToMany session startCoto endCotos graph =
     List.foldr
         (\endCoto graph ->
-            connect startCoto endCoto graph
+            connect session startCoto endCoto graph
         )
         graph
         endCotos
 
 
-connectManyToOne : List Coto -> Coto -> Graph -> Graph
-connectManyToOne startCotos endCoto graph =
+connectManyToOne : Session -> List Coto -> Coto -> Graph -> Graph
+connectManyToOne session startCotos endCoto graph =
     List.foldr
         (\startCoto graph ->
-            connect startCoto endCoto graph
+            connect session startCoto endCoto graph
         )
         graph
         startCotos
 
 
+batchConnect : Session -> Direction -> List Coto -> Coto -> Graph -> Graph
+batchConnect session direction objects subject graph =
+    case direction of
+        Outbound ->
+            connectOneToMany session subject objects graph
+
+        Inbound ->
+            connectManyToOne session objects subject graph
+
+
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
     { graph
-        | connections = graph.connections |> doDisconnect ( fromId, toId )
+        | connections = deleteConnection ( fromId, toId ) graph.connections
     }
-        |> \graph ->
-            { graph
-                | cotos =
-                    -- remove the coto (toId) if it's an orphan
-                    if inGraph toId graph then
-                        graph.cotos
-                    else
-                        graph.cotos |> Dict.remove toId
-            }
 
 
-doDisconnect : ( CotoId, CotoId ) -> Dict.Dict CotoId (List Connection) -> Dict.Dict CotoId (List Connection)
-doDisconnect ( fromId, toId ) connections =
+deleteConnection : ( CotoId, CotoId ) -> ConnectionDict -> ConnectionDict
+deleteConnection ( fromId, toId ) connections =
     connections
         |> Dict.update
             fromId
-            (\maybeChildren ->
-                case maybeChildren of
-                    Nothing ->
-                        Nothing
-
-                    Just children ->
-                        children
-                            |> List.filter (\conn -> conn.end /= toId)
-                            |> \children ->
-                                if List.isEmpty children then
-                                    Nothing
-                                else
-                                    Just children
+            (\maybeConns ->
+                maybeConns
+                    |> Maybe.map (List.filter (\conn -> conn.end /= toId))
+                    |> Maybe.andThen
+                        (\conns ->
+                            if List.isEmpty conns then
+                                Nothing
+                            else
+                                Just conns
+                        )
             )
 
 

@@ -47,7 +47,7 @@ defmodule Cotoami.CotoGraphController do
     coto = ensure_to_get_coto(coto_id)
     case cotonoma do
       nil -> CotoGraphService.unpin(Sips.conn, coto, amishi)
-      cotonoma -> CotoGraphService.unpin(Sips.conn, coto, cotonoma)
+      cotonoma -> CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
     end
     text conn, "ok"
   end
@@ -70,16 +70,10 @@ defmodule Cotoami.CotoGraphController do
     json conn, result
   end
 
-  def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id} = params, amishi) do
-    cotonoma = get_cotonoma_if_specified(params)
+  def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id}, amishi) do
     start_coto = ensure_to_get_coto(start_id)
     end_coto = ensure_to_get_coto(end_id)
-    case cotonoma do
-      nil ->
-        CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
-      cotonoma ->
-        CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
-    end
+    CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
     text conn, "ok"
   end
 
@@ -93,10 +87,7 @@ defmodule Cotoami.CotoGraphController do
   defp get_cotonoma_if_specified(params) do
     case params do
       %{"cotonoma_key" => cotonoma_key} ->
-        case CotonomaService.get_by_key(cotonoma_key) do
-          nil -> raise NotFound, "cotonoma: #{cotonoma_key}"
-          cotonoma -> cotonoma
-        end
+        CotonomaService.get_by_key!(cotonoma_key)
       _ -> nil
     end
   end
