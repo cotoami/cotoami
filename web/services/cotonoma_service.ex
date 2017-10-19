@@ -115,6 +115,10 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
+  defp complement_owners(cotonomas) when is_list(cotonomas) do
+
+  end
+
   def recent_cotonomas(cotonoma_id \\ nil) do
     Cotonoma
     |> preload([:coto, :owner])

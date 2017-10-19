@@ -16,7 +16,8 @@ defmodule Cotoami.RedisServiceTest do
 
     test "batch get a gravatar profiles" do
       assert RedisService.get_gravatar_profiles(
-        ["foo@example.com", "bar@example.com"]) == ["hello", "bye"]
+        ["foo@example.com", "bar@example.com"]) ==
+          %{"foo@example.com" => "hello", "bar@example.com" => "bye"}
     end
   end
 end
