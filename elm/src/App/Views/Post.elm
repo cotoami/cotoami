@@ -22,25 +22,28 @@ view context graph post =
     let
         elementId =
             "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
-    in
-        div
-            (App.Views.Coto.cotoClassList context
+
+        classAttr =
+            App.Views.Coto.cotoClassList context
                 elementId
                 post.cotoId
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 ]
-                :: (case post.cotoId of
-                        Nothing ->
-                            []
 
-                        Just cotoId ->
-                            [ onClick (CotoClick elementId cotoId)
-                            , onMouseEnter (CotoMouseEnter elementId cotoId)
-                            , onMouseLeave (CotoMouseLeave elementId cotoId)
-                            ]
-                   )
-            )
+        eventAttrs =
+            post.cotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        [ onClick (CotoClick elementId cotoId)
+                        , onMouseEnter (CotoMouseEnter elementId cotoId)
+                        , onMouseLeave (CotoMouseLeave elementId cotoId)
+                        ]
+                    )
+                |> Maybe.withDefault []
+    in
+        div
+            (classAttr :: eventAttrs)
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph post
