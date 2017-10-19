@@ -46,10 +46,11 @@ defmodule Cotoami.AmishiService do
 
   def append_gravatar_profile(nil), do: nil
   def append_gravatar_profile(%Amishi{} = amishi) do
-    gravatar_profile = get_gravatar_profile(amishi.email) || %{}
+    gravatar_profile = get_gravatar_profile(amishi.email)
     append_gravatar_profile(%Amishi{} = amishi, gravatar_profile)
   end
   def append_gravatar_profile(%Amishi{} = amishi, gravatar_profile) do
+    gravatar_profile = gravatar_profile || %{}
     Map.merge(amishi, %{
       avatar_url: get_gravatar_url(amishi.email),
       display_name:
@@ -68,7 +69,12 @@ defmodule Cotoami.AmishiService do
       |> Enum.uniq()
       |> RedisService.get_gravatar_profiles()
       |> Map.to_list()
-      |> Enum.map(fn({email, json}) -> {email, decode_gravatar_profile_json(json)} end)
+      |> Enum.map(fn({email, json}) ->
+           case json do
+             nil -> {email, do_get_and_cache_gravatar_profile(email)}
+             json -> {email, decode_gravatar_profile_json(json)}
+           end
+         end)
       |> Enum.into(%{})
     Enum.map(amishis, &(append_gravatar_profile(&1, profiles[&1.email])))
   end
@@ -85,15 +91,8 @@ defmodule Cotoami.AmishiService do
 
   def get_gravatar_profile(email) do
     case RedisService.get_gravatar_profile(email) do
-      nil ->
-        case do_get_gravatar_profile(email) do
-          nil -> nil
-          json ->
-            RedisService.put_gravatar_profile(email, json)
-            decode_gravatar_profile_json(json)
-        end
-      json ->
-        decode_gravatar_profile_json(json)
+      nil -> do_get_and_cache_gravatar_profile(email)
+      json -> decode_gravatar_profile_json(json)
     end
   end
 
@@ -102,6 +101,15 @@ defmodule Cotoami.AmishiService do
     |> Poison.decode!()
     |> Map.get("entry")
     |> List.first
+  end
+
+  defp do_get_and_cache_gravatar_profile(email) do
+    case do_get_gravatar_profile(email) do
+      nil -> nil
+      json ->
+        RedisService.put_gravatar_profile(email, json)
+        decode_gravatar_profile_json(json)
+    end
   end
 
   defp do_get_gravatar_profile(email) do

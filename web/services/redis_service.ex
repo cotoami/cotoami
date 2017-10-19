@@ -44,7 +44,7 @@ defmodule Cotoami.RedisService do
   # Gravatar profile cache
   #
 
-  @gravatar_key_expire_seconds 60 * 10
+  @gravatar_key_expire_seconds 60 * 60
 
   def gravatar_key(email), do: "gravatar:" <> email
 
