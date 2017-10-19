@@ -22,6 +22,7 @@ type alias Coto =
     , content : String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
+    , postedAt : Date
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
     }
@@ -39,6 +40,7 @@ type alias Cotonoma =
     , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
+    , postedAt : Date
     , updatedAt : Date
     }
 
@@ -50,6 +52,7 @@ toCoto cotonoma =
         cotonoma.name
         cotonoma.owner
         Nothing
+        cotonoma.postedAt
         True
         (Just cotonoma.key)
 

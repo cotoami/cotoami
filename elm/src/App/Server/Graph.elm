@@ -1,5 +1,6 @@
 module App.Server.Graph exposing (..)
 
+import Date
 import Http
 import Task exposing (Task, andThen)
 import Json.Decode as Decode
@@ -23,11 +24,12 @@ decodeConnection =
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map6 Coto
+    Decode.map7 Coto
         (Decode.field "uuid" Decode.string)
         (Decode.field "content" Decode.string)
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
+        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
         (Decode.map isJust decodeCotonomaKeyField)
         decodeCotonomaKeyField
 
