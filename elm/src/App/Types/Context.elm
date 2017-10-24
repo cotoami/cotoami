@@ -66,14 +66,16 @@ setCotoFocus maybeCotoId context =
     { context | cotoFocus = maybeCotoId }
 
 
+anySelection : Context -> Bool
+anySelection context =
+    not (List.isEmpty context.selection)
+
+
 isSelected : Maybe CotoId -> Context -> Bool
 isSelected maybeCotoId context =
-    case maybeCotoId of
-        Nothing ->
-            False
-
-        Just cotoId ->
-            List.member cotoId context.selection
+    maybeCotoId
+        |> Maybe.map (\cotoId -> List.member cotoId context.selection)
+        |> Maybe.withDefault False
 
 
 updateSelection : CotoId -> Context -> Context

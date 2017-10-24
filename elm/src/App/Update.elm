@@ -483,14 +483,13 @@ update msg model =
 
         EditorKeyDown keyCode ->
             if
-                keyCode
-                    == enter.keyCode
+                (keyCode == enter.keyCode)
                     && not (Set.isEmpty model.context.modifierKeys)
                     && isNotBlank model.timeline.newContent
             then
                 if isCtrlDown model.context then
                     post Nothing model
-                else if isAltDown model.context then
+                else if isAltDown model.context && anySelection model.context then
                     confirmPostAndConnect model ! []
                 else
                     model ! []
