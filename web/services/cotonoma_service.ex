@@ -125,6 +125,7 @@ defmodule Cotoami.CotonomaService do
 
   def recent_cotonomas() do
     Cotonoma
+    |> Cotonoma.not_empty()
     |> limit(100)
     |> do_query_for_cotonomas()
   end

@@ -72,11 +72,14 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def in_cotonoma(query, nil), do: query
   def in_cotonoma(query, cotonoma_id) do
     from c in query,
       join: coto in assoc(c, :coto),
       where: coto.posted_in_id == ^cotonoma_id
+  end
+
+  def not_empty(query) do
+    from c in query, where: c.timeline_revision > 0 or c.graph_revision > 0
   end
 
   def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
