@@ -65,3 +65,10 @@ cotonomaNameMaxlength =
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
     not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
+
+
+type alias CotonomaStats =
+    { key : CotonomaKey
+    , cotos : Int
+    , connections : Int
+    }

@@ -22,6 +22,7 @@ import App.Types.Coto
     exposing
         ( Coto
         , CotonomaKey
+        , CotonomaStats
         , updateContent
         , cotonomaNameMaxlength
         , validateCotonomaName
@@ -39,6 +40,7 @@ import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
 type alias Model =
     { coto : Coto
+    , cotonomaStats : Maybe CotonomaStats
     , cotonomaPinned : Bool
     , editing : Bool
     , editingToCotonomatize : Bool
@@ -59,6 +61,7 @@ type ContentUpdateStatus
 initModel : Bool -> Coto -> Model
 initModel cotonomaPinned coto =
     { coto = coto
+    , cotonomaStats = Nothing
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingToCotonomatize = False

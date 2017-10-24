@@ -186,8 +186,9 @@ defmodule Cotoami.CotonomaService do
     |> Cotonoma.copy_belongings(cotonoma)
   end
 
-  def stats(%Cotonoma{id: cotonoma_id} = cotonoma) do
+  def stats(%Cotonoma{id: cotonoma_id, key: key} = cotonoma) do
     %{
+      key: key,
       cotos:
         Coto
         |> Coto.in_cotonoma(cotonoma_id)

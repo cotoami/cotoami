@@ -7,7 +7,7 @@ import Json.Encode as Encode
 import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
@@ -78,3 +78,17 @@ pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
              else
                 httpDelete url
             )
+
+
+fetchStats : CotonomaKey -> Cmd Msg
+fetchStats cotonomaKey =
+    Http.send CotonomaStatsFetched <|
+        Http.get ("/api/cotonomas/" ++ cotonomaKey ++ "/stats") decodeStats
+
+
+decodeStats : Decode.Decoder CotonomaStats
+decodeStats =
+    Decode.map3 CotonomaStats
+        (Decode.field "key" Decode.string)
+        (Decode.field "cotos" Decode.int)
+        (Decode.field "connections" Decode.int)
