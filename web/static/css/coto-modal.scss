@@ -137,4 +137,19 @@
       vertical-align: middle;
     }
   }
+
+  div.cotonoma-stats {
+    color: #999;
+    border: 1px solid #eee;
+    padding: 4px;
+    margin-top: 15px;
+
+    span.number {
+      color: #666;
+      margin-left: 12px;
+      margin-right: 3px;
+      font-size: 120%;
+      font-weight: bold;
+    }
+  }
 }

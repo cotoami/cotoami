@@ -275,7 +275,17 @@ cotonomaModalConfig cotonomaKey session model =
               else
                 div [ class "cotonoma-view" ]
                     [ div [ class "cotonoma" ]
-                        [ cotonomaLabel model.coto.amishi model.coto.content ]
+                        [ cotonomaLabel model.coto.amishi model.coto.content
+                        , model.cotonomaStats
+                            |> Maybe.andThen
+                                (\stats ->
+                                    if stats.key == cotonomaKey then
+                                        Just (cotonomaStatsDiv stats)
+                                    else
+                                        Nothing
+                                )
+                            |> Maybe.withDefault (div [] [])
+                        ]
                     , cotoInfo model.coto
                     ]
             ]
@@ -388,6 +398,20 @@ saveButton enabled model =
              else
                 "Save"
             )
+        ]
+
+
+cotonomaStatsDiv : CotonomaStats -> Html AppMsg.Msg
+cotonomaStatsDiv stats =
+    div [ class "cotonoma-stats"]
+        [ div [ class "cotos" ]
+            [ span [ class "number" ] [ text (toString stats.cotos) ]
+            , text "cotos posted."
+            ]
+        , div [ class "connections" ]
+            [ span [ class "number" ] [ text (toString stats.connections) ]
+            , text "connections created."
+            ]
         ]
 
 
