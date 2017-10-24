@@ -130,7 +130,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", cotonoma_owner)
 
       coto_amishi = AmishiService.create!("coto@example.com")
-      {coto, _} = CotoService.create!("hello", coto_amishi.id)
+      {coto, _} = CotoService.create!("hello", coto_amishi.id, cotonoma.id)
 
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
 
@@ -210,6 +210,10 @@ defmodule Cotoami.CotoGraphServiceTest do
 
     test "the cotonoma has one connection", ~M{conn, cotonoma} do
       assert CotoGraphService.count_connections_in_cotonoma(conn, cotonoma) == 1
+    end
+
+    test "the cotonoma's stats should be correct", ~M{cotonoma}  do
+      assert %{cotos: 1, connections: 1} = CotonomaService.stats(cotonoma)
     end
   end
 

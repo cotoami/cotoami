@@ -185,4 +185,15 @@ defmodule Cotoami.CotonomaService do
     |> Repo.update!()
     |> Cotonoma.copy_belongings(cotonoma)
   end
+
+  def stats(%Cotonoma{id: cotonoma_id} = cotonoma) do
+    %{
+      cotos:
+        Coto
+        |> Coto.in_cotonoma(cotonoma_id)
+        |> Repo.aggregate(:count, :id),
+      connections:
+        CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn, cotonoma)
+    }
+  end
 end
