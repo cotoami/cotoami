@@ -123,20 +123,28 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(fn({owner, cotonoma}) -> %{cotonoma | owner: owner} end)
   end
 
-  def recent_cotonomas(cotonoma_id \\ nil) do
+  def recent_cotonomas() do
     Cotonoma
-    |> preload([:coto, :owner])
-    |> Cotonoma.in_cotonoma(cotonoma_id)
-    |> order_by(desc: :updated_at)
     |> limit(100)
-    |> Repo.all()
-    |> complement_owners()
+    |> do_query_for_cotonomas()
+  end
+
+  def sub_cotonomas(cotonoma_id) do
+    Cotonoma
+    |> Cotonoma.in_cotonoma(cotonoma_id)
+    |> limit(100)
+    |> do_query_for_cotonomas()
   end
 
   def pinned_cotonomas() do
     Cotonoma
-    |> preload([:coto, :owner])
     |> where([c], c.pinned == true)
+    |> do_query_for_cotonomas()
+  end
+
+  defp do_query_for_cotonomas(query) do
+    query
+    |> preload([:coto, :owner])
     |> order_by(desc: :updated_at)
     |> Repo.all()
     |> complement_owners()

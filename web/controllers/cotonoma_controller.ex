@@ -19,7 +19,7 @@ defmodule Cotoami.CotonomaController do
 
   def sub(conn, %{"cotonoma_id" => cotonoma_id}, _amishi) do
     render(conn, "sub.json", %{
-      rows: CotonomaService.recent_cotonomas(cotonoma_id)
+      rows: CotonomaService.sub_cotonomas(cotonoma_id)
     })
   end
 
