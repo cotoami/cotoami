@@ -97,10 +97,10 @@ defmodule Cotoami.AmishiService do
   end
 
   defp decode_gravatar_profile_json(json) do
-    json
-    |> Poison.decode!()
-    |> Map.get("entry")
-    |> List.first
+    case Poison.decode!(json) do
+      %{"entry" => value} when is_list(value) -> List.first(value) || %{}
+      _ -> %{}
+    end
   end
 
   defp do_get_and_cache_gravatar_profile(email) do
@@ -119,6 +119,7 @@ defmodule Cotoami.AmishiService do
     Logger.info "Gravatar response <#{email}> - #{inspect response}"
     case response do
       %{status_code: 200, body: body} -> body
+      %{status_code: 404} -> "{}"   # empty json object for caching
       _ -> nil
     end
   end
