@@ -148,17 +148,13 @@ postsDiv context graph posts =
 
 getKey : Post -> String
 getKey post =
-    case post.cotoId of
-        Just cotoId ->
-            toString cotoId
-
-        Nothing ->
-            case post.postId of
-                Just postId ->
-                    toString postId
-
-                Nothing ->
-                    ""
+    post.cotoId
+        |> Maybe.map toString
+        |> Maybe.withDefault
+            (post.postId
+                |> Maybe.map toString
+                |> Maybe.withDefault ""
+            )
 
 
 timelineClass : Timeline -> String
