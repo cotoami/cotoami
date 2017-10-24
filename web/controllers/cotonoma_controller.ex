@@ -70,4 +70,12 @@ defmodule Cotoami.CotonomaController do
         render(conn, "cotos.json", %{cotos: cotos, cotonoma: cotonoma})
     end
   end
+
+  def stats(conn, %{"key" => key}, _amishi) do
+    stats =
+      Cotonoma
+      |> Repo.get_by!(key: key)
+      |> CotonomaService.stats()
+    json conn, stats
+  end
 end
