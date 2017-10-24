@@ -76,7 +76,7 @@ defmodule Cotoami.Neo4jServiceTest do
       assert %{"a" => "updated", "uuid" => ^uuid} = Neo4jService.get_node(conn, uuid).properties
     end
 
-    test "the properties can't be replaced with an invalid id", ~M{conn}  do
+    test "the properties can't be replaced by an invalid uuid", ~M{conn}  do
       assert {:error, "not-found"} =
         Neo4jService.replace_node_properties(conn, "no-such-uuid", %{})
     end
@@ -112,7 +112,7 @@ defmodule Cotoami.Neo4jServiceTest do
         Neo4jService.get_relationship(conn, uuid1, uuid2, "A")
     end
 
-    test "a relationship of another type can be created", ~M{conn, uuid1, uuid2, rel} do
+    test "a same relationship of another type can be created", ~M{conn, uuid1, uuid2, rel} do
       %Relationship{id: relationship_id} =
         Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "B")
       assert rel.id != relationship_id
@@ -160,7 +160,7 @@ defmodule Cotoami.Neo4jServiceTest do
       ~M{uuid1, uuid2, uuid3, rel1, rel2}
     end
 
-    test "they should have correct orders ", ~M{rel1, rel2} do
+    test "they should have correct order numbers", ~M{rel1, rel2} do
       assert %Relationship{properties: %{"order" => 1}} = rel1
       assert %Relationship{properties: %{"order" => 2}} = rel2
     end
