@@ -85,7 +85,12 @@ defmodule Cotoami.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
-    CotoService.delete(id, amishi)
+    Repo.transaction(fn ->
+      case CotoService.delete!(id, amishi) do
+        nil -> nil
+        posted_in -> increment_timeline_revision(posted_in)
+      end
+    end)
     send_resp(conn, :no_content, "")
   end
 end
