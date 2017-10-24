@@ -10,17 +10,15 @@ defmodule Cotoami.CotoServiceTest do
     %{conn: Bolt.Sips.conn, amishi: amishi}
   end
 
-  describe "a coto pinned to an amishi" do
+  describe "when there is a coto pinned to an amishi" do
     setup ~M{conn, amishi} do
       {coto, _posted_in} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
-    test "get", ~M{coto} do
-      assert %Coto{
-        content: "hello"
-      } = CotoService.get(coto.id)
+    test "the coto can be gotten", ~M{coto} do
+      assert %Coto{content: "hello"} = CotoService.get(coto.id)
     end
   end
 end
