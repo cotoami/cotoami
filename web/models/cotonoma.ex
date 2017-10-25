@@ -32,7 +32,9 @@ defmodule Cotoami.Cotonoma do
   def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :coto_id, :owner_id])
-    |> generate_key
+    |> generate_key()
+    |> put_change(:timeline_revision, 0)
+    |> put_change(:graph_revision, 0)
     |> validate_required([:key, :name, :coto_id, :owner_id])
     |> validate_name()
   end

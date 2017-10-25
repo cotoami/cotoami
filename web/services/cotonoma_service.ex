@@ -70,7 +70,16 @@ defmodule Cotoami.CotonomaService do
         }
       }
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn, cotonoma_coto)
+    bolt_conn = Bolt.Sips.conn
+
+    CotoGraphService.sync_coto_props(bolt_conn, cotonoma_coto)
+
+    # Increment the revision if it has connections, which in turn displays it
+    # in the "recent cotonomas" for other amishis even if its timeline is empty.
+    graph = CotoGraphService.get_subgraph(bolt_conn, cotonoma_coto.cotonoma)
+    if map_size(graph.connections) > 0 do
+      increment_graph_revision(cotonoma_coto.cotonoma)
+    end
 
     cotonoma_coto
   end
