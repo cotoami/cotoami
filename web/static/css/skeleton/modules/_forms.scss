@@ -1,6 +1,27 @@
 // Forms
 //––––––––––––––––––––––––––––––––––––––––––––––––––
 
+@mixin placeholderColor($color) {
+  &:placeholder-shown {
+    color: $color;
+  }
+  &::-webkit-input-placeholder {
+    color:$color;
+  }
+  &:-moz-placeholder {
+    color:$color;
+    opacity: 1;
+  }
+  &::-moz-placeholder {
+    color:$color;
+    opacity: 1;
+  }
+  &:-ms-input-placeholder {
+    color:$color;
+  }
+}
+@include placeholderColor(#ccc);
+
 textarea,
 select {
   height: 38px;

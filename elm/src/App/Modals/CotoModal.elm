@@ -221,6 +221,14 @@ cotoModalConfig session model =
             [ if model.editing then
                 div [ class "coto-editor" ]
                     [ adviceOnCotonomaNameDiv model
+                    , div [ class "summary-input" ]
+                        [ input
+                            [ type_ "text"
+                            , class "u-full-width"
+                            , placeholder "Summary"
+                            ]
+                            []
+                        ]
                     , div [ class "content-input" ]
                         [ textarea
                             [ value model.editorContent
