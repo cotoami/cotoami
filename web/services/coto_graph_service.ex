@@ -46,7 +46,7 @@ defmodule Cotoami.CotoGraphService do
     |> Bolt.Sips.query!(query, %{uuid: amishi_id, created_by: amishi_id})
     |> build_graph_from_query_result(amishi_id, true)
   end
-  defp do_get_graph(bolt_conn, %Cotonoma{id: cotonom_id, coto: %Coto{id: cotonoma_coto_id}}) do
+  defp do_get_graph(bolt_conn, %Cotonoma{id: cotonoma_id, coto: %Coto{id: cotonoma_coto_id}}) do
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
@@ -56,7 +56,7 @@ defmodule Cotoami.CotoGraphService do
         ORDER BY has.#{Neo4jService.rel_prop_order()}
       """
     bolt_conn
-    |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonom_id})
+    |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonoma_id})
     |> build_graph_from_query_result(cotonoma_coto_id, true)
   end
 
@@ -168,6 +168,17 @@ defmodule Cotoami.CotoGraphService do
       |> Map.put("start", parent.properties["uuid"])
       |> Map.put("end", child.properties["uuid"])
     end)
+  end
+
+  def count_connections_in_cotonoma(bolt_conn, %Cotonoma{id: cotonoma_id}) do
+    query = ~s"""
+      MATCH (parent)-[has:#{@rel_type_has_a} { created_in: $created_in }]->(child)
+      RETURN count(DISTINCT has) AS connections
+    """
+    case Bolt.Sips.query!(bolt_conn, query, %{created_in: cotonoma_id}) do
+      [%{"connections" => connections}] -> connections
+      _ -> 0
+    end
   end
 
   def pin(bolt_conn, %Coto{} = coto, %Amishi{} = amishi) do
@@ -313,6 +324,7 @@ defmodule Cotoami.CotoGraphService do
   defp to_coto_props(%Coto{} = coto) do
     %{
       content: coto.content,
+      summary: coto.summary,
       amishi_id: coto.amishi_id,
       cotonoma_key: (if coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
       posted_in_id: coto.posted_in_id,

@@ -98,6 +98,7 @@ getCoto cotoId model =
     Exts.Maybe.oneOf
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
+        , getCotoFromCotonomaList cotoId model.pinnedCotonomas
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
         ]
@@ -111,11 +112,11 @@ getCotoFromCotonomaList cotoId cotonomas =
         |> Maybe.map App.Types.Coto.toCoto
 
 
-updateCotoContent : CotoId -> String -> Model -> Model
-updateCotoContent cotoId content model =
+updateCotoContent : Coto -> Model -> Model
+updateCotoContent coto model =
     { model
-        | timeline = App.Types.Timeline.updateContent cotoId content model.timeline
-        , graph = App.Types.Graph.updateContent cotoId content model.graph
+        | timeline = App.Types.Timeline.updateContent coto model.timeline
+        , graph = App.Types.Graph.updateContent coto model.graph
     }
 
 

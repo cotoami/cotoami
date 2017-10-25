@@ -2,25 +2,28 @@ module App.Server.Cotonoma exposing (..)
 
 import Date
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Encode as Encode
+import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Util.HttpUtil exposing (httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
 decodeCotonoma =
-    Decode.map8 Cotonoma
-        (Decode.field "id" Decode.string)
-        (Decode.field "key" Decode.string)
-        (Decode.field "name" Decode.string)
-        (Decode.field "pinned" Decode.bool)
-        (Decode.field "coto_id" Decode.string)
-        (Decode.maybe (Decode.field "owner" decodeAmishi))
-        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
-        (Decode.field "updated_at" (Decode.map Date.fromTime Decode.float))
+    Json.Decode.Pipeline.decode Cotonoma
+        |> required "id" string
+        |> required "key" string
+        |> required "name" string
+        |> required "pinned" bool
+        |> required "coto_id" string
+        |> optional "owner" (maybe decodeAmishi) Nothing
+        |> required "inserted_at" (Decode.map Date.fromTime float)
+        |> required "updated_at" (Decode.map Date.fromTime float)
+        |> required "timeline_revision" int
+        |> required "graph_revision" int
 
 
 fetchCotonomas : Cmd Msg
@@ -78,3 +81,17 @@ pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
              else
                 httpDelete url
             )
+
+
+fetchStats : CotonomaKey -> Cmd Msg
+fetchStats cotonomaKey =
+    Http.send CotonomaStatsFetched <|
+        Http.get ("/api/cotonomas/" ++ cotonomaKey ++ "/stats") decodeStats
+
+
+decodeStats : Decode.Decoder CotonomaStats
+decodeStats =
+    Decode.map3 CotonomaStats
+        (Decode.field "key" Decode.string)
+        (Decode.field "cotos" Decode.int)
+        (Decode.field "connections" Decode.int)

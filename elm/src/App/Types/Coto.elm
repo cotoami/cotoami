@@ -20,6 +20,7 @@ type alias CotonomaKey =
 type alias Coto =
     { id : CotoId
     , content : String
+    , summary : Maybe String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Date
@@ -27,6 +28,10 @@ type alias Coto =
     , cotonomaKey : Maybe CotonomaKey
     }
 
+
+summaryMaxlength : Int
+summaryMaxlength =
+    200
 
 updateContent : String -> Coto -> Coto
 updateContent content coto =
@@ -42,6 +47,8 @@ type alias Cotonoma =
     , owner : Maybe Amishi
     , postedAt : Date
     , updatedAt : Date
+    , timelineRevision : Int
+    , graphRevision : Int
     }
 
 
@@ -50,6 +57,7 @@ toCoto cotonoma =
     Coto
         cotonoma.cotoId
         cotonoma.name
+        Nothing
         cotonoma.owner
         Nothing
         cotonoma.postedAt
@@ -65,3 +73,15 @@ cotonomaNameMaxlength =
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
     not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
+
+
+revisedBefore : Cotonoma -> Bool
+revisedBefore cotonoma =
+    (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
+
+
+type alias CotonomaStats =
+    { key : CotonomaKey
+    , cotos : Int
+    , connections : Int
+    }

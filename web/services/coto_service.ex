@@ -98,23 +98,22 @@ defmodule Cotoami.CotoService do
     complement_amishi(updated_coto, amishi)
   end
 
-  def delete(id, %Amishi{id: amishi_id}) do
-    Repo.transaction(fn ->
+  def delete!(id, %Amishi{id: amishi_id}) do
+    coto =
       Coto
       |> Coto.for_amishi(amishi_id)
+      |> preload([:posted_in, :cotonoma])
       |> Repo.get!(id)
-      |> ensure_not_to_be_cotonoma()
-      |> Repo.delete!()
 
-      CotoGraphService.delete_coto(Bolt.Sips.conn, id)
-    end)
-  end
-
-  defp ensure_not_to_be_cotonoma(coto) do
-    if coto.as_cotonoma do
-      raise InvalidOperation
-    else
-      coto
+    if coto.cotonoma do
+      case CotonomaService.stats(coto.cotonoma) do
+        %{cotos: 0, connections: 0} -> Repo.delete!(coto.cotonoma)
+        _ -> raise InvalidOperation
+      end
     end
+    Repo.delete!(coto)
+    CotoGraphService.delete_coto(Bolt.Sips.conn, id)
+
+    CotonomaService.complement_owner(coto.posted_in)
   end
 end

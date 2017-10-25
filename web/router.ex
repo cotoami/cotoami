@@ -64,6 +64,7 @@ defmodule Cotoami.Router do
     put "/cotonomas/pin/:key", CotonomaController, :pin
     delete "/cotonomas/pin/:key", CotonomaController, :unpin
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
+    get "/cotonomas/:key/stats", CotonomaController, :stats
 
     get "/graph", CotoGraphController, :index
     get "/graph/:cotonoma_key", CotoGraphController, :index

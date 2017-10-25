@@ -70,7 +70,16 @@ defmodule Cotoami.CotonomaService do
         }
       }
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn, cotonoma_coto)
+    bolt_conn = Bolt.Sips.conn
+
+    CotoGraphService.sync_coto_props(bolt_conn, cotonoma_coto)
+
+    # Increment the revision if it has connections, which in turn displays it
+    # in the "recent cotonomas" for other amishis even if its timeline is empty.
+    graph = CotoGraphService.get_subgraph(bolt_conn, cotonoma_coto.cotonoma)
+    if map_size(graph.connections) > 0 do
+      increment_graph_revision(cotonoma_coto.cotonoma)
+    end
 
     cotonoma_coto
   end
@@ -123,20 +132,29 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(fn({owner, cotonoma}) -> %{cotonoma | owner: owner} end)
   end
 
-  def recent_cotonomas(cotonoma_id \\ nil) do
+  def recent_cotonomas(%Amishi{id: amishi_id}) do
     Cotonoma
-    |> preload([:coto, :owner])
-    |> Cotonoma.in_cotonoma(cotonoma_id)
-    |> order_by(desc: :updated_at)
+    |> Cotonoma.exclude_empty_by_others(amishi_id)
     |> limit(100)
-    |> Repo.all()
-    |> complement_owners()
+    |> do_query_for_cotonomas()
+  end
+
+  def sub_cotonomas(cotonoma_id) do
+    Cotonoma
+    |> Cotonoma.in_cotonoma(cotonoma_id)
+    |> limit(100)
+    |> do_query_for_cotonomas()
   end
 
   def pinned_cotonomas() do
     Cotonoma
-    |> preload([:coto, :owner])
     |> where([c], c.pinned == true)
+    |> do_query_for_cotonomas()
+  end
+
+  defp do_query_for_cotonomas(query) do
+    query
+    |> preload([:coto, :owner])
     |> order_by(desc: :updated_at)
     |> Repo.all()
     |> complement_owners()
@@ -175,5 +193,17 @@ defmodule Cotoami.CotonomaService do
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
     |> Cotonoma.copy_belongings(cotonoma)
+  end
+
+  def stats(%Cotonoma{id: cotonoma_id, key: key} = cotonoma) do
+    %{
+      key: key,
+      cotos:
+        Coto
+        |> Coto.in_cotonoma(cotonoma_id)
+        |> Repo.aggregate(:count, :id),
+      connections:
+        CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn, cotonoma)
+    }
   end
 end

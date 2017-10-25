@@ -32,6 +32,12 @@
     display: flex;
     flex-direction: column;
 
+    div.coto-summary {
+      margin-bottom: 10px;
+      font-weight: bold;
+      opacity: .5;
+    }
+
     div.content {
       flex: 1;
       overflow-y: auto;
@@ -108,6 +114,7 @@
 
     div.content-input {
       flex: 1;
+      display: flex;
       padding-bottom: 6px;
 
       textarea {
@@ -135,6 +142,21 @@
       margin-left: 3px;
       font-weight: bold;
       vertical-align: middle;
+    }
+  }
+
+  div.cotonoma-stats {
+    color: #999;
+    border: 1px solid #eee;
+    padding: 4px;
+    margin-top: 15px;
+
+    span.number {
+      color: #666;
+      margin-left: 12px;
+      margin-right: 3px;
+      font-size: 120%;
+      font-weight: bold;
     }
   }
 }

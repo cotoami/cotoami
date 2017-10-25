@@ -22,7 +22,9 @@ import App.Types.Coto
     exposing
         ( Coto
         , CotonomaKey
+        , CotonomaStats
         , updateContent
+        , summaryMaxlength
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
@@ -39,10 +41,12 @@ import App.Modals.CotoModalMsg as CotoModalMsg exposing (Msg(..))
 
 type alias Model =
     { coto : Coto
+    , cotonomaStats : Maybe CotonomaStats
     , cotonomaPinned : Bool
     , editing : Bool
     , editingToCotonomatize : Bool
-    , editorContent : String
+    , content : String
+    , summary : String
     , waitingToUpdateContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
     , waitingToPinOrUnpinCotonoma : Bool
@@ -59,10 +63,12 @@ type ContentUpdateStatus
 initModel : Bool -> Coto -> Model
 initModel cotonomaPinned coto =
     { coto = coto
+    , cotonomaStats = Nothing
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingToCotonomatize = False
-    , editorContent = coto.content
+    , content = coto.content
+    , summary = Maybe.withDefault "" coto.summary
     , waitingToUpdateContent = False
     , contentUpdateStatus = None
     , waitingToPinOrUnpinCotonoma = False
@@ -117,6 +123,11 @@ setCotonomatized coto model =
     }
 
 
+isCotonomaEmpty : CotonomaStats -> Bool
+isCotonomaEmpty stats =
+    stats.cotos == 0 && stats.connections == 0
+
+
 update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Msg )
 update msg model =
     case msg of
@@ -127,13 +138,17 @@ update msg model =
             )
 
         EditorInput content ->
-            ( { model | editorContent = content }, Nothing, Cmd.none )
+            ( { model | content = content }, Nothing, Cmd.none )
+
+        SummaryInput summary ->
+            ( { model | summary = summary }, Nothing, Cmd.none )
 
         CancelEditing ->
             ( { model
                 | editing = False
                 , editingToCotonomatize = False
-                , editorContent = model.coto.content
+                , content = model.coto.content
+                , summary = Maybe.withDefault "" model.coto.summary
                 , contentUpdateStatus = None
               }
             , Nothing
@@ -145,7 +160,8 @@ update msg model =
             , Nothing
             , App.Server.Coto.updateContent
                 model.coto.id
-                model.editorContent
+                model.summary
+                model.content
             )
 
         ConfirmCotonomatize ->
@@ -213,9 +229,23 @@ cotoModalConfig session model =
             [ if model.editing then
                 div [ class "coto-editor" ]
                     [ adviceOnCotonomaNameDiv model
+                    , if model.editingToCotonomatize then
+                        div [] []
+                      else
+                        div [ class "summary-input" ]
+                            [ input
+                                [ type_ "text"
+                                , class "u-full-width"
+                                , placeholder "Summary"
+                                , maxlength summaryMaxlength
+                                , value model.summary
+                                , onInput (AppMsg.CotoModalMsg << SummaryInput)
+                                ]
+                                []
+                            ]
                     , div [ class "content-input" ]
                         [ textarea
-                            [ value model.editorContent
+                            [ value model.content
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -224,7 +254,13 @@ cotoModalConfig session model =
                     ]
               else
                 div [ class "coto-view" ]
-                    [ App.Markdown.markdown model.coto.content
+                    [ model.coto.summary
+                        |> Maybe.map
+                            (\summary ->
+                                div [ class "coto-summary" ] [ text summary ]
+                            )
+                        |> Maybe.withDefault (div [] [])
+                    , App.Markdown.markdown model.coto.content
                     , cotoInfo model.coto
                     ]
             ]
@@ -232,16 +268,14 @@ cotoModalConfig session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (isNotBlank model.editorContent
+                (isNotBlank model.content
                     && not model.waitingToUpdateContent
                 )
                 model
             ]
         else if checkWritePermission session model then
             [ editButton
-            , button
-                [ class "button", onClick ConfirmDeleteCoto ]
-                [ text "Delete" ]
+            , deleteButton model
             ]
         else
             []
@@ -262,7 +296,7 @@ cotonomaModalConfig cotonomaKey session model =
                             , class "u-full-width"
                             , placeholder "Cotonoma name"
                             , maxlength cotonomaNameMaxlength
-                            , value model.editorContent
+                            , value model.content
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -272,7 +306,17 @@ cotonomaModalConfig cotonomaKey session model =
               else
                 div [ class "cotonoma-view" ]
                     [ div [ class "cotonoma" ]
-                        [ cotonomaLabel model.coto.amishi model.coto.content ]
+                        [ cotonomaLabel model.coto.amishi model.coto.content
+                        , model.cotonomaStats
+                            |> Maybe.andThen
+                                (\stats ->
+                                    if stats.key == cotonomaKey then
+                                        Just (cotonomaStatsDiv stats)
+                                    else
+                                        Nothing
+                                )
+                            |> Maybe.withDefault (div [] [])
+                        ]
                     , cotoInfo model.coto
                     ]
             ]
@@ -280,34 +324,25 @@ cotonomaModalConfig cotonomaKey session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (validateCotonomaName model.editorContent
+                (validateCotonomaName model.content
                     && not model.waitingToUpdateContent
                 )
                 model
             ]
         else
-            [ if session.owner then
-                button
-                    [ class "button"
-                    , disabled model.waitingToPinOrUnpinCotonoma
-                    , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
-                    ]
-                    [ text
-                        (if model.waitingToPinOrUnpinCotonoma then
-                            "Processing..."
-                         else if model.cotonomaPinned then
-                            "Unpin from nav"
-                         else
-                            "Pin to nav"
-                        )
-                    ]
-              else
-                span [] []
-            , if checkWritePermission session model then
-                editButton
-              else
-                span [] []
-            ]
+            (if checkWritePermission session model then
+                [ editButton
+                , deleteButton model
+                ]
+             else
+                []
+            )
+                |> (::)
+                    (if session.owner then
+                        pinOrUnpinCotonomaButton cotonomaKey model
+                     else
+                        span [] []
+                    )
     }
 
 
@@ -365,6 +400,20 @@ cancelEditingButton =
         [ text "Cancel" ]
 
 
+deleteButton : Model -> Html AppMsg.Msg
+deleteButton model =
+    button
+        [ class "button"
+        , disabled
+            (model.cotonomaStats
+                |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
+                |> Maybe.withDefault model.coto.asCotonoma
+            )
+        , onClick ConfirmDeleteCoto
+        ]
+        [ text "Delete" ]
+
+
 editButton : Html AppMsg.Msg
 editButton =
     button
@@ -388,6 +437,38 @@ saveButton enabled model =
         ]
 
 
+pinOrUnpinCotonomaButton : CotonomaKey -> Model -> Html AppMsg.Msg
+pinOrUnpinCotonomaButton cotonomaKey model =
+    button
+        [ class "button"
+        , disabled model.waitingToPinOrUnpinCotonoma
+        , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
+        ]
+        [ text
+            (if model.waitingToPinOrUnpinCotonoma then
+                "Processing..."
+             else if model.cotonomaPinned then
+                "Unpin from nav"
+             else
+                "Pin to nav"
+            )
+        ]
+
+
+cotonomaStatsDiv : CotonomaStats -> Html AppMsg.Msg
+cotonomaStatsDiv stats =
+    div [ class "cotonoma-stats" ]
+        [ div [ class "cotos" ]
+            [ span [ class "number" ] [ text (toString stats.cotos) ]
+            , text "cotos posted."
+            ]
+        , div [ class "connections" ]
+            [ span [ class "number" ] [ text (toString stats.connections) ]
+            , text "connections created."
+            ]
+        ]
+
+
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
@@ -398,7 +479,7 @@ adviceOnCotonomaNameDiv model =
     if model.editingToCotonomatize then
         let
             contentLength =
-                String.length model.editorContent
+                String.length model.content
         in
             div [ class "advice-on-cotonoma-name" ]
                 [ text

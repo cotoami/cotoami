@@ -83,11 +83,16 @@ updatePost predicate update timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-updateContent : CotoId -> String -> Timeline -> Timeline
-updateContent cotoId content timeline =
+updateContent : Coto -> Timeline -> Timeline
+updateContent coto timeline =
     updatePost
-        (\post -> post.cotoId == Just cotoId)
-        (\post -> { post | content = content })
+        (\post -> post.cotoId == Just coto.id)
+        (\post ->
+            { post
+                | content = coto.content
+                , summary = coto.summary
+            }
+        )
         timeline
 
 

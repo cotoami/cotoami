@@ -8,6 +8,7 @@ import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.EventUtil exposing (onLoad)
+import App.Types.Coto exposing (ElementId)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -52,7 +53,7 @@ view context graph post =
                     div [] []
                   else
                     authorDiv context.session post
-                , bodyDiv context graph post
+                , bodyDiv context graph elementId post
                 , footerDiv post
                 , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
                 ]
@@ -85,7 +86,7 @@ parentsDiv graph post =
                             [ class "parent"
                             , onClick (OpenTraversal parent.id)
                             ]
-                            [ text (App.Views.Coto.headline parent) ]
+                            [ text (App.Views.Coto.abbreviate parent) ]
                     )
                     parents
                 )
@@ -93,32 +94,31 @@ parentsDiv graph post =
 
 authorDiv : Maybe Session -> Post -> Html Msg
 authorDiv maybeSession post =
-    case maybeSession of
-        Nothing ->
-            span [] []
-
-        Just session ->
-            case post.amishi of
-                Nothing ->
-                    span [] []
-
-                Just author ->
-                    if author.id == session.id then
-                        span [] []
-                    else
-                        div [ class "amishi author" ]
-                            [ img [ class "avatar", src author.avatarUrl ] []
-                            , span [ class "name" ] [ text author.displayName ]
-                            ]
+    (Maybe.map2
+        (\session author ->
+            if author.id == session.id then
+                span [] []
+            else
+                div [ class "amishi author" ]
+                    [ img [ class "avatar", src author.avatarUrl ] []
+                    , span [ class "name" ] [ text author.displayName ]
+                    ]
+        )
+        maybeSession
+        post.amishi
+    )
+        |> Maybe.withDefault (span [] [])
 
 
-bodyDiv : Context -> Graph -> Post -> Html Msg
-bodyDiv context graph post =
+bodyDiv : Context -> Graph -> ElementId -> Post -> Html Msg
+bodyDiv context graph elementId post =
     App.Views.Coto.bodyDivWithConfig
         context
         graph
+        elementId
         { openCoto = Just (OpenPost post)
         , selectCoto = Just SelectCoto
+        , toggleContent = ToggleCotoContent
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
@@ -128,6 +128,7 @@ bodyDiv context graph post =
         }
         { cotoId = post.cotoId
         , content = post.content
+        , summary = post.summary
         , amishi = post.amishi
         , asCotonoma = post.asCotonoma
         , cotonomaKey = post.cotonomaKey

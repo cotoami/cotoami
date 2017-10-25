@@ -13,6 +13,7 @@ type alias Post =
     { postId : Maybe Int
     , cotoId : Maybe CotoId
     , content : String
+    , summary : Maybe String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Maybe Date
@@ -27,6 +28,7 @@ defaultPost =
     { postId = Nothing
     , cotoId = Nothing
     , content = ""
+    , summary = Nothing
     , amishi = Nothing
     , postedIn = Nothing
     , postedAt = Nothing
@@ -43,6 +45,7 @@ toCoto post =
             Coto
                 cotoId
                 post.content
+                post.summary
                 post.amishi
                 post.postedIn
                 postedAt

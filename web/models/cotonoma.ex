@@ -32,7 +32,9 @@ defmodule Cotoami.Cotonoma do
   def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :coto_id, :owner_id])
-    |> generate_key
+    |> generate_key()
+    |> put_change(:timeline_revision, 0)
+    |> put_change(:graph_revision, 0)
     |> validate_required([:key, :name, :coto_id, :owner_id])
     |> validate_name()
   end
@@ -72,11 +74,18 @@ defmodule Cotoami.Cotonoma do
     changeset |> put_change(:key, key)
   end
 
-  def in_cotonoma(query, nil), do: query
   def in_cotonoma(query, cotonoma_id) do
     from c in query,
       join: coto in assoc(c, :coto),
       where: coto.posted_in_id == ^cotonoma_id
+  end
+
+  def exclude_empty_by_others(query, amishi_id) do
+    from c in query,
+      where:
+        c.timeline_revision > 0 or
+        c.graph_revision > 0 or
+        c.owner_id == ^amishi_id
   end
 
   def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do

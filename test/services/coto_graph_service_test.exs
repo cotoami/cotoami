@@ -13,14 +13,14 @@ defmodule Cotoami.CotoGraphServiceTest do
     %{conn: Bolt.Sips.conn, amishi: amishi}
   end
 
-  describe "a coto pinned to an amishi" do
+  describe "when a coto is pinned to an amishi" do
     setup ~M{conn, amishi} do
       {coto, _posted_in} = CotoService.create!("hello", amishi.id)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
-    test "reflects in the neo4j",
+    test "it should be reflected in the neo4j",
         %{conn: conn, amishi: %{id: amishi_id}, coto: %{id: coto_id}} do
       assert %Node{
         id: amishi_node_id,
@@ -54,12 +54,12 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships(conn, amishi_id, "HAS_A")
     end
 
-    test "can be unpinned", ~M{conn, amishi, coto} do
+    test "it can be unpinned", ~M{conn, amishi, coto} do
       CotoGraphService.unpin(conn, coto, amishi)
       assert [] == Neo4jService.get_ordered_relationships(conn, amishi.id, "HAS_A")
     end
 
-    test "can be gotten as a graph",
+    test "it can be gotten as a graph",
         %{conn: conn, amishi: %{id: amishi_id} = amishi, coto: %{id: coto_id}} do
       assert %CotoGraph{
         cotos: %{
@@ -89,14 +89,14 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
-  describe "a cotonoma pinned to an amishi" do
+  describe "when a cotonoma is pinned to an amishi" do
     setup ~M{conn, amishi} do
       {coto, _} = CotonomaService.create!("cotonoma coto", amishi)
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
-    test "reflects in the neo4j", %{
+    test "it should be reflected in the neo4j", %{
       conn: conn,
       amishi: %{id: amishi_id},
       coto: %{id: coto_id, cotonoma: %{key: cotonoma_key}}
@@ -124,20 +124,20 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
-  describe "a coto pinned to a cotonoma" do
+  describe "when a coto is pinned to a cotonoma" do
     setup ~M{conn, amishi} do
       cotonoma_owner = AmishiService.create!("cotonoma@example.com")
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!("test", cotonoma_owner)
 
       coto_amishi = AmishiService.create!("coto@example.com")
-      {coto, _} = CotoService.create!("hello", coto_amishi.id)
+      {coto, _} = CotoService.create!("hello", coto_amishi.id, cotonoma.id)
 
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
 
       ~M{coto, coto_amishi, cotonoma}
     end
 
-    test "reflects in the neo4j", %{
+    test "it should be reflected in the neo4j", %{
       conn: conn,
       amishi: %{id: amishi_id},
       coto: %{id: coto_id, amishi_id: coto_amishi_id},
@@ -183,31 +183,41 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships(conn, cotonoma_coto_id, "HAS_A")
     end
 
-    test "can be unpinned by the amishi who pinned", ~M{conn, amishi, coto, cotonoma} do
+    test "it can be unpinned by the amishi who pinned", ~M{conn, amishi, coto, cotonoma} do
       CotoGraphService.unpin(conn, coto, cotonoma, amishi)
       assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
+      assert CotoGraphService.count_connections_in_cotonoma(conn, cotonoma) == 0
     end
 
-    test "can be unpinned by the cotonoma owner", ~M{conn, coto, cotonoma} do
+    test "it can be unpinned by the cotonoma owner", ~M{conn, coto, cotonoma} do
       CotoGraphService.unpin(conn, coto, cotonoma, cotonoma.owner)
       assert [] == Neo4jService.get_ordered_relationships(conn, cotonoma.coto.id, "HAS_A")
+      assert CotoGraphService.count_connections_in_cotonoma(conn, cotonoma) == 0
     end
 
-    test "can't be unpinned by the coto amishi", ~M{conn, coto, coto_amishi, cotonoma} do
+    test "it can't be unpinned by the coto amishi", ~M{conn, coto, coto_amishi, cotonoma} do
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.unpin(conn, coto, cotonoma, coto_amishi)
       end
     end
 
-    test "can't be unpinned by an unrelated amishi", ~M{conn, coto, cotonoma} do
+    test "it can't be unpinned by an unrelated amishi", ~M{conn, coto, cotonoma} do
       unrelated_amishi = AmishiService.create!("unrelated@example.com")
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.unpin(conn, coto, cotonoma, unrelated_amishi)
       end
     end
+
+    test "the cotonoma has one connection", ~M{conn, cotonoma} do
+      assert CotoGraphService.count_connections_in_cotonoma(conn, cotonoma) == 1
+    end
+
+    test "the cotonoma's stats should be correct", ~M{cotonoma}  do
+      assert %{cotos: 1, connections: 1} = CotonomaService.stats(cotonoma)
+    end
   end
 
-  describe "two cotos with a connection" do
+  describe "when two cotos are connected" do
     setup ~M{conn, amishi} do
       source_amishi = AmishiService.create!("source@example.com")
       {source, _} = CotoService.create!("hello", source_amishi.id)
@@ -220,7 +230,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       ~M{source, source_amishi, target, target_amishi}
     end
 
-    test "reflects in the neo4j", ~M{conn, amishi, source, target} do
+    test "it should be reflected in the neo4j", ~M{conn, amishi, source, target} do
       amishi_id = amishi.id
       source_node_id = Neo4jService.get_or_create_node(conn, source.id).id
       target_node_id = Neo4jService.get_or_create_node(conn, target.id).id
@@ -239,23 +249,23 @@ defmodule Cotoami.CotoGraphServiceTest do
       ] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
 
-    test "can be disconnected by the amishi who connected", ~M{conn, amishi, source, target} do
+    test "they can be disconnected by the amishi who connected", ~M{conn, amishi, source, target} do
       CotoGraphService.disconnect(conn, source, target, amishi)
       assert [] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
 
-    test "can be disconnected by the source amishi", ~M{conn, source, source_amishi, target} do
+    test "they can be disconnected by the source amishi", ~M{conn, source, source_amishi, target} do
       CotoGraphService.disconnect(conn, source, target, source_amishi)
       assert [] = Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
     end
 
-    test "can't be disconnected by the target amishi", ~M{conn, source, target, target_amishi} do
+    test "they can't be disconnected by the target amishi", ~M{conn, source, target, target_amishi} do
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.disconnect(conn, source, target, target_amishi)
       end
     end
 
-    test "can't be disconnected by an unrelated amishi", ~M{conn, source, target} do
+    test "they can't be disconnected by an unrelated amishi", ~M{conn, source, target} do
       unrelated_amishi = AmishiService.create!("unrelated@example.com")
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.disconnect(conn, source, target, unrelated_amishi)
@@ -263,7 +273,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
-  describe "two paths to the same cotos" do
+  describe "when there are two paths to the same cotos" do
     # a -> b
     # c -> a -> b
     setup ~M{conn, amishi} do
@@ -275,7 +285,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       ~M{coto_a, coto_b, coto_c}
     end
 
-    test "as a graph (ensure no duplicate connections)",
+    test "the graph should not have duplicate connections",
         ~M{conn, amishi, coto_a, coto_b, coto_c} do
       {coto_a_id, coto_b_id, coto_c_id} = {coto_a.id, coto_b.id, coto_c.id}
       assert %CotoGraph{

@@ -5,7 +5,7 @@ import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
 import App.Types.Post exposing (Post)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
@@ -34,6 +34,7 @@ type Msg
     | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomaFetched (Result Http.Error ( Cotonoma, List Post ))
+    | CotonomaStatsFetched (Result Http.Error CotonomaStats)
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
       --
@@ -56,6 +57,7 @@ type Msg
     | SelectCoto CotoId
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
+    | ToggleCotoContent ElementId
     | ConfirmDeleteCoto
     | RequestDeleteCoto Coto
     | DeleteCoto Coto

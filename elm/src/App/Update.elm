@@ -167,6 +167,16 @@ update msg model =
         CotonomaFetched (Err _) ->
             model ! []
 
+        CotonomaStatsFetched (Ok stats) ->
+            model.cotoModal
+                |> Maybe.map (\cotoModal -> { cotoModal | cotonomaStats = Just stats })
+                |> Maybe.map (\cotoModal -> { model | cotoModal = Just cotoModal })
+                |> Maybe.withDefault model
+                |> (\model -> ( model, Cmd.none ))
+
+        CotonomaStatsFetched (Err _) ->
+            model ! []
+
         GraphFetched (Ok graph) ->
             { model | graph = graph } ! []
 
@@ -200,7 +210,7 @@ update msg model =
             openModal App.Model.ProfileModal model ! []
 
         OpenCotoModal coto ->
-            openCoto coto model ! []
+            openCoto coto model
 
         OpenCotonomaModal ->
             { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
@@ -256,6 +266,11 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
 
+        ToggleCotoContent elementId ->
+            ( { model | context = toggleContent elementId model.context }
+            , Cmd.none
+            )
+
         ConfirmDeleteCoto ->
             ( confirm
                 (Confirmation
@@ -301,7 +316,7 @@ update msg model =
             (model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
                 |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> updateCotoContent coto.id coto.content
+                |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
             )
                 ! if coto.asCotonoma then
@@ -596,7 +611,7 @@ update msg model =
                     model ! []
 
                 Just coto ->
-                    openCoto coto model ! []
+                    openCoto coto model
 
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
@@ -818,3 +833,12 @@ post maybeDirection model =
                     ! [ App.Commands.scrollTimelineToBottom NoOp
                       , App.Server.Post.post clientId cotonoma postMsg newPost
                       ]
+
+
+openCoto : Coto -> Model -> ( Model, Cmd Msg )
+openCoto coto model =
+    ( App.Model.openCoto coto model
+    , coto.cotonomaKey
+        |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+        |> Maybe.withDefault Cmd.none
+    )
