@@ -123,9 +123,9 @@ defmodule Cotoami.CotonomaService do
     |> Enum.map(fn({owner, cotonoma}) -> %{cotonoma | owner: owner} end)
   end
 
-  def recent_cotonomas() do
+  def recent_cotonomas(%Amishi{id: amishi_id}) do
     Cotonoma
-    |> Cotonoma.not_empty()
+    |> Cotonoma.exclude_empty_by_others(amishi_id)
     |> limit(100)
     |> do_query_for_cotonomas()
   end

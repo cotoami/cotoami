@@ -10,10 +10,10 @@ defmodule Cotoami.CotonomaController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, _params, _amishi) do
+  def index(conn, _params, amishi) do
     render(conn, "index.json", %{
       pinned: CotonomaService.pinned_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(),
+      recent: CotonomaService.recent_cotonomas(amishi),
     })
   end
 
