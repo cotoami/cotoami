@@ -7,6 +7,8 @@ defmodule Cotoami.Coto do
   import Cotoami.Helpers
   alias Cotoami.Amishi
 
+  @summary_max_length 200
+
   schema "cotos" do
     field :content, :string
     field :summary, :string
@@ -28,6 +30,7 @@ defmodule Cotoami.Coto do
     struct
     |> cast(params, [:content, :summary])
     |> validate_required([:content])
+    |> validate_length(:summary, max: @summary_max_length)
   end
 
   def changeset_to_import(struct, json, %Amishi{id: amishi_id}) do
