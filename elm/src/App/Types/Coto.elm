@@ -42,6 +42,8 @@ type alias Cotonoma =
     , owner : Maybe Amishi
     , postedAt : Date
     , updatedAt : Date
+    , timelineRevision : Int
+    , graphRevision : Int
     }
 
 
@@ -65,6 +67,11 @@ cotonomaNameMaxlength =
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
     not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
+
+
+revisedBefore : Cotonoma -> Bool
+revisedBefore cotonoma =
+    (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
 
 
 type alias CotonomaStats =

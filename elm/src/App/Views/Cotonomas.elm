@@ -44,6 +44,7 @@ cotonomaDiv context listTitle cotonoma =
                         |> Maybe.map (\current -> current.id == cotonoma.id)
                         |> Maybe.withDefault False
                   )
+                , ( "not-active", not (App.Types.Coto.revisedBefore cotonoma) )
                 ]
             , onClickWithoutPropagation (CotoClick elementId cotonoma.cotoId)
             , onMouseEnter (CotoMouseEnter elementId cotonoma.cotoId)
