@@ -266,6 +266,11 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
 
+        ToggleCotoContent elementId ->
+            ( { model | context = toggleContent elementId model.context }
+            , Cmd.none
+            )
+
         ConfirmDeleteCoto ->
             ( confirm
                 (Confirmation
@@ -311,7 +316,7 @@ update msg model =
             (model.cotoModal
                 |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
                 |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> updateCotoContent coto.id coto.content
+                |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
             )
                 ! if coto.asCotonoma then

@@ -324,6 +324,7 @@ defmodule Cotoami.CotoGraphService do
   defp to_coto_props(%Coto{} = coto) do
     %{
       content: coto.content,
+      summary: coto.summary,
       amishi_id: coto.amishi_id,
       cotonoma_key: (if coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
       posted_in_id: coto.posted_in_id,

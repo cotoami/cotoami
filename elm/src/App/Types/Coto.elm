@@ -20,6 +20,7 @@ type alias CotonomaKey =
 type alias Coto =
     { id : CotoId
     , content : String
+    , summary : Maybe String
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Date
@@ -27,6 +28,10 @@ type alias Coto =
     , cotonomaKey : Maybe CotonomaKey
     }
 
+
+summaryMaxlength : Int
+summaryMaxlength =
+    200
 
 updateContent : String -> Coto -> Coto
 updateContent content coto =
@@ -52,6 +57,7 @@ toCoto cotonoma =
     Coto
         cotonoma.cotoId
         cotonoma.name
+        Nothing
         cotonoma.owner
         Nothing
         cotonoma.postedAt

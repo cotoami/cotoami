@@ -24,6 +24,7 @@ import App.Types.Coto
         , CotonomaKey
         , CotonomaStats
         , updateContent
+        , summaryMaxlength
         , cotonomaNameMaxlength
         , validateCotonomaName
         )
@@ -44,7 +45,8 @@ type alias Model =
     , cotonomaPinned : Bool
     , editing : Bool
     , editingToCotonomatize : Bool
-    , editorContent : String
+    , content : String
+    , summary : String
     , waitingToUpdateContent : Bool
     , contentUpdateStatus : ContentUpdateStatus
     , waitingToPinOrUnpinCotonoma : Bool
@@ -65,7 +67,8 @@ initModel cotonomaPinned coto =
     , cotonomaPinned = cotonomaPinned
     , editing = False
     , editingToCotonomatize = False
-    , editorContent = coto.content
+    , content = coto.content
+    , summary = Maybe.withDefault "" coto.summary
     , waitingToUpdateContent = False
     , contentUpdateStatus = None
     , waitingToPinOrUnpinCotonoma = False
@@ -135,13 +138,17 @@ update msg model =
             )
 
         EditorInput content ->
-            ( { model | editorContent = content }, Nothing, Cmd.none )
+            ( { model | content = content }, Nothing, Cmd.none )
+
+        SummaryInput summary ->
+            ( { model | summary = summary }, Nothing, Cmd.none )
 
         CancelEditing ->
             ( { model
                 | editing = False
                 , editingToCotonomatize = False
-                , editorContent = model.coto.content
+                , content = model.coto.content
+                , summary = Maybe.withDefault "" model.coto.summary
                 , contentUpdateStatus = None
               }
             , Nothing
@@ -153,7 +160,8 @@ update msg model =
             , Nothing
             , App.Server.Coto.updateContent
                 model.coto.id
-                model.editorContent
+                model.summary
+                model.content
             )
 
         ConfirmCotonomatize ->
@@ -221,9 +229,23 @@ cotoModalConfig session model =
             [ if model.editing then
                 div [ class "coto-editor" ]
                     [ adviceOnCotonomaNameDiv model
+                    , if model.editingToCotonomatize then
+                        div [] []
+                      else
+                        div [ class "summary-input" ]
+                            [ input
+                                [ type_ "text"
+                                , class "u-full-width"
+                                , placeholder "Summary"
+                                , maxlength summaryMaxlength
+                                , value model.summary
+                                , onInput (AppMsg.CotoModalMsg << SummaryInput)
+                                ]
+                                []
+                            ]
                     , div [ class "content-input" ]
                         [ textarea
-                            [ value model.editorContent
+                            [ value model.content
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -232,7 +254,13 @@ cotoModalConfig session model =
                     ]
               else
                 div [ class "coto-view" ]
-                    [ App.Markdown.markdown model.coto.content
+                    [ model.coto.summary
+                        |> Maybe.map
+                            (\summary ->
+                                div [ class "coto-summary" ] [ text summary ]
+                            )
+                        |> Maybe.withDefault (div [] [])
+                    , App.Markdown.markdown model.coto.content
                     , cotoInfo model.coto
                     ]
             ]
@@ -240,7 +268,7 @@ cotoModalConfig session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (isNotBlank model.editorContent
+                (isNotBlank model.content
                     && not model.waitingToUpdateContent
                 )
                 model
@@ -268,7 +296,7 @@ cotonomaModalConfig cotonomaKey session model =
                             , class "u-full-width"
                             , placeholder "Cotonoma name"
                             , maxlength cotonomaNameMaxlength
-                            , value model.editorContent
+                            , value model.content
                             , onInput (AppMsg.CotoModalMsg << EditorInput)
                             ]
                             []
@@ -296,7 +324,7 @@ cotonomaModalConfig cotonomaKey session model =
         if model.editing then
             [ cancelEditingButton
             , saveButton
-                (validateCotonomaName model.editorContent
+                (validateCotonomaName model.content
                     && not model.waitingToUpdateContent
                 )
                 model
@@ -451,7 +479,7 @@ adviceOnCotonomaNameDiv model =
     if model.editingToCotonomatize then
         let
             contentLength =
-                String.length model.editorContent
+                String.length model.content
         in
             div [ class "advice-on-cotonoma-name" ]
                 [ text

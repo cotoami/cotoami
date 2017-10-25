@@ -20,6 +20,7 @@ type alias Context =
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
+    , contentOpenElements : Set ElementId
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
@@ -37,6 +38,7 @@ initContext seed =
     , cotonoma = Nothing
     , cotonomaLoading = False
     , elementFocus = Nothing
+    , contentOpenElements = Set.empty
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
@@ -64,6 +66,22 @@ setElementFocus maybeElementId context =
 setCotoFocus : Maybe CotoId -> Context -> Context
 setCotoFocus maybeCotoId context =
     { context | cotoFocus = maybeCotoId }
+
+
+toggleContent : ElementId -> Context -> Context
+toggleContent elementId context =
+    { context
+        | contentOpenElements =
+            if Set.member elementId context.contentOpenElements then
+                Set.remove elementId context.contentOpenElements
+            else
+                Set.insert elementId context.contentOpenElements
+    }
+
+
+contentOpen : ElementId -> Context -> Bool
+contentOpen elementId context =
+    Set.member elementId context.contentOpenElements
 
 
 anySelection : Context -> Bool
