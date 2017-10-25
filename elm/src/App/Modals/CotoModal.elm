@@ -120,6 +120,11 @@ setCotonomatized coto model =
     }
 
 
+isCotonomaEmpty : CotonomaStats -> Bool
+isCotonomaEmpty stats =
+    stats.cotos == 0 && stats.connections == 0
+
+
 update : CotoModalMsg.Msg -> Model -> ( Model, Maybe Confirmation, Cmd AppMsg.Msg )
 update msg model =
     case msg of
@@ -242,9 +247,7 @@ cotoModalConfig session model =
             ]
         else if checkWritePermission session model then
             [ editButton
-            , button
-                [ class "button", onClick ConfirmDeleteCoto ]
-                [ text "Delete" ]
+            , deleteButton model
             ]
         else
             []
@@ -299,28 +302,19 @@ cotonomaModalConfig cotonomaKey session model =
                 model
             ]
         else
-            [ if session.owner then
-                button
-                    [ class "button"
-                    , disabled model.waitingToPinOrUnpinCotonoma
-                    , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
-                    ]
-                    [ text
-                        (if model.waitingToPinOrUnpinCotonoma then
-                            "Processing..."
-                         else if model.cotonomaPinned then
-                            "Unpin from nav"
-                         else
-                            "Pin to nav"
-                        )
-                    ]
-              else
-                span [] []
-            , if checkWritePermission session model then
-                editButton
-              else
-                span [] []
-            ]
+            (if checkWritePermission session model then
+                [ editButton
+                , deleteButton model
+                ]
+             else
+                []
+            )
+                |> (::)
+                    (if session.owner then
+                        pinOrUnpinCotonomaButton cotonomaKey model
+                     else
+                        span [] []
+                    )
     }
 
 
@@ -378,6 +372,20 @@ cancelEditingButton =
         [ text "Cancel" ]
 
 
+deleteButton : Model -> Html AppMsg.Msg
+deleteButton model =
+    button
+        [ class "button"
+        , disabled
+            (model.cotonomaStats
+                |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
+                |> Maybe.withDefault model.coto.asCotonoma
+            )
+        , onClick ConfirmDeleteCoto
+        ]
+        [ text "Delete" ]
+
+
 editButton : Html AppMsg.Msg
 editButton =
     button
@@ -401,9 +409,27 @@ saveButton enabled model =
         ]
 
 
+pinOrUnpinCotonomaButton : CotonomaKey -> Model -> Html AppMsg.Msg
+pinOrUnpinCotonomaButton cotonomaKey model =
+    button
+        [ class "button"
+        , disabled model.waitingToPinOrUnpinCotonoma
+        , onClick (PinOrUnpinCotonoma cotonomaKey (not model.cotonomaPinned))
+        ]
+        [ text
+            (if model.waitingToPinOrUnpinCotonoma then
+                "Processing..."
+             else if model.cotonomaPinned then
+                "Unpin from nav"
+             else
+                "Pin to nav"
+            )
+        ]
+
+
 cotonomaStatsDiv : CotonomaStats -> Html AppMsg.Msg
 cotonomaStatsDiv stats =
-    div [ class "cotonoma-stats"]
+    div [ class "cotonoma-stats" ]
         [ div [ class "cotos" ]
             [ span [ class "number" ] [ text (toString stats.cotos) ]
             , text "cotos posted."
