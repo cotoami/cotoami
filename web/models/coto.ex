@@ -9,6 +9,7 @@ defmodule Cotoami.Coto do
 
   schema "cotos" do
     field :content, :string
+    field :summary, :string
     field :as_cotonoma, :boolean
     belongs_to :posted_in, Cotoami.Cotonoma
     belongs_to :amishi, Cotoami.Amishi
