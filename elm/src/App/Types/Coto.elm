@@ -29,6 +29,10 @@ type alias Coto =
     }
 
 
+summaryMaxlength : Int
+summaryMaxlength =
+    200
+
 updateContent : String -> Coto -> Coto
 updateContent content coto =
     { coto | content = content }
