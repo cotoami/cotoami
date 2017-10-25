@@ -9,7 +9,7 @@ import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
-import App.Types.Context exposing (Context, isSelected, orignatedHere)
+import App.Types.Context exposing (Context, isSelected, orignatedHere, contentOpen)
 import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
@@ -71,6 +71,7 @@ headerDiv cotonomaClick context graph coto =
 type alias BodyModel =
     { cotoId : Maybe CotoId
     , content : String
+    , summary : Maybe String
     , amishi : Maybe Amishi
     , asCotonoma : Bool
     , cotonomaKey : Maybe CotonomaKey
@@ -80,6 +81,7 @@ type alias BodyModel =
 type alias BodyConfig msg =
     { openCoto : Maybe msg
     , selectCoto : Maybe (CotoId -> msg)
+    , toggleContent : ElementId -> msg
     , pinCoto : Maybe (CotoId -> msg)
     , openTraversal : Maybe (CotoId -> msg)
     , cotonomaClick : CotonomaKey -> msg
@@ -112,6 +114,7 @@ defaultBodyConfig context maybeConnection coto =
     in
         { openCoto = Just (OpenCotoModal coto)
         , selectCoto = Just SelectCoto
+        , toggleContent = ToggleCotoContent
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
         , cotonomaClick = CotonomaClick
@@ -128,29 +131,66 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-bodyDivWithConfig : Context -> Graph -> BodyConfig msg -> BodyModel -> Html msg
-bodyDivWithConfig context graph config model =
+bodyDivWithConfig : Context -> Graph -> ElementId -> BodyConfig msg -> BodyModel -> Html msg
+bodyDivWithConfig context graph elementId config model =
     div [ class "coto-body" ]
         [ model.cotoId
             |> Maybe.map (toolButtonsSpan context graph config model.asCotonoma)
             |> Maybe.withDefault (span [] [])
         , model.cotonomaKey
             |> Maybe.map
-                (\cotonomaKey ->
-                    cotonomaLink config.cotonomaClick model.amishi cotonomaKey model.content
+                (\key ->
+                    cotonomaLink config.cotonomaClick model.amishi key model.content
                 )
-            |> Maybe.withDefault (config.markdown model.content)
+            |> Maybe.withDefault (contentDiv context elementId config model)
         ]
 
 
-bodyDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> Coto -> Html Msg
-bodyDiv context graph maybeConnection coto =
+contentDiv : Context -> ElementId -> BodyConfig msg -> BodyModel -> Html msg
+contentDiv context elementId config model =
+    model.summary
+        |> Maybe.map
+            (\summary ->
+                div [ class "summary-and-content" ]
+                    [ div
+                        [ class "coto-summary" ]
+                        [ span [ class "summary" ] [ text summary ]
+                        , a
+                            [ class "tool-button toggle-coto-content"
+                            , title "Toggle coto content"
+                            , onLinkButtonClick (config.toggleContent elementId)
+                            ]
+                            [ faIcon
+                                (if contentOpen elementId context then
+                                    "angle-double-up"
+                                else
+                                    "angle-double-down"
+                                )
+                                Nothing
+                            ]
+                        ]
+                    , div
+                        [ classList
+                            [ ( "coto-collapsible-content", True )
+                            , ( "open", contentOpen elementId context )
+                            ]
+                        ]
+                        [ config.markdown model.content ]
+                    ]
+            )
+        |> Maybe.withDefault (config.markdown model.content)
+
+
+bodyDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ElementId -> Coto -> Html Msg
+bodyDiv context graph maybeConnection elementId coto =
     bodyDivWithConfig
         context
         graph
+        elementId
         (defaultBodyConfig context maybeConnection coto)
         { cotoId = Just coto.id
         , content = coto.content
+        , summary = coto.summary
         , amishi = coto.amishi
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey
@@ -332,7 +372,7 @@ subCotoDiv context graph parentElementId connection coto =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv CotonomaClick context graph coto
-                , bodyDiv context graph (Just connection) coto
+                , bodyDiv context graph (Just connection) elementId coto
                 , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
                 ]
             ]

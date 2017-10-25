@@ -9,7 +9,7 @@ import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Context exposing (CotoSelection, Context)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -94,42 +94,48 @@ selectedCotosDiv model =
 
 cotoDiv : Bool -> Context -> Graph -> Coto -> Html Msg
 cotoDiv beingDeselected context graph coto =
-    div
-        [ classList
-            [ ( "coto", True )
-            , ( "animated", True )
-            , ( "fadeOut", beingDeselected )
-            ]
-        ]
-        [ div
-            [ class "coto-inner" ]
-            [ a
-                [ class "tool-button deselect-coto"
-                , title "Deselect coto"
-                , onLinkButtonClick (DeselectingCoto coto.id)
+    let
+        elementId =
+            "selection-" ++ coto.id
+    in
+        div
+            [ classList
+                [ ( "coto", True )
+                , ( "animated", True )
+                , ( "fadeOut", beingDeselected )
                 ]
-                [ materialIcon
-                    (if beingDeselected then
-                        "check_box_outline_blank"
-                     else
-                        "check_box"
-                    )
-                    Nothing
-                ]
-            , App.Views.Coto.headerDiv CotonomaClick context graph coto
-            , bodyDiv context graph coto
-            , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
             ]
-        ]
+            [ div
+                [ class "coto-inner" ]
+                [ a
+                    [ class "tool-button deselect-coto"
+                    , title "Deselect coto"
+                    , onLinkButtonClick (DeselectingCoto coto.id)
+                    ]
+                    [ materialIcon
+                        (if beingDeselected then
+                            "check_box_outline_blank"
+                         else
+                            "check_box"
+                        )
+                        Nothing
+                    ]
+                , App.Views.Coto.headerDiv CotonomaClick context graph coto
+                , bodyDiv context graph elementId coto
+                , App.Views.Coto.openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                ]
+            ]
 
 
-bodyDiv : Context -> Graph -> Coto -> Html Msg
-bodyDiv context graph coto =
+bodyDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
+bodyDiv context graph elementId coto =
     App.Views.Coto.bodyDivWithConfig
         context
         graph
+        elementId
         { openCoto = Nothing
         , selectCoto = Nothing
+        , toggleContent = ToggleCotoContent
         , pinCoto = Nothing
         , openTraversal = Nothing
         , cotonomaClick = CotonomaClick
@@ -139,6 +145,7 @@ bodyDiv context graph coto =
         }
         { cotoId = Just coto.id
         , content = coto.content
+        , summary = coto.summary
         , amishi = coto.amishi
         , asCotonoma = coto.asCotonoma
         , cotonomaKey = coto.cotonomaKey

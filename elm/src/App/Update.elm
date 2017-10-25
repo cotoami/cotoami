@@ -266,6 +266,11 @@ update msg model =
         CotonomaClick key ->
             changeLocationToCotonoma key model
 
+        ToggleCotoContent elementId ->
+            ( { model | context = toggleContent elementId model.context }
+            , Cmd.none
+            )
+
         ConfirmDeleteCoto ->
             ( confirm
                 (Confirmation

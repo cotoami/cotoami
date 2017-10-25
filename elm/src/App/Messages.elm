@@ -57,6 +57,7 @@ type Msg
     | SelectCoto CotoId
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
+    | ToggleCotoContent ElementId
     | ConfirmDeleteCoto
     | RequestDeleteCoto Coto
     | DeleteCoto Coto

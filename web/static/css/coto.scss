@@ -60,6 +60,27 @@ div.parents {
 div.coto-body {
   position: relative;
 
+  div.coto-summary {
+    span.summary {
+      font-weight: bold;
+      opacity: .5;
+    }
+
+    a.toggle-coto-content {
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+  }
+
+  div.coto-collapsible-content {
+    display: none;
+
+    &.open {
+      display: block;
+      margin-top: 10px;
+    }
+  }
+
   span.coto-tool-buttons {
     position: absolute;
     top: 0;
