@@ -26,7 +26,7 @@ defmodule Cotoami.Coto do
 
   def changeset_to_update_content(struct, params \\ %{}) do
     struct
-    |> cast(params, [:content])
+    |> cast(params, [:content, :summary])
     |> validate_required([:content])
   end
 
