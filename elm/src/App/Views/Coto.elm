@@ -33,12 +33,27 @@ cotoClassList context elementId maybeCotoId additionalClasses =
         )
 
 
-headline : { r | content : String } -> String
-headline { content } =
-    extractTextFromMarkdown content
-        |> List.head
-        |> Maybe.withDefault ""
-        |> String.left 100
+abbreviate : { r | content : String, summary : Maybe String } -> String
+abbreviate { content, summary } =
+    let
+        maxLength =
+            200
+    in
+        summary
+            |> Maybe.map identity
+            |> Maybe.withDefault
+                (extractTextFromMarkdown content
+                    |> List.head
+                    |> Maybe.withDefault ""
+                    |> (\text ->
+                            (String.left maxLength text)
+                                ++ (if String.length text > maxLength then
+                                        "..."
+                                    else
+                                        ""
+                                   )
+                       )
+                )
 
 
 headerDiv : (CotonomaKey -> msg) -> Context -> Graph -> Coto -> Html msg
@@ -163,7 +178,7 @@ contentDiv context elementId config model =
                             [ faIcon
                                 (if contentOpen elementId context then
                                     "angle-double-up"
-                                else
+                                 else
                                     "angle-double-down"
                                 )
                                 Nothing

@@ -86,7 +86,7 @@ parentsDiv graph post =
                             [ class "parent"
                             , onClick (OpenTraversal parent.id)
                             ]
-                            [ text (App.Views.Coto.headline parent) ]
+                            [ text (App.Views.Coto.abbreviate parent) ]
                     )
                     parents
                 )
@@ -94,23 +94,20 @@ parentsDiv graph post =
 
 authorDiv : Maybe Session -> Post -> Html Msg
 authorDiv maybeSession post =
-    case maybeSession of
-        Nothing ->
-            span [] []
-
-        Just session ->
-            case post.amishi of
-                Nothing ->
-                    span [] []
-
-                Just author ->
-                    if author.id == session.id then
-                        span [] []
-                    else
-                        div [ class "amishi author" ]
-                            [ img [ class "avatar", src author.avatarUrl ] []
-                            , span [ class "name" ] [ text author.displayName ]
-                            ]
+    (Maybe.map2
+        (\session author ->
+            if author.id == session.id then
+                span [] []
+            else
+                div [ class "amishi author" ]
+                    [ img [ class "avatar", src author.avatarUrl ] []
+                    , span [ class "name" ] [ text author.displayName ]
+                    ]
+        )
+        maybeSession
+        post.amishi
+    )
+        |> Maybe.withDefault (span [] [])
 
 
 bodyDiv : Context -> Graph -> ElementId -> Post -> Html Msg
