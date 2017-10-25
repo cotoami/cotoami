@@ -88,8 +88,8 @@ updateContent : Coto -> Graph -> Graph
 updateContent coto graph =
     updateCoto
         coto.id
-        (\coto ->
-            { coto
+        (\currentCoto ->
+            { currentCoto
                 | content = coto.content
                 , summary = coto.summary
             }
