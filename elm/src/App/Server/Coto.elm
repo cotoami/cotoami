@@ -29,8 +29,8 @@ deleteCoto cotoId =
     Http.send CotoDeleted ("/api/cotos/" ++ cotoId |> httpDelete)
 
 
-updateContent : CotoId -> String -> Cmd Msg
-updateContent cotoId content =
+updateContent : CotoId -> String -> String -> Cmd Msg
+updateContent cotoId summary content =
     let
         url =
             "/api/cotos/" ++ cotoId
@@ -39,7 +39,10 @@ updateContent cotoId content =
             Http.jsonBody <|
                 Encode.object
                     [ ( "coto"
-                      , Encode.object [ ( "content", Encode.string content ) ]
+                      , Encode.object
+                            [ ( "content", Encode.string content )
+                            , ( "summary", Encode.string summary )
+                            ]
                       )
                     ]
     in

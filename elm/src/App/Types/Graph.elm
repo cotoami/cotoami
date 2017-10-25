@@ -84,9 +84,17 @@ updateCoto cotoId update graph =
     { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
 
 
-updateContent : CotoId -> String -> Graph -> Graph
-updateContent cotoId content graph =
-    updateCoto cotoId (App.Types.Coto.updateContent content) graph
+updateContent : Coto -> Graph -> Graph
+updateContent coto graph =
+    updateCoto
+        coto.id
+        (\coto ->
+            { coto
+                | content = coto.content
+                , summary = coto.summary
+            }
+        )
+        graph
 
 
 cotonomatize : CotoId -> CotonomaKey -> Graph -> Graph

@@ -148,6 +148,7 @@ update msg model =
                 | editing = False
                 , editingToCotonomatize = False
                 , content = model.coto.content
+                , summary = Maybe.withDefault "" model.coto.summary
                 , contentUpdateStatus = None
               }
             , Nothing
@@ -159,6 +160,7 @@ update msg model =
             , Nothing
             , App.Server.Coto.updateContent
                 model.coto.id
+                model.summary
                 model.content
             )
 
