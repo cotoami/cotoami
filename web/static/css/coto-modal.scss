@@ -32,6 +32,12 @@
     display: flex;
     flex-direction: column;
 
+    div.coto-summary {
+      margin-bottom: 10px;
+      font-weight: bold;
+      opacity: .5;
+    }
+
     div.content {
       flex: 1;
       overflow-y: auto;

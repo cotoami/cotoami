@@ -254,7 +254,13 @@ cotoModalConfig session model =
                     ]
               else
                 div [ class "coto-view" ]
-                    [ App.Markdown.markdown model.coto.content
+                    [ model.coto.summary
+                        |> Maybe.map
+                            (\summary ->
+                                div [ class "coto-summary" ] [ text summary ]
+                            )
+                        |> Maybe.withDefault (div [] [])
+                    , App.Markdown.markdown model.coto.content
                     , cotoInfo model.coto
                     ]
             ]
