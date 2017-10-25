@@ -19,6 +19,7 @@ decodePost =
         |> optional "postId" (maybe int) Nothing
         |> optional "id" (maybe string) Nothing
         |> required "content" string
+        |> optional "summary" (maybe string) Nothing
         |> optional "amishi" (maybe decodeAmishi) Nothing
         |> optional "posted_in" (maybe decodeCotonoma) Nothing
         |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing

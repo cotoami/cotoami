@@ -33,6 +33,7 @@ defmodule Cotoami.CotoView do
     %{
       id: coto.id,
       content: coto.content,
+      summary: coto.summary,
       amishi: amishi_as_json,
       posted_in: posted_in_as_json,
       as_cotonoma: coto.as_cotonoma,

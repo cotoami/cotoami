@@ -13,9 +13,10 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map7 Coto
+    Decode.map8 Coto
         (Decode.field "id" Decode.string)
         (Decode.field "content" Decode.string)
+        (Decode.maybe (Decode.field "summary" Decode.string))
         (Decode.maybe (Decode.field "amishi" decodeAmishi))
         (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
         (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
