@@ -135,10 +135,8 @@ bodyDiv context graph elementId coto =
         elementId
         { openCoto = Nothing
         , selectCoto = Nothing
-        , toggleContent = ToggleCotoContent
         , pinCoto = Nothing
         , openTraversal = Nothing
-        , cotonomaClick = CotonomaClick
         , confirmConnect = Nothing
         , deleteConnection = Nothing
         , markdown = App.Markdown.markdown
