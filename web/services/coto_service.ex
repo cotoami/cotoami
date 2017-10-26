@@ -86,16 +86,17 @@ defmodule Cotoami.CotoService do
     |> Coto.changeset_to_update_content(params)
     |> Repo.update!()
 
-    updated_coto = get(id)  # updated struct with the relations
-    if updated_coto.as_cotonoma do
-      updated_coto.cotonoma
-      |> Cotonoma.changeset_to_update_name(%{name: updated_coto.content})
+    coto = get(id)  # updated struct with the relations
+    if coto.as_cotonoma do
+      coto.cotonoma
+      |> Cotonoma.changeset_to_update_name(%{name: coto.content})
       |> Repo.update!()
     end
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn, updated_coto)
+    CotoGraphService.sync_coto_props(Bolt.Sips.conn, coto)
 
-    complement_amishi(updated_coto, amishi)
+    %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in)}
+    |> complement_amishi(amishi)
   end
 
   def delete!(id, %Amishi{id: amishi_id}) do
