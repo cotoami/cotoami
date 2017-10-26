@@ -107,7 +107,7 @@ type alias BodyConfig msg =
 
 
 defaultBodyConfig : Context -> Maybe ( Coto, Connection ) -> Coto -> BodyConfig Msg
-defaultBodyConfig context maybeConnection coto =
+defaultBodyConfig context maybeInbound coto =
     let
         deleteConnection =
             (Maybe.map2
@@ -117,7 +117,7 @@ defaultBodyConfig context maybeConnection coto =
                     )
                 )
                 context.session
-                maybeConnection
+                maybeInbound
             )
                 |> Maybe.andThen
                     (\( cotoIdPair, disconnectable ) ->
