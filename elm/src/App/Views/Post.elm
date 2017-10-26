@@ -118,10 +118,8 @@ bodyDiv context graph elementId post =
         elementId
         { openCoto = Just (OpenPost post)
         , selectCoto = Just SelectCoto
-        , toggleContent = ToggleCotoContent
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
-        , cotonomaClick = CotonomaClick
         , confirmConnect = Just ConfirmConnect
         , deleteConnection = Nothing
         , markdown = markdown

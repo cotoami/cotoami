@@ -56,7 +56,7 @@ abbreviate { content, summary } =
                 )
 
 
-headerDiv : (CotonomaKey -> msg) -> Context -> Graph -> Coto -> Html msg
+headerDiv : (CotonomaKey -> Msg) -> Context -> Graph -> Coto -> Html Msg
 headerDiv cotonomaClick context graph coto =
     div
         [ class "coto-header" ]
@@ -93,20 +93,18 @@ type alias BodyModel =
     }
 
 
-type alias BodyConfig msg =
-    { openCoto : Maybe msg
-    , selectCoto : Maybe (CotoId -> msg)
-    , toggleContent : ElementId -> msg
-    , pinCoto : Maybe (CotoId -> msg)
-    , openTraversal : Maybe (CotoId -> msg)
-    , cotonomaClick : CotonomaKey -> msg
-    , confirmConnect : Maybe (CotoId -> Direction -> msg)
-    , deleteConnection : Maybe msg
-    , markdown : String -> Html msg
+type alias BodyConfig =
+    { openCoto : Maybe Msg
+    , selectCoto : Maybe (CotoId -> Msg)
+    , pinCoto : Maybe (CotoId -> Msg)
+    , openTraversal : Maybe (CotoId -> Msg)
+    , confirmConnect : Maybe (CotoId -> Direction -> Msg)
+    , deleteConnection : Maybe Msg
+    , markdown : String -> Html Msg
     }
 
 
-defaultBodyConfig : Context -> Maybe ( Coto, Connection ) -> Coto -> BodyConfig Msg
+defaultBodyConfig : Context -> Maybe ( Coto, Connection ) -> Coto -> BodyConfig
 defaultBodyConfig context maybeInbound coto =
     let
         deleteConnection =
@@ -129,10 +127,8 @@ defaultBodyConfig context maybeInbound coto =
     in
         { openCoto = Just (OpenCotoModal coto)
         , selectCoto = Just SelectCoto
-        , toggleContent = ToggleCotoContent
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
-        , cotonomaClick = CotonomaClick
         , confirmConnect = Just ConfirmConnect
         , deleteConnection = deleteConnection
         , markdown = App.Markdown.markdown
@@ -146,7 +142,7 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-bodyDivWithConfig : Context -> Graph -> ElementId -> BodyConfig msg -> BodyModel -> Html msg
+bodyDivWithConfig : Context -> Graph -> ElementId -> BodyConfig -> BodyModel -> Html Msg
 bodyDivWithConfig context graph elementId config model =
     div [ class "coto-body" ]
         [ model.cotoId
@@ -155,13 +151,13 @@ bodyDivWithConfig context graph elementId config model =
         , model.cotonomaKey
             |> Maybe.map
                 (\key ->
-                    cotonomaLink config.cotonomaClick model.amishi key model.content
+                    cotonomaLink CotonomaClick model.amishi key model.content
                 )
             |> Maybe.withDefault (contentDiv context elementId config model)
         ]
 
 
-contentDiv : Context -> ElementId -> BodyConfig msg -> BodyModel -> Html msg
+contentDiv : Context -> ElementId -> BodyConfig -> BodyModel -> Html Msg
 contentDiv context elementId config model =
     model.summary
         |> Maybe.map
@@ -172,7 +168,7 @@ contentDiv context elementId config model =
                         [ a
                             [ class "tool-button toggle-coto-content"
                             , title "Toggle coto content"
-                            , onLinkButtonClick (config.toggleContent elementId)
+                            , onLinkButtonClick (ToggleCotoContent elementId)
                             ]
                             [ faIcon
                                 (if contentOpen elementId context then
@@ -222,7 +218,7 @@ connectOutboundIcon =
     faIcon "sign-out" Nothing
 
 
-toolButtonsSpan : Context -> Graph -> BodyConfig msg -> Bool -> CotoId -> Html msg
+toolButtonsSpan : Context -> Graph -> BodyConfig -> Bool -> CotoId -> Html Msg
 toolButtonsSpan context graph config asCotonoma cotoId =
     [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
         Nothing
@@ -311,7 +307,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
         |> span [ class "coto-tool-buttons" ]
 
 
-openTraversalButtonDiv : (CotoId -> msg) -> Maybe CotoId -> Graph -> Html msg
+openTraversalButtonDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
 openTraversalButtonDiv buttonClick maybeCotoId graph =
     case maybeCotoId of
         Nothing ->
@@ -393,7 +389,7 @@ subCotoDiv context graph parentElementId connection coto =
             ]
 
 
-cotonomaLink : (CotonomaKey -> msg) -> Maybe Amishi -> CotonomaKey -> String -> Html msg
+cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> CotonomaKey -> String -> Html Msg
 cotonomaLink cotonomaClick maybeOwner cotonomaKey name =
     a
         [ class "cotonoma-link"
