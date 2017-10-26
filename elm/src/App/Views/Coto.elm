@@ -169,8 +169,7 @@ contentDiv context elementId config model =
                 div [ class "summary-and-content" ]
                     [ div
                         [ class "coto-summary" ]
-                        [ span [ class "summary" ] [ text summary ]
-                        , a
+                        [ a
                             [ class "tool-button toggle-coto-content"
                             , title "Toggle coto content"
                             , onLinkButtonClick (config.toggleContent elementId)
@@ -183,6 +182,7 @@ contentDiv context elementId config model =
                                 )
                                 Nothing
                             ]
+                        , span [ class "summary" ] [ text summary ]
                         ]
                     , div
                         [ classList
