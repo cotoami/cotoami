@@ -514,13 +514,13 @@ update msg model =
         Post ->
             post Nothing model
 
-        Posted (Ok response) ->
-            ( { model | timeline = setCotoSaved response model.timeline }
+        Posted postId (Ok response) ->
+            ( { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
             , Cmd.none
             )
 
-        Posted (Err _) ->
+        Posted postId (Err _) ->
             model ! []
 
         ConfirmPostAndConnect ->
@@ -529,8 +529,8 @@ update msg model =
         PostAndConnect ->
             post (Just model.connectingDirection) model
 
-        PostedAndConnect (Ok response) ->
-            { model | timeline = setCotoSaved response model.timeline }
+        PostedAndConnect postId (Ok response) ->
+            { model | timeline = setCotoSaved postId response model.timeline }
                 |> (\model ->
                         response.cotoId
                             |> andThen (\cotoId -> App.Model.getCoto cotoId model)
@@ -557,15 +557,12 @@ update msg model =
                             |> withDefault (model ! [])
                    )
 
-        PostedAndConnect (Err _) ->
+        PostedAndConnect postId (Err _) ->
             model ! []
 
         PostCotonoma ->
             let
-                timeline =
-                    model.timeline
-                        |> postContent model.context True model.cotonomaModal.name
-                        |> \( timeline, _ ) -> timeline
+                (timeline, _) = postContent model.context True model.cotonomaModal.name model.timeline
 
                 cotonomaModal =
                     model.cotonomaModal
@@ -583,10 +580,10 @@ update msg model =
                             model.cotonomaModal.name
                       ]
 
-        CotonomaPosted (Ok response) ->
+        CotonomaPosted postId (Ok response) ->
             ({ model
                 | cotonomasLoading = True
-                , timeline = setCotoSaved response model.timeline
+                , timeline = setCotoSaved postId response model.timeline
              }
                 |> closeModal
             )
@@ -594,7 +591,7 @@ update msg model =
                   , fetchSubCotonomas model.context.cotonoma
                   ]
 
-        CotonomaPosted (Err error) ->
+        CotonomaPosted postId (Err error) ->
             App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
                 |> (\( modal, postId ) ->
                         ( { model
@@ -814,25 +811,25 @@ post maybeDirection model =
         newContent =
             model.timeline.newContent
 
+        (timeline, newPost) =
+            postContent model.context False newContent model.timeline
+
         postMsg =
             case maybeDirection of
                 Nothing ->
-                    Posted
+                    Posted timeline.postIdCounter
 
                 Just _ ->
-                    PostedAndConnect
+                    PostedAndConnect timeline.postIdCounter
     in
-        model.timeline
-            |> postContent model.context False newContent
-            |> \( timeline, newPost ) ->
-                { model
-                    | timeline = timeline
-                    , connectingDirection =
-                        Maybe.withDefault Outbound maybeDirection
-                }
-                    ! [ App.Commands.scrollTimelineToBottom NoOp
-                      , App.Server.Post.post clientId cotonoma postMsg newPost
-                      ]
+        { model
+            | timeline = timeline
+            , connectingDirection =
+                Maybe.withDefault Outbound maybeDirection
+        }
+            ! [ App.Commands.scrollTimelineToBottom NoOp
+                , App.Server.Post.post clientId cotonoma postMsg newPost
+                ]
 
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )

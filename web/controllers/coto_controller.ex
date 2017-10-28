@@ -21,8 +21,7 @@ defmodule Cotoami.CotoController do
       "clientId" => clientId,
       "coto" => %{
         "cotonoma_id" => cotonoma_id,
-        "content" => content,
-        "postId" => post_id
+        "content" => content
       }
     },
     amishi
@@ -39,7 +38,7 @@ defmodule Cotoami.CotoController do
     if posted_in do
       broadcast_post(coto, posted_in.key, clientId)
     end
-    render(conn, "created.json", coto: coto, postId: post_id)
+    render(conn, "created.json", coto: coto)
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
