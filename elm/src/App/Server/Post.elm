@@ -16,7 +16,7 @@ import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
 decodePost : Decode.Decoder Post
 decodePost =
     Json.Decode.Pipeline.decode Post
-        |> optional "postId" (maybe int) Nothing
+        |> hardcoded Nothing
         |> optional "id" (maybe string) Nothing
         |> required "content" string
         |> optional "summary" (maybe string) Nothing
@@ -58,7 +58,7 @@ post clientId maybeCotonoma msgAfterPosted post =
 
 postCotonoma : String -> Maybe Cotonoma -> Int -> String -> Cmd Msg
 postCotonoma clientId maybeCotonoma postId name =
-    Http.send CotonomaPosted <|
+    Http.send (CotonomaPosted postId) <|
         httpPost
             "/api/cotonomas"
             (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId name))
@@ -78,14 +78,6 @@ encodePost clientId maybeCotonoma post =
 
                         Just cotonoma ->
                             Encode.string cotonoma.id
-                  )
-                , ( "postId"
-                  , case post.postId of
-                        Nothing ->
-                            Encode.null
-
-                        Just postId ->
-                            Encode.int postId
                   )
                 , ( "content", Encode.string post.content )
                 ]

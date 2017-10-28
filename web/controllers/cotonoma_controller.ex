@@ -29,8 +29,7 @@ defmodule Cotoami.CotonomaController do
       "clientId" => clientId,
       "cotonoma" => %{
         "cotonoma_id" => cotonoma_id,
-        "name" => name,
-        "postId" => post_id
+        "name" => name
       }
     },
     amishi
@@ -46,10 +45,7 @@ defmodule Cotoami.CotonomaController do
     if posted_in do
       broadcast_post(cotonoma_coto, posted_in.key, clientId)
     end
-    render(conn, CotoView, "created.json", coto: cotonoma_coto, postId: post_id)
-  rescue
-    e in Ecto.ConstraintError ->
-      send_resp_by_constraint_error(conn, e, Integer.to_string(post_id))
+    render(conn, CotoView, "created.json", coto: cotonoma_coto)
   end
 
   def pin(conn, %{"key" => key}, %{owner: true}) do
