@@ -172,7 +172,7 @@ update msg model =
                 |> Maybe.map (\cotoModal -> { cotoModal | cotonomaStats = Just stats })
                 |> Maybe.map (\cotoModal -> { model | cotoModal = Just cotoModal })
                 |> Maybe.withDefault model
-                |> (\model -> ( model, Cmd.none ))
+                |> \model -> ( model, Cmd.none )
 
         CotonomaStatsFetched (Err _) ->
             model ! []
@@ -531,31 +531,7 @@ update msg model =
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> (\model ->
-                        response.cotoId
-                            |> andThen (\cotoId -> App.Model.getCoto cotoId model)
-                            |> Maybe.map
-                                (\subject ->
-                                    let
-                                        direction =
-                                            model.connectingDirection
-
-                                        objects =
-                                            getSelectedCotos model
-
-                                        maybeCotonomaKey =
-                                            Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
-                                    in
-                                        ( App.Model.connect direction objects subject model
-                                        , App.Server.Graph.connect
-                                            maybeCotonomaKey
-                                            direction
-                                            (List.map (\coto -> coto.id) objects)
-                                            subject.id
-                                        )
-                                )
-                            |> withDefault (model ! [])
-                   )
+                |> connectPost response
 
         PostedAndConnect postId (Err _) ->
             model ! []
@@ -594,14 +570,13 @@ update msg model =
 
         CotonomaPosted postId (Err error) ->
             App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
-                |> (\( modal, postId ) ->
-                        ( { model
-                            | cotonomaModal = modal
-                            , timeline = deletePendingPost postId model.timeline
-                          }
-                        , Cmd.none
-                        )
-                   )
+                |> \( modal, postId ) ->
+                    ( { model
+                        | cotonomaModal = modal
+                        , timeline = deletePendingPost postId model.timeline
+                      }
+                    , Cmd.none
+                    )
 
         OpenPost post ->
             case toCoto post of
@@ -840,3 +815,30 @@ openCoto coto model =
         |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
         |> Maybe.withDefault Cmd.none
     )
+
+
+connectPost : Post -> Model -> ( Model, Cmd Msg )
+connectPost post model =
+    post.cotoId
+        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.map
+            (\subject ->
+                let
+                    direction =
+                        model.connectingDirection
+
+                    objects =
+                        getSelectedCotos model
+
+                    maybeCotonomaKey =
+                        Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
+                in
+                    ( App.Model.connect direction objects subject model
+                    , App.Server.Graph.connect
+                        maybeCotonomaKey
+                        direction
+                        (List.map (\coto -> coto.id) objects)
+                        subject.id
+                    )
+            )
+        |> withDefault (model ! [])
