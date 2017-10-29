@@ -29,7 +29,7 @@ The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
 * **Cotonoma**: Chatroom-like unit which has a timeline and coto-connections. Nestable.
     * Cotonoma is a kind of coto
 
-![](docs/images/cotoami-model.png)
+![](docs/images/cotonoma.png)
 
 Cotoami's concept of knowledge generation:
 
