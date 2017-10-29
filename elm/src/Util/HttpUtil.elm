@@ -37,8 +37,10 @@ httpDelete url =
 
 
 httpPost : String -> Http.Body -> Decode.Decoder a -> Http.Request a
-httpPost = httpRequestWithBody "POST"
+httpPost =
+    httpRequestWithBody "POST"
 
 
 httpPut : String -> Http.Body -> Decode.Decoder a -> Http.Request a
-httpPut = httpRequestWithBody "PUT"
+httpPut =
+    httpRequestWithBody "PUT"

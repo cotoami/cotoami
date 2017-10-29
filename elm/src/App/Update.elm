@@ -562,7 +562,8 @@ update msg model =
 
         PostCotonoma ->
             let
-                (timeline, _) = postContent model.context True model.cotonomaModal.name model.timeline
+                ( timeline, _ ) =
+                    postContent model.context True model.cotonomaModal.name model.timeline
 
                 cotonomaModal =
                     model.cotonomaModal
@@ -811,7 +812,7 @@ post maybeDirection model =
         newContent =
             model.timeline.newContent
 
-        (timeline, newPost) =
+        ( timeline, newPost ) =
             postContent model.context False newContent model.timeline
 
         postMsg =
@@ -828,8 +829,8 @@ post maybeDirection model =
                 Maybe.withDefault Outbound maybeDirection
         }
             ! [ App.Commands.scrollTimelineToBottom NoOp
-                , App.Server.Post.post clientId cotonoma postMsg newPost
-                ]
+              , App.Server.Post.post clientId cotonoma postMsg newPost
+              ]
 
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )

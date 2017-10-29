@@ -55,7 +55,8 @@ view model =
                     , div [ id "main-content" ]
                         ([ timelineColumn model
                          , pinnedCotosColumn model
-                         ] ++ (traversalColumns model)
+                         ]
+                            ++ (traversalColumns model)
                         )
                     , selectionColumn model
                     , viewSwitchContainerDiv model
@@ -126,10 +127,10 @@ pinnedCotosColumn model =
 traversalColumns : Model -> List (Html Msg)
 traversalColumns model =
     App.Views.Traversals.view
-            (model.activeViewOnMobile == TraversalsView)
-            model.context
-            model.graph
-            model.traversals
+        (model.activeViewOnMobile == TraversalsView)
+        model.context
+        model.graph
+        model.traversals
 
 
 selectionColumn : Model -> Html Msg

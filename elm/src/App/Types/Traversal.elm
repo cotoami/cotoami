@@ -29,9 +29,10 @@ doTraverse traverse =
     traverse.traversal
         |> \traversal ->
             { traversal
-            | steps = traversal.steps
-                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
-                |> (::) traverse.endCotoId
+                | steps =
+                    traversal.steps
+                        |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
+                        |> (::) traverse.endCotoId
             }
 
 
@@ -39,15 +40,17 @@ traversed : Int -> CotoId -> Traversal -> Bool
 traversed index cotoId traversal =
     let
         steps =
-          if index < 0 then
-              traversal.steps |> List.reverse
-          else
-              traversal.steps |> List.reverse |> List.drop (index + 1)
-
+            if index < 0 then
+                traversal.steps |> List.reverse
+            else
+                traversal.steps |> List.reverse |> List.drop (index + 1)
     in
         case List.head steps of
-            Nothing -> False
-            Just nextStep -> nextStep == cotoId
+            Nothing ->
+                False
+
+            Just nextStep ->
+                nextStep == cotoId
 
 
 type alias Traversals =
@@ -78,27 +81,27 @@ size traversals =
 openTraversal : CotoId -> Traversals -> Traversals
 openTraversal cotoId traversals =
     { traversals
-    | entries = Dict.insert cotoId (initTraversal cotoId) traversals.entries
-    , order =
-        traversals.order
-        |> List.filter (\id -> id /= cotoId)
-        |> (::) cotoId
-    , activeIndexOnMobile = 0
+        | entries = Dict.insert cotoId (initTraversal cotoId) traversals.entries
+        , order =
+            traversals.order
+                |> List.filter (\id -> id /= cotoId)
+                |> (::) cotoId
+        , activeIndexOnMobile = 0
     }
 
 
 closeTraversal : CotoId -> Traversals -> Traversals
 closeTraversal cotoId traversals =
     { traversals
-    | entries = Dict.remove cotoId traversals.entries
-    , order = List.filter (\id -> id /= cotoId) traversals.order
+        | entries = Dict.remove cotoId traversals.entries
+        , order = List.filter (\id -> id /= cotoId) traversals.order
     }
 
 
 updateTraversal : Traversal -> Traversals -> Traversals
 updateTraversal traversal traversals =
     { traversals
-    | entries = Dict.insert traversal.start traversal traversals.entries
+        | entries = Dict.insert traversal.start traversal traversals.entries
     }
 
 

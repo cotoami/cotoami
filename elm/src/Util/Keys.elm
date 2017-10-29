@@ -4,7 +4,11 @@ import Dict exposing (Dict)
 import Keyboard exposing (KeyCode)
 
 
-type Modifier = Shift | Ctrl | Alt | Meta
+type Modifier
+    = Shift
+    | Ctrl
+    | Alt
+    | Meta
 
 
 modifiers : Dict KeyCode Modifier

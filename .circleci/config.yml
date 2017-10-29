@@ -21,6 +21,9 @@ jobs:
           command: npm install --unsafe-perm
           # ref. https://github.com/npm/npm/issues/3497
       - run:
+          name: Check elm sources are formatted
+          command: npm run elm-format:validate
+      - run:
           name: Fix elm-make
           command: ./ci/fix-elm-make.sh
       - run:

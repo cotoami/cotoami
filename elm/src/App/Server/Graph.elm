@@ -101,8 +101,11 @@ cotoIdsAsJsonBody key cotoIds =
 pinCotos : Maybe CotonomaKey -> List CotoId -> Cmd Msg
 pinCotos maybeCotonomaKey cotoIds =
     let
-        url = pinUrl maybeCotonomaKey
-        body = cotoIdsAsJsonBody "coto_ids" cotoIds
+        url =
+            pinUrl maybeCotonomaKey
+
+        body =
+            cotoIdsAsJsonBody "coto_ids" cotoIds
     in
         Http.send CotoPinned (httpPut url body (Decode.succeed "done"))
 
@@ -110,7 +113,8 @@ pinCotos maybeCotonomaKey cotoIds =
 unpinCoto : Maybe CotonomaKey -> CotoId -> Cmd Msg
 unpinCoto maybeCotonomaKey cotoId =
     let
-        url = (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+        url =
+            (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
         Http.send CotoUnpinned (httpDelete url)
 
@@ -136,6 +140,7 @@ connectTask maybeCotonomaKey direction objects subject =
                         (cotoIdsAsJsonBody "end_ids" objects)
                         (Decode.succeed "done")
                     ]
+
                 App.Types.Graph.Inbound ->
                     List.map
                         (\startId ->
@@ -158,6 +163,7 @@ connect maybeCotonomaKey direction objects subject =
 disconnect : Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
 disconnect maybeCotonomaKey startId endId =
     let
-        url = (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
+        url =
+            (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send ConnectionDeleted (httpDelete url)
