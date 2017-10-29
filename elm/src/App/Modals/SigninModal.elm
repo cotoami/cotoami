@@ -101,11 +101,10 @@ modalConfig model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
+    else if model.signupEnabled then
+        modalConfigWithSignupEnabled model
     else
-        if model.signupEnabled then
-            modalConfigWithSignupEnabled model
-        else
-            modalConfigOnlyForSignin model
+        modalConfigOnlyForSignin model
 
 
 modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg

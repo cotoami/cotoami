@@ -66,16 +66,19 @@ modalConfig session =
                     ]
                 ]
             , div [ class "tools" ]
-                [ toolButton "Invite" "person_add"
+                [ toolButton "Invite"
+                    "person_add"
                     [ title "Invite an amishi"
                     , onClick OpenInviteModal
                     ]
-                , toolButton "Export" "cloud_download"
+                , toolButton "Export"
+                    "cloud_download"
                     [ title "Export my data"
                     , href "/export"
                     ]
                 , if session.owner then
-                    toolButton "Import" "cloud_upload"
+                    toolButton "Import"
+                        "cloud_upload"
                         [ title "Import cotos and connections"
                         , onClick OpenImportModal
                         ]
