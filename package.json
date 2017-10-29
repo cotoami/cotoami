@@ -5,6 +5,8 @@
     "deploy": "NPM_BIN=$(npm bin) brunch build --production",
     "watch": "NPM_BIN=$(npm bin) brunch watch --stdin",
     "elm-install": "cd elm && elm-install",
+    "elm-format": "elm-format --elm-version 0.18 elm",
+    "elm-format:validate": "elm-format --validate --elm-version 0.18 elm",
     "postinstall": "npm run elm-install"
   },
   "dependencies": {
@@ -20,6 +22,7 @@
     "css-brunch": "~2.10.0",
     "elm": "^0.18.0",
     "elm-brunch": "^0.7.0",
+    "elm-format": "^0.6.1-alpha",
     "elm-github-install": "^1.0.1",
     "javascript-brunch": "~2.10.0",
     "sass-brunch": "^2.10.4",
