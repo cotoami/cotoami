@@ -172,7 +172,7 @@ update msg model =
                 |> Maybe.map (\cotoModal -> { cotoModal | cotonomaStats = Just stats })
                 |> Maybe.map (\cotoModal -> { model | cotoModal = Just cotoModal })
                 |> Maybe.withDefault model
-                |> (\model -> ( model, Cmd.none ))
+                |> \model -> ( model, Cmd.none )
 
         CotonomaStatsFetched (Err _) ->
             model ! []
@@ -570,14 +570,13 @@ update msg model =
 
         CotonomaPosted postId (Err error) ->
             App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
-                |> (\( modal, postId ) ->
-                        ( { model
-                            | cotonomaModal = modal
-                            , timeline = deletePendingPost postId model.timeline
-                          }
-                        , Cmd.none
-                        )
-                   )
+                |> \( modal, postId ) ->
+                    ( { model
+                        | cotonomaModal = modal
+                        , timeline = deletePendingPost postId model.timeline
+                      }
+                    , Cmd.none
+                    )
 
         OpenPost post ->
             case toCoto post of
@@ -816,6 +815,7 @@ openCoto coto model =
         |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
         |> Maybe.withDefault Cmd.none
     )
+
 
 connectPost : Post -> Model -> ( Model, Cmd Msg )
 connectPost post model =
