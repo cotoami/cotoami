@@ -38,10 +38,10 @@ Cotonoma or connected to other Cotos.
 
 ![](docs/images/cotoami-concept.png)
 
-1. Collect random ideas by posting cotos to a timeline.
-2. Look for connections between cotos and make them as they are found.
-3. Cotonomatize: Convert a hub coto that has many outbound connections and looks worth discussing.
-4. Repeat the same thing in the new cotonoma.
+1. Collect random ideas by posting Cotos to a timeline.
+2. Look for connections between Cotos and make them as they are found.
+3. Cotonomatize: Convert a hub Coto that has many outbound connections and looks worth discussing into a Cotonoma.
+4. Repeat the same thing in the new Cotonoma.
 
 
 ## Development
