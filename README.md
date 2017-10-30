@@ -34,9 +34,14 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 Actually, you can treat Cotonomas as Cotos. They can be pinned to another
 Cotonoma or connected to other Cotos.
 
-### Cotoami's concept of knowledge generation:
+### Cotoami's concept of knowledge generation
 
 ![](docs/images/cotoami-concept.png)
+
+1. Collect random ideas by posting cotos to a timeline.
+2. Look for connections between cotos and make them as they are found.
+3. Cotonomatize: Convert a hub coto that has many outbound connections and looks worth discussing.
+4. Repeat the same thing in the new cotonoma.
 
 
 ## Development
