@@ -39,21 +39,20 @@ abbreviate { content, summary } =
         maxLength =
             200
     in
-        summary
-            |> Maybe.map identity
-            |> Maybe.withDefault
-                (extractTextFromMarkdown content
-                    |> List.head
-                    |> Maybe.withDefault ""
-                    |> (\text ->
-                            (String.left maxLength text)
-                                ++ (if String.length text > maxLength then
-                                        "..."
-                                    else
-                                        ""
-                                   )
-                       )
-                )
+        Maybe.withDefault
+            (extractTextFromMarkdown content
+                |> List.head
+                |> Maybe.withDefault ""
+                |> (\text ->
+                        (String.left maxLength text)
+                            ++ (if String.length text > maxLength then
+                                    "..."
+                                else
+                                    ""
+                               )
+                   )
+            )
+            summary
 
 
 headerDiv : (CotonomaKey -> Msg) -> Context -> Graph -> Coto -> Html Msg
