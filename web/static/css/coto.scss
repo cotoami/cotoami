@@ -80,72 +80,72 @@ div.coto-body {
       margin-top: 10px;
     }
   }
+}
 
-  span.coto-tool-buttons {
+span.coto-tool-buttons {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  z-index: 2;
+  display: none;
+  height: 34px;
+  padding: 0;
+  padding-top: 3px;
+  padding-right: 10px;
+  border: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+  background-color: rgba(255, 255, 255, .6);
+
+  &::before {
+    content: '';
     position: absolute;
-    top: -40px;
+    display: block;
+    width: 0;
+    height: 0;
     right: 0;
-    z-index: 2;
-    display: none;
-    height: 34px;
-    padding: 0;
-    padding-top: 3px;
-    padding-right: 10px;
-    border: 1px solid #eee;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
-    background-color: rgba(255, 255, 255, .6);
+    bottom: -10px;
+    border-top: 10px solid #eee;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+  }
 
-    &::before {
-      content: '';
-      position: absolute;
-      display: block;
-      width: 0;
-      height: 0;
-      right: 0;
-      bottom: -10px;
-      border-top: 10px solid #eee;
-      border-right: 10px solid transparent;
-      border-left: 10px solid transparent;
+  &::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    right: 0;
+    bottom: -8px;
+    border-top: 10px solid rgba(255, 255, 255, .8);
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+  }
+
+  a.tool-button {
+    margin-left: 10px;
+
+    i.material-icons {
+      font-size: 30px;
     }
 
-    &::after {
-      content: '';
-      position: absolute;
-      display: block;
-      width: 0;
-      height: 0;
-      right: 0;
-      bottom: -8px;
-      border-top: 10px solid rgba(255, 255, 255, .8);
-      border-right: 10px solid transparent;
-      border-left: 10px solid transparent;
+    i.fa {
+      width: 30px;
+      text-align: center;
+      font-size: 26px;
+      vertical-align: 5px;
     }
+  }
 
+  span.connecting-buttons {
     a.tool-button {
-      margin-left: 10px;
-
-      i.material-icons {
-        font-size: 30px;
-      }
-
-      i.fa {
-        width: 30px;
-        text-align: center;
-        font-size: 26px;
-        vertical-align: 5px;
-      }
+      color: #ffa500;
+      opacity: 1;
     }
 
-    span.connecting-buttons {
-      a.tool-button {
-        color: #ffa500;
-        opacity: 1;
-      }
-
-      i {
-        font-size: 27px;
-        vertical-align: 5px;
-      }
+    i {
+      font-size: 27px;
+      vertical-align: 5px;
     }
   }
 }

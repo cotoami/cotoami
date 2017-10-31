@@ -7,27 +7,28 @@ import Html.Events exposing (..)
 import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
+import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(..))
 import App.Views.Coto
 
 
-view : Context -> String -> List Cotonoma -> Html Msg
-view context title cotonomas =
+view : Context -> Graph -> String -> List Cotonoma -> Html Msg
+view context graph title cotonomas =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
         (List.map
             (\cotonoma ->
                 ( toString cotonoma.id
-                , cotonomaDiv context title cotonoma
+                , cotonomaDiv context graph title cotonoma
                 )
             )
             cotonomas
         )
 
 
-cotonomaDiv : Context -> String -> Cotonoma -> Html Msg
-cotonomaDiv context listTitle cotonoma =
+cotonomaDiv : Context -> Graph -> String -> Cotonoma -> Html Msg
+cotonomaDiv context graph listTitle cotonoma =
     let
         elementId =
             listTitle ++ cotonoma.cotoId
@@ -56,4 +57,14 @@ cotonomaDiv context listTitle cotonoma =
                     cotonoma.key
                     cotonoma.name
                 ]
+            , App.Views.Coto.toolButtonsSpan
+                context
+                graph
+                (App.Views.Coto.defaultBodyConfig
+                    context
+                    Nothing
+                    (App.Types.Coto.toCoto cotonoma)
+                )
+                True
+                cotonoma.cotoId
             ]
