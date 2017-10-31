@@ -246,6 +246,8 @@ div.main-traversal {
     animation-name: none;
     overflow-y: hidden;
     background-color: #f2f2f2;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 
   div.main-traversal {
@@ -254,7 +256,9 @@ div.main-traversal {
     flex: 1;
     margin: 0;
     padding: 0;
-    background-color: #f2f2f2;
+    padding-left: 6px;
+    padding-right: 6px;
+    background-color: #e8e8e8;
   }
 
   #main-timeline {
