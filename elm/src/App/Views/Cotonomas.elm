@@ -57,6 +57,7 @@ cotonomaDiv context graph listTitle cotonoma =
                     cotonoma.key
                     cotonoma.name
                 ]
+            , div [ class "touch-space-to-open-tools" ] []
             , App.Views.Coto.toolButtonsSpan
                 context
                 graph

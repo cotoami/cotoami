@@ -65,12 +65,11 @@
       }
     }
 
-    div.traverse {
+    div.touch-space-to-open-tools {
       width: 20px;
 
-      a.traverse-cotonoma i {
-        font-size: 20px;
-        opacity: .3;
+      @media (#{$wide-viewport}) {
+        display: none;
       }
     }
 
