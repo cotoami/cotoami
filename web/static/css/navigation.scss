@@ -48,6 +48,10 @@
       border: 2px solid #f8f8f8;
     }
 
+    &.coto-focus {
+      border: 2px dotted #eee;
+    }
+
     &.selected {
       border: 2px solid #ffa500;
     }
