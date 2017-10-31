@@ -52,12 +52,9 @@ view model =
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     [ navColumn model
-                    , div [ id "main-content" ]
-                        ([ timelineColumn model
-                         , pinnedCotosColumn model
-                         ]
-                            ++ (traversalColumns model)
-                        )
+                    , div [ id "main-graph" ]
+                        (pinnedCotosColumn model :: (traversalColumns model))
+                    , timelineColumn model
                     , selectionColumn model
                     , viewSwitchContainerDiv model
                     ]

@@ -16,7 +16,7 @@ sendMsg msg =
 
 scrollMainContentToRight : msg -> Cmd msg
 scrollMainContentToRight msg =
-    scrollToRight "main-content" msg
+    scrollToRight "main-graph" msg
 
 
 scrollToRight : String -> msg -> Cmd msg
