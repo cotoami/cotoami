@@ -240,7 +240,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                     else
                         a
                             [ class "tool-button pin-coto"
-                            , title "Pin this coto"
+                            , title "Pin"
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ faIcon "thumb-tack" Nothing ]
@@ -260,17 +260,17 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\openCoto ->
                     a
                         [ class "tool-button open-coto"
-                        , title "Open coto view"
+                        , title "Edit"
                         , onLinkButtonClick openCoto
                         ]
-                        [ materialIcon "settings" Nothing ]
+                        [ materialIcon "mode_edit" Nothing ]
                 )
       , config.deleteConnection
             |> Maybe.map
                 (\deleteConnection ->
                     a
                         [ class "tool-button delete-connection"
-                        , title "Delete connection"
+                        , title "Disconnect"
                         , onLinkButtonClick deleteConnection
                         ]
                         [ faIcon "unlink" Nothing ]
@@ -280,7 +280,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\selectCoto ->
                     a
                         [ class "tool-button select-coto"
-                        , title "Select this coto"
+                        , title "Select"
                         , onLinkButtonClick (selectCoto cotoId)
                         ]
                         [ materialIcon
