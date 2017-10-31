@@ -183,6 +183,10 @@ div.coto.selectable {
     display: inline-block !important;
   }
 
+  &.coto-focus > div.coto-inner {
+    border: 2px dotted #eee !important;
+  }
+
   &.selected > div.coto-inner {
     border: 2px solid #ffa500 !important;
   }
