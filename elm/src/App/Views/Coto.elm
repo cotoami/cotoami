@@ -75,8 +75,6 @@ headerDiv cotonomaClick context graph coto =
             |> Maybe.withDefault (span [] [])
         , if pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
-          else if App.Types.Graph.member coto.id graph then
-            faIcon "share-alt" (Just "connected")
           else
             span [] []
         ]
