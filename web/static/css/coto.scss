@@ -157,10 +157,6 @@ div.coto.selectable {
     display: inline-block !important;
   }
 
-  &.coto-focus > div.coto-inner {
-    border: 2px solid #ffdd33 !important;
-  }
-
   &.selected > div.coto-inner {
     border: 2px solid #ffa500 !important;
   }
