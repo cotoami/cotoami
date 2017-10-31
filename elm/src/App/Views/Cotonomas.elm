@@ -5,7 +5,6 @@ import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
-import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
 import App.Messages exposing (Msg(..))
@@ -56,13 +55,5 @@ cotonomaDiv context listTitle cotonoma =
                     cotonoma.owner
                     cotonoma.key
                     cotonoma.name
-                ]
-            , div [ class "traverse" ]
-                [ a
-                    [ class "tool-button traverse-cotonoma"
-                    , title "Traverse from this cotonoma"
-                    , onLinkButtonClick (OpenTraversal cotonoma.cotoId)
-                    ]
-                    [ materialIcon "arrow_forward" Nothing ]
                 ]
             ]

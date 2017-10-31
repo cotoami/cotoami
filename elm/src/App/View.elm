@@ -170,8 +170,8 @@ viewSwitchContainerDiv model =
             (SwitchViewOnMobile PinnedView)
         , viewSwitchDiv
             "switch-to-traversals"
-            "share-alt"
-            "Switch to traversals"
+            "sitemap"
+            "Switch to explorations"
             (model.activeViewOnMobile == TraversalsView)
             (App.Types.Traversal.isEmpty model.traversals)
             (SwitchViewOnMobile TraversalsView)

@@ -250,10 +250,10 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\openTraversal ->
                     a
                         [ class "tool-button traverse-coto"
-                        , title "Traverse from this coto"
+                        , title "Explore"
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
-                        [ materialIcon "arrow_forward" Nothing ]
+                        [ faIcon "sitemap" Nothing ]
                 )
       , config.openCoto
             |> Maybe.map
@@ -263,7 +263,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                         , title "Edit"
                         , onLinkButtonClick openCoto
                         ]
-                        [ materialIcon "mode_edit" Nothing ]
+                        [ materialIcon "edit" Nothing ]
                 )
       , config.deleteConnection
             |> Maybe.map
