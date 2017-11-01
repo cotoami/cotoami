@@ -109,9 +109,10 @@ timelineColumn model =
 pinnedCotosColumn : Model -> Html Msg
 pinnedCotosColumn model =
     div
-        [ id "main-stock"
+        [ id "main-pinned-cotos"
         , classList
             [ ( "main-column", True )
+            , ( "empty", List.isEmpty model.graph.rootConnections )
             , ( "activeOnMobile", model.activeViewOnMobile == PinnedView )
             , ( "animated", model.activeViewOnMobile == PinnedView )
             , ( "fadeIn", model.activeViewOnMobile == PinnedView )

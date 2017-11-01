@@ -116,7 +116,7 @@ div.main-column {
   }
 }
 
-#main-stock,
+#main-pinned-cotos,
 #main-selection {
   flex: 1;
   position: absolute;
@@ -239,7 +239,7 @@ div.main-traversal {
     }
   }
 
-  #main-stock {
+  #main-pinned-cotos {
     flex: 1;
     position: relative;
     top: auto;
@@ -248,6 +248,10 @@ div.main-traversal {
     background-color: #f2f2f2;
     padding-left: 6px;
     padding-right: 6px;
+
+    &.empty {
+      display: none !important;
+    }
   }
 
   div.main-traversal {
