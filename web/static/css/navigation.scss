@@ -99,6 +99,14 @@
           font-size: 20px;
         }
       }
+
+      @media (#{$wide-viewport}) {
+        padding-right: 4px;
+
+        a.tool-button {
+          margin-left: 4px;
+        }
+      }
     }
 
     &.element-focus span.coto-tool-buttons {
