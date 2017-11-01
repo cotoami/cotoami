@@ -258,7 +258,7 @@ update msg model =
                 |> \model ->
                     ( model
                     , Cmd.batch
-                        [ App.Commands.scrollMainContentToRight NoOp
+                        [ App.Commands.scrollGraphExplorationToRight NoOp
                         , fetchSubgraphIfCotonoma model.graph cotoId
                         ]
                     )

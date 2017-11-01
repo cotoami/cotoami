@@ -14,9 +14,9 @@ sendMsg msg =
     Task.succeed msg |> Task.perform identity
 
 
-scrollMainContentToRight : msg -> Cmd msg
-scrollMainContentToRight msg =
-    scrollToRight "main-content" msg
+scrollGraphExplorationToRight : msg -> Cmd msg
+scrollGraphExplorationToRight msg =
+    scrollToRight "graph-exploration" msg
 
 
 scrollToRight : String -> msg -> Cmd msg
