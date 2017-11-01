@@ -72,7 +72,7 @@ $tool-button-color: #3572A5 !default;
 }
 
 div.main-column,
-#main-graph {
+#graph-exploration {
   display: none;
   flex: 1;
 
@@ -224,7 +224,7 @@ div.main-traversal {
     }
   }
 
-  #main-graph {
+  #graph-exploration {
     flex: 1;
     display: flex;
     overflow-x: auto;

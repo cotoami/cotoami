@@ -52,7 +52,7 @@ view model =
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     [ navColumn model
-                    , graphArea model
+                    , graphExplorationDiv model
                     , timelineColumn model
                     , selectionColumn model
                     , viewSwitchContainerDiv model
@@ -87,10 +87,10 @@ navColumn model =
         (App.Views.Navigation.view model)
 
 
-graphArea : Model -> Html Msg
-graphArea model =
+graphExplorationDiv : Model -> Html Msg
+graphExplorationDiv model =
     div
-        [ id "main-graph"
+        [ id "graph-exploration"
         , classList
             [ ( "activeOnMobile"
               , List.member model.activeViewOnMobile [ PinnedView, TraversalsView ]
