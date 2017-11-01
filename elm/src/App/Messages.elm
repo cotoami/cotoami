@@ -91,12 +91,12 @@ type Msg
     | EditorInput String
     | EditorKeyDown KeyCode
     | Post
-    | Posted (Result Http.Error Post)
+    | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect
     | PostAndConnect
-    | PostedAndConnect (Result Http.Error Post)
+    | PostedAndConnect Int (Result Http.Error Post)
     | PostCotonoma
-    | CotonomaPosted (Result Http.Error Post)
+    | CotonomaPosted Int (Result Http.Error Post)
     | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post

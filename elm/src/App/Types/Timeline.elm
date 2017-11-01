@@ -109,13 +109,14 @@ cotonomatize cotoId cotonomaKey timeline =
         timeline
 
 
-setCotoSaved : Post -> Timeline -> Timeline
-setCotoSaved apiResponse timeline =
+setCotoSaved : Int -> Post -> Timeline -> Timeline
+setCotoSaved postId apiResponse timeline =
     updatePost
-        (\post -> post.postId == apiResponse.postId)
+        (\post -> post.postId == Just postId)
         (\post ->
             { post
-                | cotoId = apiResponse.cotoId
+                | postId = Just postId
+                , cotoId = apiResponse.cotoId
                 , postedAt = apiResponse.postedAt
                 , cotonomaKey = apiResponse.cotonomaKey
             }

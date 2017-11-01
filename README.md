@@ -26,14 +26,22 @@ The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
 ## Concept
 
 * **Coto**: Post. A unit of information in Cotoami.
-* **Cotonoma**: Chatroom-like unit which has a timeline and coto-connections. Nestable.
-    * Cotonoma is a kind of coto
+* **Cotonoma**: A Cotonoma is a chatroom-like unit which has its own timeline and pinned Cotos.
 
-![](docs/images/cotoami-model.png)
+![](docs/images/cotonoma.png)
 
-Cotoami's concept of knowledge generation:
+As you can see in the image above, Cotonomas are posted to a timeline like Cotos.
+Actually, you can treat Cotonomas as Cotos. They can be pinned to another
+Cotonoma or connected to other Cotos.
+
+### Cotoami's concept of knowledge generation
 
 ![](docs/images/cotoami-concept.png)
+
+1. Collect random ideas by posting Cotos to a timeline.
+2. Look for connections between Cotos and make them as they are found.
+3. Cotonomatize: Convert a hub Coto that has many outbound connections and looks worth discussing into a Cotonoma.
+4. Repeat the same thing in the new Cotonoma.
 
 
 ## Development

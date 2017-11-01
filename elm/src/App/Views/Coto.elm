@@ -39,21 +39,20 @@ abbreviate { content, summary } =
         maxLength =
             200
     in
-        summary
-            |> Maybe.map identity
-            |> Maybe.withDefault
-                (extractTextFromMarkdown content
-                    |> List.head
-                    |> Maybe.withDefault ""
-                    |> (\text ->
-                            (String.left maxLength text)
-                                ++ (if String.length text > maxLength then
-                                        "..."
-                                    else
-                                        ""
-                                   )
-                       )
-                )
+        Maybe.withDefault
+            (extractTextFromMarkdown content
+                |> List.head
+                |> Maybe.withDefault ""
+                |> (\text ->
+                        (String.left maxLength text)
+                            ++ (if String.length text > maxLength then
+                                    "..."
+                                else
+                                    ""
+                               )
+                   )
+            )
+            summary
 
 
 headerDiv : (CotonomaKey -> Msg) -> Context -> Graph -> Coto -> Html Msg
@@ -76,8 +75,6 @@ headerDiv cotonomaClick context graph coto =
             |> Maybe.withDefault (span [] [])
         , if pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
-          else if App.Types.Graph.member coto.id graph then
-            faIcon "share-alt" (Just "connected")
           else
             span [] []
         ]
@@ -243,7 +240,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                     else
                         a
                             [ class "tool-button pin-coto"
-                            , title "Pin this coto"
+                            , title "Pin"
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ faIcon "thumb-tack" Nothing ]
@@ -253,27 +250,27 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\openTraversal ->
                     a
                         [ class "tool-button traverse-coto"
-                        , title "Traverse from this coto"
+                        , title "Explore"
                         , onLinkButtonClick (openTraversal cotoId)
                         ]
-                        [ materialIcon "arrow_forward" Nothing ]
+                        [ faIcon "sitemap" Nothing ]
                 )
       , config.openCoto
             |> Maybe.map
                 (\openCoto ->
                     a
                         [ class "tool-button open-coto"
-                        , title "Open coto view"
+                        , title "Edit"
                         , onLinkButtonClick openCoto
                         ]
-                        [ materialIcon "settings" Nothing ]
+                        [ materialIcon "edit" Nothing ]
                 )
       , config.deleteConnection
             |> Maybe.map
                 (\deleteConnection ->
                     a
                         [ class "tool-button delete-connection"
-                        , title "Delete connection"
+                        , title "Disconnect"
                         , onLinkButtonClick deleteConnection
                         ]
                         [ faIcon "unlink" Nothing ]
@@ -283,7 +280,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\selectCoto ->
                     a
                         [ class "tool-button select-coto"
-                        , title "Select this coto"
+                        , title "Select"
                         , onLinkButtonClick (selectCoto cotoId)
                         ]
                         [ materialIcon
@@ -307,8 +304,8 @@ toolButtonsSpan context graph config asCotonoma cotoId =
         |> span [ class "coto-tool-buttons" ]
 
 
-openTraversalButtonDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
-openTraversalButtonDiv buttonClick maybeCotoId graph =
+subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
+subCotosEllipsisDiv buttonClick maybeCotoId graph =
     case maybeCotoId of
         Nothing ->
             div [] []
@@ -317,7 +314,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ materialIcon "arrow_forward" Nothing ]
+                        [ materialIcon "more_horiz" Nothing ]
                     ]
             else
                 div [] []
@@ -384,7 +381,7 @@ subCotoDiv context graph parentElementId connection coto =
                 [ class "coto-inner" ]
                 [ headerDiv CotonomaClick context graph coto
                 , bodyDiv context graph (Just connection) elementId coto
-                , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]
 

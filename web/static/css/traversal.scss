@@ -11,14 +11,10 @@ div.traversal {
     text-align: center;
 
     span.description {
-      color: gray;
+      color: #aaa;
 
-      span.text {
-        margin-left: 5px;
-        vertical-align: top;
-        line-height: 24px;
-        font-size: 90%;
-        opacity: 0.8;
+      i.fa {
+        font-size: 20px;
       }
     }
 
@@ -39,15 +35,8 @@ div.traversal {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 5px;
+    padding-top: 26px;
     padding-bottom: 60px;
-
-    div.coto {
-      div.coto-header {
-        i.connected {
-          display: none;
-        }
-      }
-    }
 
     div.sub-cotos {
       div.outbound-conn {

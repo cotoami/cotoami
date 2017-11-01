@@ -3,6 +3,7 @@ module App.Views.Navigation exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import App.Types.Coto exposing (Cotonoma)
+import App.Types.Graph exposing (Graph)
 import App.Types.Context exposing (Context)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg)
@@ -15,9 +16,9 @@ view model =
         [ model.context.cotonoma
             |> Maybe.map cotonomaNav
             |> Maybe.withDefault (div [] [])
-        , cotonomasDiv "sub-cotonomas" "Sub" model.context model.subCotonomas
-        , cotonomasDiv "pinned-cotonomas" "Pinned" model.context model.pinnedCotonomas
-        , cotonomasDiv "recent-cotonomas" "Recent" model.context model.recentCotonomas
+        , cotonomasDiv model.context model.graph "sub-cotonomas" "Sub" model.subCotonomas
+        , cotonomasDiv model.context model.graph "pinned-cotonomas" "Pinned" model.pinnedCotonomas
+        , cotonomasDiv model.context model.graph "recent-cotonomas" "Recent" model.recentCotonomas
         ]
     ]
 
@@ -39,12 +40,12 @@ cotonomaNav cotonoma =
         ]
 
 
-cotonomasDiv : String -> String -> Context -> List Cotonoma -> Html Msg
-cotonomasDiv divClass title context cotonomas =
+cotonomasDiv : Context -> Graph -> String -> String -> List Cotonoma -> Html Msg
+cotonomasDiv context graph divClass title cotonomas =
     if List.isEmpty cotonomas then
         div [] []
     else
         div [ class divClass ]
             [ div [ class "navigation-title" ] [ text title ]
-            , App.Views.Cotonomas.view context divClass cotonomas
+            , App.Views.Cotonomas.view context graph divClass cotonomas
             ]

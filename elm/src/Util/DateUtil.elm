@@ -18,7 +18,8 @@ langToLocaleId lang =
 format : String -> String -> Date -> String
 format lang format date =
     let
-        config = Configs.getConfig (langToLocaleId lang)
+        config =
+            Configs.getConfig (langToLocaleId lang)
     in
         Date.Extra.Format.format config format date
 
@@ -26,7 +27,8 @@ format lang format date =
 formatDay : String -> Date -> String
 formatDay lang date =
     let
-        config = Configs.getConfig (langToLocaleId lang)
+        config =
+            Configs.getConfig (langToLocaleId lang)
     in
         Date.Extra.Format.format config config.format.longDate date
 

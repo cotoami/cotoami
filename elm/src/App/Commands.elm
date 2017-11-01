@@ -7,14 +7,16 @@ import Time
 
 
 -- https://medium.com/elm-shorts/how-to-turn-a-msg-into-a-cmd-msg-in-elm-5dd095175d84
+
+
 sendMsg : msg -> Cmd msg
 sendMsg msg =
     Task.succeed msg |> Task.perform identity
 
 
-scrollMainContentToRight : msg -> Cmd msg
-scrollMainContentToRight msg =
-    scrollToRight "main-content" msg
+scrollGraphExplorationToRight : msg -> Cmd msg
+scrollGraphExplorationToRight msg =
+    scrollToRight "graph-exploration" msg
 
 
 scrollToRight : String -> msg -> Cmd msg

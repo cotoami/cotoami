@@ -2,7 +2,7 @@ module App.Server.Amishi exposing (..)
 
 import Http
 import Json.Decode as Decode
-import App.Types.Amishi exposing(Amishi)
+import App.Types.Amishi exposing (Amishi)
 
 
 decodeAmishi : Decode.Decoder Amishi
@@ -17,6 +17,6 @@ decodeAmishi =
 
 fetchAmishi : (Result Http.Error Amishi -> msg) -> String -> Cmd msg
 fetchAmishi msg email =
-    Http.send msg
-        <| Http.get ("/api/amishis/email/" ++ email)
-        <| decodeAmishi
+    Http.send msg <|
+        Http.get ("/api/amishis/email/" ++ email) <|
+            decodeAmishi

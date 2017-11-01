@@ -252,11 +252,11 @@ connect direction objects subject model =
             (\session ->
                 batchConnect session direction objects subject model.graph
                     |> (\graph ->
-                        { model
-                            | graph = graph
-                            , connectingSubject = Nothing
-                        }
-                    )
+                            { model
+                                | graph = graph
+                                , connectingSubject = Nothing
+                            }
+                       )
             )
         |> Maybe.withDefault model
 

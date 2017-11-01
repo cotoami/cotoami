@@ -52,11 +52,8 @@ view model =
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     [ navColumn model
-                    , div [ id "main-content" ]
-                        ([ timelineColumn model
-                         , pinnedCotosColumn model
-                         ] ++ (traversalColumns model)
-                        )
+                    , graphExplorationDiv model
+                    , timelineColumn model
                     , selectionColumn model
                     , viewSwitchContainerDiv model
                     ]
@@ -90,6 +87,19 @@ navColumn model =
         (App.Views.Navigation.view model)
 
 
+graphExplorationDiv : Model -> Html Msg
+graphExplorationDiv model =
+    div
+        [ id "graph-exploration"
+        , classList
+            [ ( "activeOnMobile"
+              , List.member model.activeViewOnMobile [ PinnedView, TraversalsView ]
+              )
+            ]
+        ]
+        (pinnedCotosColumn model :: (traversalColumns model))
+
+
 timelineColumn : Model -> Html Msg
 timelineColumn model =
     div
@@ -111,9 +121,10 @@ timelineColumn model =
 pinnedCotosColumn : Model -> Html Msg
 pinnedCotosColumn model =
     div
-        [ id "main-stock"
+        [ id "main-pinned-cotos"
         , classList
             [ ( "main-column", True )
+            , ( "empty", List.isEmpty model.graph.rootConnections )
             , ( "activeOnMobile", model.activeViewOnMobile == PinnedView )
             , ( "animated", model.activeViewOnMobile == PinnedView )
             , ( "fadeIn", model.activeViewOnMobile == PinnedView )
@@ -126,10 +137,10 @@ pinnedCotosColumn model =
 traversalColumns : Model -> List (Html Msg)
 traversalColumns model =
     App.Views.Traversals.view
-            (model.activeViewOnMobile == TraversalsView)
-            model.context
-            model.graph
-            model.traversals
+        (model.activeViewOnMobile == TraversalsView)
+        model.context
+        model.graph
+        model.traversals
 
 
 selectionColumn : Model -> Html Msg
@@ -169,8 +180,8 @@ viewSwitchContainerDiv model =
             (SwitchViewOnMobile PinnedView)
         , viewSwitchDiv
             "switch-to-traversals"
-            "share-alt"
-            "Switch to traversals"
+            "sitemap"
+            "Switch to explorations"
             (model.activeViewOnMobile == TraversalsView)
             (App.Types.Traversal.isEmpty model.traversals)
             (SwitchViewOnMobile TraversalsView)
