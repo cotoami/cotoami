@@ -71,8 +71,10 @@ $tool-button-color: #3572A5 !default;
   background-color: #f8f8f8;
 }
 
-div.main-column {
+div.main-column,
+#main-graph {
   display: none;
+  flex: 1;
 
   &.activeOnMobile {
     display: flex;
@@ -105,7 +107,6 @@ div.main-column {
 }
 
 #main-timeline {
-  flex: 1;
   padding: 0 10px;
 }
 
@@ -118,7 +119,6 @@ div.main-column {
 
 #main-pinned-cotos,
 #main-selection {
-  flex: 1;
   position: absolute;
   z-index: 3;
   top: 35px;
@@ -136,7 +136,6 @@ div.main-column {
 }
 
 div.main-traversal {
-  flex: 1;
   padding: 0 5px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

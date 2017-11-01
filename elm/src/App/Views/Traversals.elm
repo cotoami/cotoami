@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (materialIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
@@ -73,7 +73,9 @@ traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description" ] []
+            [ span [ class "description" ]
+                [ faIcon "sitemap" Nothing
+                ]
             , a
                 [ class "tool-button close-traversal"
                 , href "/"
