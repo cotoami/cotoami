@@ -26,14 +26,16 @@ initTraversal start =
 
 doTraverse : Traverse -> Traversal
 doTraverse traverse =
-    traverse.traversal
-        |> \traversal ->
-            { traversal
-                | steps =
-                    traversal.steps
-                        |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
-                        |> (::) traverse.endCotoId
-            }
+    let
+        traversal =
+            traverse.traversal
+
+        steps =
+            traversal.steps
+                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
+                |> (::) traverse.endCotoId
+    in
+        { traversal | steps = steps }
 
 
 traversed : Int -> CotoId -> Traversal -> Bool

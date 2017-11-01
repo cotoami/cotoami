@@ -52,12 +52,9 @@ view activeOnMobile context graph model =
 
 maybeTraversalDiv : Context -> Graph -> Traversal -> Maybe (Html Msg)
 maybeTraversalDiv context graph traversal =
-    case Dict.get traversal.start graph.cotos of
-        Nothing ->
-            Nothing
-
-        Just startCoto ->
-            Just <|
+    Dict.get traversal.start graph.cotos
+        |> Maybe.map
+            (\startCoto ->
                 traversalDiv
                     context
                     graph
@@ -66,6 +63,7 @@ maybeTraversalDiv context graph traversal =
                         |> Maybe.withDefault []
                     )
                     startCoto
+            )
 
 
 traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
@@ -73,7 +71,7 @@ traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description" ]
+            [ span [ class "description", title "Coto Graph Exploration" ]
                 [ faIcon "sitemap" Nothing
                 ]
             , a
@@ -90,7 +88,10 @@ traversalDiv context graph traversal connections startCoto =
                 ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
-                    |> List.indexedMap (\index step -> traversalStepDiv context graph step ( traversal, index ))
+                    |> List.indexedMap
+                        (\index step ->
+                            traversalStepDiv context graph step ( traversal, index )
+                        )
                     |> List.filterMap identity
                 )
             ]
