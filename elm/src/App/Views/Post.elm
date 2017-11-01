@@ -55,7 +55,7 @@ view context graph post =
                     authorDiv context.session post
                 , bodyDiv context graph elementId post
                 , footerDiv post
-                , App.Views.Coto.openTraversalButtonDiv OpenTraversal post.cotoId graph
+                , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
                 ]
             ]
 

@@ -304,8 +304,8 @@ toolButtonsSpan context graph config asCotonoma cotoId =
         |> span [ class "coto-tool-buttons" ]
 
 
-openTraversalButtonDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
-openTraversalButtonDiv buttonClick maybeCotoId graph =
+subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
+subCotosEllipsisDiv buttonClick maybeCotoId graph =
     case maybeCotoId of
         Nothing ->
             div [] []
@@ -314,7 +314,7 @@ openTraversalButtonDiv buttonClick maybeCotoId graph =
             if hasChildren cotoId graph then
                 div [ class "sub-cotos-button" ]
                     [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ materialIcon "arrow_forward" Nothing ]
+                        [ materialIcon "more_horiz" Nothing ]
                     ]
             else
                 div [] []
@@ -381,7 +381,7 @@ subCotoDiv context graph parentElementId connection coto =
                 [ class "coto-inner" ]
                 [ headerDiv CotonomaClick context graph coto
                 , bodyDiv context graph (Just connection) elementId coto
-                , openTraversalButtonDiv OpenTraversal (Just coto.id) graph
+                , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]
 
