@@ -1,6 +1,32 @@
 @import 'variables';
 
 #navigation-content {
+  div.home-nav {
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: bold;
+
+    &.in {
+      background-color: #f8f8f8;
+      border: 2px solid #f8f8f8;
+    }
+
+    span.home {
+      opacity: 0.5;
+    }
+
+    i {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+  }
+
+  div.cotonomas-nav {
+    @media (#{$wide-viewport}) {
+      padding-left: 10px;
+    }
+  }
+
   div.navigation-title {
     margin-bottom: 4px;
     color: #ccc;

@@ -194,6 +194,7 @@ div.main-traversal {
   }
 
   #main-nav {
+    display: block !important;
     position: relative;
     top: auto;
     width: 230px;
@@ -201,10 +202,6 @@ div.main-traversal {
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
     padding: 0;
     animation-name: none;
-
-    &.notEmpty {
-      display: block;
-    }
 
     #navigation-content {
       position: absolute;
@@ -214,9 +211,9 @@ div.main-traversal {
       right: 0;
       padding: 0;
       padding-top: 10px;
-      padding-left: 10px;
       max-height: none;
 
+      div.home,
       div.owner,
       div.cotonomas {
         font-size: 90%;

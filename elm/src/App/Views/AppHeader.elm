@@ -13,46 +13,47 @@ view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
-            (case model.context.cotonoma of
-                Nothing ->
+            (model.context.cotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
+                            [ materialIcon "home" Nothing ]
+                        , materialIcon "navigate_next" (Just "arrow")
+                        , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+                        , navigationToggle model
+                        ]
+                    )
+                |> Maybe.withDefault
                     [ materialIcon "home" (Just "at-home")
                     , navigationToggle model
                     ]
-
-                Just cotonoma ->
-                    [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
-                        [ materialIcon "home" Nothing ]
-                    , materialIcon "navigate_next" (Just "arrow")
-                    , span [ class "cotonoma-name" ] [ text cotonoma.name ]
-                    , navigationToggle model
-                    ]
             )
-        , (case model.context.session of
-            Nothing ->
-                span [] []
-
-            Just session ->
-                a
-                    [ class "tool-button add-cotonoma"
-                    , title "Add Cotonoma"
-                    , onClick OpenCotonomaModal
-                    ]
-                    [ materialIcon "add_circle_outline" Nothing ]
-          )
+        , model.context.session
+            |> Maybe.map
+                (\session ->
+                    a
+                        [ class "tool-button add-cotonoma"
+                        , title "Add Cotonoma"
+                        , onClick OpenCotonomaModal
+                        ]
+                        [ materialIcon "add_circle_outline" Nothing ]
+                )
+            |> Maybe.withDefault (span [] [])
         , div [ class "user" ]
-            (case model.context.session of
-                Nothing ->
+            (model.context.session
+                |> Maybe.map
+                    (\session ->
+                        [ a [ title "Profile", onClick OpenProfileModal ]
+                            [ img [ class "avatar", src session.avatarUrl ] [] ]
+                        ]
+                    )
+                |> Maybe.withDefault
                     [ a
                         [ class "tool-button"
                         , title "Sign in"
                         , onClick OpenSigninModal
                         ]
                         [ materialIcon "perm_identity" Nothing ]
-                    ]
-
-                Just session ->
-                    [ a [ title "Profile", onClick OpenProfileModal ]
-                        [ img [ class "avatar", src session.avatarUrl ] [] ]
                     ]
             )
         ]
