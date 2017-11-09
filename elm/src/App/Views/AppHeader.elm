@@ -24,7 +24,7 @@ view model =
                         ]
                     )
                 |> Maybe.withDefault
-                    [ materialIcon "home" (Just "at-home")
+                    [ materialIcon "home" (Just "in-home")
                     , navigationToggle model
                     ]
             )
