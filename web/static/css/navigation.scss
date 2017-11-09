@@ -19,6 +19,10 @@
       vertical-align: middle;
       margin-right: 4px;
     }
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
   }
 
   div.cotonomas-nav {
