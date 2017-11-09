@@ -28,17 +28,6 @@ view model =
                     , navigationToggle model
                     ]
             )
-        , model.context.session
-            |> Maybe.map
-                (\session ->
-                    a
-                        [ class "tool-button add-cotonoma"
-                        , title "Add Cotonoma"
-                        , onClick OpenCotonomaModal
-                        ]
-                        [ materialIcon "add_circle_outline" Nothing ]
-                )
-            |> Maybe.withDefault (span [] [])
         , div [ class "user" ]
             (model.context.session
                 |> Maybe.map
