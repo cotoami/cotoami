@@ -724,6 +724,7 @@ loadHome model =
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
+        , navigationOpen = False
     }
         ! [ fetchPosts
           , fetchCotonomas
