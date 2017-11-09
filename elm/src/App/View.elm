@@ -47,6 +47,7 @@ view model =
                 [ ( "cotonomas-loading", model.cotonomasLoading )
                 , ( activeViewOnMobile ++ "-view-on-mobile", True )
                 ]
+            , onClick AppClick
             ]
             [ App.Views.AppHeader.view model
             , div [ id "app-body" ]
@@ -64,7 +65,7 @@ view model =
                 , title "News and Feedback"
                 , href "https://twitter.com/cotoami"
                 , target "_blank"
-                , hidden (model.timeline.editingNew)
+                , hidden (model.timeline.editorOpen)
                 ]
                 [ materialIcon "info" Nothing ]
             , div [] (modals model)

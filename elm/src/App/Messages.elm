@@ -21,6 +21,7 @@ type Msg
     = NoOp
     | KeyDown KeyCode
     | KeyUp KeyCode
+    | AppClick
     | OnLocationChange Location
     | NavigationToggle
     | SwitchViewOnMobile ActiveViewOnMobile
@@ -87,7 +88,6 @@ type Msg
     | PostsFetched (Result Http.Error (List Post))
     | ImageLoaded
     | EditorFocus
-    | EditorBlur
     | EditorInput String
     | EditorKeyDown KeyCode
     | Post

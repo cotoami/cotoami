@@ -19,8 +19,7 @@ import App.Types.Graph exposing (..)
 import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline
     exposing
-        ( setEditingNew
-        , updatePost
+        ( updatePost
         , setLoading
         , postContent
         , setCotoSaved
@@ -69,6 +68,11 @@ update msg model =
                 | context = App.Types.Context.keyUp keyCode model.context
             }
                 ! []
+
+        AppClick ->
+            ( { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
+            , Cmd.none
+            )
 
         OnLocationChange location ->
             parseLocation location
@@ -488,10 +492,9 @@ update msg model =
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         EditorFocus ->
-            { model | timeline = setEditingNew True model.timeline } ! []
-
-        EditorBlur ->
-            { model | timeline = setEditingNew False model.timeline } ! []
+            ( { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
+            , Cmd.none
+            )
 
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []

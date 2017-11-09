@@ -9,7 +9,7 @@ import App.Types.Session
 
 
 type alias Timeline =
-    { editingNew : Bool
+    { editorOpen : Bool
     , newContent : String
     , postIdCounter : Int
     , posts : List Post
@@ -19,7 +19,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { editingNew = False
+    { editorOpen = False
     , newContent = ""
     , postIdCounter = 0
     , posts = []
@@ -32,9 +32,9 @@ isEmpty timeline =
     List.isEmpty timeline.posts
 
 
-setEditingNew : Bool -> Timeline -> Timeline
-setEditingNew editingNew timeline =
-    { timeline | editingNew = editingNew }
+openOrCloseEditor : Bool -> Timeline -> Timeline
+openOrCloseEditor open timeline =
+    { timeline | editorOpen = open }
 
 
 setPosts : List Post -> Timeline -> Timeline
