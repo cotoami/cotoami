@@ -62,7 +62,7 @@ postEditor session context model =
             ]
         , textarea
             [ class "coto"
-            , placeholder "Write your idea in Markdown"
+            , placeholder "Write your Coto in Markdown"
             , value model.newContent
             , onFocus EditorFocus
             , onInput EditorInput
