@@ -506,7 +506,7 @@ update msg model =
                     && isNotBlank model.timeline.newContent
             then
                 if isCtrlDown model.context then
-                    post Nothing model
+                    post Nothing Nothing model.timeline.newContent model
                 else if isAltDown model.context && anySelection model.context then
                     confirmPostAndConnect model ! []
                 else
@@ -515,7 +515,7 @@ update msg model =
                 model ! []
 
         Post ->
-            post Nothing model
+            post Nothing Nothing model.timeline.newContent model
 
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
@@ -530,7 +530,7 @@ update msg model =
             confirmPostAndConnect model ! []
 
         PostAndConnect ->
-            post (Just model.connectingDirection) model
+            post (Just model.connectingDirection) Nothing model.timeline.newContent model
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
@@ -797,8 +797,8 @@ handlePushedPost clientId payload model =
         model ! []
 
 
-post : Maybe Direction -> Model -> ( Model, Cmd Msg )
-post maybeDirection model =
+post : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+post maybeDirection summary content model =
     let
         clientId =
             model.context.clientId
@@ -806,12 +806,9 @@ post maybeDirection model =
         cotonoma =
             model.context.cotonoma
 
-        newContent =
-            model.timeline.newContent
-
         ( timeline, newPost ) =
             model.timeline
-                |> App.Types.Timeline.post model.context False Nothing newContent
+                |> App.Types.Timeline.post model.context False summary content
 
         postMsg =
             maybeDirection
