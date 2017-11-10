@@ -12,7 +12,7 @@ defmodule Cotoami.CotonomaService do
   }
   alias Cotoami.Exceptions.NotFound
 
-  def create!(name, %Amishi{} = amishi, cotonoma_id \\ nil) do
+  def create!(%Amishi{} = amishi, name, cotonoma_id \\ nil) do
     posted_in = get!(cotonoma_id)
 
     cotonoma_coto =
