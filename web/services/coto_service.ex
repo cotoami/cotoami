@@ -65,15 +65,16 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
-  def create!(content, amishi_id, cotonoma_id \\ nil) do
+  def create!(%Amishi{id: amishi_id}, content, summary \\ nil, cotonoma_id \\ nil) do
     posted_in = CotonomaService.get!(cotonoma_id)
     coto =
       %Coto{}
       |> Coto.changeset_to_insert(%{
-          posted_in_id: cotonoma_id,
-          amishi_id: amishi_id,
           content: content,
-          as_cotonoma: false
+          summary: summary,
+          as_cotonoma: false,
+          posted_in_id: cotonoma_id,
+          amishi_id: amishi_id
         })
       |> Repo.insert!
     {coto, posted_in}

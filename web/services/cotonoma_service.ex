@@ -18,10 +18,10 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto =
       %Coto{}
       |> Coto.changeset_to_insert(%{
-          posted_in_id: cotonoma_id,
-          amishi_id: amishi.id,
           content: name,
-          as_cotonoma: true
+          as_cotonoma: true,
+          posted_in_id: cotonoma_id,
+          amishi_id: amishi.id
         })
       |> Repo.insert!()
 

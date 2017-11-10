@@ -71,15 +71,15 @@ encodePost clientId maybeCotonoma post =
         [ ( "clientId", Encode.string clientId )
         , ( "coto"
           , (Encode.object
-                [ ( "cotonoma_id"
-                  , maybeCotonoma
-                        |> Maybe.map (\cotonoma -> Encode.string cotonoma.id)
-                        |> Maybe.withDefault Encode.null
-                  )
-                , ( "content", Encode.string post.content )
+                [ ( "content", Encode.string post.content )
                 , ( "summary"
                   , post.summary
                         |> Maybe.map (\summary -> Encode.string summary)
+                        |> Maybe.withDefault Encode.null
+                  )
+                , ( "cotonoma_id"
+                  , maybeCotonoma
+                        |> Maybe.map (\cotonoma -> Encode.string cotonoma.id)
                         |> Maybe.withDefault Encode.null
                   )
                 ]
