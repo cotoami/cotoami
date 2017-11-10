@@ -39,6 +39,7 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotonomaModal
@@ -669,6 +670,11 @@ update msg model =
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> \( signinModal, subCmd ) ->
                     { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
+
+        EditorModalMsg subMsg ->
+            App.Modals.EditorModal.update subMsg model.editorModal
+                |> \( editorModal, cmd ) ->
+                    ( { model | editorModal = editorModal }, cmd )
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal

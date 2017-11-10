@@ -1,0 +1,35 @@
+@import 'variables';
+
+#editor-modal {
+  .modal-content {
+    width: 80vw;
+  }
+
+  input {
+    margin-bottom: 1rem;
+  }
+
+  div.coto-editor {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+
+    div.content-input {
+      flex: 1;
+      display: flex;
+      padding-bottom: 6px;
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+
+        @media (#{$narrow-viewport}) {
+          // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ module App.Modals.EditorModal
     exposing
         ( Model
         , initModel
+        , update
         , view
         )
 
@@ -11,6 +12,7 @@ import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 
 
 type alias Model =
@@ -34,6 +36,16 @@ initModel maybeCoto =
     }
 
 
+update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update msg model =
+    case msg of
+        EditorInput content ->
+            ( { model | content = content }, Cmd.none )
+
+        SummaryInput summary ->
+            ( { model | summary = summary }, Cmd.none )
+
+
 view : Model -> Html AppMsg.Msg
 view model =
     modalConfig model
@@ -46,7 +58,34 @@ modalConfig model =
     { closeMessage = CloseModal
     , title = text "New Coto"
     , content =
-        div [] []
+        div [] [ cotoEditor model ]
     , buttons =
-        [ button [ class "button", onClick CloseModal ] [ text "Post" ] ]
+        [ button
+            [ class "button button-primary", onClick CloseModal ]
+            [ text "Post" ]
+        ]
     }
+
+
+cotoEditor : Model -> Html AppMsg.Msg
+cotoEditor model =
+    div [ class "coto-editor" ]
+        [ div [ class "summary-input" ]
+            [ input
+                [ type_ "text"
+                , class "u-full-width"
+                , placeholder "Summary (optional)"
+                , maxlength App.Types.Coto.summaryMaxlength
+                , value model.summary
+                , onInput (AppMsg.EditorModalMsg << SummaryInput)
+                ]
+                []
+            ]
+        , div [ class "content-input" ]
+            [ textarea
+                [ value model.content
+                , onInput (AppMsg.EditorModalMsg << EditorInput)
+                ]
+                []
+            ]
+        ]
