@@ -10,6 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
+import Util.StringUtil exposing (isBlank)
 import App.Types.Coto exposing (Coto)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
@@ -19,6 +20,7 @@ type alias Model =
     { coto : Maybe Coto
     , summary : String
     , content : String
+    , requestProcessing : Bool
     }
 
 
@@ -33,6 +35,7 @@ initModel maybeCoto =
         maybeCoto
             |> Maybe.map (\coto -> coto.content)
             |> Maybe.withDefault ""
+    , requestProcessing = False
     }
 
 
@@ -61,8 +64,17 @@ modalConfig model =
         div [] [ cotoEditor model ]
     , buttons =
         [ button
-            [ class "button button-primary", onClick CloseModal ]
-            [ text "Post" ]
+            [ class "button button-primary"
+            , disabled (isBlank model.content || model.requestProcessing)
+            , onClick CloseModal
+            ]
+            [ text
+                (if model.requestProcessing then
+                    "Posting..."
+                 else
+                    "Post"
+                )
+            ]
         ]
     }
 
