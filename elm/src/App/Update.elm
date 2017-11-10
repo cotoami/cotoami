@@ -39,6 +39,7 @@ import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.EditorModal
+import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotonomaModal
@@ -520,6 +521,7 @@ update msg model =
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
+                |> closeModal
             , Cmd.none
             )
 
@@ -672,17 +674,29 @@ update msg model =
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> \( signinModal, subCmd ) ->
-                    { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
+                    { model | signinModal = signinModal }
+                        ! [ Cmd.map SigninModalMsg subCmd ]
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update subMsg model.editorModal
-                |> \( editorModal, cmd ) ->
-                    ( { model | editorModal = editorModal }, cmd )
+                |> (\( editorModal, cmd ) ->
+                        case subMsg of
+                            App.Modals.EditorModalMsg.Post ->
+                                post
+                                    Nothing
+                                    (App.Modals.EditorModal.getSummary editorModal)
+                                    editorModal.content
+                                    { model | editorModal = editorModal }
+
+                            _ ->
+                                ( { model | editorModal = editorModal }, cmd )
+                   )
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> \( inviteModal, subCmd ) ->
-                    { model | inviteModal = inviteModal } ! [ Cmd.map InviteModalMsg subCmd ]
+                    { model | inviteModal = inviteModal }
+                        ! [ Cmd.map InviteModalMsg subCmd ]
 
         CotonomaModalMsg subMsg ->
             model.context.session

@@ -2,6 +2,7 @@ module App.Modals.EditorModal
     exposing
         ( Model
         , initModel
+        , getSummary
         , update
         , view
         )
@@ -37,6 +38,14 @@ initModel maybeCoto =
             |> Maybe.withDefault ""
     , requestProcessing = False
     }
+
+
+getSummary : Model -> Maybe String
+getSummary model =
+    if isBlank model.summary then
+        Nothing
+    else
+        Just model.summary
 
 
 update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
