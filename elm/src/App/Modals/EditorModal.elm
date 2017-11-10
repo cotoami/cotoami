@@ -2,6 +2,7 @@ module App.Modals.EditorModal
     exposing
         ( Model
         , initModel
+        , view
         )
 
 import Html exposing (..)

@@ -14,6 +14,7 @@ import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
+import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
 import App.Modals.CotoModal
@@ -23,6 +24,7 @@ import App.Modals.ImportModal
 type Modal
     = ConfirmModal
     | SigninModal
+    | EditorModal
     | ProfileModal
     | InviteModal
     | CotoModal
@@ -45,6 +47,7 @@ type alias Model =
     , presences : Presences
     , modals : List Modal
     , confirmation : Confirmation
+    , editorModal : App.Modals.EditorModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
@@ -74,6 +77,7 @@ initModel seed route =
     , presences = Dict.empty
     , modals = []
     , confirmation = defaultConfirmation
+    , editorModal = App.Modals.EditorModal.initModel Nothing
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel

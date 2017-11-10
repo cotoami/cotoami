@@ -39,6 +39,7 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotonomaModal
@@ -205,6 +206,10 @@ update msg model =
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
                 |> \model -> openModal App.Model.SigninModal model ! []
+
+        OpenNewEditorModal ->
+            { model | editorModal = App.Modals.EditorModal.initModel Nothing }
+                |> \model -> openModal App.Model.EditorModal model ! []
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }

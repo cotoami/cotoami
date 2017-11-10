@@ -44,6 +44,7 @@ type Msg
     | CloseModal
     | Confirm
     | OpenSigninModal
+    | OpenNewEditorModal
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
