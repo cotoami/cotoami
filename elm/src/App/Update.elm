@@ -21,7 +21,6 @@ import App.Types.Timeline
     exposing
         ( updatePost
         , setLoading
-        , postContent
         , setCotoSaved
         , setBeingDeleted
         , deletePendingPost
@@ -543,7 +542,12 @@ update msg model =
         PostCotonoma ->
             let
                 ( timeline, _ ) =
-                    postContent model.context True model.cotonomaModal.name model.timeline
+                    App.Types.Timeline.post
+                        model.context
+                        True
+                        Nothing
+                        model.cotonomaModal.name
+                        model.timeline
 
                 cotonomaModal =
                     model.cotonomaModal
@@ -685,9 +689,9 @@ update msg model =
                 |> Maybe.map
                     (\session ->
                         App.Modals.CotonomaModal.update
-                            subMsg
-                            session
                             model.context
+                            session
+                            subMsg
                             model.cotonomaModal
                     )
                 |> Maybe.map
@@ -806,15 +810,13 @@ post maybeDirection model =
             model.timeline.newContent
 
         ( timeline, newPost ) =
-            postContent model.context False newContent model.timeline
+            model.timeline
+                |> App.Types.Timeline.post model.context False Nothing newContent
 
         postMsg =
-            case maybeDirection of
-                Nothing ->
-                    Posted timeline.postIdCounter
-
-                Just _ ->
-                    PostedAndConnect timeline.postIdCounter
+            maybeDirection
+                |> Maybe.map (\_ -> PostedAndConnect timeline.postIdCounter)
+                |> Maybe.withDefault (Posted timeline.postIdCounter)
     in
         { model
             | timeline = timeline

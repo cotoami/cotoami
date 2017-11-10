@@ -48,6 +48,9 @@ update msg model =
         SummaryInput summary ->
             ( { model | summary = summary }, Cmd.none )
 
+        Post ->
+            ( { model | requestProcessing = True }, Cmd.none )
+
 
 view : Model -> Html AppMsg.Msg
 view model =
@@ -66,7 +69,7 @@ modalConfig model =
         [ button
             [ class "button button-primary"
             , disabled (isBlank model.content || model.requestProcessing)
-            , onClick CloseModal
+            , onClick (AppMsg.EditorModalMsg Post)
             ]
             [ text
                 (if model.requestProcessing then
