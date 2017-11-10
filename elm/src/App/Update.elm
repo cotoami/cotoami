@@ -7,7 +7,7 @@ import Time
 import Maybe exposing (andThen, withDefault)
 import Json.Decode as Decode
 import Http exposing (Error(..))
-import Util.Keys exposing (enter, escape)
+import Util.Keys exposing (enter, escape, n)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
@@ -39,7 +39,6 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
-import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotonomaModal
@@ -50,25 +49,24 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-            model ! []
+            ( model, Cmd.none )
 
         KeyDown keyCode ->
-            { model
-                | context = App.Types.Context.keyDown keyCode model.context
-            }
+            { model | context = App.Types.Context.keyDown keyCode model.context }
                 |> (\model ->
                         if keyCode == escape.keyCode then
                             closeModal model
+                        else if (keyCode == n.keyCode) && (List.isEmpty model.modals) then
+                            openNewEditor model
                         else
                             model
                    )
-                |> \model -> model ! []
+                |> \model -> ( model, Cmd.none )
 
         KeyUp keyCode ->
-            { model
-                | context = App.Types.Context.keyUp keyCode model.context
-            }
-                ! []
+            ( { model | context = App.Types.Context.keyUp keyCode model.context }
+            , Cmd.none
+            )
 
         AppClick ->
             ( { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
@@ -97,10 +95,9 @@ update msg model =
                 ! []
 
         SwitchViewOnMobile view ->
-            { model
-                | activeViewOnMobile = view
-            }
-                ! []
+            ( { model | activeViewOnMobile = view }
+            , Cmd.none
+            )
 
         HomeClick ->
             changeLocationToHome model
@@ -208,8 +205,7 @@ update msg model =
                 |> \model -> openModal App.Model.SigninModal model ! []
 
         OpenNewEditorModal ->
-            { model | editorModal = App.Modals.EditorModal.initModel Nothing }
-                |> \model -> openModal App.Model.EditorModal model ! []
+            openNewEditor model ! []
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }

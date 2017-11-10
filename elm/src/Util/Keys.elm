@@ -51,3 +51,10 @@ escape =
     { keyCode = 27
     , name = "Escape"
     }
+
+
+n : Key
+n =
+    { keyCode = 78
+    , name = "n"
+    }
