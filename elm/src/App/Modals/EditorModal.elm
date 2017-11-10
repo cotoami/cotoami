@@ -95,7 +95,8 @@ cotoEditor model =
             ]
         , div [ class "content-input" ]
             [ textarea
-                [ value model.content
+                [ id "editor-modal-content-input"
+                , value model.content
                 , onInput (AppMsg.EditorModalMsg << EditorInput)
                 ]
                 []

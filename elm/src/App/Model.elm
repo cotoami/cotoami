@@ -192,12 +192,6 @@ maybeConfirm maybeConfirmation model =
         |> Maybe.withDefault model
 
 
-openNewEditor : Model -> Model
-openNewEditor model =
-    { model | editorModal = App.Modals.EditorModal.initModel Nothing }
-        |>  openModal EditorModal
-
-
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto

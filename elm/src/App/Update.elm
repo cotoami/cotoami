@@ -56,13 +56,12 @@ update msg model =
             { model | context = App.Types.Context.keyDown keyCode model.context }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            closeModal model
+                            ( closeModal model, Cmd.none )
                         else if (keyCode == n.keyCode) && (List.isEmpty model.modals) then
                             openNewEditor model
                         else
-                            model
+                            ( model, Cmd.none )
                    )
-                |> \model -> ( model, Cmd.none )
 
         KeyUp keyCode ->
             ( { model | context = App.Types.Context.keyUp keyCode model.context }
@@ -206,7 +205,7 @@ update msg model =
                 |> \model -> openModal App.Model.SigninModal model ! []
 
         OpenNewEditorModal ->
-            openNewEditor model ! []
+            openNewEditor model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
@@ -718,6 +717,14 @@ update msg model =
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
+
+
+openNewEditor : Model -> ( Model, Cmd Msg )
+openNewEditor model =
+    ( { model | editorModal = App.Modals.EditorModal.initModel Nothing }
+        |> openModal EditorModal
+    , App.Commands.focus "editor-modal-content-input" NoOp
+    )
 
 
 loadHome : Model -> ( Model, Cmd Msg )
