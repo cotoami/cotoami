@@ -12,6 +12,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
+import Util.EventUtil exposing (onKeyDown)
 import App.Types.Coto exposing (Coto)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
@@ -60,6 +61,9 @@ update msg model =
         Post ->
             ( { model | requestProcessing = True }, Cmd.none )
 
+        EditorKeyDown keyCode ->
+            ( model, Cmd.none )
+
 
 view : Model -> Html AppMsg.Msg
 view model =
@@ -80,13 +84,13 @@ modalConfig model =
             , disabled (isBlank model.content || model.requestProcessing)
             , onClick (AppMsg.EditorModalMsg Post)
             ]
-            [ text
-                (if model.requestProcessing then
-                    "Posting..."
-                 else
-                    "Post"
-                )
-            ]
+            (if model.requestProcessing then
+                [ text "Posting..." ]
+             else
+                [ text "Post"
+                , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
+                ]
+            )
         ]
     }
 
@@ -110,6 +114,7 @@ cotoEditor model =
                 [ id "editor-modal-content-input"
                 , value model.content
                 , onInput (AppMsg.EditorModalMsg << EditorInput)
+                , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
                 ]
                 []
             ]

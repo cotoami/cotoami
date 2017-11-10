@@ -5,6 +5,7 @@ import Task
 import Process
 import Time
 import Maybe exposing (andThen, withDefault)
+import Keyboard exposing (KeyCode)
 import Json.Decode as Decode
 import Http exposing (Error(..))
 import Util.Keys exposing (enter, escape, n)
@@ -501,19 +502,7 @@ update msg model =
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
         EditorKeyDown keyCode ->
-            if
-                (keyCode == enter.keyCode)
-                    && not (Set.isEmpty model.context.modifierKeys)
-                    && isNotBlank model.timeline.newContent
-            then
-                if isCtrlDown model.context then
-                    post Nothing Nothing model.timeline.newContent model
-                else if isAltDown model.context && anySelection model.context then
-                    confirmPostAndConnect model ! []
-                else
-                    model ! []
-            else
-                model ! []
+            handleEditorShortcut keyCode Nothing model.timeline.newContent model
 
         Post ->
             post Nothing Nothing model.timeline.newContent model
@@ -680,16 +669,26 @@ update msg model =
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update subMsg model.editorModal
                 |> (\( editorModal, cmd ) ->
+                        ( { model | editorModal = editorModal }, cmd )
+                   )
+                |> (\( model, cmd ) ->
                         case subMsg of
                             App.Modals.EditorModalMsg.Post ->
                                 post
                                     Nothing
-                                    (App.Modals.EditorModal.getSummary editorModal)
-                                    editorModal.content
-                                    { model | editorModal = editorModal }
+                                    (App.Modals.EditorModal.getSummary model.editorModal)
+                                    model.editorModal.content
+                                    model
+
+                            App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
+                                handleEditorShortcut
+                                    keyCode
+                                    (App.Modals.EditorModal.getSummary model.editorModal)
+                                    model.editorModal.content
+                                    model
 
                             _ ->
-                                ( { model | editorModal = editorModal }, cmd )
+                                ( model, cmd )
                    )
 
         InviteModalMsg subMsg ->
@@ -837,6 +836,23 @@ post maybeDirection summary content model =
             ! [ App.Commands.scrollTimelineToBottom NoOp
               , App.Server.Post.post clientId cotonoma postMsg newPost
               ]
+
+
+handleEditorShortcut : KeyCode -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+handleEditorShortcut keyCode summary content model =
+    if
+        (keyCode == enter.keyCode)
+            && not (Set.isEmpty model.context.modifierKeys)
+            && isNotBlank content
+    then
+        if isCtrlDown model.context then
+            post Nothing summary content model
+        else if isAltDown model.context && anySelection model.context then
+            ( confirmPostAndConnect model, Cmd.none )
+        else
+            ( model, Cmd.none )
+    else
+        ( model, Cmd.none )
 
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
