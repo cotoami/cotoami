@@ -515,10 +515,12 @@ update msg model =
             )
 
         Posted postId (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConfirmPostAndConnect content summary ->
-            confirmPostAndConnect summary content model ! []
+            ( confirmPostAndConnect summary content model
+            , Cmd.none
+            )
 
         PostAndConnect content summary ->
             post (Just model.connectingDirection) summary content model
@@ -529,7 +531,7 @@ update msg model =
                 |> connectPost response
 
         PostedAndConnect postId (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         PostCotonoma ->
             let
