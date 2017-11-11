@@ -89,6 +89,7 @@ modalConfig context model =
     , buttons =
         [ button
             [ class "button preview"
+            , disabled (isBlank model.content || model.requestProcessing)
             , onClick (AppMsg.EditorModalMsg TogglePreview)
             ]
             [ text
