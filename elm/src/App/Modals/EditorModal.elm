@@ -113,6 +113,7 @@ cotoEditor model =
             [ textarea
                 [ id "editor-modal-content-input"
                 , value model.content
+                , autofocus True
                 , onInput (AppMsg.EditorModalMsg << EditorInput)
                 , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
                 ]

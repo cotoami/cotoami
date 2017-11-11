@@ -37,6 +37,7 @@ modalConfig direction selectedCotos subject =
             Coto coto ->
                 [ button
                     [ class "button button-primary"
+                    , autofocus True
                     , onClick (Connect coto selectedCotos direction)
                     ]
                     [ text "Connect" ]
@@ -45,6 +46,7 @@ modalConfig direction selectedCotos subject =
             NewPost content summary ->
                 [ button
                     [ class "button button-primary"
+                    , autofocus True
                     , onClick (PostAndConnect content summary)
                     ]
                     [ text "Post and connect" ]
