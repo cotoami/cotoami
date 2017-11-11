@@ -44,7 +44,11 @@ postEditor session context model =
                         [ button
                             [ class "button connect"
                             , disabled (isBlank model.newContent)
-                            , onMouseDown App.Messages.ConfirmPostAndConnect
+                            , onMouseDown
+                                (App.Messages.ConfirmPostAndConnect
+                                    model.newContent
+                                    Nothing
+                                )
                             ]
                             [ faIcon "link" Nothing
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]

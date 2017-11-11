@@ -94,8 +94,8 @@ type Msg
     | EditorKeyDown KeyCode
     | Post
     | Posted Int (Result Http.Error Post)
-    | ConfirmPostAndConnect
-    | PostAndConnect
+    | ConfirmPostAndConnect String (Maybe String)
+    | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)

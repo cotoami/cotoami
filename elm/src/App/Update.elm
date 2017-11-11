@@ -510,21 +510,22 @@ update msg model =
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
-                |> closeModal
+                |> clearModals
             , Cmd.none
             )
 
         Posted postId (Err _) ->
             model ! []
 
-        ConfirmPostAndConnect ->
-            confirmPostAndConnect model ! []
+        ConfirmPostAndConnect content summary ->
+            confirmPostAndConnect summary content model ! []
 
-        PostAndConnect ->
-            post (Just model.connectingDirection) Nothing model.timeline.newContent model
+        PostAndConnect content summary ->
+            post (Just model.connectingDirection) summary content model
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
+                |> clearModals
                 |> connectPost response
 
         PostedAndConnect postId (Err _) ->
@@ -848,7 +849,7 @@ handleEditorShortcut keyCode summary content model =
         if isCtrlDown model.context then
             post Nothing summary content model
         else if isAltDown model.context && anySelection model.context then
-            ( confirmPostAndConnect model, Cmd.none )
+            ( confirmPostAndConnect summary content model, Cmd.none )
         else
             ( model, Cmd.none )
     else

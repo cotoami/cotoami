@@ -35,7 +35,7 @@ type Modal
 
 type ConnectingSubject
     = Coto Coto
-    | NewPost String
+    | NewPost String (Maybe String)
 
 
 type alias Model =
@@ -201,10 +201,10 @@ openCoto coto model =
         |> openModal CotoModal
 
 
-confirmPostAndConnect : Model -> Model
-confirmPostAndConnect model =
+confirmPostAndConnect : Maybe String -> String -> Model -> Model
+confirmPostAndConnect summary content model =
     { model
-        | connectingSubject = Just (NewPost model.timeline.newContent)
+        | connectingSubject = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
         |> \model -> openModal ConnectModal model

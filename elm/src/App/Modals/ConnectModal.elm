@@ -42,10 +42,10 @@ modalConfig direction selectedCotos subject =
                     [ text "Connect" ]
                 ]
 
-            NewPost _ ->
+            NewPost content summary ->
                 [ button
                     [ class "button button-primary"
-                    , onClick PostAndConnect
+                    , onClick (PostAndConnect content summary)
                     ]
                     [ text "Post and connect" ]
                 ]
@@ -75,7 +75,7 @@ modalContent direction selectedCotos subject =
                     div [ class "connecting-coto coto-content" ]
                         [ App.Markdown.markdown coto.content ]
 
-                NewPost content ->
+                NewPost content summary ->
                     div [ class "connecting-new-post coto-content" ]
                         [ App.Markdown.markdown content ]
 
