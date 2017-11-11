@@ -406,7 +406,10 @@ update msg model =
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
             }
-                |> \model -> openModal App.Model.ConnectModal model ! []
+                |> \model ->
+                    ( openModal App.Model.ConnectModal model
+                    , App.Commands.focus "connect-modal-primary-button" NoOp
+                    )
 
         ReverseDirection ->
             { model
@@ -518,9 +521,7 @@ update msg model =
             ( model, Cmd.none )
 
         ConfirmPostAndConnect content summary ->
-            ( confirmPostAndConnect summary content model
-            , Cmd.none
-            )
+            confirmPostAndConnect summary content model
 
         PostAndConnect content summary ->
             post (Just model.connectingDirection) summary content model
@@ -841,6 +842,13 @@ post maybeDirection summary content model =
               ]
 
 
+confirmPostAndConnect : Maybe String -> String -> Model -> ( Model, Cmd Msg )
+confirmPostAndConnect summary content model =
+    ( App.Model.confirmPostAndConnect summary content model
+    , App.Commands.focus "connect-modal-primary-button" NoOp
+    )
+
+
 handleEditorShortcut : KeyCode -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
 handleEditorShortcut keyCode summary content model =
     if
@@ -851,7 +859,7 @@ handleEditorShortcut keyCode summary content model =
         if isCtrlDown model.context then
             post Nothing summary content model
         else if isAltDown model.context && anySelection model.context then
-            ( confirmPostAndConnect summary content model, Cmd.none )
+            confirmPostAndConnect summary content model
         else
             ( model, Cmd.none )
     else
