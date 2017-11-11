@@ -29,29 +29,35 @@ view model =
 
 modalConfig : Direction -> List Coto -> ConnectingSubject -> Modal.Config Msg
 modalConfig direction selectedCotos subject =
-    { closeMessage = CloseModal
-    , title = text "Connect Preview"
-    , content = modalContent direction selectedCotos subject
-    , buttons =
-        case subject of
-            Coto coto ->
-                [ button
-                    [ class "button button-primary"
-                    , autofocus True
-                    , onClick (Connect coto selectedCotos direction)
+    let
+        primaryButtonId =
+            "connect-modal-primary-button"
+    in
+        { closeMessage = CloseModal
+        , title = text "Connect Preview"
+        , content = modalContent direction selectedCotos subject
+        , buttons =
+            case subject of
+                Coto coto ->
+                    [ button
+                        [ id primaryButtonId
+                        , class "button button-primary"
+                        , autofocus True
+                        , onClick (Connect coto selectedCotos direction)
+                        ]
+                        [ text "Connect" ]
                     ]
-                    [ text "Connect" ]
-                ]
 
-            NewPost content summary ->
-                [ button
-                    [ class "button button-primary"
-                    , autofocus True
-                    , onClick (PostAndConnect content summary)
+                NewPost content summary ->
+                    [ button
+                        [ id primaryButtonId
+                        , class "button button-primary"
+                        , autofocus True
+                        , onClick (PostAndConnect content summary)
+                        ]
+                        [ text "Post and connect" ]
                     ]
-                    [ text "Post and connect" ]
-                ]
-    }
+        }
 
 
 modalContent : Direction -> List Coto -> ConnectingSubject -> Html Msg
