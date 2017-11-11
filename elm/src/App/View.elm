@@ -234,7 +234,7 @@ modals model =
                     App.Modals.SigninModal.view model.signinModal
 
                 EditorModal ->
-                    App.Modals.EditorModal.view model.editorModal
+                    App.Modals.EditorModal.view model.context model.editorModal
 
                 ProfileModal ->
                     App.Modals.ProfileModal.view model.context.session

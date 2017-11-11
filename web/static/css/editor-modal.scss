@@ -38,4 +38,15 @@
     text-transform: none;
     opacity: 0.7;
   }
+
+  button.connect {
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #fff;
+
+    i {
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
 }

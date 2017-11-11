@@ -13,8 +13,10 @@ import Html.Events exposing (onClick, onInput)
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown)
+import Util.HtmlUtil exposing (faIcon)
 import App.Types.Coto exposing (Coto)
-import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Types.Context exposing (Context)
+import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 
 
@@ -65,21 +67,32 @@ update msg model =
             ( model, Cmd.none )
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
+view : Context -> Model -> Html AppMsg.Msg
+view context model =
+    modalConfig context model
         |> Just
         |> Modal.view "editor-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
+modalConfig : Context -> Model -> Modal.Config AppMsg.Msg
+modalConfig context model =
     { closeMessage = CloseModal
     , title = text "New Coto"
     , content =
         div [] [ cotoEditor model ]
     , buttons =
-        [ button
+        [ if List.isEmpty context.selection then
+            span [] []
+          else
+            button
+                [ class "button connect"
+                , disabled (isBlank model.content || model.requestProcessing)
+                , onClick (ConfirmPostAndConnect model.content (getSummary model))
+                ]
+                [ faIcon "link" Nothing
+                , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
+                ]
+        , button
             [ class "button button-primary"
             , disabled (isBlank model.content || model.requestProcessing)
             , onClick (AppMsg.EditorModalMsg Post)
