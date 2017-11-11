@@ -19,6 +19,7 @@ import App.Modals.ProfileModal
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
+import App.Modals.EditorModal
 import App.Modals.ConfirmModal
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
@@ -61,13 +62,14 @@ view model =
                 ]
             , App.Views.CotoSelection.statusBar model
             , a
-                [ class "tool-button info-button"
-                , title "News and Feedback"
-                , href "https://twitter.com/cotoami"
-                , target "_blank"
+                [ class "tool-button new-coto-button"
+                , title "New Coto"
                 , hidden (model.timeline.editorOpen)
+                , onClick OpenNewEditorModal
                 ]
-                [ materialIcon "info" Nothing ]
+                [ materialIcon "create" Nothing
+                , span [ class "shortcut" ] [ text "(Press N key)" ]
+                ]
             , div [] (modals model)
             ]
 
@@ -230,6 +232,9 @@ modals model =
 
                 SigninModal ->
                     App.Modals.SigninModal.view model.signinModal
+
+                EditorModal ->
+                    App.Modals.EditorModal.view model.context model.editorModal
 
                 ProfileModal ->
                     App.Modals.ProfileModal.view model.context.session

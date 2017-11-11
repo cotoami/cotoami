@@ -132,8 +132,8 @@ setBeingDeleted coto timeline =
         timeline
 
 
-postContent : Context -> Bool -> String -> Timeline -> ( Timeline, Post )
-postContent context asCotonoma content timeline =
+post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
+post context asCotonoma summary content timeline =
     let
         postId =
             timeline.postIdCounter + 1
@@ -141,6 +141,7 @@ postContent context asCotonoma content timeline =
         { defaultPost
             | postId = Just postId
             , content = content
+            , summary = summary
             , amishi = Maybe.map App.Types.Session.toAmishi context.session
             , asCotonoma = asCotonoma
             , postedIn = context.cotonoma

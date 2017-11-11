@@ -5,9 +5,10 @@ import Task
 import Process
 import Time
 import Maybe exposing (andThen, withDefault)
+import Keyboard exposing (KeyCode)
 import Json.Decode as Decode
 import Http exposing (Error(..))
-import Util.Keys exposing (enter, escape)
+import Util.Keys exposing (enter, escape, n)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
@@ -21,7 +22,6 @@ import App.Types.Timeline
     exposing
         ( updatePost
         , setLoading
-        , postContent
         , setCotoSaved
         , setBeingDeleted
         , deletePendingPost
@@ -39,6 +39,8 @@ import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Modals.EditorModal
+import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.CotoModal
 import App.Modals.CotonomaModal
@@ -49,25 +51,23 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-            model ! []
+            ( model, Cmd.none )
 
         KeyDown keyCode ->
-            { model
-                | context = App.Types.Context.keyDown keyCode model.context
-            }
+            { model | context = App.Types.Context.keyDown keyCode model.context }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            closeModal model
+                            ( closeModal model, Cmd.none )
+                        else if (keyCode == n.keyCode) && (List.isEmpty model.modals) then
+                            openNewEditor model
                         else
-                            model
+                            ( model, Cmd.none )
                    )
-                |> \model -> model ! []
 
         KeyUp keyCode ->
-            { model
-                | context = App.Types.Context.keyUp keyCode model.context
-            }
-                ! []
+            ( { model | context = App.Types.Context.keyUp keyCode model.context }
+            , Cmd.none
+            )
 
         AppClick ->
             ( { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
@@ -96,10 +96,9 @@ update msg model =
                 ! []
 
         SwitchViewOnMobile view ->
-            { model
-                | activeViewOnMobile = view
-            }
-                ! []
+            ( { model | activeViewOnMobile = view }
+            , Cmd.none
+            )
 
         HomeClick ->
             changeLocationToHome model
@@ -205,6 +204,9 @@ update msg model =
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
                 |> \model -> openModal App.Model.SigninModal model ! []
+
+        OpenNewEditorModal ->
+            openNewEditor model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
@@ -404,7 +406,10 @@ update msg model =
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
             }
-                |> \model -> openModal App.Model.ConnectModal model ! []
+                |> \model ->
+                    ( openModal App.Model.ConnectModal model
+                    , App.Commands.focus "connect-modal-primary-button" NoOp
+                    )
 
         ReverseDirection ->
             { model
@@ -500,49 +505,44 @@ update msg model =
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
         EditorKeyDown keyCode ->
-            if
-                (keyCode == enter.keyCode)
-                    && not (Set.isEmpty model.context.modifierKeys)
-                    && isNotBlank model.timeline.newContent
-            then
-                if isCtrlDown model.context then
-                    post Nothing model
-                else if isAltDown model.context && anySelection model.context then
-                    confirmPostAndConnect model ! []
-                else
-                    model ! []
-            else
-                model ! []
+            handleEditorShortcut keyCode Nothing model.timeline.newContent model
 
         Post ->
-            post Nothing model
+            post Nothing Nothing model.timeline.newContent model
 
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
+                |> clearModals
             , Cmd.none
             )
 
         Posted postId (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
-        ConfirmPostAndConnect ->
-            confirmPostAndConnect model ! []
+        ConfirmPostAndConnect content summary ->
+            confirmPostAndConnect summary content model
 
-        PostAndConnect ->
-            post (Just model.connectingDirection) model
+        PostAndConnect content summary ->
+            post (Just model.connectingDirection) summary content model
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
+                |> clearModals
                 |> connectPost response
 
         PostedAndConnect postId (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         PostCotonoma ->
             let
                 ( timeline, _ ) =
-                    postContent model.context True model.cotonomaModal.name model.timeline
+                    App.Types.Timeline.post
+                        model.context
+                        True
+                        Nothing
+                        model.cotonomaModal.name
+                        model.timeline
 
                 cotonomaModal =
                     model.cotonomaModal
@@ -667,21 +667,48 @@ update msg model =
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> \( signinModal, subCmd ) ->
-                    { model | signinModal = signinModal } ! [ Cmd.map SigninModalMsg subCmd ]
+                    { model | signinModal = signinModal }
+                        ! [ Cmd.map SigninModalMsg subCmd ]
+
+        EditorModalMsg subMsg ->
+            App.Modals.EditorModal.update subMsg model.editorModal
+                |> (\( editorModal, cmd ) ->
+                        ( { model | editorModal = editorModal }, cmd )
+                   )
+                |> (\( model, cmd ) ->
+                        case subMsg of
+                            App.Modals.EditorModalMsg.Post ->
+                                post
+                                    Nothing
+                                    (App.Modals.EditorModal.getSummary model.editorModal)
+                                    model.editorModal.content
+                                    model
+
+                            App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
+                                handleEditorShortcut
+                                    keyCode
+                                    (App.Modals.EditorModal.getSummary model.editorModal)
+                                    model.editorModal.content
+                                    model
+
+                            _ ->
+                                ( model, cmd )
+                   )
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> \( inviteModal, subCmd ) ->
-                    { model | inviteModal = inviteModal } ! [ Cmd.map InviteModalMsg subCmd ]
+                    { model | inviteModal = inviteModal }
+                        ! [ Cmd.map InviteModalMsg subCmd ]
 
         CotonomaModalMsg subMsg ->
             model.context.session
                 |> Maybe.map
                     (\session ->
                         App.Modals.CotonomaModal.update
-                            subMsg
-                            session
                             model.context
+                            session
+                            subMsg
                             model.cotonomaModal
                     )
                 |> Maybe.map
@@ -711,6 +738,14 @@ update msg model =
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
+
+
+openNewEditor : Model -> ( Model, Cmd Msg )
+openNewEditor model =
+    ( { model | editorModal = App.Modals.EditorModal.initModel Nothing }
+        |> openModal EditorModal
+    , App.Commands.focus "editor-modal-content-input" NoOp
+    )
 
 
 loadHome : Model -> ( Model, Cmd Msg )
@@ -779,8 +814,8 @@ handlePushedPost clientId payload model =
         model ! []
 
 
-post : Maybe Direction -> Model -> ( Model, Cmd Msg )
-post maybeDirection model =
+post : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+post maybeDirection summary content model =
     let
         clientId =
             model.context.clientId
@@ -788,19 +823,14 @@ post maybeDirection model =
         cotonoma =
             model.context.cotonoma
 
-        newContent =
-            model.timeline.newContent
-
         ( timeline, newPost ) =
-            postContent model.context False newContent model.timeline
+            model.timeline
+                |> App.Types.Timeline.post model.context False summary content
 
         postMsg =
-            case maybeDirection of
-                Nothing ->
-                    Posted timeline.postIdCounter
-
-                Just _ ->
-                    PostedAndConnect timeline.postIdCounter
+            maybeDirection
+                |> Maybe.map (\_ -> PostedAndConnect timeline.postIdCounter)
+                |> Maybe.withDefault (Posted timeline.postIdCounter)
     in
         { model
             | timeline = timeline
@@ -810,6 +840,30 @@ post maybeDirection model =
             ! [ App.Commands.scrollTimelineToBottom NoOp
               , App.Server.Post.post clientId cotonoma postMsg newPost
               ]
+
+
+confirmPostAndConnect : Maybe String -> String -> Model -> ( Model, Cmd Msg )
+confirmPostAndConnect summary content model =
+    ( App.Model.confirmPostAndConnect summary content model
+    , App.Commands.focus "connect-modal-primary-button" NoOp
+    )
+
+
+handleEditorShortcut : KeyCode -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+handleEditorShortcut keyCode summary content model =
+    if
+        (keyCode == enter.keyCode)
+            && not (Set.isEmpty model.context.modifierKeys)
+            && isNotBlank content
+    then
+        if isCtrlDown model.context then
+            post Nothing summary content model
+        else if isAltDown model.context && anySelection model.context then
+            confirmPostAndConnect summary content model
+        else
+            ( model, Cmd.none )
+    else
+        ( model, Cmd.none )
 
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )

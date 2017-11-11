@@ -68,8 +68,8 @@ updateRequestStatus error model =
         )
 
 
-update : CotonomaModalMsg.Msg -> Session -> Context -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )
-update msg session context model =
+update : Context -> Session -> CotonomaModalMsg.Msg -> Model -> ( Model, Cmd CotonomaModalMsg.Msg )
+update context session msg model =
     case msg of
         CotonomaModalMsg.NoOp ->
             ( model, Cmd.none )

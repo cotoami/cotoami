@@ -11,6 +11,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
+import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.CotonomaModalMsg
 import App.Modals.CotoModalMsg
@@ -44,6 +45,7 @@ type Msg
     | CloseModal
     | Confirm
     | OpenSigninModal
+    | OpenNewEditorModal
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
@@ -92,8 +94,8 @@ type Msg
     | EditorKeyDown KeyCode
     | Post
     | Posted Int (Result Http.Error Post)
-    | ConfirmPostAndConnect
-    | PostAndConnect
+    | ConfirmPostAndConnect String (Maybe String)
+    | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)
@@ -117,6 +119,7 @@ type Msg
       -- Sub components
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
+    | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
     | CotoModalMsg App.Modals.CotoModalMsg.Msg

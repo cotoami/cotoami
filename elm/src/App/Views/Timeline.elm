@@ -44,7 +44,11 @@ postEditor session context model =
                         [ button
                             [ class "button connect"
                             , disabled (isBlank model.newContent)
-                            , onMouseDown App.Messages.ConfirmPostAndConnect
+                            , onMouseDown
+                                (App.Messages.ConfirmPostAndConnect
+                                    model.newContent
+                                    Nothing
+                                )
                             ]
                             [ faIcon "link" Nothing
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
@@ -62,7 +66,7 @@ postEditor session context model =
             ]
         , textarea
             [ class "coto"
-            , placeholder "Write your idea in Markdown"
+            , placeholder "Write your Coto in Markdown"
             , value model.newContent
             , onFocus EditorFocus
             , onInput EditorInput

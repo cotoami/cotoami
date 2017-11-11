@@ -1,5 +1,6 @@
 module App.Commands exposing (..)
 
+import Dom
 import Dom.Scroll
 import Task exposing (andThen, attempt)
 import Process
@@ -41,3 +42,8 @@ scrollToBottom elementId msg =
     Process.sleep (100 * Time.millisecond)
         |> andThen (\_ -> (Dom.Scroll.toBottom elementId))
         |> attempt (\_ -> msg)
+
+
+focus : String -> msg -> Cmd msg
+focus elementId msg =
+    Dom.focus elementId |> attempt (\_ -> msg)
