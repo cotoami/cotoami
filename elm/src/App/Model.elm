@@ -48,6 +48,7 @@ type alias Model =
     , modals : List Modal
     , confirmation : Confirmation
     , editorModal : App.Modals.EditorModal.Model
+    , cotoMenu : Maybe Coto
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
@@ -78,6 +79,7 @@ initModel seed route =
     , modals = []
     , confirmation = defaultConfirmation
     , editorModal = App.Modals.EditorModal.initModel Nothing
+    , cotoMenu = Nothing
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel

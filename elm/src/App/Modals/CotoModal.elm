@@ -188,11 +188,11 @@ update msg model =
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
 view maybeSession maybeModel =
-    maybeModel
-        |> Maybe.andThen
-            (\model ->
-                maybeSession |> Maybe.map (\session -> modalConfig session model)
-            )
+    (Maybe.map2
+        (\session model -> modalConfig session model)
+        maybeSession
+        maybeModel
+    )
         |> Modal.view "coto-modal"
 
 

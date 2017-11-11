@@ -3,16 +3,19 @@ module App.Modals.CotoMenuModal exposing (view)
 import Html exposing (..)
 import Util.Modal as Modal
 import App.Types.Coto exposing (Coto)
+import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 
 
-view : Coto -> Html Msg
-view coto =
-    Modal.view "coto-menu-modal" (Just (modalConfig coto))
+view : Model -> Html Msg
+view model =
+    model.cotoMenu
+        |> Maybe.map (\coto -> modalConfig coto model)
+        |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Coto -> Modal.Config Msg
-modalConfig coto =
+modalConfig : Coto -> Model -> Modal.Config Msg
+modalConfig coto model =
     { closeMessage = CloseModal
     , title = text ""
     , content = div [] []
