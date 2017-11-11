@@ -14,6 +14,7 @@ import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown)
 import Util.HtmlUtil exposing (faIcon)
+import App.Markdown
 import App.Types.Coto exposing (Coto)
 import App.Types.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
@@ -24,6 +25,7 @@ type alias Model =
     { coto : Maybe Coto
     , summary : String
     , content : String
+    , preview : Bool
     , requestProcessing : Bool
     }
 
@@ -39,6 +41,7 @@ initModel maybeCoto =
         maybeCoto
             |> Maybe.map (\coto -> coto.content)
             |> Maybe.withDefault ""
+    , preview = False
     , requestProcessing = False
     }
 
@@ -59,6 +62,9 @@ update msg model =
 
         SummaryInput summary ->
             ( { model | summary = summary }, Cmd.none )
+
+        TogglePreview ->
+            ( { model | preview = not model.preview }, Cmd.none )
 
         Post ->
             ( { model | requestProcessing = True }, Cmd.none )
@@ -81,7 +87,18 @@ modalConfig context model =
     , content =
         div [] [ cotoEditor model ]
     , buttons =
-        [ if List.isEmpty context.selection then
+        [ button
+            [ class "button preview"
+            , onClick (AppMsg.EditorModalMsg TogglePreview)
+            ]
+            [ text
+                (if model.preview then
+                    "Edit"
+                 else
+                    "Preview"
+                )
+            ]
+        , if List.isEmpty context.selection then
             span [] []
           else
             button
@@ -122,14 +139,18 @@ cotoEditor model =
                 ]
                 []
             ]
-        , div [ class "content-input" ]
-            [ textarea
-                [ id "editor-modal-content-input"
-                , value model.content
-                , autofocus True
-                , onInput (AppMsg.EditorModalMsg << EditorInput)
-                , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
+        , if model.preview then
+            div [ class "content-preview" ]
+                [ App.Markdown.markdown model.content ]
+          else
+            div [ class "content-input" ]
+                [ textarea
+                    [ id "editor-modal-content-input"
+                    , value model.content
+                    , autofocus True
+                    , onInput (AppMsg.EditorModalMsg << EditorInput)
+                    , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
+                    ]
+                    []
                 ]
-                []
-            ]
         ]

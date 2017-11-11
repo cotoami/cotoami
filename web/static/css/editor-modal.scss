@@ -33,6 +33,14 @@
     }
   }
 
+  div.content-preview {
+    height: 50vh;
+    padding-left: 6px;
+    padding-right: 6px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   span.shortcut-help {
     margin-left: 4px;
     text-transform: none;
