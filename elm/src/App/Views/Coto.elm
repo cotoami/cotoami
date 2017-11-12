@@ -247,16 +247,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             ]
                             [ faIcon "thumb-tack" Nothing ]
                 )
-      , config.openTraversal
-            |> Maybe.map
-                (\openTraversal ->
-                    a
-                        [ class "tool-button traverse-coto"
-                        , title "Explore"
-                        , onLinkButtonClick (openTraversal cotoId)
-                        ]
-                        [ faIcon "sitemap" Nothing ]
-                )
       , config.openCoto
             |> Maybe.map
                 (\openCoto ->
