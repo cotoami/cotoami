@@ -66,10 +66,13 @@ update msg model =
         TogglePreview ->
             ( { model | preview = not model.preview }, Cmd.none )
 
+        EditorKeyDown keyCode ->
+            ( model, Cmd.none )
+
         Post ->
             ( { model | requestProcessing = True }, Cmd.none )
 
-        EditorKeyDown keyCode ->
+        Save ->
             ( model, Cmd.none )
 
 
@@ -101,7 +104,11 @@ modalConfig context model =
                 text "Preview"
               )
             ]
-        ] ++ (buttonsForNew context model)
+        ]
+            ++ (model.coto
+                    |> Maybe.map (\_ -> buttonsForEdit model)
+                    |> Maybe.withDefault (buttonsForNew context model)
+               )
     }
 
 
@@ -160,5 +167,19 @@ buttonsForNew context model =
             [ text "Post"
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
+        )
+    ]
+
+
+buttonsForEdit : Model -> List (Html AppMsg.Msg)
+buttonsForEdit model =
+    [ button
+        [ class "button button-primary"
+        , disabled (isBlank model.content || model.requestProcessing)
+        ]
+        (if model.requestProcessing then
+            [ text "Saving..." ]
+         else
+            [ text "Save" ]
         )
     ]
