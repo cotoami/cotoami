@@ -49,6 +49,7 @@ type Msg
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
+    | OpenCotoMenuModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
       --

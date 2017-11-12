@@ -27,6 +27,7 @@ type Modal
     | EditorModal
     | ProfileModal
     | InviteModal
+    | CotoMenuModal
     | CotoModal
     | CotonomaModal
     | ConnectModal
@@ -192,6 +193,11 @@ maybeConfirm maybeConfirmation model =
     maybeConfirmation
         |> Maybe.map (\confirmation -> confirm confirmation model)
         |> Maybe.withDefault model
+
+
+openCotoMenuModal : Coto -> Model -> Model
+openCotoMenuModal coto model =
+    openModal CotoMenuModal  { model | cotoMenu = Just coto }
 
 
 openCoto : Coto -> Model -> Model

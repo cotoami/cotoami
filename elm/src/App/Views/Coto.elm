@@ -92,6 +92,7 @@ type alias BodyModel =
 
 type alias BodyConfig =
     { openCoto : Maybe Msg
+    , openCotoMenu : Maybe Msg
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
@@ -123,6 +124,7 @@ defaultBodyConfig context maybeInbound coto =
                     )
     in
         { openCoto = Just (OpenCotoModal coto)
+        , openCotoMenu = Just (OpenCotoMenuModal coto)
         , selectCoto = Just SelectCoto
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
@@ -294,6 +296,16 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             )
                             Nothing
                         ]
+                )
+      , config.openCotoMenu
+            |> Maybe.map
+                (\openCotoMenu ->
+                    a
+                        [ class "tool-button open-coto-menu"
+                        , title "Menu"
+                        , onLinkButtonClick openCotoMenu
+                        ]
+                        [ materialIcon "more_horiz" Nothing ]
                 )
       ]
         |> List.filterMap identity

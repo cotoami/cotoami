@@ -203,28 +203,31 @@ update msg model =
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
-                |> \model -> openModal App.Model.SigninModal model ! []
+                |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
             openNewEditor model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> \model -> openModal App.Model.InviteModal model ! []
+                |> \model -> ( openModal App.Model.InviteModal model, Cmd.none )
 
         OpenProfileModal ->
-            openModal App.Model.ProfileModal model ! []
+            ( openModal App.Model.ProfileModal model, Cmd.none )
+
+        OpenCotoMenuModal coto ->
+            ( openCotoMenuModal coto model, Cmd.none )
 
         OpenCotoModal coto ->
             openCoto coto model
 
         OpenCotonomaModal ->
             { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
-                |> \model -> openModal App.Model.CotonomaModal model ! []
+                |> \model -> ( openModal App.Model.CotonomaModal model, Cmd.none )
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> \model -> openModal App.Model.ImportModal model ! []
+                |> \model -> ( openModal App.Model.ImportModal model, Cmd.none )
 
         --
         -- Coto
@@ -582,12 +585,9 @@ update msg model =
                     )
 
         OpenPost post ->
-            case toCoto post of
-                Nothing ->
-                    model ! []
-
-                Just coto ->
-                    openCoto coto model
+            toCoto post
+                |> Maybe.map (\coto -> openCoto coto model)
+                |> Maybe.withDefault ( model, Cmd.none )
 
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
