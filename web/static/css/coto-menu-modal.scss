@@ -10,6 +10,7 @@
   }
 
   div.menu-item {
+    margin-bottom: 4px;
     padding: 6px;
     padding-right: 10px;
     cursor: pointer;
@@ -27,21 +28,38 @@
     }
 
     i {
+      vertical-align: middle;
       margin-right: 6px;
-
-      &.material-icons {
-        vertical-align: middle;
-      }
 
       &.fa {
         font-size: 20px;
         margin-left: 3px;
+      }
+
+      &.fa-thumb-tack {
+        font-size: 22px;
+        margin-left: 6px;
+        margin-right: 9px;
+      }
+
+      &.fa-remove {
+        opacity: .6;
+        font-size: 12px;
+        margin-left: -12px;
+        margin-top: -16px;
+        margin-right: 3px;
       }
     }
 
     span.menu-title {
       opacity: 0.6;
       font-weight: bold;
+    }
+
+    span.cotonoma {
+      color: #888;
+      font-weight: normal;
+      font-size: 90%;
     }
   }
 }
