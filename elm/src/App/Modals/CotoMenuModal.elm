@@ -54,37 +54,56 @@ checkWritePermission session model =
 
 menuItems : Session -> Model -> List (Html Msg)
 menuItems session model =
-    [ div
-        [ class "menu-item"
-        , onLinkButtonClick (OpenTraversal model.coto.id)
-        ]
-        [ a
-            [ class "explore", title "Explore" ]
-            [ faIcon "sitemap" Nothing
-            , span [ class "menu-title" ]
-                [ text "Explore the connections" ]
+    let
+        cotonomaNotDeletable =
+            model.cotonomaStats
+                |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
+                |> Maybe.withDefault model.coto.asCotonoma
+    in
+        [ div
+            [ class "menu-item"
+            , onLinkButtonClick (OpenTraversal model.coto.id)
             ]
-        ]
-    , div
-        [ class "menu-item"
-        , onLinkButtonClick (OpenEditorModal model.coto)
-        ]
-        [ a
-            [ class "edit", title "Edit" ]
-            [ materialIcon "edit" Nothing
-            , span [ class "menu-title" ]
-                [ text "Edit" ]
+            [ a
+                [ class "explore" ]
+                [ faIcon "sitemap" Nothing
+                , span [ class "menu-title" ]
+                    [ text "Explore the connections" ]
+                ]
             ]
+        , if checkWritePermission session model then
+            div
+                [ class "menu-item"
+                , onLinkButtonClick (OpenEditorModal model.coto)
+                ]
+                [ a
+                    [ class "edit" ]
+                    [ materialIcon "edit" Nothing
+                    , span [ class "menu-title" ] [ text "Edit" ]
+                    ]
+                ]
+          else
+            div [] []
+        , if checkWritePermission session model then
+            if cotonomaNotDeletable then
+                div [ class "menu-item disabled" ]
+                    [ span
+                        [ class "delete" ]
+                        [ materialIcon "delete" Nothing
+                        , span [ class "menu-title" ] [ text "Delete" ]
+                        ]
+                    ]
+            else
+                div
+                    [ class "menu-item"
+                    , onLinkButtonClick (ConfirmDeleteCoto model.coto)
+                    ]
+                    [ a
+                        [ class "delete" ]
+                        [ materialIcon "delete" Nothing
+                        , span [ class "menu-title" ] [ text "Delete" ]
+                        ]
+                    ]
+          else
+            div [] []
         ]
-    , div
-        [ class "menu-item"
-        , onLinkButtonClick (ConfirmDeleteCoto model.coto)
-        ]
-        [ a
-            [ class "delete", title "Delete" ]
-            [ materialIcon "delete" Nothing
-            , span [ class "menu-title" ]
-                [ text "Delete" ]
-            ]
-        ]
-    ]

@@ -244,7 +244,7 @@ modals model =
                     App.Modals.InviteModal.view model.inviteModal
 
                 CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model
+                    App.Modals.CotoMenuModal.view model.context.session model.cotoMenuModal
 
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal
