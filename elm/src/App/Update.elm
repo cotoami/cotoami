@@ -171,9 +171,9 @@ update msg model =
             model ! []
 
         CotonomaStatsFetched (Ok stats) ->
-            model.cotoModal
-                |> Maybe.map (\cotoModal -> { cotoModal | cotonomaStats = Just stats })
-                |> Maybe.map (\cotoModal -> { model | cotoModal = Just cotoModal })
+            model.cotoMenuModal
+                |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
+                |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
                 |> Maybe.withDefault model
                 |> \model -> ( model, Cmd.none )
 
@@ -216,7 +216,11 @@ update msg model =
             ( openModal App.Model.ProfileModal model, Cmd.none )
 
         OpenCotoMenuModal coto ->
-            ( openCotoMenuModal coto model, Cmd.none )
+            ( openCotoMenuModal coto model
+            , coto.cotonomaKey
+                |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+                |> Maybe.withDefault Cmd.none
+            )
 
         OpenEditorModal coto ->
             ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
