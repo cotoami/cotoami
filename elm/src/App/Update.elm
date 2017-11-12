@@ -264,6 +264,7 @@ update msg model =
         OpenTraversal cotoId ->
             model
                 |> openTraversal cotoId
+                |> clearModals
                 |> \model ->
                     ( model
                     , Cmd.batch

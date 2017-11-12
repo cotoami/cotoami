@@ -1,0 +1,43 @@
+@import "variables.scss";
+
+#coto-menu-modal {
+  div.modal-content-inner {
+    padding-top: 20px;
+  }
+
+  .modal-buttons-seperator {
+    display: none;
+  }
+
+  div.menu-item {
+    padding: 6px;
+    padding-right: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    a {
+      color: $tool-button-color;
+
+      i {
+        margin-right: 6px;
+
+        &.material-icons {
+          vertical-align: middle;
+        }
+
+        &.fa {
+          font-size: 20px;
+          margin-left: 3px;
+        }
+      }
+
+      span.menu-title {
+        opacity: 0.6;
+        font-weight: bold;
+      }
+    }
+  }
+}
