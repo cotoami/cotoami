@@ -302,7 +302,7 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                 (\openCotoMenu ->
                     a
                         [ class "tool-button open-coto-menu"
-                        , title "Menu"
+                        , title "More"
                         , onLinkButtonClick openCotoMenu
                         ]
                         [ materialIcon "more_horiz" Nothing ]

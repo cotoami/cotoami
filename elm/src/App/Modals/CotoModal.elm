@@ -409,7 +409,7 @@ deleteButton model =
                 |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
                 |> Maybe.withDefault model.coto.asCotonoma
             )
-        , onClick ConfirmDeleteCoto
+        , onClick (ConfirmDeleteCoto model.coto)
         ]
         [ text "Delete" ]
 

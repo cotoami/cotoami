@@ -36,7 +36,7 @@ modalConfig coto model =
                 ]
             , div
                 [ class "menu-item"
-                , onLinkButtonClick (DeleteCoto coto)
+                , onLinkButtonClick (ConfirmDeleteCoto coto)
                 ]
                 [ a
                     [ class "delete", title "Delete" ]

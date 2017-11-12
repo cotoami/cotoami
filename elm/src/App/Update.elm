@@ -281,14 +281,11 @@ update msg model =
             , Cmd.none
             )
 
-        ConfirmDeleteCoto ->
+        ConfirmDeleteCoto coto ->
             ( confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
-                    (model.cotoModal
-                        |> Maybe.map (\cotoModal -> RequestDeleteCoto cotoModal.coto)
-                        |> Maybe.withDefault App.Messages.NoOp
-                    )
+                    (RequestDeleteCoto coto)
                 )
                 model
             , Cmd.none

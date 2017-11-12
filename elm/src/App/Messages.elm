@@ -62,7 +62,7 @@ type Msg
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
-    | ConfirmDeleteCoto
+    | ConfirmDeleteCoto Coto
     | RequestDeleteCoto Coto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
