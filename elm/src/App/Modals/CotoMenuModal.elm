@@ -7,6 +7,7 @@ import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Coto exposing (Coto, CotonomaStats)
 import App.Types.Session exposing (Session)
+import App.Types.Context exposing (Context)
 import App.Messages exposing (Msg(..))
 
 
@@ -28,21 +29,21 @@ isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
 
 
-view : Maybe Session -> Maybe Model -> Html Msg
-view maybeSession maybeModel =
+view : Context -> Maybe Model -> Html Msg
+view context maybeModel =
     (Maybe.map2
-        (\session model -> modalConfig session model)
-        maybeSession
+        (\session model -> modalConfig context session model)
+        context.session
         maybeModel
     )
         |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Session -> Model -> Modal.Config Msg
-modalConfig session model =
+modalConfig : Context -> Session -> Model -> Modal.Config Msg
+modalConfig context session model =
     { closeMessage = CloseModal
     , title = text ""
-    , content = div [] (menuItems session model)
+    , content = div [] (menuItems context session model)
     , buttons = []
     }
 
@@ -52,8 +53,8 @@ checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
 
 
-menuItems : Session -> Model -> List (Html Msg)
-menuItems session model =
+menuItems : Context -> Session -> Model -> List (Html Msg)
+menuItems context session model =
     let
         cotonomaNotDeletable =
             model.cotonomaStats
