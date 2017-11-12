@@ -36,6 +36,17 @@ modalConfig coto model =
                 ]
             , div
                 [ class "menu-item"
+                , onLinkButtonClick (OpenEditorModal coto)
+                ]
+                [ a
+                    [ class "edit", title "Edit" ]
+                    [ materialIcon "edit" Nothing
+                    , span [ class "menu-title" ]
+                        [ text "Edit" ]
+                    ]
+                ]
+            , div
+                [ class "menu-item"
                 , onLinkButtonClick (ConfirmDeleteCoto coto)
                 ]
                 [ a

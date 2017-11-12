@@ -218,6 +218,12 @@ update msg model =
         OpenCotoMenuModal coto ->
             ( openCotoMenuModal coto model, Cmd.none )
 
+        OpenEditorModal coto ->
+            ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+                |> openModal EditorModal
+            , App.Commands.focus "editor-modal-content-input" NoOp
+            )
+
         OpenCotoModal coto ->
             openCoto coto model
 

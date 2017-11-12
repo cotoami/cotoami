@@ -83,7 +83,10 @@ view context model =
 modalConfig : Context -> Model -> Modal.Config AppMsg.Msg
 modalConfig context model =
     { closeMessage = CloseModal
-    , title = text "New Coto"
+    , title =
+        model.coto
+            |> Maybe.map (\_ -> text "Edit Coto")
+            |> Maybe.withDefault (text "New Coto")
     , content =
         div [] [ cotoEditor model ]
     , buttons =
@@ -92,12 +95,11 @@ modalConfig context model =
             , disabled (isBlank model.content || model.requestProcessing)
             , onClick (AppMsg.EditorModalMsg TogglePreview)
             ]
-            [ text
-                (if model.preview then
-                    "Edit"
-                 else
-                    "Preview"
-                )
+            [ (if model.preview then
+                text "Edit"
+               else
+                text "Preview"
+              )
             ]
         , if List.isEmpty context.selection then
             span [] []

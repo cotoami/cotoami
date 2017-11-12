@@ -50,6 +50,7 @@ type Msg
     | OpenProfileModal
     | OpenCotonomaModal
     | OpenCotoMenuModal Coto
+    | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
       --
