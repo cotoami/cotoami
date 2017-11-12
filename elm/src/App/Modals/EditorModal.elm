@@ -101,30 +101,7 @@ modalConfig context model =
                 text "Preview"
               )
             ]
-        , if List.isEmpty context.selection then
-            span [] []
-          else
-            button
-                [ class "button connect"
-                , disabled (isBlank model.content || model.requestProcessing)
-                , onClick (ConfirmPostAndConnect model.content (getSummary model))
-                ]
-                [ faIcon "link" Nothing
-                , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
-                ]
-        , button
-            [ class "button button-primary"
-            , disabled (isBlank model.content || model.requestProcessing)
-            , onClick (AppMsg.EditorModalMsg Post)
-            ]
-            (if model.requestProcessing then
-                [ text "Posting..." ]
-             else
-                [ text "Post"
-                , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
-                ]
-            )
-        ]
+        ] ++ (buttonsForNew context model)
     }
 
 
@@ -157,3 +134,31 @@ cotoEditor model =
                     []
                 ]
         ]
+
+
+buttonsForNew : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNew context model =
+    [ if List.isEmpty context.selection then
+        span [] []
+      else
+        button
+            [ class "button connect"
+            , disabled (isBlank model.content || model.requestProcessing)
+            , onClick (ConfirmPostAndConnect model.content (getSummary model))
+            ]
+            [ faIcon "link" Nothing
+            , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
+            ]
+    , button
+        [ class "button button-primary"
+        , disabled (isBlank model.content || model.requestProcessing)
+        , onClick (AppMsg.EditorModalMsg Post)
+        ]
+        (if model.requestProcessing then
+            [ text "Posting..." ]
+         else
+            [ text "Post"
+            , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
+            ]
+        )
+    ]
