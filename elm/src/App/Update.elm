@@ -359,7 +359,7 @@ update msg model =
                 , Cmd.none
                 )
             else
-                ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+                ( { model | editorModal = App.Modals.EditorModal.editToCotonomatize coto }
                     |> openModal EditorModal
                 , Cmd.none
                 )

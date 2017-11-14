@@ -2,6 +2,7 @@ module App.Modals.EditorModal
     exposing
         ( Model
         , initModel
+        , editToCotonomatize
         , getSummary
         , setCotoSaveError
         , update
@@ -31,6 +32,7 @@ type alias Model =
     , preview : Bool
     , requestProcessing : Bool
     , requestStatus : RequestStatus
+    , editingToCotonomatize : Bool
     }
 
 
@@ -54,7 +56,14 @@ initModel maybeCoto =
     , preview = False
     , requestProcessing = False
     , requestStatus = None
+    , editingToCotonomatize = False
     }
+
+
+editToCotonomatize : Coto -> Model
+editToCotonomatize coto =
+    initModel (Just coto)
+        |> \model -> { model | editingToCotonomatize = True }
 
 
 getSummary : Model -> Maybe String
@@ -170,15 +179,19 @@ cotoEditor : Model -> Html AppMsg.Msg
 cotoEditor model =
     div [ class "coto-editor" ]
         [ div [ class "summary-input" ]
-            [ input
-                [ type_ "text"
-                , class "u-full-width"
-                , placeholder "Summary (optional)"
-                , maxlength App.Types.Coto.summaryMaxlength
-                , value model.summary
-                , onInput (AppMsg.EditorModalMsg << SummaryInput)
-                ]
-                []
+            [ adviceOnCotonomaNameDiv model
+            , if model.editingToCotonomatize then
+                div [] []
+              else
+                input
+                    [ type_ "text"
+                    , class "u-full-width"
+                    , placeholder "Summary (optional)"
+                    , maxlength App.Types.Coto.summaryMaxlength
+                    , value model.summary
+                    , onInput (AppMsg.EditorModalMsg << SummaryInput)
+                    ]
+                    []
             ]
         , if model.preview then
             div [ class "content-preview" ]
@@ -308,3 +321,33 @@ errorDiv model =
 
         _ ->
             div [] []
+
+
+adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
+adviceOnCotonomaNameDiv model =
+    if model.editingToCotonomatize then
+        let
+            contentLength =
+                String.length model.content
+
+            maxlength =
+                App.Types.Coto.cotonomaNameMaxlength
+        in
+            div [ class "advice-on-cotonoma-name" ]
+                [ text
+                    ("A cotonoma name have to be under "
+                        ++ (toString maxlength)
+                        ++ " characters, currently: "
+                    )
+                , span
+                    [ class
+                        (if contentLength > maxlength then
+                            "too-long"
+                         else
+                            "ok"
+                        )
+                    ]
+                    [ text (toString contentLength) ]
+                ]
+    else
+        div [] []
