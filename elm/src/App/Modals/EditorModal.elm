@@ -188,9 +188,11 @@ cotoEditor model =
                 [ textarea
                     [ id "editor-modal-content-input"
                     , value model.content
-                    , autofocus True
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
-                    , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
+                    , model.coto
+                        |> Maybe.map (\_ -> autofocus True)
+                        |> Maybe.withDefault
+                            (onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown))
                     ]
                     []
                 ]
