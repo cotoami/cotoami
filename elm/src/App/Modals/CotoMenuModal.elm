@@ -46,7 +46,14 @@ modalConfig : Context -> Session -> Graph -> Model -> Modal.Config Msg
 modalConfig context session graph model =
     { closeMessage = CloseModal
     , title = text ""
-    , content = div [] (menuItems context session graph model)
+    , content =
+        div []
+            [ menuItemExplore model
+            , menuItemPinUnpin context graph model
+            , menuItemPinUnpinCotonoma session model
+            , menuItemEdit session model
+            , menuItemDelete session model
+            ]
     , buttons = []
     }
 
@@ -56,116 +63,46 @@ checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
 
 
-menuItems : Context -> Session -> Graph -> Model -> List (Html Msg)
-menuItems context session graph model =
-    let
-        cotonomaNotDeletable =
-            model.cotonomaStats
-                |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
-                |> Maybe.withDefault model.coto.asCotonoma
-    in
-        [ div
+menuItemExplore : Model -> Html Msg
+menuItemExplore model =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (OpenTraversal model.coto.id)
+        ]
+        [ a
+            [ class "explore" ]
+            [ faIcon "sitemap" Nothing
+            , span [ class "menu-title" ]
+                [ text "Explore the connections" ]
+            ]
+        ]
+
+
+menuItemPinUnpin : Context -> Graph -> Model -> Html Msg
+menuItemPinUnpin context graph model =
+    if App.Types.Graph.pinned model.coto.id graph then
+        div
             [ class "menu-item"
-            , onLinkButtonClick (OpenTraversal model.coto.id)
+            , onLinkButtonClick (UnpinCoto model.coto.id)
             ]
             [ a
-                [ class "explore" ]
-                [ faIcon "sitemap" Nothing
-                , span [ class "menu-title" ]
-                    [ text "Explore the connections" ]
+                [ class "unpin" ]
+                [ faIcon "thumb-tack" Nothing
+                , faIcon "remove" Nothing
+                , pinOrUnpinMenuTitle context False
                 ]
             ]
-        , if App.Types.Graph.pinned model.coto.id graph then
-            div
-                [ class "menu-item"
-                , onLinkButtonClick (UnpinCoto model.coto.id)
+    else
+        div
+            [ class "menu-item"
+            , onLinkButtonClick (PinCoto model.coto.id)
+            ]
+            [ a
+                [ class "pin" ]
+                [ faIcon "thumb-tack" Nothing
+                , pinOrUnpinMenuTitle context True
                 ]
-                [ a
-                    [ class "unpin" ]
-                    [ faIcon "thumb-tack" Nothing
-                    , faIcon "remove" Nothing
-                    , pinOrUnpinMenuTitle context False
-                    ]
-                ]
-          else
-            div
-                [ class "menu-item"
-                , onLinkButtonClick (PinCoto model.coto.id)
-                ]
-                [ a
-                    [ class "pin" ]
-                    [ faIcon "thumb-tack" Nothing
-                    , pinOrUnpinMenuTitle context True
-                    ]
-                ]
-        , if session.owner then
-            model.coto.cotonomaKey
-                |> Maybe.map
-                    (\cotonomaKey ->
-                        div
-                            [ class "menu-item"
-                            , onLinkButtonClick
-                                (PinOrUnpinCotonoma
-                                    cotonomaKey
-                                    (not model.cotonomaPinned)
-                                )
-                            ]
-                            [ if model.cotonomaPinned then
-                                a
-                                    [ class "unpin-cotonoma" ]
-                                    [ faIcon "thumb-tack" Nothing
-                                    , faIcon "remove" Nothing
-                                    , span [ class "menu-title" ]
-                                        [ text "Unpin from the main nav" ]
-                                    ]
-                              else
-                                a
-                                    [ class "pin-cotonoma" ]
-                                    [ faIcon "thumb-tack" Nothing
-                                    , span [ class "menu-title" ]
-                                        [ text "Pin to the main nav" ]
-                                    ]
-                            ]
-                    )
-                |> Maybe.withDefault (div [] [])
-          else
-            div [] []
-        , if checkWritePermission session model then
-            div
-                [ class "menu-item"
-                , onLinkButtonClick (OpenEditorModal model.coto)
-                ]
-                [ a
-                    [ class "edit" ]
-                    [ materialIcon "edit" Nothing
-                    , span [ class "menu-title" ] [ text "Edit" ]
-                    ]
-                ]
-          else
-            div [] []
-        , if checkWritePermission session model then
-            if cotonomaNotDeletable then
-                div [ class "menu-item disabled" ]
-                    [ span
-                        [ class "delete" ]
-                        [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
-                        ]
-                    ]
-            else
-                div
-                    [ class "menu-item"
-                    , onLinkButtonClick (ConfirmDeleteCoto model.coto)
-                    ]
-                    [ a
-                        [ class "delete" ]
-                        [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
-                        ]
-                    ]
-          else
-            div [] []
-        ]
+            ]
 
 
 pinOrUnpinMenuTitle : Context -> Bool -> Html Msg
@@ -187,3 +124,88 @@ pinOrUnpinMenuTitle context pinOrUnpin =
                     )
                 |> Maybe.withDefault [ text (prefix ++ "My Home") ]
             )
+
+
+menuItemPinUnpinCotonoma : Session -> Model -> Html Msg
+menuItemPinUnpinCotonoma session model =
+    if session.owner then
+        model.coto.cotonomaKey
+            |> Maybe.map
+                (\cotonomaKey ->
+                    div
+                        [ class "menu-item"
+                        , onLinkButtonClick
+                            (PinOrUnpinCotonoma
+                                cotonomaKey
+                                (not model.cotonomaPinned)
+                            )
+                        ]
+                        [ if model.cotonomaPinned then
+                            a
+                                [ class "unpin-cotonoma" ]
+                                [ faIcon "thumb-tack" Nothing
+                                , faIcon "remove" Nothing
+                                , span [ class "menu-title" ]
+                                    [ text "Unpin from the main nav" ]
+                                ]
+                          else
+                            a
+                                [ class "pin-cotonoma" ]
+                                [ faIcon "thumb-tack" Nothing
+                                , span [ class "menu-title" ]
+                                    [ text "Pin to the main nav" ]
+                                ]
+                        ]
+                )
+            |> Maybe.withDefault (div [] [])
+    else
+        div [] []
+
+
+menuItemEdit : Session -> Model -> Html Msg
+menuItemEdit session model =
+    if checkWritePermission session model then
+        div
+            [ class "menu-item"
+            , onLinkButtonClick (OpenEditorModal model.coto)
+            ]
+            [ a
+                [ class "edit" ]
+                [ materialIcon "edit" Nothing
+                , span [ class "menu-title" ] [ text "Edit" ]
+                ]
+            ]
+    else
+        div [] []
+
+
+menuItemDelete : Session -> Model -> Html Msg
+menuItemDelete session model =
+    let
+        cotonomaNotDeletable =
+            model.cotonomaStats
+                |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
+                |> Maybe.withDefault model.coto.asCotonoma
+    in
+        if checkWritePermission session model then
+            if cotonomaNotDeletable then
+                div [ class "menu-item disabled" ]
+                    [ span
+                        [ class "delete" ]
+                        [ materialIcon "delete" Nothing
+                        , span [ class "menu-title" ] [ text "Delete" ]
+                        ]
+                    ]
+            else
+                div
+                    [ class "menu-item"
+                    , onLinkButtonClick (ConfirmDeleteCoto model.coto)
+                    ]
+                    [ a
+                        [ class "delete" ]
+                        [ materialIcon "delete" Nothing
+                        , span [ class "menu-title" ] [ text "Delete" ]
+                        ]
+                    ]
+        else
+            div [] []
