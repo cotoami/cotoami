@@ -118,13 +118,27 @@ update msg model =
 
 view : Context -> Model -> Html AppMsg.Msg
 view context model =
-    modalConfig context model
+    model.coto
+        |> Maybe.map
+            (\coto ->
+                if coto.asCotonoma then
+                    cotonomaEditorConfig context model
+                else
+                    cotoEditorConfig context model
+            )
+        |> Maybe.withDefault (cotoEditorConfig context model)
         |> Just
         |> Modal.view "editor-modal"
 
 
-modalConfig : Context -> Model -> Modal.Config AppMsg.Msg
-modalConfig context model =
+
+--
+-- Coto Editor
+--
+
+
+cotoEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
+cotoEditorConfig context model =
     { closeMessage = CloseModal
     , title =
         model.coto
@@ -182,6 +196,54 @@ cotoEditor model =
                 ]
         , errorDiv model
         ]
+
+
+
+--
+-- Cotonoma Editor
+--
+
+
+cotonomaEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
+cotonomaEditorConfig context model =
+    { closeMessage = CloseModal
+    , title =
+        model.coto
+            |> Maybe.map (\_ -> text "Change Cotonoma Name")
+            |> Maybe.withDefault (text "New Cotonoma")
+    , content =
+        div [] [ cotonomaEditor model ]
+    , buttons =
+        model.coto
+            |> Maybe.map (\_ -> buttonsForEdit model)
+            |> Maybe.withDefault (buttonsForNew context model)
+    }
+
+
+cotonomaEditor : Model -> Html AppMsg.Msg
+cotonomaEditor model =
+    div [ class "cotonoma-editor" ]
+        [ div [ class "cotonoma-editor" ]
+            [ div [ class "name-input" ]
+                [ input
+                    [ type_ "text"
+                    , class "u-full-width"
+                    , placeholder "Cotonoma name"
+                    , maxlength App.Types.Coto.cotonomaNameMaxlength
+                    , value model.content
+                    , onInput (AppMsg.EditorModalMsg << EditorInput)
+                    ]
+                    []
+                ]
+            , errorDiv model
+            ]
+        ]
+
+
+
+--
+-- Partials
+--
 
 
 buttonsForNew : Context -> Model -> List (Html AppMsg.Msg)
