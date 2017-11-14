@@ -208,7 +208,7 @@ openCotoMenuModal coto model =
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto
-        |> App.Modals.CotoModal.initModel (isCotonomaAndPinned coto model)
+        |> App.Modals.CotoModal.initModel
         |> Just
         |> (\modal -> { model | cotoModal = modal })
         |> openModal CotoModal

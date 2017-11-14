@@ -42,7 +42,6 @@ import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
-import App.Modals.CotoModal
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
@@ -378,10 +377,14 @@ update msg model =
             )
 
         Cotonomatized (Err error) ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> \model -> model ! []
+            model.cotoMenuModal
+                |> Maybe.map (\cotoMenuModal -> Just cotoMenuModal.coto)
+                |> Maybe.map App.Modals.EditorModal.initModel
+                |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
+                |> Maybe.map (\editorModal -> { model | editorModal =  editorModal })
+                |> Maybe.map (openModal EditorModal)
+                |> Maybe.withDefault model
+                |> \model -> ( model, Cmd.none )
 
         PinCoto cotoId ->
             (Maybe.map2
@@ -396,13 +399,13 @@ update msg model =
                 model.context.session
                 (App.Model.getCoto cotoId model)
             )
-                |> withDefault (model ! [])
+                |> withDefault ( model, Cmd.none )
 
         CotoPinned (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         CotoPinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConfirmUnpinCoto cotoId ->
             ( confirm
@@ -422,10 +425,10 @@ update msg model =
                   ]
 
         CotoUnpinned (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         CotoUnpinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConfirmConnect cotoId direction ->
             { model
@@ -738,17 +741,6 @@ update msg model =
                     (\( cotonomaModal, subCmd ) ->
                         { model | cotonomaModal = cotonomaModal }
                             ! [ Cmd.map CotonomaModalMsg subCmd ]
-                    )
-                |> withDefault (model ! [])
-
-        CotoModalMsg subMsg ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.update subMsg)
-                |> Maybe.map
-                    (\( cotoModal, maybeConfirmation, cmd ) ->
-                        { model | cotoModal = Just cotoModal }
-                            |> maybeConfirm maybeConfirmation
-                            |> (\model -> ( model, cmd ))
                     )
                 |> withDefault (model ! [])
 
