@@ -381,7 +381,7 @@ update msg model =
                 |> Maybe.map (\cotoMenuModal -> Just cotoMenuModal.coto)
                 |> Maybe.map App.Modals.EditorModal.initModel
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
-                |> Maybe.map (\editorModal -> { model | editorModal =  editorModal })
+                |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
                 |> Maybe.map (openModal EditorModal)
                 |> Maybe.withDefault model
                 |> \model -> ( model, Cmd.none )
