@@ -48,7 +48,8 @@ modalConfig context session graph model =
     , title = text ""
     , content =
         div []
-            [ menuItemExplore model
+            [ menuItemInfo model
+            , menuItemExplore model
             , menuItemPinUnpin context graph model
             , menuItemPinUnpinCotonoma session model
             , menuItemEdit session model
@@ -64,6 +65,20 @@ checkWritePermission session model =
     (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
 
 
+menuItemInfo : Model -> Html Msg
+menuItemInfo model =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (OpenCotoModal model.coto)
+        ]
+        [ a
+            [ class "info" ]
+            [ materialIcon "info" Nothing
+            , span [ class "menu-title" ] [ text "Info" ]
+            ]
+        ]
+
+
 menuItemExplore : Model -> Html Msg
 menuItemExplore model =
     div
@@ -73,8 +88,7 @@ menuItemExplore model =
         [ a
             [ class "explore" ]
             [ faIcon "sitemap" Nothing
-            , span [ class "menu-title" ]
-                [ text "Explore the connections" ]
+            , span [ class "menu-title" ] [ text "Explore the connections" ]
             ]
         ]
 

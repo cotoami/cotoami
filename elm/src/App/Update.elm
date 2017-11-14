@@ -610,11 +610,6 @@ update msg model =
                     , Cmd.none
                     )
 
-        OpenPost post ->
-            toCoto post
-                |> Maybe.map (\coto -> openCoto coto model)
-                |> Maybe.withDefault ( model, Cmd.none )
-
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
                 Ok decodedPayload ->

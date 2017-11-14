@@ -102,7 +102,6 @@ type Msg
     | PostedAndConnect Int (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)
-    | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post
       --

@@ -91,8 +91,7 @@ type alias BodyModel =
 
 
 type alias BodyConfig =
-    { openCoto : Maybe Msg
-    , openCotoMenu : Maybe Msg
+    { openCotoMenu : Maybe Msg
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
@@ -123,8 +122,7 @@ defaultBodyConfig context maybeInbound coto =
                             Nothing
                     )
     in
-        { openCoto = Just (OpenCotoModal coto)
-        , openCotoMenu = Just (OpenCotoMenuModal coto)
+        { openCotoMenu = Just (OpenCotoMenuModal coto)
         , selectCoto = Just SelectCoto
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
@@ -246,16 +244,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             , onLinkButtonClick (pinCoto cotoId)
                             ]
                             [ faIcon "thumb-tack" Nothing ]
-                )
-      , config.openCoto
-            |> Maybe.map
-                (\openCoto ->
-                    a
-                        [ class "tool-button open-coto"
-                        , title "Edit"
-                        , onLinkButtonClick openCoto
-                        ]
-                        [ materialIcon "edit" Nothing ]
                 )
       , config.deleteConnection
             |> Maybe.map
