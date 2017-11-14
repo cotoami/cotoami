@@ -3,6 +3,7 @@ module App.Modals.EditorModal
         ( Model
         , initModel
         , getSummary
+        , setCotoSaveError
         , update
         , view
         )
@@ -10,6 +11,7 @@ module App.Modals.EditorModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown)
@@ -17,6 +19,7 @@ import Util.HtmlUtil exposing (faIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto)
 import App.Types.Context exposing (Context)
+import App.Server.Coto
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 
@@ -27,7 +30,14 @@ type alias Model =
     , content : String
     , preview : Bool
     , requestProcessing : Bool
+    , requestStatus : RequestStatus
     }
+
+
+type RequestStatus
+    = None
+    | Conflict
+    | Rejected
 
 
 initModel : Maybe Coto -> Model
@@ -43,6 +53,7 @@ initModel maybeCoto =
             |> Maybe.withDefault ""
     , preview = False
     , requestProcessing = False
+    , requestStatus = None
     }
 
 
@@ -52,6 +63,25 @@ getSummary model =
         Nothing
     else
         Just model.summary
+
+
+setCotoSaveError : Http.Error -> Model -> Model
+setCotoSaveError error model =
+    (case error of
+        BadStatus response ->
+            if response.status.code == 409 then
+                { model | requestStatus = Conflict }
+            else
+                { model | requestStatus = Rejected }
+
+        _ ->
+            { model | requestStatus = Rejected }
+    )
+        |> \model ->
+            { model
+                | preview = False
+                , requestProcessing = False
+            }
 
 
 update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -73,7 +103,17 @@ update msg model =
             ( { model | requestProcessing = True }, Cmd.none )
 
         Save ->
-            ( model, Cmd.none )
+            ( { model | requestProcessing = True }
+            , model.coto
+                |> Maybe.map
+                    (\coto ->
+                        App.Server.Coto.updateContent
+                            coto.id
+                            model.summary
+                            model.content
+                    )
+                |> Maybe.withDefault Cmd.none
+            )
 
 
 view : Context -> Model -> Html AppMsg.Msg
@@ -140,6 +180,7 @@ cotoEditor model =
                     ]
                     []
                 ]
+        , errorDiv model
         ]
 
 
@@ -176,6 +217,7 @@ buttonsForEdit model =
     [ button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)
+        , onClick (AppMsg.EditorModalMsg Save)
         ]
         (if model.requestProcessing then
             [ text "Saving..." ]
@@ -183,3 +225,22 @@ buttonsForEdit model =
             [ text "Save" ]
         )
     ]
+
+
+errorDiv : Model -> Html AppMsg.Msg
+errorDiv model =
+    case model.requestStatus of
+        Conflict ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "You already have a cotonoma with this name." ]
+                ]
+
+        Rejected ->
+            div [ class "error" ]
+                [ span [ class "message" ]
+                    [ text "An unexpected error has occurred." ]
+                ]
+
+        _ ->
+            div [] []

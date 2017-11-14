@@ -329,12 +329,11 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
-        ContentUpdated (Ok coto) ->
-            (model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+        CotoUpdated (Ok coto) ->
+            (model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
+                |> clearModals
             )
                 ! if coto.asCotonoma then
                     [ fetchCotonomas
@@ -343,11 +342,11 @@ update msg model =
                   else
                     []
 
-        ContentUpdated (Err error) ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> \model -> model ! []
+        CotoUpdated (Err error) ->
+            model.editorModal
+                |> App.Modals.EditorModal.setCotoSaveError error
+                |> (\editorModal -> { model | editorModal = editorModal })
+                |> \model -> ( model, Cmd.none )
 
         Cotonomatized (Ok coto) ->
             ( model.cotoModal
