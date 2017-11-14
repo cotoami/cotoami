@@ -52,6 +52,7 @@ modalConfig context session graph model =
             , menuItemPinUnpin context graph model
             , menuItemPinUnpinCotonoma session model
             , menuItemEdit session model
+            , menuItemCotonomatize session model
             , menuItemDelete session model
             ]
     , buttons = []
@@ -173,6 +174,24 @@ menuItemEdit session model =
                 [ class "edit" ]
                 [ materialIcon "edit" Nothing
                 , span [ class "menu-title" ] [ text "Edit" ]
+                ]
+            ]
+    else
+        div [] []
+
+
+menuItemCotonomatize : Session -> Model -> Html Msg
+menuItemCotonomatize session model =
+    if (not model.coto.asCotonoma) && (checkWritePermission session model) then
+        div
+            [ class "menu-item"
+            , onLinkButtonClick (ConfirmCotonomatize model.coto)
+            ]
+            [ a
+                [ class "cotonomatize" ]
+                [ faIcon "users" Nothing
+                , span [ class "menu-title" ]
+                    [ text "Convert into a Cotonoma" ]
                 ]
             ]
     else

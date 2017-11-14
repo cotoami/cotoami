@@ -348,11 +348,29 @@ update msg model =
                 |> (\editorModal -> { model | editorModal = editorModal })
                 |> \model -> ( model, Cmd.none )
 
+        ConfirmCotonomatize coto ->
+            if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
+                ( confirm
+                    (Confirmation
+                        ("You are about to convert this coto into a cotonoma: " ++ coto.content)
+                        (Cotonomatize coto.id)
+                    )
+                    model
+                , Cmd.none
+                )
+            else
+                ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+                    |> openModal EditorModal
+                , Cmd.none
+                )
+
+        Cotonomatize cotoId ->
+            ( model, App.Server.Coto.cotonomatize cotoId )
+
         Cotonomatized (Ok coto) ->
-            ( model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setCotonomatized coto)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+            ( model
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
+                |> clearModals
             , Cmd.batch
                 [ fetchCotonomas
                 , fetchSubCotonomas model.context.cotonoma
