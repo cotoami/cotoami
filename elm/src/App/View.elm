@@ -17,6 +17,7 @@ import App.Views.CotoSelection
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
+import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.EditorModal
@@ -241,6 +242,9 @@ modals model =
 
                 InviteModal ->
                     App.Modals.InviteModal.view model.inviteModal
+
+                CotoMenuModal ->
+                    App.Modals.CotoMenuModal.view model.context model.graph model.cotoMenuModal
 
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal

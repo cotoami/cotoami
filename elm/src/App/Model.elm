@@ -17,6 +17,7 @@ import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotonomaModal
+import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
 
@@ -27,6 +28,7 @@ type Modal
     | EditorModal
     | ProfileModal
     | InviteModal
+    | CotoMenuModal
     | CotoModal
     | CotonomaModal
     | ConnectModal
@@ -48,6 +50,7 @@ type alias Model =
     , modals : List Modal
     , confirmation : Confirmation
     , editorModal : App.Modals.EditorModal.Model
+    , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
@@ -78,6 +81,7 @@ initModel seed route =
     , modals = []
     , confirmation = defaultConfirmation
     , editorModal = App.Modals.EditorModal.initModel Nothing
+    , cotoMenuModal = Nothing
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
@@ -192,10 +196,19 @@ maybeConfirm maybeConfirmation model =
         |> Maybe.withDefault model
 
 
+openCotoMenuModal : Coto -> Model -> Model
+openCotoMenuModal coto model =
+    coto
+        |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
+        |> Just
+        |> (\modal -> { model | cotoMenuModal = modal })
+        |> openModal CotoMenuModal
+
+
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto
-        |> App.Modals.CotoModal.initModel (isCotonomaAndPinned coto model)
+        |> App.Modals.CotoModal.initModel
         |> Just
         |> (\modal -> { model | cotoModal = modal })
         |> openModal CotoModal

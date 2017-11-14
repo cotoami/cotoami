@@ -42,7 +42,6 @@ import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
-import App.Modals.CotoModal
 import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
@@ -171,9 +170,9 @@ update msg model =
             model ! []
 
         CotonomaStatsFetched (Ok stats) ->
-            model.cotoModal
-                |> Maybe.map (\cotoModal -> { cotoModal | cotonomaStats = Just stats })
-                |> Maybe.map (\cotoModal -> { model | cotoModal = Just cotoModal })
+            model.cotoMenuModal
+                |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
+                |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
                 |> Maybe.withDefault model
                 |> \model -> ( model, Cmd.none )
 
@@ -203,28 +202,41 @@ update msg model =
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
-                |> \model -> openModal App.Model.SigninModal model ! []
+                |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
             openNewEditor model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> \model -> openModal App.Model.InviteModal model ! []
+                |> \model -> ( openModal App.Model.InviteModal model, Cmd.none )
 
         OpenProfileModal ->
-            openModal App.Model.ProfileModal model ! []
+            ( openModal App.Model.ProfileModal model, Cmd.none )
+
+        OpenCotoMenuModal coto ->
+            ( openCotoMenuModal coto model
+            , coto.cotonomaKey
+                |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+                |> Maybe.withDefault Cmd.none
+            )
+
+        OpenEditorModal coto ->
+            ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+                |> openModal EditorModal
+            , App.Commands.focus "editor-modal-content-input" NoOp
+            )
 
         OpenCotoModal coto ->
             openCoto coto model
 
         OpenCotonomaModal ->
             { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
-                |> \model -> openModal App.Model.CotonomaModal model ! []
+                |> \model -> ( openModal App.Model.CotonomaModal model, Cmd.none )
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> \model -> openModal App.Model.ImportModal model ! []
+                |> \model -> ( openModal App.Model.ImportModal model, Cmd.none )
 
         --
         -- Coto
@@ -261,6 +273,7 @@ update msg model =
         OpenTraversal cotoId ->
             model
                 |> openTraversal cotoId
+                |> clearModals
                 |> \model ->
                     ( model
                     , Cmd.batch
@@ -277,14 +290,11 @@ update msg model =
             , Cmd.none
             )
 
-        ConfirmDeleteCoto ->
+        ConfirmDeleteCoto coto ->
             ( confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
-                    (model.cotoModal
-                        |> Maybe.map (\cotoModal -> RequestDeleteCoto cotoModal.coto)
-                        |> Maybe.withDefault App.Messages.NoOp
-                    )
+                    (RequestDeleteCoto coto)
                 )
                 model
             , Cmd.none
@@ -318,12 +328,11 @@ update msg model =
         CotoDeleted _ ->
             model ! []
 
-        ContentUpdated (Ok coto) ->
-            (model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdated coto)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+        CotoUpdated (Ok coto) ->
+            (model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
+                |> clearModals
             )
                 ! if coto.asCotonoma then
                     [ fetchCotonomas
@@ -332,17 +341,35 @@ update msg model =
                   else
                     []
 
-        ContentUpdated (Err error) ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> \model -> model ! []
+        CotoUpdated (Err error) ->
+            model.editorModal
+                |> App.Modals.EditorModal.setCotoSaveError error
+                |> (\editorModal -> { model | editorModal = editorModal })
+                |> \model -> ( model, Cmd.none )
+
+        ConfirmCotonomatize coto ->
+            if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
+                ( confirm
+                    (Confirmation
+                        ("You are about to convert this coto into a cotonoma: " ++ coto.content)
+                        (Cotonomatize coto.id)
+                    )
+                    model
+                , Cmd.none
+                )
+            else
+                ( { model | editorModal = App.Modals.EditorModal.editToCotonomatize coto }
+                    |> openModal EditorModal
+                , Cmd.none
+                )
+
+        Cotonomatize cotoId ->
+            ( model, App.Server.Coto.cotonomatize cotoId )
 
         Cotonomatized (Ok coto) ->
-            ( model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setCotonomatized coto)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
+            ( model
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
+                |> clearModals
             , Cmd.batch
                 [ fetchCotonomas
                 , fetchSubCotonomas model.context.cotonoma
@@ -350,10 +377,14 @@ update msg model =
             )
 
         Cotonomatized (Err error) ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.setContentUpdateError error)
-                |> (\maybeCotoModal -> { model | cotoModal = maybeCotoModal })
-                |> \model -> model ! []
+            model.cotoMenuModal
+                |> Maybe.map (\cotoMenuModal -> Just cotoMenuModal.coto)
+                |> Maybe.map App.Modals.EditorModal.initModel
+                |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
+                |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
+                |> Maybe.map (openModal EditorModal)
+                |> Maybe.withDefault model
+                |> \model -> ( model, Cmd.none )
 
         PinCoto cotoId ->
             (Maybe.map2
@@ -368,13 +399,13 @@ update msg model =
                 model.context.session
                 (App.Model.getCoto cotoId model)
             )
-                |> withDefault (model ! [])
+                |> withDefault ( model, Cmd.none )
 
         CotoPinned (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         CotoPinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConfirmUnpinCoto cotoId ->
             ( confirm
@@ -394,10 +425,10 @@ update msg model =
                   ]
 
         CotoUnpinned (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         CotoUnpinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConfirmConnect cotoId direction ->
             { model
@@ -459,26 +490,24 @@ update msg model =
                   ]
 
         ConnectionDeleted (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConnectionDeleted (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         --
         -- Cotonoma
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            model.cotoModal
-                |> Maybe.map (\modal -> { modal | waitingToPinOrUnpinCotonoma = True })
-                |> (\modal -> { model | cotoModal = modal })
-                |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
+            ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ({ model | cotonomasLoading = True } |> closeModal)
-                ! [ fetchCotonomas ]
+            ( { model | cotonomasLoading = True } |> closeModal
+            , fetchCotonomas
+            )
 
         CotonomaPinnedOrUnpinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         --
         -- Timeline
@@ -580,14 +609,6 @@ update msg model =
                       }
                     , Cmd.none
                     )
-
-        OpenPost post ->
-            case toCoto post of
-                Nothing ->
-                    model ! []
-
-                Just coto ->
-                    openCoto coto model
 
         PostPushed payload ->
             case Decode.decodeValue (decodePayload "post" decodePost) payload of
@@ -715,17 +736,6 @@ update msg model =
                     (\( cotonomaModal, subCmd ) ->
                         { model | cotonomaModal = cotonomaModal }
                             ! [ Cmd.map CotonomaModalMsg subCmd ]
-                    )
-                |> withDefault (model ! [])
-
-        CotoModalMsg subMsg ->
-            model.cotoModal
-                |> Maybe.map (App.Modals.CotoModal.update subMsg)
-                |> Maybe.map
-                    (\( cotoModal, maybeConfirmation, cmd ) ->
-                        { model | cotoModal = Just cotoModal }
-                            |> maybeConfirm maybeConfirmation
-                            |> (\model -> ( model, cmd ))
                     )
                 |> withDefault (model ! [])
 

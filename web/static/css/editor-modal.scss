@@ -31,6 +31,19 @@
         }
       }
     }
+
+    div.advice-on-cotonoma-name {
+      margin-bottom: 6px;
+
+      .too-long {
+        color: #f00;
+        font-weight: bold;
+      }
+      .ok {
+        color: #008000;
+        font-weight: bold;
+      }
+    }
   }
 
   div.content-preview {

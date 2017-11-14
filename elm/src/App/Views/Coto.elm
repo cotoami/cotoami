@@ -91,7 +91,7 @@ type alias BodyModel =
 
 
 type alias BodyConfig =
-    { openCoto : Maybe Msg
+    { openCotoMenu : Maybe Msg
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
@@ -122,7 +122,7 @@ defaultBodyConfig context maybeInbound coto =
                             Nothing
                     )
     in
-        { openCoto = Just (OpenCotoModal coto)
+        { openCotoMenu = Just (OpenCotoMenuModal coto)
         , selectCoto = Just SelectCoto
         , pinCoto = Just PinCoto
         , openTraversal = Just OpenTraversal
@@ -245,26 +245,6 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             ]
                             [ faIcon "thumb-tack" Nothing ]
                 )
-      , config.openTraversal
-            |> Maybe.map
-                (\openTraversal ->
-                    a
-                        [ class "tool-button traverse-coto"
-                        , title "Explore"
-                        , onLinkButtonClick (openTraversal cotoId)
-                        ]
-                        [ faIcon "sitemap" Nothing ]
-                )
-      , config.openCoto
-            |> Maybe.map
-                (\openCoto ->
-                    a
-                        [ class "tool-button open-coto"
-                        , title "Edit"
-                        , onLinkButtonClick openCoto
-                        ]
-                        [ materialIcon "edit" Nothing ]
-                )
       , config.deleteConnection
             |> Maybe.map
                 (\deleteConnection ->
@@ -294,6 +274,16 @@ toolButtonsSpan context graph config asCotonoma cotoId =
                             )
                             Nothing
                         ]
+                )
+      , config.openCotoMenu
+            |> Maybe.map
+                (\openCotoMenu ->
+                    a
+                        [ class "tool-button open-coto-menu"
+                        , title "More"
+                        , onLinkButtonClick openCotoMenu
+                        ]
+                        [ materialIcon "more_horiz" Nothing ]
                 )
       ]
         |> List.filterMap identity

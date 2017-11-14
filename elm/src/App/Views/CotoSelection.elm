@@ -133,7 +133,7 @@ bodyDiv context graph elementId coto =
         context
         graph
         elementId
-        { openCoto = Nothing
+        { openCotoMenu = Nothing
         , selectCoto = Nothing
         , pinCoto = Nothing
         , openTraversal = Nothing

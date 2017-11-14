@@ -14,7 +14,6 @@ import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.CotonomaModalMsg
-import App.Modals.CotoModalMsg
 import App.Modals.ImportModalMsg
 
 
@@ -49,6 +48,8 @@ type Msg
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotonomaModal
+    | OpenCotoMenuModal Coto
+    | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
       --
@@ -61,11 +62,13 @@ type Msg
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
-    | ConfirmDeleteCoto
+    | ConfirmDeleteCoto Coto
     | RequestDeleteCoto Coto
     | DeleteCoto Coto
     | CotoDeleted (Result Http.Error String)
-    | ContentUpdated (Result Http.Error Coto)
+    | CotoUpdated (Result Http.Error Coto)
+    | ConfirmCotonomatize Coto
+    | Cotonomatize CotoId
     | Cotonomatized (Result Http.Error Coto)
     | PinCoto CotoId
     | CotoPinned (Result Http.Error String)
@@ -99,7 +102,6 @@ type Msg
     | PostedAndConnect Int (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)
-    | OpenPost Post
     | PostPushed Value
     | CotonomaPushed Post
       --
@@ -122,5 +124,4 @@ type Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
-    | CotoModalMsg App.Modals.CotoModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg

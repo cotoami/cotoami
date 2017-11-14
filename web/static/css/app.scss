@@ -29,8 +29,6 @@ html, body, #elm-container, #app {
   transition: visibility 0s 1s, opacity 1s linear;
 }
 
-$tool-button-color: #3572A5 !default;
-
 .tool-button {
   color: $tool-button-color;
   opacity: 0.6;

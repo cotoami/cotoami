@@ -26,13 +26,9 @@ view modalId maybeConfig =
             ]
         ]
         [ div [ class "modal-inner" ]
-            [ (case maybeConfig of
-                Nothing ->
-                    div [ class "modal-content" ] []
-
-                Just config ->
-                    modalContent config
-              )
+            [ maybeConfig
+                |> Maybe.map (\config -> modalContent config)
+                |> Maybe.withDefault (div [ class "modal-content" ] [])
             ]
         ]
 

@@ -7,5 +7,6 @@ type Msg
     = EditorInput String
     | SummaryInput String
     | TogglePreview
-    | Post
     | EditorKeyDown KeyCode
+    | Post
+    | Save
