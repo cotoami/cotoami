@@ -198,10 +198,11 @@ maybeConfirm maybeConfirmation model =
 
 openCotoMenuModal : Coto -> Model -> Model
 openCotoMenuModal coto model =
-    openModal CotoMenuModal
-        { model
-            | cotoMenuModal = Just (App.Modals.CotoMenuModal.initModel coto)
-        }
+    coto
+        |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
+        |> Just
+        |> (\modal -> { model | cotoMenuModal = modal })
+        |> openModal CotoMenuModal
 
 
 openCoto : Coto -> Model -> Model

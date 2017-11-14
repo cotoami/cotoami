@@ -15,13 +15,15 @@ import App.Messages exposing (Msg(..))
 type alias Model =
     { coto : Coto
     , cotonomaStats : Maybe CotonomaStats
+    , cotonomaPinned : Bool
     }
 
 
-initModel : Coto -> Model
-initModel coto =
+initModel : Bool -> Coto -> Model
+initModel cotonomaPinned coto =
     { coto = coto
     , cotonomaStats = Nothing
+    , cotonomaPinned = cotonomaPinned
     }
 
 
@@ -96,6 +98,38 @@ menuItems context session graph model =
                     , pinOrUnpinMenuTitle context True
                     ]
                 ]
+        , if session.owner then
+            model.coto.cotonomaKey
+                |> Maybe.map
+                    (\cotonomaKey ->
+                        div
+                            [ class "menu-item"
+                            , onLinkButtonClick
+                                (PinOrUnpinCotonoma
+                                    cotonomaKey
+                                    (not model.cotonomaPinned)
+                                )
+                            ]
+                            [ if model.cotonomaPinned then
+                                a
+                                    [ class "unpin-cotonoma" ]
+                                    [ faIcon "thumb-tack" Nothing
+                                    , faIcon "remove" Nothing
+                                    , span [ class "menu-title" ]
+                                        [ text "Unpin from the main nav" ]
+                                    ]
+                              else
+                                a
+                                    [ class "pin-cotonoma" ]
+                                    [ faIcon "thumb-tack" Nothing
+                                    , span [ class "menu-title" ]
+                                        [ text "Pin to the main nav" ]
+                                    ]
+                            ]
+                    )
+                |> Maybe.withDefault (div [] [])
+          else
+            div [] []
         , if checkWritePermission session model then
             div
                 [ class "menu-item"

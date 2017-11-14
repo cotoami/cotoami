@@ -469,26 +469,24 @@ update msg model =
                   ]
 
         ConnectionDeleted (Ok _) ->
-            model ! []
+            ( model, Cmd.none )
 
         ConnectionDeleted (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         --
         -- Cotonoma
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            model.cotoModal
-                |> Maybe.map (\modal -> { modal | waitingToPinOrUnpinCotonoma = True })
-                |> (\modal -> { model | cotoModal = modal })
-                |> (\model -> model ! [ pinOrUnpinCotonoma pinOrUnpin cotonomaKey ])
+            ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ({ model | cotonomasLoading = True } |> closeModal)
-                ! [ fetchCotonomas ]
+            ( { model | cotonomasLoading = True } |> closeModal
+            , fetchCotonomas
+            )
 
         CotonomaPinnedOrUnpinned (Err _) ->
-            model ! []
+            ( model, Cmd.none )
 
         --
         -- Timeline
