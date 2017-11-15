@@ -351,7 +351,11 @@ update msg model =
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
                 ( confirm
                     (Confirmation
-                        ("You are about to promote this coto to a Cotonoma: " ++ coto.content)
+                        ("You are about to promote this coto to a Cotonoma "
+                            ++ "to discuss with others about: '"
+                            ++ coto.content
+                            ++ "'"
+                        )
                         (Cotonomatize coto.id)
                     )
                     model
