@@ -205,7 +205,7 @@ menuItemCotonomatize session model =
                 [ class "cotonomatize" ]
                 [ faIcon "users" Nothing
                 , span [ class "menu-title" ]
-                    [ text "Convert into a Cotonoma" ]
+                    [ text "Promote to a Cotonoma" ]
                 ]
             ]
     else
