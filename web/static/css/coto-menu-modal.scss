@@ -1,6 +1,12 @@
 @import "variables.scss";
 
 #coto-menu-modal {
+  div.modal-content {
+    @media (max-width: 400px) {
+      padding: 1em 1em;
+    }
+  }
+
   div.modal-content-inner {
     padding-top: 20px;
   }
