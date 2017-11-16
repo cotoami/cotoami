@@ -300,20 +300,29 @@ cotonomaEditorConfig context model =
 cotonomaEditor : Model -> Html AppMsg.Msg
 cotonomaEditor model =
     div [ class "cotonoma-editor" ]
-        [ div [ class "cotonoma-editor" ]
-            [ div [ class "name-input" ]
-                [ input
-                    [ type_ "text"
-                    , class "u-full-width"
-                    , placeholder "Cotonoma name"
-                    , maxlength App.Types.Coto.cotonomaNameMaxlength
-                    , value model.content
-                    , onInput (AppMsg.EditorModalMsg << EditorInput)
+        [ case model.mode of
+            NewCotonoma ->
+                div [ class "cotonoma-help" ]
+                    [ text
+                        ("A Cotonoma is a dedicated place where you can keep Cotos or"
+                            ++ " discuss with others about a topic described by its name."
+                        )
                     ]
-                    []
+
+            _ ->
+                div [] []
+        , div [ class "name-input" ]
+            [ input
+                [ type_ "text"
+                , class "u-full-width"
+                , placeholder "Cotonoma name"
+                , maxlength App.Types.Coto.cotonomaNameMaxlength
+                , value model.content
+                , onInput (AppMsg.EditorModalMsg << EditorInput)
                 ]
-            , errorDiv model
+                []
             ]
+        , errorDiv model
         ]
 
 
