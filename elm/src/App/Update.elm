@@ -222,7 +222,11 @@ update msg model =
             )
 
         OpenEditorModal coto ->
-            ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+            ( { model
+                | editorModal =
+                    App.Modals.EditorModal.initModel
+                        (App.Modals.EditorModal.Edit coto)
+              }
                 |> openModal EditorModal
             , App.Commands.focus "editor-modal-content-input" NoOp
             )
@@ -382,7 +386,7 @@ update msg model =
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
-                |> Maybe.map (\cotoMenuModal -> Just cotoMenuModal.coto)
+                |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.Edit cotoMenuModal.coto)
                 |> Maybe.map App.Modals.EditorModal.initModel
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
                 |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
@@ -756,7 +760,10 @@ changeLocationToHome model =
 
 openNewEditor : Model -> ( Model, Cmd Msg )
 openNewEditor model =
-    ( { model | editorModal = App.Modals.EditorModal.initModel Nothing }
+    ( { model
+        | editorModal =
+            App.Modals.EditorModal.initModel App.Modals.EditorModal.NewCoto
+      }
         |> openModal EditorModal
     , App.Commands.focus "editor-modal-content-input" NoOp
     )
