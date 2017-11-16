@@ -46,6 +46,9 @@ defmodule Cotoami.CotonomaController do
       broadcast_post(cotonoma_coto, posted_in.key, clientId)
     end
     render(conn, CotoView, "created.json", coto: cotonoma_coto)
+  rescue
+    e in Ecto.ConstraintError ->
+      send_resp_by_constraint_error(conn, e)
   end
 
   def pin(conn, %{"key" => key}, %{owner: true}) do

@@ -33,7 +33,7 @@ import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
-import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
+import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
@@ -42,7 +42,6 @@ import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
-import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
 
@@ -222,17 +221,17 @@ update msg model =
             )
 
         OpenEditorModal coto ->
-            ( { model | editorModal = App.Modals.EditorModal.initModel (Just coto) }
+            ( { model
+                | editorModal =
+                    App.Modals.EditorModal.initModel
+                        (App.Modals.EditorModal.Edit coto)
+              }
                 |> openModal EditorModal
             , App.Commands.focus "editor-modal-content-input" NoOp
             )
 
         OpenCotoModal coto ->
             openCoto coto model
-
-        OpenCotonomaModal ->
-            { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
-                |> \model -> ( openModal App.Model.CotonomaModal model, Cmd.none )
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
@@ -382,7 +381,7 @@ update msg model =
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
-                |> Maybe.map (\cotoMenuModal -> Just cotoMenuModal.coto)
+                |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.Edit cotoMenuModal.coto)
                 |> Maybe.map App.Modals.EditorModal.initModel
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
                 |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
@@ -567,32 +566,6 @@ update msg model =
         PostedAndConnect postId (Err _) ->
             ( model, Cmd.none )
 
-        PostCotonoma ->
-            let
-                ( timeline, _ ) =
-                    App.Types.Timeline.post
-                        model.context
-                        True
-                        Nothing
-                        model.cotonomaModal.name
-                        model.timeline
-
-                cotonomaModal =
-                    model.cotonomaModal
-                        |> \modal -> { modal | requestProcessing = True }
-            in
-                { model
-                    | timeline = timeline
-                    , cotonomaModal = cotonomaModal
-                }
-                    ! [ App.Commands.scrollTimelineToBottom NoOp
-                      , postCotonoma
-                            model.context.clientId
-                            model.context.cotonoma
-                            timeline.postIdCounter
-                            model.cotonomaModal.name
-                      ]
-
         CotonomaPosted postId (Ok response) ->
             ({ model
                 | cotonomasLoading = True
@@ -605,10 +578,11 @@ update msg model =
                   ]
 
         CotonomaPosted postId (Err error) ->
-            App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
-                |> \( modal, postId ) ->
+            model.editorModal
+                |> App.Modals.EditorModal.setCotoSaveError error
+                |> \editorModal ->
                     ( { model
-                        | cotonomaModal = modal
+                        | editorModal = editorModal
                         , timeline = deletePendingPost postId model.timeline
                       }
                     , Cmd.none
@@ -709,6 +683,28 @@ update msg model =
                                     model.editorModal.content
                                     model
 
+                            App.Modals.EditorModalMsg.PostCotonoma ->
+                                let
+                                    cotonomaName =
+                                        model.editorModal.content
+
+                                    ( timeline, _ ) =
+                                        App.Types.Timeline.post
+                                            model.context
+                                            True
+                                            Nothing
+                                            cotonomaName
+                                            model.timeline
+                                in
+                                    { model | timeline = timeline }
+                                        ! [ App.Commands.scrollTimelineToBottom NoOp
+                                          , App.Server.Post.postCotonoma
+                                                model.context.clientId
+                                                model.context.cotonoma
+                                                timeline.postIdCounter
+                                                cotonomaName
+                                          ]
+
                             App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
                                 handleEditorShortcut
                                     keyCode
@@ -726,23 +722,6 @@ update msg model =
                     { model | inviteModal = inviteModal }
                         ! [ Cmd.map InviteModalMsg subCmd ]
 
-        CotonomaModalMsg subMsg ->
-            model.context.session
-                |> Maybe.map
-                    (\session ->
-                        App.Modals.CotonomaModal.update
-                            model.context
-                            session
-                            subMsg
-                            model.cotonomaModal
-                    )
-                |> Maybe.map
-                    (\( cotonomaModal, subCmd ) ->
-                        { model | cotonomaModal = cotonomaModal }
-                            ! [ Cmd.map CotonomaModalMsg subCmd ]
-                    )
-                |> withDefault (model ! [])
-
         ImportModalMsg subMsg ->
             App.Modals.ImportModal.update subMsg model.importModal
                 |> \( importModal, subCmd ) ->
@@ -756,7 +735,10 @@ changeLocationToHome model =
 
 openNewEditor : Model -> ( Model, Cmd Msg )
 openNewEditor model =
-    ( { model | editorModal = App.Modals.EditorModal.initModel Nothing }
+    ( { model
+        | editorModal =
+            App.Modals.EditorModal.initModel App.Modals.EditorModal.NewCoto
+      }
         |> openModal EditorModal
     , App.Commands.focus "editor-modal-content-input" NoOp
     )

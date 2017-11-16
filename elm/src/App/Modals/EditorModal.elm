@@ -1,6 +1,8 @@
 module App.Modals.EditorModal
     exposing
         ( Model
+        , Mode(..)
+        , defaultModel
         , initModel
         , editToCotonomatize
         , getSummary
@@ -15,7 +17,7 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
-import Util.EventUtil exposing (onKeyDown)
+import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto)
@@ -26,7 +28,7 @@ import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 
 
 type alias Model =
-    { coto : Maybe Coto
+    { mode : Mode
     , summary : String
     , content : String
     , preview : Bool
@@ -36,23 +38,23 @@ type alias Model =
     }
 
 
+type Mode
+    = NewCoto
+    | NewCotonoma
+    | Edit Coto
+
+
 type RequestStatus
     = None
     | Conflict
     | Rejected
 
 
-initModel : Maybe Coto -> Model
-initModel maybeCoto =
-    { coto = maybeCoto
-    , summary =
-        maybeCoto
-            |> Maybe.map (\coto -> Maybe.withDefault "" coto.summary)
-            |> Maybe.withDefault ""
-    , content =
-        maybeCoto
-            |> Maybe.map (\coto -> coto.content)
-            |> Maybe.withDefault ""
+defaultModel : Model
+defaultModel =
+    { mode = NewCoto
+    , summary = ""
+    , content = ""
     , preview = False
     , requestProcessing = False
     , requestStatus = None
@@ -60,9 +62,30 @@ initModel maybeCoto =
     }
 
 
+initModel : Mode -> Model
+initModel mode =
+    { defaultModel
+        | mode = mode
+        , summary =
+            case mode of
+                Edit coto ->
+                    Maybe.withDefault "" coto.summary
+
+                _ ->
+                    ""
+        , content =
+            case mode of
+                Edit coto ->
+                    coto.content
+
+                _ ->
+                    ""
+    }
+
+
 editToCotonomatize : Coto -> Model
 editToCotonomatize coto =
-    initModel (Just coto)
+    initModel (Edit coto)
         |> \model -> { model | editingToCotonomatize = True }
 
 
@@ -111,31 +134,44 @@ update msg model =
         Post ->
             ( { model | requestProcessing = True }, Cmd.none )
 
+        PostCotonoma ->
+            ( { model | requestProcessing = True }, Cmd.none )
+
         Save ->
             ( { model | requestProcessing = True }
-            , model.coto
-                |> Maybe.map
-                    (\coto ->
-                        App.Server.Coto.updateContent
-                            coto.id
-                            model.summary
-                            model.content
-                    )
-                |> Maybe.withDefault Cmd.none
+            , case model.mode of
+                Edit coto ->
+                    App.Server.Coto.updateContent
+                        coto.id
+                        model.summary
+                        model.content
+
+                _ ->
+                    Cmd.none
             )
+
+        SetNewCotoMode ->
+            ( { model | mode = NewCoto }, Cmd.none )
+
+        SetNewCotonomaMode ->
+            ( { model | mode = NewCotonoma }, Cmd.none )
 
 
 view : Context -> Model -> Html AppMsg.Msg
 view context model =
-    model.coto
-        |> Maybe.map
-            (\coto ->
-                if coto.asCotonoma then
-                    cotonomaEditorConfig context model
-                else
-                    cotoEditorConfig context model
-            )
-        |> Maybe.withDefault (cotoEditorConfig context model)
+    (case model.mode of
+        Edit coto ->
+            if coto.asCotonoma then
+                cotonomaEditorConfig context model
+            else
+                cotoEditorConfig context model
+
+        NewCoto ->
+            cotoEditorConfig context model
+
+        NewCotonoma ->
+            cotonomaEditorConfig context model
+    )
         |> Just
         |> Modal.view "editor-modal"
 
@@ -150,9 +186,19 @@ cotoEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
 cotoEditorConfig context model =
     { closeMessage = CloseModal
     , title =
-        model.coto
-            |> Maybe.map (\_ -> text "Edit Coto")
-            |> Maybe.withDefault (text "New Coto")
+        case model.mode of
+            Edit coto ->
+                text "Edit Coto"
+
+            _ ->
+                div []
+                    [ text "New Coto or "
+                    , a
+                        [ class "switch-to"
+                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
+                        ]
+                        [ text "Cotonoma" ]
+                    ]
     , content =
         div [] [ cotoEditor model ]
     , buttons =
@@ -168,9 +214,12 @@ cotoEditorConfig context model =
               )
             ]
         ]
-            ++ (model.coto
-                    |> Maybe.map (\_ -> buttonsForEdit model)
-                    |> Maybe.withDefault (buttonsForNew context model)
+            ++ (case model.mode of
+                    Edit coto ->
+                        buttonsForEdit model
+
+                    _ ->
+                        buttonsForNewCoto context model
                )
     }
 
@@ -202,10 +251,12 @@ cotoEditor model =
                     [ id "editor-modal-content-input"
                     , value model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
-                    , model.coto
-                        |> Maybe.map (\_ -> autofocus True)
-                        |> Maybe.withDefault
-                            (onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown))
+                    , case model.mode of
+                        NewCoto ->
+                            onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
+
+                        _ ->
+                            autofocus True
                     ]
                     []
                 ]
@@ -223,35 +274,58 @@ cotonomaEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
 cotonomaEditorConfig context model =
     { closeMessage = CloseModal
     , title =
-        model.coto
-            |> Maybe.map (\_ -> text "Change Cotonoma Name")
-            |> Maybe.withDefault (text "New Cotonoma")
+        case model.mode of
+            Edit coto ->
+                text "Change Cotonoma Name"
+
+            _ ->
+                div []
+                    [ text "New "
+                    , a
+                        [ class "switch-to"
+                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
+                        ]
+                        [ text "Coto" ]
+                    , text " or Cotonoma"
+                    ]
     , content =
         div [] [ cotonomaEditor model ]
     , buttons =
-        model.coto
-            |> Maybe.map (\_ -> buttonsForEdit model)
-            |> Maybe.withDefault (buttonsForNew context model)
+        case model.mode of
+            Edit coto ->
+                buttonsForEdit model
+
+            _ ->
+                buttonsForNewCotonoma context model
     }
 
 
 cotonomaEditor : Model -> Html AppMsg.Msg
 cotonomaEditor model =
     div [ class "cotonoma-editor" ]
-        [ div [ class "cotonoma-editor" ]
-            [ div [ class "name-input" ]
-                [ input
-                    [ type_ "text"
-                    , class "u-full-width"
-                    , placeholder "Cotonoma name"
-                    , maxlength App.Types.Coto.cotonomaNameMaxlength
-                    , value model.content
-                    , onInput (AppMsg.EditorModalMsg << EditorInput)
+        [ case model.mode of
+            NewCotonoma ->
+                div [ class "cotonoma-help" ]
+                    [ text
+                        ("A Cotonoma is a dedicated place where you can keep Cotos or"
+                            ++ " discuss with others about a topic described by its name."
+                        )
                     ]
-                    []
+
+            _ ->
+                div [] []
+        , div [ class "name-input" ]
+            [ input
+                [ type_ "text"
+                , class "u-full-width"
+                , placeholder "Cotonoma name"
+                , maxlength App.Types.Coto.cotonomaNameMaxlength
+                , value model.content
+                , onInput (AppMsg.EditorModalMsg << EditorInput)
                 ]
-            , errorDiv model
+                []
             ]
+        , errorDiv model
         ]
 
 
@@ -261,8 +335,8 @@ cotonomaEditor model =
 --
 
 
-buttonsForNew : Context -> Model -> List (Html AppMsg.Msg)
-buttonsForNew context model =
+buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCoto context model =
     [ if List.isEmpty context.selection then
         span [] []
       else
@@ -285,6 +359,21 @@ buttonsForNew context model =
             [ text "Post"
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
+        )
+    ]
+
+
+buttonsForNewCotonoma : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCotonoma context model =
+    [ button
+        [ class "button button-primary"
+        , disabled (isBlank model.content || model.requestProcessing)
+        , onClick (AppMsg.EditorModalMsg PostCotonoma)
+        ]
+        (if model.requestProcessing then
+            [ text "Posting..." ]
+         else
+            [ text "Post" ]
         )
     ]
 

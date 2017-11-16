@@ -16,7 +16,6 @@ import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
-import App.Modals.CotonomaModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
@@ -30,7 +29,6 @@ type Modal
     | InviteModal
     | CotoMenuModal
     | CotoModal
-    | CotonomaModal
     | ConnectModal
     | ImportModal
 
@@ -63,7 +61,6 @@ type alias Model =
     , cotoSelectionTitle : String
     , connectingSubject : Maybe ConnectingSubject
     , connectingDirection : Direction
-    , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
@@ -80,7 +77,7 @@ initModel seed route =
     , presences = Dict.empty
     , modals = []
     , confirmation = defaultConfirmation
-    , editorModal = App.Modals.EditorModal.initModel Nothing
+    , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
@@ -94,7 +91,6 @@ initModel seed route =
     , cotoSelectionTitle = ""
     , connectingSubject = Nothing
     , connectingDirection = App.Types.Graph.Outbound
-    , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
     , traversals = defaultTraversals
     , importModal = App.Modals.ImportModal.defaultModel

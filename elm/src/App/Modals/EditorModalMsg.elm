@@ -9,4 +9,7 @@ type Msg
     | TogglePreview
     | EditorKeyDown KeyCode
     | Post
+    | PostCotonoma
     | Save
+    | SetNewCotoMode
+    | SetNewCotonomaMode

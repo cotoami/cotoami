@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
 import App.Model exposing (Model, isNavigationEmpty)
-import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, OpenCotonomaModal, NavigationToggle))
+import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, NavigationToggle))
 
 
 view : Model -> Html Msg
