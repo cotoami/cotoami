@@ -583,8 +583,9 @@ update msg model =
                   ]
 
         CotonomaPosted postId (Err error) ->
-            App.Modals.EditorModal.setCotonomaPostError error model.editorModal
-                |> \( editorModal, postId ) ->
+            model.editorModal
+                |> App.Modals.EditorModal.setCotoSaveError error
+                |> \editorModal ->
                     ( { model
                         | editorModal = editorModal
                         , timeline = deletePendingPost postId model.timeline

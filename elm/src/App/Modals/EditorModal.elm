@@ -7,7 +7,6 @@ module App.Modals.EditorModal
         , editToCotonomatize
         , getSummary
         , setCotoSaveError
-        , setCotonomaPostError
         , update
         , view
         )
@@ -115,33 +114,6 @@ setCotoSaveError error model =
                 | preview = False
                 , requestProcessing = False
             }
-
-
-setCotonomaPostError : Http.Error -> Model -> ( Model, Int )
-setCotonomaPostError error model =
-    let
-        ( requestStatus, postId ) =
-            case error of
-                BadStatus response ->
-                    let
-                        postId =
-                            String.toInt response.body
-                                |> Result.withDefault 0
-                    in
-                        if response.status.code == 409 then
-                            ( Conflict, postId )
-                        else
-                            ( Rejected, postId )
-
-                _ ->
-                    ( Rejected, 0 )
-    in
-        ( { model
-            | requestProcessing = False
-            , requestStatus = requestStatus
-          }
-        , postId
-        )
 
 
 update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
