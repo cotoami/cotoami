@@ -9,6 +9,12 @@
     margin-bottom: 1rem;
   }
 
+  a.switch-to {
+    color: #ccc;
+    text-decoration: underline;
+    text-decoration-color: #eee;
+  }
+
   div.coto-editor {
     height: 50vh;
     display: flex;

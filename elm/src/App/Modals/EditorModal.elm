@@ -17,7 +17,7 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
-import Util.EventUtil exposing (onKeyDown)
+import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto)
@@ -147,6 +147,12 @@ update msg model =
                     Cmd.none
             )
 
+        SetNewCotoMode ->
+            ( { model | mode = NewCoto }, Cmd.none )
+
+        SetNewCotonomaMode ->
+            ( { model | mode = NewCotonoma }, Cmd.none )
+
 
 view : Context -> Model -> Html AppMsg.Msg
 view context model =
@@ -182,7 +188,14 @@ cotoEditorConfig context model =
                 text "Edit Coto"
 
             _ ->
-                text "New Coto"
+                div []
+                    [ text "New Coto or "
+                    , a
+                        [ class "switch-to"
+                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
+                        ]
+                        [ text "Cotonoma" ]
+                    ]
     , content =
         div [] [ cotoEditor model ]
     , buttons =
@@ -263,7 +276,15 @@ cotonomaEditorConfig context model =
                 text "Change Cotonoma Name"
 
             _ ->
-                text "New Cotonoma"
+                div []
+                    [ text "New "
+                    , a
+                        [ class "switch-to"
+                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
+                        ]
+                        [ text "Coto" ]
+                    , text " or Cotonoma"
+                    ]
     , content =
         div [] [ cotonomaEditor model ]
     , buttons =

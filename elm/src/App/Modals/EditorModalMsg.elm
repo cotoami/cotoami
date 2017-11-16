@@ -10,3 +10,5 @@ type Msg
     | EditorKeyDown KeyCode
     | Post
     | Save
+    | SetNewCotoMode
+    | SetNewCotonomaMode
