@@ -42,7 +42,6 @@ import App.Modals.SigninModal exposing (setSignupEnabled)
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
-import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
 
@@ -233,10 +232,6 @@ update msg model =
 
         OpenCotoModal coto ->
             openCoto coto model
-
-        OpenCotonomaModal ->
-            { model | cotonomaModal = App.Modals.CotonomaModal.defaultModel }
-                |> \model -> ( openModal App.Model.CotonomaModal model, Cmd.none )
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
@@ -726,23 +721,6 @@ update msg model =
                 |> \( inviteModal, subCmd ) ->
                     { model | inviteModal = inviteModal }
                         ! [ Cmd.map InviteModalMsg subCmd ]
-
-        CotonomaModalMsg subMsg ->
-            model.context.session
-                |> Maybe.map
-                    (\session ->
-                        App.Modals.CotonomaModal.update
-                            model.context
-                            session
-                            subMsg
-                            model.cotonomaModal
-                    )
-                |> Maybe.map
-                    (\( cotonomaModal, subCmd ) ->
-                        { model | cotonomaModal = cotonomaModal }
-                            ! [ Cmd.map CotonomaModalMsg subCmd ]
-                    )
-                |> withDefault (model ! [])
 
         ImportModalMsg subMsg ->
             App.Modals.ImportModal.update subMsg model.importModal

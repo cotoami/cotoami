@@ -22,7 +22,6 @@ import App.Modals.CotoModal
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.ConfirmModal
-import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
 
@@ -248,9 +247,6 @@ modals model =
 
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal
-
-                CotonomaModal ->
-                    App.Modals.CotonomaModal.view model.context model.cotonomaModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model

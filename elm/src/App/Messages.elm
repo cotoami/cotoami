@@ -13,7 +13,6 @@ import App.Types.Traversal exposing (Traverse)
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
-import App.Modals.CotonomaModalMsg
 import App.Modals.ImportModalMsg
 
 
@@ -47,7 +46,6 @@ type Msg
     | OpenNewEditorModal
     | OpenInviteModal
     | OpenProfileModal
-    | OpenCotonomaModal
     | OpenCotoMenuModal Coto
     | OpenEditorModal Coto
     | OpenCotoModal Coto
@@ -122,5 +120,4 @@ type Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
-    | CotonomaModalMsg App.Modals.CotonomaModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
