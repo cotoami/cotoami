@@ -1,0 +1,83 @@
+@import 'variables';
+
+#editor-modal {
+  .modal-content {
+    width: 80vw;
+  }
+
+  input {
+    margin-bottom: 1rem;
+  }
+
+  a.switch-to {
+    color: #ccc;
+    text-decoration: underline;
+    text-decoration-color: #eee;
+  }
+
+  div.coto-editor {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+
+    div.content-input {
+      flex: 1;
+      display: flex;
+      padding-bottom: 6px;
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+
+        @media (#{$narrow-viewport}) {
+          // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+          font-size: 16px;
+        }
+      }
+    }
+
+    div.advice-on-cotonoma-name {
+      margin-bottom: 6px;
+
+      .too-long {
+        color: #f00;
+        font-weight: bold;
+      }
+      .ok {
+        color: #008000;
+        font-weight: bold;
+      }
+    }
+  }
+
+  div.content-preview {
+    height: 50vh;
+    padding-left: 6px;
+    padding-right: 6px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div.cotonoma-help {
+    padding-bottom: 10px;
+  }
+
+  span.shortcut-help {
+    margin-left: 4px;
+    text-transform: none;
+    opacity: 0.7;
+  }
+
+  button.connect {
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #fff;
+
+    i {
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
+}

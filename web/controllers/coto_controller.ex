@@ -20,15 +20,16 @@ defmodule Cotoami.CotoController do
     %{
       "clientId" => clientId,
       "coto" => %{
-        "cotonoma_id" => cotonoma_id,
-        "content" => content
+        "content" => content,
+        "summary" => summary,
+        "cotonoma_id" => cotonoma_id
       }
     },
     amishi
   ) do
     {:ok, {coto, posted_in}} =
       Repo.transaction(fn ->
-        case CotoService.create!(content, amishi.id, cotonoma_id) do
+        case CotoService.create!(amishi, content, summary, cotonoma_id) do
           {coto, nil} -> {coto, nil}
           {coto, posted_in} ->
             {coto, increment_timeline_revision(posted_in)}

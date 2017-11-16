@@ -12,6 +12,11 @@ html, body, #elm-container, #app {
 
 .elm-overlay {
   z-index: 200;
+
+  .elm-mini-controls {
+    left: 6px;
+    right: auto;
+  }
 }
 
 .hidden {
@@ -23,8 +28,6 @@ html, body, #elm-container, #app {
   opacity: 0;
   transition: visibility 0s 1s, opacity 1s linear;
 }
-
-$tool-button-color: #3572A5 !default;
 
 .tool-button {
   color: $tool-button-color;
@@ -45,14 +48,25 @@ $tool-button-color: #3572A5 !default;
 #app {
   position: relative;
 
-  a.info-button {
+  a.new-coto-button {
     z-index: 10;
     position: absolute;
     bottom: 6px;
-    right: 10px;
+    right: 20px;
 
     i.material-icons {
       font-size: 32px;
+    }
+
+    span.shortcut {
+      vertical-align: 10px;
+      font-size: 90%;
+      font-weight: bold;
+      opacity: .6;
+
+      @media (#{$narrow-viewport}) {
+        display: none;
+      }
     }
   }
 }
@@ -194,6 +208,7 @@ div.main-traversal {
   }
 
   #main-nav {
+    display: block !important;
     position: relative;
     top: auto;
     width: 230px;
@@ -201,10 +216,6 @@ div.main-traversal {
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
     padding: 0;
     animation-name: none;
-
-    &.notEmpty {
-      display: block;
-    }
 
     #navigation-content {
       position: absolute;
@@ -214,9 +225,9 @@ div.main-traversal {
       right: 0;
       padding: 0;
       padding-top: 10px;
-      padding-left: 10px;
       max-height: none;
 
+      div.home-nav,
       div.owner,
       div.cotonomas {
         font-size: 90%;
@@ -234,6 +245,7 @@ div.main-traversal {
     div.main-column {
       display: flex;
       min-width: 500px;
+      max-width: 740px;
     }
   }
 

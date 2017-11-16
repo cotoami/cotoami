@@ -8,7 +8,7 @@ import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
-import Util.EventUtil exposing (onKeyDown)
+import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation)
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -31,7 +31,7 @@ view context graph timeline =
 postEditor : Session -> Context -> Timeline -> Html Msg
 postEditor session context model =
     div [ id "new-coto" ]
-        [ div [ class "toolbar", hidden (not model.editingNew) ]
+        [ div [ class "toolbar", hidden (not model.editorOpen) ]
             [ span [ class "user session" ]
                 [ img [ class "avatar", src session.avatarUrl ] []
                 , span [ class "name" ] [ text session.displayName ]
@@ -44,7 +44,11 @@ postEditor session context model =
                         [ button
                             [ class "button connect"
                             , disabled (isBlank model.newContent)
-                            , onMouseDown App.Messages.ConfirmPostAndConnect
+                            , onMouseDown
+                                (App.Messages.ConfirmPostAndConnect
+                                    model.newContent
+                                    Nothing
+                                )
                             ]
                             [ faIcon "link" Nothing
                             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
@@ -62,12 +66,12 @@ postEditor session context model =
             ]
         , textarea
             [ class "coto"
-            , placeholder "Write your idea in Markdown"
+            , placeholder "Write your Coto in Markdown"
             , value model.newContent
             , onFocus EditorFocus
-            , onBlur EditorBlur
             , onInput EditorInput
             , onKeyDown EditorKeyDown
+            , onClickWithoutPropagation NoOp
             ]
             []
         ]
@@ -135,7 +139,7 @@ getKey post =
 
 timelineClass : Timeline -> String
 timelineClass model =
-    if model.editingNew then
+    if model.editorOpen then
         "editing"
     else
         ""

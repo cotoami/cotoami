@@ -17,10 +17,11 @@ import App.Views.CotoSelection
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
+import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.SigninModal
+import App.Modals.EditorModal
 import App.Modals.ConfirmModal
-import App.Modals.CotonomaModal
 import App.Modals.ImportModal
 
 
@@ -47,6 +48,7 @@ view model =
                 [ ( "cotonomas-loading", model.cotonomasLoading )
                 , ( activeViewOnMobile ++ "-view-on-mobile", True )
                 ]
+            , onClick AppClick
             ]
             [ App.Views.AppHeader.view model
             , div [ id "app-body" ]
@@ -60,13 +62,14 @@ view model =
                 ]
             , App.Views.CotoSelection.statusBar model
             , a
-                [ class "tool-button info-button"
-                , title "News and Feedback"
-                , href "https://twitter.com/cotoami"
-                , target "_blank"
-                , hidden (model.timeline.editingNew)
+                [ class "tool-button new-coto-button"
+                , title "New Coto"
+                , hidden (model.timeline.editorOpen)
+                , onClick OpenNewEditorModal
                 ]
-                [ materialIcon "info" Nothing ]
+                [ materialIcon "create" Nothing
+                , span [ class "shortcut" ] [ text "(Press N key)" ]
+                ]
             , div [] (modals model)
             ]
 
@@ -230,17 +233,20 @@ modals model =
                 SigninModal ->
                     App.Modals.SigninModal.view model.signinModal
 
+                EditorModal ->
+                    App.Modals.EditorModal.view model.context model.editorModal
+
                 ProfileModal ->
                     App.Modals.ProfileModal.view model.context.session
 
                 InviteModal ->
                     App.Modals.InviteModal.view model.inviteModal
 
+                CotoMenuModal ->
+                    App.Modals.CotoMenuModal.view model.context model.graph model.cotoMenuModal
+
                 CotoModal ->
                     App.Modals.CotoModal.view model.context.session model.cotoModal
-
-                CotonomaModal ->
-                    App.Modals.CotonomaModal.view model.context model.cotonomaModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model

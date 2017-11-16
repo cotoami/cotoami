@@ -1,0 +1,75 @@
+@import "variables.scss";
+
+#coto-menu-modal {
+  div.modal-content {
+    @media (max-width: 400px) {
+      padding: 1em 1em;
+    }
+  }
+
+  div.modal-content-inner {
+    padding-top: 20px;
+  }
+
+  .modal-buttons-seperator {
+    display: none;
+  }
+
+  div.menu-item {
+    margin-bottom: 8px;
+    padding: 6px;
+    padding-right: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    &.disabled {
+      opacity: .3;
+    }
+
+    a {
+      color: $tool-button-color;
+    }
+
+    i {
+      vertical-align: middle;
+      margin-right: 6px;
+
+      &.fa {
+        font-size: 20px;
+        margin-left: 3px;
+      }
+
+      &.fa-thumb-tack {
+        font-size: 22px;
+        margin-left: 6px;
+        margin-right: 9px;
+      }
+
+      &.fa-users {
+        font-size: 18px;
+        margin-right: 8px;
+      }
+
+      &.fa-remove {
+        opacity: .6;
+        font-size: 12px;
+        margin-left: -12px;
+        margin-top: -16px;
+        margin-right: 3px;
+      }
+    }
+
+    span.menu-title {
+      opacity: 0.6;
+      font-weight: bold;
+    }
+
+    span.cotonoma {
+      color: #888;
+      font-size: 90%;
+    }
+  }
+}

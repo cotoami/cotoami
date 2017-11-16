@@ -14,8 +14,9 @@ import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
 import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
+import App.Modals.EditorModal
 import App.Modals.InviteModal
-import App.Modals.CotonomaModal
+import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
 
@@ -23,17 +24,18 @@ import App.Modals.ImportModal
 type Modal
     = ConfirmModal
     | SigninModal
+    | EditorModal
     | ProfileModal
     | InviteModal
+    | CotoMenuModal
     | CotoModal
-    | CotonomaModal
     | ConnectModal
     | ImportModal
 
 
 type ConnectingSubject
     = Coto Coto
-    | NewPost String
+    | NewPost String (Maybe String)
 
 
 type alias Model =
@@ -45,6 +47,8 @@ type alias Model =
     , presences : Presences
     , modals : List Modal
     , confirmation : Confirmation
+    , editorModal : App.Modals.EditorModal.Model
+    , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
@@ -57,7 +61,6 @@ type alias Model =
     , cotoSelectionTitle : String
     , connectingSubject : Maybe ConnectingSubject
     , connectingDirection : Direction
-    , cotonomaModal : App.Modals.CotonomaModal.Model
     , graph : Graph
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
@@ -74,6 +77,8 @@ initModel seed route =
     , presences = Dict.empty
     , modals = []
     , confirmation = defaultConfirmation
+    , editorModal = App.Modals.EditorModal.defaultModel
+    , cotoMenuModal = Nothing
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.defaultModel
     , inviteModal = App.Modals.InviteModal.defaultModel
@@ -86,7 +91,6 @@ initModel seed route =
     , cotoSelectionTitle = ""
     , connectingSubject = Nothing
     , connectingDirection = App.Types.Graph.Outbound
-    , cotonomaModal = App.Modals.CotonomaModal.defaultModel
     , graph = defaultGraph
     , traversals = defaultTraversals
     , importModal = App.Modals.ImportModal.defaultModel
@@ -188,19 +192,28 @@ maybeConfirm maybeConfirmation model =
         |> Maybe.withDefault model
 
 
+openCotoMenuModal : Coto -> Model -> Model
+openCotoMenuModal coto model =
+    coto
+        |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
+        |> Just
+        |> (\modal -> { model | cotoMenuModal = modal })
+        |> openModal CotoMenuModal
+
+
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto
-        |> App.Modals.CotoModal.initModel (isCotonomaAndPinned coto model)
+        |> App.Modals.CotoModal.initModel
         |> Just
         |> (\modal -> { model | cotoModal = modal })
         |> openModal CotoModal
 
 
-confirmPostAndConnect : Model -> Model
-confirmPostAndConnect model =
+confirmPostAndConnect : Maybe String -> String -> Model -> Model
+confirmPostAndConnect summary content model =
     { model
-        | connectingSubject = Just (NewPost model.timeline.newContent)
+        | connectingSubject = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
         |> \model -> openModal ConnectModal model

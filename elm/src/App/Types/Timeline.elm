@@ -9,7 +9,7 @@ import App.Types.Session
 
 
 type alias Timeline =
-    { editingNew : Bool
+    { editorOpen : Bool
     , newContent : String
     , postIdCounter : Int
     , posts : List Post
@@ -19,7 +19,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { editingNew = False
+    { editorOpen = False
     , newContent = ""
     , postIdCounter = 0
     , posts = []
@@ -32,9 +32,9 @@ isEmpty timeline =
     List.isEmpty timeline.posts
 
 
-setEditingNew : Bool -> Timeline -> Timeline
-setEditingNew editingNew timeline =
-    { timeline | editingNew = editingNew }
+openOrCloseEditor : Bool -> Timeline -> Timeline
+openOrCloseEditor open timeline =
+    { timeline | editorOpen = open }
 
 
 setPosts : List Post -> Timeline -> Timeline
@@ -132,8 +132,8 @@ setBeingDeleted coto timeline =
         timeline
 
 
-postContent : Context -> Bool -> String -> Timeline -> ( Timeline, Post )
-postContent context asCotonoma content timeline =
+post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
+post context asCotonoma summary content timeline =
     let
         postId =
             timeline.postIdCounter + 1
@@ -141,6 +141,7 @@ postContent context asCotonoma content timeline =
         { defaultPost
             | postId = Just postId
             , content = content
+            , summary = summary
             , amishi = Maybe.map App.Types.Session.toAmishi context.session
             , asCotonoma = asCotonoma
             , postedIn = context.cotonoma

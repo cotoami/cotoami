@@ -22,8 +22,9 @@ defmodule Cotoami.Coto do
 
   def changeset_to_insert(struct, params \\ %{}) do
     struct
-    |> cast(params, [:posted_in_id, :amishi_id, :content, :as_cotonoma])
-    |> validate_required([:amishi_id, :content])
+    |> cast(params, [:content, :summary, :as_cotonoma, :posted_in_id, :amishi_id])
+    |> validate_required([:content, :amishi_id])
+    |> validate_length(:summary, max: @summary_max_length)
   end
 
   def changeset_to_update_content(struct, params \\ %{}) do

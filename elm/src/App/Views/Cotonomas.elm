@@ -32,6 +32,11 @@ cotonomaDiv context graph listTitle cotonoma =
     let
         elementId =
             listTitle ++ cotonoma.cotoId
+
+        inCotonoma =
+            context.cotonoma
+                |> Maybe.map (\current -> current.id == cotonoma.id)
+                |> Maybe.withDefault False
     in
         div
             [ classList
@@ -39,11 +44,7 @@ cotonomaDiv context graph listTitle cotonoma =
                 , ( "element-focus", Just elementId == context.elementFocus )
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
                 , ( "selected", isSelected (Just cotonoma.cotoId) context )
-                , ( "in"
-                  , context.cotonoma
-                        |> Maybe.map (\current -> current.id == cotonoma.id)
-                        |> Maybe.withDefault False
-                  )
+                , ( "in", inCotonoma )
                 , ( "not-active", not (App.Types.Coto.revisedBefore cotonoma) )
                 ]
             , onClickWithoutPropagation (CotoClick elementId cotonoma.cotoId)
@@ -51,11 +52,14 @@ cotonomaDiv context graph listTitle cotonoma =
             , onMouseLeave (CotoMouseLeave elementId cotonoma.cotoId)
             ]
             [ div [ class "cotonoma-link" ]
-                [ App.Views.Coto.cotonomaLink
-                    CotonomaClick
-                    cotonoma.owner
-                    cotonoma.key
-                    cotonoma.name
+                [ if inCotonoma then
+                    App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma.name
+                  else
+                    App.Views.Coto.cotonomaLink
+                        CotonomaClick
+                        cotonoma.owner
+                        cotonoma.key
+                        cotonoma.name
                 ]
             , div [ class "touch-space-to-open-tools" ] []
             , App.Views.Coto.toolButtonsSpan

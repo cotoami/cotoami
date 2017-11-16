@@ -1,6 +1,36 @@
 @import 'variables';
 
 #navigation-content {
+  div.home-nav {
+    padding-left: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+
+    &.in {
+      background-color: #f8f8f8;
+      border: 2px solid #f8f8f8;
+    }
+
+    span.home {
+      opacity: 0.5;
+    }
+
+    i {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
+  }
+
+  div.cotonomas-nav {
+    @media (#{$wide-viewport}) {
+      padding-left: 10px;
+    }
+  }
+
   div.navigation-title {
     margin-bottom: 4px;
     color: #ccc;
@@ -46,6 +76,10 @@
     &.in {
       background-color: #f8f8f8;
       border: 2px solid #f8f8f8;
+
+      span.cotonoma-name {
+        opacity: 0.5;
+      }
     }
 
     &.coto-focus {
@@ -62,6 +96,7 @@
 
     div.cotonoma-link {
       flex: 1;
+      padding-right: 4px;
 
       img.avatar {
         width: 20px;
