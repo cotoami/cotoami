@@ -7,6 +7,7 @@ module App.Modals.EditorModal
         , editToCotonomatize
         , getSummary
         , setCotoSaveError
+        , setCotonomaPostError
         , update
         , view
         )
@@ -116,6 +117,33 @@ setCotoSaveError error model =
             }
 
 
+setCotonomaPostError : Http.Error -> Model -> ( Model, Int )
+setCotonomaPostError error model =
+    let
+        ( requestStatus, postId ) =
+            case error of
+                BadStatus response ->
+                    let
+                        postId =
+                            String.toInt response.body
+                                |> Result.withDefault 0
+                    in
+                        if response.status.code == 409 then
+                            ( Conflict, postId )
+                        else
+                            ( Rejected, postId )
+
+                _ ->
+                    ( Rejected, 0 )
+    in
+        ( { model
+            | requestProcessing = False
+            , requestStatus = requestStatus
+          }
+        , postId
+        )
+
+
 update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
@@ -132,6 +160,9 @@ update msg model =
             ( model, Cmd.none )
 
         Post ->
+            ( { model | requestProcessing = True }, Cmd.none )
+
+        PostCotonoma ->
             ( { model | requestProcessing = True }, Cmd.none )
 
         Save ->
@@ -216,7 +247,7 @@ cotoEditorConfig context model =
                         buttonsForEdit model
 
                     _ ->
-                        buttonsForNew context model
+                        buttonsForNewCoto context model
                )
     }
 
@@ -293,7 +324,7 @@ cotonomaEditorConfig context model =
                 buttonsForEdit model
 
             _ ->
-                buttonsForNew context model
+                buttonsForNewCotonoma context model
     }
 
 
@@ -332,8 +363,8 @@ cotonomaEditor model =
 --
 
 
-buttonsForNew : Context -> Model -> List (Html AppMsg.Msg)
-buttonsForNew context model =
+buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCoto context model =
     [ if List.isEmpty context.selection then
         span [] []
       else
@@ -356,6 +387,21 @@ buttonsForNew context model =
             [ text "Post"
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
+        )
+    ]
+
+
+buttonsForNewCotonoma : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCotonoma context model =
+    [ button
+        [ class "button button-primary"
+        , disabled (isBlank model.content || model.requestProcessing)
+        , onClick (AppMsg.EditorModalMsg PostCotonoma)
+        ]
+        (if model.requestProcessing then
+            [ text "Posting..." ]
+         else
+            [ text "Post" ]
         )
     ]
 

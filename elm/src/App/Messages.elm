@@ -100,7 +100,6 @@ type Msg
     | ConfirmPostAndConnect String (Maybe String)
     | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
-    | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)
     | PostPushed Value
     | CotonomaPushed Post

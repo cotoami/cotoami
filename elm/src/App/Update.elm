@@ -33,7 +33,7 @@ import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
-import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost, postCotonoma)
+import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
 import App.Server.Coto exposing (deleteCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
@@ -571,32 +571,6 @@ update msg model =
         PostedAndConnect postId (Err _) ->
             ( model, Cmd.none )
 
-        PostCotonoma ->
-            let
-                ( timeline, _ ) =
-                    App.Types.Timeline.post
-                        model.context
-                        True
-                        Nothing
-                        model.cotonomaModal.name
-                        model.timeline
-
-                cotonomaModal =
-                    model.cotonomaModal
-                        |> \modal -> { modal | requestProcessing = True }
-            in
-                { model
-                    | timeline = timeline
-                    , cotonomaModal = cotonomaModal
-                }
-                    ! [ App.Commands.scrollTimelineToBottom NoOp
-                      , postCotonoma
-                            model.context.clientId
-                            model.context.cotonoma
-                            timeline.postIdCounter
-                            model.cotonomaModal.name
-                      ]
-
         CotonomaPosted postId (Ok response) ->
             ({ model
                 | cotonomasLoading = True
@@ -609,10 +583,10 @@ update msg model =
                   ]
 
         CotonomaPosted postId (Err error) ->
-            App.Modals.CotonomaModal.updateRequestStatus error model.cotonomaModal
-                |> \( modal, postId ) ->
+            App.Modals.EditorModal.setCotonomaPostError error model.editorModal
+                |> \( editorModal, postId ) ->
                     ( { model
-                        | cotonomaModal = modal
+                        | editorModal = editorModal
                         , timeline = deletePendingPost postId model.timeline
                       }
                     , Cmd.none
@@ -712,6 +686,28 @@ update msg model =
                                     (App.Modals.EditorModal.getSummary model.editorModal)
                                     model.editorModal.content
                                     model
+
+                            App.Modals.EditorModalMsg.PostCotonoma ->
+                                let
+                                    cotonomaName =
+                                        model.editorModal.content
+
+                                    ( timeline, _ ) =
+                                        App.Types.Timeline.post
+                                            model.context
+                                            True
+                                            Nothing
+                                            cotonomaName
+                                            model.timeline
+                                in
+                                    { model | timeline = timeline }
+                                        ! [ App.Commands.scrollTimelineToBottom NoOp
+                                          , App.Server.Post.postCotonoma
+                                                model.context.clientId
+                                                model.context.cotonoma
+                                                timeline.postIdCounter
+                                                cotonomaName
+                                          ]
 
                             App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
                                 handleEditorShortcut
