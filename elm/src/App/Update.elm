@@ -56,7 +56,11 @@ update msg model =
                 |> (\model ->
                         if keyCode == escape.keyCode then
                             ( closeModal model, Cmd.none )
-                        else if (keyCode == n.keyCode) && (List.isEmpty model.modals) then
+                        else if
+                            (keyCode == n.keyCode)
+                                && (List.isEmpty model.modals)
+                                && (not model.timeline.editorOpen)
+                        then
                             openNewEditor model
                         else
                             ( model, Cmd.none )
