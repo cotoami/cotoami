@@ -11,7 +11,6 @@ import Util.EventUtil exposing (onLoad)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, toCoto)
-import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
 import App.Messages exposing (..)
 import App.Markdown exposing (extractTextFromMarkdown)
@@ -52,7 +51,7 @@ view context graph post =
                 , if post.asCotonoma then
                     div [] []
                   else
-                    authorDiv context.session post
+                    authorDiv context post
                 , bodyDiv context graph elementId post
                 , footerDiv post
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
@@ -92,19 +91,19 @@ parentsDiv graph post =
                 )
 
 
-authorDiv : Maybe Session -> Post -> Html Msg
-authorDiv maybeSession post =
+authorDiv : Context -> Post -> Html Msg
+authorDiv context post =
     (Maybe.map2
         (\session author ->
-            if author.id == session.id then
-                span [] []
-            else
+            if (isJust context.cotonoma) || (author.id /= session.id) then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
                     ]
+            else
+                span [] []
         )
-        maybeSession
+        context.session
         post.amishi
     )
         |> Maybe.withDefault (span [] [])
