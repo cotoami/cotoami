@@ -8,9 +8,14 @@ import App.Types.Context exposing (Context)
 import App.Types.Session
 
 
+-- editorCounter: avoid unwanted cursor jump with onInput
+-- https://github.com/elm-lang/html/issues/105#issuecomment-309524197
+
+
 type alias Timeline =
     { editorOpen : Bool
     , newContent : String
+    , editorCounter : Int
     , postIdCounter : Int
     , posts : List Post
     , loading : Bool
@@ -21,6 +26,7 @@ defaultTimeline : Timeline
 defaultTimeline =
     { editorOpen = False
     , newContent = ""
+    , editorCounter = 0
     , postIdCounter = 0
     , posts = []
     , loading = False
@@ -151,6 +157,7 @@ post context asCotonoma summary content timeline =
                     | posts = newPost :: timeline.posts
                     , postIdCounter = postId
                     , newContent = ""
+                    , editorCounter = timeline.editorCounter + 1
                   }
                 , newPost
                 )

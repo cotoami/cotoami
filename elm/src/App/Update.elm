@@ -538,9 +538,17 @@ update msg model =
 
         EditorKeyDown keyCode ->
             handleEditorShortcut keyCode Nothing model.timeline.newContent model
+                |> \( model, cmd ) ->
+                    ( model
+                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
+                    )
 
         Post ->
             post Nothing Nothing model.timeline.newContent model
+                |> \( model, cmd ) ->
+                    ( model
+                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
+                    )
 
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }

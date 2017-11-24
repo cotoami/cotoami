@@ -64,16 +64,23 @@ postEditor session context model =
                     ]
                 ]
             ]
-        , textarea
-            [ class "coto"
-            , placeholder "Write your Coto in Markdown"
-            , value model.newContent
-            , onFocus EditorFocus
-            , onInput EditorInput
-            , onKeyDown EditorKeyDown
-            , onClickWithoutPropagation NoOp
-            ]
+        , Html.Keyed.node
+            "div"
             []
+            [ ( toString model.editorCounter
+              , textarea
+                    [ class "coto"
+                    , id "quick-coto-input"
+                    , placeholder "Write your Coto in Markdown"
+                    , defaultValue model.newContent
+                    , onFocus EditorFocus
+                    , onInput EditorInput
+                    , onKeyDown EditorKeyDown
+                    , onClickWithoutPropagation NoOp
+                    ]
+                    []
+              )
+            ]
         ]
 
 
