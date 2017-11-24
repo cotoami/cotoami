@@ -529,9 +529,14 @@ update msg model =
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         EditorFocus ->
-            ( { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
-            , Cmd.none
-            )
+            App.Types.Timeline.openOrCloseEditor True model.timeline
+                |> \timeline ->
+                    ( { model | timeline = timeline }
+                    , if timeline.editorOpen then
+                        App.Commands.scrollTimelineByQuickEditorOpen NoOp
+                      else
+                        Cmd.none
+                    )
 
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []

@@ -32,6 +32,14 @@ scrollTimelineToBottom msg =
     scrollToBottom "timeline" msg
 
 
+scrollTimelineByQuickEditorOpen : msg -> Cmd msg
+scrollTimelineByQuickEditorOpen msg =
+    Process.sleep (1 * Time.millisecond)
+        |> andThen (\_ -> (Dom.Scroll.y "timeline"))
+        |> andThen (\y -> (Dom.Scroll.toY "timeline" (y + 142)))
+        |> attempt (\_ -> msg)
+
+
 scrollPinnedCotosToBottom : msg -> Cmd msg
 scrollPinnedCotosToBottom msg =
     scrollToBottom "pinned-cotos-body" msg
