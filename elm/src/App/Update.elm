@@ -462,13 +462,14 @@ update msg model =
                 ! []
 
         Connect subject objects direction ->
-            App.Model.connect direction objects subject model
-                ! [ App.Server.Graph.connect
-                        (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                        direction
-                        (List.map (\coto -> coto.id) objects)
-                        subject.id
-                  ]
+            ( App.Model.connect direction objects subject model
+                |> closeModal App.Model.ConnectModal
+            , App.Server.Graph.connect
+                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                direction
+                (List.map (\coto -> coto.id) objects)
+                subject.id
+            )
 
         Connected (Ok _) ->
             model ! []
@@ -509,7 +510,8 @@ update msg model =
             ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ( { model | cotonomasLoading = True } |> closeActiveModal
+            ( { model | cotonomasLoading = True }
+                |> closeModal App.Model.CotoMenuModal
             , fetchCotonomas
             )
 
@@ -573,7 +575,9 @@ update msg model =
             confirmPostAndConnect summary content model
 
         PostAndConnect content summary ->
-            post (Just model.connectingDirection) summary content model
+            model
+                |> closeModal App.Model.ConnectModal
+                |> post (Just model.connectingDirection) summary content
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
@@ -584,15 +588,16 @@ update msg model =
             ( model, Cmd.none )
 
         CotonomaPosted postId (Ok response) ->
-            ({ model
+            ( { model
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
-             }
-                |> closeActiveModal
+              }
+                |> clearModals
+            , Cmd.batch
+                [ fetchCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
             )
-                ! [ fetchCotonomas
-                  , fetchSubCotonomas model.context.cotonoma
-                  ]
 
         CotonomaPosted postId (Err error) ->
             model.editorModal

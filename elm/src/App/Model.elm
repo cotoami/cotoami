@@ -174,6 +174,11 @@ closeActiveModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
 
+closeModal : Modal -> Model -> Model
+closeModal modal model =
+    { model | modals = List.filter (\m -> m /= modal) model.modals }
+
+
 clearModals : Model -> Model
 clearModals model =
     { model | modals = [] }
