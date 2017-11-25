@@ -169,8 +169,8 @@ openModal modal model =
         { model | modals = modal :: model.modals }
 
 
-closeModal : Model -> Model
-closeModal model =
+closeActiveModal : Model -> Model
+closeActiveModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
 

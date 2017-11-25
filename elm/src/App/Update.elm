@@ -55,7 +55,7 @@ update msg model =
             { model | context = App.Types.Context.keyDown keyCode model.context }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            ( closeModal model, Cmd.none )
+                            ( closeActiveModal model, Cmd.none )
                         else if
                             (keyCode == n.keyCode)
                                 && (List.isEmpty model.modals)
@@ -198,10 +198,10 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            ( closeModal model, Cmd.none )
+            ( closeActiveModal model, Cmd.none )
 
         Confirm ->
-            ( closeModal model, sendMsg model.confirmation.msgOnConfirm )
+            ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -509,7 +509,7 @@ update msg model =
             ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ( { model | cotonomasLoading = True } |> closeModal
+            ( { model | cotonomasLoading = True } |> closeActiveModal
             , fetchCotonomas
             )
 
@@ -588,7 +588,7 @@ update msg model =
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
              }
-                |> closeModal
+                |> closeActiveModal
             )
                 ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
