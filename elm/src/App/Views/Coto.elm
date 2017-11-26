@@ -210,16 +210,20 @@ toolButtonsSpan context graph maybeInbound config coto =
                         [ faIcon "thumb-tack" Nothing ]
             )
             config.pinCoto
-      , Maybe.map
-            (\editCoto ->
-                a
-                    [ class "tool-button edit-coto"
-                    , title "Edit"
-                    , onLinkButtonClick (editCoto coto)
-                    ]
-                    [ materialIcon "edit" Nothing ]
+      , Maybe.map2
+            (\editCoto session ->
+                if App.Types.Coto.checkWritePermission session coto then
+                    a
+                        [ class "tool-button edit-coto"
+                        , title "Edit"
+                        , onLinkButtonClick (editCoto coto)
+                        ]
+                        [ materialIcon "edit" Nothing ]
+                else
+                    span [] []
             )
             config.editCoto
+            context.session
       , Maybe.map3
             (\deleteConnection session ( parent, connection ) ->
                 if isDisconnectable session parent connection coto then
