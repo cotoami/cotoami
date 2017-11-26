@@ -65,7 +65,7 @@ cotonomaDiv context graph listTitle cotonoma =
             , App.Views.Coto.toolButtonsSpan
                 context
                 graph
-                (App.Views.Coto.defaultBodyConfig
+                (App.Views.Coto.defaultConfig
                     context
                     Nothing
                     (App.Types.Coto.toCoto cotonoma)
