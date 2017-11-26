@@ -52,7 +52,7 @@ view context graph post =
                     div [] []
                   else
                     authorDiv context post
-                , bodyDiv context graph elementId post
+                , App.Views.Coto.bodyDiv context graph elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
                 ]
@@ -61,9 +61,8 @@ view context graph post =
 
 headerDiv : Context -> Graph -> Post -> Html Msg
 headerDiv context graph post =
-    post
-        |> toCoto
-        |> Maybe.map (App.Views.Coto.headerDiv CotonomaClick context graph)
+    toCoto post
+        |> Maybe.map (App.Views.Coto.headerDivWithDefaultConfig context graph Nothing)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
@@ -107,30 +106,6 @@ authorDiv context post =
         post.amishi
     )
         |> Maybe.withDefault (span [] [])
-
-
-bodyDiv : Context -> Graph -> ElementId -> Post -> Html Msg
-bodyDiv context graph elementId post =
-    App.Views.Coto.bodyDivWithConfig
-        context
-        graph
-        elementId
-        { openCotoMenu = toCoto post |> Maybe.map (\coto -> OpenCotoMenuModal coto)
-        , selectCoto = Just SelectCoto
-        , pinCoto = Just PinCoto
-        , editCoto = toCoto post |> Maybe.map (\coto -> OpenEditorModal coto)
-        , openTraversal = Just OpenTraversal
-        , confirmConnect = Just ConfirmConnect
-        , deleteConnection = Nothing
-        , markdown = markdown
-        }
-        { cotoId = post.cotoId
-        , content = post.content
-        , summary = post.summary
-        , amishi = post.amishi
-        , asCotonoma = post.asCotonoma
-        , cotonomaKey = post.cotonomaKey
-        }
 
 
 markdown : String -> Html Msg

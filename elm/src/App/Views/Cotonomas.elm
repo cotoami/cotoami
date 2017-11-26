@@ -9,7 +9,7 @@ import App.Types.Coto exposing (Cotonoma)
 import App.Types.Context exposing (Context, isSelected)
 import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(..))
-import App.Views.Coto
+import App.Views.Coto exposing (defaultActionConfig)
 
 
 view : Context -> Graph -> String -> List Cotonoma -> Html Msg
@@ -62,14 +62,15 @@ cotonomaDiv context graph listTitle cotonoma =
                         cotonoma.name
                 ]
             , div [ class "touch-space-to-open-tools" ] []
-            , App.Views.Coto.toolButtonsSpan
-                context
-                graph
-                (App.Views.Coto.defaultConfig
-                    context
-                    Nothing
-                    (App.Types.Coto.toCoto cotonoma)
-                )
-                True
-                cotonoma.cotoId
+            , App.Types.Coto.toCoto cotonoma
+                |> (\coto ->
+                        App.Views.Coto.toolButtonsSpan
+                            context
+                            graph
+                            Nothing
+                            { defaultActionConfig
+                                | editCoto = Nothing
+                            }
+                            coto
+                   )
             ]
