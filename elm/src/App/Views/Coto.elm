@@ -46,6 +46,7 @@ type alias Config =
     { openCotoMenu : Maybe Msg
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
+    , editCoto : Maybe Msg
     , openTraversal : Maybe (CotoId -> Msg)
     , confirmConnect : Maybe (CotoId -> Direction -> Msg)
     , deleteConnection : Maybe Msg
@@ -77,6 +78,7 @@ defaultConfig context maybeInbound coto =
         { openCotoMenu = Just (OpenCotoMenuModal coto)
         , selectCoto = Just SelectCoto
         , pinCoto = Just PinCoto
+        , editCoto = Just (OpenEditorModal coto)
         , openTraversal = Just OpenTraversal
         , confirmConnect = Just ConfirmConnect
         , deleteConnection = deleteConnection
@@ -235,71 +237,81 @@ toolButtonsSpan context graph config asCotonoma cotoId =
     [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
         Nothing
       else
-        config.confirmConnect
-            |> Maybe.map
-                (\confirmConnect ->
-                    span [ class "connecting-buttons" ]
-                        [ a
-                            [ class "tool-button connect"
-                            , title "Connect"
-                            , onLinkButtonClick (confirmConnect cotoId Inbound)
-                            ]
-                            [ faIcon "link" Nothing ]
+        Maybe.map
+            (\confirmConnect ->
+                span [ class "connecting-buttons" ]
+                    [ a
+                        [ class "tool-button connect"
+                        , title "Connect"
+                        , onLinkButtonClick (confirmConnect cotoId Inbound)
                         ]
-                )
-    , [ config.pinCoto
-            |> Maybe.map
-                (\pinCoto ->
-                    if pinned cotoId graph then
-                        span [] []
-                    else
-                        a
-                            [ class "tool-button pin-coto"
-                            , title "Pin"
-                            , onLinkButtonClick (pinCoto cotoId)
-                            ]
-                            [ faIcon "thumb-tack" Nothing ]
-                )
-      , config.deleteConnection
-            |> Maybe.map
-                (\deleteConnection ->
+                        [ faIcon "link" Nothing ]
+                    ]
+            )
+            config.confirmConnect
+    , [ Maybe.map
+            (\pinCoto ->
+                if pinned cotoId graph then
+                    span [] []
+                else
                     a
-                        [ class "tool-button delete-connection"
-                        , title "Disconnect"
-                        , onLinkButtonClick deleteConnection
+                        [ class "tool-button pin-coto"
+                        , title "Pin"
+                        , onLinkButtonClick (pinCoto cotoId)
                         ]
-                        [ faIcon "unlink" Nothing ]
-                )
-      , config.selectCoto
-            |> Maybe.map
-                (\selectCoto ->
-                    a
-                        [ class "tool-button select-coto"
-                        , title "Select"
-                        , onLinkButtonClick (selectCoto cotoId)
-                        ]
-                        [ materialIcon
-                            (if
-                                isSelected (Just cotoId) context
-                                    && not (Set.member cotoId context.deselecting)
-                             then
-                                "check_box"
-                             else
-                                "check_box_outline_blank"
-                            )
-                            Nothing
-                        ]
-                )
-      , config.openCotoMenu
-            |> Maybe.map
-                (\openCotoMenu ->
-                    a
-                        [ class "tool-button open-coto-menu"
-                        , title "More"
-                        , onLinkButtonClick openCotoMenu
-                        ]
-                        [ materialIcon "more_horiz" Nothing ]
-                )
+                        [ faIcon "thumb-tack" Nothing ]
+            )
+            config.pinCoto
+      , Maybe.map
+            (\editCoto ->
+                a
+                    [ class "tool-button edit-coto"
+                    , title "Edit"
+                    , onLinkButtonClick editCoto
+                    ]
+                    [ materialIcon "edit" Nothing ]
+            )
+            config.editCoto
+      , Maybe.map
+            (\deleteConnection ->
+                a
+                    [ class "tool-button delete-connection"
+                    , title "Disconnect"
+                    , onLinkButtonClick deleteConnection
+                    ]
+                    [ faIcon "unlink" Nothing ]
+            )
+            config.deleteConnection
+      , Maybe.map
+            (\selectCoto ->
+                a
+                    [ class "tool-button select-coto"
+                    , title "Select"
+                    , onLinkButtonClick (selectCoto cotoId)
+                    ]
+                    [ materialIcon
+                        (if
+                            isSelected (Just cotoId) context
+                                && not (Set.member cotoId context.deselecting)
+                         then
+                            "check_box"
+                         else
+                            "check_box_outline_blank"
+                        )
+                        Nothing
+                    ]
+            )
+            config.selectCoto
+      , Maybe.map
+            (\openCotoMenu ->
+                a
+                    [ class "tool-button open-coto-menu"
+                    , title "More"
+                    , onLinkButtonClick openCotoMenu
+                    ]
+                    [ materialIcon "more_horiz" Nothing ]
+            )
+            config.openCotoMenu
       ]
         |> List.filterMap identity
         |> span [ class "default-buttons" ]

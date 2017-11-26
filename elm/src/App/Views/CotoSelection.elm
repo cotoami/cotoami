@@ -136,6 +136,7 @@ bodyDiv context graph elementId coto =
         { openCotoMenu = Nothing
         , selectCoto = Nothing
         , pinCoto = Nothing
+        , editCoto = Nothing
         , openTraversal = Nothing
         , confirmConnect = Nothing
         , deleteConnection = Nothing

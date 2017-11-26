@@ -118,6 +118,7 @@ bodyDiv context graph elementId post =
         { openCotoMenu = toCoto post |> Maybe.map (\coto -> OpenCotoMenuModal coto)
         , selectCoto = Just SelectCoto
         , pinCoto = Just PinCoto
+        , editCoto = toCoto post |> Maybe.map (\coto -> OpenEditorModal coto)
         , openTraversal = Just OpenTraversal
         , confirmConnect = Just ConfirmConnect
         , deleteConnection = Nothing

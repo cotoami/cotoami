@@ -1,7 +1,23 @@
-module App.Types.Coto exposing (..)
+module App.Types.Coto
+    exposing
+        ( ElementId
+        , CotoId
+        , CotonomaKey
+        , Coto
+        , summaryMaxlength
+        , updateContent
+        , checkWritePermission
+        , Cotonoma
+        , toCoto
+        , cotonomaNameMaxlength
+        , validateCotonomaName
+        , revisedBefore
+        , CotonomaStats
+        )
 
 import Date exposing (Date)
 import App.Types.Amishi exposing (Amishi)
+import App.Types.Session exposing (Session)
 import Util.StringUtil exposing (isBlank)
 
 
@@ -37,6 +53,11 @@ summaryMaxlength =
 updateContent : String -> Coto -> Coto
 updateContent content coto =
     { coto | content = content }
+
+
+checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
+checkWritePermission session coto =
+    (Maybe.map (\amishi -> amishi.id) coto.amishi) == (Just session.id)
 
 
 type alias Cotonoma =
