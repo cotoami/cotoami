@@ -71,7 +71,7 @@ modalContent direction selectedCotos target =
                     (\coto ->
                         ( toString coto.id
                         , div [ class "coto-content" ]
-                            [ App.Markdown.markdown coto.content ]
+                            [ contentDiv coto.summary coto.content ]
                         )
                     )
                     (List.reverse selectedCotos)
@@ -81,11 +81,11 @@ modalContent direction selectedCotos target =
             case target of
                 Coto coto ->
                     div [ class "target-coto coto-content" ]
-                        [ App.Markdown.markdown coto.content ]
+                        [ contentDiv coto.summary coto.content ]
 
                 NewPost content summary ->
                     div [ class "target-new-post coto-content" ]
-                        [ App.Markdown.markdown content ]
+                        [ contentDiv summary content ]
 
         ( start, end ) =
             case direction of
@@ -106,11 +106,26 @@ modalContent direction selectedCotos target =
                 ]
             , div
                 [ class "start" ]
-                [ start ]
+                [ span [ class "node-title" ] [ text "From:" ]
+                , start
+                ]
             , div
                 [ class "arrow" ]
                 [ materialIcon "arrow_downward" Nothing ]
             , div
                 [ class "end" ]
-                [ end ]
+                [ span [ class "node-title" ] [ text "To:" ]
+                , end
+                ]
             ]
+
+
+contentDiv : Maybe String -> String -> Html Msg
+contentDiv maybeSummary content =
+    maybeSummary
+        |> Maybe.map
+            (\summary ->
+                div [ class "coto-summary" ] [ text summary ]
+            )
+        |> Maybe.withDefault (App.Markdown.markdown content)
+        |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
