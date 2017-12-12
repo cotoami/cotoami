@@ -33,7 +33,7 @@ type Modal
     | ImportModal
 
 
-type ConnectingSubject
+type ConnectingTarget
     = Coto Coto
     | NewPost String (Maybe String)
 
@@ -59,7 +59,7 @@ type alias Model =
     , timeline : Timeline
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
-    , connectingSubject : Maybe ConnectingSubject
+    , connectingTarget : Maybe ConnectingTarget
     , connectingDirection : Direction
     , graph : Graph
     , traversals : Traversals
@@ -89,7 +89,7 @@ initModel seed route =
     , timeline = defaultTimeline
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
-    , connectingSubject = Nothing
+    , connectingTarget = Nothing
     , connectingDirection = App.Types.Graph.Outbound
     , graph = defaultGraph
     , traversals = defaultTraversals
@@ -218,7 +218,7 @@ openCoto coto model =
 confirmPostAndConnect : Maybe String -> String -> Model -> Model
 confirmPostAndConnect summary content model =
     { model
-        | connectingSubject = Just (NewPost content summary)
+        | connectingTarget = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
         |> \model -> openModal ConnectModal model
@@ -264,15 +264,15 @@ openTraversal cotoId model =
 
 
 connect : Direction -> List Coto -> Coto -> Model -> Model
-connect direction objects subject model =
+connect direction cotos target model =
     model.context.session
         |> Maybe.map
             (\session ->
-                batchConnect session direction objects subject model.graph
+                batchConnect session direction cotos target model.graph
                     |> (\graph ->
                             { model
                                 | graph = graph
-                                , connectingSubject = Nothing
+                                , connectingTarget = Nothing
                             }
                        )
             )

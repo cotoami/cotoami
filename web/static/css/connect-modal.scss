@@ -15,19 +15,19 @@
       border: 1px solid #ddd;
     }
 
-    div.connecting-coto,
-    div.connecting-new-post {
+    div.target-coto,
+    div.target-new-post {
       max-height: 15vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    div.connecting-new-post {
+    div.target-new-post {
       border-style: dashed;
     }
 
     div.selected-cotos {
-      max-height: 40vh;
+      max-height: 30vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }

@@ -439,7 +439,7 @@ update msg model =
 
         ConfirmConnect cotoId direction ->
             { model
-                | connectingSubject =
+                | connectingTarget =
                     App.Model.getCoto cotoId model
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
@@ -461,14 +461,14 @@ update msg model =
             }
                 ! []
 
-        Connect subject objects direction ->
-            ( App.Model.connect direction objects subject model
+        Connect target objects direction ->
+            ( App.Model.connect direction objects target model
                 |> closeModal App.Model.ConnectModal
             , App.Server.Graph.connect
                 (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                 direction
                 (List.map (\coto -> coto.id) objects)
-                subject.id
+                target.id
             )
 
         Connected (Ok _) ->
@@ -664,7 +664,7 @@ update msg model =
         ClearSelection ->
             { model
                 | context = clearSelection model.context
-                , connectingSubject = Nothing
+                , connectingTarget = Nothing
                 , cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
                     case model.activeViewOnMobile of
@@ -776,7 +776,7 @@ loadHome model =
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = setLoading model.timeline
-        , connectingSubject = Nothing
+        , connectingTarget = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -802,7 +802,7 @@ loadCotonoma key model =
                 |> clearSelection
         , cotonomasLoading = True
         , timeline = setLoading model.timeline
-        , connectingSubject = Nothing
+        , connectingTarget = Nothing
         , graph = defaultGraph
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -898,7 +898,7 @@ connectPost post model =
     post.cotoId
         |> andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
-            (\subject ->
+            (\target ->
                 let
                     direction =
                         model.connectingDirection
@@ -909,12 +909,12 @@ connectPost post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
                 in
-                    ( App.Model.connect direction objects subject model
+                    ( App.Model.connect direction objects target model
                     , App.Server.Graph.connect
                         maybeCotonomaKey
                         direction
                         (List.map (\coto -> coto.id) objects)
-                        subject.id
+                        target.id
                     )
             )
         |> withDefault (model ! [])
