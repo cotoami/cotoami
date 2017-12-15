@@ -117,6 +117,7 @@ timelineColumn model =
         [ App.Views.Timeline.view
             model.context
             model.graph
+            (App.Model.isTimelineReady model)
             model.timeline
         ]
 

@@ -62,6 +62,7 @@ type alias Model =
     , connectingTarget : Maybe ConnectingTarget
     , connectingDirection : Direction
     , graph : Graph
+    , loadingGraph : Bool
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
     }
@@ -92,6 +93,7 @@ initModel seed route =
     , connectingTarget = Nothing
     , connectingDirection = App.Types.Graph.Outbound
     , graph = defaultGraph
+    , loadingGraph = False
     , traversals = defaultTraversals
     , importModal = App.Modals.ImportModal.defaultModel
     }
@@ -293,3 +295,14 @@ clickCoto elementId cotoId model =
         |> setElementFocus (Just elementId)
         |> setCotoFocus (Just cotoId)
         |> \context -> { model | context = context }
+
+
+areTimelineAndGraphLoaded : Model -> Bool
+areTimelineAndGraphLoaded model =
+    (not model.timeline.loading) && (not model.loadingGraph)
+
+
+isTimelineReady : Model -> Bool
+isTimelineReady model =
+    (areTimelineAndGraphLoaded model)
+        && (not model.timeline.initializingScrollPos)

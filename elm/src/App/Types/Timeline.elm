@@ -19,6 +19,7 @@ type alias Timeline =
     , postIdCounter : Int
     , posts : List Post
     , loading : Bool
+    , initializingScrollPos : Bool
     }
 
 
@@ -30,6 +31,7 @@ defaultTimeline =
     , postIdCounter = 0
     , posts = []
     , loading = False
+    , initializingScrollPos = False
     }
 
 
@@ -73,7 +75,11 @@ deletePendingPost postId timeline =
 
 setLoading : Timeline -> Timeline
 setLoading timeline =
-    { timeline | posts = [], loading = True }
+    { timeline
+        | posts = []
+        , loading = True
+        , initializingScrollPos = True
+    }
 
 
 updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline

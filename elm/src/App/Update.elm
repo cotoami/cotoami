@@ -21,7 +21,6 @@ import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline
     exposing
         ( updatePost
-        , setLoading
         , setCotoSaved
         , setBeingDeleted
         , deletePendingPost
@@ -165,9 +164,13 @@ update msg model =
                 , navigationOpen = False
                 , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
-                ! [ App.Commands.scrollTimelineToBottom NoOp
-                  , fetchSubCotonomas (Just cotonoma)
-                  ]
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ initializeTimelineScrollPosition model
+                        , fetchSubCotonomas (Just cotonoma)
+                        ]
+                    )
 
         CotonomaFetched (Err _) ->
             model ! []
@@ -183,7 +186,8 @@ update msg model =
             model ! []
 
         GraphFetched (Ok graph) ->
-            { model | graph = graph } ! []
+            { model | graph = graph, loadingGraph = False }
+                |> \model -> ( model, initializeTimelineScrollPosition model )
 
         GraphFetched (Err _) ->
             model ! []
@@ -526,7 +530,7 @@ update msg model =
                 | context = setCotonoma Nothing model.context
                 , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
-                ! [ App.Commands.scrollTimelineToBottom NoOp ]
+                |> \model -> ( model, initializeTimelineScrollPosition model )
 
         PostsFetched (Err _) ->
             model ! []
@@ -623,6 +627,11 @@ update msg model =
                 ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
+
+        TimelineScrollPosInitialized ->
+            model.timeline
+                |> (\timeline -> { timeline | initializingScrollPos = False })
+                |> \timeline -> ( { model | timeline = timeline }, Cmd.none )
 
         --
         -- Traversals
@@ -775,9 +784,10 @@ loadHome model =
                 |> clearSelection
         , cotonomasLoading = True
         , subCotonomas = []
-        , timeline = setLoading model.timeline
+        , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
         , graph = defaultGraph
+        , loadingGraph = True
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
@@ -801,9 +811,10 @@ loadCotonoma key model =
                 |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
-        , timeline = setLoading model.timeline
+        , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
         , graph = defaultGraph
+        , loadingGraph = True
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
@@ -812,6 +823,14 @@ loadCotonoma key model =
           , fetchCotonomaPosts key
           , fetchGraph (Just key)
           ]
+
+
+initializeTimelineScrollPosition : Model -> Cmd Msg
+initializeTimelineScrollPosition model =
+    if App.Model.areTimelineAndGraphLoaded model then
+        App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
+    else
+        Cmd.none
 
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )

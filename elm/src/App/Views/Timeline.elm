@@ -18,15 +18,19 @@ import App.Messages exposing (..)
 import App.Views.Post
 
 
-view : Context -> Graph -> Timeline -> Html Msg
-view context graph timeline =
+view : Context -> Graph -> Bool -> Timeline -> Html Msg
+view context graph ready timeline =
     div
         [ id "timeline-and-input"
         , classList
             [ ( "editing", timeline.editorOpen )
             ]
         ]
-        [ timelineDiv context graph timeline
+        [ if not ready then
+            div [ class "loading-overlay" ] []
+          else
+            div [] []
+        , timelineDiv context graph timeline
         , context.session
             |> Maybe.map (\session -> postEditor session context timeline)
             |> Maybe.withDefault (div [] [])
@@ -62,14 +66,7 @@ timelineDiv context graph model =
                         ]
                     )
             )
-        |> Html.Keyed.node
-            "div"
-            [ id "timeline"
-            , classList
-                [ ( "timeline", True )
-                , ( "loading", model.loading )
-                ]
-            ]
+        |> Html.Keyed.node "div" [ id "timeline", class "timeline" ]
 
 
 postsDiv : Context -> Graph -> List Post -> Html Msg

@@ -21,6 +21,16 @@
   }
 }
 
+div.loading-overlay {
+  z-index: 20;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url(../images/loading.gif) center no-repeat #f8f8f8;
+}
+
 div.timeline {
   overflow-x: hidden;
   overflow-y: auto;
@@ -30,10 +40,6 @@ div.timeline {
   @media (#{$wide-viewport}) {
     padding-left: 5px;
     padding-right: 5px;
-  }
-
-  &.loading {
-    background: url(../images/loading.gif) center no-repeat #fff;
   }
 
   div.posts-on-day {
