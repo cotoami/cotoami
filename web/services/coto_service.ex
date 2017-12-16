@@ -45,6 +45,21 @@ defmodule Cotoami.CotoService do
     |> Enum.map(&(complement_amishi(&1, amishi)))
   end
 
+  def get_cotos_by_cotonoma(key, %Amishi{} = amishi) do
+    case CotonomaService.get_by_key(key) do
+      nil -> nil
+      cotonoma ->
+        cotos =
+          Coto
+          |> Coto.in_cotonoma(cotonoma.id)
+          |> preload([:amishi, :posted_in, :cotonoma])
+          |> limit(100)
+          |> Repo.all
+          |> Enum.map(&(complement_amishi(&1, amishi)))
+        {cotos, cotonoma}
+    end
+  end
+
   def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
     if coto.amishi_id == amishi_id do
       %{coto | amishi: amishi}

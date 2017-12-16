@@ -2,7 +2,7 @@ defmodule Cotoami.CotonomaController do
   use Cotoami.Web, :controller
   require Logger
   import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
-  alias Cotoami.{Cotonoma, CotonomaService, CotoView}
+  alias Cotoami.{Cotonoma, CotoService, CotonomaService, CotoView}
 
   plug :scrub_params, "cotonoma" when action in [:create]
 
@@ -62,7 +62,7 @@ defmodule Cotoami.CotonomaController do
   end
 
   def cotos(conn, %{"key" => key}, amishi) do
-    case CotonomaService.get_cotos(key, amishi) do
+    case CotoService.get_cotos_by_cotonoma(key, amishi) do
       nil ->
         send_resp(conn, :not_found, "")
       {cotos, cotonoma} ->

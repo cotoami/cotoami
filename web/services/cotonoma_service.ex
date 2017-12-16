@@ -8,7 +8,7 @@ defmodule Cotoami.CotonomaService do
   import Ecto.Changeset, only: [change: 2]
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
-    AmishiService, CotoService, CotoGraphService
+    AmishiService, CotoGraphService
   }
   alias Cotoami.Exceptions.NotFound
 
@@ -158,21 +158,6 @@ defmodule Cotoami.CotonomaService do
     |> order_by(desc: :updated_at)
     |> Repo.all()
     |> complement_owners()
-  end
-
-  def get_cotos(key, %Amishi{} = amishi) do
-    case get_by_key(key) do
-      nil -> nil
-      cotonoma ->
-        cotos =
-          Coto
-          |> Coto.in_cotonoma(cotonoma.id)
-          |> preload([:amishi, :posted_in, :cotonoma])
-          |> limit(100)
-          |> Repo.all
-          |> Enum.map(&(CotoService.complement_amishi(&1, amishi)))
-        {cotos, cotonoma}
-    end
   end
 
   def pin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, true)
