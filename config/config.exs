@@ -42,15 +42,22 @@ case System.get_env("REDIS_URL") do
 end
 
 # Mail
-config :cotoami, Cotoami.Mailer,
-  adapter: Bamboo.SMTPAdapter,
-  server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
-  port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer,
-  username: System.get_env("COTOAMI_SMTP_USER"),
-  password: System.get_env("COTOAMI_SMTP_PASSWORD"),
-  tls: :if_available, # can be `:always` or `:never`
-  ssl: false, # can be `true`
-  retries: 1
+case System.get_env("SENDGRID_USERNAME") do
+  nil ->
+    config :cotoami, Cotoami.Mailer,
+      adapter: Bamboo.SMTPAdapter,
+      server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
+      port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer,
+      username: System.get_env("COTOAMI_SMTP_USER"),
+      password: System.get_env("COTOAMI_SMTP_PASSWORD"),
+      tls: :if_available, # can be `:always` or `:never`
+      ssl: false, # can be `true`
+      retries: 1
+  username ->
+    config :cotoami, Cotoami.Mailer,
+      adapter: Bamboo.SendgridAdapter,
+      api_key: System.get_env("SENDGRID_API_KEY")
+end
 
 config :cotoami, Cotoami.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
