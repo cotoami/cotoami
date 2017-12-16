@@ -13,8 +13,10 @@
     }
   ],
   "env": {
+    "SECRET_KEY_BASE": "<replace-this-with-your-random-64-bytes-long-string>",
     "COTOAMI_URL_SCHEME": "https",
     "COTOAMI_URL_PORT": "443",
+    "COTOAMI_URL_HOST": "<app-name>.herokuapp.com",
     "COTOAMI_SIGNUP_ENABLED": "true"
   }
 }
