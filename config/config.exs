@@ -22,6 +22,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Amishi-related
 config :cotoami, Cotoami.AmishiService,
   owner_emails:
     (System.get_env("COTOAMI_OWNER_EMAILS") || "")
@@ -30,10 +31,17 @@ config :cotoami, Cotoami.AmishiService,
     (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
     |> String.to_existing_atom()
 
-config :cotoami, Cotoami.Redix,
-  host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
-  port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer
+# Redis
+case System.get_env("REDIS_URL") do
+  nil ->
+    config :cotoami, Cotoami.Redix,
+      host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
+      port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer
+  url ->
+    config :cotoami, Cotoami.Redix, url: url
+end
 
+# Mail
 config :cotoami, Cotoami.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
@@ -47,11 +55,23 @@ config :cotoami, Cotoami.Mailer,
 config :cotoami, Cotoami.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
 
-config :bolt_sips, Bolt,
-  hostname: System.get_env("COTOAMI_NEO4J_HOST") || "localhost",
-  port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
-  pool_size: 5,
-  max_overflow: 1
+# Neo4j
+case System.get_env("GRAPHENEDB_BOLT_URL") do
+  nil ->
+    config :bolt_sips, Bolt,
+      hostname: System.get_env("COTOAMI_NEO4J_HOST") || "localhost",
+      port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
+      pool_size: 5,
+      max_overflow: 1
+  url ->
+    config :bolt_sips, Bolt,
+      url: url,
+      basic_auth: [
+        username: System.get_env("GRAPHENEDB_BOLT_USER"), 
+        password: System.get_env("GRAPHENEDB_BOLT_PASSWORD")
+      ],
+      ssl: true
+end
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
