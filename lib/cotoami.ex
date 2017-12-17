@@ -12,8 +12,13 @@ defmodule Cotoami do
     redix_workers = for i <- 0..(Cotoami.Redix.redix_pool_size() - 1) do
       worker(
         Redix,
-        [[host: Cotoami.Redix.host(), port: Cotoami.Redix.port()],
-         [name: :"redix_#{i}"]],
+        [
+          case Cotoami.Redix.url() do
+            nil -> [host: Cotoami.Redix.host(), port: Cotoami.Redix.port()]
+            url -> url
+          end,
+          [name: :"redix_#{i}"]
+        ],
         id: {Redix, i}
       )
     end

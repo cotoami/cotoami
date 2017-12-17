@@ -23,6 +23,13 @@ defmodule Cotoami.Redix do
     || @default_port
   end
 
+  # An optional way to specify a redis server
+  def url() do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:url)
+  end
+
   def redix_pool_size(), do: @redix_pool_size
 
   def command(command, opts \\ []) do

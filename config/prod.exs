@@ -18,16 +18,27 @@ config :cotoami, Cotoami.Endpoint,
     host: System.get_env("COTOAMI_URL_HOST"),
     port: (System.get_env("COTOAMI_URL_PORT") || "80") |> String.to_integer
   ],
-  cache_static_manifest: "priv/static/manifest.json"
+  cache_static_manifest: "priv/static/manifest.json",
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Do not print debug messages in production
 config :logger, level: :info
 
 # Configure your database
-config :cotoami, Cotoami.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("COTOAMI_REPO_USER"),
-  password: System.get_env("COTOAMI_REPO_PASSWORD"),
-  database: System.get_env("COTOAMI_REPO_DATABASE"),
-  hostname: System.get_env("COTOAMI_REPO_HOST"),
-  pool_size: 5
+case System.get_env("DATABASE_URL") do
+  nil ->
+    config :cotoami, Cotoami.Repo,
+      adapter: Ecto.Adapters.Postgres,
+      username: System.get_env("COTOAMI_REPO_USER"),
+      password: System.get_env("COTOAMI_REPO_PASSWORD"),
+      database: System.get_env("COTOAMI_REPO_DATABASE"),
+      hostname: System.get_env("COTOAMI_REPO_HOST"),
+      pool_size: 5
+  url ->
+    config :cotoami, Cotoami.Repo,
+      adapter: Ecto.Adapters.Postgres,
+      url: url,
+      pool_size: 5,
+      ssl: true
+end
+

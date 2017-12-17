@@ -1,0 +1,25 @@
+{
+  "name": "Cotoami",
+  "description": "Cotoami is a platform where people can weave a large network of wisdom from tiny ideas.",
+  "repository": "https://github.com/cotoami/cotoami",
+  "keywords": ["ideation", "graph", "neo4j", "elixir", "Elm"],
+  "addons": ["heroku-postgresql", "heroku-redis", "graphenedb", "sendgrid"],
+  "buildpacks": [
+    {
+      "url": "https://github.com/HashNuke/heroku-buildpack-elixir.git"
+    },
+    {
+      "url": "https://github.com/gjaldon/heroku-buildpack-phoenix-static.git"
+    }
+  ],
+  "env": {
+    "SECRET_KEY_BASE": "<replace-this-with-your-random-64-bytes-long-string>",
+    "SENDGRID_API_KEY": "<replace-this-with-your-sendgrid-api-key>",
+    "COTOAMI_URL_SCHEME": "https",
+    "COTOAMI_URL_PORT": "443",
+    "COTOAMI_URL_HOST": "<app-name>.herokuapp.com",
+    "COTOAMI_OWNER_EMAILS": "you@example.com",
+    "COTOAMI_SIGNUP_ENABLED": "true",
+    "COTOAMI_EMAIL_FROM": "no-reply@cotoa.me"
+  }
+}

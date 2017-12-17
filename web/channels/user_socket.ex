@@ -7,7 +7,8 @@ defmodule Cotoami.UserSocket do
   channel "cotonomas:*", Cotoami.CotonomaChannel
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  # https://hexdocs.pm/phoenix/heroku.html
+  transport :websocket, Phoenix.Transports.WebSocket, timeout: 45_000
   # transport :longpoll, Phoenix.Transports.LongPoll
   
   @max_age 2 * 7 * 24 * 60 * 60
