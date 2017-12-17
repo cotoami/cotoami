@@ -24,7 +24,7 @@ There is an official Cotoami server to demonstrate its features and
 
 The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
 
-## Launch your own server on Heroku
+### Launch your own server on Heroku
 
 The easiest way to launch your own Cotoami server is to click the following Heroku Button:
 
