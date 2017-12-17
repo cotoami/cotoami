@@ -17,10 +17,20 @@ Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univ
 
 ## Try it
 
+### Official demo server
+
 There is an official Cotoami server to demonstrate its features and
 *generative knowledge sharing* which this project aims to promote.
 
 The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
+
+## Launch your own server on Heroku
+
+The easiest way to launch your own Cotoami server is to click the following Heroku Button:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+and set the required configurations:
 
 
 ## Concept
