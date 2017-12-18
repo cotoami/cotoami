@@ -11,7 +11,6 @@ import Util.EventUtil exposing (onLoad)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, toCoto)
-import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
 import App.Messages exposing (..)
 import App.Markdown exposing (extractTextFromMarkdown)
@@ -52,8 +51,8 @@ view context graph post =
                 , if post.asCotonoma then
                     div [] []
                   else
-                    authorDiv context.session post
-                , bodyDiv context graph elementId post
+                    authorDiv context post
+                , App.Views.Coto.bodyDiv context graph elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
                 ]
@@ -62,9 +61,8 @@ view context graph post =
 
 headerDiv : Context -> Graph -> Post -> Html Msg
 headerDiv context graph post =
-    post
-        |> toCoto
-        |> Maybe.map (App.Views.Coto.headerDiv CotonomaClick context graph)
+    toCoto post
+        |> Maybe.map (App.Views.Coto.headerDivWithDefaultConfig context graph Nothing)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
@@ -92,45 +90,22 @@ parentsDiv graph post =
                 )
 
 
-authorDiv : Maybe Session -> Post -> Html Msg
-authorDiv maybeSession post =
+authorDiv : Context -> Post -> Html Msg
+authorDiv context post =
     (Maybe.map2
         (\session author ->
-            if author.id == session.id then
-                span [] []
-            else
+            if (isJust context.cotonoma) || (author.id /= session.id) then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
                     ]
+            else
+                span [] []
         )
-        maybeSession
+        context.session
         post.amishi
     )
         |> Maybe.withDefault (span [] [])
-
-
-bodyDiv : Context -> Graph -> ElementId -> Post -> Html Msg
-bodyDiv context graph elementId post =
-    App.Views.Coto.bodyDivWithConfig
-        context
-        graph
-        elementId
-        { openCotoMenu = toCoto post |> Maybe.map (\coto -> OpenCotoMenuModal coto)
-        , selectCoto = Just SelectCoto
-        , pinCoto = Just PinCoto
-        , openTraversal = Just OpenTraversal
-        , confirmConnect = Just ConfirmConnect
-        , deleteConnection = Nothing
-        , markdown = markdown
-        }
-        { cotoId = post.cotoId
-        , content = post.content
-        , summary = post.summary
-        , amishi = post.amishi
-        , asCotonoma = post.asCotonoma
-        , cotonomaKey = post.cotonomaKey
-        }
 
 
 markdown : String -> Html Msg

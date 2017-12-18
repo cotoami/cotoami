@@ -25,10 +25,12 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 10px;
+  padding-top: 20px;
   padding-bottom: 50px;
 
   @media (#{$wide-viewport}) {
     padding: 5px;
+    padding-top: 20px;
     padding-bottom: 50px;
   }
 

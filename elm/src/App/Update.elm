@@ -21,7 +21,6 @@ import App.Types.Post exposing (Post, defaultPost)
 import App.Types.Timeline
     exposing
         ( updatePost
-        , setLoading
         , setCotoSaved
         , setBeingDeleted
         , deletePendingPost
@@ -55,8 +54,12 @@ update msg model =
             { model | context = App.Types.Context.keyDown keyCode model.context }
                 |> (\model ->
                         if keyCode == escape.keyCode then
-                            ( closeModal model, Cmd.none )
-                        else if (keyCode == n.keyCode) && (List.isEmpty model.modals) then
+                            ( closeActiveModal model, Cmd.none )
+                        else if
+                            (keyCode == n.keyCode)
+                                && (List.isEmpty model.modals)
+                                && (not model.timeline.editorOpen)
+                        then
                             openNewEditor model
                         else
                             ( model, Cmd.none )
@@ -161,9 +164,13 @@ update msg model =
                 , navigationOpen = False
                 , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
-                ! [ App.Commands.scrollTimelineToBottom NoOp
-                  , fetchSubCotonomas (Just cotonoma)
-                  ]
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ initializeTimelineScrollPosition model
+                        , fetchSubCotonomas (Just cotonoma)
+                        ]
+                    )
 
         CotonomaFetched (Err _) ->
             model ! []
@@ -179,7 +186,8 @@ update msg model =
             model ! []
 
         GraphFetched (Ok graph) ->
-            { model | graph = graph } ! []
+            { model | graph = graph, loadingGraph = False }
+                |> \model -> ( model, initializeTimelineScrollPosition model )
 
         GraphFetched (Err _) ->
             model ! []
@@ -194,10 +202,10 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            ( closeModal model, Cmd.none )
+            ( closeActiveModal model, Cmd.none )
 
         Confirm ->
-            ( closeModal model, sendMsg model.confirmation.msgOnConfirm )
+            ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.defaultModel }
@@ -435,7 +443,7 @@ update msg model =
 
         ConfirmConnect cotoId direction ->
             { model
-                | connectingSubject =
+                | connectingTarget =
                     App.Model.getCoto cotoId model
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
@@ -457,14 +465,15 @@ update msg model =
             }
                 ! []
 
-        Connect subject objects direction ->
-            App.Model.connect direction objects subject model
-                ! [ App.Server.Graph.connect
-                        (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                        direction
-                        (List.map (\coto -> coto.id) objects)
-                        subject.id
-                  ]
+        Connect target objects direction ->
+            ( App.Model.connect direction objects target model
+                |> closeModal App.Model.ConnectModal
+            , App.Server.Graph.connect
+                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                direction
+                (List.map (\coto -> coto.id) objects)
+                target.id
+            )
 
         Connected (Ok _) ->
             model ! []
@@ -505,7 +514,8 @@ update msg model =
             ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ( { model | cotonomasLoading = True } |> closeModal
+            ( { model | cotonomasLoading = True }
+                |> closeModal App.Model.CotoMenuModal
             , fetchCotonomas
             )
 
@@ -520,7 +530,7 @@ update msg model =
                 | context = setCotonoma Nothing model.context
                 , timeline = App.Types.Timeline.setPosts posts model.timeline
             }
-                ! [ App.Commands.scrollTimelineToBottom NoOp ]
+                |> \model -> ( model, initializeTimelineScrollPosition model )
 
         PostsFetched (Err _) ->
             model ! []
@@ -529,18 +539,31 @@ update msg model =
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
 
         EditorFocus ->
-            ( { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
-            , Cmd.none
-            )
+            App.Types.Timeline.openOrCloseEditor True model.timeline
+                |> \timeline ->
+                    ( { model | timeline = timeline }
+                    , if timeline.editorOpen then
+                        App.Commands.scrollTimelineByQuickEditorOpen NoOp
+                      else
+                        Cmd.none
+                    )
 
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
         EditorKeyDown keyCode ->
             handleEditorShortcut keyCode Nothing model.timeline.newContent model
+                |> \( model, cmd ) ->
+                    ( model
+                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
+                    )
 
         Post ->
             post Nothing Nothing model.timeline.newContent model
+                |> \( model, cmd ) ->
+                    ( model
+                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
+                    )
 
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
@@ -556,7 +579,9 @@ update msg model =
             confirmPostAndConnect summary content model
 
         PostAndConnect content summary ->
-            post (Just model.connectingDirection) summary content model
+            model
+                |> closeModal App.Model.ConnectModal
+                |> post (Just model.connectingDirection) summary content
 
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
@@ -567,15 +592,16 @@ update msg model =
             ( model, Cmd.none )
 
         CotonomaPosted postId (Ok response) ->
-            ({ model
+            ( { model
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
-             }
-                |> closeModal
+              }
+                |> clearModals
+            , Cmd.batch
+                [ fetchCotonomas
+                , fetchSubCotonomas model.context.cotonoma
+                ]
             )
-                ! [ fetchCotonomas
-                  , fetchSubCotonomas model.context.cotonoma
-                  ]
 
         CotonomaPosted postId (Err error) ->
             model.editorModal
@@ -601,6 +627,11 @@ update msg model =
                 ! [ fetchCotonomas
                   , fetchSubCotonomas model.context.cotonoma
                   ]
+
+        TimelineScrollPosInitialized ->
+            model.timeline
+                |> (\timeline -> { timeline | initializingScrollPos = False })
+                |> \timeline -> ( { model | timeline = timeline }, Cmd.none )
 
         --
         -- Traversals
@@ -642,7 +673,7 @@ update msg model =
         ClearSelection ->
             { model
                 | context = clearSelection model.context
-                , connectingSubject = Nothing
+                , connectingTarget = Nothing
                 , cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
                     case model.activeViewOnMobile of
@@ -753,9 +784,10 @@ loadHome model =
                 |> clearSelection
         , cotonomasLoading = True
         , subCotonomas = []
-        , timeline = setLoading model.timeline
-        , connectingSubject = Nothing
+        , timeline = App.Types.Timeline.setLoading model.timeline
+        , connectingTarget = Nothing
         , graph = defaultGraph
+        , loadingGraph = True
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
@@ -779,9 +811,10 @@ loadCotonoma key model =
                 |> setCotonomaLoading
                 |> clearSelection
         , cotonomasLoading = True
-        , timeline = setLoading model.timeline
-        , connectingSubject = Nothing
+        , timeline = App.Types.Timeline.setLoading model.timeline
+        , connectingTarget = Nothing
         , graph = defaultGraph
+        , loadingGraph = True
         , traversals = defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
@@ -790,6 +823,14 @@ loadCotonoma key model =
           , fetchCotonomaPosts key
           , fetchGraph (Just key)
           ]
+
+
+initializeTimelineScrollPosition : Model -> Cmd Msg
+initializeTimelineScrollPosition model =
+    if App.Model.areTimelineAndGraphLoaded model then
+        App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
+    else
+        Cmd.none
 
 
 handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
@@ -876,7 +917,7 @@ connectPost post model =
     post.cotoId
         |> andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
-            (\subject ->
+            (\target ->
                 let
                     direction =
                         model.connectingDirection
@@ -887,12 +928,12 @@ connectPost post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
                 in
-                    ( App.Model.connect direction objects subject model
+                    ( App.Model.connect direction objects target model
                     , App.Server.Graph.connect
                         maybeCotonomaKey
                         direction
                         (List.map (\coto -> coto.id) objects)
-                        subject.id
+                        target.id
                     )
             )
         |> withDefault (model ! [])

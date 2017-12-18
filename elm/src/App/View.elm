@@ -2,6 +2,7 @@ module App.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Exts.Maybe exposing (isJust)
 import Html.Events exposing (onClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Traversal
@@ -61,17 +62,25 @@ view model =
                     ]
                 ]
             , App.Views.CotoSelection.statusBar model
-            , a
-                [ class "tool-button new-coto-button"
-                , title "New Coto"
-                , hidden (model.timeline.editorOpen)
-                , onClick OpenNewEditorModal
-                ]
-                [ materialIcon "create" Nothing
-                , span [ class "shortcut" ] [ text "(Press N key)" ]
-                ]
+            , newCotoButton model
             , div [] (modals model)
             ]
+
+
+newCotoButton : Model -> Html Msg
+newCotoButton model =
+    if (isJust model.context.session) && (App.Model.isTimelineReady model) then
+        a
+            [ class "tool-button new-coto-button"
+            , title "New Coto"
+            , hidden (model.timeline.editorOpen)
+            , onClick OpenNewEditorModal
+            ]
+            [ materialIcon "create" Nothing
+            , span [ class "shortcut" ] [ text "(Press N key)" ]
+            ]
+    else
+        span [] []
 
 
 navColumn : Model -> Html Msg
@@ -105,20 +114,31 @@ graphExplorationDiv model =
 
 timelineColumn : Model -> Html Msg
 timelineColumn model =
-    div
-        [ id "main-timeline"
-        , classList
-            [ ( "main-column", True )
-            , ( "activeOnMobile", model.activeViewOnMobile == TimelineView )
-            , ( "animated", model.activeViewOnMobile == TimelineView )
-            , ( "fadeIn", model.activeViewOnMobile == TimelineView )
-            ]
-        ]
-        [ App.Views.Timeline.view
-            model.context
-            model.graph
-            model.timeline
-        ]
+    model.context.session
+        |> Maybe.map
+            (\session ->
+                let
+                    active =
+                        model.activeViewOnMobile == TimelineView
+                in
+                    div
+                        [ id "main-timeline"
+                        , classList
+                            [ ( "main-column", True )
+                            , ( "activeOnMobile", active )
+                            , ( "animated", active )
+                            , ( "fadeIn", active )
+                            ]
+                        ]
+                        [ App.Views.Timeline.view
+                            model.context
+                            session
+                            model.graph
+                            (App.Model.isTimelineReady model)
+                            model.timeline
+                        ]
+            )
+        |> Maybe.withDefault (div [] [])
 
 
 pinnedCotosColumn : Model -> Html Msg

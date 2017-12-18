@@ -120,31 +120,20 @@ cotoDiv beingDeselected context graph coto =
                         )
                         Nothing
                     ]
-                , App.Views.Coto.headerDiv CotonomaClick context graph coto
-                , bodyDiv context graph elementId coto
+                , App.Views.Coto.headerDiv
+                    context
+                    graph
+                    Nothing
+                    { openCotoMenu = Nothing
+                    , selectCoto = Nothing
+                    , pinCoto = Nothing
+                    , editCoto = Nothing
+                    , openTraversal = Nothing
+                    , confirmConnect = Nothing
+                    , deleteConnection = Nothing
+                    }
+                    coto
+                , App.Views.Coto.bodyDiv context graph elementId App.Markdown.markdown coto
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]
-
-
-bodyDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
-bodyDiv context graph elementId coto =
-    App.Views.Coto.bodyDivWithConfig
-        context
-        graph
-        elementId
-        { openCotoMenu = Nothing
-        , selectCoto = Nothing
-        , pinCoto = Nothing
-        , openTraversal = Nothing
-        , confirmConnect = Nothing
-        , deleteConnection = Nothing
-        , markdown = App.Markdown.markdown
-        }
-        { cotoId = Just coto.id
-        , content = coto.content
-        , summary = coto.summary
-        , amishi = coto.amishi
-        , asCotonoma = coto.asCotonoma
-        , cotonomaKey = coto.cotonomaKey
-        }

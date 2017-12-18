@@ -18,19 +18,84 @@ import App.Messages exposing (..)
 import App.Views.Post
 
 
-view : Context -> Graph -> Timeline -> Html Msg
-view context graph timeline =
-    div [ id "input-and-timeline", class (timelineClass timeline) ]
-        [ timelineDiv context graph timeline
-        , context.session
-            |> Maybe.map (\session -> postEditor session context timeline)
-            |> Maybe.withDefault (div [] [])
+view : Context -> Session -> Graph -> Bool -> Timeline -> Html Msg
+view context session graph ready timeline =
+    div
+        [ id "timeline-and-input"
+        , classList
+            [ ( "editing", timeline.editorOpen )
+            ]
+        ]
+        [ if not ready then
+            div [ class "loading-overlay" ] []
+          else
+            div [] []
+        , timelineDiv context graph timeline
+        , postEditor context session timeline
         ]
 
 
-postEditor : Session -> Context -> Timeline -> Html Msg
-postEditor session context model =
-    div [ id "new-coto" ]
+timelineDiv : Context -> Graph -> Timeline -> Html Msg
+timelineDiv context graph model =
+    model.posts
+        |> List.reverse
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
+        |> List.map
+            (\postsOnDay ->
+                let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
+                    postDateString =
+                        List.head postsOnDay
+                            |> Maybe.andThen (\post -> post.postedAt)
+                            |> Maybe.map (formatDay lang)
+                            |> Maybe.withDefault ""
+                in
+                    ( postDateString
+                    , div
+                        [ class "posts-on-day" ]
+                        [ div
+                            [ class "date-header" ]
+                            [ span [ class "date" ] [ text postDateString ] ]
+                        , postsDiv context graph postsOnDay
+                        ]
+                    )
+            )
+        |> Html.Keyed.node "div" [ id "timeline", class "timeline" ]
+
+
+postsDiv : Context -> Graph -> List Post -> Html Msg
+postsDiv context graph posts =
+    Html.Keyed.node
+        "div"
+        [ class "posts" ]
+        (List.map
+            (\post ->
+                ( getKey post
+                , App.Views.Post.view context graph post
+                )
+            )
+            posts
+        )
+
+
+getKey : Post -> String
+getKey post =
+    post.cotoId
+        |> Maybe.map toString
+        |> Maybe.withDefault
+            (post.postId
+                |> Maybe.map toString
+                |> Maybe.withDefault ""
+            )
+
+
+postEditor : Context -> Session -> Timeline -> Html Msg
+postEditor context session model =
+    div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
             [ span [ class "user session" ]
                 [ img [ class "avatar", src session.avatarUrl ] []
@@ -64,82 +129,21 @@ postEditor session context model =
                     ]
                 ]
             ]
-        , textarea
-            [ class "coto"
-            , placeholder "Write your Coto in Markdown"
-            , value model.newContent
-            , onFocus EditorFocus
-            , onInput EditorInput
-            , onKeyDown EditorKeyDown
-            , onClickWithoutPropagation NoOp
-            ]
-            []
-        ]
-
-
-timelineDiv : Context -> Graph -> Timeline -> Html Msg
-timelineDiv context graph model =
-    model.posts
-        |> List.reverse
-        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
-        |> List.map
-            (\postsOnDay ->
-                let
-                    lang =
-                        context.session
-                            |> Maybe.map (\session -> session.lang)
-                            |> Maybe.withDefault ""
-
-                    postDateString =
-                        List.head postsOnDay
-                            |> Maybe.andThen (\post -> post.postedAt)
-                            |> Maybe.map (formatDay lang)
-                            |> Maybe.withDefault ""
-                in
-                    ( postDateString
-                    , div
-                        [ class "posts-on-day" ]
-                        [ div
-                            [ class "date-header" ]
-                            [ span [ class "date" ] [ text postDateString ] ]
-                        , postsDiv context graph postsOnDay
-                        ]
-                    )
-            )
-        |> Html.Keyed.node
+        , Html.Keyed.node
             "div"
-            [ id "timeline", classList [ ( "loading", model.loading ) ] ]
-
-
-postsDiv : Context -> Graph -> List Post -> Html Msg
-postsDiv context graph posts =
-    Html.Keyed.node
-        "div"
-        [ class "posts" ]
-        (List.map
-            (\post ->
-                ( getKey post
-                , App.Views.Post.view context graph post
-                )
-            )
-            posts
-        )
-
-
-getKey : Post -> String
-getKey post =
-    post.cotoId
-        |> Maybe.map toString
-        |> Maybe.withDefault
-            (post.postId
-                |> Maybe.map toString
-                |> Maybe.withDefault ""
-            )
-
-
-timelineClass : Timeline -> String
-timelineClass model =
-    if model.editorOpen then
-        "editing"
-    else
-        ""
+            []
+            [ ( toString model.editorCounter
+              , textarea
+                    [ class "coto"
+                    , id "quick-coto-input"
+                    , placeholder "Write your Coto in Markdown"
+                    , defaultValue model.newContent
+                    , onFocus EditorFocus
+                    , onInput EditorInput
+                    , onKeyDown EditorKeyDown
+                    , onClickWithoutPropagation NoOp
+                    ]
+                    []
+              )
+            ]
+        ]

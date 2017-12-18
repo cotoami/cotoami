@@ -62,7 +62,7 @@ modalConfig context session graph model =
 
 checkWritePermission : Session -> Model -> Bool
 checkWritePermission session model =
-    (Maybe.map (\amishi -> amishi.id) model.coto.amishi) == (Just session.id)
+    App.Types.Coto.checkWritePermission session model.coto
 
 
 menuItemInfo : Model -> Html Msg

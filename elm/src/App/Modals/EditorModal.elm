@@ -249,7 +249,7 @@ cotoEditor model =
             div [ class "content-input" ]
                 [ textarea
                     [ id "editor-modal-content-input"
-                    , value model.content
+                    , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
                     , case model.mode of
                         NewCoto ->

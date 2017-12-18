@@ -27,6 +27,7 @@ div.coto-inner {
 }
 
 div.coto-header {
+  position: relative;
   min-height: 12px;
   text-align: right;
 
@@ -85,7 +86,7 @@ div.coto-body {
 span.coto-tool-buttons {
   position: absolute;
   top: -40px;
-  right: 0;
+  right: -10px;
   z-index: 10;
   display: none;
   height: 34px;
@@ -179,7 +180,7 @@ div.sub-cotos {
 }
 
 div.coto.selectable {
-  &.element-focus > div.coto-inner > div.coto-body > span.coto-tool-buttons {
+  &.element-focus > div.coto-inner > div.coto-header > span.coto-tool-buttons {
     display: inline-block !important;
   }
 

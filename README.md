@@ -17,10 +17,48 @@ Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univ
 
 ## Try it
 
+### Official demo server
+
 There is an official Cotoami server to demonstrate its features and
 *generative knowledge sharing* which this project aims to promote.
 
 The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
+
+### Launch your own server on Heroku
+
+The easiest way to launch your own Cotoami server is to click the following Heroku Button:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+and set the required configurations.
+
+![](docs/images/cotoami-heroku-configs.png)
+
+Replace the highlighted values with your custom values:
+
+* `SECRET_KEY_BASE`
+    * Specify a random 64-bytes-long string.
+        * e.g. `Y/j0csZXyV2On8uX1TIZXAkR6K8w45egzL76xIV/6jyfPuaZ5A5j5mAtoTsMw3CE`
+* `SENDGRID_API_KEY`
+    * This is a tricky part of the deployment. You need to obtain a SendGrid (an email sending service) API key by following the instructions in the "Obtain a SendGrid API key" section below.
+* `COTOAMI_URL_HOST`
+    * Replace `<app-name>` with your Heroku app name.
+* `COTOAMI_OWNER_EMAILS`
+    * Specify owner email addresses (comma separated).
+
+You should know the limitations of Cotoami on Heroku as described in:
+
+* <https://hexdocs.pm/phoenix/heroku.html#limitations>
+    
+#### Obtain a SendGrid API key
+
+1. First, you need to get SendGrid's username and password by deploying an app (Click the "Deploy app" button in the Heroku site).
+2. After finishing the deployment, you can check your username and password via config vars: `SENDGRID_USERNAME` and `SENDGRID_PASSWORD`, which can be viewed in the app's settings page in the Heroku site (click the "Reveal Config Vars" button).
+3. Go to <https://app.sendgrid.com/settings/api_keys> and log in with the username and password.
+4. Create an API key.
+5. Set the obtained key to the config `SENDGRID_API_KEY` in the Heroku app's settings page (then the app will restart automatically).
+
+* ref. [SendGrid \| Heroku Dev Center](https://devcenter.heroku.com/articles/sendgrid)
 
 
 ## Concept

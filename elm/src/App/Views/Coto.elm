@@ -1,4 +1,19 @@
-module App.Views.Coto exposing (..)
+module App.Views.Coto
+    exposing
+        ( cotoClassList
+        , bodyDiv
+        , bodyDivByCoto
+        , ActionConfig
+        , defaultActionConfig
+        , headerDivWithDefaultConfig
+        , headerDiv
+        , toolButtonsSpan
+        , subCotosEllipsisDiv
+        , subCotosDiv
+        , abbreviate
+        , cotonomaLink
+        , cotonomaLabel
+        )
 
 import Set
 import Dict
@@ -33,129 +48,45 @@ cotoClassList context elementId maybeCotoId additionalClasses =
         )
 
 
-abbreviate : { r | content : String, summary : Maybe String } -> String
-abbreviate { content, summary } =
-    let
-        maxLength =
-            200
-    in
-        Maybe.withDefault
-            (extractTextFromMarkdown content
-                |> List.head
-                |> Maybe.withDefault ""
-                |> (\text ->
-                        (String.left maxLength text)
-                            ++ (if String.length text > maxLength then
-                                    "..."
-                                else
-                                    ""
-                               )
-                   )
-            )
-            summary
+
+--
+-- Body
+--
 
 
-headerDiv : (CotonomaKey -> Msg) -> Context -> Graph -> Coto -> Html Msg
-headerDiv cotonomaClick context graph coto =
-    div
-        [ class "coto-header" ]
-        [ coto.postedIn
-            |> Maybe.map
-                (\postedIn ->
-                    if orignatedHere context coto then
-                        span [] []
-                    else
-                        a
-                            [ class "posted-in"
-                            , href ("/cotonomas/" ++ postedIn.key)
-                            , onLinkButtonClick (cotonomaClick postedIn.key)
-                            ]
-                            [ text postedIn.name ]
-                )
-            |> Maybe.withDefault (span [] [])
-        , if pinned coto.id graph then
-            faIcon "thumb-tack" (Just "pinned")
-          else
-            span [] []
-        ]
-
-
-type alias BodyModel =
-    { cotoId : Maybe CotoId
-    , content : String
-    , summary : Maybe String
-    , amishi : Maybe Amishi
-    , asCotonoma : Bool
-    , cotonomaKey : Maybe CotonomaKey
+type alias BodyModel r =
+    { r
+        | content : String
+        , summary : Maybe String
+        , amishi : Maybe Amishi
+        , asCotonoma : Bool
+        , cotonomaKey : Maybe CotonomaKey
     }
 
 
-type alias BodyConfig =
-    { openCotoMenu : Maybe Msg
-    , selectCoto : Maybe (CotoId -> Msg)
-    , pinCoto : Maybe (CotoId -> Msg)
-    , openTraversal : Maybe (CotoId -> Msg)
-    , confirmConnect : Maybe (CotoId -> Direction -> Msg)
-    , deleteConnection : Maybe Msg
-    , markdown : String -> Html Msg
-    }
+type alias Markdown =
+    String -> Html Msg
 
 
-defaultBodyConfig : Context -> Maybe ( Coto, Connection ) -> Coto -> BodyConfig
-defaultBodyConfig context maybeInbound coto =
-    let
-        deleteConnection =
-            (Maybe.map2
-                (\session ( parent, connection ) ->
-                    ( ( parent.id, coto.id )
-                    , isDisconnectable session parent connection coto
-                    )
-                )
-                context.session
-                maybeInbound
-            )
-                |> Maybe.andThen
-                    (\( cotoIdPair, disconnectable ) ->
-                        if disconnectable then
-                            Just (ConfirmDeleteConnection cotoIdPair)
-                        else
-                            Nothing
-                    )
-    in
-        { openCotoMenu = Just (OpenCotoMenuModal coto)
-        , selectCoto = Just SelectCoto
-        , pinCoto = Just PinCoto
-        , openTraversal = Just OpenTraversal
-        , confirmConnect = Just ConfirmConnect
-        , deleteConnection = deleteConnection
-        , markdown = App.Markdown.markdown
-        }
-
-
-isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
-isDisconnectable session parent connection child =
-    session.owner
-        || (session.id == connection.amishiId)
-        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
-
-
-bodyDivWithConfig : Context -> Graph -> ElementId -> BodyConfig -> BodyModel -> Html Msg
-bodyDivWithConfig context graph elementId config model =
+bodyDiv : Context -> Graph -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv context graph elementId markdown model =
     div [ class "coto-body" ]
-        [ model.cotoId
-            |> Maybe.map (toolButtonsSpan context graph config model.asCotonoma)
-            |> Maybe.withDefault (span [] [])
-        , model.cotonomaKey
+        [ model.cotonomaKey
             |> Maybe.map
                 (\key ->
                     cotonomaLink CotonomaClick model.amishi key model.content
                 )
-            |> Maybe.withDefault (contentDiv context elementId config model)
+            |> Maybe.withDefault (contentDiv context elementId markdown model)
         ]
 
 
-contentDiv : Context -> ElementId -> BodyConfig -> BodyModel -> Html Msg
-contentDiv context elementId config model =
+bodyDivByCoto : Context -> Graph -> ElementId -> Coto -> Html Msg
+bodyDivByCoto context graph elementId coto =
+    bodyDiv context graph elementId App.Markdown.markdown coto
+
+
+contentDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+contentDiv context elementId markdown model =
     model.summary
         |> Maybe.map
             (\summary ->
@@ -183,108 +114,161 @@ contentDiv context elementId config model =
                             , ( "open", contentOpen elementId context )
                             ]
                         ]
-                        [ config.markdown model.content ]
+                        [ markdown model.content ]
                     ]
             )
-        |> Maybe.withDefault (config.markdown model.content)
+        |> Maybe.withDefault (markdown model.content)
 
 
-bodyDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ElementId -> Coto -> Html Msg
-bodyDiv context graph maybeConnection elementId coto =
-    bodyDivWithConfig
-        context
-        graph
-        elementId
-        (defaultBodyConfig context maybeConnection coto)
-        { cotoId = Just coto.id
-        , content = coto.content
-        , summary = coto.summary
-        , amishi = coto.amishi
-        , asCotonoma = coto.asCotonoma
-        , cotonomaKey = coto.cotonomaKey
-        }
+
+--
+-- Header
+--
 
 
-connectInboundIcon : Html msg
-connectInboundIcon =
-    faIcon "sign-in" Nothing
+type alias ActionConfig =
+    { openCotoMenu : Maybe (Coto -> Msg)
+    , selectCoto : Maybe (CotoId -> Msg)
+    , pinCoto : Maybe (CotoId -> Msg)
+    , editCoto : Maybe (Coto -> Msg)
+    , openTraversal : Maybe (CotoId -> Msg)
+    , confirmConnect : Maybe (CotoId -> Direction -> Msg)
+    , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
+    }
 
 
-connectOutboundIcon : Html msg
-connectOutboundIcon =
-    faIcon "sign-out" Nothing
+defaultActionConfig : ActionConfig
+defaultActionConfig =
+    { openCotoMenu = Just OpenCotoMenuModal
+    , selectCoto = Just SelectCoto
+    , pinCoto = Just PinCoto
+    , editCoto = Just OpenEditorModal
+    , openTraversal = Just OpenTraversal
+    , confirmConnect = Just ConfirmConnect
+    , deleteConnection = Just ConfirmDeleteConnection
+    }
 
 
-toolButtonsSpan : Context -> Graph -> BodyConfig -> Bool -> CotoId -> Html Msg
-toolButtonsSpan context graph config asCotonoma cotoId =
-    [ if List.isEmpty context.selection || isSelected (Just cotoId) context then
-        Nothing
-      else
-        config.confirmConnect
+headerDivWithDefaultConfig : Context -> Graph -> Maybe ( Coto, Connection ) -> Coto -> Html Msg
+headerDivWithDefaultConfig context graph maybeInbound coto =
+    headerDiv context graph maybeInbound defaultActionConfig coto
+
+
+headerDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> Coto -> Html Msg
+headerDiv context graph maybeInbound config coto =
+    div
+        [ class "coto-header" ]
+        [ toolButtonsSpan context graph maybeInbound config coto
+        , coto.postedIn
             |> Maybe.map
-                (\confirmConnect ->
-                    span [ class "connecting-buttons" ]
-                        [ a
-                            [ class "tool-button connect"
-                            , title "Connect"
-                            , onLinkButtonClick (confirmConnect cotoId Inbound)
-                            ]
-                            [ faIcon "link" Nothing ]
-                        ]
-                )
-    , [ config.pinCoto
-            |> Maybe.map
-                (\pinCoto ->
-                    if pinned cotoId graph then
+                (\postedIn ->
+                    if orignatedHere context coto then
                         span [] []
                     else
                         a
-                            [ class "tool-button pin-coto"
-                            , title "Pin"
-                            , onLinkButtonClick (pinCoto cotoId)
+                            [ class "posted-in"
+                            , href ("/cotonomas/" ++ postedIn.key)
+                            , onLinkButtonClick (CotonomaClick postedIn.key)
                             ]
-                            [ faIcon "thumb-tack" Nothing ]
+                            [ text postedIn.name ]
                 )
-      , config.deleteConnection
-            |> Maybe.map
-                (\deleteConnection ->
+            |> Maybe.withDefault (span [] [])
+        , if pinned coto.id graph then
+            faIcon "thumb-tack" (Just "pinned")
+          else
+            span [] []
+        ]
+
+
+toolButtonsSpan : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> Coto -> Html Msg
+toolButtonsSpan context graph maybeInbound config coto =
+    [ if List.isEmpty context.selection || isSelected (Just coto.id) context then
+        Nothing
+      else
+        Maybe.map
+            (\confirmConnect ->
+                span [ class "connecting-buttons" ]
+                    [ a
+                        [ class "tool-button connect"
+                        , title "Connect"
+                        , onLinkButtonClick (confirmConnect coto.id Inbound)
+                        ]
+                        [ faIcon "link" Nothing ]
+                    ]
+            )
+            config.confirmConnect
+    , [ Maybe.map
+            (\pinCoto ->
+                if pinned coto.id graph then
+                    span [] []
+                else
+                    a
+                        [ class "tool-button pin-coto"
+                        , title "Pin"
+                        , onLinkButtonClick (pinCoto coto.id)
+                        ]
+                        [ faIcon "thumb-tack" Nothing ]
+            )
+            config.pinCoto
+      , Maybe.map2
+            (\editCoto session ->
+                if App.Types.Coto.checkWritePermission session coto then
+                    a
+                        [ class "tool-button edit-coto"
+                        , title "Edit"
+                        , onLinkButtonClick (editCoto coto)
+                        ]
+                        [ materialIcon "edit" Nothing ]
+                else
+                    span [] []
+            )
+            config.editCoto
+            context.session
+      , Maybe.map3
+            (\deleteConnection session ( parent, connection ) ->
+                if isDisconnectable session parent connection coto then
                     a
                         [ class "tool-button delete-connection"
                         , title "Disconnect"
-                        , onLinkButtonClick deleteConnection
+                        , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
                         ]
                         [ faIcon "unlink" Nothing ]
-                )
-      , config.selectCoto
-            |> Maybe.map
-                (\selectCoto ->
-                    a
-                        [ class "tool-button select-coto"
-                        , title "Select"
-                        , onLinkButtonClick (selectCoto cotoId)
-                        ]
-                        [ materialIcon
-                            (if
-                                isSelected (Just cotoId) context
-                                    && not (Set.member cotoId context.deselecting)
-                             then
-                                "check_box"
-                             else
-                                "check_box_outline_blank"
-                            )
-                            Nothing
-                        ]
-                )
-      , config.openCotoMenu
-            |> Maybe.map
-                (\openCotoMenu ->
-                    a
-                        [ class "tool-button open-coto-menu"
-                        , title "More"
-                        , onLinkButtonClick openCotoMenu
-                        ]
-                        [ materialIcon "more_horiz" Nothing ]
-                )
+                else
+                    span [] []
+            )
+            config.deleteConnection
+            context.session
+            maybeInbound
+      , Maybe.map
+            (\selectCoto ->
+                a
+                    [ class "tool-button select-coto"
+                    , title "Select"
+                    , onLinkButtonClick (selectCoto coto.id)
+                    ]
+                    [ materialIcon
+                        (if
+                            isSelected (Just coto.id) context
+                                && not (Set.member coto.id context.deselecting)
+                         then
+                            "check_box"
+                         else
+                            "check_box_outline_blank"
+                        )
+                        Nothing
+                    ]
+            )
+            config.selectCoto
+      , Maybe.map
+            (\openCotoMenu ->
+                a
+                    [ class "tool-button open-coto-menu"
+                    , title "More"
+                    , onLinkButtonClick (openCotoMenu coto)
+                    ]
+                    [ materialIcon "more_horiz" Nothing ]
+            )
+            config.openCotoMenu
       ]
         |> List.filterMap identity
         |> span [ class "default-buttons" ]
@@ -292,6 +276,19 @@ toolButtonsSpan context graph config asCotonoma cotoId =
     ]
         |> List.filterMap identity
         |> span [ class "coto-tool-buttons" ]
+
+
+isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
+isDisconnectable session parent connection child =
+    session.owner
+        || (session.id == connection.amishiId)
+        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
+
+
+
+--
+-- Sub cotos
+--
 
 
 subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
@@ -369,11 +366,39 @@ subCotoDiv context graph parentElementId connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv CotonomaClick context graph coto
-                , bodyDiv context graph (Just connection) elementId coto
+                [ headerDiv context graph (Just connection) defaultActionConfig coto
+                , bodyDivByCoto context graph elementId coto
                 , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]
+
+
+
+--
+-- Misc
+--
+
+
+abbreviate : { r | content : String, summary : Maybe String } -> String
+abbreviate { content, summary } =
+    let
+        maxLength =
+            200
+    in
+        Maybe.withDefault
+            (extractTextFromMarkdown content
+                |> List.head
+                |> Maybe.withDefault ""
+                |> (\text ->
+                        (String.left maxLength text)
+                            ++ (if String.length text > maxLength then
+                                    "..."
+                                else
+                                    ""
+                               )
+                   )
+            )
+            summary
 
 
 cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> CotonomaKey -> String -> Html Msg

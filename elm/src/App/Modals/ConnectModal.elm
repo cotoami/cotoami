@@ -16,28 +16,28 @@ import App.Markdown
 
 view : Model -> Html Msg
 view model =
-    model.connectingSubject
+    model.connectingTarget
         |> Maybe.map
-            (\subject ->
+            (\target ->
                 modalConfig
                     model.connectingDirection
                     (getSelectedCotos model)
-                    subject
+                    target
             )
         |> Modal.view "connect-modal"
 
 
-modalConfig : Direction -> List Coto -> ConnectingSubject -> Modal.Config Msg
-modalConfig direction selectedCotos subject =
+modalConfig : Direction -> List Coto -> ConnectingTarget -> Modal.Config Msg
+modalConfig direction selectedCotos target =
     let
         primaryButtonId =
             "connect-modal-primary-button"
     in
         { closeMessage = CloseModal
         , title = text "Connect Preview"
-        , content = modalContent direction selectedCotos subject
+        , content = modalContent direction selectedCotos target
         , buttons =
-            case subject of
+            case target of
                 Coto coto ->
                     [ button
                         [ id primaryButtonId
@@ -60,8 +60,8 @@ modalConfig direction selectedCotos subject =
         }
 
 
-modalContent : Direction -> List Coto -> ConnectingSubject -> Html Msg
-modalContent direction selectedCotos subject =
+modalContent : Direction -> List Coto -> ConnectingTarget -> Html Msg
+modalContent direction selectedCotos target =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -71,29 +71,29 @@ modalContent direction selectedCotos subject =
                     (\coto ->
                         ( toString coto.id
                         , div [ class "coto-content" ]
-                            [ App.Markdown.markdown coto.content ]
+                            [ contentDiv coto.summary coto.content ]
                         )
                     )
                     (List.reverse selectedCotos)
                 )
 
-        subjectHtml =
-            case subject of
+        targetHtml =
+            case target of
                 Coto coto ->
-                    div [ class "connecting-coto coto-content" ]
-                        [ App.Markdown.markdown coto.content ]
+                    div [ class "target-coto coto-content" ]
+                        [ contentDiv coto.summary coto.content ]
 
                 NewPost content summary ->
-                    div [ class "connecting-new-post coto-content" ]
-                        [ App.Markdown.markdown content ]
+                    div [ class "target-new-post coto-content" ]
+                        [ contentDiv summary content ]
 
         ( start, end ) =
             case direction of
                 Outbound ->
-                    ( subjectHtml, selectedCotosHtml )
+                    ( targetHtml, selectedCotosHtml )
 
                 Inbound ->
-                    ( selectedCotosHtml, subjectHtml )
+                    ( selectedCotosHtml, targetHtml )
     in
         div []
             [ div
@@ -106,11 +106,26 @@ modalContent direction selectedCotos subject =
                 ]
             , div
                 [ class "start" ]
-                [ start ]
+                [ span [ class "node-title" ] [ text "From:" ]
+                , start
+                ]
             , div
                 [ class "arrow" ]
                 [ materialIcon "arrow_downward" Nothing ]
             , div
                 [ class "end" ]
-                [ end ]
+                [ span [ class "node-title" ] [ text "To:" ]
+                , end
+                ]
             ]
+
+
+contentDiv : Maybe String -> String -> Html Msg
+contentDiv maybeSummary content =
+    maybeSummary
+        |> Maybe.map
+            (\summary ->
+                div [ class "coto-summary" ] [ text summary ]
+            )
+        |> Maybe.withDefault (App.Markdown.markdown content)
+        |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])

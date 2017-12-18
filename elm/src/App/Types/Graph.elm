@@ -220,13 +220,13 @@ connectManyToOne session startCotos endCoto graph =
 
 
 batchConnect : Session -> Direction -> List Coto -> Coto -> Graph -> Graph
-batchConnect session direction objects subject graph =
+batchConnect session direction cotos target graph =
     case direction of
         Outbound ->
-            connectOneToMany session subject objects graph
+            connectOneToMany session target cotos graph
 
         Inbound ->
-            connectManyToOne session objects subject graph
+            connectManyToOne session cotos target graph
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph

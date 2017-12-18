@@ -33,7 +33,7 @@ type Modal
     | ImportModal
 
 
-type ConnectingSubject
+type ConnectingTarget
     = Coto Coto
     | NewPost String (Maybe String)
 
@@ -59,9 +59,10 @@ type alias Model =
     , timeline : Timeline
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
-    , connectingSubject : Maybe ConnectingSubject
+    , connectingTarget : Maybe ConnectingTarget
     , connectingDirection : Direction
     , graph : Graph
+    , loadingGraph : Bool
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
     }
@@ -89,9 +90,10 @@ initModel seed route =
     , timeline = defaultTimeline
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
-    , connectingSubject = Nothing
+    , connectingTarget = Nothing
     , connectingDirection = App.Types.Graph.Outbound
     , graph = defaultGraph
+    , loadingGraph = False
     , traversals = defaultTraversals
     , importModal = App.Modals.ImportModal.defaultModel
     }
@@ -169,9 +171,14 @@ openModal modal model =
         { model | modals = modal :: model.modals }
 
 
-closeModal : Model -> Model
-closeModal model =
+closeActiveModal : Model -> Model
+closeActiveModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
+
+
+closeModal : Modal -> Model -> Model
+closeModal modal model =
+    { model | modals = List.filter (\m -> m /= modal) model.modals }
 
 
 clearModals : Model -> Model
@@ -213,7 +220,7 @@ openCoto coto model =
 confirmPostAndConnect : Maybe String -> String -> Model -> Model
 confirmPostAndConnect summary content model =
     { model
-        | connectingSubject = Just (NewPost content summary)
+        | connectingTarget = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
         |> \model -> openModal ConnectModal model
@@ -259,15 +266,15 @@ openTraversal cotoId model =
 
 
 connect : Direction -> List Coto -> Coto -> Model -> Model
-connect direction objects subject model =
+connect direction cotos target model =
     model.context.session
         |> Maybe.map
             (\session ->
-                batchConnect session direction objects subject model.graph
+                batchConnect session direction cotos target model.graph
                     |> (\graph ->
                             { model
                                 | graph = graph
-                                , connectingSubject = Nothing
+                                , connectingTarget = Nothing
                             }
                        )
             )
@@ -288,3 +295,14 @@ clickCoto elementId cotoId model =
         |> setElementFocus (Just elementId)
         |> setCotoFocus (Just cotoId)
         |> \context -> { model | context = context }
+
+
+areTimelineAndGraphLoaded : Model -> Bool
+areTimelineAndGraphLoaded model =
+    (not model.timeline.loading) && (not model.loadingGraph)
+
+
+isTimelineReady : Model -> Bool
+isTimelineReady model =
+    (areTimelineAndGraphLoaded model)
+        && (not model.timeline.initializingScrollPos)

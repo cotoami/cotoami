@@ -101,6 +101,7 @@ type Msg
     | CotonomaPosted Int (Result Http.Error Post)
     | PostPushed Value
     | CotonomaPushed Post
+    | TimelineScrollPosInitialized
       --
       -- Traversals
       --
