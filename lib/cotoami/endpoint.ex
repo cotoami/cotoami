@@ -1,7 +1,7 @@
 defmodule Cotoami.Endpoint do
   use Phoenix.Endpoint, otp_app: :cotoami
 
-  @session_max_age 60 * 60 * 24 * 30
+  @session_max_age 60 * 60 * 24 * 30 * 3
 
   socket "/socket", Cotoami.UserSocket
 
