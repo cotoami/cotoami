@@ -18,8 +18,8 @@ import App.Messages exposing (..)
 import App.Views.Post
 
 
-view : Context -> Graph -> Bool -> Timeline -> Html Msg
-view context graph ready timeline =
+view : Context -> Session -> Graph -> Bool -> Timeline -> Html Msg
+view context session graph ready timeline =
     div
         [ id "timeline-and-input"
         , classList
@@ -31,9 +31,7 @@ view context graph ready timeline =
           else
             div [] []
         , timelineDiv context graph timeline
-        , context.session
-            |> Maybe.map (\session -> postEditor session context timeline)
-            |> Maybe.withDefault (div [] [])
+        , postEditor context session timeline
         ]
 
 
@@ -95,8 +93,8 @@ getKey post =
             )
 
 
-postEditor : Session -> Context -> Timeline -> Html Msg
-postEditor session context model =
+postEditor : Context -> Session -> Timeline -> Html Msg
+postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
             [ span [ class "user session" ]
