@@ -307,8 +307,8 @@ cotonomaEditor model =
             NewCotonoma ->
                 div [ class "cotonoma-help" ]
                     [ text
-                        ("A Cotonoma is a dedicated place where you can keep Cotos or"
-                            ++ " discuss with others about a topic described by its name."
+                        ("A Cotonoma is a special Coto that has a dedicated chat timeline"
+                            ++ " where you can discuss with others about a topic described by its name."
                         )
                     ]
 
