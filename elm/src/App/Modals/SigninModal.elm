@@ -1,7 +1,7 @@
 module App.Modals.SigninModal
     exposing
         ( Model
-        , defaultModel
+        , initModel
         , update
         , view
         , setSignupEnabled
@@ -32,9 +32,9 @@ type RequestStatus
     | Rejected
 
 
-defaultModel : Model
-defaultModel =
-    { signupEnabled = False
+initModel : Bool -> Model
+initModel signupEnabled =
+    { signupEnabled = signupEnabled
     , email = ""
     , requestProcessing = False
     , requestStatus = None

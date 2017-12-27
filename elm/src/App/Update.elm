@@ -208,7 +208,10 @@ update msg model =
             ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
-            { model | signinModal = App.Modals.SigninModal.defaultModel }
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel model.signinModal.signupEnabled
+            }
                 |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
