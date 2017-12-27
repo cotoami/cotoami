@@ -85,10 +85,12 @@ type Msg
       --
     | PinOrUnpinCotonoma CotonomaKey Bool
     | CotonomaPinnedOrUnpinned (Result Http.Error String)
+    | LoadMorePostsInCotonoma CotonomaKey
       --
       -- Timeline
       --
     | PostsFetched (Result Http.Error PaginatedPosts)
+    | LoadMorePosts
     | ImageLoaded
     | EditorFocus
     | EditorInput String

@@ -12,7 +12,7 @@ defmodule Cotoami.CotoController do
 
   def index(conn, %{"page" => page}, amishi) do
     page_index = String.to_integer(page)
-    paginated_results = CotoService.get_cotos_by_amishi(amishi, 3, page_index)
+    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index)
     render(conn, "cotos.json", paginated_results)
   end
 

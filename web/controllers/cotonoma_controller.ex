@@ -63,7 +63,7 @@ defmodule Cotoami.CotonomaController do
 
   def cotos(conn, %{"key" => key, "page" => page}, amishi) do
     page_index = String.to_integer(page)
-    case CotoService.get_cotos_by_cotonoma(key, amishi, 30, page_index) do
+    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index) do
       nil ->
         send_resp(conn, :not_found, "")
       paginated_results ->

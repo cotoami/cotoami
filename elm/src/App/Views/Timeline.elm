@@ -38,7 +38,7 @@ view context session graph ready timeline =
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
     div [ id "timeline", class "timeline" ]
-        [ moreButton model
+        [ moreButton context model
         , model.posts
             |> List.reverse
             |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
@@ -70,8 +70,8 @@ timelineDiv context graph model =
         ]
 
 
-moreButton : Timeline -> Html Msg
-moreButton timeline =
+moreButton : Context -> Timeline -> Html Msg
+moreButton context timeline =
     if timeline.more then
         div [ class "more-button-div" ]
             [ if timeline.loadingMore then
@@ -80,7 +80,13 @@ moreButton timeline =
                     [ img [ src "/images/loading-horizontal.gif" ] [] ]
               else
                 button
-                    [ class "button more-button" ]
+                    [ class "button more-button"
+                    , onClick
+                        (context.cotonoma
+                            |> Maybe.map (\cotonoma -> LoadMorePostsInCotonoma cotonoma.key)
+                            |> Maybe.withDefault LoadMorePosts
+                        )
+                    ]
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
     else

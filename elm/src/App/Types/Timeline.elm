@@ -51,11 +51,6 @@ openOrCloseEditor open timeline =
     { timeline | editorOpen = open }
 
 
-setPosts : List Post -> Timeline -> Timeline
-setPosts posts timeline =
-    { timeline | posts = posts, loading = False }
-
-
 addPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
 addPaginatedPosts paginatedPosts timeline =
     { timeline
@@ -63,6 +58,7 @@ addPaginatedPosts paginatedPosts timeline =
         , loading = False
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
+        , loadingMore = False
     }
 
 
@@ -101,6 +97,11 @@ setLoading timeline =
         , loading = True
         , initializingScrollPos = True
     }
+
+
+setLoadingMore : Timeline -> Timeline
+setLoadingMore timeline =
+    { timeline | loadingMore = True }
 
 
 updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline

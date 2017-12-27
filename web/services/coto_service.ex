@@ -37,21 +37,23 @@ defmodule Cotoami.CotoService do
     end
   end
 
-  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_size, page_index) do
+  @page_size 30
+
+  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> preload([:posted_in, :cotonoma])
-    |> query_with_pagination(page_size, page_index, &(complement_amishi(&1, amishi)))
+    |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
   end
 
-  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_size, page_index) do
+  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index) do
     case CotonomaService.get_by_key(key) do
       nil -> nil
       cotonoma ->
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
         |> preload([:amishi, :posted_in, :cotonoma])
-        |> query_with_pagination(page_size, page_index, &(complement_amishi(&1, amishi)))
+        |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
         |> Map.put(:cotonoma, cotonoma)
     end
   end
