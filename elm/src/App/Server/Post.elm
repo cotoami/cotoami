@@ -36,18 +36,27 @@ decodePaginatedPosts =
         |> required "total_pages" int
 
 
-fetchPosts : Cmd Msg
-fetchPosts =
-    Http.send PostsFetched (Http.get "/api/cotos" decodePaginatedPosts)
+fetchPosts : Int -> Cmd Msg
+fetchPosts pageIndex =
+    let
+        url =
+            "/api/cotos?page=" ++ (toString pageIndex)
+    in
+        Http.send PostsFetched <|
+            Http.get url decodePaginatedPosts
 
 
-fetchCotonomaPosts : CotonomaKey -> Cmd Msg
-fetchCotonomaPosts key =
-    Http.send CotonomaFetched <|
-        Http.get ("/api/cotonomas/" ++ key ++ "/cotos") <|
-            Decode.map2 (,)
-                (Decode.field "cotonoma" decodeCotonoma)
-                (Decode.field "paginated_cotos" decodePaginatedPosts)
+fetchCotonomaPosts : CotonomaKey -> Int -> Cmd Msg
+fetchCotonomaPosts key pageIndex =
+    let
+        url =
+            "/api/cotonomas/" ++ key ++ "/cotos?page=" ++ (toString pageIndex)
+    in
+        Http.send CotonomaFetched <|
+            Http.get url <|
+                Decode.map2 (,)
+                    (Decode.field "cotonoma" decodeCotonoma)
+                    (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post

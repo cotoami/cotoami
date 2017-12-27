@@ -64,6 +64,11 @@ addPaginatedPosts paginatedPosts timeline =
     }
 
 
+nextPageIndex : Timeline -> Int
+nextPageIndex timeline =
+    timeline.pageIndex + 1
+
+
 getCoto : CotoId -> Timeline -> Maybe Coto
 getCoto cotoId timeline =
     timeline.posts

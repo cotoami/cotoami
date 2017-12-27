@@ -795,7 +795,7 @@ loadHome model =
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchPosts
+        ! [ fetchPosts 0
           , fetchCotonomas
           , fetchGraph Nothing
           ]
@@ -823,7 +823,7 @@ loadCotonoma key model =
         , navigationOpen = False
     }
         ! [ fetchCotonomas
-          , fetchCotonomaPosts key
+          , fetchCotonomaPosts key 0
           , fetchGraph (Just key)
           ]
 
