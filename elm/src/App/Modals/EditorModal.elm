@@ -249,6 +249,7 @@ cotoEditor model =
             div [ class "content-input" ]
                 [ textarea
                     [ id "editor-modal-content-input"
+                    , placeholder "Write your Coto in Markdown"
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
                     , case model.mode of
