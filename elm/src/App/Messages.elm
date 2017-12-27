@@ -6,7 +6,7 @@ import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
-import App.Types.Post exposing (Post)
+import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
@@ -88,7 +88,7 @@ type Msg
       --
       -- Timeline
       --
-    | PostsFetched (Result Http.Error (List Post))
+    | PostsFetched (Result Http.Error PaginatedPosts)
     | ImageLoaded
     | EditorFocus
     | EditorInput String

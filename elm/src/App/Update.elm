@@ -528,10 +528,10 @@ update msg model =
         --
         -- Timeline
         --
-        PostsFetched (Ok posts) ->
+        PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.setPosts paginatedPosts.posts model.timeline
             }
                 |> \model -> ( model, initializeTimelineScrollPosition model )
 

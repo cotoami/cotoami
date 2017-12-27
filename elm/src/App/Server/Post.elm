@@ -7,7 +7,7 @@ import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
 import Util.HttpUtil exposing (httpPost)
 import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
-import App.Types.Post exposing (Post)
+import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
@@ -28,9 +28,17 @@ decodePost =
         |> hardcoded False
 
 
+decodePaginatedPosts : Decode.Decoder PaginatedPosts
+decodePaginatedPosts =
+    Json.Decode.Pipeline.decode PaginatedPosts
+        |> required "cotos" (Decode.list decodePost)
+        |> required "page_index" int
+        |> required "total_pages" int
+
+
 fetchPosts : Cmd Msg
 fetchPosts =
-    Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
+    Http.send PostsFetched (Http.get "/api/cotos" decodePaginatedPosts)
 
 
 fetchCotonomaPosts : CotonomaKey -> Cmd Msg
