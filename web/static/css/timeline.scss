@@ -34,6 +34,7 @@ div.loading-overlay {
 div.timeline {
   overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 10px;
   padding-bottom: 10px;
  
