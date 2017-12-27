@@ -158,16 +158,19 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        CotonomaFetched (Ok ( cotonoma, posts )) ->
+        CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model
                 | context = setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
                 |> \model ->
                     ( model
                     , Cmd.batch
-                        [ initializeTimelineScrollPosition model
+                        [ if paginatedPosts.pageIndex == 0 then
+                            initializeTimelineScrollPosition model
+                          else
+                            Cmd.none
                         , fetchSubCotonomas (Just cotonoma)
                         ]
                     )
@@ -208,7 +211,10 @@ update msg model =
             ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
 
         OpenSigninModal ->
-            { model | signinModal = App.Modals.SigninModal.defaultModel }
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel model.signinModal.signupEnabled
+            }
                 |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
@@ -522,18 +528,37 @@ update msg model =
         CotonomaPinnedOrUnpinned (Err _) ->
             ( model, Cmd.none )
 
+        LoadMorePostsInCotonoma cotonomaKey ->
+            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+                |> \model ->
+                    ( model
+                    , fetchCotonomaPosts
+                        cotonomaKey
+                        (App.Types.Timeline.nextPageIndex model.timeline)
+                    )
+
         --
         -- Timeline
         --
-        PostsFetched (Ok posts) ->
+        PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
-                |> \model -> ( model, initializeTimelineScrollPosition model )
+                |> \model ->
+                    ( model
+                    , if paginatedPosts.pageIndex == 0 then
+                        initializeTimelineScrollPosition model
+                      else
+                        Cmd.none
+                    )
 
         PostsFetched (Err _) ->
             model ! []
+
+        LoadMorePosts ->
+            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+                |> \model -> ( model, fetchPosts (App.Types.Timeline.nextPageIndex model.timeline) )
 
         ImageLoaded ->
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
@@ -792,7 +817,7 @@ loadHome model =
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchPosts
+        ! [ fetchPosts 0
           , fetchCotonomas
           , fetchGraph Nothing
           ]
@@ -820,7 +845,7 @@ loadCotonoma key model =
         , navigationOpen = False
     }
         ! [ fetchCotonomas
-          , fetchCotonomaPosts key
+          , fetchCotonomaPosts key 0
           , fetchGraph (Just key)
           ]
 

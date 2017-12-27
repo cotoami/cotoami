@@ -87,3 +87,10 @@ isPostedInCoto coto post =
 isSelfOrPostedIn : Coto -> Post -> Bool
 isSelfOrPostedIn coto post =
     post.cotoId == Just coto.id || (isPostedInCoto coto post)
+
+
+type alias PaginatedPosts =
+    { posts : List Post
+    , pageIndex : Int
+    , totalPages : Int
+    }

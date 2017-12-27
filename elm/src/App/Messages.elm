@@ -6,7 +6,7 @@ import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
-import App.Types.Post exposing (Post)
+import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
 import App.Types.Traversal exposing (Traverse)
@@ -33,7 +33,7 @@ type Msg
     | SessionFetched (Result Http.Error Session)
     | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaFetched (Result Http.Error ( Cotonoma, List Post ))
+    | CotonomaFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
     | CotonomaStatsFetched (Result Http.Error CotonomaStats)
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
@@ -85,10 +85,12 @@ type Msg
       --
     | PinOrUnpinCotonoma CotonomaKey Bool
     | CotonomaPinnedOrUnpinned (Result Http.Error String)
+    | LoadMorePostsInCotonoma CotonomaKey
       --
       -- Timeline
       --
-    | PostsFetched (Result Http.Error (List Post))
+    | PostsFetched (Result Http.Error PaginatedPosts)
+    | LoadMorePosts
     | ImageLoaded
     | EditorFocus
     | EditorInput String

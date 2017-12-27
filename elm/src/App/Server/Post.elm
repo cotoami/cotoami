@@ -7,7 +7,7 @@ import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
 import Util.HttpUtil exposing (httpPost)
 import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
-import App.Types.Post exposing (Post)
+import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
@@ -28,18 +28,35 @@ decodePost =
         |> hardcoded False
 
 
-fetchPosts : Cmd Msg
-fetchPosts =
-    Http.send PostsFetched (Http.get "/api/cotos" (Decode.list decodePost))
+decodePaginatedPosts : Decode.Decoder PaginatedPosts
+decodePaginatedPosts =
+    Json.Decode.Pipeline.decode PaginatedPosts
+        |> required "cotos" (Decode.list decodePost)
+        |> required "page_index" int
+        |> required "total_pages" int
 
 
-fetchCotonomaPosts : CotonomaKey -> Cmd Msg
-fetchCotonomaPosts key =
-    Http.send CotonomaFetched <|
-        Http.get ("/api/cotonomas/" ++ key ++ "/cotos") <|
-            Decode.map2 (,)
-                (Decode.field "cotonoma" decodeCotonoma)
-                (Decode.field "cotos" (Decode.list decodePost))
+fetchPosts : Int -> Cmd Msg
+fetchPosts pageIndex =
+    let
+        url =
+            "/api/cotos?page=" ++ (toString pageIndex)
+    in
+        Http.send PostsFetched <|
+            Http.get url decodePaginatedPosts
+
+
+fetchCotonomaPosts : CotonomaKey -> Int -> Cmd Msg
+fetchCotonomaPosts key pageIndex =
+    let
+        url =
+            "/api/cotonomas/" ++ key ++ "/cotos?page=" ++ (toString pageIndex)
+    in
+        Http.send CotonomaFetched <|
+            Http.get url <|
+                Decode.map2 (,)
+                    (Decode.field "cotonoma" decodeCotonoma)
+                    (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post
