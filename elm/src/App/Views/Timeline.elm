@@ -74,9 +74,14 @@ moreButton : Timeline -> Html Msg
 moreButton timeline =
     if timeline.more then
         div [ class "more-button-div" ]
-            [ button
-                [ class "button more-button" ]
-                [ materialIcon "arrow_drop_up" Nothing ]
+            [ if timeline.loadingMore then
+                button
+                    [ class "button more-button loading", disabled True ]
+                    [ img [ src "/images/loading-horizontal.gif" ] [] ]
+              else
+                button
+                    [ class "button more-button" ]
+                    [ materialIcon "arrow_drop_up" Nothing ]
             ]
     else
         div [] []

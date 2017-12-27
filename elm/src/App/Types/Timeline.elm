@@ -22,6 +22,7 @@ type alias Timeline =
     , initializingScrollPos : Bool
     , pageIndex : Int
     , more : Bool
+    , loadingMore : Bool
     }
 
 
@@ -36,6 +37,7 @@ defaultTimeline =
     , initializingScrollPos = False
     , pageIndex = 0
     , more = False
+    , loadingMore = False
     }
 
 
