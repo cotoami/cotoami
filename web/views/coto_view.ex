@@ -2,7 +2,7 @@ defmodule Cotoami.CotoView do
   use Cotoami.Web, :view
   alias Cotoami.{Cotonoma, CotonomaView, AmishiView}
 
-  def render("index.json", %{
+  def render("cotos.json", %{
     rows: rows, 
     page_index: page_index, 
     total_pages: total_pages

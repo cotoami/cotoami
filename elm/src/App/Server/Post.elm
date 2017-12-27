@@ -47,7 +47,7 @@ fetchCotonomaPosts key =
         Http.get ("/api/cotonomas/" ++ key ++ "/cotos") <|
             Decode.map2 (,)
                 (Decode.field "cotonoma" decodeCotonoma)
-                (Decode.field "cotos" (Decode.list decodePost))
+                (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
 postRequest : String -> Maybe Cotonoma -> Post -> Request Post

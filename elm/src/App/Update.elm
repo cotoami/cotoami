@@ -158,11 +158,11 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        CotonomaFetched (Ok ( cotonoma, posts )) ->
+        CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model
                 | context = setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
                 |> \model ->
                     ( model
