@@ -531,7 +531,7 @@ update msg model =
         PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.setPosts paginatedPosts.posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
                 |> \model -> ( model, initializeTimelineScrollPosition model )
 

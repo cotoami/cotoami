@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation)
 import App.Types.Context exposing (CotoSelection, Context)
@@ -37,34 +37,49 @@ view context session graph ready timeline =
 
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
-    model.posts
-        |> List.reverse
-        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
-        |> List.map
-            (\postsOnDay ->
-                let
-                    lang =
-                        context.session
-                            |> Maybe.map (\session -> session.lang)
-                            |> Maybe.withDefault ""
+    div [ id "timeline", class "timeline" ]
+        [ moreButton model
+        , model.posts
+            |> List.reverse
+            |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
+            |> List.map
+                (\postsOnDay ->
+                    let
+                        lang =
+                            context.session
+                                |> Maybe.map (\session -> session.lang)
+                                |> Maybe.withDefault ""
 
-                    postDateString =
-                        List.head postsOnDay
-                            |> Maybe.andThen (\post -> post.postedAt)
-                            |> Maybe.map (formatDay lang)
-                            |> Maybe.withDefault ""
-                in
-                    ( postDateString
-                    , div
-                        [ class "posts-on-day" ]
-                        [ div
-                            [ class "date-header" ]
-                            [ span [ class "date" ] [ text postDateString ] ]
-                        , postsDiv context graph postsOnDay
-                        ]
-                    )
-            )
-        |> Html.Keyed.node "div" [ id "timeline", class "timeline" ]
+                        postDateString =
+                            List.head postsOnDay
+                                |> Maybe.andThen (\post -> post.postedAt)
+                                |> Maybe.map (formatDay lang)
+                                |> Maybe.withDefault ""
+                    in
+                        ( postDateString
+                        , div
+                            [ class "posts-on-day" ]
+                            [ div
+                                [ class "date-header" ]
+                                [ span [ class "date" ] [ text postDateString ] ]
+                            , postsDiv context graph postsOnDay
+                            ]
+                        )
+                )
+            |> Html.Keyed.node "div" [ class "posts" ]
+        ]
+
+
+moreButton : Timeline -> Html Msg
+moreButton timeline =
+    if timeline.more then
+        div [ class "more-button-div" ]
+            [ button
+                [ class "button more-button" ]
+                [ materialIcon "arrow_drop_up" Nothing ]
+            ]
+    else
+        div [] []
 
 
 postsDiv : Context -> Graph -> List Post -> Html Msg
