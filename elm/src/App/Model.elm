@@ -270,7 +270,7 @@ connect direction cotos target model =
     model.context.session
         |> Maybe.map
             (\session ->
-                batchConnect session direction cotos target model.graph
+                batchConnect session.id direction cotos target model.graph
                     |> (\graph ->
                             { model
                                 | graph = graph

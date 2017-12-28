@@ -406,7 +406,7 @@ update msg model =
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = pinCoto session coto model.graph }
+                    { model | graph = pinCoto session.id coto model.graph }
                         ! [ App.Server.Graph.pinCotos
                                 model.context.clientId
                                 (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)

@@ -150,15 +150,15 @@ hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
 
 
-pinCoto : Session -> Coto -> Graph -> Graph
-pinCoto session coto graph =
+pinCoto : AmishiId -> Coto -> Graph -> Graph
+pinCoto amishiId coto graph =
     if pinned coto.id graph then
         graph
     else
         { graph
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
-                (initConnection session.id Nothing coto.id) :: graph.rootConnections
+                (initConnection amishiId Nothing coto.id) :: graph.rootConnections
         }
 
 
@@ -171,8 +171,8 @@ unpinCoto cotoId graph =
     }
 
 
-connect : Session -> Coto -> Coto -> Graph -> Graph
-connect session start end graph =
+connect : AmishiId -> Coto -> Coto -> Graph -> Graph
+connect amishiId start end graph =
     let
         cotos =
             graph.cotos
@@ -180,7 +180,7 @@ connect session start end graph =
                 |> Dict.insert end.id end
 
         newConnection =
-            initConnection session.id (Just start.id) end.id
+            initConnection amishiId (Just start.id) end.id
 
         connections =
             if connected start.id end.id graph then
@@ -199,34 +199,34 @@ connect session start end graph =
         { graph | cotos = cotos, connections = connections }
 
 
-connectOneToMany : Session -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany session startCoto endCotos graph =
+connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
+connectOneToMany amishiId startCoto endCotos graph =
     List.foldr
         (\endCoto graph ->
-            connect session startCoto endCoto graph
+            connect amishiId startCoto endCoto graph
         )
         graph
         endCotos
 
 
-connectManyToOne : Session -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne session startCotos endCoto graph =
+connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
+connectManyToOne amishiId startCotos endCoto graph =
     List.foldr
         (\startCoto graph ->
-            connect session startCoto endCoto graph
+            connect amishiId startCoto endCoto graph
         )
         graph
         startCotos
 
 
-batchConnect : Session -> Direction -> List Coto -> Coto -> Graph -> Graph
-batchConnect session direction cotos target graph =
+batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
+batchConnect amishiId direction cotos target graph =
     case direction of
         Outbound ->
-            connectOneToMany session target cotos graph
+            connectOneToMany amishiId target cotos graph
 
         Inbound ->
-            connectManyToOne session cotos target graph
+            connectManyToOne amishiId cotos target graph
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
