@@ -34,7 +34,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
-import App.Server.Coto
+import App.Server.Coto exposing (decodeCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
@@ -340,17 +340,19 @@ update msg model =
             ( model, Cmd.none )
 
         CotoUpdated (Ok coto) ->
-            (model
+            ( (model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
                 |> clearModals
-            )
-                ! if coto.asCotonoma then
+              )
+            , if coto.asCotonoma then
+                Cmd.batch
                     [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
-                  else
-                    []
+              else
+                Cmd.none
+            )
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -715,6 +717,9 @@ update msg model =
         --
         PostPushed payload ->
             App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
+
+        UpdatePushed payload ->
+            App.Pushed.handle "coto" decodeCoto App.Pushed.handleUpdate payload model
 
         DeletePushed payload ->
             App.Pushed.handle "cotoId" Decode.string App.Pushed.handleDelete payload model

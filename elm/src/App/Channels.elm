@@ -13,6 +13,8 @@ import App.Messages exposing (..)
 globalChannel : Channel Msg
 globalChannel =
     Channel.init ("global")
+        |> Channel.on "update"
+            (\payload -> UpdatePushed payload)
         |> Channel.on "delete"
             (\payload -> DeletePushed payload)
 

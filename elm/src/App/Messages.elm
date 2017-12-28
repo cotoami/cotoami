@@ -120,6 +120,7 @@ type Msg
       -- Pushed
       --
     | PostPushed Value
+    | UpdatePushed Value
     | DeletePushed Value
       --
       -- Sub components

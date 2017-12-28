@@ -51,6 +51,7 @@ defmodule Cotoami.CotoController do
             %{coto | posted_in: increment_timeline_revision(posted_in)}
         end
       end)
+    broadcast_update(coto, conn.assigns.client_id)
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)

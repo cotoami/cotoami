@@ -14,13 +14,13 @@ defmodule Cotoami.ControllerHelpers do
     end
   end
 
-  def broadcast_post(coto, cotonoma_key, client_id) do
+  def broadcast_update(coto, client_id) do
     Cotoami.Endpoint.broadcast(
-      "cotonomas:#{cotonoma_key}",
-      "post",
+      "global",
+      "update",
       %{
-        clientId: client_id, 
-        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
+        clientId: client_id,
+        coto: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
       }
     )
   end
@@ -32,6 +32,17 @@ defmodule Cotoami.ControllerHelpers do
       %{
         clientId: client_id,
         cotoId: coto_id
+      }
+    )
+  end
+
+  def broadcast_post(coto, cotonoma_key, client_id) do
+    Cotoami.Endpoint.broadcast(
+      "cotonomas:#{cotonoma_key}",
+      "post",
+      %{
+        clientId: client_id, 
+        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
       }
     )
   end
