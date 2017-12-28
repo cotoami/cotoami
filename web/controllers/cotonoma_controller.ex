@@ -26,7 +26,6 @@ defmodule Cotoami.CotonomaController do
   def create(
     conn,
     %{
-      "clientId" => clientId,
       "cotonoma" => %{
         "cotonoma_id" => cotonoma_id,
         "name" => name
@@ -43,7 +42,7 @@ defmodule Cotoami.CotonomaController do
         end
       end)
     if posted_in do
-      broadcast_post(cotonoma_coto, posted_in.key, clientId)
+      broadcast_post(cotonoma_coto, posted_in.key, conn.assigns.client_id)
     end
     render(conn, CotoView, "created.json", coto: cotonoma_coto)
   rescue

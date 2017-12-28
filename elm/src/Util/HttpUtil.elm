@@ -18,7 +18,7 @@ type ClientId
 commonRequestHeaders : ClientId -> List Http.Header
 commonRequestHeaders (ClientId clientId) =
     [ Http.header "X-Requested-With" "XMLHttpRequest"
-    , Http.header "X-Cotoami-ClientId" clientId
+    , Http.header "X-Cotoami-Client-Id" clientId
     ]
 
 

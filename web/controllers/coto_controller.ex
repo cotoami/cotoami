@@ -19,7 +19,6 @@ defmodule Cotoami.CotoController do
   def create(
     conn,
     %{
-      "clientId" => clientId,
       "coto" => %{
         "content" => content,
         "summary" => summary,
@@ -38,7 +37,7 @@ defmodule Cotoami.CotoController do
       end)
     coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
-      broadcast_post(coto, posted_in.key, clientId)
+      broadcast_post(coto, posted_in.key, conn.assigns.client_id)
     end
     render(conn, "created.json", coto: coto)
   end
