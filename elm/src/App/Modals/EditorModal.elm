@@ -116,8 +116,8 @@ setCotoSaveError error model =
             }
 
 
-update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update msg model =
+update : Context -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update context msg model =
     case msg of
         EditorInput content ->
             ( { model | content = content }, Cmd.none )
@@ -142,6 +142,7 @@ update msg model =
             , case model.mode of
                 Edit coto ->
                     App.Server.Coto.updateContent
+                        context.clientId
                         coto.id
                         model.summary
                         model.content

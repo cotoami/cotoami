@@ -6,7 +6,6 @@ import Process
 import Time
 import Maybe exposing (andThen, withDefault)
 import Keyboard exposing (KeyCode)
-import Json.Decode as Decode
 import Http exposing (Error(..))
 import Util.Keys exposing (enter, escape, n)
 import Navigation
@@ -33,7 +32,7 @@ import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session exposing (decodeSessionNotFoundBodyString)
 import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
-import App.Server.Coto exposing (deleteCoto)
+import App.Server.Coto
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
@@ -318,7 +317,7 @@ update msg model =
             ({ model | timeline = setBeingDeleted coto model.timeline }
                 |> clearModals
             )
-                ! [ deleteCoto coto.id
+                ! [ App.Server.Coto.deleteCoto model.context.clientId coto.id
                   , Process.sleep (1 * Time.second)
                         |> Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeleteCoto coto)
@@ -382,7 +381,7 @@ update msg model =
                 )
 
         Cotonomatize cotoId ->
-            ( model, App.Server.Coto.cotonomatize cotoId )
+            ( model, App.Server.Coto.cotonomatize model.context.clientId cotoId )
 
         Cotonomatized (Ok coto) ->
             ( model
@@ -409,6 +408,7 @@ update msg model =
                 (\session coto ->
                     { model | graph = pinCoto session coto model.graph }
                         ! [ App.Server.Graph.pinCotos
+                                model.context.clientId
                                 (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                                 [ cotoId ]
                           , App.Commands.scrollPinnedCotosToBottom NoOp
@@ -438,6 +438,7 @@ update msg model =
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId }
                 ! [ App.Server.Graph.unpinCoto
+                        model.context.clientId
                         (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                         cotoId
                   ]
@@ -476,6 +477,7 @@ update msg model =
             ( App.Model.connect direction objects target model
                 |> closeModal App.Model.ConnectModal
             , App.Server.Graph.connect
+                model.context.clientId
                 (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                 direction
                 (List.map (\coto -> coto.id) objects)
@@ -503,6 +505,7 @@ update msg model =
                 | graph = disconnect ( startId, endId ) model.graph
             }
                 ! [ App.Server.Graph.disconnect
+                        model.context.clientId
                         (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                         startId
                         endId
@@ -518,7 +521,7 @@ update msg model =
         -- Cotonoma
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
+            ( model, pinOrUnpinCotonoma model.context.clientId pinOrUnpin cotonomaKey )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
             ( { model | cotonomasLoading = True }
@@ -612,7 +615,7 @@ update msg model =
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> clearModals
-                |> connectPost response
+                |> connectPost model.context.clientId response
 
         PostedAndConnect postId (Err _) ->
             ( model, Cmd.none )
@@ -722,7 +725,7 @@ update msg model =
                         ! [ Cmd.map SigninModalMsg subCmd ]
 
         EditorModalMsg subMsg ->
-            App.Modals.EditorModal.update subMsg model.editorModal
+            App.Modals.EditorModal.update model.context subMsg model.editorModal
                 |> (\( editorModal, cmd ) ->
                         ( { model | editorModal = editorModal }, cmd )
                    )
@@ -775,7 +778,7 @@ update msg model =
                         ! [ Cmd.map InviteModalMsg subCmd ]
 
         ImportModalMsg subMsg ->
-            App.Modals.ImportModal.update subMsg model.importModal
+            App.Modals.ImportModal.update model.context subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
 
@@ -915,8 +918,8 @@ openCoto coto model =
     )
 
 
-connectPost : Post -> Model -> ( Model, Cmd Msg )
-connectPost post model =
+connectPost : String -> Post -> Model -> ( Model, Cmd Msg )
+connectPost clientId post model =
     post.cotoId
         |> andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
@@ -933,6 +936,7 @@ connectPost post model =
                 in
                     ( App.Model.connect direction objects target model
                     , App.Server.Graph.connect
+                        clientId
                         maybeCotonomaKey
                         direction
                         (List.map (\coto -> coto.id) objects)

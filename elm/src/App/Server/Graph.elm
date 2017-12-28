@@ -98,8 +98,8 @@ cotoIdsAsJsonBody key cotoIds =
             ]
 
 
-pinCotos : Maybe CotonomaKey -> List CotoId -> Cmd Msg
-pinCotos maybeCotonomaKey cotoIds =
+pinCotos : String -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
+pinCotos clientId maybeCotonomaKey cotoIds =
     let
         url =
             pinUrl maybeCotonomaKey
@@ -107,16 +107,16 @@ pinCotos maybeCotonomaKey cotoIds =
         body =
             cotoIdsAsJsonBody "coto_ids" cotoIds
     in
-        Http.send CotoPinned (httpPut url body (Decode.succeed "done"))
+        Http.send CotoPinned (httpPut url clientId body (Decode.succeed "done"))
 
 
-unpinCoto : Maybe CotonomaKey -> CotoId -> Cmd Msg
-unpinCoto maybeCotonomaKey cotoId =
+unpinCoto : String -> Maybe CotonomaKey -> CotoId -> Cmd Msg
+unpinCoto clientId maybeCotonomaKey cotoId =
     let
         url =
             (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
     in
-        Http.send CotoUnpinned (httpDelete url)
+        Http.send CotoUnpinned (httpDelete url clientId)
 
 
 connectUrl : Maybe CotonomaKey -> CotoId -> String
@@ -129,14 +129,15 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connectTask : Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
-connectTask maybeCotonomaKey direction objects subject =
+connectTask : String -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
+connectTask clientId maybeCotonomaKey direction objects subject =
     let
         requests =
             case direction of
                 App.Types.Graph.Outbound ->
                     [ httpPut
                         (connectUrl maybeCotonomaKey subject)
+                        clientId
                         (cotoIdsAsJsonBody "end_ids" objects)
                         (Decode.succeed "done")
                     ]
@@ -146,6 +147,7 @@ connectTask maybeCotonomaKey direction objects subject =
                         (\startId ->
                             httpPut
                                 (connectUrl maybeCotonomaKey startId)
+                                clientId
                                 (cotoIdsAsJsonBody "end_ids" [ subject ])
                                 (Decode.succeed "done")
                         )
@@ -154,16 +156,16 @@ connectTask maybeCotonomaKey direction objects subject =
         requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
-connect maybeCotonomaKey direction objects subject =
-    connectTask maybeCotonomaKey direction objects subject
+connect : String -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
+connect clientId maybeCotonomaKey direction objects subject =
+    connectTask clientId maybeCotonomaKey direction objects subject
         |> Task.attempt Connected
 
 
-disconnect : Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
-disconnect maybeCotonomaKey startId endId =
+disconnect : String -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
+disconnect clientId maybeCotonomaKey startId endId =
     let
         url =
             (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
-        Http.send ConnectionDeleted (httpDelete url)
+        Http.send ConnectionDeleted (httpDelete url clientId)

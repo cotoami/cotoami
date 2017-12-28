@@ -24,13 +24,13 @@ decodeCoto =
         (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
 
 
-deleteCoto : CotoId -> Cmd Msg
-deleteCoto cotoId =
-    Http.send CotoDeleted ("/api/cotos/" ++ cotoId |> httpDelete)
+deleteCoto : String -> CotoId -> Cmd Msg
+deleteCoto clientId cotoId =
+    Http.send CotoDeleted (httpDelete ("/api/cotos/" ++ cotoId) clientId)
 
 
-updateContent : CotoId -> String -> String -> Cmd Msg
-updateContent cotoId summary content =
+updateContent : String -> CotoId -> String -> String -> Cmd Msg
+updateContent clientId cotoId summary content =
     let
         url =
             "/api/cotos/" ++ cotoId
@@ -46,13 +46,14 @@ updateContent cotoId summary content =
                       )
                     ]
     in
-        Http.send CotoUpdated (httpPut url body decodeCoto)
+        Http.send CotoUpdated (httpPut url clientId body decodeCoto)
 
 
-cotonomatize : CotoId -> Cmd Msg
-cotonomatize cotoId =
+cotonomatize : String -> CotoId -> Cmd Msg
+cotonomatize clientId cotoId =
     Http.send Cotonomatized <|
         httpPut
             ("/api/cotos/" ++ cotoId ++ "/cotonomatize")
+            clientId
             Http.emptyBody
             decodeCoto

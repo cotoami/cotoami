@@ -63,7 +63,8 @@ postRequest : String -> Maybe Cotonoma -> Post -> Request Post
 postRequest clientId maybeCotonoma post =
     httpPost
         "/api/cotos"
-        (Http.jsonBody (encodePost clientId maybeCotonoma post))
+        clientId
+        (Http.jsonBody (encodePost maybeCotonoma post))
         decodePost
 
 
@@ -78,15 +79,15 @@ postCotonoma clientId maybeCotonoma postId name =
     Http.send (CotonomaPosted postId) <|
         httpPost
             "/api/cotonomas"
-            (Http.jsonBody (encodeCotonoma clientId maybeCotonoma postId name))
+            clientId
+            (Http.jsonBody (encodeCotonoma maybeCotonoma postId name))
             decodePost
 
 
-encodePost : String -> Maybe Cotonoma -> Post -> Encode.Value
-encodePost clientId maybeCotonoma post =
+encodePost : Maybe Cotonoma -> Post -> Encode.Value
+encodePost maybeCotonoma post =
     Encode.object
-        [ ( "clientId", Encode.string clientId )
-        , ( "coto"
+        [ ( "coto"
           , (Encode.object
                 [ ( "content", Encode.string post.content )
                 , ( "summary"

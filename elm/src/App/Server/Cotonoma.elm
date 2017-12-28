@@ -47,11 +47,10 @@ fetchSubCotonomas maybeCotonoma =
         |> Maybe.withDefault Cmd.none
 
 
-encodeCotonoma : String -> Maybe Cotonoma -> Int -> String -> Encode.Value
-encodeCotonoma clientId maybeCotonoma postId name =
+encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value
+encodeCotonoma maybeCotonoma postId name =
     Encode.object
-        [ ( "clientId", Encode.string clientId )
-        , ( "cotonoma"
+        [ ( "cotonoma"
           , (Encode.object
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
@@ -69,17 +68,17 @@ encodeCotonoma clientId maybeCotonoma postId name =
         ]
 
 
-pinOrUnpinCotonoma : Bool -> CotonomaKey -> Cmd Msg
-pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
+pinOrUnpinCotonoma : String -> Bool -> CotonomaKey -> Cmd Msg
+pinOrUnpinCotonoma clientId pinOrUnpin cotonomaKey =
     let
         url =
             "/api/cotonomas/pin/" ++ cotonomaKey
     in
         Http.send CotonomaPinnedOrUnpinned
             (if pinOrUnpin then
-                httpPut url Http.emptyBody Decode.string
+                httpPut url clientId Http.emptyBody Decode.string
              else
-                httpDelete url
+                httpDelete url clientId
             )
 
 
