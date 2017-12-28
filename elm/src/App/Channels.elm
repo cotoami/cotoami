@@ -6,7 +6,8 @@ import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (CotonomaKey)
-import App.Types.Amishi exposing (Presences)
+import App.Types.Amishi exposing (Amishi, Presences)
+import App.Server.Amishi
 import App.Messages exposing (..)
 
 
@@ -32,14 +33,16 @@ cotonomaChannel key =
 
 type alias Payload body =
     { clientId : ClientId
+    , amishi : Amishi
     , body : body
     }
 
 
 decodePayload : String -> Decode.Decoder body -> Decode.Decoder (Payload body)
 decodePayload bodyName bodyDecoder =
-    Decode.map2 Payload
+    Decode.map3 Payload
         (Decode.field "clientId" (Decode.map ClientId Decode.string))
+        (Decode.field "amishi" App.Server.Amishi.decodeAmishi)
         (Decode.field bodyName bodyDecoder)
 
 

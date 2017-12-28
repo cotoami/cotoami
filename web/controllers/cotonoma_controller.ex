@@ -42,7 +42,7 @@ defmodule Cotoami.CotonomaController do
         end
       end)
     if posted_in do
-      broadcast_post(cotonoma_coto, posted_in.key, conn.assigns.client_id)
+      broadcast_post(cotonoma_coto, posted_in.key, amishi, conn.assigns.client_id)
     end
     render(conn, CotoView, "created.json", coto: cotonoma_coto)
   rescue

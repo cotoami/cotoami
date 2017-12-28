@@ -37,7 +37,7 @@ defmodule Cotoami.CotoController do
       end)
     coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
-      broadcast_post(coto, posted_in.key, conn.assigns.client_id)
+      broadcast_post(coto, posted_in.key, amishi, conn.assigns.client_id)
     end
     render(conn, "created.json", coto: coto)
   end
@@ -51,7 +51,7 @@ defmodule Cotoami.CotoController do
             %{coto | posted_in: increment_timeline_revision(posted_in)}
         end
       end)
-    broadcast_update(coto, conn.assigns.client_id)
+    broadcast_update(coto, amishi, conn.assigns.client_id)
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
@@ -92,7 +92,7 @@ defmodule Cotoami.CotoController do
         posted_in -> increment_timeline_revision(posted_in)
       end
     end)
-    broadcast_delete(id, conn.assigns.client_id)
+    broadcast_delete(id, amishi, conn.assigns.client_id)
     send_resp(conn, :no_content, "")
   end
 end
