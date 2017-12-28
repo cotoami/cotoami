@@ -10,6 +10,7 @@ import Http exposing (Error(..))
 import Util.Keys exposing (enter, escape, n)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
+import Util.HttpUtil exposing (ClientId)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Amishi exposing (Presences, applyPresenceDiff)
@@ -918,7 +919,7 @@ openCoto coto model =
     )
 
 
-connectPost : String -> Post -> Model -> ( Model, Cmd Msg )
+connectPost : ClientId -> Post -> Model -> ( Model, Cmd Msg )
 connectPost clientId post model =
     post.cotoId
         |> andThen (\cotoId -> App.Model.getCoto cotoId model)

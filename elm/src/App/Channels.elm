@@ -4,6 +4,7 @@ import Dict
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
+import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (CotonomaKey)
 import App.Types.Amishi exposing (Presences)
 import App.Messages exposing (..)
@@ -21,7 +22,7 @@ cotonomaChannel key =
 
 
 type alias Payload body =
-    { clientId : String
+    { clientId : ClientId
     , body : body
     }
 
@@ -29,7 +30,7 @@ type alias Payload body =
 decodePayload : String -> Decode.Decoder body -> Decode.Decoder (Payload body)
 decodePayload bodyName bodyDecoder =
     Decode.map2 Payload
-        (Decode.field "clientId" Decode.string)
+        (Decode.field "clientId" (Decode.map ClientId Decode.string))
         (Decode.field bodyName bodyDecoder)
 
 

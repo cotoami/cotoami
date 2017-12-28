@@ -5,6 +5,7 @@ import Uuid
 import Random.Pcg exposing (initialSeed, step)
 import Keyboard exposing (KeyCode)
 import Exts.Maybe exposing (isNothing)
+import Util.HttpUtil exposing (ClientId(ClientId))
 import Util.Keys exposing (Modifier(..), isModifier, toModifier)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma)
@@ -15,7 +16,7 @@ type alias CotoSelection =
 
 
 type alias Context =
-    { clientId : String
+    { clientId : ClientId
     , session : Maybe Session
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
@@ -33,7 +34,7 @@ initContext seed =
     { clientId =
         initialSeed seed
             |> step Uuid.uuidGenerator
-            |> \( uuid, _ ) -> Uuid.toString uuid
+            |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
     , session = Nothing
     , cotonoma = Nothing
     , cotonomaLoading = False

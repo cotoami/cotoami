@@ -5,7 +5,7 @@ import Http
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
-import Util.HttpUtil exposing (httpPut, httpDelete)
+import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
@@ -68,7 +68,7 @@ encodeCotonoma maybeCotonoma postId name =
         ]
 
 
-pinOrUnpinCotonoma : String -> Bool -> CotonomaKey -> Cmd Msg
+pinOrUnpinCotonoma : ClientId -> Bool -> CotonomaKey -> Cmd Msg
 pinOrUnpinCotonoma clientId pinOrUnpin cotonomaKey =
     let
         url =

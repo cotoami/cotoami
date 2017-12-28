@@ -5,7 +5,7 @@ import Http exposing (Request)
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
-import Util.HttpUtil exposing (httpPost)
+import Util.HttpUtil exposing (ClientId, httpPost)
 import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
@@ -59,7 +59,7 @@ fetchCotonomaPosts key pageIndex =
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
-postRequest : String -> Maybe Cotonoma -> Post -> Request Post
+postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
 postRequest clientId maybeCotonoma post =
     httpPost
         "/api/cotos"
@@ -68,13 +68,13 @@ postRequest clientId maybeCotonoma post =
         decodePost
 
 
-post : String -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
+post : ClientId -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
 post clientId maybeCotonoma msgAfterPosted post =
     postRequest clientId maybeCotonoma post
         |> Http.send msgAfterPosted
 
 
-postCotonoma : String -> Maybe Cotonoma -> Int -> String -> Cmd Msg
+postCotonoma : ClientId -> Maybe Cotonoma -> Int -> String -> Cmd Msg
 postCotonoma clientId maybeCotonoma postId name =
     Http.send (CotonomaPosted postId) <|
         httpPost

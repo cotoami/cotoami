@@ -2,6 +2,7 @@ module App.Pushed exposing (..)
 
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
+import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Post exposing (Post)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
@@ -17,10 +18,17 @@ handle : String -> Decode.Decoder body -> Handler body -> Value -> Model -> ( Mo
 handle bodyName payloadDecoder handler payload model =
     case Decode.decodeValue (App.Channels.decodePayload bodyName payloadDecoder) payload of
         Ok decodedPayload ->
-            if decodedPayload.clientId /= model.context.clientId then
-                handler decodedPayload model
-            else
-                ( model, Cmd.none )
+            let
+                (ClientId senderId) =
+                    decodedPayload.clientId
+
+                (ClientId selfId) =
+                    model.context.clientId
+            in
+                if senderId /= selfId then
+                    handler decodedPayload model
+                else
+                    ( model, Cmd.none )
 
         Err err ->
             ( model, Cmd.none )

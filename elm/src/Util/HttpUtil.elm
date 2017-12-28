@@ -1,17 +1,28 @@
-module Util.HttpUtil exposing (httpRequestWithBody, httpDelete, httpPost, httpPut)
+module Util.HttpUtil
+    exposing
+        ( ClientId(ClientId)
+        , httpRequestWithBody
+        , httpDelete
+        , httpPost
+        , httpPut
+        )
 
 import Http
 import Json.Decode as Decode
 
 
-commonRequestHeaders : String -> List Http.Header
-commonRequestHeaders clientId =
+type ClientId
+    = ClientId String
+
+
+commonRequestHeaders : ClientId -> List Http.Header
+commonRequestHeaders (ClientId clientId) =
     [ Http.header "X-Requested-With" "XMLHttpRequest"
     , Http.header "X-Cotoami-ClientId" clientId
     ]
 
 
-httpRequestWithBody : String -> String -> String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpRequestWithBody : String -> String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpRequestWithBody method url clientId body decoder =
     Http.request
         { method = method
@@ -24,7 +35,7 @@ httpRequestWithBody method url clientId body decoder =
         }
 
 
-httpDelete : String -> String -> Http.Request String
+httpDelete : String -> ClientId -> Http.Request String
 httpDelete url clientId =
     Http.request
         { method = "DELETE"
@@ -37,11 +48,11 @@ httpDelete url clientId =
         }
 
 
-httpPost : String -> String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPost : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPost =
     httpRequestWithBody "POST"
 
 
-httpPut : String -> String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPut : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPut =
     httpRequestWithBody "PUT"

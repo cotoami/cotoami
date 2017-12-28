@@ -4,7 +4,7 @@ import Date
 import Http exposing (Request)
 import Json.Encode as Encode
 import Json.Decode as Decode
-import Util.HttpUtil exposing (httpDelete, httpPut)
+import Util.HttpUtil exposing (ClientId, httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, CotoUpdated, Cotonomatized))
 import App.Types.Coto exposing (CotoId, Coto, Cotonoma)
 import App.Server.Amishi exposing (decodeAmishi)
@@ -24,12 +24,12 @@ decodeCoto =
         (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
 
 
-deleteCoto : String -> CotoId -> Cmd Msg
+deleteCoto : ClientId -> CotoId -> Cmd Msg
 deleteCoto clientId cotoId =
     Http.send CotoDeleted (httpDelete ("/api/cotos/" ++ cotoId) clientId)
 
 
-updateContent : String -> CotoId -> String -> String -> Cmd Msg
+updateContent : ClientId -> CotoId -> String -> String -> Cmd Msg
 updateContent clientId cotoId summary content =
     let
         url =
@@ -49,7 +49,7 @@ updateContent clientId cotoId summary content =
         Http.send CotoUpdated (httpPut url clientId body decodeCoto)
 
 
-cotonomatize : String -> CotoId -> Cmd Msg
+cotonomatize : ClientId -> CotoId -> Cmd Msg
 cotonomatize clientId cotoId =
     Http.send Cotonomatized <|
         httpPut

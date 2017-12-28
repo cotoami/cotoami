@@ -8,7 +8,7 @@ import Json.Encode as Encode
 import Json.Decode as Decode
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
-import Util.HttpUtil exposing (httpPost)
+import Util.HttpUtil exposing (ClientId, httpPost)
 import App.Types.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg
@@ -79,7 +79,7 @@ update context msg model =
                    )
 
 
-importData : String -> String -> Cmd ImportModalMsg.Msg
+importData : ClientId -> String -> Cmd ImportModalMsg.Msg
 importData clientId data =
     let
         requestBody =

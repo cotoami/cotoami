@@ -6,7 +6,7 @@ import Task exposing (Task, andThen)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
-import Util.HttpUtil exposing (httpPut, httpDelete)
+import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Types.Graph exposing (Direction, Connection, initConnection, Graph, getCoto)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
@@ -98,7 +98,7 @@ cotoIdsAsJsonBody key cotoIds =
             ]
 
 
-pinCotos : String -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
+pinCotos : ClientId -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
 pinCotos clientId maybeCotonomaKey cotoIds =
     let
         url =
@@ -110,7 +110,7 @@ pinCotos clientId maybeCotonomaKey cotoIds =
         Http.send CotoPinned (httpPut url clientId body (Decode.succeed "done"))
 
 
-unpinCoto : String -> Maybe CotonomaKey -> CotoId -> Cmd Msg
+unpinCoto : ClientId -> Maybe CotonomaKey -> CotoId -> Cmd Msg
 unpinCoto clientId maybeCotonomaKey cotoId =
     let
         url =
@@ -129,7 +129,7 @@ connectUrl maybeCotonomaKey startId =
             "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
 
 
-connectTask : String -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
+connectTask : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
 connectTask clientId maybeCotonomaKey direction objects subject =
     let
         requests =
@@ -156,13 +156,13 @@ connectTask clientId maybeCotonomaKey direction objects subject =
         requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : String -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
+connect : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
 connect clientId maybeCotonomaKey direction objects subject =
     connectTask clientId maybeCotonomaKey direction objects subject
         |> Task.attempt Connected
 
 
-disconnect : String -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
+disconnect : ClientId -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
 disconnect clientId maybeCotonomaKey startId endId =
     let
         url =
