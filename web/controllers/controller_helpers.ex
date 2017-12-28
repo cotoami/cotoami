@@ -19,8 +19,19 @@ defmodule Cotoami.ControllerHelpers do
       "cotonomas:#{cotonoma_key}",
       "post",
       %{
-        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json"),
-        clientId: client_id
+        clientId: client_id, 
+        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json")
+      }
+    )
+  end
+
+  def broadcast_delete(coto_id, client_id) do
+    Cotoami.Endpoint.broadcast(
+      "global",
+      "delete",
+      %{
+        clientId: client_id,
+        cotoId: coto_id
       }
     )
   end

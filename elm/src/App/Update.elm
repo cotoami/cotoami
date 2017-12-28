@@ -7,6 +7,7 @@ import Time
 import Maybe exposing (andThen, withDefault)
 import Keyboard exposing (KeyCode)
 import Http exposing (Error(..))
+import Json.Decode as Decode
 import Util.Keys exposing (enter, escape, n)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
@@ -325,22 +326,18 @@ update msg model =
                   ]
 
         DeleteCoto coto ->
-            { model
-                | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-                , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
-                , traversals = closeTraversal coto.id model.traversals
-                , context = deleteSelection coto.id model.context
-            }
-                ! (if coto.asCotonoma then
+            ( App.Model.deleteCoto coto model
+            , if coto.asCotonoma then
+                Cmd.batch
                     [ fetchCotonomas
                     , fetchSubCotonomas model.context.cotonoma
                     ]
-                   else
-                    []
-                  )
+              else
+                Cmd.none
+            )
 
         CotoDeleted _ ->
-            model ! []
+            ( model, Cmd.none )
 
         CotoUpdated (Ok coto) ->
             (model
@@ -644,9 +641,6 @@ update msg model =
                     , Cmd.none
                     )
 
-        PostPushed payload ->
-            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
-
         CotonomaPushed post ->
             model
                 ! [ fetchCotonomas
@@ -715,6 +709,15 @@ update msg model =
                 | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen)
             }
                 ! []
+
+        --
+        -- Pushed
+        --
+        PostPushed payload ->
+            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
+
+        DeletePushed payload ->
+            App.Pushed.handle "cotoId" Decode.string App.Pushed.handleDelete payload model
 
         --
         -- Sub components

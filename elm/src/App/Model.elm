@@ -306,3 +306,13 @@ isTimelineReady : Model -> Bool
 isTimelineReady model =
     (areTimelineAndGraphLoaded model)
         && (not model.timeline.initializingScrollPos)
+
+
+deleteCoto : Coto -> Model -> Model
+deleteCoto coto model =
+    { model
+        | timeline = App.Types.Timeline.deleteCoto coto model.timeline
+        , graph = App.Types.Graph.removeCoto coto.id model.graph |> \( graph, _ ) -> graph
+        , traversals = App.Types.Traversal.closeTraversal coto.id model.traversals
+        , context = deleteSelection coto.id model.context
+    }

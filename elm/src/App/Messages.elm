@@ -101,7 +101,6 @@ type Msg
     | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
-    | PostPushed Value
     | CotonomaPushed Post
     | TimelineScrollPosInitialized
       --
@@ -117,6 +116,11 @@ type Msg
     | DeselectCoto
     | ClearSelection
     | CotoSelectionColumnToggle
+      --
+      -- Pushed
+      --
+    | PostPushed Value
+    | DeletePushed Value
       --
       -- Sub components
       --

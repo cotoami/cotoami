@@ -10,6 +10,13 @@ import App.Types.Amishi exposing (Presences)
 import App.Messages exposing (..)
 
 
+globalChannel : Channel Msg
+globalChannel =
+    Channel.init ("global")
+        |> Channel.on "delete"
+            (\payload -> DeletePushed payload)
+
+
 cotonomaChannel : CotonomaKey -> Channel Msg
 cotonomaChannel key =
     Channel.init ("cotonomas:" ++ key)

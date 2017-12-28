@@ -3,6 +3,7 @@ module App.Pushed exposing (..)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Util.HttpUtil exposing (ClientId(ClientId))
+import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Post exposing (Post)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
@@ -47,3 +48,11 @@ handlePost payload model =
             ]
           else
             [ App.Commands.scrollTimelineToBottom NoOp ]
+
+
+handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handleDelete payload model =
+    App.Model.getCoto payload.body model
+        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
+        |> Maybe.withDefault model
+        |> \model -> ( model, Cmd.none )

@@ -91,6 +91,7 @@ defmodule Cotoami.CotoController do
         posted_in -> increment_timeline_revision(posted_in)
       end
     end)
+    broadcast_delete(id, conn.assigns.client_id)
     send_resp(conn, :no_content, "")
   end
 end
