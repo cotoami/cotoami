@@ -5,6 +5,7 @@ import Json.Decode as Decode
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Post exposing (Post)
+import App.Types.Graph
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Commands
@@ -35,6 +36,22 @@ handle bodyName payloadDecoder handler payload model =
             ( model, Cmd.none )
 
 
+handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
+handleUpdate payload model =
+    model
+        |> App.Model.updateCotoContent payload.body
+        |> App.Model.updateRecentCotonomasByCoto payload.body
+        |> \model -> ( model, Cmd.none )
+
+
+handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handleDelete payload model =
+    App.Model.getCoto payload.body model
+        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
+        |> Maybe.withDefault model
+        |> \model -> ( model, Cmd.none )
+
+
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     (model.timeline
@@ -50,17 +67,18 @@ handlePost payload model =
             [ App.Commands.scrollTimelineToBottom NoOp ]
 
 
-handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
-handleUpdate payload model =
-    model
-        |> App.Model.updateCotoContent payload.body
-        |> App.Model.updateRecentCotonomasByCoto payload.body
-        |> \model -> ( model, Cmd.none )
-
-
-handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
-handleDelete payload model =
+handlePin : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handlePin payload model =
     App.Model.getCoto payload.body model
-        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
+        |> Maybe.map
+            (\coto ->
+                { model
+                    | graph =
+                        App.Types.Graph.pinCoto
+                            payload.amishi.id
+                            coto
+                            model.graph
+                }
+            )
         |> Maybe.withDefault model
-        |> \model -> ( model, Cmd.none )
+        |> \model -> ( model, App.Commands.scrollPinnedCotosToBottom NoOp )

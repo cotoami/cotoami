@@ -406,13 +406,15 @@ update msg model =
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = pinCoto session.id coto model.graph }
-                        ! [ App.Server.Graph.pinCotos
-                                model.context.clientId
-                                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                [ cotoId ]
-                          , App.Commands.scrollPinnedCotosToBottom NoOp
-                          ]
+                    ( { model | graph = pinCoto session.id coto model.graph }
+                    , Cmd.batch
+                        [ App.Server.Graph.pinCotos
+                            model.context.clientId
+                            (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                            [ cotoId ]
+                        , App.Commands.scrollPinnedCotosToBottom NoOp
+                        ]
+                    )
                 )
                 model.context.session
                 (App.Model.getCoto cotoId model)
@@ -715,14 +717,17 @@ update msg model =
         --
         -- Pushed
         --
-        PostPushed payload ->
-            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
-
         UpdatePushed payload ->
             App.Pushed.handle "coto" decodeCoto App.Pushed.handleUpdate payload model
 
         DeletePushed payload ->
             App.Pushed.handle "cotoId" Decode.string App.Pushed.handleDelete payload model
+
+        PostPushed payload ->
+            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
+
+        PinPushed payload ->
+            App.Pushed.handle "cotoId" Decode.string App.Pushed.handlePin payload model
 
         --
         -- Sub components

@@ -122,6 +122,7 @@ type Msg
     | PostPushed Value
     | UpdatePushed Value
     | DeletePushed Value
+    | PinPushed Value
       --
       -- Sub components
       --

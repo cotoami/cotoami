@@ -48,4 +48,13 @@ defmodule Cotoami.ControllerHelpers do
       |> Map.put(:post, Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json"))
     )
   end
+
+  def broadcast_pin(coto_id, cotonoma_key, %Amishi{} = amishi, client_id) do
+    Cotoami.Endpoint.broadcast(
+      "cotonomas:#{cotonoma_key}",
+      "pin",
+      payload_base(amishi, client_id) 
+      |> Map.put(:cotoId, coto_id)
+    )
+  end
 end

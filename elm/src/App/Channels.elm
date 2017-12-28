@@ -23,12 +23,14 @@ globalChannel =
 cotonomaChannel : CotonomaKey -> Channel Msg
 cotonomaChannel key =
     Channel.init ("cotonomas:" ++ key)
-        |> Channel.on "post"
-            (\payload -> PostPushed payload)
         |> Channel.on "presence_state"
             (\payload -> CotonomaPresenceState payload)
         |> Channel.on "presence_diff"
             (\payload -> CotonomaPresenceDiff payload)
+        |> Channel.on "post"
+            (\payload -> PostPushed payload)
+        |> Channel.on "pin"
+            (\payload -> PinPushed payload)
 
 
 type alias Payload body =
