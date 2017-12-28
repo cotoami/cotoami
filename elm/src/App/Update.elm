@@ -42,6 +42,7 @@ import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
+import App.Pushed
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -640,12 +641,7 @@ update msg model =
                     )
 
         PostPushed payload ->
-            case Decode.decodeValue (decodePayload "post" decodePost) payload of
-                Ok decodedPayload ->
-                    handlePushedPost model.context.clientId decodedPayload model
-
-                Err err ->
-                    model ! []
+            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
 
         CotonomaPushed post ->
             model
@@ -856,24 +852,6 @@ initializeTimelineScrollPosition model =
         App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
     else
         Cmd.none
-
-
-handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
-handlePushedPost clientId payload model =
-    if payload.clientId /= clientId then
-        (model.timeline
-            |> (\timeline -> ( timeline, payload.body :: timeline.posts ))
-            |> (\( timeline, posts ) -> { timeline | posts = posts })
-            |> (\timeline -> { model | timeline = timeline })
-        )
-            ! if payload.body.asCotonoma then
-                [ App.Commands.scrollTimelineToBottom NoOp
-                , sendMsg (CotonomaPushed payload.body)
-                ]
-              else
-                [ App.Commands.scrollTimelineToBottom NoOp ]
-    else
-        model ! []
 
 
 post : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
