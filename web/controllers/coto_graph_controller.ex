@@ -37,7 +37,7 @@ defmodule Cotoami.CotoGraphController do
               CotoGraphService.pin(Sips.conn, coto, amishi)
             cotonoma ->
               CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
-              broadcast_pin(coto.id, cotonoma.key, amishi, conn.assigns.client_id)
+              broadcast_pin(coto, cotonoma.key, amishi, conn.assigns.client_id)
           end
         end)
     json conn, results

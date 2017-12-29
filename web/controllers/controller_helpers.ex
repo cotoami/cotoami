@@ -72,8 +72,9 @@ defmodule Cotoami.ControllerHelpers do
     |> broadcast("cotonomas:#{cotonoma_key}", "post", amishi, client_id)
   end
 
-  def broadcast_pin(coto_id, cotonoma_key, %Amishi{} = amishi, client_id) do
-    coto_id
+  def broadcast_pin(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
+    coto
+    |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
     |> broadcast("cotonomas:#{cotonoma_key}", "pin", amishi, client_id)
   end
 

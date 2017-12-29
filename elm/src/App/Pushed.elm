@@ -112,21 +112,17 @@ handleConnect payload model =
         |> \model -> ( model, Cmd.none )
 
 
-handlePin : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handlePin : Payload Coto -> Model -> ( Model, Cmd Msg )
 handlePin payload model =
-    App.Model.getCoto payload.body model
-        |> Maybe.map
-            (\coto ->
-                { model
-                    | graph =
-                        App.Types.Graph.pinCoto
-                            payload.amishi.id
-                            coto
-                            model.graph
-                }
-            )
-        |> Maybe.withDefault model
-        |> \model -> ( model, App.Commands.scrollPinnedCotosToBottom NoOp )
+    ( { model
+        | graph =
+            App.Types.Graph.pinCoto
+                payload.amishi.id
+                payload.body
+                model.graph
+      }
+    , App.Commands.scrollPinnedCotosToBottom NoOp
+    )
 
 
 handleUnpin : Payload CotoId -> Model -> ( Model, Cmd Msg )
