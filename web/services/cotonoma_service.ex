@@ -63,7 +63,7 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto =
       %{cotonoma_coto |
         amishi: amishi,
-        posted_in: coto.posted_in,
+        posted_in: complement_owner(coto.posted_in),
         cotonoma: %{cotonoma |
           owner: amishi,
           coto: cotonoma_coto

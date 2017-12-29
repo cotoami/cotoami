@@ -739,6 +739,13 @@ update msg model =
         DeletePushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
 
+        CotonomatizePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomatize
+                payload
+                model
+
         CotonomaPushed payload ->
             App.Pushed.handle
                 App.Server.Cotonoma.decodeCotonoma

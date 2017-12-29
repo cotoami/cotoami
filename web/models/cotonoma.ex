@@ -33,6 +33,7 @@ defmodule Cotoami.Cotonoma do
     struct
     |> cast(params, [:name, :coto_id, :owner_id])
     |> generate_key()
+    |> put_change(:pinned, false)
     |> put_change(:timeline_revision, 0)
     |> put_change(:graph_revision, 0)
     |> validate_required([:key, :name, :coto_id, :owner_id])

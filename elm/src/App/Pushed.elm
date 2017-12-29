@@ -35,7 +35,7 @@ handle payloadDecoder handler payload model =
                     ( model, Cmd.none )
 
         Err err ->
-            ( model, Cmd.none )
+            Debug.log err ( model, Cmd.none )
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
@@ -52,6 +52,13 @@ handleDelete payload model =
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
         |> \model -> ( model, Cmd.none )
+
+
+handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
+handleCotonomatize payload model =
+    ( App.Model.cotonomatize payload.body.cotoId (Just payload.body.key) model
+    , Cmd.none
+    )
 
 
 handleCotonoma : Payload Cotonoma -> Model -> ( Model, Cmd Msg )

@@ -120,6 +120,7 @@ type Msg
       --
     | UpdatePushed Value
     | DeletePushed Value
+    | CotonomatizePushed Value
     | CotonomaPushed Value
     | PostPushed Value
     | PinPushed Value

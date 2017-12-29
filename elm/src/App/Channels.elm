@@ -18,6 +18,8 @@ globalChannel =
             (\payload -> UpdatePushed payload)
         |> Channel.on "delete"
             (\payload -> DeletePushed payload)
+        |> Channel.on "cotonomatize"
+            (\payload -> CotonomatizePushed payload)
         |> Channel.on "cotonoma"
             (\payload -> CotonomaPushed payload)
 
