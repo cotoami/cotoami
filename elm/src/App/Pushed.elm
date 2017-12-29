@@ -11,6 +11,7 @@ import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Commands
 import App.Channels exposing (Payload)
+import App.Server.Coto
 import App.Server.Cotonoma
 
 
@@ -83,31 +84,29 @@ handlePost payload model =
 
 
 type alias ConnectPayloadBody =
-    { startId : CotoId
-    , endId : CotoId
+    { start : Coto
+    , end : Coto
     }
 
 
 decodeConnectPayloadBody : Decode.Decoder ConnectPayloadBody
 decodeConnectPayloadBody =
     Decode.map2 ConnectPayloadBody
-        (Decode.field "startId" Decode.string)
-        (Decode.field "endId" Decode.string)
+        (Decode.field "start" App.Server.Coto.decodeCoto)
+        (Decode.field "end" App.Server.Coto.decodeCoto)
 
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleConnect payload model =
-    (Maybe.map2
-        (\startCoto endCoto ->
-            App.Types.Graph.connect
-                payload.amishi.id
-                startCoto
-                endCoto
-                model.graph
-        )
-        (App.Model.getCoto payload.body.startId model)
-        (App.Model.getCoto payload.body.endId model)
-    )
+    App.Model.getCoto payload.body.start.id model
+        |> Maybe.map
+            (\startCoto ->
+                App.Types.Graph.connect
+                    payload.amishi.id
+                    startCoto
+                    payload.body.end
+                    model.graph
+            )
         |> Maybe.map (\graph -> { model | graph = graph })
         |> Maybe.withDefault model
         |> \model -> ( model, Cmd.none )

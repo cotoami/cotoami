@@ -54,8 +54,11 @@ defmodule Cotoami.ControllerHelpers do
     |> broadcast("global", "cotonoma", amishi, client_id)
   end
 
-  def broadcast_connect(start_id, end_id, %Amishi{} = amishi, client_id) do
-    %{startId: start_id, endId: end_id}
+  def broadcast_connect(%Coto{} = start_coto, %Coto{} = end_coto, %Amishi{} = amishi, client_id) do
+    %{
+      start: Phoenix.View.render_one(start_coto, Cotoami.CotoView, "coto.json"), 
+      end: Phoenix.View.render_one(end_coto, Cotoami.CotoView, "coto.json")
+    }
     |> broadcast("global", "connect", amishi, client_id)
   end
 

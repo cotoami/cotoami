@@ -69,7 +69,7 @@ defmodule Cotoami.CotoGraphController do
             cotonoma ->
               CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
           end
-          broadcast_connect(start_coto.id, end_coto.id, amishi, conn.assigns.client_id)
+          broadcast_connect(start_coto, end_coto, amishi, conn.assigns.client_id)
         end)
     json conn, result
   end
