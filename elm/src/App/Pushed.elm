@@ -82,3 +82,10 @@ handlePin payload model =
             )
         |> Maybe.withDefault model
         |> \model -> ( model, App.Commands.scrollPinnedCotosToBottom NoOp )
+
+
+handleUnpin : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handleUnpin payload model =
+    ( { model | graph = App.Types.Graph.unpinCoto payload.body model.graph }
+    , Cmd.none
+    )

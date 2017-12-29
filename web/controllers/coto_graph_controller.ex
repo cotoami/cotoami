@@ -48,7 +48,9 @@ defmodule Cotoami.CotoGraphController do
     coto = ensure_to_get_coto(coto_id)
     case cotonoma do
       nil -> CotoGraphService.unpin(Sips.conn, coto, amishi)
-      cotonoma -> CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
+      cotonoma -> 
+        CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
+        broadcast_unpin(coto.id, cotonoma.key, amishi, conn.assigns.client_id)
     end
     text conn, "ok"
   end

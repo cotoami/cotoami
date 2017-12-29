@@ -729,6 +729,9 @@ update msg model =
         PinPushed payload ->
             App.Pushed.handle "cotoId" Decode.string App.Pushed.handlePin payload model
 
+        UnpinPushed payload ->
+            App.Pushed.handle "cotoId" Decode.string App.Pushed.handleUnpin payload model
+
         --
         -- Sub components
         --

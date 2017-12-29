@@ -123,6 +123,7 @@ type Msg
     | UpdatePushed Value
     | DeletePushed Value
     | PinPushed Value
+    | UnpinPushed Value
       --
       -- Sub components
       --
