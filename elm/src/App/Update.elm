@@ -33,9 +33,9 @@ import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
 import App.Server.Session
 import App.Server.Cotonoma
-import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
-import App.Server.Coto exposing (decodeCoto)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
+import App.Server.Post
+import App.Server.Coto
+import App.Server.Graph
 import App.Commands exposing (sendMsg)
 import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
 import App.Modals.SigninModal exposing (setSignupEnabled)
@@ -293,7 +293,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ App.Commands.scrollGraphExplorationToRight NoOp
-                        , fetchSubgraphIfCotonoma model.graph cotoId
+                        , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
                         ]
                     )
 
@@ -543,7 +543,7 @@ update msg model =
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
                 |> \model ->
                     ( model
-                    , fetchCotonomaPosts
+                    , App.Server.Post.fetchCotonomaPosts
                         cotonomaKey
                         (App.Types.Timeline.nextPageIndex model.timeline)
                     )
@@ -569,7 +569,11 @@ update msg model =
 
         LoadMorePosts ->
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> \model -> ( model, fetchPosts (App.Types.Timeline.nextPageIndex model.timeline) )
+                |> \model ->
+                    ( model
+                    , App.Server.Post.fetchPosts
+                        (App.Types.Timeline.nextPageIndex model.timeline)
+                    )
 
         ImageLoaded ->
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
@@ -717,7 +721,11 @@ update msg model =
         -- Pushed
         --
         UpdatePushed payload ->
-            App.Pushed.handle decodeCoto App.Pushed.handleUpdate payload model
+            App.Pushed.handle
+                App.Server.Coto.decodeCoto
+                App.Pushed.handleUpdate
+                payload
+                model
 
         DeletePushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
@@ -730,7 +738,11 @@ update msg model =
                 model
 
         PostPushed payload ->
-            App.Pushed.handle decodePost App.Pushed.handlePost payload model
+            App.Pushed.handle
+                App.Server.Post.decodePost
+                App.Pushed.handlePost
+                payload
+                model
 
         PinPushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handlePin payload model
@@ -839,9 +851,9 @@ loadHome model =
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchPosts 0
+        ! [ App.Server.Post.fetchPosts 0
           , App.Server.Cotonoma.fetchCotonomas
-          , fetchGraph Nothing
+          , App.Server.Graph.fetchGraph Nothing
           ]
 
 
@@ -867,8 +879,8 @@ loadCotonoma key model =
         , navigationOpen = False
     }
         ! [ App.Server.Cotonoma.fetchCotonomas
-          , fetchCotonomaPosts key 0
-          , fetchGraph (Just key)
+          , App.Server.Post.fetchCotonomaPosts key 0
+          , App.Server.Graph.fetchGraph (Just key)
           ]
 
 
