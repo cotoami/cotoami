@@ -169,23 +169,3 @@ handleDisconnect payload model =
                 |> Maybe.withDefault graph1
     in
         ( { model | graph = graph2 }, Cmd.none )
-
-
-handlePin : Payload Coto -> Model -> ( Model, Cmd Msg )
-handlePin payload model =
-    ( { model
-        | graph =
-            App.Types.Graph.pinCoto
-                payload.amishi.id
-                payload.body
-                model.graph
-      }
-    , App.Commands.scrollPinnedCotosToBottom NoOp
-    )
-
-
-handleUnpin : Payload CotoId -> Model -> ( Model, Cmd Msg )
-handleUnpin payload model =
-    ( { model | graph = App.Types.Graph.unpinCoto payload.body model.graph }
-    , Cmd.none
-    )

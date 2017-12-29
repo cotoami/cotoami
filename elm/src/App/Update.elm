@@ -774,16 +774,6 @@ update msg model =
                 payload
                 model
 
-        PinPushed payload ->
-            App.Pushed.handle
-                App.Server.Coto.decodeCoto
-                App.Pushed.handlePin
-                payload
-                model
-
-        UnpinPushed payload ->
-            App.Pushed.handle Decode.string App.Pushed.handleUnpin payload model
-
         --
         -- Sub components
         --

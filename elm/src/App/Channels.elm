@@ -37,10 +37,6 @@ cotonomaChannel key =
             (\payload -> CotonomaPresenceDiff payload)
         |> Channel.on "post"
             (\payload -> PostPushed payload)
-        |> Channel.on "pin"
-            (\payload -> PinPushed payload)
-        |> Channel.on "unpin"
-            (\payload -> UnpinPushed payload)
 
 
 type alias Payload body =

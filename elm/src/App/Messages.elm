@@ -125,8 +125,6 @@ type Msg
     | ConnectPushed Value
     | DisconnectPushed Value
     | PostPushed Value
-    | PinPushed Value
-    | UnpinPushed Value
       --
       -- Sub components
       --
