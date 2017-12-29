@@ -98,18 +98,35 @@ decodeConnectPayloadBody =
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleConnect payload model =
-    App.Model.getCoto payload.body.start.id model
-        |> Maybe.map
-            (\startCoto ->
-                App.Types.Graph.connect
-                    payload.amishi.id
-                    startCoto
-                    payload.body.end
-                    model.graph
-            )
-        |> Maybe.map (\graph -> { model | graph = graph })
-        |> Maybe.withDefault model
-        |> \model -> ( model, Cmd.none )
+    let
+        graph1 =
+            App.Model.getCoto payload.body.start.id model
+                |> Maybe.map
+                    (\startCoto ->
+                        App.Types.Graph.connect
+                            payload.amishi.id
+                            startCoto
+                            payload.body.end
+                            model.graph
+                    )
+                |> Maybe.withDefault model.graph
+
+        graph2 =
+            model.context.cotonoma
+                |> Maybe.andThen
+                    (\cotonoma ->
+                        if cotonoma.cotoId == payload.body.start.id then
+                            Just <|
+                                App.Types.Graph.pinCoto
+                                    payload.amishi.id
+                                    payload.body.end
+                                    graph1
+                        else
+                            Nothing
+                    )
+                |> Maybe.withDefault graph1
+    in
+        ( { model | graph = graph2 }, Cmd.none )
 
 
 handlePin : Payload Coto -> Model -> ( Model, Cmd Msg )
