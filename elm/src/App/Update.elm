@@ -4,7 +4,7 @@ import Set
 import Task
 import Process
 import Time
-import Maybe exposing (andThen, withDefault)
+import Maybe
 import Keyboard exposing (KeyCode)
 import Http exposing (Error(..))
 import Json.Decode as Decode
@@ -14,11 +14,11 @@ import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Amishi exposing (Presences, applyPresenceDiff)
+import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (..)
-import App.Types.Post exposing (Post, defaultPost)
+import App.Types.Post exposing (Post)
 import App.Types.Timeline
     exposing
         ( updatePost
@@ -26,19 +26,19 @@ import App.Types.Timeline
         , setBeingDeleted
         , deletePendingPost
         )
-import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
+import App.Types.Traversal
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
-import App.Route exposing (parseLocation, Route(..))
+import App.Route exposing (Route(..))
 import App.Server.Session
 import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Coto
 import App.Server.Graph
-import App.Commands exposing (sendMsg)
-import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Commands
+import App.Channels exposing (Payload)
+import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
@@ -78,7 +78,7 @@ update msg model =
             )
 
         OnLocationChange location ->
-            parseLocation location
+            App.Route.parseLocation location
                 |> (\route -> ( route, { model | route = route } ))
                 |> \( route, model ) ->
                     case route of
@@ -107,11 +107,11 @@ update msg model =
             changeLocationToHome model
 
         CotonomaPresenceState payload ->
-            { model | presences = decodePresenceState payload } ! []
+            { model | presences = App.Channels.decodePresenceState payload } ! []
 
         CotonomaPresenceDiff payload ->
-            decodePresenceDiff payload
-                |> (\diff -> applyPresenceDiff diff model.presences)
+            App.Channels.decodePresenceDiff payload
+                |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
 
         --
@@ -133,7 +133,11 @@ update msg model =
                 BadStatus response ->
                     if response.status.code == 404 then
                         App.Server.Session.decodeSessionNotFoundBodyString response.body
-                            |> (\body -> setSignupEnabled body.signupEnabled model.signinModal)
+                            |> (\body ->
+                                    App.Modals.SigninModal.setSignupEnabled
+                                        body.signupEnabled
+                                        model.signinModal
+                               )
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> openModal App.Model.SigninModal
                             |> \model -> model ! []
@@ -210,7 +214,9 @@ update msg model =
             ( closeActiveModal model, Cmd.none )
 
         Confirm ->
-            ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
+            ( closeActiveModal model
+            , App.Commands.sendMsg model.confirmation.msgOnConfirm
+            )
 
         OpenSigninModal ->
             { model
@@ -419,7 +425,7 @@ update msg model =
                 model.context.session
                 (App.Model.getCoto cotoId model)
             )
-                |> withDefault ( model, Cmd.none )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         CotoPinned (Ok _) ->
             ( model, Cmd.none )
@@ -664,13 +670,16 @@ update msg model =
         --
         TraverseClick traverse ->
             { model
-                | traversals = updateTraversal (doTraverse traverse) model.traversals
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        (App.Types.Traversal.doTraverse traverse)
+                        model.traversals
             }
                 ! []
 
         CloseTraversal cotoId ->
             { model
-                | traversals = closeTraversal cotoId model.traversals
+                | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals
             }
                 ! []
 
@@ -847,7 +856,7 @@ loadHome model =
         , connectingTarget = Nothing
         , graph = defaultGraph
         , loadingGraph = True
-        , traversals = defaultTraversals
+        , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
@@ -874,7 +883,7 @@ loadCotonoma key model =
         , connectingTarget = Nothing
         , graph = defaultGraph
         , loadingGraph = True
-        , traversals = defaultTraversals
+        , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
@@ -956,7 +965,7 @@ openCoto coto model =
 connectPost : ClientId -> Post -> Model -> ( Model, Cmd Msg )
 connectPost clientId post model =
     post.cotoId
-        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
             (\target ->
                 let
@@ -978,4 +987,4 @@ connectPost clientId post model =
                         target.id
                     )
             )
-        |> withDefault (model ! [])
+        |> Maybe.withDefault (model ! [])
