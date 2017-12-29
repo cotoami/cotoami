@@ -82,6 +82,37 @@ handlePost payload model =
     )
 
 
+type alias ConnectPayloadBody =
+    { startId : CotoId
+    , endId : CotoId
+    }
+
+
+decodeConnectPayloadBody : Decode.Decoder ConnectPayloadBody
+decodeConnectPayloadBody =
+    Decode.map2 ConnectPayloadBody
+        (Decode.field "startId" Decode.string)
+        (Decode.field "endId" Decode.string)
+
+
+handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
+handleConnect payload model =
+    (Maybe.map2
+        (\startCoto endCoto ->
+            App.Types.Graph.connect
+                payload.amishi.id
+                startCoto
+                endCoto
+                model.graph
+        )
+        (App.Model.getCoto payload.body.startId model)
+        (App.Model.getCoto payload.body.endId model)
+    )
+        |> Maybe.map (\graph -> { model | graph = graph })
+        |> Maybe.withDefault model
+        |> \model -> ( model, Cmd.none )
+
+
 handlePin : Payload CotoId -> Model -> ( Model, Cmd Msg )
 handlePin payload model =
     App.Model.getCoto payload.body model

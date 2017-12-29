@@ -22,6 +22,8 @@ globalChannel =
             (\payload -> CotonomatizePushed payload)
         |> Channel.on "cotonoma"
             (\payload -> CotonomaPushed payload)
+        |> Channel.on "connect"
+            (\payload -> ConnectPushed payload)
 
 
 cotonomaChannel : CotonomaKey -> Channel Msg

@@ -753,6 +753,13 @@ update msg model =
                 payload
                 model
 
+        ConnectPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeConnectPayloadBody
+                App.Pushed.handleConnect
+                payload
+                model
+
         PostPushed payload ->
             App.Pushed.handle
                 App.Server.Post.decodePost
