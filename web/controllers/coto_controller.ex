@@ -62,8 +62,17 @@ defmodule Cotoami.CotoController do
     case CotoService.get_by_amishi(id, amishi) do
       %Coto{as_cotonoma: false} = coto ->
         {:ok, coto} = do_cotonomatize(coto, amishi)
+
+        # broadcast events
         broadcast_cotonomatize(coto.cotonoma, amishi, conn.assigns.client_id)
-        broadcast_cotonoma(coto.posted_in, amishi, conn.assigns.client_id)
+        if coto.cotonoma.graph_revision > 0 do
+          # broadcast 'cotonoma' only if it's not empty
+          broadcast_cotonoma(coto.cotonoma, amishi, conn.assigns.client_id)
+        end
+        if coto.posted_in do
+          broadcast_cotonoma(coto.posted_in, amishi, conn.assigns.client_id)
+        end
+
         render(conn, "coto.json", coto: coto)
 
       # Fix inconsistent state caused by the cotonomatizing-won't-affect-graph bug

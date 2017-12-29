@@ -76,10 +76,15 @@ defmodule Cotoami.CotonomaService do
 
     # Increment the revision if it has connections, which in turn displays it
     # in the "recent cotonomas" for other amishis even if its timeline is empty.
-    graph = CotoGraphService.get_subgraph(bolt_conn, cotonoma_coto.cotonoma)
-    if map_size(graph.connections) > 0 do
-      increment_graph_revision(cotonoma_coto.cotonoma)
-    end
+    subgraph = CotoGraphService.get_subgraph(bolt_conn, cotonoma_coto.cotonoma)
+    cotonoma_coto =
+      if map_size(subgraph.connections) > 0 do
+        %{cotonoma_coto | 
+          cotonoma: increment_graph_revision(cotonoma_coto.cotonoma)
+        }
+      else
+        cotonoma_coto
+      end
 
     cotonoma_coto
   end
