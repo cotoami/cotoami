@@ -22,35 +22,35 @@ defmodule Cotoami.ControllerHelpers do
     }
   end
 
-  defp broadcast(value, key, topic, event, %Amishi{} = amishi, client_id) do
+  defp broadcast(body, topic, event, %Amishi{} = amishi, client_id) do
     Cotoami.Endpoint.broadcast(
-      topic, event, payload_base(amishi, client_id) |> Map.put(key, value))
+      topic, event, payload_base(amishi, client_id) |> Map.put(:body, body))
   end
 
   def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
-    |> broadcast(:coto, "global", "update", amishi, client_id)
+    |> broadcast("global", "update", amishi, client_id)
   end
 
   def broadcast_delete(coto_id, %Amishi{} = amishi, client_id) do
     coto_id
-    |> broadcast(:cotoId, "global", "delete", amishi, client_id)
+    |> broadcast("global", "delete", amishi, client_id)
   end
 
   def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
-    |> broadcast(:post, "cotonomas:#{cotonoma_key}", "post", amishi, client_id)
+    |> broadcast("cotonomas:#{cotonoma_key}", "post", amishi, client_id)
   end
 
   def broadcast_pin(coto_id, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto_id
-    |> broadcast(:cotoId, "cotonomas:#{cotonoma_key}", "pin", amishi, client_id)
+    |> broadcast("cotonomas:#{cotonoma_key}", "pin", amishi, client_id)
   end
 
   def broadcast_unpin(coto_id, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto_id
-    |> broadcast(:cotoId, "cotonomas:#{cotonoma_key}", "unpin", amishi, client_id)
+    |> broadcast("cotonomas:#{cotonoma_key}", "unpin", amishi, client_id)
   end
 end

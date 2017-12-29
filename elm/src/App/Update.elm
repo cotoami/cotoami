@@ -718,19 +718,19 @@ update msg model =
         -- Pushed
         --
         UpdatePushed payload ->
-            App.Pushed.handle "coto" decodeCoto App.Pushed.handleUpdate payload model
+            App.Pushed.handle decodeCoto App.Pushed.handleUpdate payload model
 
         DeletePushed payload ->
-            App.Pushed.handle "cotoId" Decode.string App.Pushed.handleDelete payload model
+            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
 
         PostPushed payload ->
-            App.Pushed.handle "post" decodePost App.Pushed.handlePost payload model
+            App.Pushed.handle decodePost App.Pushed.handlePost payload model
 
         PinPushed payload ->
-            App.Pushed.handle "cotoId" Decode.string App.Pushed.handlePin payload model
+            App.Pushed.handle Decode.string App.Pushed.handlePin payload model
 
         UnpinPushed payload ->
-            App.Pushed.handle "cotoId" Decode.string App.Pushed.handleUnpin payload model
+            App.Pushed.handle Decode.string App.Pushed.handleUnpin payload model
 
         --
         -- Sub components

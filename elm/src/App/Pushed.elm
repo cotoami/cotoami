@@ -16,9 +16,9 @@ type alias Handler body =
     Payload body -> Model -> ( Model, Cmd Msg )
 
 
-handle : String -> Decode.Decoder body -> Handler body -> Value -> Model -> ( Model, Cmd Msg )
-handle bodyName payloadDecoder handler payload model =
-    case Decode.decodeValue (App.Channels.decodePayload bodyName payloadDecoder) payload of
+handle : Decode.Decoder body -> Handler body -> Value -> Model -> ( Model, Cmd Msg )
+handle payloadDecoder handler payload model =
+    case Decode.decodeValue (App.Channels.decodePayload payloadDecoder) payload of
         Ok decodedPayload ->
             let
                 (ClientId senderId) =

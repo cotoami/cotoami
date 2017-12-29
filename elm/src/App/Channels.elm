@@ -42,12 +42,12 @@ type alias Payload body =
     }
 
 
-decodePayload : String -> Decode.Decoder body -> Decode.Decoder (Payload body)
-decodePayload bodyName bodyDecoder =
+decodePayload : Decode.Decoder body -> Decode.Decoder (Payload body)
+decodePayload bodyDecoder =
     Decode.map3 Payload
         (Decode.field "clientId" (Decode.map ClientId Decode.string))
         (Decode.field "amishi" App.Server.Amishi.decodeAmishi)
-        (Decode.field bodyName bodyDecoder)
+        (Decode.field "body" bodyDecoder)
 
 
 
