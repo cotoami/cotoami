@@ -62,6 +62,11 @@ defmodule Cotoami.ControllerHelpers do
     |> broadcast("global", "connect", amishi, client_id)
   end
 
+  def broadcast_disconnect(start_id, end_id, %Amishi{} = amishi, client_id) do
+    %{startId: start_id, endId: end_id}
+    |> broadcast("global", "disconnect", amishi, client_id)
+  end
+
   #
   # Channel: 'cotonomas:*'
   #

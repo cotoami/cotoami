@@ -760,6 +760,13 @@ update msg model =
                 payload
                 model
 
+        DisconnectPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeDisconnectPayloadBody
+                App.Pushed.handleDisconnect
+                payload
+                model
+
         PostPushed payload ->
             App.Pushed.handle
                 App.Server.Post.decodePost

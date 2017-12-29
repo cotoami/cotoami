@@ -123,6 +123,7 @@ type Msg
     | CotonomatizePushed Value
     | CotonomaPushed Value
     | ConnectPushed Value
+    | DisconnectPushed Value
     | PostPushed Value
     | PinPushed Value
     | UnpinPushed Value

@@ -84,6 +84,7 @@ defmodule Cotoami.CotoGraphController do
     start_coto = ensure_to_get_coto(start_id)
     end_coto = ensure_to_get_coto(end_id)
     CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
+    broadcast_disconnect(start_coto.id, end_coto.id, amishi, conn.assigns.client_id)
     text conn, "ok"
   end
 

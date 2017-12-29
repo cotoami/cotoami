@@ -129,6 +129,44 @@ handleConnect payload model =
         ( { model | graph = graph2 }, Cmd.none )
 
 
+type alias DisconnectPayloadBody =
+    { startId : CotoId
+    , endId : CotoId
+    }
+
+
+decodeDisconnectPayloadBody : Decode.Decoder DisconnectPayloadBody
+decodeDisconnectPayloadBody =
+    Decode.map2 DisconnectPayloadBody
+        (Decode.field "startId" Decode.string)
+        (Decode.field "endId" Decode.string)
+
+
+handleDisconnect : Payload DisconnectPayloadBody -> Model -> ( Model, Cmd Msg )
+handleDisconnect payload model =
+    let
+        graph1 =
+            App.Types.Graph.disconnect
+                ( payload.body.startId, payload.body.endId )
+                model.graph
+
+        graph2 =
+            model.context.cotonoma
+                |> Maybe.andThen
+                    (\cotonoma ->
+                        if cotonoma.cotoId == payload.body.startId then
+                            Just <|
+                                App.Types.Graph.unpinCoto
+                                    payload.body.endId
+                                    graph1
+                        else
+                            Nothing
+                    )
+                |> Maybe.withDefault graph1
+    in
+        ( { model | graph = graph2 }, Cmd.none )
+
+
 handlePin : Payload Coto -> Model -> ( Model, Cmd Msg )
 handlePin payload model =
     ( { model
