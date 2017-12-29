@@ -58,6 +58,20 @@ defmodule Cotoami.CotoService do
     end
   end
 
+  def complement(%Coto{} = coto, %Amishi{} = amishi) do
+    coto
+    |> complement_cotonoma()
+    |> complement_amishi(amishi)
+  end
+
+  def complement_cotonoma(%Coto{} = coto) do
+    if coto.cotonoma do
+      %{coto | cotonoma: CotonomaService.complement_owner(coto.cotonoma)}
+    else
+      coto
+    end
+  end
+
   def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
     if coto.amishi_id == amishi_id do
       %{coto | amishi: amishi}
