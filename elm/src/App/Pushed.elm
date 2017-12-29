@@ -99,6 +99,7 @@ decodeConnectPayloadBody =
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleConnect payload model =
     let
+        -- Create the connection only if the start coto exists in the model
         graph1 =
             App.Model.getCoto payload.body.start.id model
                 |> Maybe.map
@@ -111,6 +112,7 @@ handleConnect payload model =
                     )
                 |> Maybe.withDefault model.graph
 
+        -- Do pinning if the start coto is the current cotonoma
         graph2 =
             model.context.cotonoma
                 |> Maybe.andThen
@@ -145,11 +147,13 @@ decodeDisconnectPayloadBody =
 handleDisconnect : Payload DisconnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleDisconnect payload model =
     let
+        -- Delete the connection
         graph1 =
             App.Types.Graph.disconnect
                 ( payload.body.startId, payload.body.endId )
                 model.graph
 
+        -- Do unpinning if the start coto is the current cotonoma
         graph2 =
             model.context.cotonoma
                 |> Maybe.andThen
