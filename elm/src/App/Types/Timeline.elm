@@ -51,6 +51,11 @@ openOrCloseEditor open timeline =
     { timeline | editorOpen = open }
 
 
+addPost : Post -> Timeline -> Timeline
+addPost post timeline =
+    { timeline | posts = post :: timeline.posts }
+
+
 addPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
 addPaginatedPosts paginatedPosts timeline =
     { timeline

@@ -4,7 +4,7 @@ defmodule Cotoami.ControllerHelpers do
   """
 
   import Plug.Conn, only: [send_resp: 3]
-  alias Cotoami.{Amishi, Coto}
+  alias Cotoami.{Amishi, Coto, Cotonoma}
 
   def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil)  do
     case e.constraint do
@@ -27,6 +27,10 @@ defmodule Cotoami.ControllerHelpers do
       topic, event, payload_base(amishi, client_id) |> Map.put(:body, body))
   end
 
+  #
+  # Channel: 'global'
+  #
+
   def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
@@ -37,6 +41,16 @@ defmodule Cotoami.ControllerHelpers do
     coto_id
     |> broadcast("global", "delete", amishi, client_id)
   end
+
+  def broadcast_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, client_id) do
+    cotonoma
+    |> Phoenix.View.render_one(Cotoami.CotonomaView, "cotonoma.json")
+    |> broadcast("global", "cotonoma", amishi, client_id)
+  end
+
+  #
+  # Channel: 'cotonomas:*'
+  #
 
   def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto

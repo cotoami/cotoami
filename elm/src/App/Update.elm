@@ -31,8 +31,8 @@ import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
 import App.Route exposing (parseLocation, Route(..))
-import App.Server.Session exposing (decodeSessionNotFoundBodyString)
-import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
+import App.Server.Session
+import App.Server.Cotonoma
 import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
 import App.Server.Coto exposing (decodeCoto)
 import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
@@ -132,7 +132,7 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        decodeSessionNotFoundBodyString response.body
+                        App.Server.Session.decodeSessionNotFoundBodyString response.body
                             |> (\body -> setSignupEnabled body.signupEnabled model.signinModal)
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> openModal App.Model.SigninModal
@@ -173,7 +173,7 @@ update msg model =
                             initializeTimelineScrollPosition model
                           else
                             Cmd.none
-                        , fetchSubCotonomas (Just cotonoma)
+                        , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
                         ]
                     )
 
@@ -329,8 +329,8 @@ update msg model =
             ( App.Model.deleteCoto coto model
             , if coto.asCotonoma then
                 Cmd.batch
-                    [ fetchCotonomas
-                    , fetchSubCotonomas model.context.cotonoma
+                    [ App.Server.Cotonoma.fetchCotonomas
+                    , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                     ]
               else
                 Cmd.none
@@ -347,8 +347,8 @@ update msg model =
               )
             , if coto.asCotonoma then
                 Cmd.batch
-                    [ fetchCotonomas
-                    , fetchSubCotonomas model.context.cotonoma
+                    [ App.Server.Cotonoma.fetchCotonomas
+                    , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                     ]
               else
                 Cmd.none
@@ -388,8 +388,8 @@ update msg model =
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
                 |> clearModals
             , Cmd.batch
-                [ fetchCotonomas
-                , fetchSubCotonomas model.context.cotonoma
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                 ]
             )
 
@@ -523,12 +523,17 @@ update msg model =
         -- Cotonoma
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            ( model, pinOrUnpinCotonoma model.context.clientId pinOrUnpin cotonomaKey )
+            ( model
+            , App.Server.Cotonoma.pinOrUnpinCotonoma
+                model.context.clientId
+                pinOrUnpin
+                cotonomaKey
+            )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
             ( { model | cotonomasLoading = True }
                 |> closeModal App.Model.CotoMenuModal
-            , fetchCotonomas
+            , App.Server.Cotonoma.fetchCotonomas
             )
 
         CotonomaPinnedOrUnpinned (Err _) ->
@@ -629,8 +634,8 @@ update msg model =
               }
                 |> clearModals
             , Cmd.batch
-                [ fetchCotonomas
-                , fetchSubCotonomas model.context.cotonoma
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                 ]
             )
 
@@ -644,12 +649,6 @@ update msg model =
                       }
                     , Cmd.none
                     )
-
-        CotonomaPushed post ->
-            model
-                ! [ fetchCotonomas
-                  , fetchSubCotonomas model.context.cotonoma
-                  ]
 
         TimelineScrollPosInitialized ->
             model.timeline
@@ -722,6 +721,13 @@ update msg model =
 
         DeletePushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+
+        CotonomaPushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonoma
+                payload
+                model
 
         PostPushed payload ->
             App.Pushed.handle decodePost App.Pushed.handlePost payload model
@@ -834,7 +840,7 @@ loadHome model =
         , navigationOpen = False
     }
         ! [ fetchPosts 0
-          , fetchCotonomas
+          , App.Server.Cotonoma.fetchCotonomas
           , fetchGraph Nothing
           ]
 
@@ -860,7 +866,7 @@ loadCotonoma key model =
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchCotonomas
+        ! [ App.Server.Cotonoma.fetchCotonomas
           , fetchCotonomaPosts key 0
           , fetchGraph (Just key)
           ]

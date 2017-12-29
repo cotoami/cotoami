@@ -3,13 +3,15 @@ module App.Pushed exposing (..)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Util.HttpUtil exposing (ClientId(ClientId))
-import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Types.Graph
+import App.Types.Timeline
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Commands
 import App.Channels exposing (Payload)
+import App.Server.Cotonoma
 
 
 type alias Handler body =
@@ -52,19 +54,25 @@ handleDelete payload model =
         |> \model -> ( model, Cmd.none )
 
 
+handleCotonoma : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
+handleCotonoma payload model =
+    ( App.Model.updateRecentCotonomas payload.body model
+    , Cmd.none
+    )
+
+
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
-    (model.timeline
-        |> (\timeline -> ( timeline, payload.body :: timeline.posts ))
-        |> (\( timeline, posts ) -> { timeline | posts = posts })
-        |> (\timeline -> { model | timeline = timeline })
-    )
-        ! if payload.body.asCotonoma then
+    ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
+    , if payload.body.asCotonoma then
+        Cmd.batch
             [ App.Commands.scrollTimelineToBottom NoOp
-            , App.Commands.sendMsg (CotonomaPushed payload.body)
+            , App.Server.Cotonoma.fetchCotonomas
+            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
             ]
-          else
-            [ App.Commands.scrollTimelineToBottom NoOp ]
+      else
+        App.Commands.scrollTimelineToBottom NoOp
+    )
 
 
 handlePin : Payload CotoId -> Model -> ( Model, Cmd Msg )

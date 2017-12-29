@@ -101,7 +101,6 @@ type Msg
     | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
-    | CotonomaPushed Post
     | TimelineScrollPosInitialized
       --
       -- Traversals
@@ -119,9 +118,10 @@ type Msg
       --
       -- Pushed
       --
-    | PostPushed Value
     | UpdatePushed Value
     | DeletePushed Value
+    | CotonomaPushed Value
+    | PostPushed Value
     | PinPushed Value
     | UnpinPushed Value
       --

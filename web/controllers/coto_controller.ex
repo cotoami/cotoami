@@ -38,6 +38,7 @@ defmodule Cotoami.CotoController do
     coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
       broadcast_post(coto, posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma(posted_in, amishi, conn.assigns.client_id)
     end
     render(conn, "created.json", coto: coto)
   end
