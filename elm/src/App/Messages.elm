@@ -61,8 +61,8 @@ type Msg
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
     | ConfirmDeleteCoto Coto
-    | RequestDeleteCoto Coto
-    | DeleteCoto Coto
+    | DeleteCotoInServerSide Coto
+    | DeleteCotoInClientSide Coto
     | CotoDeleted (Result Http.Error String)
     | CotoUpdated (Result Http.Error Coto)
     | ConfirmCotonomatize Coto

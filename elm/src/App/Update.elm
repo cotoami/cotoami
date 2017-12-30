@@ -315,34 +315,35 @@ update msg model =
             ( confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
-                    (RequestDeleteCoto coto)
+                    (DeleteCotoInServerSide coto)
                 )
                 model
             , Cmd.none
             )
 
-        RequestDeleteCoto coto ->
-            ({ model | timeline = setBeingDeleted coto model.timeline }
+        DeleteCotoInServerSide coto ->
+            ( { model | timeline = setBeingDeleted coto model.timeline }
                 |> clearModals
-            )
-                ! [ App.Server.Coto.deleteCoto model.context.clientId coto.id
-                  , Process.sleep (1 * Time.second)
-                        |> Task.andThen (\_ -> Task.succeed ())
-                        |> Task.perform (\_ -> DeleteCoto coto)
-                  ]
-
-        DeleteCoto coto ->
-            ( App.Model.deleteCoto coto model
-            , if coto.asCotonoma then
-                Cmd.batch
-                    [ App.Server.Cotonoma.fetchCotonomas
-                    , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-                    ]
-              else
-                Cmd.none
+            , Cmd.batch
+                [ App.Server.Coto.deleteCoto model.context.clientId coto.id
+                , Process.sleep (1 * Time.second)
+                    |> Task.andThen (\_ -> Task.succeed ())
+                    |> Task.perform (\_ -> DeleteCotoInClientSide coto)
+                ]
             )
 
-        CotoDeleted _ ->
+        DeleteCotoInClientSide coto ->
+            ( App.Model.deleteCoto coto model, Cmd.none )
+
+        CotoDeleted (Ok _) ->
+            ( model
+            , Cmd.batch
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                ]
+            )
+
+        CotoDeleted (Err error) ->
             ( model, Cmd.none )
 
         CotoUpdated (Ok coto) ->
