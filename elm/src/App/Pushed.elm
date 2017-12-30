@@ -69,20 +69,6 @@ handleCotonoma payload model =
     )
 
 
-handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
-handlePost payload model =
-    ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
-    , if payload.body.asCotonoma then
-        Cmd.batch
-            [ App.Commands.scrollTimelineToBottom NoOp
-            , App.Server.Cotonoma.fetchCotonomas
-            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-            ]
-      else
-        App.Commands.scrollTimelineToBottom NoOp
-    )
-
-
 type alias ConnectPayloadBody =
     { start : Coto
     , end : Coto
@@ -169,3 +155,17 @@ handleDisconnect payload model =
                 |> Maybe.withDefault graph1
     in
         ( { model | graph = graph2 }, Cmd.none )
+
+
+handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
+handlePost payload model =
+    ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
+    , if payload.body.asCotonoma then
+        Cmd.batch
+            [ App.Commands.scrollTimelineToBottom NoOp
+            , App.Server.Cotonoma.fetchCotonomas
+            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+            ]
+      else
+        App.Commands.scrollTimelineToBottom NoOp
+    )
