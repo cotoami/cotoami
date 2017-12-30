@@ -4,6 +4,7 @@ defmodule Cotoami.UserSocket do
   alias Cotoami.Repo
 
   ## Channels
+  channel "global", Cotoami.GlobalChannel
   channel "cotonomas:*", Cotoami.CotonomaChannel
 
   ## Transports

@@ -61,8 +61,8 @@ type Msg
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
     | ConfirmDeleteCoto Coto
-    | RequestDeleteCoto Coto
-    | DeleteCoto Coto
+    | DeleteCotoInServerSide Coto
+    | DeleteCotoInClientSide Coto
     | CotoDeleted (Result Http.Error String)
     | CotoUpdated (Result Http.Error Coto)
     | ConfirmCotonomatize Coto
@@ -101,8 +101,6 @@ type Msg
     | PostAndConnect String (Maybe String)
     | PostedAndConnect Int (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
-    | PostPushed Value
-    | CotonomaPushed Post
     | TimelineScrollPosInitialized
       --
       -- Traversals
@@ -117,6 +115,16 @@ type Msg
     | DeselectCoto
     | ClearSelection
     | CotoSelectionColumnToggle
+      --
+      -- Pushed
+      --
+    | UpdatePushed Value
+    | DeletePushed Value
+    | CotonomatizePushed Value
+    | CotonomaPushed Value
+    | ConnectPushed Value
+    | DisconnectPushed Value
+    | PostPushed Value
       --
       -- Sub components
       --
