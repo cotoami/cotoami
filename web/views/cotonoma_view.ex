@@ -13,10 +13,19 @@ defmodule Cotoami.CotonomaView do
     render_many(rows, __MODULE__, "cotonoma.json")
   end
 
-  def render("cotos.json", %{rows: rows, cotonoma: cotonoma}) do
+  def render("cotos.json", %{
+    cotonoma: cotonoma,
+    rows: rows,
+    page_index: page_index, 
+    total_pages: total_pages
+  }) do
     %{
       cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
-      cotos: render_many(rows, CotoView, "coto.json")
+      paginated_cotos: render(CotoView, "cotos.json", 
+        rows: rows,
+        page_index: page_index, 
+        total_pages: total_pages
+      )
     }
   end
 

@@ -26,7 +26,6 @@ defmodule Cotoami.CotonomaController do
   def create(
     conn,
     %{
-      "clientId" => clientId,
       "cotonoma" => %{
         "cotonoma_id" => cotonoma_id,
         "name" => name
@@ -43,7 +42,7 @@ defmodule Cotoami.CotonomaController do
         end
       end)
     if posted_in do
-      broadcast_post(cotonoma_coto, posted_in.key, clientId)
+      broadcast_post(cotonoma_coto, posted_in.key, amishi, conn.assigns.client_id)
     end
     render(conn, CotoView, "created.json", coto: cotonoma_coto)
   rescue
@@ -61,8 +60,9 @@ defmodule Cotoami.CotonomaController do
     conn |> put_status(:ok) |> json("")
   end
 
-  def cotos(conn, %{"key" => key}, amishi) do
-    case CotoService.get_cotos_by_cotonoma(key, amishi, 30, 0) do
+  def cotos(conn, %{"key" => key, "page" => page}, amishi) do
+    page_index = String.to_integer(page)
+    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index) do
       nil ->
         send_resp(conn, :not_found, "")
       paginated_results ->

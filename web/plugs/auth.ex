@@ -7,6 +7,9 @@ defmodule Cotoami.Auth do
   require Logger
   alias Cotoami.AmishiService
 
+  @client_id_header "x-cotoami-client-id"
+  @assign_key_clientid :client_id
+
   @session_key_amishi_id :amishi_id
   @assign_key_amishi :amishi
 
@@ -15,9 +18,21 @@ defmodule Cotoami.Auth do
   end
 
   def call(conn, _opts) do
+    conn = assign_client_id(conn)
     case get_amishi_from_session(conn) do
       nil -> conn
       amishi -> assign_amishi(conn, amishi)
+    end
+  end
+
+  defp assign_client_id(conn) do
+    case get_req_header(conn, @client_id_header) do
+      [client_id] ->
+        Logger.info "#{@client_id_header}: #{client_id}"
+        assign(conn, @assign_key_clientid, client_id)
+      _ ->
+        Logger.info "Header '#{@client_id_header}' does not exist"
+        conn
     end
   end
 

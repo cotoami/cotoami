@@ -4,33 +4,54 @@ import Dict
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
+import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (CotonomaKey)
-import App.Types.Amishi exposing (Presences)
+import App.Types.Amishi exposing (Amishi, Presences)
+import App.Server.Amishi
 import App.Messages exposing (..)
+
+
+globalChannel : Channel Msg
+globalChannel =
+    Channel.init ("global")
+        |> Channel.on "update"
+            (\payload -> UpdatePushed payload)
+        |> Channel.on "delete"
+            (\payload -> DeletePushed payload)
+        |> Channel.on "cotonomatize"
+            (\payload -> CotonomatizePushed payload)
+        |> Channel.on "cotonoma"
+            (\payload -> CotonomaPushed payload)
+        |> Channel.on "connect"
+            (\payload -> ConnectPushed payload)
+        |> Channel.on "disconnect"
+            (\payload -> DisconnectPushed payload)
 
 
 cotonomaChannel : CotonomaKey -> Channel Msg
 cotonomaChannel key =
     Channel.init ("cotonomas:" ++ key)
-        |> Channel.on "post"
-            (\payload -> PostPushed payload)
         |> Channel.on "presence_state"
             (\payload -> CotonomaPresenceState payload)
         |> Channel.on "presence_diff"
             (\payload -> CotonomaPresenceDiff payload)
+        |> Channel.on "post"
+            (\payload -> PostPushed payload)
 
 
 type alias Payload body =
-    { clientId : String
+    { clientId : ClientId
+    , amishi : Amishi
     , body : body
     }
 
 
-decodePayload : String -> Decode.Decoder body -> Decode.Decoder (Payload body)
-decodePayload bodyName bodyDecoder =
-    Decode.map2 Payload
-        (Decode.field "clientId" Decode.string)
-        (Decode.field bodyName bodyDecoder)
+decodePayload : Decode.Decoder body -> Decode.Decoder (Payload body)
+decodePayload bodyDecoder =
+    Decode.map3 Payload
+        (Decode.field "clientId" (Decode.map ClientId Decode.string))
+        (Decode.field "amishi" App.Server.Amishi.decodeAmishi)
+        (Decode.field "body" bodyDecoder)
 
 
 

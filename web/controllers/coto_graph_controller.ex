@@ -37,6 +37,11 @@ defmodule Cotoami.CotoGraphController do
               CotoGraphService.pin(Sips.conn, coto, amishi)
             cotonoma ->
               CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
+              broadcast_connect(
+                cotonoma.coto, 
+                CotoService.complement(coto, amishi), 
+                amishi, 
+                conn.assigns.client_id)
           end
         end)
     json conn, results
@@ -47,7 +52,9 @@ defmodule Cotoami.CotoGraphController do
     coto = ensure_to_get_coto(coto_id)
     case cotonoma do
       nil -> CotoGraphService.unpin(Sips.conn, coto, amishi)
-      cotonoma -> CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
+      cotonoma -> 
+        CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
+        broadcast_disconnect(cotonoma.coto_id, coto.id, amishi, conn.assigns.client_id)
     end
     text conn, "ok"
   end
@@ -66,6 +73,11 @@ defmodule Cotoami.CotoGraphController do
             cotonoma ->
               CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
           end
+          broadcast_connect(
+            CotoService.complement(start_coto, amishi), 
+            CotoService.complement(end_coto, amishi), 
+            amishi, 
+            conn.assigns.client_id)
         end)
     json conn, result
   end
@@ -74,6 +86,7 @@ defmodule Cotoami.CotoGraphController do
     start_coto = ensure_to_get_coto(start_id)
     end_coto = ensure_to_get_coto(end_id)
     CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
+    broadcast_disconnect(start_coto.id, end_coto.id, amishi, conn.assigns.client_id)
     text conn, "ok"
   end
 

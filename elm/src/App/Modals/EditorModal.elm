@@ -116,8 +116,8 @@ setCotoSaveError error model =
             }
 
 
-update : EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update msg model =
+update : Context -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update context msg model =
     case msg of
         EditorInput content ->
             ( { model | content = content }, Cmd.none )
@@ -142,6 +142,7 @@ update msg model =
             , case model.mode of
                 Edit coto ->
                     App.Server.Coto.updateContent
+                        context.clientId
                         coto.id
                         model.summary
                         model.content
@@ -249,6 +250,7 @@ cotoEditor model =
             div [ class "content-input" ]
                 [ textarea
                     [ id "editor-modal-content-input"
+                    , placeholder "Write your Coto in Markdown"
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
                     , case model.mode of
@@ -307,8 +309,8 @@ cotonomaEditor model =
             NewCotonoma ->
                 div [ class "cotonoma-help" ]
                     [ text
-                        ("A Cotonoma is a dedicated place where you can keep Cotos or"
-                            ++ " discuss with others about a topic described by its name."
+                        ("A Cotonoma is a special Coto that has a dedicated chat timeline"
+                            ++ " where you can discuss with others about a topic described by its name."
                         )
                     ]
 

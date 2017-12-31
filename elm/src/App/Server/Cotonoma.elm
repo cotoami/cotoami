@@ -5,7 +5,7 @@ import Http
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
-import Util.HttpUtil exposing (httpPut, httpDelete)
+import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
@@ -47,11 +47,10 @@ fetchSubCotonomas maybeCotonoma =
         |> Maybe.withDefault Cmd.none
 
 
-encodeCotonoma : String -> Maybe Cotonoma -> Int -> String -> Encode.Value
-encodeCotonoma clientId maybeCotonoma postId name =
+encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value
+encodeCotonoma maybeCotonoma postId name =
     Encode.object
-        [ ( "clientId", Encode.string clientId )
-        , ( "cotonoma"
+        [ ( "cotonoma"
           , (Encode.object
                 [ ( "cotonoma_id"
                   , case maybeCotonoma of
@@ -69,17 +68,17 @@ encodeCotonoma clientId maybeCotonoma postId name =
         ]
 
 
-pinOrUnpinCotonoma : Bool -> CotonomaKey -> Cmd Msg
-pinOrUnpinCotonoma pinOrUnpin cotonomaKey =
+pinOrUnpinCotonoma : ClientId -> Bool -> CotonomaKey -> Cmd Msg
+pinOrUnpinCotonoma clientId pinOrUnpin cotonomaKey =
     let
         url =
             "/api/cotonomas/pin/" ++ cotonomaKey
     in
         Http.send CotonomaPinnedOrUnpinned
             (if pinOrUnpin then
-                httpPut url Http.emptyBody Decode.string
+                httpPut url clientId Http.emptyBody Decode.string
              else
-                httpDelete url
+                httpDelete url clientId
             )
 
 

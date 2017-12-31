@@ -10,15 +10,15 @@ defmodule Cotoami.CotoController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, _params, amishi) do
-    paginated_results = CotoService.get_cotos_by_amishi(amishi, 30, 0)
-    render(conn, "index.json", paginated_results)
+  def index(conn, %{"page" => page}, amishi) do
+    page_index = String.to_integer(page)
+    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index)
+    render(conn, "cotos.json", paginated_results)
   end
 
   def create(
     conn,
     %{
-      "clientId" => clientId,
       "coto" => %{
         "content" => content,
         "summary" => summary,
@@ -37,7 +37,8 @@ defmodule Cotoami.CotoController do
       end)
     coto = %{coto | posted_in: posted_in, amishi: amishi}
     if posted_in do
-      broadcast_post(coto, posted_in.key, clientId)
+      broadcast_post(coto, posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma(posted_in, amishi, conn.assigns.client_id)
     end
     render(conn, "created.json", coto: coto)
   end
@@ -51,6 +52,7 @@ defmodule Cotoami.CotoController do
             %{coto | posted_in: increment_timeline_revision(posted_in)}
         end
       end)
+    broadcast_update(coto, amishi, conn.assigns.client_id)
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
@@ -60,6 +62,17 @@ defmodule Cotoami.CotoController do
     case CotoService.get_by_amishi(id, amishi) do
       %Coto{as_cotonoma: false} = coto ->
         {:ok, coto} = do_cotonomatize(coto, amishi)
+
+        # broadcast events
+        broadcast_cotonomatize(coto.cotonoma, amishi, conn.assigns.client_id)
+        if coto.cotonoma.graph_revision > 0 do
+          # broadcast 'cotonoma' only if it's not empty
+          broadcast_cotonoma(coto.cotonoma, amishi, conn.assigns.client_id)
+        end
+        if coto.posted_in do
+          broadcast_cotonoma(coto.posted_in, amishi, conn.assigns.client_id)
+        end
+
         render(conn, "coto.json", coto: coto)
 
       # Fix inconsistent state caused by the cotonomatizing-won't-affect-graph bug
@@ -85,12 +98,17 @@ defmodule Cotoami.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
-    Repo.transaction(fn ->
-      case CotoService.delete!(id, amishi) do
-        nil -> nil
-        posted_in -> increment_timeline_revision(posted_in)
-      end
-    end)
+    {:ok, posted_in} = 
+      Repo.transaction(fn ->
+        case CotoService.delete!(id, amishi) do
+          nil -> nil
+          posted_in -> increment_timeline_revision(posted_in)
+        end
+      end)
+    broadcast_delete(id, amishi, conn.assigns.client_id)
+    if posted_in do
+      broadcast_cotonoma(posted_in, amishi, conn.assigns.client_id)
+    end
     send_resp(conn, :no_content, "")
   end
 end

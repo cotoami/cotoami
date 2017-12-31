@@ -8,7 +8,8 @@ import Json.Encode as Encode
 import Json.Decode as Decode
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
-import Util.HttpUtil exposing (httpPost)
+import Util.HttpUtil exposing (ClientId, httpPost)
+import App.Types.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg
     exposing
@@ -41,15 +42,15 @@ defaultModel =
     }
 
 
-update : ImportModalMsg.Msg -> Model -> ( Model, Cmd ImportModalMsg.Msg )
-update msg model =
+update : Context -> ImportModalMsg.Msg -> Model -> ( Model, Cmd ImportModalMsg.Msg )
+update context msg model =
     case msg of
         DataInput data ->
             ( { model | data = data }, Cmd.none )
 
         ImportClick ->
             { model | requestProcessing = True }
-                ! [ importData model.data ]
+                ! [ importData context.clientId model.data ]
 
         ImportDone (Ok results) ->
             ( { model
@@ -78,8 +79,8 @@ update msg model =
                    )
 
 
-importData : String -> Cmd ImportModalMsg.Msg
-importData data =
+importData : ClientId -> String -> Cmd ImportModalMsg.Msg
+importData clientId data =
     let
         requestBody =
             Http.jsonBody <|
@@ -107,7 +108,7 @@ importData data =
                     )
                 )
     in
-        Http.send ImportDone (httpPost "/api/import" requestBody decodeResult)
+        Http.send ImportDone (httpPost "/api/import" clientId requestBody decodeResult)
 
 
 view : Model -> Html AppMsg.Msg

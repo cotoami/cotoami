@@ -4,6 +4,7 @@ defmodule Cotoami.ControllerHelpers do
   """
 
   import Plug.Conn, only: [send_resp: 3]
+  alias Cotoami.{Amishi, Coto, Cotonoma}
 
   def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil)  do
     case e.constraint do
@@ -14,14 +15,65 @@ defmodule Cotoami.ControllerHelpers do
     end
   end
 
-  def broadcast_post(coto, cotonoma_key, clientId) do
+  defp payload_base(%Amishi{} = amishi, client_id) do
+    %{
+      clientId: client_id,
+      amishi: Phoenix.View.render_one(amishi, Cotoami.AmishiView, "amishi.json")
+    }
+  end
+
+  defp broadcast(body, topic, event, %Amishi{} = amishi, client_id) do
     Cotoami.Endpoint.broadcast(
-      "cotonomas:#{cotonoma_key}",
-      "post",
-      %{
-        post: Phoenix.View.render_one(coto, Cotoami.CotoView, "coto.json"),
-        clientId: clientId
-      }
-    )
+      topic, event, payload_base(amishi, client_id) |> Map.put(:body, body))
+  end
+
+  #
+  # Channel: 'global'
+  #
+
+  def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
+    coto
+    |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
+    |> broadcast("global", "update", amishi, client_id)
+  end
+
+  def broadcast_delete(coto_id, %Amishi{} = amishi, client_id) do
+    coto_id
+    |> broadcast("global", "delete", amishi, client_id)
+  end
+
+  def broadcast_cotonomatize(%Cotonoma{} = cotonoma, %Amishi{} = amishi, client_id) do
+    cotonoma
+    |> Phoenix.View.render_one(Cotoami.CotonomaView, "cotonoma.json")
+    |> broadcast("global", "cotonomatize", amishi, client_id)
+  end
+
+  def broadcast_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, client_id) do
+    cotonoma
+    |> Phoenix.View.render_one(Cotoami.CotonomaView, "cotonoma.json")
+    |> broadcast("global", "cotonoma", amishi, client_id)
+  end
+
+  def broadcast_connect(%Coto{} = start_coto, %Coto{} = end_coto, %Amishi{} = amishi, client_id) do
+    %{
+      start: Phoenix.View.render_one(start_coto, Cotoami.CotoView, "coto.json"), 
+      end: Phoenix.View.render_one(end_coto, Cotoami.CotoView, "coto.json")
+    }
+    |> broadcast("global", "connect", amishi, client_id)
+  end
+
+  def broadcast_disconnect(start_id, end_id, %Amishi{} = amishi, client_id) do
+    %{startId: start_id, endId: end_id}
+    |> broadcast("global", "disconnect", amishi, client_id)
+  end
+
+  #
+  # Channel: 'cotonomas:*'
+  #
+
+  def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
+    coto
+    |> Phoenix.View.render_one(Cotoami.CotoView, "coto.json")
+    |> broadcast("cotonomas:#{cotonoma_key}", "post", amishi, client_id)
   end
 end

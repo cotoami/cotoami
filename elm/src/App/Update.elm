@@ -4,20 +4,21 @@ import Set
 import Task
 import Process
 import Time
-import Maybe exposing (andThen, withDefault)
+import Maybe
 import Keyboard exposing (KeyCode)
-import Json.Decode as Decode
 import Http exposing (Error(..))
+import Json.Decode as Decode
 import Util.Keys exposing (enter, escape, n)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
+import Util.HttpUtil exposing (ClientId)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
-import App.Types.Amishi exposing (Presences, applyPresenceDiff)
+import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post, toCoto, isPostedInCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (..)
-import App.Types.Post exposing (Post, defaultPost)
+import App.Types.Post exposing (Post)
 import App.Types.Timeline
     exposing
         ( updatePost
@@ -25,23 +26,24 @@ import App.Types.Timeline
         , setBeingDeleted
         , deletePendingPost
         )
-import App.Types.Traversal exposing (closeTraversal, defaultTraversals, updateTraversal, doTraverse)
+import App.Types.Traversal
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
-import App.Route exposing (parseLocation, Route(..))
-import App.Server.Session exposing (decodeSessionNotFoundBodyString)
-import App.Server.Cotonoma exposing (fetchCotonomas, fetchSubCotonomas, pinOrUnpinCotonoma)
-import App.Server.Post exposing (fetchPosts, fetchCotonomaPosts, decodePost)
-import App.Server.Coto exposing (deleteCoto)
-import App.Server.Graph exposing (fetchGraph, fetchSubgraphIfCotonoma)
-import App.Commands exposing (sendMsg)
-import App.Channels exposing (Payload, decodePayload, decodePresenceState, decodePresenceDiff)
-import App.Modals.SigninModal exposing (setSignupEnabled)
+import App.Route exposing (Route(..))
+import App.Server.Session
+import App.Server.Cotonoma
+import App.Server.Post
+import App.Server.Coto
+import App.Server.Graph
+import App.Commands
+import App.Channels exposing (Payload)
+import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
+import App.Pushed
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -76,7 +78,7 @@ update msg model =
             )
 
         OnLocationChange location ->
-            parseLocation location
+            App.Route.parseLocation location
                 |> (\route -> ( route, { model | route = route } ))
                 |> \( route, model ) ->
                     case route of
@@ -105,11 +107,11 @@ update msg model =
             changeLocationToHome model
 
         CotonomaPresenceState payload ->
-            { model | presences = decodePresenceState payload } ! []
+            { model | presences = App.Channels.decodePresenceState payload } ! []
 
         CotonomaPresenceDiff payload ->
-            decodePresenceDiff payload
-                |> (\diff -> applyPresenceDiff diff model.presences)
+            App.Channels.decodePresenceDiff payload
+                |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
 
         --
@@ -130,8 +132,12 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        decodeSessionNotFoundBodyString response.body
-                            |> (\body -> setSignupEnabled body.signupEnabled model.signinModal)
+                        App.Server.Session.decodeSessionNotFoundBodyString response.body
+                            |> (\body ->
+                                    App.Modals.SigninModal.setSignupEnabled
+                                        body.signupEnabled
+                                        model.signinModal
+                               )
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> openModal App.Model.SigninModal
                             |> \model -> model ! []
@@ -158,17 +164,20 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model ! []
 
-        CotonomaFetched (Ok ( cotonoma, posts )) ->
+        CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model
                 | context = setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
                 |> \model ->
                     ( model
                     , Cmd.batch
-                        [ initializeTimelineScrollPosition model
-                        , fetchSubCotonomas (Just cotonoma)
+                        [ if paginatedPosts.pageIndex == 0 then
+                            initializeTimelineScrollPosition model
+                          else
+                            Cmd.none
+                        , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
                         ]
                     )
 
@@ -205,10 +214,15 @@ update msg model =
             ( closeActiveModal model, Cmd.none )
 
         Confirm ->
-            ( closeActiveModal model, sendMsg model.confirmation.msgOnConfirm )
+            ( closeActiveModal model
+            , App.Commands.sendMsg model.confirmation.msgOnConfirm
+            )
 
         OpenSigninModal ->
-            { model | signinModal = App.Modals.SigninModal.defaultModel }
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel model.signinModal.signupEnabled
+            }
                 |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
@@ -285,7 +299,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ App.Commands.scrollGraphExplorationToRight NoOp
-                        , fetchSubgraphIfCotonoma model.graph cotoId
+                        , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
                         ]
                     )
 
@@ -301,52 +315,51 @@ update msg model =
             ( confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
-                    (RequestDeleteCoto coto)
+                    (DeleteCotoInServerSide coto)
                 )
                 model
             , Cmd.none
             )
 
-        RequestDeleteCoto coto ->
-            ({ model | timeline = setBeingDeleted coto model.timeline }
+        DeleteCotoInServerSide coto ->
+            ( { model | timeline = setBeingDeleted coto model.timeline }
                 |> clearModals
+            , Cmd.batch
+                [ App.Server.Coto.deleteCoto model.context.clientId coto.id
+                , Process.sleep (1 * Time.second)
+                    |> Task.andThen (\_ -> Task.succeed ())
+                    |> Task.perform (\_ -> DeleteCotoInClientSide coto)
+                ]
             )
-                ! [ deleteCoto coto.id
-                  , Process.sleep (1 * Time.second)
-                        |> Task.andThen (\_ -> Task.succeed ())
-                        |> Task.perform (\_ -> DeleteCoto coto)
-                  ]
 
-        DeleteCoto coto ->
-            { model
-                | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-                , graph = removeCoto coto.id model.graph |> \( graph, _ ) -> graph
-                , traversals = closeTraversal coto.id model.traversals
-                , context = deleteSelection coto.id model.context
-            }
-                ! (if coto.asCotonoma then
-                    [ fetchCotonomas
-                    , fetchSubCotonomas model.context.cotonoma
-                    ]
-                   else
-                    []
-                  )
+        DeleteCotoInClientSide coto ->
+            ( App.Model.deleteCoto coto model, Cmd.none )
 
-        CotoDeleted _ ->
-            model ! []
+        CotoDeleted (Ok _) ->
+            ( model
+            , Cmd.batch
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                ]
+            )
+
+        CotoDeleted (Err error) ->
+            ( model, Cmd.none )
 
         CotoUpdated (Ok coto) ->
-            (model
+            ( (model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
                 |> clearModals
-            )
-                ! if coto.asCotonoma then
-                    [ fetchCotonomas
-                    , fetchSubCotonomas model.context.cotonoma
+              )
+            , if coto.asCotonoma then
+                Cmd.batch
+                    [ App.Server.Cotonoma.fetchCotonomas
+                    , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                     ]
-                  else
-                    []
+              else
+                Cmd.none
+            )
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -375,15 +388,15 @@ update msg model =
                 )
 
         Cotonomatize cotoId ->
-            ( model, App.Server.Coto.cotonomatize cotoId )
+            ( model, App.Server.Coto.cotonomatize model.context.clientId cotoId )
 
         Cotonomatized (Ok coto) ->
             ( model
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
                 |> clearModals
             , Cmd.batch
-                [ fetchCotonomas
-                , fetchSubCotonomas model.context.cotonoma
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                 ]
             )
 
@@ -400,17 +413,20 @@ update msg model =
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = pinCoto session coto model.graph }
-                        ! [ App.Server.Graph.pinCotos
-                                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                                [ cotoId ]
-                          , App.Commands.scrollPinnedCotosToBottom NoOp
-                          ]
+                    ( { model | graph = pinCoto session.id coto model.graph }
+                    , Cmd.batch
+                        [ App.Server.Graph.pinCotos
+                            model.context.clientId
+                            (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                            [ cotoId ]
+                        , App.Commands.scrollPinnedCotosToBottom NoOp
+                        ]
+                    )
                 )
                 model.context.session
                 (App.Model.getCoto cotoId model)
             )
-                |> withDefault ( model, Cmd.none )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         CotoPinned (Ok _) ->
             ( model, Cmd.none )
@@ -431,6 +447,7 @@ update msg model =
         UnpinCoto cotoId ->
             { model | graph = model.graph |> unpinCoto cotoId }
                 ! [ App.Server.Graph.unpinCoto
+                        model.context.clientId
                         (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                         cotoId
                   ]
@@ -469,6 +486,7 @@ update msg model =
             ( App.Model.connect direction objects target model
                 |> closeModal App.Model.ConnectModal
             , App.Server.Graph.connect
+                model.context.clientId
                 (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                 direction
                 (List.map (\coto -> coto.id) objects)
@@ -496,6 +514,7 @@ update msg model =
                 | graph = disconnect ( startId, endId ) model.graph
             }
                 ! [ App.Server.Graph.disconnect
+                        model.context.clientId
                         (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
                         startId
                         endId
@@ -511,29 +530,57 @@ update msg model =
         -- Cotonoma
         --
         PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            ( model, pinOrUnpinCotonoma pinOrUnpin cotonomaKey )
+            ( model
+            , App.Server.Cotonoma.pinOrUnpinCotonoma
+                model.context.clientId
+                pinOrUnpin
+                cotonomaKey
+            )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
             ( { model | cotonomasLoading = True }
                 |> closeModal App.Model.CotoMenuModal
-            , fetchCotonomas
+            , App.Server.Cotonoma.fetchCotonomas
             )
 
         CotonomaPinnedOrUnpinned (Err _) ->
             ( model, Cmd.none )
 
+        LoadMorePostsInCotonoma cotonomaKey ->
+            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+                |> \model ->
+                    ( model
+                    , App.Server.Post.fetchCotonomaPosts
+                        cotonomaKey
+                        (App.Types.Timeline.nextPageIndex model.timeline)
+                    )
+
         --
         -- Timeline
         --
-        PostsFetched (Ok posts) ->
+        PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.setPosts posts model.timeline
+                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
-                |> \model -> ( model, initializeTimelineScrollPosition model )
+                |> \model ->
+                    ( model
+                    , if paginatedPosts.pageIndex == 0 then
+                        initializeTimelineScrollPosition model
+                      else
+                        Cmd.none
+                    )
 
         PostsFetched (Err _) ->
             model ! []
+
+        LoadMorePosts ->
+            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+                |> \model ->
+                    ( model
+                    , App.Server.Post.fetchPosts
+                        (App.Types.Timeline.nextPageIndex model.timeline)
+                    )
 
         ImageLoaded ->
             model ! [ App.Commands.scrollTimelineToBottom NoOp ]
@@ -586,7 +633,7 @@ update msg model =
         PostedAndConnect postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> clearModals
-                |> connectPost response
+                |> connectPost model.context.clientId response
 
         PostedAndConnect postId (Err _) ->
             ( model, Cmd.none )
@@ -598,8 +645,8 @@ update msg model =
               }
                 |> clearModals
             , Cmd.batch
-                [ fetchCotonomas
-                , fetchSubCotonomas model.context.cotonoma
+                [ App.Server.Cotonoma.fetchCotonomas
+                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
                 ]
             )
 
@@ -614,20 +661,6 @@ update msg model =
                     , Cmd.none
                     )
 
-        PostPushed payload ->
-            case Decode.decodeValue (decodePayload "post" decodePost) payload of
-                Ok decodedPayload ->
-                    handlePushedPost model.context.clientId decodedPayload model
-
-                Err err ->
-                    model ! []
-
-        CotonomaPushed post ->
-            model
-                ! [ fetchCotonomas
-                  , fetchSubCotonomas model.context.cotonoma
-                  ]
-
         TimelineScrollPosInitialized ->
             model.timeline
                 |> (\timeline -> { timeline | initializingScrollPos = False })
@@ -638,13 +671,16 @@ update msg model =
         --
         TraverseClick traverse ->
             { model
-                | traversals = updateTraversal (doTraverse traverse) model.traversals
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        (App.Types.Traversal.doTraverse traverse)
+                        model.traversals
             }
                 ! []
 
         CloseTraversal cotoId ->
             { model
-                | traversals = closeTraversal cotoId model.traversals
+                | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals
             }
                 ! []
 
@@ -692,6 +728,54 @@ update msg model =
                 ! []
 
         --
+        -- Pushed
+        --
+        UpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Coto.decodeCoto
+                App.Pushed.handleUpdate
+                payload
+                model
+
+        DeletePushed payload ->
+            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+
+        CotonomatizePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomatize
+                payload
+                model
+
+        CotonomaPushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonoma
+                payload
+                model
+
+        ConnectPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeConnectPayloadBody
+                App.Pushed.handleConnect
+                payload
+                model
+
+        DisconnectPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeDisconnectPayloadBody
+                App.Pushed.handleDisconnect
+                payload
+                model
+
+        PostPushed payload ->
+            App.Pushed.handle
+                App.Server.Post.decodePost
+                App.Pushed.handlePost
+                payload
+                model
+
+        --
         -- Sub components
         --
         SigninModalMsg subMsg ->
@@ -701,7 +785,7 @@ update msg model =
                         ! [ Cmd.map SigninModalMsg subCmd ]
 
         EditorModalMsg subMsg ->
-            App.Modals.EditorModal.update subMsg model.editorModal
+            App.Modals.EditorModal.update model.context subMsg model.editorModal
                 |> (\( editorModal, cmd ) ->
                         ( { model | editorModal = editorModal }, cmd )
                    )
@@ -754,7 +838,7 @@ update msg model =
                         ! [ Cmd.map InviteModalMsg subCmd ]
 
         ImportModalMsg subMsg ->
-            App.Modals.ImportModal.update subMsg model.importModal
+            App.Modals.ImportModal.update model.context subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
 
@@ -788,13 +872,13 @@ loadHome model =
         , connectingTarget = Nothing
         , graph = defaultGraph
         , loadingGraph = True
-        , traversals = defaultTraversals
+        , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchPosts
-          , fetchCotonomas
-          , fetchGraph Nothing
+        ! [ App.Server.Post.fetchPosts 0
+          , App.Server.Cotonoma.fetchCotonomas
+          , App.Server.Graph.fetchGraph Nothing
           ]
 
 
@@ -815,13 +899,13 @@ loadCotonoma key model =
         , connectingTarget = Nothing
         , graph = defaultGraph
         , loadingGraph = True
-        , traversals = defaultTraversals
+        , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
     }
-        ! [ fetchCotonomas
-          , fetchCotonomaPosts key
-          , fetchGraph (Just key)
+        ! [ App.Server.Cotonoma.fetchCotonomas
+          , App.Server.Post.fetchCotonomaPosts key 0
+          , App.Server.Graph.fetchGraph (Just key)
           ]
 
 
@@ -831,24 +915,6 @@ initializeTimelineScrollPosition model =
         App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
     else
         Cmd.none
-
-
-handlePushedPost : String -> Payload Post -> Model -> ( Model, Cmd Msg )
-handlePushedPost clientId payload model =
-    if payload.clientId /= clientId then
-        (model.timeline
-            |> (\timeline -> ( timeline, payload.body :: timeline.posts ))
-            |> (\( timeline, posts ) -> { timeline | posts = posts })
-            |> (\timeline -> { model | timeline = timeline })
-        )
-            ! if payload.body.asCotonoma then
-                [ App.Commands.scrollTimelineToBottom NoOp
-                , sendMsg (CotonomaPushed payload.body)
-                ]
-              else
-                [ App.Commands.scrollTimelineToBottom NoOp ]
-    else
-        model ! []
 
 
 post : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
@@ -912,10 +978,10 @@ openCoto coto model =
     )
 
 
-connectPost : Post -> Model -> ( Model, Cmd Msg )
-connectPost post model =
+connectPost : ClientId -> Post -> Model -> ( Model, Cmd Msg )
+connectPost clientId post model =
     post.cotoId
-        |> andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
             (\target ->
                 let
@@ -930,10 +996,11 @@ connectPost post model =
                 in
                     ( App.Model.connect direction objects target model
                     , App.Server.Graph.connect
+                        clientId
                         maybeCotonomaKey
                         direction
                         (List.map (\coto -> coto.id) objects)
                         target.id
                     )
             )
-        |> withDefault (model ! [])
+        |> Maybe.withDefault (model ! [])

@@ -31,9 +31,32 @@ div.loading-overlay {
   background: url(../images/loading.gif) center no-repeat #f8f8f8;
 }
 
+div.more-button-div {
+  margin-top: 10px;
+  padding-left: 2px;
+  padding-right: 2px;
+  text-align: center;
+
+  button {
+    width: 100%;
+    background-color: #fff;
+
+    &.loading {
+      padding-top: 4px;
+      background-color: rgba(255, 255, 255, 0) !important;
+    }
+  }
+
+  i.material-icons {
+    vertical-align: middle;
+    font-size: 36px;
+  }
+}
+
 div.timeline {
   overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 10px;
   padding-bottom: 10px;
  

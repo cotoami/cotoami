@@ -1,20 +1,32 @@
-module Util.HttpUtil exposing (httpRequestWithBody, httpDelete, httpPost, httpPut)
+module Util.HttpUtil
+    exposing
+        ( ClientId(ClientId)
+        , httpRequestWithBody
+        , httpDelete
+        , httpPost
+        , httpPut
+        )
 
 import Http
 import Json.Decode as Decode
 
 
-commonRequestHeaders : List Http.Header
-commonRequestHeaders =
+type ClientId
+    = ClientId String
+
+
+commonRequestHeaders : ClientId -> List Http.Header
+commonRequestHeaders (ClientId clientId) =
     [ Http.header "X-Requested-With" "XMLHttpRequest"
+    , Http.header "X-Cotoami-Client-Id" clientId
     ]
 
 
-httpRequestWithBody : String -> String -> Http.Body -> Decode.Decoder a -> Http.Request a
-httpRequestWithBody method url body decoder =
+httpRequestWithBody : String -> String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpRequestWithBody method url clientId body decoder =
     Http.request
         { method = method
-        , headers = commonRequestHeaders
+        , headers = commonRequestHeaders clientId
         , url = url
         , body = body
         , expect = Http.expectJson decoder
@@ -23,11 +35,11 @@ httpRequestWithBody method url body decoder =
         }
 
 
-httpDelete : String -> Http.Request String
-httpDelete url =
+httpDelete : String -> ClientId -> Http.Request String
+httpDelete url clientId =
     Http.request
         { method = "DELETE"
-        , headers = commonRequestHeaders
+        , headers = commonRequestHeaders clientId
         , url = url
         , body = Http.emptyBody
         , expect = Http.expectString
@@ -36,11 +48,11 @@ httpDelete url =
         }
 
 
-httpPost : String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPost : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPost =
     httpRequestWithBody "POST"
 
 
-httpPut : String -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPut : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPut =
     httpRequestWithBody "PUT"

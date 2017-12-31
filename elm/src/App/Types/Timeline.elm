@@ -3,7 +3,7 @@ module App.Types.Timeline exposing (..)
 import Maybe
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post, defaultPost, toCoto, isSelfOrPostedIn)
+import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Context exposing (Context)
 import App.Types.Session
 
@@ -20,6 +20,9 @@ type alias Timeline =
     , posts : List Post
     , loading : Bool
     , initializingScrollPos : Bool
+    , pageIndex : Int
+    , more : Bool
+    , loadingMore : Bool
     }
 
 
@@ -32,6 +35,9 @@ defaultTimeline =
     , posts = []
     , loading = False
     , initializingScrollPos = False
+    , pageIndex = 0
+    , more = False
+    , loadingMore = False
     }
 
 
@@ -45,9 +51,25 @@ openOrCloseEditor open timeline =
     { timeline | editorOpen = open }
 
 
-setPosts : List Post -> Timeline -> Timeline
-setPosts posts timeline =
-    { timeline | posts = posts, loading = False }
+addPost : Post -> Timeline -> Timeline
+addPost post timeline =
+    { timeline | posts = post :: timeline.posts }
+
+
+addPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+addPaginatedPosts paginatedPosts timeline =
+    { timeline
+        | posts = List.append timeline.posts paginatedPosts.posts
+        , loading = False
+        , pageIndex = paginatedPosts.pageIndex
+        , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
+        , loadingMore = False
+    }
+
+
+nextPageIndex : Timeline -> Int
+nextPageIndex timeline =
+    timeline.pageIndex + 1
 
 
 getCoto : CotoId -> Timeline -> Maybe Coto
@@ -55,13 +77,13 @@ getCoto cotoId timeline =
     timeline.posts
         |> List.filter (\post -> post.cotoId == Just cotoId)
         |> List.head
-        |> Maybe.andThen toCoto
+        |> Maybe.andThen App.Types.Post.toCoto
 
 
 deleteCoto : Coto -> Timeline -> Timeline
 deleteCoto coto timeline =
     timeline.posts
-        |> List.filter (\post -> not (isSelfOrPostedIn coto post))
+        |> List.filter (\post -> not (App.Types.Post.isSelfOrPostedIn coto post))
         |> (\posts -> { timeline | posts = posts })
 
 
@@ -80,6 +102,11 @@ setLoading timeline =
         , loading = True
         , initializingScrollPos = True
     }
+
+
+setLoadingMore : Timeline -> Timeline
+setLoadingMore timeline =
+    { timeline | loadingMore = True }
 
 
 updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
@@ -139,7 +166,7 @@ setCotoSaved postId apiResponse timeline =
 setBeingDeleted : Coto -> Timeline -> Timeline
 setBeingDeleted coto timeline =
     updatePost
-        (\post -> isSelfOrPostedIn coto post)
+        (\post -> App.Types.Post.isSelfOrPostedIn coto post)
         (\post -> { post | beingDeleted = True })
         timeline
 
@@ -147,6 +174,9 @@ setBeingDeleted coto timeline =
 post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
 post context asCotonoma summary content timeline =
     let
+        defaultPost =
+            App.Types.Post.defaultPost
+
         postId =
             timeline.postIdCounter + 1
     in

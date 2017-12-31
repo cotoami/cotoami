@@ -14,6 +14,7 @@ defmodule Cotoami.CotoGraphControllerTest do
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> put_req_header("x-cotoami-client-id", "this-is-a-client-id")
       |> assign(:amishi, amishi)
     bolt_conn = Bolt.Sips.conn
     %{amishi: amishi, conn: conn, bolt_conn: bolt_conn}
