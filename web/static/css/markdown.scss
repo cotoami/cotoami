@@ -25,4 +25,34 @@ div.content {
   h4 { font-size: 1.6rem; line-height: 1.35; letter-spacing: -.08rem; }
   h5 { font-size: 1.4rem; line-height: 1.5;  letter-spacing: -.05rem; }
   h6 { font-size: 1.2rem; line-height: 1.6;  letter-spacing: 0;       }
+
+  blockquote {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    color: #888;
+    quotes: "\201C""\201D""\2018""\2019";
+
+    &:before {
+      color: #ccc;
+      font-family: serif;
+      content: open-quote;
+      font-size: 45px;
+      line-height: 0.1em;
+      margin-right: 5px;
+      vertical-align: -20px;
+    }
+
+    &:after {
+      color: #ccc;
+      font-family: serif;
+      content: close-quote;
+      font-size: 45px;
+      line-height: 0.1em;
+      vertical-align: -27px;
+    }
+
+    p {
+      padding-left: 1em;
+    }
+  }
 }
