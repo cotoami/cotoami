@@ -380,7 +380,7 @@ sourceCotoDiv context model =
 
 buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
-    [ if List.isEmpty context.selection then
+    [ if List.isEmpty context.selection || isJust model.source then
         span [] []
       else
         button
