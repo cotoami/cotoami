@@ -809,11 +809,7 @@ update msg model =
                                 postCotonomaFromEditorModal model
 
                             App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
-                                handleEditorShortcut
-                                    keyCode
-                                    (App.Modals.EditorModal.getSummary model.editorModal)
-                                    model.editorModal.content
-                                    model
+                                handleEditorModalShortcut keyCode model
 
                             _ ->
                                 ( model, cmd )
@@ -1007,6 +1003,26 @@ handleEditorShortcut keyCode summary content model =
             postAndConnectToSelection Nothing summary content model
         else if isAltDown model.context && anySelection model.context then
             confirmPostAndConnect summary content model
+        else
+            ( model, Cmd.none )
+    else
+        ( model, Cmd.none )
+
+
+handleEditorModalShortcut : KeyCode -> Model -> ( Model, Cmd Msg )
+handleEditorModalShortcut keyCode model =
+    if
+        (keyCode == enter.keyCode)
+            && not (Set.isEmpty model.context.modifierKeys)
+            && isNotBlank model.editorModal.content
+    then
+        if isCtrlDown model.context then
+            postFromEditorModal model
+        else if isAltDown model.context && anySelection model.context then
+            confirmPostAndConnect
+                (App.Modals.EditorModal.getSummary model.editorModal)
+                model.editorModal.content
+                model
         else
             ( model, Cmd.none )
     else
