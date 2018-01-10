@@ -636,15 +636,17 @@ update msg model =
         PostedAndConnectToSelection postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> clearModals
-                |> connectPost model.context.clientId response
+                |> connectPostToSelection model.context.clientId response
 
         PostedAndConnectToSelection postId (Err _) ->
             ( model, Cmd.none )
 
-        PostedAndConnectToCoto postId (Ok response) ->
-            ( model, Cmd.none )
+        PostedAndConnectToCoto postId coto (Ok response) ->
+            { model | timeline = setCotoSaved postId response model.timeline }
+                |> clearModals
+                |> connectPostToCoto model.context.clientId coto response
 
-        PostedAndConnectToCoto postId (Err _) ->
+        PostedAndConnectToCoto postId coto (Err _) ->
             ( model, Cmd.none )
 
         CotonomaPosted postId (Ok response) ->
@@ -940,7 +942,7 @@ postAndConnectToCoto coto summary content model =
               , App.Server.Post.post
                     model.context.clientId
                     model.context.cotonoma
-                    (PostedAndConnectToCoto timeline.postIdCounter)
+                    (PostedAndConnectToCoto timeline.postIdCounter coto)
                     newPost
               ]
 
@@ -1020,8 +1022,8 @@ openCoto coto model =
     )
 
 
-connectPost : ClientId -> Post -> Model -> ( Model, Cmd Msg )
-connectPost clientId post model =
+connectPostToSelection : ClientId -> Post -> Model -> ( Model, Cmd Msg )
+connectPostToSelection clientId post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
         |> Maybe.map
@@ -1045,4 +1047,29 @@ connectPost clientId post model =
                         target.id
                     )
             )
-        |> Maybe.withDefault (model ! [])
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+connectPostToCoto : ClientId -> Coto -> Post -> Model -> ( Model, Cmd Msg )
+connectPostToCoto clientId coto post model =
+    post.cotoId
+        |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.map
+            (\target ->
+                let
+                    direction =
+                        App.Types.Graph.Inbound
+
+                    maybeCotonomaKey =
+                        Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
+                in
+                    ( App.Model.connect direction [ coto ] target model
+                    , App.Server.Graph.connect
+                        clientId
+                        maybeCotonomaKey
+                        direction
+                        [ coto.id ]
+                        target.id
+                    )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
