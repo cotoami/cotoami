@@ -19,7 +19,7 @@ import Http exposing (Error(..))
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto)
 import App.Types.Context exposing (Context)
@@ -201,7 +201,7 @@ cotoEditorConfig context model =
                         [ text "Cotonoma" ]
                     ]
     , content =
-        div []
+        div [ class "coto-editor-modal-body" ]
             [ sourceCotoDiv context model
             , cotoEditor model
             ]
@@ -354,6 +354,8 @@ sourceCotoDiv context model =
                         "source-coto"
                         App.Markdown.markdown
                         source
+                    , div [ class "arrow" ]
+                        [ materialIcon "arrow_downward" Nothing ]
                     ]
             )
         |> Maybe.withDefault (div [] [])
