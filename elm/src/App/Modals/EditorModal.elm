@@ -16,6 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
+import Exts.Maybe exposing (isJust)
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
@@ -192,14 +193,7 @@ cotoEditorConfig context model =
                 text "Edit Coto"
 
             _ ->
-                div []
-                    [ text "New Coto or "
-                    , a
-                        [ class "switch-to"
-                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
-                        ]
-                        [ text "Cotonoma" ]
-                    ]
+                newEditorTitle model
     , content =
         div [ class "coto-editor-modal-body" ]
             [ sourceCotoDiv context model
@@ -284,15 +278,7 @@ cotonomaEditorConfig context model =
                 text "Change Cotonoma Name"
 
             _ ->
-                div []
-                    [ text "New "
-                    , a
-                        [ class "switch-to"
-                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
-                        ]
-                        [ text "Coto" ]
-                    , text " or Cotonoma"
-                    ]
+                newEditorTitle model
     , content =
         div []
             [ sourceCotoDiv context model
@@ -341,6 +327,37 @@ cotonomaEditor model =
 --
 -- Partials
 --
+
+
+newEditorTitle : Model -> Html AppMsg.Msg
+newEditorTitle model =
+    (case model.mode of
+        NewCoto ->
+            if isJust model.source then
+                [ text "New Connected Coto" ]
+            else
+                [ text "New Coto or "
+                , a
+                    [ class "switch-to"
+                    , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
+                    ]
+                    [ text "Cotonoma" ]
+                ]
+
+        NewCotonoma ->
+            [ text "New "
+            , a
+                [ class "switch-to"
+                , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
+                ]
+                [ text "Coto" ]
+            , text " or Cotonoma"
+            ]
+
+        _ ->
+            []
+    )
+        |> (div [])
 
 
 sourceCotoDiv : Context -> Model -> Html AppMsg.Msg
