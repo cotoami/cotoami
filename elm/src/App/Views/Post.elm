@@ -8,7 +8,6 @@ import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.EventUtil exposing (onLoad)
-import App.Types.Coto exposing (ElementId)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
@@ -29,6 +28,7 @@ view context graph post =
                 post.cotoId
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
+                , ( "by-another-amishi", not (isAuthor context post) )
                 ]
 
         eventAttrs =
@@ -57,6 +57,16 @@ view context graph post =
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
                 ]
             ]
+
+
+isAuthor : Context -> Post -> Bool
+isAuthor context post =
+    (Maybe.map2
+        (\session author -> author.id == session.id)
+        context.session
+        post.amishi
+    )
+        |> Maybe.withDefault False
 
 
 headerDiv : Context -> Graph -> Post -> Html Msg
