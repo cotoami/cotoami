@@ -15,8 +15,28 @@
     text-decoration-color: #eee;
   }
 
-  div.coto-editor {
+  div.coto-editor-modal-body {
     height: 50vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  div.source-coto {
+    div.coto-body {
+      max-height: 100px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    div.arrow {
+      text-align: center;
+      padding-top: 5px;
+    }
+  }
+
+  div.coto-editor {
+    flex: 1;
     display: flex;
     flex-direction: column;
 

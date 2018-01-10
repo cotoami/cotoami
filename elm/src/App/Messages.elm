@@ -44,6 +44,7 @@ type Msg
     | Confirm
     | OpenSigninModal
     | OpenNewEditorModal
+    | OpenNewEditorModalWithSourceCoto Coto
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotoMenuModal Coto
@@ -98,8 +99,9 @@ type Msg
     | Post
     | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect String (Maybe String)
-    | PostAndConnect String (Maybe String)
-    | PostedAndConnect Int (Result Http.Error Post)
+    | PostAndConnectToSelection String (Maybe String)
+    | PostedAndConnectToSelection Int (Result Http.Error Post)
+    | PostedAndConnectToCoto Int Coto (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
     | TimelineScrollPosInitialized
       --

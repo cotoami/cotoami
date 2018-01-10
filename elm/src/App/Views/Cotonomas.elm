@@ -70,6 +70,7 @@ cotonomaDiv context graph listTitle cotonoma =
                             Nothing
                             { defaultActionConfig
                                 | editCoto = Nothing
+                                , addCoto = Nothing
                             }
                             coto
                    )

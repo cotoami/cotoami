@@ -68,8 +68,8 @@ type alias Markdown =
     String -> Html Msg
 
 
-bodyDiv : Context -> Graph -> ElementId -> Markdown -> BodyModel r -> Html Msg
-bodyDiv context graph elementId markdown model =
+bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.cotonomaKey
             |> Maybe.map
@@ -80,9 +80,9 @@ bodyDiv context graph elementId markdown model =
         ]
 
 
-bodyDivByCoto : Context -> Graph -> ElementId -> Coto -> Html Msg
-bodyDivByCoto context graph elementId coto =
-    bodyDiv context graph elementId App.Markdown.markdown coto
+bodyDivByCoto : Context -> ElementId -> Coto -> Html Msg
+bodyDivByCoto context elementId coto =
+    bodyDiv context elementId App.Markdown.markdown coto
 
 
 contentDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
@@ -131,6 +131,7 @@ type alias ActionConfig =
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , editCoto : Maybe (Coto -> Msg)
+    , addCoto : Maybe (Coto -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
     , confirmConnect : Maybe (CotoId -> Direction -> Msg)
     , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
@@ -143,6 +144,7 @@ defaultActionConfig =
     , selectCoto = Just SelectCoto
     , pinCoto = Just PinCoto
     , editCoto = Just OpenEditorModal
+    , addCoto = Just OpenNewEditorModalWithSourceCoto
     , openTraversal = Just OpenTraversal
     , confirmConnect = Just ConfirmConnect
     , deleteConnection = Just ConfirmDeleteConnection
@@ -224,6 +226,16 @@ toolButtonsSpan context graph maybeInbound config coto =
             )
             config.editCoto
             context.session
+      , Maybe.map
+            (\addCoto ->
+                a
+                    [ class "tool-button add-coto"
+                    , title "Create a connected Coto"
+                    , onLinkButtonClick (addCoto coto)
+                    ]
+                    [ materialIcon "add" Nothing ]
+            )
+            config.addCoto
       , Maybe.map3
             (\deleteConnection session ( parent, connection ) ->
                 if isDisconnectable session parent connection coto then
@@ -367,7 +379,7 @@ subCotoDiv context graph parentElementId connection coto =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph (Just connection) defaultActionConfig coto
-                , bodyDivByCoto context graph elementId coto
+                , bodyDivByCoto context elementId coto
                 , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]

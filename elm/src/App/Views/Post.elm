@@ -52,7 +52,7 @@ view context graph post =
                     div [] []
                   else
                     authorDiv context post
-                , App.Views.Coto.bodyDiv context graph elementId markdown post
+                , App.Views.Coto.bodyDiv context elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
                 ]

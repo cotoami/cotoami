@@ -133,7 +133,7 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
             ]
             [ div [ class "coto-inner" ]
                 [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
-                , App.Views.Coto.bodyDivByCoto context graph elementId coto
+                , App.Views.Coto.bodyDivByCoto context elementId coto
                 , div [ class "main-sub-border" ] []
                 , connectionsDiv ( traversal, index ) coto connections context graph
                 ]
@@ -192,7 +192,7 @@ subCotoDiv ( traversal, index ) context graph connection coto =
                     (Just connection)
                     App.Views.Coto.defaultActionConfig
                     coto
-                , App.Views.Coto.bodyDivByCoto context graph elementId coto
+                , App.Views.Coto.bodyDivByCoto context elementId coto
                 , traverseButtonDiv TraverseClick index coto.id traversal graph
                 ]
             ]
