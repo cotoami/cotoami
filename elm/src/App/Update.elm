@@ -641,6 +641,12 @@ update msg model =
         PostedAndConnectToSelection postId (Err _) ->
             ( model, Cmd.none )
 
+        PostedAndConnectToCoto postId (Ok response) ->
+            ( model, Cmd.none )
+
+        PostedAndConnectToCoto postId (Err _) ->
+            ( model, Cmd.none )
+
         CotonomaPosted postId (Ok response) ->
             ( { model
                 | cotonomasLoading = True
@@ -795,33 +801,10 @@ update msg model =
                 |> (\( model, cmd ) ->
                         case subMsg of
                             App.Modals.EditorModalMsg.Post ->
-                                postAndConnectToSelection
-                                    Nothing
-                                    (App.Modals.EditorModal.getSummary model.editorModal)
-                                    model.editorModal.content
-                                    model
+                                postFromEditorModal model
 
                             App.Modals.EditorModalMsg.PostCotonoma ->
-                                let
-                                    cotonomaName =
-                                        model.editorModal.content
-
-                                    ( timeline, _ ) =
-                                        App.Types.Timeline.post
-                                            model.context
-                                            True
-                                            Nothing
-                                            cotonomaName
-                                            model.timeline
-                                in
-                                    { model | timeline = timeline }
-                                        ! [ App.Commands.scrollTimelineToBottom NoOp
-                                          , App.Server.Post.postCotonoma
-                                                model.context.clientId
-                                                model.context.cotonoma
-                                                timeline.postIdCounter
-                                                cotonomaName
-                                          ]
+                                postCotonomaFromEditorModal model
 
                             App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
                                 handleEditorShortcut
@@ -922,12 +905,6 @@ initializeTimelineScrollPosition model =
 postAndConnectToSelection : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
 postAndConnectToSelection maybeDirection summary content model =
     let
-        clientId =
-            model.context.clientId
-
-        cotonoma =
-            model.context.cotonoma
-
         ( timeline, newPost ) =
             model.timeline
                 |> App.Types.Timeline.post model.context False summary content
@@ -943,7 +920,70 @@ postAndConnectToSelection maybeDirection summary content model =
                 Maybe.withDefault Outbound maybeDirection
         }
             ! [ App.Commands.scrollTimelineToBottom NoOp
-              , App.Server.Post.post clientId cotonoma postMsg newPost
+              , App.Server.Post.post
+                    model.context.clientId
+                    model.context.cotonoma
+                    postMsg
+                    newPost
+              ]
+
+
+postAndConnectToCoto : Coto -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+postAndConnectToCoto coto summary content model =
+    let
+        ( timeline, newPost ) =
+            model.timeline
+                |> App.Types.Timeline.post model.context False summary content
+    in
+        { model | timeline = timeline }
+            ! [ App.Commands.scrollTimelineToBottom NoOp
+              , App.Server.Post.post
+                    model.context.clientId
+                    model.context.cotonoma
+                    (PostedAndConnectToCoto timeline.postIdCounter)
+                    newPost
+              ]
+
+
+postFromEditorModal : Model -> ( Model, Cmd Msg )
+postFromEditorModal model =
+    let
+        summary =
+            App.Modals.EditorModal.getSummary model.editorModal
+
+        content =
+            model.editorModal.content
+    in
+        model.editorModal.source
+            |> Maybe.map
+                (\source ->
+                    postAndConnectToCoto source summary content model
+                )
+            |> Maybe.withDefault
+                (postAndConnectToSelection Nothing summary content model)
+
+
+postCotonomaFromEditorModal : Model -> ( Model, Cmd Msg )
+postCotonomaFromEditorModal model =
+    let
+        cotonomaName =
+            model.editorModal.content
+
+        ( timeline, _ ) =
+            App.Types.Timeline.post
+                model.context
+                True
+                Nothing
+                cotonomaName
+                model.timeline
+    in
+        { model | timeline = timeline }
+            ! [ App.Commands.scrollTimelineToBottom NoOp
+              , App.Server.Post.postCotonoma
+                    model.context.clientId
+                    model.context.cotonoma
+                    timeline.postIdCounter
+                    cotonomaName
               ]
 
 
