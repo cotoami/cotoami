@@ -1016,15 +1016,29 @@ handleEditorModalShortcut keyCode model =
             && not (Set.isEmpty model.context.modifierKeys)
             && isNotBlank model.editorModal.content
     then
-        if isCtrlDown model.context then
-            postFromEditorModal model
-        else if isAltDown model.context && anySelection model.context then
-            confirmPostAndConnect
-                (App.Modals.EditorModal.getSummary model.editorModal)
-                model.editorModal.content
-                model
-        else
-            ( model, Cmd.none )
+        case model.editorModal.mode of
+            App.Modals.EditorModal.Edit coto ->
+                if isCtrlDown model.context then
+                    ( model
+                    , App.Server.Coto.updateContent
+                        model.context.clientId
+                        coto.id
+                        model.editorModal.summary
+                        model.editorModal.content
+                    )
+                else
+                    ( model, Cmd.none )
+
+            _ ->
+                if isCtrlDown model.context then
+                    postFromEditorModal model
+                else if isAltDown model.context && anySelection model.context then
+                    confirmPostAndConnect
+                        (App.Modals.EditorModal.getSummary model.editorModal)
+                        model.editorModal.content
+                        model
+                else
+                    ( model, Cmd.none )
     else
         ( model, Cmd.none )
 
