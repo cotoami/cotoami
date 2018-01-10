@@ -94,7 +94,7 @@ authorDiv : Context -> Post -> Html Msg
 authorDiv context post =
     (Maybe.map2
         (\session author ->
-            if (isJust context.cotonoma) || (author.id /= session.id) then
+            if author.id /= session.id then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
