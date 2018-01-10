@@ -20,12 +20,9 @@ view activeOnMobile context graph model =
     model.order
         |> List.filterMap
             (\cotoId ->
-                case Dict.get cotoId model.entries of
-                    Nothing ->
-                        Nothing
-
-                    Just traversal ->
-                        traversal |> maybeTraversalDiv context graph
+                Dict.get cotoId model.entries
+                    |> Maybe.andThen
+                        (\traversal -> maybeTraversalDiv context graph traversal)
             )
         |> List.indexedMap
             (\index traversalDiv ->
@@ -84,13 +81,13 @@ traversalDiv context graph traversal connections startCoto =
         , div
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
-                [ traversalStepCotoDiv context graph ( traversal, -1 ) connections startCoto
+                [ startCotoDiv context graph traversal connections startCoto
                 ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
                     |> List.indexedMap
                         (\index step ->
-                            traversalStepDiv context graph step ( traversal, index )
+                            stepDiv context graph step ( traversal, index )
                         )
                     |> List.filterMap identity
                 )
@@ -98,32 +95,11 @@ traversalDiv context graph traversal connections startCoto =
         ]
 
 
-traversalStepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
-traversalStepDiv context graph cotoId traversalStep =
-    graph.cotos
-        |> Dict.get cotoId
-        |> Maybe.map
-            (\coto ->
-                div [ class "step" ]
-                    [ div [ class "arrow" ]
-                        [ materialIcon "arrow_downward" Nothing ]
-                    , traversalStepCotoDiv
-                        context
-                        graph
-                        traversalStep
-                        (Dict.get cotoId graph.connections
-                            |> Maybe.withDefault []
-                        )
-                        coto
-                    ]
-            )
-
-
-traversalStepCotoDiv : Context -> Graph -> ( Traversal, Int ) -> List Connection -> Coto -> Html Msg
-traversalStepCotoDiv context graph ( traversal, index ) connections coto =
+startCotoDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
+startCotoDiv context graph traversal connections coto =
     let
         elementId =
-            "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
+            "traversal-" ++ traversal.start
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
@@ -135,48 +111,79 @@ traversalStepCotoDiv context graph ( traversal, index ) connections coto =
                 [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , div [ class "main-sub-border" ] []
-                , connectionsDiv ( traversal, index ) coto connections context graph
+                , connectionsDiv context graph ( traversal, -1 ) elementId coto connections
                 ]
             ]
 
 
-connectionsDiv : ( Traversal, Int ) -> Coto -> List Connection -> Context -> Graph -> Html Msg
-connectionsDiv ( traversal, index ) parentCoto connections context graph =
-    Html.Keyed.node
-        "div"
-        [ class "sub-cotos" ]
-        (List.filterMap
-            (\connection ->
-                graph.cotos
-                    |> Dict.get connection.end
-                    |> Maybe.map
-                        (\coto ->
-                            ( connection.key
-                            , div
-                                [ classList
-                                    [ ( "outbound-conn", True )
-                                    , ( "traversed", traversed index coto.id traversal )
-                                    ]
-                                ]
-                                [ subCotoDiv
-                                    ( traversal, index )
-                                    context
-                                    graph
-                                    ( parentCoto, connection )
-                                    coto
-                                ]
-                            )
-                        )
+stepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
+stepDiv context graph cotoId ( traversal, index ) =
+    let
+        elementIdPrefix =
+            "traversal-" ++ traversal.start ++ "-step-" ++ (toString index)
+
+        connections =
+            Dict.get cotoId graph.connections |> Maybe.withDefault []
+    in
+        graph.cotos
+            |> Dict.get cotoId
+            |> Maybe.map
+                (\coto ->
+                    div [ class "step" ]
+                        [ div
+                            [ class "arrow" ]
+                            [ materialIcon "arrow_downward" Nothing ]
+                        , div
+                            [ class "step-content" ]
+                            [ connectionsDiv
+                                context
+                                graph
+                                ( traversal, index )
+                                elementIdPrefix
+                                coto
+                                connections
+                            ]
+                        ]
+                )
+
+
+connectionsDiv : Context -> Graph -> ( Traversal, Int ) -> String -> Coto -> List Connection -> Html Msg
+connectionsDiv context graph ( traversal, index ) elementIdPrefix parentCoto connections =
+    List.reverse connections
+        |> (List.filterMap (connectionDiv context graph ( traversal, index ) elementIdPrefix parentCoto))
+        |> Html.Keyed.node "div" [ class "sub-cotos" ]
+
+
+connectionDiv : Context -> Graph -> ( Traversal, Int ) -> String -> Coto -> Connection -> Maybe ( String, Html Msg )
+connectionDiv context graph ( traversal, index ) elementIdPrefix parentCoto connection =
+    graph.cotos
+        |> Dict.get connection.end
+        |> Maybe.map
+            (\coto ->
+                ( connection.key
+                , div
+                    [ classList
+                        [ ( "outbound-conn", True )
+                        , ( "traversed", traversed index coto.id traversal )
+                        ]
+                    ]
+                    [ subCotoDiv
+                        context
+                        graph
+                        ( traversal, index )
+                        elementIdPrefix
+                        ( parentCoto, connection )
+                        coto
+                    ]
+                )
             )
-            (List.reverse connections)
-        )
 
 
-subCotoDiv : ( Traversal, Int ) -> Context -> Graph -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv ( traversal, index ) context graph connection coto =
+subCotoDiv : Context -> Graph -> ( Traversal, Int ) -> String -> ( Coto, Connection ) -> Coto -> Html Msg
+subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
     let
         elementId =
-            "traversal-" ++ traversal.start ++ "-step-" ++ (toString index) ++ "-" ++ coto.id
+            elementIdPrefix ++ "-" ++ coto.id
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []

@@ -37,34 +37,33 @@ div.traversal {
     padding: 5px;
     padding-top: 40px;
     padding-bottom: 60px;
+  }
 
-    div.sub-cotos {
-      div.outbound-conn {
-        &.traversed {
-          border: 1px dashed #ffdd33 !important;
-          div.coto {
-            background-color: #ffffdd;
-            div.sub-cotos-button {
-              display: none;
-            }
-          }
+  div.outbound-conn {
+    &.traversed {
+      border: 1px dashed #ffdd33 !important;
+      div.coto {
+        background-color: #ffffdd;
+        div.sub-cotos-button {
+          display: none;
         }
       }
     }
+  }
 
-    div.step {
-      div.arrow {
-        margin-top: 10px;
-        margin-bottom: 6px;
-        text-align: center;
-        opacity: 0.4;
-      }
+  div.step {
+    div.arrow {
+      margin-top: 10px;
+      margin-bottom: 6px;
+      text-align: center;
+      opacity: 0.4;
     }
 
-    div.traversal-start > div.coto > div.coto-inner > div.coto-body {
-      a.traverse-coto {
-        display: none !important;
-      }
+    div.step-content {
+      border: 1px solid #ddd;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+      background-color: #fff;
+      padding: 12px;
     }
   }
 }
