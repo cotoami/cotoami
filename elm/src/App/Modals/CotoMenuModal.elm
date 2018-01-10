@@ -53,6 +53,7 @@ modalConfig context session graph model =
             , menuItemPinUnpin context graph model
             , menuItemPinUnpinCotonoma session model
             , menuItemEdit session model
+            , menuItemAddCoto model
             , menuItemCotonomatize session model
             , menuItemDelete session model
             ]
@@ -192,6 +193,20 @@ menuItemEdit session model =
             ]
     else
         div [] []
+
+
+menuItemAddCoto : Model -> Html Msg
+menuItemAddCoto model =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (OpenNewEditorModalWithSourceCoto model.coto)
+        ]
+        [ a
+            [ class "add-coto" ]
+            [ materialIcon "add" Nothing
+            , span [ class "menu-title" ] [ text "Create a connected Coto" ]
+            ]
+        ]
 
 
 menuItemCotonomatize : Session -> Model -> Html Msg

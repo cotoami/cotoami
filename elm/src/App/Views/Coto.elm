@@ -230,7 +230,7 @@ toolButtonsSpan context graph maybeInbound config coto =
             (\addCoto ->
                 a
                     [ class "tool-button add-coto"
-                    , title "Add a connected Coto"
+                    , title "Create a connected Coto"
                     , onLinkButtonClick (addCoto coto)
                     ]
                     [ materialIcon "add" Nothing ]
