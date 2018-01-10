@@ -228,6 +228,9 @@ update msg model =
         OpenNewEditorModal ->
             openNewEditor Nothing model
 
+        OpenNewEditorModalWithSourceCoto coto ->
+            openNewEditor (Just coto) model
+
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
                 |> \model -> ( openModal App.Model.InviteModal model, Cmd.none )

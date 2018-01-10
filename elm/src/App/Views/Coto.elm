@@ -131,6 +131,7 @@ type alias ActionConfig =
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , editCoto : Maybe (Coto -> Msg)
+    , addCoto : Maybe (Coto -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
     , confirmConnect : Maybe (CotoId -> Direction -> Msg)
     , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
@@ -143,6 +144,7 @@ defaultActionConfig =
     , selectCoto = Just SelectCoto
     , pinCoto = Just PinCoto
     , editCoto = Just OpenEditorModal
+    , addCoto = Just OpenNewEditorModalWithSourceCoto
     , openTraversal = Just OpenTraversal
     , confirmConnect = Just ConfirmConnect
     , deleteConnection = Just ConfirmDeleteConnection
@@ -224,6 +226,16 @@ toolButtonsSpan context graph maybeInbound config coto =
             )
             config.editCoto
             context.session
+      , Maybe.map
+            (\addCoto ->
+                a
+                    [ class "tool-button add-coto"
+                    , title "Add a connected Coto"
+                    , onLinkButtonClick (addCoto coto)
+                    ]
+                    [ materialIcon "add" Nothing ]
+            )
+            config.addCoto
       , Maybe.map3
             (\deleteConnection session ( parent, connection ) ->
                 if isDisconnectable session parent connection coto then

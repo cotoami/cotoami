@@ -44,6 +44,7 @@ type Msg
     | Confirm
     | OpenSigninModal
     | OpenNewEditorModal
+    | OpenNewEditorModalWithSourceCoto Coto
     | OpenInviteModal
     | OpenProfileModal
     | OpenCotoMenuModal Coto

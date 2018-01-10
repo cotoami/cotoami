@@ -295,8 +295,8 @@ cotonomaEditorConfig context model =
                     ]
     , content =
         div []
-            [ cotonomaEditor model
-            , sourceCotoDiv context model
+            [ sourceCotoDiv context model
+            , cotonomaEditor model
             ]
     , buttons =
         case model.mode of

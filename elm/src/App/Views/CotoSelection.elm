@@ -128,6 +128,7 @@ cotoDiv beingDeselected context graph coto =
                     , selectCoto = Nothing
                     , pinCoto = Nothing
                     , editCoto = Nothing
+                    , addCoto = Nothing
                     , openTraversal = Nothing
                     , confirmConnect = Nothing
                     , deleteConnection = Nothing
