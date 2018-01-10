@@ -606,7 +606,7 @@ update msg model =
                     )
 
         Post ->
-            post Nothing Nothing model.timeline.newContent model
+            postAndConnectToSelection Nothing Nothing model.timeline.newContent model
                 |> \( model, cmd ) ->
                     ( model
                     , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
@@ -625,17 +625,20 @@ update msg model =
         ConfirmPostAndConnect content summary ->
             confirmPostAndConnect summary content model
 
-        PostAndConnect content summary ->
+        PostAndConnectToSelection content summary ->
             model
                 |> closeModal App.Model.ConnectModal
-                |> post (Just model.connectingDirection) summary content
+                |> postAndConnectToSelection
+                    (Just model.connectingDirection)
+                    summary
+                    content
 
-        PostedAndConnect postId (Ok response) ->
+        PostedAndConnectToSelection postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> clearModals
                 |> connectPost model.context.clientId response
 
-        PostedAndConnect postId (Err _) ->
+        PostedAndConnectToSelection postId (Err _) ->
             ( model, Cmd.none )
 
         CotonomaPosted postId (Ok response) ->
@@ -792,7 +795,7 @@ update msg model =
                 |> (\( model, cmd ) ->
                         case subMsg of
                             App.Modals.EditorModalMsg.Post ->
-                                post
+                                postAndConnectToSelection
                                     Nothing
                                     (App.Modals.EditorModal.getSummary model.editorModal)
                                     model.editorModal.content
@@ -916,8 +919,8 @@ initializeTimelineScrollPosition model =
         Cmd.none
 
 
-post : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-post maybeDirection summary content model =
+postAndConnectToSelection : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+postAndConnectToSelection maybeDirection summary content model =
     let
         clientId =
             model.context.clientId
@@ -931,7 +934,7 @@ post maybeDirection summary content model =
 
         postMsg =
             maybeDirection
-                |> Maybe.map (\_ -> PostedAndConnect timeline.postIdCounter)
+                |> Maybe.map (\_ -> PostedAndConnectToSelection timeline.postIdCounter)
                 |> Maybe.withDefault (Posted timeline.postIdCounter)
     in
         { model
@@ -959,7 +962,7 @@ handleEditorShortcut keyCode summary content model =
             && isNotBlank content
     then
         if isCtrlDown model.context then
-            post Nothing summary content model
+            postAndConnectToSelection Nothing summary content model
         else if isAltDown model.context && anySelection model.context then
             confirmPostAndConnect summary content model
         else
