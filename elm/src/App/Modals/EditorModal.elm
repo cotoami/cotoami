@@ -214,7 +214,7 @@ cotoEditorConfig context model =
         ]
             ++ (case model.mode of
                     Edit coto ->
-                        buttonsForEdit model
+                        buttonsForEdit coto model
 
                     _ ->
                         buttonsForNewCoto context model
@@ -250,12 +250,7 @@ cotoEditor model =
                     , placeholder "Write your Coto in Markdown"
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
-                    , case model.mode of
-                        NewCoto ->
-                            onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
-
-                        _ ->
-                            autofocus True
+                    , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
                     ]
                     []
                 ]
@@ -287,7 +282,7 @@ cotonomaEditorConfig context model =
     , buttons =
         case model.mode of
             Edit coto ->
-                buttonsForEdit model
+                buttonsForEdit coto model
 
             _ ->
                 buttonsForNewCotonoma context model
@@ -421,8 +416,8 @@ buttonsForNewCotonoma context model =
     ]
 
 
-buttonsForEdit : Model -> List (Html AppMsg.Msg)
-buttonsForEdit model =
+buttonsForEdit : Coto -> Model -> List (Html AppMsg.Msg)
+buttonsForEdit coto model =
     [ button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)
@@ -431,7 +426,12 @@ buttonsForEdit model =
         (if model.requestProcessing then
             [ text "Saving..." ]
          else
-            [ text "Save" ]
+            [ text "Save"
+            , if coto.asCotonoma then
+                span [] []
+              else
+                span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
+            ]
         )
     ]
 
