@@ -68,8 +68,8 @@ type alias Markdown =
     String -> Html Msg
 
 
-bodyDiv : Context -> Graph -> ElementId -> Markdown -> BodyModel r -> Html Msg
-bodyDiv context graph elementId markdown model =
+bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.cotonomaKey
             |> Maybe.map
@@ -80,9 +80,9 @@ bodyDiv context graph elementId markdown model =
         ]
 
 
-bodyDivByCoto : Context -> Graph -> ElementId -> Coto -> Html Msg
-bodyDivByCoto context graph elementId coto =
-    bodyDiv context graph elementId App.Markdown.markdown coto
+bodyDivByCoto : Context -> ElementId -> Coto -> Html Msg
+bodyDivByCoto context elementId coto =
+    bodyDiv context elementId App.Markdown.markdown coto
 
 
 contentDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
@@ -367,7 +367,7 @@ subCotoDiv context graph parentElementId connection coto =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph (Just connection) defaultActionConfig coto
-                , bodyDivByCoto context graph elementId coto
+                , bodyDivByCoto context elementId coto
                 , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]

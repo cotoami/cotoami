@@ -133,7 +133,7 @@ cotoDiv beingDeselected context graph coto =
                     , deleteConnection = Nothing
                     }
                     coto
-                , App.Views.Coto.bodyDiv context graph elementId App.Markdown.markdown coto
+                , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
                 , App.Views.Coto.subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
                 ]
             ]

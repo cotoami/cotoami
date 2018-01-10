@@ -62,7 +62,7 @@ update msg model =
                                 && (List.isEmpty model.modals)
                                 && (not model.timeline.editorOpen)
                         then
-                            openNewEditor model
+                            openNewEditor Nothing model
                         else
                             ( model, Cmd.none )
                    )
@@ -226,7 +226,7 @@ update msg model =
                 |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
 
         OpenNewEditorModal ->
-            openNewEditor model
+            openNewEditor Nothing model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
@@ -244,9 +244,7 @@ update msg model =
 
         OpenEditorModal coto ->
             ( { model
-                | editorModal =
-                    App.Modals.EditorModal.initModel
-                        (App.Modals.EditorModal.Edit coto)
+                | editorModal = App.Modals.EditorModal.modelForEdit coto
               }
                 |> openModal EditorModal
             , App.Commands.focus "editor-modal-content-input" NoOp
@@ -382,7 +380,7 @@ update msg model =
                 , Cmd.none
                 )
             else
-                ( { model | editorModal = App.Modals.EditorModal.editToCotonomatize coto }
+                ( { model | editorModal = App.Modals.EditorModal.modelForEditToCotonomatize coto }
                     |> openModal EditorModal
                 , Cmd.none
                 )
@@ -402,8 +400,7 @@ update msg model =
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
-                |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.Edit cotoMenuModal.coto)
-                |> Maybe.map App.Modals.EditorModal.initModel
+                |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.modelForEdit cotoMenuModal.coto)
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
                 |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
                 |> Maybe.map (openModal EditorModal)
@@ -848,11 +845,10 @@ changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
 
 
-openNewEditor : Model -> ( Model, Cmd Msg )
-openNewEditor model =
+openNewEditor : Maybe Coto -> Model -> ( Model, Cmd Msg )
+openNewEditor source model =
     ( { model
-        | editorModal =
-            App.Modals.EditorModal.initModel App.Modals.EditorModal.NewCoto
+        | editorModal = App.Modals.EditorModal.modelForNew source
       }
         |> openModal EditorModal
     , App.Commands.focus "editor-modal-content-input" NoOp
