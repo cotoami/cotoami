@@ -304,13 +304,12 @@ isDisconnectable session parent connection child =
 --
 
 
-parentsDiv : Graph -> Maybe CotoId -> Html Msg
-parentsDiv graph maybeCotoId =
+parentsDiv : Graph -> Maybe CotoId -> CotoId -> Html Msg
+parentsDiv graph exclude childId =
     let
         parents =
-            maybeCotoId
-                |> Maybe.map (\cotoId -> App.Types.Graph.getParents cotoId graph)
-                |> Maybe.withDefault []
+            App.Types.Graph.getParents childId graph
+                |> List.filter (\parent -> (Just parent.id) /= exclude)
     in
         if List.isEmpty parents then
             div [] []

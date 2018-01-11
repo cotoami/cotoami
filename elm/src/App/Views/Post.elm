@@ -47,7 +47,9 @@ view context graph post =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph post
-                , App.Views.Coto.parentsDiv graph post.cotoId
+                , post.cotoId
+                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.withDefault (div [] [])
                 , if post.asCotonoma then
                     div [] []
                   else
