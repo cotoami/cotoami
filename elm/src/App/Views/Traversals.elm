@@ -81,7 +81,8 @@ traversalDiv context graph traversal connections startCoto =
         , div
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
-                [ startCotoDiv context graph traversal connections startCoto
+                [ parentsDiv graph startCoto.id
+                , startCotoDiv context graph traversal connections startCoto
                 ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
@@ -114,6 +115,33 @@ startCotoDiv context graph traversal connections coto =
                 , connectionsDiv context graph ( traversal, -1 ) elementId coto connections
                 ]
             ]
+
+
+parentsDiv : Graph -> CotoId -> Html Msg
+parentsDiv graph childId =
+    let
+        parents =
+            App.Types.Graph.getParents childId graph
+    in
+        if List.isEmpty parents then
+            div [] []
+        else
+            div [ class "parents-of-start" ]
+                [ div [ class "parents" ]
+                    (List.map
+                        (\parent ->
+                            div
+                                [ class "parent"
+                                , onClick (OpenTraversal parent.id)
+                                ]
+                                [ text (App.Views.Coto.abbreviate parent) ]
+                        )
+                        parents
+                    )
+                , div
+                    [ class "arrow" ]
+                    [ materialIcon "arrow_downward" Nothing ]
+                ]
 
 
 stepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
