@@ -53,6 +53,11 @@ div.traversal {
 
     div.parent {
       padding: 6px 12px;
+
+      @media (#{$narrow-viewport}) {
+        border: 1px solid #eee;
+        background-color: #fefefe;
+      }
     }
   }
 
