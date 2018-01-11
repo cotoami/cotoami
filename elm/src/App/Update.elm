@@ -696,7 +696,7 @@ update msg model =
                 | traversals =
                     App.Types.Traversal.updateTraversal
                         traversal.start
-                        (App.Types.Traversal.traverseToParent parentId traversal)
+                        (App.Types.Traversal.traverseToParent model.graph parentId traversal)
                         model.traversals
               }
             , Cmd.none

@@ -2,6 +2,7 @@ module App.Types.Traversal exposing (..)
 
 import Dict
 import App.Types.Coto exposing (CotoId)
+import App.Types.Graph exposing (Graph)
 
 
 type alias Traversal =
@@ -27,11 +28,15 @@ traverse stepIndex nextCotoId traversal =
     }
 
 
-traverseToParent : CotoId -> Traversal -> Traversal
-traverseToParent parentId traversal =
+traverseToParent : Graph -> CotoId -> Traversal -> Traversal
+traverseToParent graph parentId traversal =
     { traversal
         | start = parentId
-        , steps = traversal.steps ++ [ traversal.start ]
+        , steps =
+            if App.Types.Graph.hasChildren traversal.start graph then
+                traversal.steps ++ [ traversal.start ]
+            else
+                traversal.steps
     }
 
 
