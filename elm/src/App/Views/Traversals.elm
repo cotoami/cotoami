@@ -81,7 +81,8 @@ traversalDiv context graph traversal connections startCoto =
         , div
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
-                [ startCotoDiv context graph traversal connections startCoto
+                [ parentsDiv graph traversal startCoto.id
+                , startCotoDiv context graph traversal connections startCoto
                 ]
             , div [ class "steps" ]
                 (List.reverse traversal.steps
@@ -114,6 +115,33 @@ startCotoDiv context graph traversal connections coto =
                 , connectionsDiv context graph ( traversal, -1 ) elementId coto connections
                 ]
             ]
+
+
+parentsDiv : Graph -> Traversal -> CotoId -> Html Msg
+parentsDiv graph traversal childId =
+    let
+        parents =
+            App.Types.Graph.getParents childId graph
+    in
+        if List.isEmpty parents then
+            div [] []
+        else
+            div [ class "parents-of-start" ]
+                [ div [ class "parents" ]
+                    (List.map
+                        (\parent ->
+                            div
+                                [ class "parent"
+                                , onClick (TraverseToParent traversal parent.id)
+                                ]
+                                [ text (App.Views.Coto.abbreviate parent) ]
+                        )
+                        parents
+                    )
+                , div
+                    [ class "arrow" ]
+                    [ materialIcon "arrow_downward" Nothing ]
+                ]
 
 
 stepDiv : Context -> Graph -> CotoId -> ( Traversal, Int ) -> Maybe (Html Msg)
@@ -180,10 +208,13 @@ connectionDiv context graph ( traversal, index ) elementIdPrefix parentCoto conn
 
 
 subCotoDiv : Context -> Graph -> ( Traversal, Int ) -> String -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
+subCotoDiv context graph ( traversal, index ) elementIdPrefix parentConnection coto =
     let
         elementId =
             elementIdPrefix ++ "-" ++ coto.id
+
+        ( parentCoto, connection ) =
+            parentConnection
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
@@ -196,9 +227,10 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
                 [ App.Views.Coto.headerDiv
                     context
                     graph
-                    (Just connection)
+                    (Just parentConnection)
                     App.Views.Coto.defaultActionConfig
                     coto
+                , App.Views.Coto.parentsDiv graph (Just parentCoto.id) coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , traverseButtonDiv graph ( traversal, index ) coto
                 ]
@@ -234,7 +266,7 @@ traverseButtonDiv graph ( traversal, index ) coto =
             (if hasChildren coto.id graph then
                 [ a
                     [ class "tool-button traverse"
-                    , onLinkButtonClick (TraverseClick (Traverse traversal index coto.id))
+                    , onLinkButtonClick (Traverse traversal coto.id index)
                     ]
                     [ materialIcon "arrow_downward" Nothing ]
                 , openTraversalButton coto.id

@@ -47,7 +47,9 @@ view context graph post =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph post
-                , parentsDiv graph post
+                , post.cotoId
+                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.withDefault (div [] [])
                 , if post.asCotonoma then
                     div [] []
                   else
@@ -74,30 +76,6 @@ headerDiv context graph post =
     toCoto post
         |> Maybe.map (App.Views.Coto.headerDivWithDefaultConfig context graph Nothing)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
-
-
-parentsDiv : Graph -> Post -> Html Msg
-parentsDiv graph post =
-    let
-        parents =
-            post.cotoId
-                |> Maybe.map (\cotoId -> getParents cotoId graph)
-                |> Maybe.withDefault []
-    in
-        if List.isEmpty parents then
-            div [] []
-        else
-            div [ class "parents" ]
-                (List.map
-                    (\parent ->
-                        div
-                            [ class "parent"
-                            , onClick (OpenTraversal parent.id)
-                            ]
-                            [ text (App.Views.Coto.abbreviate parent) ]
-                    )
-                    parents
-                )
 
 
 authorDiv : Context -> Post -> Html Msg

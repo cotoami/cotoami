@@ -2,18 +2,12 @@ module App.Types.Traversal exposing (..)
 
 import Dict
 import App.Types.Coto exposing (CotoId)
+import App.Types.Graph exposing (Graph)
 
 
 type alias Traversal =
     { start : CotoId
     , steps : List CotoId
-    }
-
-
-type alias Traverse =
-    { traversal : Traversal
-    , startIndex : Int
-    , endCotoId : CotoId
     }
 
 
@@ -24,18 +18,26 @@ initTraversal start =
     }
 
 
-doTraverse : Traverse -> Traversal
-doTraverse traverse =
-    let
-        traversal =
-            traverse.traversal
-
-        steps =
+traverse : Int -> CotoId -> Traversal -> Traversal
+traverse stepIndex nextCotoId traversal =
+    { traversal
+        | steps =
             traversal.steps
-                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
-                |> (::) traverse.endCotoId
-    in
-        { traversal | steps = steps }
+                |> List.drop ((List.length traversal.steps) - (stepIndex + 1))
+                |> (::) nextCotoId
+    }
+
+
+traverseToParent : Graph -> CotoId -> Traversal -> Traversal
+traverseToParent graph parentId traversal =
+    { traversal
+        | start = parentId
+        , steps =
+            if App.Types.Graph.hasChildren traversal.start graph then
+                traversal.steps ++ [ traversal.start ]
+            else
+                traversal.steps
+    }
 
 
 traversed : Int -> CotoId -> Traversal -> Bool
@@ -100,10 +102,26 @@ closeTraversal cotoId traversals =
     }
 
 
-updateTraversal : Traversal -> Traversals -> Traversals
-updateTraversal traversal traversals =
+updateTraversal : CotoId -> Traversal -> Traversals -> Traversals
+updateTraversal oldStartId newTraversal traversals =
     { traversals
-        | entries = Dict.insert traversal.start traversal traversals.entries
+        | entries =
+            traversals.entries
+                |> Dict.remove oldStartId
+                |> Dict.insert newTraversal.start newTraversal
+        , order =
+            if newTraversal.start == oldStartId then
+                traversals.order
+            else
+                traversals.order
+                    |> List.filter (\cotoId -> cotoId /= newTraversal.start)
+                    |> List.map
+                        (\cotoId ->
+                            if cotoId == oldStartId then
+                                newTraversal.start
+                            else
+                                cotoId
+                        )
     }
 
 

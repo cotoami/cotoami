@@ -9,7 +9,7 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, 
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
-import App.Types.Traversal exposing (Traverse)
+import App.Types.Traversal exposing (Traversal)
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
@@ -107,7 +107,8 @@ type Msg
       --
       -- Traversals
       --
-    | TraverseClick Traverse
+    | Traverse Traversal CotoId Int
+    | TraverseToParent Traversal CotoId
     | CloseTraversal CotoId
     | SwitchTraversal Int
       --
