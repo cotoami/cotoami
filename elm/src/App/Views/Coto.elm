@@ -8,6 +8,7 @@ module App.Views.Coto
         , headerDivWithDefaultConfig
         , headerDiv
         , toolButtonsSpan
+        , parentsDiv
         , subCotosEllipsisDiv
         , subCotosDiv
         , abbreviate
@@ -295,6 +296,36 @@ isDisconnectable session parent connection child =
     session.owner
         || (session.id == connection.amishiId)
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
+
+
+
+--
+-- Parents
+--
+
+
+parentsDiv : Graph -> Maybe CotoId -> Html Msg
+parentsDiv graph maybeCotoId =
+    let
+        parents =
+            maybeCotoId
+                |> Maybe.map (\cotoId -> App.Types.Graph.getParents cotoId graph)
+                |> Maybe.withDefault []
+    in
+        if List.isEmpty parents then
+            div [] []
+        else
+            div [ class "parents" ]
+                (List.map
+                    (\parent ->
+                        div
+                            [ class "parent"
+                            , onClick (OpenTraversal parent.id)
+                            ]
+                            [ text (abbreviate parent) ]
+                    )
+                    parents
+                )
 
 
 
