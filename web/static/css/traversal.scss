@@ -41,12 +41,10 @@ div.traversal {
 
   div.outbound-conn {
     &.traversed {
-      border: 1px dashed #ffdd33 !important;
-      div.coto {
-        background-color: #ffffdd;
-        div.sub-cotos-button {
-          display: none;
-        }
+      border: 2px dotted #ffdd33 !important;
+
+      div.sub-cotos-button {
+        display: none;
       }
     }
   }

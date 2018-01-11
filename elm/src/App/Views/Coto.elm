@@ -305,18 +305,18 @@ isDisconnectable session parent connection child =
 
 subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
 subCotosEllipsisDiv buttonClick maybeCotoId graph =
-    case maybeCotoId of
-        Nothing ->
-            div [] []
-
-        Just cotoId ->
-            if hasChildren cotoId graph then
-                div [ class "sub-cotos-button" ]
-                    [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ materialIcon "more_horiz" Nothing ]
-                    ]
-            else
-                div [] []
+    maybeCotoId
+        |> Maybe.map
+            (\cotoId ->
+                if hasChildren cotoId graph then
+                    div [ class "sub-cotos-button" ]
+                        [ a [ onLinkButtonClick (buttonClick cotoId) ]
+                            [ materialIcon "more_horiz" Nothing ]
+                        ]
+                else
+                    div [] []
+            )
+        |> Maybe.withDefault (div [] [])
 
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
