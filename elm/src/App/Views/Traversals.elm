@@ -200,7 +200,7 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
                     App.Views.Coto.defaultActionConfig
                     coto
                 , App.Views.Coto.bodyDivByCoto context elementId coto
-                , traverseButtonDiv TraverseClick index coto.id traversal graph
+                , traverseButtonDiv graph ( traversal, index ) coto
                 ]
             ]
 
@@ -225,12 +225,30 @@ traversalsPaginationDiv model =
         div [] []
 
 
-traverseButtonDiv : (Traverse -> msg) -> Int -> CotoId -> Traversal -> Graph -> Html msg
-traverseButtonDiv buttonClick index cotoId traversal graph =
-    if hasChildren cotoId graph then
-        div [ class "sub-cotos-button" ]
-            [ a [ onLinkButtonClick (buttonClick (Traverse traversal index cotoId)) ]
-                [ materialIcon "arrow_downward" Nothing ]
-            ]
-    else
-        div [] []
+traverseButtonDiv : Graph -> ( Traversal, Int ) -> Coto -> Html Msg
+traverseButtonDiv graph ( traversal, index ) coto =
+    div [ class "sub-cotos-button" ]
+        (if coto.asCotonoma then
+            [ openTraversalButton coto.id ]
+         else
+            (if hasChildren coto.id graph then
+                [ a
+                    [ class "traverse"
+                    , onLinkButtonClick (TraverseClick (Traverse traversal index coto.id))
+                    ]
+                    [ materialIcon "arrow_downward" Nothing ]
+                , openTraversalButton coto.id
+                ]
+             else
+                []
+            )
+        )
+
+
+openTraversalButton : CotoId -> Html Msg
+openTraversalButton cotoId =
+    a
+        [ class "open-traversal"
+        , onLinkButtonClick (OpenTraversal cotoId)
+        ]
+        [ materialIcon "arrow_forward" Nothing ]

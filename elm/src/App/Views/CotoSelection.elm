@@ -135,6 +135,6 @@ cotoDiv beingDeselected context graph coto =
                     }
                     coto
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
-                , App.Views.Coto.subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
+                , App.Views.Coto.subCotosEllipsisDiv (Just coto.id) graph
                 ]
             ]

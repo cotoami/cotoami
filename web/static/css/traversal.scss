@@ -40,6 +40,12 @@ div.traversal {
   }
 
   div.outbound-conn {
+    div.sub-cotos-button {
+      a.traverse {
+        margin-right: 40px;
+      }
+    }
+    
     &.traversed {
       border: 2px dotted #ffdd33 !important;
 

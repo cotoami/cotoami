@@ -303,14 +303,14 @@ isDisconnectable session parent connection child =
 --
 
 
-subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
-subCotosEllipsisDiv buttonClick maybeCotoId graph =
+subCotosEllipsisDiv : Maybe CotoId -> Graph -> Html Msg
+subCotosEllipsisDiv maybeCotoId graph =
     maybeCotoId
         |> Maybe.map
             (\cotoId ->
                 if hasChildren cotoId graph then
                     div [ class "sub-cotos-button" ]
-                        [ a [ onLinkButtonClick (buttonClick cotoId) ]
+                        [ a [ onLinkButtonClick (OpenTraversal cotoId) ]
                             [ materialIcon "more_horiz" Nothing ]
                         ]
                 else
@@ -380,7 +380,7 @@ subCotoDiv context graph parentElementId connection coto =
                 [ class "coto-inner" ]
                 [ headerDiv context graph (Just connection) defaultActionConfig coto
                 , bodyDivByCoto context elementId coto
-                , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
+                , subCotosEllipsisDiv (Just coto.id) graph
                 ]
             ]
 
