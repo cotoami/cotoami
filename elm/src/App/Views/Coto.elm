@@ -398,10 +398,13 @@ connectionsDiv context graph parentElementId parentCoto connections =
 
 
 subCotoDiv : Context -> Graph -> ElementId -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv context graph parentElementId connection coto =
+subCotoDiv context graph parentElementId parentConnection coto =
     let
         elementId =
             parentElementId ++ "-" ++ coto.id
+
+        ( parentCoto, connection ) =
+            parentConnection
     in
         div
             [ cotoClassList context elementId (Just coto.id) []
@@ -411,7 +414,8 @@ subCotoDiv context graph parentElementId connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context graph (Just connection) defaultActionConfig coto
+                [ headerDiv context graph (Just parentConnection) defaultActionConfig coto
+                , parentsDiv graph (Just parentCoto.id) coto.id
                 , bodyDivByCoto context elementId coto
                 , subCotosEllipsisDiv (Just coto.id) graph
                 ]
