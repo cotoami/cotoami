@@ -180,10 +180,13 @@ connectionDiv context graph ( traversal, index ) elementIdPrefix parentCoto conn
 
 
 subCotoDiv : Context -> Graph -> ( Traversal, Int ) -> String -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
+subCotoDiv context graph ( traversal, index ) elementIdPrefix parentConnection coto =
     let
         elementId =
             elementIdPrefix ++ "-" ++ coto.id
+
+        ( parentCoto, connection ) =
+            parentConnection
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
@@ -196,9 +199,10 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix connection coto =
                 [ App.Views.Coto.headerDiv
                     context
                     graph
-                    (Just connection)
+                    (Just parentConnection)
                     App.Views.Coto.defaultActionConfig
                     coto
+                , App.Views.Coto.parentsDiv graph (Just parentCoto.id) coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , traverseButtonDiv graph ( traversal, index ) coto
                 ]
