@@ -684,7 +684,7 @@ update msg model =
             { model
                 | traversals =
                     App.Types.Traversal.updateTraversal
-                        (App.Types.Traversal.doTraverse traverse)
+                        (App.Types.Traversal.traverse traverse)
                         model.traversals
             }
                 ! []

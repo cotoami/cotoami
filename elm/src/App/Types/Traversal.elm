@@ -10,13 +10,6 @@ type alias Traversal =
     }
 
 
-type alias Traverse =
-    { traversal : Traversal
-    , startIndex : Int
-    , endCotoId : CotoId
-    }
-
-
 initTraversal : CotoId -> Traversal
 initTraversal start =
     { start = start
@@ -24,16 +17,23 @@ initTraversal start =
     }
 
 
-doTraverse : Traverse -> Traversal
-doTraverse traverse =
+type alias Traverse =
+    { traversal : Traversal
+    , stepIndex : Int
+    , nextCotoId : CotoId
+    }
+
+
+traverse : Traverse -> Traversal
+traverse traverse =
     let
         traversal =
             traverse.traversal
 
         steps =
             traversal.steps
-                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
-                |> (::) traverse.endCotoId
+                |> List.drop ((List.length traversal.steps) - (traverse.stepIndex + 1))
+                |> (::) traverse.nextCotoId
     in
         { traversal | steps = steps }
 
