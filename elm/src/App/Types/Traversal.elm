@@ -105,14 +105,18 @@ updateTraversal oldStartId newTraversal traversals =
                 |> Dict.remove oldStartId
                 |> Dict.insert newTraversal.start newTraversal
         , order =
-            traversals.order
-                |> List.map
-                    (\cotoId ->
-                        if cotoId == oldStartId then
-                            newTraversal.start
-                        else
-                            cotoId
-                    )
+            if newTraversal.start == oldStartId then
+                traversals.order
+            else
+                traversals.order
+                    |> List.filter (\cotoId -> cotoId /= newTraversal.start)
+                    |> List.map
+                        (\cotoId ->
+                            if cotoId == oldStartId then
+                                newTraversal.start
+                            else
+                                cotoId
+                        )
     }
 
 
