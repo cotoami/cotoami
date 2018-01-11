@@ -310,7 +310,10 @@ subCotosEllipsisDiv maybeCotoId graph =
             (\cotoId ->
                 if hasChildren cotoId graph then
                     div [ class "sub-cotos-button" ]
-                        [ a [ onLinkButtonClick (OpenTraversal cotoId) ]
+                        [ a
+                            [ class "tool-button"
+                            , onLinkButtonClick (OpenTraversal cotoId)
+                            ]
                             [ materialIcon "more_horiz" Nothing ]
                         ]
                 else

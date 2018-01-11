@@ -233,7 +233,7 @@ traverseButtonDiv graph ( traversal, index ) coto =
          else
             (if hasChildren coto.id graph then
                 [ a
-                    [ class "traverse"
+                    [ class "tool-button traverse"
                     , onLinkButtonClick (TraverseClick (Traverse traversal index coto.id))
                     ]
                     [ materialIcon "arrow_downward" Nothing ]
@@ -248,7 +248,7 @@ traverseButtonDiv graph ( traversal, index ) coto =
 openTraversalButton : CotoId -> Html Msg
 openTraversalButton cotoId =
     a
-        [ class "open-traversal"
+        [ class "tool-button open-traversal"
         , onLinkButtonClick (OpenTraversal cotoId)
         ]
         [ materialIcon "arrow_forward" Nothing ]
