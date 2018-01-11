@@ -81,7 +81,7 @@ traversalDiv context graph traversal connections startCoto =
         , div
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
-                [ parentsDiv graph startCoto.id
+                [ parentsDiv graph traversal startCoto.id
                 , startCotoDiv context graph traversal connections startCoto
                 ]
             , div [ class "steps" ]
@@ -117,8 +117,8 @@ startCotoDiv context graph traversal connections coto =
             ]
 
 
-parentsDiv : Graph -> CotoId -> Html Msg
-parentsDiv graph childId =
+parentsDiv : Graph -> Traversal -> CotoId -> Html Msg
+parentsDiv graph traversal childId =
     let
         parents =
             App.Types.Graph.getParents childId graph
@@ -132,7 +132,7 @@ parentsDiv graph childId =
                         (\parent ->
                             div
                                 [ class "parent"
-                                , onClick (OpenTraversal parent.id)
+                                , onClick (TraverseToParent traversal parent.id)
                                 ]
                                 [ text (App.Views.Coto.abbreviate parent) ]
                         )
@@ -266,7 +266,7 @@ traverseButtonDiv graph ( traversal, index ) coto =
             (if hasChildren coto.id graph then
                 [ a
                     [ class "tool-button traverse"
-                    , onLinkButtonClick (TraverseClick (Traverse traversal index coto.id))
+                    , onLinkButtonClick (Traverse traversal coto.id index)
                     ]
                     [ materialIcon "arrow_downward" Nothing ]
                 , openTraversalButton coto.id

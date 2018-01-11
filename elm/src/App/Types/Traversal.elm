@@ -17,25 +17,22 @@ initTraversal start =
     }
 
 
-type alias Traverse =
-    { traversal : Traversal
-    , stepIndex : Int
-    , nextCotoId : CotoId
+traverse : Int -> CotoId -> Traversal -> Traversal
+traverse stepIndex nextCotoId traversal =
+    { traversal
+        | steps =
+            traversal.steps
+                |> List.drop ((List.length traversal.steps) - (stepIndex + 1))
+                |> (::) nextCotoId
     }
 
 
-traverse : Traverse -> Traversal
-traverse traverse =
-    let
-        traversal =
-            traverse.traversal
-
-        steps =
-            traversal.steps
-                |> List.drop ((List.length traversal.steps) - (traverse.stepIndex + 1))
-                |> (::) traverse.nextCotoId
-    in
-        { traversal | steps = steps }
+traverseToParent : CotoId -> Traversal -> Traversal
+traverseToParent parentId traversal =
+    { traversal
+        | start = parentId
+        , steps = traversal.steps ++ [ traversal.start ]
+    }
 
 
 traversed : Int -> CotoId -> Traversal -> Bool
@@ -100,10 +97,22 @@ closeTraversal cotoId traversals =
     }
 
 
-updateTraversal : Traversal -> Traversals -> Traversals
-updateTraversal traversal traversals =
+updateTraversal : CotoId -> Traversal -> Traversals -> Traversals
+updateTraversal oldStartId newTraversal traversals =
     { traversals
-        | entries = Dict.insert traversal.start traversal traversals.entries
+        | entries =
+            traversals.entries
+                |> Dict.remove oldStartId
+                |> Dict.insert newTraversal.start newTraversal
+        , order =
+            traversals.order
+                |> List.map
+                    (\cotoId ->
+                        if cotoId == oldStartId then
+                            newTraversal.start
+                        else
+                            cotoId
+                    )
     }
 
 

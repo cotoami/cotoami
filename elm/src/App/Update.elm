@@ -680,26 +680,41 @@ update msg model =
         --
         -- Traversals
         --
-        TraverseClick traverse ->
-            { model
+        Traverse traversal nextCotoId stepIndex ->
+            ( { model
                 | traversals =
                     App.Types.Traversal.updateTraversal
-                        (App.Types.Traversal.traverse traverse)
+                        traversal.start
+                        (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
                         model.traversals
-            }
-                ! []
+              }
+            , Cmd.none
+            )
+
+        TraverseToParent traversal parentId ->
+            ( { model
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        traversal.start
+                        (App.Types.Traversal.traverseToParent parentId traversal)
+                        model.traversals
+              }
+            , Cmd.none
+            )
 
         CloseTraversal cotoId ->
-            { model
+            ( { model
                 | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals
-            }
-                ! []
+              }
+            , Cmd.none
+            )
 
         SwitchTraversal pageIndex ->
-            { model
+            ( { model
                 | traversals = model.traversals |> \t -> { t | activeIndexOnMobile = pageIndex }
-            }
-                ! []
+              }
+            , Cmd.none
+            )
 
         --
         -- CotoSelection
