@@ -276,7 +276,7 @@ toPageLabel defaultLabel { content, summary } =
                 |> List.head
                 |> Maybe.withDefault defaultLabel
             )
-        |> (String.left 5)
+        |> (String.left 8)
 
 
 traverseButtonDiv : Graph -> ( Traversal, Int ) -> Coto -> Html Msg
