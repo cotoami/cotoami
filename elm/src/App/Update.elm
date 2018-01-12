@@ -300,6 +300,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ App.Commands.scrollGraphExplorationToRight NoOp
+                        , App.Commands.scrollTraversalsPaginationToRight NoOp
                         , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
                         ]
                     )
