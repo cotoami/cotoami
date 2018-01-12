@@ -24,6 +24,7 @@ view activeOnMobile context graph model =
                     |> Maybe.andThen
                         (\traversal -> maybeTraversalDiv context graph traversal)
             )
+        |> List.reverse
         |> List.indexedMap
             (\index traversalDiv ->
                 let
@@ -43,7 +44,6 @@ view activeOnMobile context graph model =
                         ]
                         [ traversalDiv ]
             )
-        |> List.reverse
         |> (::) (traversalsPaginationDiv model)
 
 
@@ -239,10 +239,12 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix parentConnection c
 
 traversalsPaginationDiv : Traversals -> Html Msg
 traversalsPaginationDiv model =
-    if (App.Types.Traversal.size model) > 1 then
-        model.order
-            |> List.indexedMap
-                (\index cotoId ->
+    if App.Types.Traversal.isEmpty model then
+        div [] []
+    else
+        List.range 0 (List.length model.order - 1)
+            |> List.map
+                (\index ->
                     div [ class "button-container" ]
                         [ button
                             [ class "button"
@@ -253,8 +255,6 @@ traversalsPaginationDiv model =
                         ]
                 )
             |> div [ id "traversals-pagination" ]
-    else
-        div [] []
 
 
 traverseButtonDiv : Graph -> ( Traversal, Int ) -> Coto -> Html Msg
