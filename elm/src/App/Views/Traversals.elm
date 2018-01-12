@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
+import App.Markdown
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
@@ -44,7 +45,7 @@ view activeOnMobile context graph model =
                         ]
                         [ traversalDiv ]
             )
-        |> (::) (traversalsPaginationDiv model)
+        |> (::) (traversalsPaginationDiv graph model)
 
 
 maybeTraversalDiv : Context -> Graph -> Traversal -> Maybe (Html Msg)
@@ -237,24 +238,45 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix parentConnection c
             ]
 
 
-traversalsPaginationDiv : Traversals -> Html Msg
-traversalsPaginationDiv model =
+traversalsPaginationDiv : Graph -> Traversals -> Html Msg
+traversalsPaginationDiv graph model =
     if App.Types.Traversal.isEmpty model then
         div [] []
     else
-        List.range 0 (List.length model.order - 1)
-            |> List.map
-                (\index ->
-                    div [ class "button-container" ]
-                        [ button
-                            [ class "button"
-                            , disabled (model.activeIndexOnMobile == index)
-                            , onClickWithoutPropagation (SwitchTraversal index)
+        model.order
+            |> List.reverse
+            |> List.indexedMap
+                (\index cotoId ->
+                    let
+                        defaultPageLabel =
+                            toString (index + 1)
+
+                        pageLabel =
+                            App.Types.Graph.getCoto cotoId graph
+                                |> Maybe.map (toPageLabel defaultPageLabel)
+                                |> Maybe.withDefault defaultPageLabel
+                    in
+                        div [ class "button-container" ]
+                            [ button
+                                [ class "button"
+                                , disabled (model.activeIndexOnMobile == index)
+                                , onClickWithoutPropagation (SwitchTraversal index)
+                                ]
+                                [ text pageLabel ]
                             ]
-                            [ text (toString (index + 1)) ]
-                        ]
                 )
             |> div [ id "traversals-pagination" ]
+
+
+toPageLabel : String -> Coto -> String
+toPageLabel defaultLabel { content, summary } =
+    summary
+        |> Maybe.withDefault
+            (App.Markdown.extractTextFromMarkdown content
+                |> List.head
+                |> Maybe.withDefault defaultLabel
+            )
+        |> (String.left 5)
 
 
 traverseButtonDiv : Graph -> ( Traversal, Int ) -> Coto -> Html Msg
