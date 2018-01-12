@@ -5,6 +5,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  overflow: hidden;
 
   div.timeline {
     flex: 1;
@@ -58,7 +60,7 @@ div.timeline {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 30px;
  
   @media (#{$wide-viewport}) {
     padding-left: 5px;
@@ -88,10 +90,46 @@ div.timeline {
   div.coto {
     position: relative;
     margin-bottom: 6px;
-
+    
     &.posting {
       opacity: 0.3;
       background: url(../images/loading.gif) center no-repeat #fff;
+    }
+
+    &.by-another-amishi {
+      margin-left: 8px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: -20px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 10px solid #ddd;
+        border-left: 10px solid transparent;
+      }
+    
+      &::after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: -18px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 10px solid #fff;
+        border-left: 10px solid transparent;
+      }
     }
   }
 

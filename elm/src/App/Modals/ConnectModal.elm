@@ -53,7 +53,7 @@ modalConfig direction selectedCotos target =
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (PostAndConnect content summary)
+                        , onClick (PostAndConnectToSelection content summary)
                         ]
                         [ text "Post and connect" ]
                     ]

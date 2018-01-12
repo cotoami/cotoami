@@ -20,6 +20,11 @@ scrollGraphExplorationToRight msg =
     scrollToRight "graph-exploration" msg
 
 
+scrollTraversalsPaginationToRight : msg -> Cmd msg
+scrollTraversalsPaginationToRight msg =
+    scrollToRight "traversals-pagination" msg
+
+
 scrollToRight : String -> msg -> Cmd msg
 scrollToRight elementId msg =
     Process.sleep (100 * Time.millisecond)

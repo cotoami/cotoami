@@ -8,6 +8,7 @@ module App.Views.Coto
         , headerDivWithDefaultConfig
         , headerDiv
         , toolButtonsSpan
+        , parentsDiv
         , subCotosEllipsisDiv
         , subCotosDiv
         , abbreviate
@@ -68,8 +69,8 @@ type alias Markdown =
     String -> Html Msg
 
 
-bodyDiv : Context -> Graph -> ElementId -> Markdown -> BodyModel r -> Html Msg
-bodyDiv context graph elementId markdown model =
+bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.cotonomaKey
             |> Maybe.map
@@ -80,9 +81,9 @@ bodyDiv context graph elementId markdown model =
         ]
 
 
-bodyDivByCoto : Context -> Graph -> ElementId -> Coto -> Html Msg
-bodyDivByCoto context graph elementId coto =
-    bodyDiv context graph elementId App.Markdown.markdown coto
+bodyDivByCoto : Context -> ElementId -> Coto -> Html Msg
+bodyDivByCoto context elementId coto =
+    bodyDiv context elementId App.Markdown.markdown coto
 
 
 contentDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
@@ -131,6 +132,7 @@ type alias ActionConfig =
     , selectCoto : Maybe (CotoId -> Msg)
     , pinCoto : Maybe (CotoId -> Msg)
     , editCoto : Maybe (Coto -> Msg)
+    , addCoto : Maybe (Coto -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
     , confirmConnect : Maybe (CotoId -> Direction -> Msg)
     , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
@@ -143,6 +145,7 @@ defaultActionConfig =
     , selectCoto = Just SelectCoto
     , pinCoto = Just PinCoto
     , editCoto = Just OpenEditorModal
+    , addCoto = Just OpenNewEditorModalWithSourceCoto
     , openTraversal = Just OpenTraversal
     , confirmConnect = Just ConfirmConnect
     , deleteConnection = Just ConfirmDeleteConnection
@@ -224,6 +227,16 @@ toolButtonsSpan context graph maybeInbound config coto =
             )
             config.editCoto
             context.session
+      , Maybe.map
+            (\addCoto ->
+                a
+                    [ class "tool-button add-coto"
+                    , title "Create a connected Coto"
+                    , onLinkButtonClick (addCoto coto)
+                    ]
+                    [ materialIcon "add" Nothing ]
+            )
+            config.addCoto
       , Maybe.map3
             (\deleteConnection session ( parent, connection ) ->
                 if isDisconnectable session parent connection coto then
@@ -287,24 +300,56 @@ isDisconnectable session parent connection child =
 
 
 --
+-- Parents
+--
+
+
+parentsDiv : Graph -> Maybe CotoId -> CotoId -> Html Msg
+parentsDiv graph exclude childId =
+    let
+        parents =
+            App.Types.Graph.getParents childId graph
+                |> List.filter (\parent -> (Just parent.id) /= exclude)
+    in
+        if List.isEmpty parents then
+            div [] []
+        else
+            div [ class "parents" ]
+                (List.map
+                    (\parent ->
+                        div
+                            [ class "parent"
+                            , onClick (OpenTraversal parent.id)
+                            ]
+                            [ text (abbreviate parent) ]
+                    )
+                    parents
+                )
+
+
+
+--
 -- Sub cotos
 --
 
 
-subCotosEllipsisDiv : (CotoId -> Msg) -> Maybe CotoId -> Graph -> Html Msg
-subCotosEllipsisDiv buttonClick maybeCotoId graph =
-    case maybeCotoId of
-        Nothing ->
-            div [] []
-
-        Just cotoId ->
-            if hasChildren cotoId graph then
-                div [ class "sub-cotos-button" ]
-                    [ a [ onLinkButtonClick (buttonClick cotoId) ]
-                        [ materialIcon "more_horiz" Nothing ]
-                    ]
-            else
-                div [] []
+subCotosEllipsisDiv : Maybe CotoId -> Graph -> Html Msg
+subCotosEllipsisDiv maybeCotoId graph =
+    maybeCotoId
+        |> Maybe.map
+            (\cotoId ->
+                if hasChildren cotoId graph then
+                    div [ class "sub-cotos-button" ]
+                        [ a
+                            [ class "tool-button"
+                            , onLinkButtonClick (OpenTraversal cotoId)
+                            ]
+                            [ materialIcon "more_horiz" Nothing ]
+                        ]
+                else
+                    div [] []
+            )
+        |> Maybe.withDefault (div [] [])
 
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
@@ -353,10 +398,13 @@ connectionsDiv context graph parentElementId parentCoto connections =
 
 
 subCotoDiv : Context -> Graph -> ElementId -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv context graph parentElementId connection coto =
+subCotoDiv context graph parentElementId parentConnection coto =
     let
         elementId =
             parentElementId ++ "-" ++ coto.id
+
+        ( parentCoto, connection ) =
+            parentConnection
     in
         div
             [ cotoClassList context elementId (Just coto.id) []
@@ -366,9 +414,10 @@ subCotoDiv context graph parentElementId connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context graph (Just connection) defaultActionConfig coto
-                , bodyDivByCoto context graph elementId coto
-                , subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
+                [ headerDiv context graph (Just parentConnection) defaultActionConfig coto
+                , parentsDiv graph (Just parentCoto.id) coto.id
+                , bodyDivByCoto context elementId coto
+                , subCotosEllipsisDiv (Just coto.id) graph
                 ]
             ]
 

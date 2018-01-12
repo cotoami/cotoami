@@ -3,8 +3,9 @@ module App.Modals.EditorModal
         ( Model
         , Mode(..)
         , defaultModel
-        , initModel
-        , editToCotonomatize
+        , modelForNew
+        , modelForEdit
+        , modelForEditToCotonomatize
         , getSummary
         , setCotoSaveError
         , update
@@ -15,20 +16,23 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
+import Exts.Maybe exposing (isJust)
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto)
 import App.Types.Context exposing (Context)
 import App.Server.Coto
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
+import App.Views.Coto
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 
 
 type alias Model =
     { mode : Mode
+    , source : Maybe Coto
     , summary : String
     , content : String
     , preview : Bool
@@ -53,6 +57,7 @@ type RequestStatus
 defaultModel : Model
 defaultModel =
     { mode = NewCoto
+    , source = Nothing
     , summary = ""
     , content = ""
     , preview = False
@@ -62,30 +67,26 @@ defaultModel =
     }
 
 
-initModel : Mode -> Model
-initModel mode =
+modelForNew : Maybe Coto -> Model
+modelForNew source =
     { defaultModel
-        | mode = mode
-        , summary =
-            case mode of
-                Edit coto ->
-                    Maybe.withDefault "" coto.summary
-
-                _ ->
-                    ""
-        , content =
-            case mode of
-                Edit coto ->
-                    coto.content
-
-                _ ->
-                    ""
+        | mode = NewCoto
+        , source = source
     }
 
 
-editToCotonomatize : Coto -> Model
-editToCotonomatize coto =
-    initModel (Edit coto)
+modelForEdit : Coto -> Model
+modelForEdit coto =
+    { defaultModel
+        | mode = Edit coto
+        , summary = Maybe.withDefault "" coto.summary
+        , content = coto.content
+    }
+
+
+modelForEditToCotonomatize : Coto -> Model
+modelForEditToCotonomatize coto =
+    modelForEdit coto
         |> \model -> { model | editingToCotonomatize = True }
 
 
@@ -192,16 +193,12 @@ cotoEditorConfig context model =
                 text "Edit Coto"
 
             _ ->
-                div []
-                    [ text "New Coto or "
-                    , a
-                        [ class "switch-to"
-                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
-                        ]
-                        [ text "Cotonoma" ]
-                    ]
+                newEditorTitle model
     , content =
-        div [] [ cotoEditor model ]
+        div [ class "coto-editor-modal-body" ]
+            [ sourceCotoDiv context model
+            , cotoEditor model
+            ]
     , buttons =
         [ button
             [ class "button preview"
@@ -217,7 +214,7 @@ cotoEditorConfig context model =
         ]
             ++ (case model.mode of
                     Edit coto ->
-                        buttonsForEdit model
+                        buttonsForEdit coto model
 
                     _ ->
                         buttonsForNewCoto context model
@@ -253,12 +250,7 @@ cotoEditor model =
                     , placeholder "Write your Coto in Markdown"
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
-                    , case model.mode of
-                        NewCoto ->
-                            onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
-
-                        _ ->
-                            autofocus True
+                    , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
                     ]
                     []
                 ]
@@ -281,21 +273,16 @@ cotonomaEditorConfig context model =
                 text "Change Cotonoma Name"
 
             _ ->
-                div []
-                    [ text "New "
-                    , a
-                        [ class "switch-to"
-                        , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
-                        ]
-                        [ text "Coto" ]
-                    , text " or Cotonoma"
-                    ]
+                newEditorTitle model
     , content =
-        div [] [ cotonomaEditor model ]
+        div []
+            [ sourceCotoDiv context model
+            , cotonomaEditor model
+            ]
     , buttons =
         case model.mode of
             Edit coto ->
-                buttonsForEdit model
+                buttonsForEdit coto model
 
             _ ->
                 buttonsForNewCotonoma context model
@@ -337,9 +324,58 @@ cotonomaEditor model =
 --
 
 
+newEditorTitle : Model -> Html AppMsg.Msg
+newEditorTitle model =
+    (case model.mode of
+        NewCoto ->
+            if isJust model.source then
+                [ text "New Connected Coto" ]
+            else
+                [ text "New Coto or "
+                , a
+                    [ class "switch-to"
+                    , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
+                    ]
+                    [ text "Cotonoma" ]
+                ]
+
+        NewCotonoma ->
+            [ text "New "
+            , a
+                [ class "switch-to"
+                , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
+                ]
+                [ text "Coto" ]
+            , text " or Cotonoma"
+            ]
+
+        _ ->
+            []
+    )
+        |> (div [])
+
+
+sourceCotoDiv : Context -> Model -> Html AppMsg.Msg
+sourceCotoDiv context model =
+    model.source
+        |> Maybe.map
+            (\source ->
+                div [ class "source-coto" ]
+                    [ App.Views.Coto.bodyDiv
+                        context
+                        "source-coto"
+                        App.Markdown.markdown
+                        source
+                    , div [ class "arrow" ]
+                        [ materialIcon "arrow_downward" Nothing ]
+                    ]
+            )
+        |> Maybe.withDefault (div [] [])
+
+
 buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
-    [ if List.isEmpty context.selection then
+    [ if List.isEmpty context.selection || isJust model.source then
         span [] []
       else
         button
@@ -380,8 +416,8 @@ buttonsForNewCotonoma context model =
     ]
 
 
-buttonsForEdit : Model -> List (Html AppMsg.Msg)
-buttonsForEdit model =
+buttonsForEdit : Coto -> Model -> List (Html AppMsg.Msg)
+buttonsForEdit coto model =
     [ button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)
@@ -390,7 +426,12 @@ buttonsForEdit model =
         (if model.requestProcessing then
             [ text "Saving..." ]
          else
-            [ text "Save" ]
+            [ text "Save"
+            , if coto.asCotonoma then
+                span [] []
+              else
+                span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
+            ]
         )
     ]
 

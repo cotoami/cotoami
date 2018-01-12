@@ -128,12 +128,13 @@ cotoDiv beingDeselected context graph coto =
                     , selectCoto = Nothing
                     , pinCoto = Nothing
                     , editCoto = Nothing
+                    , addCoto = Nothing
                     , openTraversal = Nothing
                     , confirmConnect = Nothing
                     , deleteConnection = Nothing
                     }
                     coto
-                , App.Views.Coto.bodyDiv context graph elementId App.Markdown.markdown coto
-                , App.Views.Coto.subCotosEllipsisDiv OpenTraversal (Just coto.id) graph
+                , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
+                , App.Views.Coto.subCotosEllipsisDiv (Just coto.id) graph
                 ]
             ]

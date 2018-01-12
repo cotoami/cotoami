@@ -1,19 +1,14 @@
 module App.Types.Traversal exposing (..)
 
 import Dict
+import List.Extra
 import App.Types.Coto exposing (CotoId)
+import App.Types.Graph exposing (Graph)
 
 
 type alias Traversal =
     { start : CotoId
     , steps : List CotoId
-    }
-
-
-type alias Traverse =
-    { traversal : Traversal
-    , startIndex : Int
-    , endCotoId : CotoId
     }
 
 
@@ -24,18 +19,26 @@ initTraversal start =
     }
 
 
-doTraverse : Traverse -> Traversal
-doTraverse traverse =
-    let
-        traversal =
-            traverse.traversal
-
-        steps =
+traverse : Int -> CotoId -> Traversal -> Traversal
+traverse stepIndex nextCotoId traversal =
+    { traversal
+        | steps =
             traversal.steps
-                |> List.drop ((List.length traversal.steps) - (traverse.startIndex + 1))
-                |> (::) traverse.endCotoId
-    in
-        { traversal | steps = steps }
+                |> List.drop ((List.length traversal.steps) - (stepIndex + 1))
+                |> (::) nextCotoId
+    }
+
+
+traverseToParent : Graph -> CotoId -> Traversal -> Traversal
+traverseToParent graph parentId traversal =
+    { traversal
+        | start = parentId
+        , steps =
+            if App.Types.Graph.hasChildren traversal.start graph then
+                traversal.steps ++ [ traversal.start ]
+            else
+                traversal.steps
+    }
 
 
 traversed : Int -> CotoId -> Traversal -> Bool
@@ -82,14 +85,59 @@ size traversals =
 
 openTraversal : CotoId -> Traversals -> Traversals
 openTraversal cotoId traversals =
-    { traversals
-        | entries = Dict.insert cotoId (initTraversal cotoId) traversals.entries
-        , order =
+    let
+        entries =
+            traversals.entries
+                |> Dict.insert cotoId (initTraversal cotoId)
+
+        order =
             traversals.order
                 |> List.filter (\id -> id /= cotoId)
                 |> (::) cotoId
-        , activeIndexOnMobile = 0
-    }
+
+        activeIndexOnMobile =
+            List.length order - 1
+    in
+        { traversals
+            | entries = entries
+            , order = order
+            , activeIndexOnMobile = activeIndexOnMobile
+        }
+
+
+updateTraversal : CotoId -> Traversal -> Traversals -> Traversals
+updateTraversal oldStartId newTraversal traversals =
+    let
+        entries =
+            traversals.entries
+                |> Dict.remove oldStartId
+                |> Dict.insert newTraversal.start newTraversal
+
+        order =
+            if newTraversal.start == oldStartId then
+                traversals.order
+            else
+                traversals.order
+                    |> List.filter (\cotoId -> cotoId /= newTraversal.start)
+                    |> List.map
+                        (\cotoId ->
+                            if cotoId == oldStartId then
+                                newTraversal.start
+                            else
+                                cotoId
+                        )
+
+        activeIndexOnMobile =
+            order
+                |> List.reverse
+                |> List.Extra.elemIndex newTraversal.start
+                |> Maybe.withDefault 0
+    in
+        { traversals
+            | entries = entries
+            , order = order
+            , activeIndexOnMobile = activeIndexOnMobile
+        }
 
 
 closeTraversal : CotoId -> Traversals -> Traversals
@@ -97,13 +145,6 @@ closeTraversal cotoId traversals =
     { traversals
         | entries = Dict.remove cotoId traversals.entries
         , order = List.filter (\id -> id /= cotoId) traversals.order
-    }
-
-
-updateTraversal : Traversal -> Traversals -> Traversals
-updateTraversal traversal traversals =
-    { traversals
-        | entries = Dict.insert traversal.start traversal traversals.entries
     }
 
 

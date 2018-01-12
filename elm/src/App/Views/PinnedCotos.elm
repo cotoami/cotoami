@@ -34,10 +34,8 @@ pinnedCotos context graph =
 
 connectionsDiv : String -> List Connection -> Context -> Graph -> Html Msg
 connectionsDiv divClass connections context graph =
-    Html.Keyed.node
-        "div"
-        [ class divClass ]
-        (List.filterMap
+    List.reverse connections
+        |> List.filterMap
             (\conn ->
                 Maybe.map
                     (\coto ->
@@ -47,8 +45,7 @@ connectionsDiv divClass connections context graph =
                     )
                     (Dict.get conn.end graph.cotos)
             )
-            (List.reverse connections)
-        )
+        |> Html.Keyed.node "div" [ class divClass ]
 
 
 connectionDiv : Context -> Graph -> Connection -> Coto -> Html Msg
@@ -79,7 +76,8 @@ cotoDiv context graph connection coto =
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context connection coto.id
                 , App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
-                , App.Views.Coto.bodyDivByCoto context graph elementId coto
+                , App.Views.Coto.parentsDiv graph Nothing coto.id
+                , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
                 ]
             ]

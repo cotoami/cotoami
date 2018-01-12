@@ -1,4 +1,6 @@
 div.content {
+  overflow-x: hidden;
+
   p, pre, ul, ol {
     margin-bottom: 0;
   }
@@ -7,6 +9,10 @@ div.content {
   ul:not(:last-child),
   ol:not(:last-child) {
     margin-bottom: 1rem;
+  }
+
+  pre, code {
+    overflow-x: auto;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -25,4 +31,33 @@ div.content {
   h4 { font-size: 1.6rem; line-height: 1.35; letter-spacing: -.08rem; }
   h5 { font-size: 1.4rem; line-height: 1.5;  letter-spacing: -.05rem; }
   h6 { font-size: 1.2rem; line-height: 1.6;  letter-spacing: 0;       }
+
+  blockquote {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    color: #888;
+
+    &:before {
+      color: #ccc;
+      font-family: serif;
+      content: open-quote;
+      font-size: 45px;
+      line-height: 0.1em;
+      margin-right: 5px;
+      vertical-align: -20px;
+    }
+
+    &:after {
+      color: #ccc;
+      font-family: serif;
+      content: close-quote;
+      font-size: 45px;
+      line-height: 0.1em;
+      vertical-align: -27px;
+    }
+
+    p {
+      padding-left: 1em;
+    }
+  }
 }

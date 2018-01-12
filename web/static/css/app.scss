@@ -83,6 +83,7 @@ html, body, #elm-container, #app {
   padding-right: 5px;   // for view-switch on mobile
   box-sizing: border-box;
   background-color: #f8f8f8;
+  width: 100%;
 }
 
 div.main-column,
@@ -121,7 +122,9 @@ div.main-column,
 }
 
 #main-timeline {
+  width: 100%;
   padding: 0 10px;
+  overflow: hidden;
 }
 
 .cotonomas-loading {

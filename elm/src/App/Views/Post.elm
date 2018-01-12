@@ -8,7 +8,6 @@ import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.EventUtil exposing (onLoad)
-import App.Types.Coto exposing (ElementId)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
@@ -29,6 +28,7 @@ view context graph post =
                 post.cotoId
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
+                , ( "by-another-amishi", not (isAuthor context post) )
                 ]
 
         eventAttrs =
@@ -47,16 +47,28 @@ view context graph post =
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph post
-                , parentsDiv graph post
+                , post.cotoId
+                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.withDefault (div [] [])
                 , if post.asCotonoma then
                     div [] []
                   else
                     authorDiv context post
-                , App.Views.Coto.bodyDiv context graph elementId markdown post
+                , App.Views.Coto.bodyDiv context elementId markdown post
                 , footerDiv post
-                , App.Views.Coto.subCotosEllipsisDiv OpenTraversal post.cotoId graph
+                , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
                 ]
             ]
+
+
+isAuthor : Context -> Post -> Bool
+isAuthor context post =
+    (Maybe.map2
+        (\session author -> author.id == session.id)
+        context.session
+        post.amishi
+    )
+        |> Maybe.withDefault False
 
 
 headerDiv : Context -> Graph -> Post -> Html Msg
@@ -66,35 +78,11 @@ headerDiv context graph post =
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
-parentsDiv : Graph -> Post -> Html Msg
-parentsDiv graph post =
-    let
-        parents =
-            post.cotoId
-                |> Maybe.map (\cotoId -> getParents cotoId graph)
-                |> Maybe.withDefault []
-    in
-        if List.isEmpty parents then
-            div [] []
-        else
-            div [ class "parents" ]
-                (List.map
-                    (\parent ->
-                        div
-                            [ class "parent"
-                            , onClick (OpenTraversal parent.id)
-                            ]
-                            [ text (App.Views.Coto.abbreviate parent) ]
-                    )
-                    parents
-                )
-
-
 authorDiv : Context -> Post -> Html Msg
 authorDiv context post =
     (Maybe.map2
         (\session author ->
-            if (isJust context.cotonoma) || (author.id /= session.id) then
+            if author.id /= session.id then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
