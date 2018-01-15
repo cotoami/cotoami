@@ -81,6 +81,7 @@ type Msg
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
+    | ToggleReorderMode ElementId
       --
       -- Cotonoma
       --

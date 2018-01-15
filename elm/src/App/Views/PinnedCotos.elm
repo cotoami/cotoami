@@ -75,7 +75,7 @@ cotoDiv context graph connection coto =
             [ div
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context connection coto.id
-                , App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
+                , App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
                 , App.Views.Coto.parentsDiv graph Nothing coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto

@@ -154,16 +154,16 @@ defaultActionConfig =
     }
 
 
-headerDivWithDefaultConfig : Context -> Graph -> Maybe ( Coto, Connection ) -> Coto -> Html Msg
-headerDivWithDefaultConfig context graph maybeInbound coto =
-    headerDiv context graph maybeInbound defaultActionConfig coto
+headerDivWithDefaultConfig : Context -> Graph -> Maybe ( Coto, Connection ) -> ElementId -> Coto -> Html Msg
+headerDivWithDefaultConfig context graph maybeInbound elementId coto =
+    headerDiv context graph maybeInbound defaultActionConfig elementId coto
 
 
-headerDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> Coto -> Html Msg
-headerDiv context graph maybeInbound config coto =
+headerDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> ElementId -> Coto -> Html Msg
+headerDiv context graph maybeInbound config elementId coto =
     div
         [ class "coto-header" ]
-        [ toolButtonsSpan context graph maybeInbound config coto
+        [ toolButtonsSpan context graph maybeInbound config elementId coto
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
@@ -185,8 +185,8 @@ headerDiv context graph maybeInbound config coto =
         ]
 
 
-toolButtonsSpan : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> Coto -> Html Msg
-toolButtonsSpan context graph maybeInbound config coto =
+toolButtonsSpan : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> ElementId -> Coto -> Html Msg
+toolButtonsSpan context graph maybeInbound config elementId coto =
     [ if List.isEmpty context.selection || isSelected (Just coto.id) context then
         Nothing
       else
@@ -220,12 +220,17 @@ toolButtonsSpan context graph maybeInbound config coto =
             config.deleteConnection
             context.session
             maybeInbound
-      , Just <|
-            a
-                [ class "tool-button toggle-reorder-mode"
-                , title "Reorder"
-                ]
-                [ faIcon "sort" Nothing ]
+      , Maybe.map2
+            (\toggleReorderMode session ->
+                a
+                    [ class "tool-button toggle-reorder-mode"
+                    , title "Reorder"
+                    , onLinkButtonClick (toggleReorderMode elementId)
+                    ]
+                    [ faIcon "sort" Nothing ]
+            )
+            config.toggleReorderMode
+            context.session
       ]
         |> List.filterMap identity
         |> (\buttons ->
@@ -434,7 +439,15 @@ subCotoDiv context graph parentElementId parentConnection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context graph (Just parentConnection) defaultActionConfig coto
+                [ headerDiv
+                    context
+                    graph
+                    (Just parentConnection)
+                    { defaultActionConfig
+                        | toggleReorderMode = Just ToggleReorderMode
+                    }
+                    elementId
+                    coto
                 , parentsDiv graph (Just parentCoto.id) coto.id
                 , bodyDivByCoto context elementId coto
                 , subCotosEllipsisDiv (Just coto.id) graph

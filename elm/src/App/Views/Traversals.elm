@@ -110,7 +110,7 @@ startCotoDiv context graph traversal connections coto =
             , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
             [ div [ class "coto-inner" ]
-                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
+                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , div [ class "main-sub-border" ] []
                 , connectionsDiv context graph ( traversal, -1 ) elementId coto connections
@@ -230,6 +230,7 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix parentConnection c
                     graph
                     (Just parentConnection)
                     App.Views.Coto.defaultActionConfig
+                    elementId
                     coto
                 , App.Views.Coto.parentsDiv graph (Just parentCoto.id) coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
