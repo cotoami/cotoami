@@ -135,6 +135,7 @@ type alias ActionConfig =
     , addCoto : Maybe (Coto -> Msg)
     , openTraversal : Maybe (CotoId -> Msg)
     , confirmConnect : Maybe (CotoId -> Direction -> Msg)
+    , toggleReorderMode : Maybe (ElementId -> Msg)
     , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
     }
 
@@ -148,6 +149,7 @@ defaultActionConfig =
     , addCoto = Just OpenNewEditorModalWithSourceCoto
     , openTraversal = Just OpenTraversal
     , confirmConnect = Just ConfirmConnect
+    , toggleReorderMode = Nothing
     , deleteConnection = Just ConfirmDeleteConnection
     }
 
@@ -197,9 +199,42 @@ toolButtonsSpan context graph maybeInbound config coto =
                         , onLinkButtonClick (confirmConnect coto.id Inbound)
                         ]
                         [ faIcon "link" Nothing ]
+                    , span [ class "border" ] []
                     ]
             )
             config.confirmConnect
+    , [ Maybe.map3
+            (\deleteConnection session ( parent, connection ) ->
+                if isDisconnectable session parent connection coto then
+                    span []
+                        [ a
+                            [ class "tool-button delete-connection"
+                            , title "Disconnect"
+                            , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
+                            ]
+                            [ faIcon "unlink" Nothing ]
+                        ]
+                else
+                    span [] []
+            )
+            config.deleteConnection
+            context.session
+            maybeInbound
+      , Just <|
+            a
+                [ class "tool-button toggle-reorder-mode"
+                , title "Reorder"
+                ]
+                [ faIcon "sort" Nothing ]
+      ]
+        |> List.filterMap identity
+        |> (\buttons ->
+                if List.isEmpty buttons then
+                    Nothing
+                else
+                    Just <| buttons ++ [ span [ class "border" ] [] ]
+           )
+        |> Maybe.map (span [ class "sub-coto-buttons" ])
     , [ Maybe.map
             (\pinCoto ->
                 if pinned coto.id graph then
@@ -237,21 +272,6 @@ toolButtonsSpan context graph maybeInbound config coto =
                     [ materialIcon "add" Nothing ]
             )
             config.addCoto
-      , Maybe.map3
-            (\deleteConnection session ( parent, connection ) ->
-                if isDisconnectable session parent connection coto then
-                    a
-                        [ class "tool-button delete-connection"
-                        , title "Disconnect"
-                        , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
-                        ]
-                        [ faIcon "unlink" Nothing ]
-                else
-                    span [] []
-            )
-            config.deleteConnection
-            context.session
-            maybeInbound
       , Maybe.map
             (\selectCoto ->
                 a

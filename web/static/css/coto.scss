@@ -100,6 +100,7 @@ span.coto-tool-buttons {
   border: 1px solid #eee;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
   background-color: rgba(255, 255, 255, .6);
+  white-space: nowrap;
 
   &::before {
     content: '';
@@ -151,6 +152,20 @@ span.coto-tool-buttons {
     i {
       font-size: 27px;
       vertical-align: 5px;
+    }
+  }
+
+  span.border {
+    display: inline-block;
+    border-right: 1px solid #eee;
+    margin-left: 10px;
+    vertical-align: 2px;
+    height: 26px;
+  }
+
+  @media (max-width: 400px) {
+    a.pin-coto {
+      display: none;
     }
   }
 }

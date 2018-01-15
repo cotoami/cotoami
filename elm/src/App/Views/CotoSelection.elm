@@ -131,6 +131,7 @@ cotoDiv beingDeselected context graph coto =
                     , addCoto = Nothing
                     , openTraversal = Nothing
                     , confirmConnect = Nothing
+                    , toggleReorderMode = Nothing
                     , deleteConnection = Nothing
                     }
                     coto

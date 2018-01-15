@@ -22,6 +22,7 @@ type alias Context =
     , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
     , contentOpenElements : Set ElementId
+    , reorderModeElements : Set ElementId
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
@@ -40,6 +41,7 @@ initContext seed =
     , cotonomaLoading = False
     , elementFocus = Nothing
     , contentOpenElements = Set.empty
+    , reorderModeElements = Set.empty
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
