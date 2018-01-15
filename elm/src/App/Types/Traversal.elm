@@ -145,6 +145,7 @@ closeTraversal cotoId traversals =
     { traversals
         | entries = Dict.remove cotoId traversals.entries
         , order = List.filter (\id -> id /= cotoId) traversals.order
+        , activeIndexOnMobile = 0
     }
 
 
