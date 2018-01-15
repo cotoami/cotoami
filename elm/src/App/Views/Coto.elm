@@ -77,7 +77,12 @@ bodyDiv context elementId markdown model =
                 (\key ->
                     cotonomaLink CotonomaClick model.amishi key model.content
                 )
-            |> Maybe.withDefault (contentDiv context elementId markdown model)
+            |> Maybe.withDefault
+                (if App.Types.Context.inReorderMode elementId context then
+                    contentDivInReorder model
+                 else
+                    contentDiv context elementId markdown model
+                )
         , reorderToolButtonsSpan context elementId
         ]
 
@@ -155,6 +160,13 @@ contentDiv context elementId markdown model =
                     ]
             )
         |> Maybe.withDefault (markdown model.content)
+
+
+contentDivInReorder : BodyModel r -> Html Msg
+contentDivInReorder model =
+    div [ class "content-in-reorder" ]
+        [ text (abbreviate model)
+        ]
 
 
 
@@ -504,7 +516,7 @@ abbreviate : { r | content : String, summary : Maybe String } -> String
 abbreviate { content, summary } =
     let
         maxLength =
-            200
+            App.Types.Coto.summaryMaxlength
     in
         Maybe.withDefault
             (extractTextFromMarkdown content
