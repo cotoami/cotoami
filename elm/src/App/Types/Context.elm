@@ -95,6 +95,11 @@ toggleSetMember value set =
         Set.insert value set
 
 
+inReorderMode : ElementId -> Context -> Bool
+inReorderMode elementId context =
+    Set.member elementId context.reorderModeElements
+
+
 contentOpen : ElementId -> Context -> Bool
 contentOpen elementId context =
     Set.member elementId context.contentOpenElements

@@ -78,7 +78,43 @@ bodyDiv context elementId markdown model =
                     cotonomaLink CotonomaClick model.amishi key model.content
                 )
             |> Maybe.withDefault (contentDiv context elementId markdown model)
+        , reorderToolButtonsSpan context elementId
         ]
+
+
+reorderToolButtonsSpan : Context -> ElementId -> Html Msg
+reorderToolButtonsSpan context elementId =
+    if App.Types.Context.inReorderMode elementId context then
+        span [ class "reorder-tool-buttons" ]
+            [ a
+                [ class "tool-button move-to-top"
+                , title "Move to the top"
+                ]
+                [ materialIcon "skip_previous" Nothing ]
+            , a
+                [ class "tool-button move-up"
+                , title "Move up"
+                ]
+                [ materialIcon "play_arrow" Nothing ]
+            , a
+                [ class "tool-button move-down"
+                , title "Move down"
+                ]
+                [ materialIcon "play_arrow" Nothing ]
+            , a
+                [ class "tool-button move-to-bottom"
+                , title "Move to the bottom"
+                ]
+                [ materialIcon "skip_next" Nothing ]
+            , a
+                [ class "tool-button close"
+                , title "Close reorder tools"
+                , onLinkButtonClick (ToggleReorderMode elementId)
+                ]
+                [ materialIcon "close" Nothing ]
+            ]
+    else
+        span [] []
 
 
 bodyDivByCoto : Context -> ElementId -> Coto -> Html Msg
@@ -163,7 +199,10 @@ headerDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> El
 headerDiv context graph maybeInbound config elementId coto =
     div
         [ class "coto-header" ]
-        [ toolButtonsSpan context graph maybeInbound config elementId coto
+        [ if App.Types.Context.inReorderMode elementId context then
+            span [] []
+          else
+            toolButtonsSpan context graph maybeInbound config elementId coto
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
