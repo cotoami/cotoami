@@ -40,18 +40,14 @@ connectionsDiv divClass connections context graph =
                 Maybe.map
                     (\coto ->
                         ( conn.key
-                        , connectionDiv context graph conn coto
+                        , div
+                            [ class "outbound-conn" ]
+                            [ cotoDiv context graph conn coto ]
                         )
                     )
                     (Dict.get conn.end graph.cotos)
             )
         |> Html.Keyed.node "div" [ class divClass ]
-
-
-connectionDiv : Context -> Graph -> Connection -> Coto -> Html Msg
-connectionDiv context graph connection coto =
-    div [ class "outbound-conn" ]
-        [ cotoDiv context graph connection coto ]
 
 
 cotoDiv : Context -> Graph -> Connection -> Coto -> Html Msg
