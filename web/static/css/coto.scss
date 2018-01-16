@@ -208,6 +208,9 @@ span.reorder-tool-buttons {
     opacity: 0.6;
   }
 }
+div.pinned-coto > div.coto-inner > div.coto-header > span.reorder-tool-buttons {
+  top: 0;
+}
 
 div.sub-cotos {
   div.outbound-conn {
@@ -235,7 +238,7 @@ div.sub-cotos {
       }
     }
   }
-}
+} 
 
 div.coto.selectable {
   &.element-focus > div.coto-inner > div.coto-header > span.coto-tool-buttons {
