@@ -254,34 +254,42 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                     ]
             )
             config.confirmConnect
-    , [ Maybe.map3
+    , [ (Maybe.map3
             (\deleteConnection session ( parent, connection ) ->
                 if isDisconnectable session parent connection coto then
-                    span []
-                        [ a
+                    Just <|
+                        a
                             [ class "tool-button delete-connection"
                             , title "Disconnect"
                             , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
                             ]
                             [ faIcon "unlink" Nothing ]
-                        ]
                 else
-                    span [] []
+                    Nothing
             )
             config.deleteConnection
             context.session
             maybeInbound
-      , Maybe.map2
-            (\toggleReorderMode session ->
-                a
-                    [ class "tool-button toggle-reorder-mode"
-                    , title "Reorder"
-                    , onLinkButtonClick (toggleReorderMode elementId)
-                    ]
-                    [ faIcon "sort" Nothing ]
+        )
+            |> Maybe.withDefault Nothing
+      , (Maybe.map3
+            (\toggleReorderMode session ( parent, connection ) ->
+                if isReorderble session parent connection coto then
+                    Just <|
+                        a
+                            [ class "tool-button toggle-reorder-mode"
+                            , title "Reorder"
+                            , onLinkButtonClick (toggleReorderMode elementId)
+                            ]
+                            [ faIcon "sort" Nothing ]
+                else
+                    Nothing
             )
             config.toggleReorderMode
             context.session
+            maybeInbound
+        )
+            |> Maybe.withDefault Nothing
       ]
         |> List.filterMap identity
         |> (\buttons ->
@@ -371,6 +379,12 @@ isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
 isDisconnectable session parent connection child =
     session.owner
         || (session.id == connection.amishiId)
+        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
+
+
+isReorderble : Session -> Coto -> Connection -> Coto -> Bool
+isReorderble session parent connection child =
+    session.owner
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
