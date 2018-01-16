@@ -236,7 +236,14 @@ headerDiv context graph maybeInbound config elementId coto =
         ]
 
 
-toolButtonsSpan : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> ElementId -> Coto -> Html Msg
+toolButtonsSpan :
+    Context
+    -> Graph
+    -> Maybe ( Coto, Connection )
+    -> ActionConfig
+    -> ElementId
+    -> Coto
+    -> Html Msg
 toolButtonsSpan context graph maybeInbound config elementId coto =
     [ if List.isEmpty context.selection || isSelected (Just coto.id) context then
         Nothing
@@ -254,51 +261,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                     ]
             )
             config.confirmConnect
-    , [ (Maybe.map3
-            (\deleteConnection session ( parent, connection ) ->
-                if isDisconnectable session parent connection coto then
-                    Just <|
-                        a
-                            [ class "tool-button delete-connection"
-                            , title "Disconnect"
-                            , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
-                            ]
-                            [ faIcon "unlink" Nothing ]
-                else
-                    Nothing
-            )
-            config.deleteConnection
-            context.session
-            maybeInbound
-        )
-            |> Maybe.withDefault Nothing
-      , (Maybe.map3
-            (\toggleReorderMode session ( parent, connection ) ->
-                if isReorderble session parent connection coto then
-                    Just <|
-                        a
-                            [ class "tool-button toggle-reorder-mode"
-                            , title "Reorder"
-                            , onLinkButtonClick (toggleReorderMode elementId)
-                            ]
-                            [ faIcon "sort" Nothing ]
-                else
-                    Nothing
-            )
-            config.toggleReorderMode
-            context.session
-            maybeInbound
-        )
-            |> Maybe.withDefault Nothing
-      ]
-        |> List.filterMap identity
-        |> (\buttons ->
-                if List.isEmpty buttons then
-                    Nothing
-                else
-                    Just <| buttons ++ [ span [ class "border" ] [] ]
-           )
-        |> Maybe.map (span [ class "sub-coto-buttons" ])
+    , subCotoButtonsSpan context graph maybeInbound config elementId coto
     , [ Maybe.map
             (\pinCoto ->
                 if pinned coto.id graph then
@@ -373,6 +336,62 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
     ]
         |> List.filterMap identity
         |> span [ class "coto-tool-buttons" ]
+
+
+subCotoButtonsSpan :
+    Context
+    -> Graph
+    -> Maybe ( Coto, Connection )
+    -> ActionConfig
+    -> ElementId
+    -> Coto
+    -> Maybe (Html Msg)
+subCotoButtonsSpan context graph maybeInbound config elementId coto =
+    [ (Maybe.map3
+        (\deleteConnection session ( parent, connection ) ->
+            if isDisconnectable session parent connection coto then
+                Just <|
+                    a
+                        [ class "tool-button delete-connection"
+                        , title "Disconnect"
+                        , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
+                        ]
+                        [ faIcon "unlink" Nothing ]
+            else
+                Nothing
+        )
+        config.deleteConnection
+        context.session
+        maybeInbound
+      )
+        |> Maybe.withDefault Nothing
+    , (Maybe.map3
+        (\toggleReorderMode session ( parent, connection ) ->
+            if isReorderble session parent connection coto then
+                Just <|
+                    a
+                        [ class "tool-button toggle-reorder-mode"
+                        , title "Reorder"
+                        , onLinkButtonClick (toggleReorderMode elementId)
+                        ]
+                        [ faIcon "sort" Nothing ]
+            else
+                Nothing
+        )
+        config.toggleReorderMode
+        context.session
+        maybeInbound
+      )
+        |> Maybe.withDefault Nothing
+    ]
+        |> List.filterMap identity
+        |> (\buttons ->
+                if List.isEmpty buttons then
+                    Nothing
+                else
+                    Just <| buttons ++ [ span [ class "border" ] [] ]
+           )
+        |> Maybe.map (span [ class "sub-coto-buttons" ])
 
 
 isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
