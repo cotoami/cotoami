@@ -365,9 +365,9 @@ subCotoButtonsSpan context graph maybeInbound config elementId coto =
         maybeInbound
       )
         |> Maybe.withDefault Nothing
-    , (Maybe.map3
-        (\toggleReorderMode session ( parent, connection ) ->
-            if isReorderble session parent connection coto then
+    , (Maybe.map2
+        (\toggleReorderMode session ->
+            if isReorderble context session maybeInbound coto then
                 Just <|
                     a
                         [ class "tool-button toggle-reorder-mode"
@@ -380,7 +380,6 @@ subCotoButtonsSpan context graph maybeInbound config elementId coto =
         )
         config.toggleReorderMode
         context.session
-        maybeInbound
       )
         |> Maybe.withDefault Nothing
     ]
@@ -401,10 +400,30 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-isReorderble : Session -> Coto -> Connection -> Coto -> Bool
-isReorderble session parent connection child =
-    session.owner
-        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
+isReorderble : Context -> Session -> Maybe ( Coto, Connection ) -> Coto -> Bool
+isReorderble context session maybeInbound child =
+    if session.owner then
+        True
+    else
+        maybeInbound
+            |> Maybe.map
+                (\( parent, _ ) ->
+                    Just session.id
+                        == (parent.amishi
+                                |> Maybe.map (\amishi -> amishi.id)
+                           )
+                )
+            |> Maybe.withDefault
+                (context.cotonoma
+                    |> Maybe.map
+                        (\cotonoma ->
+                            Just session.id
+                                == (cotonoma.owner
+                                        |> Maybe.map (\owner -> owner.id)
+                                   )
+                        )
+                    |> Maybe.withDefault True
+                )
 
 
 
@@ -463,21 +482,24 @@ subCotosEllipsisDiv maybeCotoId graph =
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
-    graph.connections
-        |> Dict.get coto.id
-        |> Maybe.map
-            (\connections ->
-                div []
-                    [ div [ class "main-sub-border" ] []
-                    , connectionsDiv
-                        context
-                        graph
-                        parentElementId
-                        coto
-                        connections
-                    ]
-            )
-        |> Maybe.withDefault (div [] [])
+    if App.Types.Context.inReorderMode parentElementId context then
+        div [] []
+    else
+        graph.connections
+            |> Dict.get coto.id
+            |> Maybe.map
+                (\connections ->
+                    div []
+                        [ div [ class "main-sub-border" ] []
+                        , connectionsDiv
+                            context
+                            graph
+                            parentElementId
+                            coto
+                            connections
+                        ]
+                )
+            |> Maybe.withDefault (div [] [])
 
 
 connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Html Msg

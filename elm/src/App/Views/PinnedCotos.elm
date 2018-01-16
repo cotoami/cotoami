@@ -12,7 +12,7 @@ import App.Types.Context exposing (CotoSelection, Context, isSelected, isServerO
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
 import App.Messages exposing (..)
-import App.Views.Coto
+import App.Views.Coto exposing (defaultActionConfig)
 
 
 view : Context -> Graph -> Html Msg
@@ -75,7 +75,15 @@ cotoDiv context graph connection coto =
             [ div
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context connection coto.id
-                , App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
+                , App.Views.Coto.headerDiv
+                    context
+                    graph
+                    Nothing
+                    { defaultActionConfig
+                        | toggleReorderMode = Just ToggleReorderMode
+                    }
+                    elementId
+                    coto
                 , App.Views.Coto.parentsDiv graph Nothing coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
