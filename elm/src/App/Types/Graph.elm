@@ -4,7 +4,6 @@ import Dict
 import Maybe exposing (withDefault)
 import List.Extra
 import App.Types.Amishi exposing (AmishiId)
-import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 
 
