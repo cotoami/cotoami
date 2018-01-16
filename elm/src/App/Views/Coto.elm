@@ -185,7 +185,7 @@ headerDiv context graph maybeInbound config elementId coto =
     div
         [ class "coto-header" ]
         [ if App.Types.Context.inReorderMode elementId context then
-            reorderToolButtonsSpan context elementId
+            reorderToolButtonsSpan context maybeInbound elementId
           else
             toolButtonsSpan context graph maybeInbound config elementId coto
         , coto.postedIn
@@ -399,8 +399,8 @@ isReorderble context session maybeInbound child =
                 )
 
 
-reorderToolButtonsSpan : Context -> ElementId -> Html Msg
-reorderToolButtonsSpan context elementId =
+reorderToolButtonsSpan : Context -> Maybe InboundConnection -> ElementId -> Html Msg
+reorderToolButtonsSpan context maybeInbound elementId =
     span [ class "reorder-tool-buttons" ]
         [ a
             [ class "tool-button move-to-top"
