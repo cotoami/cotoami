@@ -3,6 +3,7 @@ module App.Views.Coto
         ( cotoClassList
         , bodyDiv
         , bodyDivByCoto
+        , InboundConnection
         , ActionConfig
         , defaultActionConfig
         , headerDivWithDefaultConfig
@@ -139,6 +140,14 @@ contentDivInReorder model =
 --
 
 
+type alias InboundConnection =
+    { parent : Coto
+    , connection : Connection
+    , siblings : Int
+    , index : Int
+    }
+
+
 type alias ActionConfig =
     { openCotoMenu : Maybe (Coto -> Msg)
     , selectCoto : Maybe (CotoId -> Msg)
@@ -166,12 +175,12 @@ defaultActionConfig =
     }
 
 
-headerDivWithDefaultConfig : Context -> Graph -> Maybe ( Coto, Connection ) -> ElementId -> Coto -> Html Msg
+headerDivWithDefaultConfig : Context -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
 headerDivWithDefaultConfig context graph maybeInbound elementId coto =
     headerDiv context graph maybeInbound defaultActionConfig elementId coto
 
 
-headerDiv : Context -> Graph -> Maybe ( Coto, Connection ) -> ActionConfig -> ElementId -> Coto -> Html Msg
+headerDiv : Context -> Graph -> Maybe InboundConnection -> ActionConfig -> ElementId -> Coto -> Html Msg
 headerDiv context graph maybeInbound config elementId coto =
     div
         [ class "coto-header" ]
@@ -203,7 +212,7 @@ headerDiv context graph maybeInbound config elementId coto =
 toolButtonsSpan :
     Context
     -> Graph
-    -> Maybe ( Coto, Connection )
+    -> Maybe InboundConnection
     -> ActionConfig
     -> ElementId
     -> Coto
@@ -305,14 +314,14 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
 subCotoButtonsSpan :
     Context
     -> Graph
-    -> Maybe ( Coto, Connection )
+    -> Maybe InboundConnection
     -> ActionConfig
     -> ElementId
     -> Coto
     -> Maybe (Html Msg)
 subCotoButtonsSpan context graph maybeInbound config elementId coto =
     [ (Maybe.map3
-        (\deleteConnection session ( parent, connection ) ->
+        (\deleteConnection session { parent, connection } ->
             if isDisconnectable session parent connection coto then
                 Just <|
                     a
@@ -364,14 +373,14 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-isReorderble : Context -> Session -> Maybe ( Coto, Connection ) -> Coto -> Bool
+isReorderble : Context -> Session -> Maybe InboundConnection -> Coto -> Bool
 isReorderble context session maybeInbound child =
     if session.owner then
         True
     else
         maybeInbound
             |> Maybe.map
-                (\( parent, _ ) ->
+                (\{ parent } ->
                     Just session.id
                         == (parent.amishi
                                 |> Maybe.map (\amishi -> amishi.id)
@@ -502,8 +511,8 @@ connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Htm
 connectionsDiv context graph parentElementId parentCoto connections =
     connections
         |> List.reverse
-        |> List.filterMap
-            (\connection ->
+        |> List.indexedMap
+            (\index connection ->
                 graph.cotos
                     |> Dict.get connection.end
                     |> Maybe.map
@@ -515,23 +524,30 @@ connectionsDiv context graph parentElementId parentCoto connections =
                                     context
                                     graph
                                     parentElementId
-                                    ( parentCoto, connection )
+                                    (InboundConnection
+                                        parentCoto
+                                        connection
+                                        (List.length connections)
+                                        index
+                                    )
                                     coto
                                 ]
                             )
                         )
+                    |> Maybe.withDefault
+                        ( connection.key, div [] [] )
             )
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context -> Graph -> ElementId -> ( Coto, Connection ) -> Coto -> Html Msg
-subCotoDiv context graph parentElementId parentConnection coto =
+subCotoDiv : Context -> Graph -> ElementId -> InboundConnection -> Coto -> Html Msg
+subCotoDiv context graph parentElementId inboundConnection coto =
     let
         elementId =
             parentElementId ++ "-" ++ coto.id
 
-        ( parentCoto, connection ) =
-            parentConnection
+        { parent, connection } =
+            inboundConnection
     in
         div
             [ cotoClassList context elementId (Just coto.id) []
@@ -544,13 +560,13 @@ subCotoDiv context graph parentElementId parentConnection coto =
                 [ headerDiv
                     context
                     graph
-                    (Just parentConnection)
+                    (Just inboundConnection)
                     { defaultActionConfig
                         | toggleReorderMode = Just ToggleReorderMode
                     }
                     elementId
                     coto
-                , parentsDiv graph (Just parentCoto.id) coto.id
+                , parentsDiv graph (Just parent.id) coto.id
                 , bodyDivByCoto context elementId coto
                 , subCotosEllipsisDiv (Just coto.id) graph
                 ]
