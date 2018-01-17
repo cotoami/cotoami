@@ -13,7 +13,7 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
 import App.Messages exposing (..)
-import App.Views.Coto exposing (InboundConnection)
+import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
 view : Bool -> Context -> Graph -> Traversals -> List (Html Msg)
@@ -199,7 +199,7 @@ connectionsDiv context graph ( traversal, index ) elementIdPrefix parentCoto con
                                     ( traversal, index )
                                     elementIdPrefix
                                     (InboundConnection
-                                        parentCoto
+                                        (Just parentCoto)
                                         connection
                                         (List.length connections)
                                         index
@@ -215,13 +215,13 @@ connectionsDiv context graph ( traversal, index ) elementIdPrefix parentCoto con
 
 
 subCotoDiv : Context -> Graph -> ( Traversal, Int ) -> String -> InboundConnection -> Coto -> Html Msg
-subCotoDiv context graph ( traversal, index ) elementIdPrefix inboundConnection coto =
+subCotoDiv context graph ( traversal, index ) elementIdPrefix inbound coto =
     let
         elementId =
             elementIdPrefix ++ "-" ++ coto.id
 
-        { parent, connection } =
-            inboundConnection
+        maybeParentId =
+            inbound.parent |> Maybe.map (\parent -> parent.id)
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
@@ -234,11 +234,13 @@ subCotoDiv context graph ( traversal, index ) elementIdPrefix inboundConnection 
                 [ App.Views.Coto.headerDiv
                     context
                     graph
-                    (Just inboundConnection)
-                    App.Views.Coto.defaultActionConfig
+                    (Just inbound)
+                    { defaultActionConfig
+                        | toggleReorderMode = Just ToggleReorderMode
+                    }
                     elementId
                     coto
-                , App.Views.Coto.parentsDiv graph (Just parent.id) coto.id
+                , App.Views.Coto.parentsDiv graph maybeParentId coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , traverseButtonDiv graph ( traversal, index ) coto
                 ]
