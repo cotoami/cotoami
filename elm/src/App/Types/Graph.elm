@@ -288,15 +288,13 @@ removeCoto cotoId graph =
         )
 
 
-updateConnections : (List Connection -> List Connection) -> Maybe CotoId -> Graph -> Graph
-updateConnections update maybeParentId graph =
+updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
+updateConnections maybeParentId update graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
                 graph.connections
-                    |> Dict.update
-                        parentId
-                        (Maybe.map update)
+                    |> Dict.update parentId (Maybe.map update)
                     |> (\connections -> { graph | connections = connections })
             )
         |> Maybe.withDefault
@@ -306,14 +304,29 @@ updateConnections update maybeParentId graph =
             )
 
 
-swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
-swapOrder maybeParentId index1 index2 graph =
-    updateConnections (swapAt index1 index2) maybeParentId graph
-
-
 swapAt : Int -> Int -> List Connection -> List Connection
 swapAt index1 index2 connections =
     connections
         |> List.reverse
         |> List.Extra.swapAt index1 index2
         |> List.reverse
+
+
+swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
+swapOrder maybeParentId index1 index2 graph =
+    updateConnections maybeParentId (swapAt index1 index2) graph
+
+
+moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
+moveToFirst maybeParentId index graph =
+    updateConnections maybeParentId (swapAt index 0) graph
+
+
+moveToLast : Maybe CotoId -> Int -> Graph -> Graph
+moveToLast maybeParentId index graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            swapAt index (List.length connections - 1) connections
+        )
+        graph
