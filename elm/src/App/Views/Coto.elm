@@ -409,34 +409,57 @@ isReorderble context session inbound child =
 
 reorderToolButtonsSpan : Context -> InboundConnection -> ElementId -> Html Msg
 reorderToolButtonsSpan context inbound elementId =
-    span [ class "reorder-tool-buttons" ]
-        [ a
-            [ class "tool-button move-to-top"
-            , title "Move to the top"
+    let
+        isFirst =
+            inbound.index == 0
+
+        isLast =
+            inbound.index == (inbound.siblings - 1)
+    in
+        span [ class "reorder-tool-buttons" ]
+            [ a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "move-to-top", True )
+                    , ( "disabled", isFirst )
+                    ]
+                , title "Move to the top"
+                ]
+                [ materialIcon "skip_previous" Nothing ]
+            , a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "move-up", True )
+                    , ( "disabled", isFirst )
+                    ]
+                , title "Move up"
+                ]
+                [ materialIcon "play_arrow" Nothing ]
+            , a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "move-down", True )
+                    , ( "disabled", isLast )
+                    ]
+                , title "Move down"
+                ]
+                [ materialIcon "play_arrow" Nothing ]
+            , a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "move-to-bottom", True )
+                    , ( "disabled", isLast )
+                    ]
+                , title "Move to the bottom"
+                ]
+                [ materialIcon "skip_next" Nothing ]
+            , a
+                [ class "tool-button close"
+                , title "Close reorder tools"
+                , onLinkButtonClick (ToggleReorderMode elementId)
+                ]
+                [ materialIcon "close" Nothing ]
             ]
-            [ materialIcon "skip_previous" Nothing ]
-        , a
-            [ class "tool-button move-up"
-            , title "Move up"
-            ]
-            [ materialIcon "play_arrow" Nothing ]
-        , a
-            [ class "tool-button move-down"
-            , title "Move down"
-            ]
-            [ materialIcon "play_arrow" Nothing ]
-        , a
-            [ class "tool-button move-to-bottom"
-            , title "Move to the bottom"
-            ]
-            [ materialIcon "skip_next" Nothing ]
-        , a
-            [ class "tool-button close"
-            , title "Close reorder tools"
-            , onLinkButtonClick (ToggleReorderMode elementId)
-            ]
-            [ materialIcon "close" Nothing ]
-        ]
 
 
 
