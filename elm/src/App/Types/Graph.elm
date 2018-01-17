@@ -288,8 +288,8 @@ removeCoto cotoId graph =
         )
 
 
-swapConnectionOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
-swapConnectionOrder maybeParentId index1 index2 graph =
+swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
+swapOrder maybeParentId index1 index2 graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
