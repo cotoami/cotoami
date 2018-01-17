@@ -131,6 +131,26 @@ defmodule Cotoami.Neo4jService do
       props |> Map.put(@rel_prop_order, next_order))
   end
 
+  def update_relationships_order(conn, source_uuid, target_uuids, type) 
+  when is_list(target_uuids) do
+    query = ~s"""
+      UNWIND $targets AS target
+      WITH head(target) AS target_uuid, last(target) AS order
+      MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: target_uuid })
+      SET r.#{@rel_prop_order} = order
+      RETURN r
+    """
+    conn
+    |> Bolt.Sips.query!(query, %{
+        source_uuid: source_uuid,
+        targets:
+          target_uuids
+          |> Enum.with_index(1)
+          |> Enum.map(fn({uuid, order}) -> [uuid, order] end)
+      })
+    |> Enum.map(&(&1["r"]))
+  end
+
   def delete_node_with_relationships(conn, uuid) do
     query = ~s"""
       MATCH (n { uuid: $uuid })
