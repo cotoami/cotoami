@@ -432,6 +432,7 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isFirst )
                     ]
                 , title "Move to the top"
+                , onLinkButtonClick (MoveToFirst maybeParentId index)
                 ]
                 [ materialIcon "skip_previous" Nothing ]
             , a
@@ -441,8 +442,7 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isFirst )
                     ]
                 , title "Move up"
-                , onLinkButtonClick
-                    (SwapOrder maybeParentId index (index - 1))
+                , onLinkButtonClick (SwapOrder maybeParentId index (index - 1))
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a
@@ -452,8 +452,7 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isLast )
                     ]
                 , title "Move down"
-                , onLinkButtonClick
-                    (SwapOrder maybeParentId index (index + 1))
+                , onLinkButtonClick (SwapOrder maybeParentId index (index + 1))
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a
@@ -463,6 +462,7 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isLast )
                     ]
                 , title "Move to the bottom"
+                , onLinkButtonClick (MoveToLast maybeParentId index)
                 ]
                 [ materialIcon "skip_next" Nothing ]
             , a

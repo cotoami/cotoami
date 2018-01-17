@@ -83,6 +83,8 @@ type Msg
     | ConnectionDeleted (Result Http.Error String)
     | ToggleReorderMode ElementId
     | SwapOrder (Maybe CotoId) Int Int
+    | MoveToFirst (Maybe CotoId) Int
+    | MoveToLast (Maybe CotoId) Int
       --
       -- Cotonoma
       --

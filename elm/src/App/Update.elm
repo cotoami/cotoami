@@ -548,6 +548,22 @@ update msg model =
             , Cmd.none
             )
 
+        MoveToFirst maybeParentId index ->
+            ( { model
+                | graph =
+                    App.Types.Graph.moveToFirst maybeParentId index model.graph
+              }
+            , Cmd.none
+            )
+
+        MoveToLast maybeParentId index ->
+            ( { model
+                | graph =
+                    App.Types.Graph.moveToLast maybeParentId index model.graph
+              }
+            , Cmd.none
+            )
+
         --
         -- Cotonoma
         --
