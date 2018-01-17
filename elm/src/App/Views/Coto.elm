@@ -412,6 +412,12 @@ isReorderble context session inbound child =
 reorderToolButtonsSpan : Context -> InboundConnection -> ElementId -> Html Msg
 reorderToolButtonsSpan context inbound elementId =
     let
+        maybeParentId =
+            inbound.parent |> Maybe.map (\parent -> parent.id)
+
+        index =
+            inbound.index
+
         isFirst =
             inbound.index == 0
 
@@ -435,6 +441,8 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isFirst )
                     ]
                 , title "Move up"
+                , onLinkButtonClick
+                    (SwapOrder maybeParentId index (index - 1))
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a
@@ -444,6 +452,8 @@ reorderToolButtonsSpan context inbound elementId =
                     , ( "disabled", isLast )
                     ]
                 , title "Move down"
+                , onLinkButtonClick
+                    (SwapOrder maybeParentId index (index + 1))
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a

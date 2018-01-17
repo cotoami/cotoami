@@ -296,11 +296,19 @@ swapOrder maybeParentId index1 index2 graph =
                 graph.connections
                     |> Dict.update
                         parentId
-                        (Maybe.map (List.Extra.swapAt index1 index2))
+                        (Maybe.map (swapAt index1 index2))
                     |> (\connections -> { graph | connections = connections })
             )
         |> Maybe.withDefault
             (graph.rootConnections
-                |> List.Extra.swapAt index1 index2
+                |> swapAt index1 index2
                 |> (\connections -> { graph | rootConnections = connections })
             )
+
+
+swapAt : Int -> Int -> List Connection -> List Connection
+swapAt index1 index2 connections =
+    connections
+        |> List.reverse
+        |> List.Extra.swapAt index1 index2
+        |> List.reverse

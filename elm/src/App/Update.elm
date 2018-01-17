@@ -536,6 +536,18 @@ update msg model =
             , Cmd.none
             )
 
+        SwapOrder maybeParentId index1 index2 ->
+            ( { model
+                | graph =
+                    App.Types.Graph.swapOrder
+                        maybeParentId
+                        index1
+                        index2
+                        model.graph
+              }
+            , Cmd.none
+            )
+
         --
         -- Cotonoma
         --
