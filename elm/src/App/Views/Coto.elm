@@ -383,7 +383,9 @@ isDisconnectable session parent connection child =
 
 isReorderble : Context -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
-    if session.owner then
+    if inbound.siblings < 2 then
+        False
+    else if session.owner then
         True
     else
         inbound.parent
