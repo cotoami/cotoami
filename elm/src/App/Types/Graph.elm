@@ -288,22 +288,27 @@ removeCoto cotoId graph =
         )
 
 
-swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
-swapOrder maybeParentId index1 index2 graph =
+updateConnections : (List Connection -> List Connection) -> Maybe CotoId -> Graph -> Graph
+updateConnections update maybeParentId graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
                 graph.connections
                     |> Dict.update
                         parentId
-                        (Maybe.map (swapAt index1 index2))
+                        (Maybe.map update)
                     |> (\connections -> { graph | connections = connections })
             )
         |> Maybe.withDefault
             (graph.rootConnections
-                |> swapAt index1 index2
+                |> update
                 |> (\connections -> { graph | rootConnections = connections })
             )
+
+
+swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
+swapOrder maybeParentId index1 index2 graph =
+    updateConnections (swapAt index1 index2) maybeParentId graph
 
 
 swapAt : Int -> Int -> List Connection -> List Connection
