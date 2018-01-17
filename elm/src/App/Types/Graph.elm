@@ -286,3 +286,21 @@ removeCoto cotoId graph =
           }
         , removedRoots ++ startMissingConns ++ endMissingConns
         )
+
+
+swapConnectionOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
+swapConnectionOrder maybeParentId index1 index2 graph =
+    maybeParentId
+        |> Maybe.map
+            (\parentId ->
+                graph.connections
+                    |> Dict.update
+                        parentId
+                        (Maybe.map (List.Extra.swapAt index1 index2))
+                    |> (\connections -> { graph | connections = connections })
+            )
+        |> Maybe.withDefault
+            (graph.rootConnections
+                |> List.Extra.swapAt index1 index2
+                |> (\connections -> { graph | rootConnections = connections })
+            )
