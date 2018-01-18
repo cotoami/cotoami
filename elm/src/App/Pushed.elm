@@ -157,6 +157,19 @@ handleDisconnect payload model =
         ( { model | graph = graph2 }, Cmd.none )
 
 
+type alias ReorderPayloadBody =
+    { startId : CotoId
+    , endIds : List CotoId
+    }
+
+
+decodeReorderPayloadBody : Decode.Decoder ReorderPayloadBody
+decodeReorderPayloadBody =
+    Decode.map2 ReorderPayloadBody
+        (Decode.field "startId" Decode.string)
+        (Decode.field "endIds" (Decode.list Decode.string))
+
+
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
