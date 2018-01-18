@@ -121,12 +121,12 @@ unpinCoto clientId maybeCotonomaKey cotoId =
 
 connectUrl : Maybe CotonomaKey -> CotoId -> String
 connectUrl maybeCotonomaKey startId =
-    case maybeCotonomaKey of
-        Nothing ->
-            "/api/graph/connection/" ++ startId
-
-        Just cotonomaKey ->
-            "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
+    maybeCotonomaKey
+        |> Maybe.map
+            (\cotonomaKey ->
+                "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
+            )
+        |> Maybe.withDefault ("/api/graph/connection/" ++ startId)
 
 
 connectTask : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
@@ -169,3 +169,29 @@ disconnect clientId maybeCotonomaKey startId endId =
             (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
     in
         Http.send ConnectionDeleted (httpDelete url clientId)
+
+
+reorder : ClientId -> Maybe CotonomaKey -> Maybe CotoId -> List CotoId -> Cmd Msg
+reorder clientId maybeCotonomaKey maybeStartId endIds =
+    let
+        url =
+            maybeStartId
+                |> Maybe.map
+                    (\startId ->
+                        "/graph/connection/" ++ startId ++ "/reorder"
+                    )
+                |> Maybe.withDefault
+                    (maybeCotonomaKey
+                        |> Maybe.map
+                            (\cotonomaKey ->
+                                "/graph/" ++ cotonomaKey ++ "/reorder"
+                            )
+                        |> Maybe.withDefault "/graph/reorder"
+                    )
+    in
+        Http.send ConnectionsReordered <|
+            httpPut
+                url
+                clientId
+                (cotoIdsAsJsonBody "end_ids" endIds)
+                (Decode.succeed "done")

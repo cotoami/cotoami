@@ -564,6 +564,12 @@ update msg model =
             , Cmd.none
             )
 
+        ConnectionsReordered (Ok _) ->
+            ( model, Cmd.none )
+
+        ConnectionsReordered (Err _) ->
+            ( model, Cmd.none )
+
         --
         -- Cotonoma
         --

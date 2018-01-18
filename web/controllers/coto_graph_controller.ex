@@ -96,7 +96,13 @@ defmodule Cotoami.CotoGraphController do
         start_coto = ensure_to_get_coto(start_id)
         CotoGraphService.reorder_connections(Sips.conn, start_coto, end_ids, amishi)
       _ -> 
-        CotoGraphService.reorder_connections(Sips.conn, amishi, end_ids)
+        case get_cotonoma_if_specified(params) do
+          nil ->
+            CotoGraphService.reorder_connections(Sips.conn, amishi, end_ids)
+          cotonoma ->
+            cotonoma_coto = CotoService.complement_amishi(cotonoma.coto, amishi)
+            CotoGraphService.reorder_connections(Sips.conn, cotonoma_coto, end_ids, amishi)
+        end
     end
     text conn, "ok"
   end

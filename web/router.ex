@@ -78,6 +78,7 @@ defmodule Cotoami.Router do
     delete "/graph/connection/:start_id/:end_id", CotoGraphController, :disconnect
     delete "/graph/:cotonoma_key/connection/:start_id/:end_id", CotoGraphController, :disconnect
     put "/graph/reorder", CotoGraphController, :reorder
-    put "/graph/reorder/:start_id", CotoGraphController, :reorder
+    put "/graph/:cotonoma_key/reorder", CotoGraphController, :reorder
+    put "/graph/connection/:start_id/reorder", CotoGraphController, :reorder
   end
 end
