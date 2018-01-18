@@ -9,6 +9,7 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.EventUtil exposing (onLoad)
 import App.Types.Context exposing (Context)
+import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
 import App.Messages exposing (..)
@@ -46,7 +47,7 @@ view context graph post =
             (classAttr :: eventAttrs)
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context graph post
+                [ headerDiv context graph elementId post
                 , post.cotoId
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
                     |> Maybe.withDefault (div [] [])
@@ -71,10 +72,16 @@ isAuthor context post =
         |> Maybe.withDefault False
 
 
-headerDiv : Context -> Graph -> Post -> Html Msg
-headerDiv context graph post =
+headerDiv : Context -> Graph -> ElementId -> Post -> Html Msg
+headerDiv context graph elementId post =
     toCoto post
-        |> Maybe.map (App.Views.Coto.headerDivWithDefaultConfig context graph Nothing)
+        |> Maybe.map
+            (App.Views.Coto.headerDivWithDefaultConfig
+                context
+                graph
+                Nothing
+                elementId
+            )
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 

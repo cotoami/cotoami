@@ -13,7 +13,7 @@ import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
-import App.Types.Context exposing (..)
+import App.Types.Context exposing (Context)
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post)
@@ -118,7 +118,7 @@ update msg model =
         -- Fetched
         --
         SessionFetched (Ok session) ->
-            { model | context = setSession session model.context }
+            { model | context = App.Types.Context.setSession session model.context }
                 |> (\model ->
                         case model.route of
                             CotonomaRoute key ->
@@ -166,7 +166,7 @@ update msg model =
 
         CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model
-                | context = setCotonoma (Just cotonoma) model.context
+                | context = App.Types.Context.setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
                 , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
@@ -270,8 +270,8 @@ update msg model =
             { model
                 | context =
                     model.context
-                        |> setElementFocus (Just elementId)
-                        |> setCotoFocus (Just cotoId)
+                        |> App.Types.Context.setElementFocus (Just elementId)
+                        |> App.Types.Context.setCotoFocus (Just cotoId)
             }
                 ! []
 
@@ -279,14 +279,15 @@ update msg model =
             { model
                 | context =
                     model.context
-                        |> setElementFocus Nothing
-                        |> setCotoFocus Nothing
+                        |> App.Types.Context.setElementFocus Nothing
+                        |> App.Types.Context.setCotoFocus Nothing
             }
                 ! []
 
         SelectCoto cotoId ->
             ( { model
-                | context = updateSelection cotoId model.context
+                | context =
+                    App.Types.Context.updateSelection cotoId model.context
               }
                 |> closeSelectionColumnIfEmpty
             , Cmd.none
@@ -309,7 +310,7 @@ update msg model =
             changeLocationToCotonoma key model
 
         ToggleCotoContent elementId ->
-            ( { model | context = toggleContent elementId model.context }
+            ( { model | context = App.Types.Context.toggleContent elementId model.context }
             , Cmd.none
             )
 
@@ -511,20 +512,52 @@ update msg model =
             )
 
         DeleteConnection ( startId, endId ) ->
-            { model
+            ( { model
                 | graph = disconnect ( startId, endId ) model.graph
-            }
-                ! [ App.Server.Graph.disconnect
-                        model.context.clientId
-                        (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
-                        startId
-                        endId
-                  ]
+              }
+            , App.Server.Graph.disconnect
+                model.context.clientId
+                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                startId
+                endId
+            )
 
         ConnectionDeleted (Ok _) ->
             ( model, Cmd.none )
 
         ConnectionDeleted (Err _) ->
+            ( model, Cmd.none )
+
+        ToggleReorderMode elementId ->
+            ( { model
+                | context =
+                    App.Types.Context.toggleReorderMode elementId model.context
+              }
+            , Cmd.none
+            )
+
+        SwapOrder maybeParentId index1 index2 ->
+            model.graph
+                |> App.Types.Graph.swapOrder maybeParentId index1 index2
+                |> (\graph -> { model | graph = graph })
+                |> (\model -> ( model, makeReorderCmd maybeParentId model ))
+
+        MoveToFirst maybeParentId index ->
+            model.graph
+                |> App.Types.Graph.moveToFirst maybeParentId index
+                |> (\graph -> { model | graph = graph })
+                |> (\model -> ( model, makeReorderCmd maybeParentId model ))
+
+        MoveToLast maybeParentId index ->
+            model.graph
+                |> App.Types.Graph.moveToLast maybeParentId index
+                |> (\graph -> { model | graph = graph })
+                |> (\model -> ( model, makeReorderCmd maybeParentId model ))
+
+        ConnectionsReordered (Ok _) ->
+            ( model, Cmd.none )
+
+        ConnectionsReordered (Err _) ->
             ( model, Cmd.none )
 
         --
@@ -561,7 +594,7 @@ update msg model =
         --
         PostsFetched (Ok paginatedPosts) ->
             { model
-                | context = setCotonoma Nothing model.context
+                | context = App.Types.Context.setCotonoma Nothing model.context
                 , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
                 |> \model ->
@@ -721,21 +754,21 @@ update msg model =
         -- CotoSelection
         --
         DeselectingCoto cotoId ->
-            { model | context = setBeingDeselected cotoId model.context }
+            { model | context = App.Types.Context.setBeingDeselected cotoId model.context }
                 ! [ Process.sleep (1 * Time.second)
                         |> Task.andThen (\_ -> Task.succeed ())
                         |> Task.perform (\_ -> DeselectCoto)
                   ]
 
         DeselectCoto ->
-            ( { model | context = finishBeingDeselected model.context }
+            ( { model | context = App.Types.Context.finishBeingDeselected model.context }
                 |> closeSelectionColumnIfEmpty
             , Cmd.none
             )
 
         ClearSelection ->
             { model
-                | context = clearSelection model.context
+                | context = App.Types.Context.clearSelection model.context
                 , connectingTarget = Nothing
                 , cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
@@ -792,6 +825,13 @@ update msg model =
             App.Pushed.handle
                 App.Pushed.decodeDisconnectPayloadBody
                 App.Pushed.handleDisconnect
+                payload
+                model
+
+        ReorderPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeReorderPayloadBody
+                App.Pushed.handleReorder
                 payload
                 model
 
@@ -863,8 +903,8 @@ loadHome model =
     { model
         | context =
             model.context
-                |> setCotonomaLoading
-                |> clearSelection
+                |> App.Types.Context.setCotonomaLoading
+                |> App.Types.Context.clearSelection
         , cotonomasLoading = True
         , subCotonomas = []
         , timeline = App.Types.Timeline.setLoading model.timeline
@@ -891,8 +931,8 @@ loadCotonoma key model =
     { model
         | context =
             model.context
-                |> setCotonomaLoading
-                |> clearSelection
+                |> App.Types.Context.setCotonomaLoading
+                |> App.Types.Context.clearSelection
         , cotonomasLoading = True
         , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
@@ -1015,9 +1055,12 @@ handleEditorShortcut keyCode summary content model =
             && not (Set.isEmpty model.context.modifierKeys)
             && isNotBlank content
     then
-        if isCtrlDown model.context then
+        if App.Types.Context.isCtrlDown model.context then
             postAndConnectToSelection Nothing summary content model
-        else if isAltDown model.context && anySelection model.context then
+        else if
+            App.Types.Context.isAltDown model.context
+                && App.Types.Context.anySelection model.context
+        then
             confirmPostAndConnect summary content model
         else
             ( model, Cmd.none )
@@ -1034,7 +1077,7 @@ handleEditorModalShortcut keyCode model =
     then
         case model.editorModal.mode of
             App.Modals.EditorModal.Edit coto ->
-                if isCtrlDown model.context then
+                if App.Types.Context.isCtrlDown model.context then
                     ( model
                     , App.Server.Coto.updateContent
                         model.context.clientId
@@ -1046,9 +1089,12 @@ handleEditorModalShortcut keyCode model =
                     ( model, Cmd.none )
 
             _ ->
-                if isCtrlDown model.context then
+                if App.Types.Context.isCtrlDown model.context then
                     postFromEditorModal model
-                else if isAltDown model.context && anySelection model.context then
+                else if
+                    App.Types.Context.isAltDown model.context
+                        && App.Types.Context.anySelection model.context
+                then
                     confirmPostAndConnect
                         (App.Modals.EditorModal.getSummary model.editorModal)
                         model.editorModal.content
@@ -1119,3 +1165,18 @@ connectPostToCoto clientId coto post model =
                     )
             )
         |> Maybe.withDefault ( model, Cmd.none )
+
+
+makeReorderCmd : Maybe CotoId -> Model -> Cmd Msg
+makeReorderCmd maybeParentId model =
+    model.graph
+        |> App.Types.Graph.getOutboundConnections maybeParentId
+        |> Maybe.map (List.map (\connection -> connection.end))
+        |> Maybe.map List.reverse
+        |> Maybe.map
+            (App.Server.Graph.reorder
+                model.context.clientId
+                (Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma)
+                maybeParentId
+            )
+        |> Maybe.withDefault Cmd.none

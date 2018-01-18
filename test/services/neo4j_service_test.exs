@@ -172,6 +172,15 @@ defmodule Cotoami.Neo4jServiceTest do
         %Relationship{id: ^rel2_id, properties: %{"order" => 2}}
       ] = Neo4jService.get_ordered_relationships(conn, uuid1, "A")
     end
+
+    test "they can be reordered", ~M{conn, uuid1, uuid2, uuid3, rel1, rel2} do
+      Neo4jService.update_relationships_order(conn, uuid1, [uuid3, uuid2], "A")
+      {rel1_id, rel2_id} = {rel1.id, rel2.id}
+      assert [
+        %Relationship{id: ^rel2_id, properties: %{"order" => 1}},
+        %Relationship{id: ^rel1_id, properties: %{"order" => 2}}
+      ] = Neo4jService.get_ordered_relationships(conn, uuid1, "A")
+    end
   end
 
   describe "when there is a graph: A -> B -> C, and D as an orphan" do

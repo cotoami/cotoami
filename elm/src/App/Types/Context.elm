@@ -22,6 +22,7 @@ type alias Context =
     , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
     , contentOpenElements : Set ElementId
+    , reorderModeElements : Set ElementId
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
@@ -40,6 +41,7 @@ initContext seed =
     , cotonomaLoading = False
     , elementFocus = Nothing
     , contentOpenElements = Set.empty
+    , reorderModeElements = Set.empty
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
@@ -73,11 +75,29 @@ toggleContent : ElementId -> Context -> Context
 toggleContent elementId context =
     { context
         | contentOpenElements =
-            if Set.member elementId context.contentOpenElements then
-                Set.remove elementId context.contentOpenElements
-            else
-                Set.insert elementId context.contentOpenElements
+            toggleSetMember elementId context.contentOpenElements
     }
+
+
+toggleReorderMode : ElementId -> Context -> Context
+toggleReorderMode elementId context =
+    { context
+        | reorderModeElements =
+            toggleSetMember elementId context.reorderModeElements
+    }
+
+
+toggleSetMember : comparable -> Set comparable -> Set comparable
+toggleSetMember value set =
+    if Set.member value set then
+        Set.remove value set
+    else
+        Set.insert value set
+
+
+inReorderMode : ElementId -> Context -> Bool
+inReorderMode elementId context =
+    Set.member elementId context.reorderModeElements
 
 
 contentOpen : ElementId -> Context -> Bool

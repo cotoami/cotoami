@@ -85,6 +85,10 @@ div.coto-body {
       margin-top: 10px;
     }
   }
+
+  div.content-in-reorder {
+    opacity: 0.5;
+  }
 }
 
 span.coto-tool-buttons {
@@ -100,6 +104,7 @@ span.coto-tool-buttons {
   border: 1px solid #eee;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
   background-color: rgba(255, 255, 255, .6);
+  white-space: nowrap;
 
   &::before {
     content: '';
@@ -153,6 +158,58 @@ span.coto-tool-buttons {
       vertical-align: 5px;
     }
   }
+
+  span.border {
+    display: inline-block;
+    border-right: 1px solid #eee;
+    margin-left: 10px;
+    vertical-align: 2px;
+    height: 26px;
+  }
+
+  @media (max-width: 400px) {
+    a.pin-coto {
+      display: none;
+    }
+  }
+}
+
+span.reorder-tool-buttons {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, .9);
+
+  i.material-icons {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  a.move-to-top i {
+    font-size: 36px;
+    transform: rotate( 90deg );
+  }
+  a.move-up i {
+    font-size: 30px;
+    transform: rotate( -90deg );
+  }
+  a.move-down i {
+    font-size: 30px;
+    transform: rotate( 90deg );
+  }
+  a.move-to-bottom i {
+    font-size: 36px;
+    transform: rotate( 90deg );
+    vertical-align: bottom;
+  }
+  a.close i {
+    font-size: 30px;
+    opacity: 0.8;
+  }
+}
+div.pinned-coto > div.coto-inner > div.coto-header > span.reorder-tool-buttons {
+  top: 0;
 }
 
 div.sub-cotos {
@@ -181,7 +238,7 @@ div.sub-cotos {
       }
     }
   }
-}
+} 
 
 div.coto.selectable {
   &.element-focus > div.coto-inner > div.coto-header > span.coto-tool-buttons {

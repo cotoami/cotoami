@@ -3,8 +3,8 @@ module App.Types.Graph exposing (..)
 import Dict
 import Maybe exposing (withDefault)
 import List.Extra
+import Exts.Maybe exposing (isJust)
 import App.Types.Amishi exposing (AmishiId)
-import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 
 
@@ -150,6 +150,15 @@ hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
 
 
+getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
+getOutboundConnections maybeCotoId graph =
+    if isJust maybeCotoId then
+        maybeCotoId
+            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
+    else
+        Just graph.rootConnections
+
+
 pinCoto : AmishiId -> Coto -> Graph -> Graph
 pinCoto amishiId coto graph =
     if pinned coto.id graph then
@@ -287,3 +296,95 @@ removeCoto cotoId graph =
           }
         , removedRoots ++ startMissingConns ++ endMissingConns
         )
+
+
+updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
+updateConnections maybeParentId update graph =
+    maybeParentId
+        |> Maybe.map
+            (\parentId ->
+                graph.connections
+                    |> Dict.update parentId (Maybe.map update)
+                    |> (\connections -> { graph | connections = connections })
+            )
+        |> Maybe.withDefault
+            (graph.rootConnections
+                |> update
+                |> (\connections -> { graph | rootConnections = connections })
+            )
+
+
+swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
+swapOrder maybeParentId index1 index2 graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            connections
+                |> List.reverse
+                |> List.Extra.swapAt index1 index2
+                |> List.reverse
+        )
+        graph
+
+
+moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
+moveToFirst maybeParentId index graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            let
+                connectionsInDisplayOrder =
+                    List.reverse connections
+            in
+                connectionsInDisplayOrder
+                    |> List.Extra.getAt index
+                    |> Maybe.map
+                        (\conn ->
+                            connectionsInDisplayOrder
+                                |> List.Extra.removeAt index
+                                |> (::) conn
+                                |> List.reverse
+                        )
+                    |> Maybe.withDefault connections
+        )
+        graph
+
+
+moveToLast : Maybe CotoId -> Int -> Graph -> Graph
+moveToLast maybeParentId index graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            let
+                connectionsInDisplayOrder =
+                    List.reverse connections
+            in
+                connectionsInDisplayOrder
+                    |> List.Extra.getAt index
+                    |> Maybe.map
+                        (\conn ->
+                            connectionsInDisplayOrder
+                                |> List.Extra.removeAt index
+                                |> List.reverse
+                                |> (::) conn
+                        )
+                    |> Maybe.withDefault connections
+        )
+        graph
+
+
+reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
+reorder maybeParentId newOrder graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            newOrder
+                |> List.reverse
+                |> List.filterMap
+                    (\cotoId ->
+                        List.Extra.find
+                            (\conn -> conn.end == cotoId)
+                            connections
+                    )
+        )
+        graph
