@@ -132,6 +132,7 @@ type Msg
     | CotonomaPushed Value
     | ConnectPushed Value
     | DisconnectPushed Value
+    | ReorderPushed Value
     | PostPushed Value
       --
       -- Sub components

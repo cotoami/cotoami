@@ -828,6 +828,13 @@ update msg model =
                 payload
                 model
 
+        ReorderPushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeReorderPayloadBody
+                App.Pushed.handleReorder
+                payload
+                model
+
         PostPushed payload ->
             App.Pushed.handle
                 App.Server.Post.decodePost
