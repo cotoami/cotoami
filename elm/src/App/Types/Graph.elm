@@ -314,22 +314,40 @@ updateConnections maybeParentId update graph =
             )
 
 
-swapAt : Int -> Int -> List Connection -> List Connection
-swapAt index1 index2 connections =
-    connections
-        |> List.reverse
-        |> List.Extra.swapAt index1 index2
-        |> List.reverse
-
-
 swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
 swapOrder maybeParentId index1 index2 graph =
-    updateConnections maybeParentId (swapAt index1 index2) graph
+    updateConnections
+        maybeParentId
+        (\connections ->
+            connections
+                |> List.reverse
+                |> List.Extra.swapAt index1 index2
+                |> List.reverse
+        )
+        graph
 
 
 moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
 moveToFirst maybeParentId index graph =
-    updateConnections maybeParentId (swapAt index 0) graph
+    updateConnections
+        maybeParentId
+        (\connections ->
+            let
+                connectionsInDisplayOrder =
+                    List.reverse connections
+            in
+                connectionsInDisplayOrder
+                    |> List.Extra.getAt index
+                    |> Maybe.map
+                        (\conn ->
+                            connectionsInDisplayOrder
+                                |> List.Extra.removeAt index
+                                |> (::) conn
+                                |> List.reverse
+                        )
+                    |> Maybe.withDefault connections
+        )
+        graph
 
 
 moveToLast : Maybe CotoId -> Int -> Graph -> Graph
@@ -337,7 +355,20 @@ moveToLast maybeParentId index graph =
     updateConnections
         maybeParentId
         (\connections ->
-            swapAt index (List.length connections - 1) connections
+            let
+                connectionsInDisplayOrder =
+                    List.reverse connections
+            in
+                connectionsInDisplayOrder
+                    |> List.Extra.getAt index
+                    |> Maybe.map
+                        (\conn ->
+                            connectionsInDisplayOrder
+                                |> List.Extra.removeAt index
+                                |> List.reverse
+                                |> (::) conn
+                        )
+                    |> Maybe.withDefault connections
         )
         graph
 
