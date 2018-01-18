@@ -178,15 +178,15 @@ reorder clientId maybeCotonomaKey maybeStartId endIds =
             maybeStartId
                 |> Maybe.map
                     (\startId ->
-                        "/graph/connection/" ++ startId ++ "/reorder"
+                        "/api/graph/connection/" ++ startId ++ "/reorder"
                     )
                 |> Maybe.withDefault
                     (maybeCotonomaKey
                         |> Maybe.map
                             (\cotonomaKey ->
-                                "/graph/" ++ cotonomaKey ++ "/reorder"
+                                "/api/graph/" ++ cotonomaKey ++ "/reorder"
                             )
-                        |> Maybe.withDefault "/graph/reorder"
+                        |> Maybe.withDefault "/api/graph/reorder"
                     )
     in
         Http.send ConnectionsReordered <|

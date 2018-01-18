@@ -3,6 +3,7 @@ module App.Types.Graph exposing (..)
 import Dict
 import Maybe exposing (withDefault)
 import List.Extra
+import Exts.Maybe exposing (isJust)
 import App.Types.Amishi exposing (AmishiId)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
 
@@ -147,6 +148,15 @@ getParents cotoId graph =
 hasChildren : CotoId -> Graph -> Bool
 hasChildren cotoId graph =
     graph.connections |> Dict.member cotoId
+
+
+getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
+getOutboundConnections maybeCotoId graph =
+    if isJust maybeCotoId then
+        maybeCotoId
+            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
+    else
+        Just graph.rootConnections
 
 
 pinCoto : AmishiId -> Coto -> Graph -> Graph
