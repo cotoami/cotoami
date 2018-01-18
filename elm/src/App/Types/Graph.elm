@@ -340,3 +340,20 @@ moveToLast maybeParentId index graph =
             swapAt index (List.length connections - 1) connections
         )
         graph
+
+
+reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
+reorder maybeParentId newOrder graph =
+    updateConnections
+        maybeParentId
+        (\connections ->
+            newOrder
+                |> List.reverse
+                |> List.filterMap
+                    (\cotoId ->
+                        List.Extra.find
+                            (\conn -> conn.end == cotoId)
+                            connections
+                    )
+        )
+        graph
