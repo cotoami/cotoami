@@ -86,7 +86,8 @@ traversalDiv context graph traversal connections startCoto =
                 , startCotoDiv context graph traversal connections startCoto
                 ]
             , div [ class "steps" ]
-                (List.reverse traversal.steps
+                (traversal.steps
+                    |> List.reverse
                     |> List.indexedMap
                         (\index step ->
                             stepDiv context graph step ( traversal, index )
@@ -158,7 +159,7 @@ stepDiv context graph cotoId ( traversal, index ) =
             |> Dict.get cotoId
             |> Maybe.map
                 (\coto ->
-                    div [ class "step" ]
+                    div [ class ("step step-" ++ (toString index)) ]
                         [ div
                             [ class "arrow" ]
                             [ materialIcon "arrow_downward" Nothing ]

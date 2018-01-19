@@ -50,12 +50,9 @@ traversed index cotoId traversal =
             else
                 traversal.steps |> List.reverse |> List.drop (index + 1)
     in
-        case List.head steps of
-            Nothing ->
-                False
-
-            Just nextStep ->
-                nextStep == cotoId
+        List.head steps
+            |> Maybe.map (\nextStep -> nextStep == cotoId)
+            |> Maybe.withDefault False
 
 
 type alias Traversals =
