@@ -8,7 +8,7 @@ defmodule Cotoami.Cotonoma do
   alias Cotoami.Amishi
 
   @key_length 10
-  @name_max_length 30
+  @name_max_length 50
 
   schema "cotonomas" do
     field :key, :string
