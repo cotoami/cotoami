@@ -12,7 +12,7 @@ import App.Types.Context exposing (CotoSelection, Context, isSelected, isServerO
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
 import App.Messages exposing (..)
-import App.Views.Coto
+import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
 view : Context -> Graph -> Html Msg
@@ -29,33 +29,41 @@ view context graph =
 
 pinnedCotos : Context -> Graph -> Html Msg
 pinnedCotos context graph =
-    connectionsDiv "root-connections" graph.rootConnections context graph
-
-
-connectionsDiv : String -> List Connection -> Context -> Graph -> Html Msg
-connectionsDiv divClass connections context graph =
-    List.reverse connections
-        |> List.filterMap
-            (\conn ->
-                Maybe.map
-                    (\coto ->
-                        ( conn.key
-                        , connectionDiv context graph conn coto
-                        )
+    graph.rootConnections
+        |> List.reverse
+        |> List.indexedMap
+            (\index connection ->
+                connectionDiv
+                    context
+                    graph
+                    (InboundConnection
+                        Nothing
+                        connection
+                        (List.length graph.rootConnections)
+                        index
                     )
-                    (Dict.get conn.end graph.cotos)
             )
-        |> Html.Keyed.node "div" [ class divClass ]
+        |> Html.Keyed.node "div" [ class "root-connections" ]
 
 
-connectionDiv : Context -> Graph -> Connection -> Coto -> Html Msg
-connectionDiv context graph connection coto =
-    div [ class "outbound-conn" ]
-        [ cotoDiv context graph connection coto ]
+connectionDiv : Context -> Graph -> InboundConnection -> ( String, Html Msg )
+connectionDiv context graph inbound =
+    graph.cotos
+        |> Dict.get inbound.connection.end
+        |> Maybe.map
+            (\coto ->
+                ( inbound.connection.key
+                , div
+                    [ class "outbound-conn" ]
+                    [ cotoDiv context graph inbound coto ]
+                )
+            )
+        |> Maybe.withDefault
+            ( inbound.connection.key, div [] [] )
 
 
-cotoDiv : Context -> Graph -> Connection -> Coto -> Html Msg
-cotoDiv context graph connection coto =
+cotoDiv : Context -> Graph -> InboundConnection -> Coto -> Html Msg
+cotoDiv context graph inbound coto =
     let
         elementId =
             "pinned-" ++ coto.id
@@ -74,8 +82,16 @@ cotoDiv context graph connection coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ unpinButtonDiv context connection coto.id
-                , App.Views.Coto.headerDivWithDefaultConfig context graph Nothing coto
+                [ unpinButtonDiv context inbound.connection coto.id
+                , App.Views.Coto.headerDiv
+                    context
+                    graph
+                    (Just inbound)
+                    { defaultActionConfig
+                        | toggleReorderMode = Just ToggleReorderMode
+                    }
+                    elementId
+                    coto
                 , App.Views.Coto.parentsDiv graph Nothing coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto

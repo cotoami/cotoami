@@ -81,6 +81,11 @@ type Msg
     | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
+    | ToggleReorderMode ElementId
+    | SwapOrder (Maybe CotoId) Int Int
+    | MoveToFirst (Maybe CotoId) Int
+    | MoveToLast (Maybe CotoId) Int
+    | ConnectionsReordered (Result Http.Error String)
       --
       -- Cotonoma
       --
@@ -127,6 +132,7 @@ type Msg
     | CotonomaPushed Value
     | ConnectPushed Value
     | DisconnectPushed Value
+    | ReorderPushed Value
     | PostPushed Value
       --
       -- Sub components

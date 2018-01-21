@@ -89,7 +89,7 @@ toCoto cotonoma =
 
 cotonomaNameMaxlength : Int
 cotonomaNameMaxlength =
-    30
+    50
 
 
 validateCotonomaName : String -> Bool

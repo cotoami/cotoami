@@ -15,7 +15,7 @@
         "elm-lang/keyboard": "1.0.1 <= v < 2.0.0",
         "elm-lang/navigation": "2.1.0 <= v < 3.0.0",
         "evancz/url-parser": "2.0.1 <= v < 3.0.0",
-        "elm-community/list-extra": "6.1.0 <= v < 7.0.0",
+        "elm-community/list-extra": "7.0.1 <= v < 8.0.0",
         "krisajenkins/elm-exts": "26.1.1 <= v < 27.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",
         "rluiten/elm-date-extra": "9.2.0 <= v < 10.0.0",

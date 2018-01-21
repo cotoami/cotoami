@@ -273,6 +273,40 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
+  describe "when a coto has two outbound connections" do
+    # a -> b
+    #   -> c
+    setup ~M{conn, amishi} do
+      {coto_a, _posted_in} = CotoService.create!(amishi, "a")
+      {coto_b, _posted_in} = CotoService.create!(amishi, "b")
+      {coto_c, _posted_in} = CotoService.create!(amishi, "c")
+      %Relationship{id: rel_ab_id} =
+        CotoGraphService.connect(conn, coto_a, coto_b, amishi)
+      %Relationship{id: rel_ac_id} =
+        CotoGraphService.connect(conn, coto_a, coto_c, amishi)
+      ~M{coto_a, coto_b, coto_c, rel_ab_id, rel_ac_id}
+    end
+
+    test "the connections should be in creation order", 
+        ~M{conn, coto_a, rel_ab_id, rel_ac_id} do
+      assert [
+        %Relationship{id: ^rel_ab_id},
+        %Relationship{id: ^rel_ac_id}
+      ] = Neo4jService.get_ordered_relationships(conn, coto_a.id, "HAS_A")
+    end
+
+    test "the connections can be reordered",
+        ~M{conn, amishi, coto_a, coto_b, coto_c, rel_ab_id, rel_ac_id} do
+      coto_a = CotoService.complement_amishi(coto_a, amishi)
+      CotoGraphService.reorder_connections(
+        conn, coto_a, [coto_c.id, coto_b.id], amishi)
+      assert [
+        %Relationship{id: ^rel_ac_id},
+        %Relationship{id: ^rel_ab_id}
+      ] = Neo4jService.get_ordered_relationships(conn, coto_a.id, "HAS_A")
+    end
+  end
+
   describe "when there are two paths to the same cotos" do
     # a -> b
     # c -> a -> b

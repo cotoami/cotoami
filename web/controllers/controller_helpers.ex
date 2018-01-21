@@ -67,6 +67,11 @@ defmodule Cotoami.ControllerHelpers do
     |> broadcast("global", "disconnect", amishi, client_id)
   end
 
+  def broadcast_reorder(start_id, end_ids, %Amishi{} = amishi, client_id) do
+    %{startId: start_id, endIds: end_ids}
+    |> broadcast("global", "reorder", amishi, client_id)
+  end
+
   #
   # Channel: 'cotonomas:*'
   #

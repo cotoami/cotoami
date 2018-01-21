@@ -372,4 +372,42 @@ defmodule Cotoami.CotoGraphService do
     |> common_rel_props()
     |> Map.put(:created_in, cotonoma_id)
   end
+
+  def reorder_connections(
+    bolt_conn, 
+    %Amishi{id: amishi_id},
+    target_uuids
+  ) when is_list(target_uuids) do
+    bolt_conn
+    |> Neo4jService.update_relationships_order(amishi_id, target_uuids, @rel_type_has_a) 
+  end
+  def reorder_connections(
+    bolt_conn, 
+    %Coto{id: source_uuid} = source,
+    target_uuids,
+    %Amishi{} = amishi
+  ) when is_list(target_uuids) do
+    bolt_conn
+    |> ensure_reorderable(source, amishi)
+    |> Neo4jService.update_relationships_order(source_uuid, target_uuids, @rel_type_has_a) 
+  end
+
+  defp ensure_reorderable(
+    bolt_conn,
+    %Coto{} = source,
+    %Amishi{} = amishi
+  ) do
+    if reorderable?(source, amishi) do
+      bolt_conn
+    else
+      raise Cotoami.Exceptions.NoPermission
+    end
+  end
+
+  def reorderable?(
+    %Coto{amishi: %Amishi{id: source_amishi_id}},
+    %Amishi{id: amishi_id} = amishi
+  ) do
+    Map.get(amishi, :owner) || source_amishi_id == amishi_id
+  end
 end

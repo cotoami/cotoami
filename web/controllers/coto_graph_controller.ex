@@ -90,6 +90,25 @@ defmodule Cotoami.CotoGraphController do
     text conn, "ok"
   end
 
+  def reorder(conn, %{"end_ids" => end_ids} = params, amishi) do
+    case params do
+      %{"start_id" => start_id} ->
+        start_coto = ensure_to_get_coto(start_id)
+        CotoGraphService.reorder_connections(Sips.conn, start_coto, end_ids, amishi)
+        broadcast_reorder(start_id, end_ids, amishi, conn.assigns.client_id)
+      _ -> 
+        case get_cotonoma_if_specified(params) do
+          nil ->
+            CotoGraphService.reorder_connections(Sips.conn, amishi, end_ids)
+          cotonoma ->
+            cotonoma_coto = CotoService.complement_amishi(cotonoma.coto, amishi)
+            CotoGraphService.reorder_connections(Sips.conn, cotonoma_coto, end_ids, amishi)
+            broadcast_reorder(cotonoma_coto.id, end_ids, amishi, conn.assigns.client_id)
+        end
+    end
+    text conn, "ok"
+  end
+
   defp ensure_to_get_coto(coto_id) do
     case CotoService.get(coto_id) do
       nil -> raise NotFound, "coto: #{coto_id}"

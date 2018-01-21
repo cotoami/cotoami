@@ -72,6 +72,7 @@ cotonomaDiv context graph listTitle cotonoma =
                                 | editCoto = Nothing
                                 , addCoto = Nothing
                             }
+                            elementId
                             coto
                    )
             ]
