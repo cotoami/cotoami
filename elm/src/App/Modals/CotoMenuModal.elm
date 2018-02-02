@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
-import App.Types.Coto exposing (Coto, CotonomaStats)
+import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Context exposing (Context)
 import App.Types.Graph exposing (Graph)
@@ -47,16 +47,24 @@ modalConfig context session graph model =
     { closeMessage = CloseModal
     , title = text ""
     , content =
-        div []
-            [ menuItemInfo model
-            , menuItemExplore model
+        [ [ menuItemInfo model
+          , menuItemExplore model
+          ]
+        , if App.Types.Context.atHome context then
+            [ menuItemPinUnpin context graph model ]
+          else
+            [ menuItemPinCotoToMyHome context graph model
             , menuItemPinUnpin context graph model
-            , menuItemPinUnpinCotonoma session model
-            , menuItemEdit session model
-            , menuItemAddCoto model
-            , menuItemCotonomatize session model
-            , menuItemDelete session model
             ]
+        , [ menuItemPinUnpinCotonoma session model
+          , menuItemEdit session model
+          , menuItemAddCoto model
+          , menuItemCotonomatize session model
+          , menuItemDelete session model
+          ]
+        ]
+            |> List.concat
+            |> div []
     , buttons = []
     }
 
@@ -105,7 +113,7 @@ menuItemPinUnpin context graph model =
                 [ class "unpin" ]
                 [ faIcon "thumb-tack" Nothing
                 , faIcon "remove" Nothing
-                , pinOrUnpinMenuTitle context False
+                , pinOrUnpinMenuTitle context.cotonoma False
                 ]
             ]
     else
@@ -116,13 +124,27 @@ menuItemPinUnpin context graph model =
             [ a
                 [ class "pin" ]
                 [ faIcon "thumb-tack" Nothing
-                , pinOrUnpinMenuTitle context True
+                , pinOrUnpinMenuTitle context.cotonoma True
                 ]
             ]
 
 
-pinOrUnpinMenuTitle : Context -> Bool -> Html Msg
-pinOrUnpinMenuTitle context pinOrUnpin =
+menuItemPinCotoToMyHome : Context -> Graph -> Model -> Html Msg
+menuItemPinCotoToMyHome context graph model =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (PinCotoToMyHome model.coto.id)
+        ]
+        [ a
+            [ class "pin-to-my-home" ]
+            [ faIcon "thumb-tack" Nothing
+            , pinOrUnpinMenuTitle Nothing True
+            ]
+        ]
+
+
+pinOrUnpinMenuTitle : Maybe Cotonoma -> Bool -> Html Msg
+pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
     let
         prefix =
             if pinOrUnpin then
@@ -131,7 +153,7 @@ pinOrUnpinMenuTitle context pinOrUnpin =
                 "Unpin from "
     in
         span [ class "menu-title" ]
-            (context.cotonoma
+            (maybeCotonoma
                 |> Maybe.map
                     (\cotonoma ->
                         [ text prefix
