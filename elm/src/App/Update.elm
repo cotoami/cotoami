@@ -430,6 +430,11 @@ update msg model =
             )
                 |> Maybe.withDefault ( model, Cmd.none )
 
+        PinCotoToMyHome cotoId ->
+            ( clearModals model
+            , App.Server.Graph.pinCotos model.context.clientId Nothing [ cotoId ]
+            )
+
         CotoPinned (Ok _) ->
             ( model, Cmd.none )
 

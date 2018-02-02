@@ -30,6 +30,8 @@
 
   div.coto-info {
     text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     span.preposition {
       margin-left: 3px;
@@ -86,6 +88,7 @@
     span.cotonoma-name {
       margin-left: 3px;
       font-weight: bold;
+      color: #888;
       vertical-align: middle;
     }
   }
