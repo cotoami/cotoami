@@ -70,6 +70,7 @@ type Msg
     | Cotonomatize CotoId
     | Cotonomatized (Result Http.Error Coto)
     | PinCoto CotoId
+    | PinCotoToMyHome CotoId
     | CotoPinned (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId

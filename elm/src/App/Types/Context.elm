@@ -61,6 +61,11 @@ isServerOwner context =
         |> Maybe.withDefault False
 
 
+atHome : Context -> Bool
+atHome context =
+    isNothing context.cotonoma
+
+
 setElementFocus : Maybe String -> Context -> Context
 setElementFocus maybeElementId context =
     { context | elementFocus = maybeElementId }
@@ -238,6 +243,4 @@ orignatedHere context coto =
         coto.postedIn
     )
         |> Maybe.withDefault
-            ((isNothing context.cotonoma)
-                && (isNothing coto.postedIn)
-            )
+            ((isNothing coto.postedIn) && (atHome context))

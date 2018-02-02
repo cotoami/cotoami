@@ -430,6 +430,21 @@ update msg model =
             )
                 |> Maybe.withDefault ( model, Cmd.none )
 
+        PinCotoToMyHome cotoId ->
+            (Maybe.map2
+                (\session coto ->
+                    ( if App.Types.Context.atHome model.context then
+                        { model | graph = pinCoto session.id coto model.graph }
+                      else
+                        model
+                    , App.Server.Graph.pinCotos model.context.clientId Nothing [ cotoId ]
+                    )
+                )
+                model.context.session
+                (App.Model.getCoto cotoId model)
+            )
+                |> Maybe.withDefault ( model, Cmd.none )
+
         CotoPinned (Ok _) ->
             ( model, Cmd.none )
 
