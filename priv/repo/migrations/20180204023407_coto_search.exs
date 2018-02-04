@@ -20,7 +20,6 @@ defmodule Cotoami.Repo.Migrations.CotoSearch do
     )
 
     execute("CREATE EXTENSION IF NOT EXISTS unaccent")
-
     execute(
       """
       CREATE MATERIALIZED VIEW coto_search AS
@@ -44,16 +43,13 @@ defmodule Cotoami.Repo.Migrations.CotoSearch do
   end
 
   def down do
-    execute("DROP EXTENSION pg_trgm")
     execute("DROP INDEX cotos_summary_trgm_index")
     execute("DROP INDEX cotos_content_trgm_index")
-
-    execute("DROP EXTENSION unaccent")
-
-    execute("DROP MATERIALIZED VIEW coto_search")
-
-    drop index(:coto_search, [:document], using: :gist)
+    execute("DROP EXTENSION pg_trgm")
 
     drop unique_index(:coto_search, [:id])
+    drop index(:coto_search, [:document], using: :gist)
+    execute("DROP MATERIALIZED VIEW coto_search")
+    execute("DROP EXTENSION unaccent")
   end
 end
