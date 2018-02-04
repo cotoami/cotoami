@@ -40,16 +40,41 @@ defmodule Cotoami.Repo.Migrations.CotoSearch do
 
     # to support updating CONCURRENTLY
     create unique_index(:coto_search, [:id])
+
+    # refreshing the coto_search view
+    execute(
+      """
+      CREATE OR REPLACE FUNCTION refresh_coto_search()
+      RETURNS TRIGGER LANGUAGE plpgsql
+      AS $$
+      BEGIN
+      REFRESH MATERIALIZED VIEW CONCURRENTLY coto_search;
+      RETURN NULL;
+      END $$;
+      """
+    )
+    execute(
+      """
+      CREATE TRIGGER refresh_coto_search
+      AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+      ON cotos
+      FOR EACH STATEMENT
+      EXECUTE PROCEDURE refresh_coto_search();
+      """
+    )
   end
 
   def down do
-    execute("DROP INDEX cotos_summary_trgm_index")
-    execute("DROP INDEX cotos_content_trgm_index")
-    execute("DROP EXTENSION pg_trgm")
+    execute("DROP INDEX IF EXISTS cotos_summary_trgm_index")
+    execute("DROP INDEX IF EXISTS cotos_content_trgm_index")
+    execute("DROP EXTENSION IF EXISTS pg_trgm")
+
+    execute("DROP TRIGGER IF EXISTS refresh_coto_search ON cotos")
+    execute("DROP FUNCTION IF EXISTS refresh_coto_search()")
 
     drop unique_index(:coto_search, [:id])
     drop index(:coto_search, [:document], using: :gist)
-    execute("DROP MATERIALIZED VIEW coto_search")
-    execute("DROP EXTENSION unaccent")
+    execute("DROP MATERIALIZED VIEW IF EXISTS coto_search")
+    execute("DROP EXTENSION IF EXISTS unaccent")
   end
 end
