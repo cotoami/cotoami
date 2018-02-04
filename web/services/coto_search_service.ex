@@ -36,7 +36,7 @@ defmodule Cotoami.CotoSearchService do
     end
   end
 
-  defp add_query(query, %Amishi{id: amishi_id} , ""), do: query
+  defp add_query(query, %Amishi{} , ""), do: query
   defp add_query(query, %Amishi{id: amishi_id} , search_string) do
     from coto in query,
       join: id_and_rank in matching_coto_ids_and_ranks(search_string),
