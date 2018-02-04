@@ -82,6 +82,28 @@
       border-radius: 4px;
     }
   }
+
+  form.search {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: top;
+
+    input.search-input {
+      margin: 0;
+      padding: 3px 5px;
+      padding-left: 28px;
+      width: 240px;
+      height: 27px;
+    }
+
+    i.search {
+      position: absolute;
+      top: 0;
+      left: 2px;
+      font-size: 26px;
+      opacity: 0.5;
+    }
+  }
 }
 
 .cotonomas-loading a.toggle-navigation {

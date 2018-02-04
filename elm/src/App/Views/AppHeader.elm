@@ -32,7 +32,11 @@ view model =
             (model.context.session
                 |> Maybe.map
                     (\session ->
-                        [ a [ title "Profile", onClick OpenProfileModal ]
+                        [ Html.form [ class "search" ]
+                            [ input [ type_ "text", class "search-input" ] []
+                            , materialIcon "search" (Just "search")
+                            ]
+                        , a [ title "Profile", onClick OpenProfileModal ]
                             [ img [ class "avatar", src session.avatarUrl ] [] ]
                         ]
                     )
