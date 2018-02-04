@@ -39,6 +39,10 @@ defmodule Cotoami.Repo.Migrations.CotoSearch do
     create index(:coto_search, [:document], using: :gist)
 
     # to support updating CONCURRENTLY
+    # https://www.postgresql.org/docs/9.4/static/sql-refreshmaterializedview.html
+    # "CONCURRENTLY: This option is only allowed if there is at least one UNIQUE index 
+    # on the materialized view which uses only column names and includes all rows; 
+    # that is, it must not index on any expressions nor include a WHERE clause."
     create unique_index(:coto_search, [:id])
 
     # refreshing the coto_search view
