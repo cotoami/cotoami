@@ -1,3 +1,5 @@
+@import "variables.scss";
+
 #app-header {
   position: absolute;
   top: 0;
@@ -87,6 +89,10 @@
     display: inline-block;
     margin-right: 10px;
     vertical-align: top;
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
 
     input.search-input {
       margin: 0;
