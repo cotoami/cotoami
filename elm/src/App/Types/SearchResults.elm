@@ -2,6 +2,7 @@ module App.Types.SearchResults exposing (..)
 
 import Util.StringUtil
 import App.Types.Post exposing (Post)
+import App.Types.Coto exposing (Coto, CotoId)
 
 
 type alias SearchResults =
@@ -45,3 +46,8 @@ setPosts posts searchResults =
         | loading = False
         , posts = posts
     }
+
+
+getCoto : CotoId -> SearchResults -> Maybe Coto
+getCoto cotoId searchResults =
+    App.Types.Post.getCotoFromPosts cotoId searchResults.posts

@@ -109,6 +109,7 @@ getCoto cotoId model =
     Exts.Maybe.oneOf
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
+        , App.Types.SearchResults.getCoto cotoId model.searchResults
         , getCotoFromCotonomaList cotoId model.pinnedCotonomas
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas

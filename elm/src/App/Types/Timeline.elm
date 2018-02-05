@@ -74,10 +74,7 @@ nextPageIndex timeline =
 
 getCoto : CotoId -> Timeline -> Maybe Coto
 getCoto cotoId timeline =
-    timeline.posts
-        |> List.filter (\post -> post.cotoId == Just cotoId)
-        |> List.head
-        |> Maybe.andThen App.Types.Post.toCoto
+    App.Types.Post.getCotoFromPosts cotoId timeline.posts
 
 
 deleteCoto : Coto -> Timeline -> Timeline
