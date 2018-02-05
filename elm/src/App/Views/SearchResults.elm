@@ -30,7 +30,6 @@ view context graph model =
               else
                 div [] []
             , model.posts
-                |> List.reverse
                 |> List.map
                     (\post ->
                         ( Maybe.withDefault "" post.cotoId
