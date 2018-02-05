@@ -116,7 +116,7 @@ update msg model =
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
 
-        SetSearchInputFocus focus ->
+        SetQuickSearchInputFocus focus ->
             ( { model | quickSearchInputFocus = focus }, Cmd.none )
 
         SearchQueryInput query ->
