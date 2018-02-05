@@ -8,9 +8,11 @@ defmodule Cotoami.Coto do
   alias Cotoami.Amishi
 
   @summary_max_length 200
+  @content_max_length 2500
 
   schema "cotos" do
     field :content, :string
+    field :long_content, :string
     field :summary, :string
     field :as_cotonoma, :boolean
     belongs_to :posted_in, Cotoami.Cotonoma
@@ -25,6 +27,7 @@ defmodule Cotoami.Coto do
     |> cast(params, [:content, :summary, :as_cotonoma, :posted_in_id, :amishi_id])
     |> validate_required([:content, :amishi_id])
     |> validate_length(:summary, max: @summary_max_length)
+    |> store_long_content()
   end
 
   def changeset_to_update_content(struct, params \\ %{}) do
@@ -32,6 +35,7 @@ defmodule Cotoami.Coto do
     |> cast(params, [:content, :summary])
     |> validate_required([:content])
     |> validate_length(:summary, max: @summary_max_length)
+    |> store_long_content()
   end
 
   def changeset_to_import(struct, json, %Amishi{id: amishi_id}) do
@@ -52,6 +56,19 @@ defmodule Cotoami.Coto do
       :updated_at
     ])
     |> validate_required([:id, :content, :amishi_id])
+    |> store_long_content()
+  end
+
+  defp store_long_content(changeset) do
+    content = get_field(changeset, :content)
+    if String.length(content) > @content_max_length do
+      changeset
+      |> put_change(:content, "")
+      |> put_change(:long_content, content)
+    else
+      changeset
+      |> put_change(:long_content, nil)
+    end
   end
 
   def for_amishi(query, amishi_id) do
