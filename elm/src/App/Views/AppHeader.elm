@@ -16,6 +16,7 @@ import App.Messages
             , OpenProfileModal
             , NavigationToggle
             , SetQuickSearchInputFocus
+            , ClearQuickSearchInput
             , SearchQueryInput
             )
         )
@@ -80,6 +81,14 @@ quickSearchForm searchResults =
               )
             ]
         , materialIcon "search" (Just "search")
+        , if App.Types.SearchResults.hasQuery searchResults then
+            a
+                [ class "tool-button clear-query"
+                , onLinkButtonClick ClearQuickSearchInput
+                ]
+                [ materialIcon "close" Nothing ]
+          else
+            span [] []
         ]
 
 

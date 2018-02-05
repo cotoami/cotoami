@@ -28,6 +28,7 @@ type Msg
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | SetQuickSearchInputFocus Bool
+    | ClearQuickSearchInput
     | SearchQueryInput String
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
       --

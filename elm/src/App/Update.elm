@@ -119,6 +119,14 @@ update msg model =
         SetQuickSearchInputFocus focus ->
             ( { model | quickSearchInputFocus = focus }, Cmd.none )
 
+        ClearQuickSearchInput ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+              }
+            , Cmd.none
+            )
+
         SearchQueryInput query ->
             ( { model
                 | searchResults =

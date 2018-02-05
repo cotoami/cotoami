@@ -7,18 +7,18 @@ import App.Types.Coto exposing (Coto, CotoId)
 
 type alias SearchResults =
     { query : String
-    , inputResetKey : Int
     , loading : Bool
     , posts : List Post
+    , inputResetKey : Int
     }
 
 
 defaultSearchResults : SearchResults
 defaultSearchResults =
     { query = ""
-    , inputResetKey = 0
     , loading = False
     , posts = []
+    , inputResetKey = 0
     }
 
 
@@ -37,6 +37,16 @@ setQuery query searchResults =
                 []
             else
                 searchResults.posts
+    }
+
+
+clearQuery : SearchResults -> SearchResults
+clearQuery searchResults =
+    { searchResults
+        | query = ""
+        , loading = False
+        , posts = []
+        , inputResetKey = searchResults.inputResetKey + 1
     }
 
 
