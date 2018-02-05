@@ -293,12 +293,12 @@ div.main-traversal {
   #main-selection,
   #main-search-results {
     flex: none;
-    width: 450px;
+    width: 500px;
     display: flex;
     position: relative;
     top: auto;
     overflow-y: hidden;
-    background-color: #f8f8f8;
+    background-color: #fdfdfd;
     border-left: solid 1px #ddd;
     box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
 
@@ -306,10 +306,6 @@ div.main-traversal {
     &.hidden {
       display: none;
     }
-  }
-
-  #main-search-results {
-    width: 500px;
   }
 
   #view-switch-container {
