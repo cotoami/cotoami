@@ -2,6 +2,7 @@ module App.Views.SearchResults exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Keyed
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Graph)
@@ -12,13 +13,22 @@ import App.Views.Post
 import App.Markdown
 
 
-view : SearchResults -> Html Msg
-view model =
+view : Context -> Graph -> SearchResults -> Html Msg
+view context graph model =
     div [ id "search-results" ]
         [ if model.loading then
             div [ class "loading-overlay" ] []
           else
             div [] []
+        , model.posts
+            |> List.reverse
+            |> List.map
+                (\post ->
+                    ( Maybe.withDefault "" post.cotoId
+                    , postDiv context graph post
+                    )
+                )
+            |> Html.Keyed.node "div" [ class "posts" ]
         ]
 
 

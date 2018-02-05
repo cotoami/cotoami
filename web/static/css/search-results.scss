@@ -3,4 +3,10 @@
 #search-results {
   position: relative;
   flex: 1;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px;
+  padding-bottom: 50px;
 }

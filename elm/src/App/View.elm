@@ -201,7 +201,7 @@ searchResultsColumn model =
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
-        [ App.Views.SearchResults.view model.searchResults
+        [ App.Views.SearchResults.view model.context model.graph model.searchResults
         ]
 
 
