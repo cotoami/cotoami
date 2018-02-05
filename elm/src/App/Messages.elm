@@ -28,6 +28,7 @@ type Msg
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | SearchQueryInput String
+    | SearchResultsFetched (Result Http.Error PaginatedPosts)
       --
       -- Fetched
       --

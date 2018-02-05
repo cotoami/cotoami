@@ -116,9 +116,28 @@ update msg model =
                 |> \presences -> { model | presences = presences } ! []
 
         SearchQueryInput query ->
-            ( { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuery query model.searchResults
+              }
+            , if isNotBlank query then
+                App.Server.Post.search query
+              else
+                Cmd.none
+            )
+
+        SearchResultsFetched (Ok paginatedPosts) ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setPosts
+                        paginatedPosts.posts
+                        model.searchResults
+              }
             , Cmd.none
             )
+
+        SearchResultsFetched (Err _) ->
+            ( model, Cmd.none )
 
         --
         -- Fetched

@@ -28,4 +28,16 @@ hasQuery searchResults =
 
 setQuery : String -> SearchResults -> SearchResults
 setQuery query searchResults =
-    { searchResults | query = query }
+    { searchResults
+        | query = query
+        , posts =
+            if Util.StringUtil.isBlank query then
+                []
+            else
+                searchResults.posts
+    }
+
+
+setPosts : List Post -> SearchResults -> SearchResults
+setPosts posts searchResults =
+    { searchResults | posts = posts }

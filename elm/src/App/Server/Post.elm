@@ -6,7 +6,15 @@ import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
 import Util.HttpUtil exposing (ClientId, httpPost)
-import App.Messages exposing (Msg(PostsFetched, CotonomaFetched, CotonomaPosted))
+import App.Messages
+    exposing
+        ( Msg
+            ( PostsFetched
+            , CotonomaFetched
+            , SearchResultsFetched
+            , CotonomaPosted
+            )
+        )
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
@@ -57,6 +65,16 @@ fetchCotonomaPosts key pageIndex =
                 Decode.map2 (,)
                     (Decode.field "cotonoma" decodeCotonoma)
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
+
+
+search : String -> Cmd Msg
+search query =
+    let
+        url =
+            "/api/search/" ++ (query)
+    in
+        Http.send SearchResultsFetched <|
+            Http.get url decodePaginatedPosts
 
 
 postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
