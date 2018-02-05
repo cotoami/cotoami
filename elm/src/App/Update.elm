@@ -27,6 +27,7 @@ import App.Types.Timeline
         , deletePendingPost
         )
 import App.Types.Traversal
+import App.Types.SearchResults
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
@@ -61,6 +62,7 @@ update msg model =
                             (keyCode == n.keyCode)
                                 && (List.isEmpty model.modals)
                                 && (not model.timeline.editorOpen)
+                                && (not model.quickSearchInputFocus)
                         then
                             openNewEditor Nothing model
                         else
@@ -113,6 +115,41 @@ update msg model =
             App.Channels.decodePresenceDiff payload
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
+
+        SetQuickSearchInputFocus focus ->
+            ( { model | quickSearchInputFocus = focus }, Cmd.none )
+
+        ClearQuickSearchInput ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+              }
+            , Cmd.none
+            )
+
+        SearchQueryInput query ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuery query model.searchResults
+              }
+            , if isNotBlank query then
+                App.Server.Post.search query
+              else
+                Cmd.none
+            )
+
+        SearchResultsFetched (Ok paginatedPosts) ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setPosts
+                        paginatedPosts.posts
+                        model.searchResults
+              }
+            , Cmd.none
+            )
+
+        SearchResultsFetched (Err _) ->
+            ( model, Cmd.none )
 
         --
         -- Fetched

@@ -23,16 +23,6 @@
   }
 }
 
-div.loading-overlay {
-  z-index: 20;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url(../images/loading.gif) center no-repeat #f8f8f8;
-}
-
 div.more-button-div {
   margin-top: 10px;
   padding-left: 2px;
@@ -84,86 +74,6 @@ div.timeline {
         background-color: #f8f8f8;
         padding: 10px;
       }
-    }
-  }
-
-  div.coto {
-    position: relative;
-    margin-bottom: 6px;
-    
-    &.posting {
-      opacity: 0.3;
-      background: url(../images/loading.gif) center no-repeat #fff;
-    }
-
-    &.by-another-amishi {
-      margin-left: 8px;
-
-      &::before {
-        content: '';
-        position: absolute;
-        display: block;
-        width: 0;
-        height: 0;
-        left: -20px;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        border-right: 10px solid #ddd;
-        border-left: 10px solid transparent;
-      }
-    
-      &::after {
-        content: '';
-        position: absolute;
-        display: block;
-        width: 0;
-        height: 0;
-        left: -18px;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        border-right: 10px solid #fff;
-        border-left: 10px solid transparent;
-      }
-    }
-  }
-
-  div.coto-inner {
-    padding-bottom: 3px;
-  }
-
-  div.author {
-    margin-bottom: 8px;
-
-    img.avatar {
-      margin: 0;
-      padding: 0;
-      width: 24px;
-      height: 24px;
-      margin-right: 6px;
-      border-radius: 4px;
-      vertical-align: middle;
-    }
-
-    span.name {
-      color: #aaa;
-      font-weight: bold;
-    }
-  }
-
-  div.post-footer {
-    min-height: 10px;
-    text-align: right;
-
-    span.posted-at {
-      font-size: 12px;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: #ccc;
     }
   }
 }

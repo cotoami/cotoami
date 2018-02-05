@@ -12,6 +12,7 @@ import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Graph exposing (Direction(..), Graph, defaultGraph, batchConnect)
 import App.Types.Timeline exposing (Timeline, defaultTimeline)
 import App.Types.Traversal exposing (Traversals, defaultTraversals)
+import App.Types.SearchResults exposing (SearchResults)
 import App.Confirmation exposing (Confirmation, defaultConfirmation)
 import App.Modals.SigninModal
 import App.Modals.EditorModal
@@ -47,6 +48,7 @@ type alias Model =
     , presences : Presences
     , modals : List Modal
     , confirmation : Confirmation
+    , quickSearchInputFocus : Bool
     , editorModal : App.Modals.EditorModal.Model
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
@@ -57,6 +59,7 @@ type alias Model =
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
     , timeline : Timeline
+    , searchResults : SearchResults
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
     , connectingTarget : Maybe ConnectingTarget
@@ -78,6 +81,7 @@ initModel seed route =
     , presences = Dict.empty
     , modals = []
     , confirmation = defaultConfirmation
+    , quickSearchInputFocus = False
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
@@ -88,6 +92,7 @@ initModel seed route =
     , cotonomasLoading = False
     , subCotonomas = []
     , timeline = defaultTimeline
+    , searchResults = App.Types.SearchResults.defaultSearchResults
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
     , connectingTarget = Nothing
@@ -104,6 +109,7 @@ getCoto cotoId model =
     Exts.Maybe.oneOf
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
+        , App.Types.SearchResults.getCoto cotoId model.searchResults
         , getCotoFromCotonomaList cotoId model.pinnedCotonomas
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas

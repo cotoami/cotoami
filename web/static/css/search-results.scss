@@ -1,0 +1,34 @@
+@import "variables.scss";
+
+#search-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+
+  div.column-header {
+    text-align: center;
+    padding-top: 10px;
+
+    i {
+      opacity: 0.5;
+      font-size: 28px;
+    }
+  }
+
+  div.column-body {
+    position: relative;
+    flex: 1;
+    padding: 10px;
+    padding-top: 40px;
+    padding-bottom: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div.post-footer span.time {
+    margin-left: 6px;
+  }
+}
