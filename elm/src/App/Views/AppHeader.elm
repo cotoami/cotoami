@@ -2,11 +2,22 @@ module App.Views.AppHeader exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
+import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
+import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model, isNavigationEmpty)
-import App.Messages exposing (Msg(HomeClick, OpenSigninModal, OpenProfileModal, NavigationToggle))
+import App.Messages
+    exposing
+        ( Msg
+            ( HomeClick
+            , OpenSigninModal
+            , OpenProfileModal
+            , NavigationToggle
+            , SearchQueryInput
+            )
+        )
 
 
 view : Model -> Html Msg
@@ -32,10 +43,7 @@ view model =
             (model.context.session
                 |> Maybe.map
                     (\session ->
-                        [ Html.form [ class "search" ]
-                            [ input [ type_ "text", class "search-input" ] []
-                            , materialIcon "search" (Just "search")
-                            ]
+                        [ searchForm model.searchResults
                         , a [ title "Profile", onClick OpenProfileModal ]
                             [ img [ class "avatar", src session.avatarUrl ] [] ]
                         ]
@@ -49,6 +57,26 @@ view model =
                         [ materialIcon "perm_identity" Nothing ]
                     ]
             )
+        ]
+
+
+searchForm : SearchResults -> Html Msg
+searchForm searchResults =
+    Html.form [ class "search" ]
+        [ Html.Keyed.node
+            "span"
+            []
+            [ ( toString searchResults.inputResetKey
+              , input
+                    [ type_ "text"
+                    , class "search-input"
+                    , defaultValue searchResults.query
+                    , onInput SearchQueryInput
+                    ]
+                    []
+              )
+            ]
+        , materialIcon "search" (Just "search")
         ]
 
 

@@ -27,6 +27,7 @@ import App.Types.Timeline
         , deletePendingPost
         )
 import App.Types.Traversal
+import App.Types.SearchResults
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
@@ -113,6 +114,11 @@ update msg model =
             App.Channels.decodePresenceDiff payload
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
+
+        SearchQueryInput query ->
+            ( { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
+            , Cmd.none
+            )
 
         --
         -- Fetched

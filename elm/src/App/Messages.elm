@@ -27,6 +27,7 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | SearchQueryInput String
       --
       -- Fetched
       --
