@@ -59,6 +59,9 @@ defmodule Cotoami.Coto do
     |> store_long_content()
   end
 
+  # The length of cotos.content is limited to @content_max_length 
+  # because it will be indexed and index row's maximum size is 8191 bytes.
+  # So long content will be stored as a long_content field.
   defp store_long_content(changeset) do
     content = get_field(changeset, :content)
     if String.length(content) > @content_max_length do
