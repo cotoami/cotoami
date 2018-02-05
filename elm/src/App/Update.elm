@@ -62,6 +62,7 @@ update msg model =
                             (keyCode == n.keyCode)
                                 && (List.isEmpty model.modals)
                                 && (not model.timeline.editorOpen)
+                                && (not model.quickSearchInputFocus)
                         then
                             openNewEditor Nothing model
                         else
@@ -114,6 +115,9 @@ update msg model =
             App.Channels.decodePresenceDiff payload
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
+
+        SetSearchInputFocus focus ->
+            ( { model | quickSearchInputFocus = focus }, Cmd.none )
 
         SearchQueryInput query ->
             ( { model

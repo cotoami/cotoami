@@ -2,7 +2,7 @@ module App.Views.AppHeader exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onFocus, onBlur)
 import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
@@ -15,6 +15,7 @@ import App.Messages
             , OpenSigninModal
             , OpenProfileModal
             , NavigationToggle
+            , SetSearchInputFocus
             , SearchQueryInput
             )
         )
@@ -43,7 +44,7 @@ view model =
             (model.context.session
                 |> Maybe.map
                     (\session ->
-                        [ searchForm model.searchResults
+                        [ quickSearchForm model.searchResults
                         , a [ title "Profile", onClick OpenProfileModal ]
                             [ img [ class "avatar", src session.avatarUrl ] [] ]
                         ]
@@ -60,9 +61,9 @@ view model =
         ]
 
 
-searchForm : SearchResults -> Html Msg
-searchForm searchResults =
-    Html.form [ class "search" ]
+quickSearchForm : SearchResults -> Html Msg
+quickSearchForm searchResults =
+    Html.form [ class "quick-search" ]
         [ Html.Keyed.node
             "span"
             []
@@ -71,6 +72,8 @@ searchForm searchResults =
                     [ type_ "text"
                     , class "search-input"
                     , defaultValue searchResults.query
+                    , onFocus (SetSearchInputFocus True)
+                    , onBlur (SetSearchInputFocus False)
                     , onInput SearchQueryInput
                     ]
                     []

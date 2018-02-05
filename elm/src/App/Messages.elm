@@ -27,6 +27,7 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | SetSearchInputFocus Bool
     | SearchQueryInput String
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
       --
