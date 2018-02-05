@@ -116,14 +116,13 @@ footerDiv : Post -> Html Msg
 footerDiv post =
     div
         [ class "post-footer" ]
-        [ case post.postedAt of
-            Nothing ->
-                span [] []
-
-            Just postedAt ->
-                span
-                    [ class "posted-at" ]
-                    [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
+        [ post.postedAt
+            |> Maybe.map
+                (\postedAt ->
+                    span [ class "posted-at" ]
+                        [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
+                )
+            |> Maybe.withDefault (span [] [])
         ]
 
 
