@@ -6,3 +6,4 @@ type ActiveViewOnMobile
     | PinnedView
     | TraversalsView
     | SelectionView
+    | SearchResultsView

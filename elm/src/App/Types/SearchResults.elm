@@ -1,10 +1,11 @@
 module App.Types.SearchResults exposing (..)
 
+import Util.StringUtil
 import App.Types.Post exposing (Post)
 
 
 type alias SearchResults =
-    { open : Bool
+    { query : String
     , loading : Bool
     , posts : List Post
     }
@@ -12,7 +13,12 @@ type alias SearchResults =
 
 defaultSearchResults : SearchResults
 defaultSearchResults =
-    { open = False
+    { query = ""
     , loading = False
     , posts = []
     }
+
+
+hasQuery : SearchResults -> Bool
+hasQuery searchResults =
+    Util.StringUtil.isNotBlank searchResults.query

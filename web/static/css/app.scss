@@ -127,15 +127,16 @@ div.main-column,
   overflow: hidden;
 }
 
+// workaround for chrome rendering bug
 .cotonomas-loading {
   #main-timeline {
-    // workaround for chrome rendering bug
     opacity: 0.99;
   }
 }
 
 #main-pinned-cotos,
-#main-selection {
+#main-selection,
+#main-search-results {
   position: absolute;
   z-index: 3;
   top: 35px;
@@ -289,7 +290,8 @@ div.main-traversal {
     box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
   }
 
-  #main-selection {
+  #main-selection,
+  #main-search-results {
     flex: none;
     width: 450px;
     display: flex;
