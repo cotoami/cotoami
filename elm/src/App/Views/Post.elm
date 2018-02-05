@@ -1,4 +1,4 @@
-module App.Views.Post exposing (view)
+module App.Views.Post exposing (view, postDivAttrs, headerDiv, authorDiv)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -22,7 +22,29 @@ view context graph post =
     let
         elementId =
             "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
+    in
+        div
+            (postDivAttrs context elementId post)
+            [ div
+                [ class "coto-inner" ]
+                [ headerDiv context graph elementId post
+                , post.cotoId
+                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.withDefault (div [] [])
+                , if post.asCotonoma then
+                    div [] []
+                  else
+                    authorDiv context post
+                , App.Views.Coto.bodyDiv context elementId markdown post
+                , footerDiv post
+                , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
+                ]
+            ]
 
+
+postDivAttrs : Context -> String -> Post -> List (Attribute Msg)
+postDivAttrs context elementId post =
+    let
         classAttr =
             App.Views.Coto.cotoClassList context
                 elementId
@@ -43,23 +65,7 @@ view context graph post =
                     )
                 |> Maybe.withDefault []
     in
-        div
-            (classAttr :: eventAttrs)
-            [ div
-                [ class "coto-inner" ]
-                [ headerDiv context graph elementId post
-                , post.cotoId
-                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
-                    |> Maybe.withDefault (div [] [])
-                , if post.asCotonoma then
-                    div [] []
-                  else
-                    authorDiv context post
-                , App.Views.Coto.bodyDiv context elementId markdown post
-                , footerDiv post
-                , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
-                ]
-            ]
+        classAttr :: eventAttrs
 
 
 isAuthor : Context -> Post -> Bool
