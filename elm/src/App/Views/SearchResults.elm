@@ -3,6 +3,7 @@ module App.Views.SearchResults exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
+import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Graph)
@@ -16,19 +17,28 @@ import App.Markdown
 view : Context -> Graph -> SearchResults -> Html Msg
 view context graph model =
     div [ id "search-results" ]
-        [ if model.loading then
-            div [ class "loading-overlay" ] []
-          else
-            div [] []
-        , model.posts
-            |> List.reverse
-            |> List.map
-                (\post ->
-                    ( Maybe.withDefault "" post.cotoId
-                    , postDiv context graph post
+        [ div
+            [ class "column-header" ]
+            [ span [ class "description", title "Search results" ]
+                [ materialIcon "search" Nothing
+                ]
+            ]
+        , div
+            [ class "column-body" ]
+            [ if model.loading then
+                div [ class "loading-overlay" ] []
+              else
+                div [] []
+            , model.posts
+                |> List.reverse
+                |> List.map
+                    (\post ->
+                        ( Maybe.withDefault "" post.cotoId
+                        , postDiv context graph post
+                        )
                     )
-                )
-            |> Html.Keyed.node "div" [ class "posts" ]
+                |> Html.Keyed.node "div" [ class "posts" ]
+            ]
         ]
 
 
