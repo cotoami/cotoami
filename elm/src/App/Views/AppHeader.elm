@@ -2,7 +2,7 @@ module App.Views.AppHeader exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onFocus, onBlur)
+import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
 import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
@@ -17,7 +17,8 @@ import App.Messages
             , NavigationToggle
             , SetQuickSearchInputFocus
             , ClearQuickSearchInput
-            , SearchQueryInput
+            , QuickSearchInput
+            , Search
             )
         )
 
@@ -64,7 +65,10 @@ view model =
 
 quickSearchForm : SearchResults -> Html Msg
 quickSearchForm searchResults =
-    Html.form [ class "quick-search" ]
+    Html.form
+        [ class "quick-search"
+        , onSubmit Search
+        ]
         [ Html.Keyed.node
             "span"
             []
@@ -75,7 +79,7 @@ quickSearchForm searchResults =
                     , defaultValue searchResults.query
                     , onFocus (SetQuickSearchInputFocus True)
                     , onBlur (SetQuickSearchInputFocus False)
-                    , onInput SearchQueryInput
+                    , onInput QuickSearchInput
                     ]
                     []
               )
