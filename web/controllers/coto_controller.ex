@@ -16,6 +16,11 @@ defmodule Cotoami.CotoController do
     render(conn, "cotos.json", paginated_results)
   end
 
+  def search(conn, %{"query" => query}, amishi) do
+    cotos = CotoService.search(query, amishi)
+    render(conn, "cotos.json", rows: cotos, page_index: 0, total_pages: 1)
+  end
+
   def create(
     conn,
     %{

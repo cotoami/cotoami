@@ -8,7 +8,7 @@ defmodule Cotoami.CotoService do
   import Cotoami.ServiceHelpers
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
-    AmishiService, CotonomaService, CotoGraphService
+    AmishiService, CotonomaService, CotoGraphService, CotoSearchService
   }
   alias Cotoami.Exceptions.InvalidOperation
 
@@ -56,6 +56,15 @@ defmodule Cotoami.CotoService do
         |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
         |> Map.put(:cotonoma, cotonoma)
     end
+  end
+
+  def search(query, %Amishi{} = amishi) do
+    Coto
+    |> CotoSearchService.search(amishi, query)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> limit(@page_size)
+    |> Repo.all()
+    |> Enum.map(&(complement_amishi(&1, amishi)))
   end
 
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
