@@ -16,6 +16,7 @@ import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
+import App.Views.SearchResults
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
@@ -200,7 +201,7 @@ searchResultsColumn model =
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
-        [ App.Views.CotoSelection.cotoSelectionColumnDiv model
+        [ App.Views.SearchResults.view model.searchResults
         ]
 
 

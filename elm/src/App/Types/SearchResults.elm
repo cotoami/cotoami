@@ -30,6 +30,7 @@ setQuery : String -> SearchResults -> SearchResults
 setQuery query searchResults =
     { searchResults
         | query = query
+        , loading = True
         , posts =
             if Util.StringUtil.isBlank query then
                 []
@@ -40,4 +41,7 @@ setQuery query searchResults =
 
 setPosts : List Post -> SearchResults -> SearchResults
 setPosts posts searchResults =
-    { searchResults | posts = posts }
+    { searchResults
+        | loading = False
+        , posts = posts
+    }

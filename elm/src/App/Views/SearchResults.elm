@@ -9,4 +9,8 @@ import App.Messages exposing (..)
 view : SearchResults -> Html Msg
 view model =
     div [ id "search-results" ]
-        []
+        [ if model.loading then
+            div [ class "loading-overlay" ] []
+          else
+            div [] []
+        ]
