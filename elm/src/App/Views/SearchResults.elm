@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
 import Util.HtmlUtil exposing (materialIcon)
+import Util.DateUtil
 import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Graph)
@@ -60,6 +61,35 @@ postDiv context graph post =
                   else
                     App.Views.Post.authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown post
+                , footerDiv context post
                 , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
                 ]
             ]
+
+
+footerDiv : Context -> Post -> Html Msg
+footerDiv context post =
+    post.postedAt
+        |> Maybe.map
+            (\postedAt ->
+                let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
+                    day =
+                        Util.DateUtil.formatDay lang postedAt
+
+                    time =
+                        Util.DateUtil.format "en_us" "%H:%M:%S" postedAt
+                in
+                    div
+                        [ class "post-footer" ]
+                        [ span [ class "posted-at" ]
+                            [ span [ class "day" ] [ text day ]
+                            , span [ class "time" ] [ text time ]
+                            ]
+                        ]
+            )
+        |> Maybe.withDefault (span [] [])
