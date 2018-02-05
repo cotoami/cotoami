@@ -71,6 +71,10 @@ defmodule Cotoami.Coto do
     end
   end
 
+  def get_content(%__MODULE__{content: content, long_content: long_content}) do
+    long_content || content
+  end
+
   def for_amishi(query, amishi_id) do
     from c in query,
       where: c.amishi_id == ^amishi_id,
