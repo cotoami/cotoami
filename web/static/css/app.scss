@@ -10,6 +10,14 @@ html, body, #elm-container, #app {
   overflow-y: hidden;
 }
 
+// Remove tap highlight on mobile browser
+a {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
 .elm-overlay {
   z-index: 200;
 
