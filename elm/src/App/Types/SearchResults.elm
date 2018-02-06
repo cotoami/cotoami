@@ -27,11 +27,16 @@ hasQuery searchResults =
     Util.StringUtil.isNotBlank searchResults.query
 
 
+setQuerying : String -> SearchResults -> SearchResults
+setQuerying query searchResults =
+    setQuery query searchResults
+        |> (\searchResults -> { searchResults | loading = True })
+
+
 setQuery : String -> SearchResults -> SearchResults
 setQuery query searchResults =
     { searchResults
         | query = query
-        , loading = True
         , posts =
             if Util.StringUtil.isBlank query then
                 []
@@ -48,6 +53,11 @@ clearQuery searchResults =
         , posts = []
         , inputResetKey = searchResults.inputResetKey + 1
     }
+
+
+setLoading : SearchResults -> SearchResults
+setLoading searchResults =
+    { searchResults | loading = True }
 
 
 setPosts : List Post -> SearchResults -> SearchResults

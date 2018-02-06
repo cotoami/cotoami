@@ -48,7 +48,7 @@ type alias Model =
     , presences : Presences
     , modals : List Modal
     , confirmation : Confirmation
-    , quickSearchInputFocus : Bool
+    , searchInputFocus : Bool
     , editorModal : App.Modals.EditorModal.Model
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
@@ -81,7 +81,7 @@ initModel seed route =
     , presences = Dict.empty
     , modals = []
     , confirmation = defaultConfirmation
-    , quickSearchInputFocus = False
+    , searchInputFocus = False
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
     , cotoModal = Nothing

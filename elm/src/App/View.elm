@@ -237,6 +237,13 @@ viewSwitchContainerDiv model =
             (model.activeViewOnMobile == SelectionView)
             (List.isEmpty model.context.selection)
             (SwitchViewOnMobile SelectionView)
+        , viewSwitchDiv
+            "switch-to-search"
+            "search"
+            "Switch to search cotos"
+            (model.activeViewOnMobile == SearchResultsView)
+            False
+            (SwitchViewOnMobile SearchResultsView)
         ]
 
 

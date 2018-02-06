@@ -2,7 +2,9 @@ module App.Views.SearchResults exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onFocus, onBlur, onInput)
 import Html.Keyed
+import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
 import Util.DateUtil
 import App.Types.Context exposing (Context)
@@ -22,6 +24,28 @@ view context graph model =
             [ class "column-header" ]
             [ span [ class "description", title "Search results" ]
                 [ materialIcon "search" Nothing
+                ]
+            , span [ class "search-in-narrow-viewport" ]
+                [ Html.Keyed.node
+                    "span"
+                    []
+                    [ ( toString model.inputResetKey
+                      , input
+                            [ type_ "text"
+                            , class "search-input"
+                            , defaultValue model.query
+                            , onFocus (SearchInputFocusChanged True)
+                            , onBlur (SearchInputFocusChanged False)
+                            , onInput SearchInput
+                            ]
+                            []
+                      )
+                    ]
+                , a
+                    [ class "tool-button search"
+                    , onLinkButtonClick Search
+                    ]
+                    [ materialIcon "search" Nothing ]
                 ]
             ]
         , div

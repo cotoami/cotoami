@@ -62,7 +62,7 @@ update msg model =
                             (keyCode == n.keyCode)
                                 && (List.isEmpty model.modals)
                                 && (not model.timeline.editorOpen)
-                                && (not model.quickSearchInputFocus)
+                                && (not model.searchInputFocus)
                         then
                             openNewEditor Nothing model
                         else
@@ -116,8 +116,8 @@ update msg model =
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
 
-        SetQuickSearchInputFocus focus ->
-            ( { model | quickSearchInputFocus = focus }, Cmd.none )
+        SearchInputFocusChanged focus ->
+            ( { model | searchInputFocus = focus }, Cmd.none )
 
         ClearQuickSearchInput ->
             ( { model
@@ -130,7 +130,7 @@ update msg model =
         QuickSearchInput query ->
             ( { model
                 | searchResults =
-                    App.Types.SearchResults.setQuery query model.searchResults
+                    App.Types.SearchResults.setQuerying query model.searchResults
               }
             , if isNotBlank query then
                 App.Server.Post.search query
@@ -138,8 +138,16 @@ update msg model =
                 Cmd.none
             )
 
+        SearchInput query ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuery query model.searchResults
+              }
+            , Cmd.none
+            )
+
         Search ->
-            ( model
+            ( { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
             , if App.Types.SearchResults.hasQuery model.searchResults then
                 App.Server.Post.search model.searchResults.query
               else
