@@ -27,6 +27,7 @@ import App.Types.Timeline
         , deletePendingPost
         )
 import App.Types.Traversal
+import App.Types.SearchResults
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
@@ -61,6 +62,7 @@ update msg model =
                             (keyCode == n.keyCode)
                                 && (List.isEmpty model.modals)
                                 && (not model.timeline.editorOpen)
+                                && (not model.searchInputFocus)
                         then
                             openNewEditor Nothing model
                         else
@@ -113,6 +115,57 @@ update msg model =
             App.Channels.decodePresenceDiff payload
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
                 |> \presences -> { model | presences = presences } ! []
+
+        SearchInputFocusChanged focus ->
+            ( { model | searchInputFocus = focus }, Cmd.none )
+
+        ClearQuickSearchInput ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+              }
+            , Cmd.none
+            )
+
+        QuickSearchInput query ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuerying query model.searchResults
+              }
+            , if isNotBlank query then
+                App.Server.Post.search query
+              else
+                Cmd.none
+            )
+
+        SearchInput query ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuery query model.searchResults
+              }
+            , Cmd.none
+            )
+
+        Search ->
+            ( { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
+            , if App.Types.SearchResults.hasQuery model.searchResults then
+                App.Server.Post.search model.searchResults.query
+              else
+                Cmd.none
+            )
+
+        SearchResultsFetched (Ok paginatedPosts) ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setPosts
+                        paginatedPosts.posts
+                        model.searchResults
+              }
+            , Cmd.none
+            )
+
+        SearchResultsFetched (Err _) ->
+            ( model, Cmd.none )
 
         --
         -- Fetched
@@ -174,7 +227,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ if paginatedPosts.pageIndex == 0 then
-                            initializeTimelineScrollPosition model
+                            initScrollPositionOfTimeline model
                           else
                             Cmd.none
                         , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
@@ -196,7 +249,13 @@ update msg model =
 
         GraphFetched (Ok graph) ->
             { model | graph = graph, loadingGraph = False }
-                |> \model -> ( model, initializeTimelineScrollPosition model )
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ initScrollPositionOfTimeline model
+                        , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                        ]
+                    )
 
         GraphFetched (Err _) ->
             model ! []
@@ -430,6 +489,11 @@ update msg model =
             )
                 |> Maybe.withDefault ( model, Cmd.none )
 
+        PinCotoToMyHome cotoId ->
+            ( clearModals model
+            , App.Server.Graph.pinCotos model.context.clientId Nothing [ cotoId ]
+            )
+
         CotoPinned (Ok _) ->
             ( model, Cmd.none )
 
@@ -600,7 +664,7 @@ update msg model =
                 |> \model ->
                     ( model
                     , if paginatedPosts.pageIndex == 0 then
-                        initializeTimelineScrollPosition model
+                        initScrollPositionOfTimeline model
                       else
                         Cmd.none
                     )
@@ -900,7 +964,7 @@ openNewEditor source model =
 
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
-    { model
+    ( { model
         | context =
             model.context
                 |> App.Types.Context.setCotonomaLoading
@@ -914,11 +978,13 @@ loadHome model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
-    }
-        ! [ App.Server.Post.fetchPosts 0
-          , App.Server.Cotonoma.fetchCotonomas
-          , App.Server.Graph.fetchGraph Nothing
-          ]
+      }
+    , Cmd.batch
+        [ App.Server.Post.fetchPosts 0
+        , App.Server.Cotonoma.fetchCotonomas
+        , App.Server.Graph.fetchGraph Nothing
+        ]
+    )
 
 
 changeLocationToCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
@@ -928,7 +994,7 @@ changeLocationToCotonoma key model =
 
 loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
-    { model
+    ( { model
         | context =
             model.context
                 |> App.Types.Context.setCotonomaLoading
@@ -941,15 +1007,17 @@ loadCotonoma key model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
-    }
-        ! [ App.Server.Cotonoma.fetchCotonomas
-          , App.Server.Post.fetchCotonomaPosts key 0
-          , App.Server.Graph.fetchGraph (Just key)
-          ]
+      }
+    , Cmd.batch
+        [ App.Server.Cotonoma.fetchCotonomas
+        , App.Server.Post.fetchCotonomaPosts key 0
+        , App.Server.Graph.fetchGraph (Just key)
+        ]
+    )
 
 
-initializeTimelineScrollPosition : Model -> Cmd Msg
-initializeTimelineScrollPosition model =
+initScrollPositionOfTimeline : Model -> Cmd Msg
+initScrollPositionOfTimeline model =
     if App.Model.areTimelineAndGraphLoaded model then
         App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
     else

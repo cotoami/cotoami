@@ -6,6 +6,7 @@ import Exts.Maybe exposing (isJust)
 import Html.Events exposing (onClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Traversal
+import App.Types.SearchResults
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Model exposing (..)
 import App.Messages exposing (..)
@@ -15,6 +16,7 @@ import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
+import App.Views.SearchResults
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
@@ -42,6 +44,9 @@ view model =
 
                 SelectionView ->
                     "selection"
+
+                SearchResultsView ->
+                    "search-results"
     in
         div
             [ id "app"
@@ -58,6 +63,7 @@ view model =
                     , graphExplorationDiv model
                     , timelineColumn model
                     , selectionColumn model
+                    , searchResultsColumn model
                     , viewSwitchContainerDiv model
                     ]
                 ]
@@ -183,6 +189,22 @@ selectionColumn model =
         ]
 
 
+searchResultsColumn : Model -> Html Msg
+searchResultsColumn model =
+    div
+        [ id "main-search-results"
+        , classList
+            [ ( "main-column", True )
+            , ( "activeOnMobile", model.activeViewOnMobile == SearchResultsView )
+            , ( "animated", True )
+            , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
+            , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
+            ]
+        ]
+        [ App.Views.SearchResults.view model.context model.graph model.searchResults
+        ]
+
+
 viewSwitchContainerDiv : Model -> Html Msg
 viewSwitchContainerDiv model =
     div
@@ -215,6 +237,13 @@ viewSwitchContainerDiv model =
             (model.activeViewOnMobile == SelectionView)
             (List.isEmpty model.context.selection)
             (SwitchViewOnMobile SelectionView)
+        , viewSwitchDiv
+            "switch-to-search"
+            "search"
+            "Switch to search cotos"
+            (model.activeViewOnMobile == SearchResultsView)
+            False
+            (SwitchViewOnMobile SearchResultsView)
         ]
 
 

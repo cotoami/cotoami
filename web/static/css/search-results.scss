@@ -1,0 +1,68 @@
+@import "variables.scss";
+
+#search-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+
+  div.column-header {
+    text-align: center;
+    padding-top: 10px;
+
+    span.description i {
+      opacity: 0.5;
+      font-size: 28px;
+    }
+
+    span.search-in-narrow-viewport {
+      display: inline-block;
+      position: relative;
+
+      a.search {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+      }
+
+      i {
+        font-size: 28px;
+      }
+
+      input {
+        width: 250px;
+        height: 30px;
+        padding-right: 30px;
+        // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+        font-size: 16px;
+      }
+    }
+
+    @media (#{$narrow-viewport}) {
+      span.description {
+        display: none;
+      }
+    }
+    @media (#{$wide-viewport}) {
+      span.search-in-narrow-viewport {
+        display: none;
+      }
+    }
+  }
+
+  div.column-body {
+    position: relative;
+    flex: 1;
+    padding: 10px;
+    padding-top: 40px;
+    padding-bottom: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div.post-footer span.time {
+    margin-left: 6px;
+  }
+}

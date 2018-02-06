@@ -94,3 +94,11 @@ type alias PaginatedPosts =
     , pageIndex : Int
     , totalPages : Int
     }
+
+
+getCotoFromPosts : CotoId -> List Post -> Maybe Coto
+getCotoFromPosts cotoId posts =
+    posts
+        |> List.filter (\post -> post.cotoId == Just cotoId)
+        |> List.head
+        |> Maybe.andThen toCoto

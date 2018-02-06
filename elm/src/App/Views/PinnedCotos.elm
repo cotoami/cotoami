@@ -67,6 +67,9 @@ cotoDiv context graph inbound coto =
     let
         elementId =
             "pinned-" ++ coto.id
+
+        cotonomaCotoId =
+            context.cotonoma |> Maybe.map (\cotonoma -> cotonoma.cotoId)
     in
         div
             [ App.Views.Coto.cotoClassList context
@@ -92,7 +95,7 @@ cotoDiv context graph inbound coto =
                     }
                     elementId
                     coto
-                , App.Views.Coto.parentsDiv graph Nothing coto.id
+                , App.Views.Coto.parentsDiv graph cotonomaCotoId coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
                 ]

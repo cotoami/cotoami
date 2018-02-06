@@ -1,6 +1,6 @@
 defmodule Cotoami.CotoView do
   use Cotoami.Web, :view
-  alias Cotoami.{Cotonoma, CotonomaView, AmishiView}
+  alias Cotoami.{Coto, Cotonoma, CotonomaView, AmishiView}
 
   def render("cotos.json", %{
     rows: rows, 
@@ -37,7 +37,7 @@ defmodule Cotoami.CotoView do
       end
     %{
       id: coto.id,
-      content: coto.content,
+      content: Coto.get_content(coto),
       summary: coto.summary,
       amishi: amishi_as_json,
       posted_in: posted_in_as_json,

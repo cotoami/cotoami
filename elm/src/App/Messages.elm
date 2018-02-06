@@ -27,6 +27,12 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | SearchInputFocusChanged Bool
+    | ClearQuickSearchInput
+    | QuickSearchInput String
+    | SearchInput String
+    | Search
+    | SearchResultsFetched (Result Http.Error PaginatedPosts)
       --
       -- Fetched
       --
@@ -70,6 +76,7 @@ type Msg
     | Cotonomatize CotoId
     | Cotonomatized (Result Http.Error Coto)
     | PinCoto CotoId
+    | PinCotoToMyHome CotoId
     | CotoPinned (Result Http.Error String)
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId

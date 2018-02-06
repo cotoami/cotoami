@@ -1,3 +1,5 @@
+@import "variables.scss";
+
 #app-header {
   position: absolute;
   top: 0;
@@ -80,6 +82,44 @@
       width: 27px;
       height: 27px;
       border-radius: 4px;
+    }
+  }
+
+  form.quick-search {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: top;
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
+
+    input.search-input {
+      margin: 0;
+      padding: 3px 5px;
+      padding-left: 28px;
+      padding-right: 20px;
+      width: 260px;
+      height: 27px;
+    }
+
+    i.search {
+      position: absolute;
+      top: 0;
+      left: 2px;
+      font-size: 26px;
+      opacity: 0.5;
+    }
+
+    a.clear-query {
+      position: absolute;
+      top: 0;
+      right: 3px;
+
+      i {
+        font-size: 18px;
+      }
     }
   }
 }

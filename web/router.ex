@@ -56,6 +56,7 @@ defmodule Cotoami.Router do
     get "/invite/:email", AmishiController, :invite
     get "/amishis/email/:email", AmishiController, :show_by_email
 
+    get "/search/:query", CotoController, :search
     resources "/cotos", CotoController, only: [:index, :create, :update, :delete]
     put "/cotos/:id/cotonomatize", CotoController, :cotonomatize
 
