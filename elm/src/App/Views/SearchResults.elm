@@ -34,8 +34,8 @@ view context graph model =
                             [ type_ "text"
                             , class "search-input"
                             , defaultValue model.query
-                            , onFocus (SetQuickSearchInputFocus True)
-                            , onBlur (SetQuickSearchInputFocus False)
+                            , onFocus (SearchInputFocusChanged True)
+                            , onBlur (SearchInputFocusChanged False)
                             ]
                             []
                       )

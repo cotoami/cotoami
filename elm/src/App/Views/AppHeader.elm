@@ -15,7 +15,7 @@ import App.Messages
             , OpenSigninModal
             , OpenProfileModal
             , NavigationToggle
-            , SetQuickSearchInputFocus
+            , SearchInputFocusChanged
             , ClearQuickSearchInput
             , QuickSearchInput
             , Search
@@ -77,8 +77,8 @@ quickSearchForm searchResults =
                     [ type_ "text"
                     , class "search-input"
                     , defaultValue searchResults.query
-                    , onFocus (SetQuickSearchInputFocus True)
-                    , onBlur (SetQuickSearchInputFocus False)
+                    , onFocus (SearchInputFocusChanged True)
+                    , onBlur (SearchInputFocusChanged False)
                     , onInput QuickSearchInput
                     ]
                     []

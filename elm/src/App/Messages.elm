@@ -27,7 +27,7 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
-    | SetQuickSearchInputFocus Bool
+    | SearchInputFocusChanged Bool
     | ClearQuickSearchInput
     | QuickSearchInput String
     | Search
