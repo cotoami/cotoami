@@ -227,7 +227,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ if paginatedPosts.pageIndex == 0 then
-                            initializeTimelineScrollPosition model
+                            initScrollPositionOfTimeline model
                           else
                             Cmd.none
                         , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
@@ -249,7 +249,13 @@ update msg model =
 
         GraphFetched (Ok graph) ->
             { model | graph = graph, loadingGraph = False }
-                |> \model -> ( model, initializeTimelineScrollPosition model )
+                |> \model ->
+                    ( model
+                    , Cmd.batch
+                        [ initScrollPositionOfTimeline model
+                        , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                        ]
+                    )
 
         GraphFetched (Err _) ->
             model ! []
@@ -658,7 +664,7 @@ update msg model =
                 |> \model ->
                     ( model
                     , if paginatedPosts.pageIndex == 0 then
-                        initializeTimelineScrollPosition model
+                        initScrollPositionOfTimeline model
                       else
                         Cmd.none
                     )
@@ -958,7 +964,7 @@ openNewEditor source model =
 
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
-    { model
+    ( { model
         | context =
             model.context
                 |> App.Types.Context.setCotonomaLoading
@@ -972,11 +978,13 @@ loadHome model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
-    }
-        ! [ App.Server.Post.fetchPosts 0
-          , App.Server.Cotonoma.fetchCotonomas
-          , App.Server.Graph.fetchGraph Nothing
-          ]
+      }
+    , Cmd.batch
+        [ App.Server.Post.fetchPosts 0
+        , App.Server.Cotonoma.fetchCotonomas
+        , App.Server.Graph.fetchGraph Nothing
+        ]
+    )
 
 
 changeLocationToCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
@@ -986,7 +994,7 @@ changeLocationToCotonoma key model =
 
 loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
-    { model
+    ( { model
         | context =
             model.context
                 |> App.Types.Context.setCotonomaLoading
@@ -999,15 +1007,17 @@ loadCotonoma key model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
-    }
-        ! [ App.Server.Cotonoma.fetchCotonomas
-          , App.Server.Post.fetchCotonomaPosts key 0
-          , App.Server.Graph.fetchGraph (Just key)
-          ]
+      }
+    , Cmd.batch
+        [ App.Server.Cotonoma.fetchCotonomas
+        , App.Server.Post.fetchCotonomaPosts key 0
+        , App.Server.Graph.fetchGraph (Just key)
+        ]
+    )
 
 
-initializeTimelineScrollPosition : Model -> Cmd Msg
-initializeTimelineScrollPosition model =
+initScrollPositionOfTimeline : Model -> Cmd Msg
+initScrollPositionOfTimeline model =
     if App.Model.areTimelineAndGraphLoaded model then
         App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
     else

@@ -45,9 +45,21 @@ scrollTimelineByQuickEditorOpen msg =
         |> attempt (\_ -> msg)
 
 
+initScrollPositionOfPinnedCotos : msg -> Cmd msg
+initScrollPositionOfPinnedCotos msg =
+    scrollToTop "pinned-cotos-body" msg
+
+
 scrollPinnedCotosToBottom : msg -> Cmd msg
 scrollPinnedCotosToBottom msg =
     scrollToBottom "pinned-cotos-body" msg
+
+
+scrollToTop : String -> msg -> Cmd msg
+scrollToTop elementId msg =
+    Process.sleep (100 * Time.millisecond)
+        |> andThen (\_ -> (Dom.Scroll.toTop elementId))
+        |> attempt (\_ -> msg)
 
 
 scrollToBottom : String -> msg -> Cmd msg
