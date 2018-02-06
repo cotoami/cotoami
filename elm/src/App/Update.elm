@@ -130,7 +130,7 @@ update msg model =
         QuickSearchInput query ->
             ( { model
                 | searchResults =
-                    App.Types.SearchResults.setQuery query model.searchResults
+                    App.Types.SearchResults.setQuerying query model.searchResults
               }
             , if isNotBlank query then
                 App.Server.Post.search query
@@ -138,8 +138,16 @@ update msg model =
                 Cmd.none
             )
 
+        SearchInput query ->
+            ( { model
+                | searchResults =
+                    App.Types.SearchResults.setQuery query model.searchResults
+              }
+            , Cmd.none
+            )
+
         Search ->
-            ( model
+            ( { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
             , if App.Types.SearchResults.hasQuery model.searchResults then
                 App.Server.Post.search model.searchResults.query
               else

@@ -2,7 +2,7 @@ module App.Views.SearchResults exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onFocus, onBlur)
+import Html.Events exposing (onFocus, onBlur, onInput)
 import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
@@ -36,13 +36,14 @@ view context graph model =
                             , defaultValue model.query
                             , onFocus (SearchInputFocusChanged True)
                             , onBlur (SearchInputFocusChanged False)
+                            , onInput SearchInput
                             ]
                             []
                       )
                     ]
                 , a
                     [ class "tool-button search"
-                    , onLinkButtonClick NoOp
+                    , onLinkButtonClick Search
                     ]
                     [ materialIcon "search" Nothing ]
                 ]
