@@ -143,6 +143,7 @@ div.main-column,
   left: 0;
   right: 0;
   bottom: 0;
+  padding-right: 5px;   // for view-switch on mobile
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -154,7 +155,7 @@ div.main-column,
 }
 
 div.main-traversal {
-  padding: 0 5px;
+  padding-right: 5px;   // for view-switch on mobile
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -274,8 +275,6 @@ div.main-traversal {
     flex: 1;
     margin: 0;
     padding: 0;
-    padding-left: 6px;
-    padding-right: 6px;
     background-color: #e8e8e8;
   }
 
@@ -301,6 +300,7 @@ div.main-traversal {
     background-color: #fdfdfd;
     border-left: solid 1px #ddd;
     box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
+    padding: 0;
 
     &.empty,
     &.hidden {
