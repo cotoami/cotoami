@@ -80,7 +80,6 @@ html, body, #elm-container, #app {
   display: flex;
   flex-direction: row;
   padding-top: 35px;
-  padding-right: 5px;   // for view-switch on mobile
   box-sizing: border-box;
   background-color: #f8f8f8;
   width: 100%;
@@ -123,7 +122,8 @@ div.main-column,
 
 #main-timeline {
   width: 100%;
-  padding: 0 10px;
+  padding-left: 10px;
+  padding-right: 15px;   // for view-switch on mobile
   overflow: hidden;
 }
 
