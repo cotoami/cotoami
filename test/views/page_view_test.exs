@@ -1,3 +1,3 @@
-defmodule Cotoami.PageViewTest do
-  use Cotoami.ConnCase, async: true
+defmodule CotoamiWeb.PageViewTest do
+  use CotoamiWeb.ConnCase, async: true
 end

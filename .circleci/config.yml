@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cotoami/cotoami-elixir:1.4.5
+      - image: cotoami/cotoami-elixir:1.6
       - image: circleci/postgres:9.5-alpine
       - image: redis:alpine
       - image: neo4j:3.2.2
@@ -18,24 +18,24 @@ jobs:
             MIX_ENV: prod
       - run:
           name: Install node modules
-          command: npm install --unsafe-perm
+          command: cd assets && npm install --unsafe-perm
           # ref. https://github.com/npm/npm/issues/3497
       - run:
           name: Check elm sources are formatted
-          command: npm run elm-format:validate
+          command: cd assets && npm run elm-format:validate
       - run:
           name: Fix elm-make
-          command: ./ci/fix-elm-make.sh
+          command: ./.circleci/fix-elm-make.sh
       - run:
           name: Compile assets
-          command: npm run deploy && npm run deploy && mix phoenix.digest
-          environment:
-            MIX_ENV: prod
-            LOGGY_STACKS: "1"
+          command: cd assets && npm run deploy && npm run deploy
           # ref. https://github.com/madsflensted/elm-brunch/issues/26
       - run:
+          name: Digest and compress static files
+          command: mix phx.digest
+      - run:
           name: Install dockerize
-          command: ./ci/install-dockerize.sh
+          command: ./.circleci/install-dockerize.sh
       - run:
           name: Wait for postgres to be ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
@@ -77,9 +77,9 @@ jobs:
       - checkout
       - run:
           name: Install kubectl
-          command: ./ci/install-kubectl.sh
+          command: ./.circleci/install-kubectl.sh
       - deploy:
-          command: ./ci/deploy-develop.sh
+          command: ./.circleci/deploy-develop.sh
 
   release:
     docker:
@@ -108,7 +108,7 @@ jobs:
       - checkout
       - run:
           name: Install kubectl
-          command: ./ci/install-kubectl.sh
+          command: ./.circleci/install-kubectl.sh
       - deploy:
           command: |
             ~/.kube/kubectl config use-context $KUBE_CONTEXT

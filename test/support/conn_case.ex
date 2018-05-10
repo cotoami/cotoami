@@ -1,4 +1,4 @@
-defmodule Cotoami.ConnCase do
+defmodule CotoamiWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,10 +25,10 @@ defmodule Cotoami.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import Cotoami.Router.Helpers
+      import CotoamiWeb.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Cotoami.Endpoint
+      @endpoint CotoamiWeb.Endpoint
     end
   end
 

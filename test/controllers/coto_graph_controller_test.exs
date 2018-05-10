@@ -1,5 +1,5 @@
-defmodule Cotoami.CotoGraphControllerTest do
-  use Cotoami.ConnCase
+defmodule CotoamiWeb.CotoGraphControllerTest do
+  use CotoamiWeb.ConnCase
   alias Bolt.Sips.Types.Relationship
   alias Cotoami.{
     Coto,

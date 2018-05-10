@@ -1,3 +1,3 @@
-defmodule Cotoami.LayoutViewTest do
-  use Cotoami.ConnCase, async: true
+defmodule CotoamiWeb.LayoutViewTest do
+  use CotoamiWeb.ConnCase, async: true
 end
