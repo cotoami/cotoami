@@ -10,6 +10,7 @@ if [ ! -d ~/sysconfcpus/bin ]; then
 fi
 
 # replace elm-make https://github.com/elm-lang/elm-compiler/issues/1473#issuecomment-250637064
+cd assets
 if [ ! -f $(npm bin)/elm-make-old ]; then
   mv $(npm bin)/elm-make $(npm bin)/elm-make-old
   printf "#\041/bin/bash\n\necho \"Running elm-make with sysconfcpus -n 2\"\n\n$HOME/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old \"\$@\"" > $(npm bin)/elm-make
