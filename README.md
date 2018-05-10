@@ -116,3 +116,9 @@ Now you can visit `localhost:4000` from your browser.
 
 There should be a line like `You can check sign-up/in mails at <url>` in the output log.
 You can access the test mail server via the `<url>` to check sign-up/in mails.
+
+## License
+
+Cotoami source code is released under Apache 2 License.
+
+Check [LICENSE](LICENSE) file for more information.
