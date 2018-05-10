@@ -25,8 +25,8 @@ defmodule Cotoami do
 
     children = [
       supervisor(Cotoami.Repo, []),
-      supervisor(Cotoami.Endpoint, []),
-      supervisor(Cotoami.Presence, []),
+      supervisor(CotoamiWeb.Endpoint, []),
+      supervisor(CotoamiWeb.Presence, []),
       worker(Bolt.Sips, [Application.get_env(:bolt_sips, Bolt)])
     ] ++ redix_workers
 
@@ -41,7 +41,7 @@ defmodule Cotoami do
   end
 
   def config_change(changed, _new, removed) do
-    Cotoami.Endpoint.config_change(changed, removed)
+    CotoamiWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

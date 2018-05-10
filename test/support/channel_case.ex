@@ -1,4 +1,4 @@
-defmodule Cotoami.ChannelCase do
+defmodule CotoamiWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -27,7 +27,7 @@ defmodule Cotoami.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint Cotoami.Endpoint
+      @endpoint CotoamiWeb.Endpoint
     end
   end
 
