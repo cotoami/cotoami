@@ -20,8 +20,8 @@ defmodule Cotoami.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Cotoami, []},
-      extra_applications: [:logger, :poison]
+      mod: {Cotoami.Application, []},
+      extra_applications: [:logger, :runtime_tools, :poison]
     ]
   end
 

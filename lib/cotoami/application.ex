@@ -1,4 +1,4 @@
-defmodule Cotoami do
+defmodule Cotoami.Application do
   @moduledoc """
   The entrypoint of Cotoami app
   """
