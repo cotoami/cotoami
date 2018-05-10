@@ -33,12 +33,14 @@ case System.get_env("DATABASE_URL") do
       password: System.get_env("COTOAMI_REPO_PASSWORD"),
       database: System.get_env("COTOAMI_REPO_DATABASE"),
       hostname: System.get_env("COTOAMI_REPO_HOST"),
-      pool_size: 5
+      pool_size: 5,
+      timeout: 300_000
   url ->
     config :cotoami, Cotoami.Repo,
       adapter: Ecto.Adapters.Postgres,
       url: url,
       pool_size: 5,
-      ssl: true
+      ssl: true,
+      timeout: 300_000
 end
 
