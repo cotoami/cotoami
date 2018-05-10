@@ -8,7 +8,7 @@ defmodule CotoamiWeb.SigninController do
       token = RedisService.generate_signin_token(email)
       host_url = CotoamiWeb.Router.Helpers.url(conn)
       email
-      |> Cotoami.Email.signin_link(token, host_url)
+      |> CotoamiWeb.Email.signin_link(token, host_url)
       |> Cotoami.Mailer.deliver_now
       json conn, "ok"
     else

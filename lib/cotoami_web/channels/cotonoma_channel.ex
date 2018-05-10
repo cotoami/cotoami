@@ -4,7 +4,8 @@ defmodule CotoamiWeb.CotonomaChannel do
   """
 
   use CotoamiWeb, :channel
-  alias Cotoami.{Presence, CotonomaService}
+  alias Cotoami.CotonomaService
+  alias CotoamiWeb.Presence
 
   def join("cotonomas:" <> cotonoma_key, _params, socket) do
     case CotonomaService.get_by_key(cotonoma_key) do

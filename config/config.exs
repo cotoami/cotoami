@@ -59,7 +59,7 @@ case System.get_env("SENDGRID_USERNAME") do
       api_key: System.get_env("SENDGRID_API_KEY")
 end
 
-config :cotoami, Cotoami.Email,
+config :cotoami, CotoamiWeb.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
 
 # Neo4j

@@ -22,7 +22,7 @@ defmodule CotoamiWeb.AmishiController do
         token = RedisService.generate_invite_token(email)
         host_url = CotoamiWeb.Router.Helpers.url(conn)
         email
-        |> Cotoami.Email.invitation(token, host_url, amishi)
+        |> CotoamiWeb.Email.invitation(token, host_url, amishi)
         |> Cotoami.Mailer.deliver_now
         json conn, "ok"
       invitee ->
