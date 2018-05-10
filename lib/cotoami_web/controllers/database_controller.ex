@@ -49,7 +49,10 @@ defmodule CotoamiWeb.DatabaseController do
                   send_resp(conn, :internal_server_error, "Transaction error.")
               end
             rescue
-              e -> send_resp(conn, :bad_request, Exception.message(e))
+              e -> 
+                Logger.error "Import error: #{inspect e}"
+                Logger.info Exception.format_stacktrace(System.stacktrace())
+                send_resp(conn, :bad_request, Exception.message(e))
             end
           _ ->
             send_resp(conn, :bad_request, "Invalid data structure.")
