@@ -36,10 +36,15 @@ defmodule Cotoami.CotoGraphService do
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
+
         MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
           { created_by: $created_by }]->(child:#{@label_coto})
         WHERE NOT exists(has.created_in)
-        RETURN DISTINCT parent, has, child
+        WITH DISTINCT parent, has, child
+        ORDER BY has.created_at DESC
+        LIMIT 100
+
+        RETURN parent, has, child
         ORDER BY has.#{Neo4jService.rel_prop_order()}
       """
     bolt_conn
@@ -50,9 +55,14 @@ defmodule Cotoami.CotoGraphService do
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
+
         MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
           { created_in: $created_in }]->(child:#{@label_coto})
-        RETURN DISTINCT parent, has, child
+        WITH DISTINCT parent, has, child
+        ORDER BY has.created_at DESC
+        LIMIT 100
+
+        RETURN parent, has, child
         ORDER BY has.#{Neo4jService.rel_prop_order()}
       """
     bolt_conn
@@ -67,7 +77,7 @@ defmodule Cotoami.CotoGraphService do
   end
 
   # start with the uuid node and traverse HAS_A relationships
-  # until finding the end edge or a cotonoma
+  # until finding an end edge or a cotonoma
   defp query_graph_from_uuid do
     ~s"""
       MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
