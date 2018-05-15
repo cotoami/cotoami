@@ -7,6 +7,16 @@ module Util.Keyboard.Key exposing (..)
 import Keyboard exposing (KeyCode)
 
 
+escapeKeyCode : KeyCode
+escapeKeyCode =
+    27
+
+
+nKeyCode : KeyCode
+nKeyCode =
+    78
+
+
 {-|
     Represents a Key. Currently incomplete.
 -}

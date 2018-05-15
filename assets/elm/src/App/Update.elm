@@ -6,7 +6,6 @@ import Time
 import Maybe
 import Http exposing (Error(..))
 import Json.Decode as Decode
-import Util.Keys exposing (enter, escape, n)
 import Util.Keyboard.Key
 import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
@@ -54,10 +53,10 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            if keyCode == escape.keyCode then
+            if keyCode == Util.Keyboard.Key.escapeKeyCode then
                 ( closeActiveModal model, Cmd.none )
             else if
-                (keyCode == n.keyCode)
+                (keyCode == Util.Keyboard.Key.nKeyCode)
                     && (List.isEmpty model.modals)
                     && (not model.timeline.editorOpen)
                     && (not model.searchInputFocus)
