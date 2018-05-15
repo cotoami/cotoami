@@ -38,6 +38,5 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
-        , Keyboard.ups KeyUp
         , phoenixChannels model
         ]

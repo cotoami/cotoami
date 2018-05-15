@@ -20,7 +20,6 @@ import App.Modals.ImportModalMsg
 type Msg
     = NoOp
     | KeyDown KeyCode
-    | KeyUp KeyCode
     | AppClick
     | OnLocationChange Location
     | NavigationToggle

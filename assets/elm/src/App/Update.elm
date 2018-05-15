@@ -1,11 +1,9 @@
 module App.Update exposing (..)
 
-import Set
 import Task
 import Process
 import Time
 import Maybe
-import Keyboard exposing (KeyCode)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Util.Keys exposing (enter, escape, n)
@@ -56,25 +54,17 @@ update msg model =
             ( model, Cmd.none )
 
         KeyDown keyCode ->
-            { model | context = App.Types.Context.keyDown keyCode model.context }
-                |> (\model ->
-                        if keyCode == escape.keyCode then
-                            ( closeActiveModal model, Cmd.none )
-                        else if
-                            (keyCode == n.keyCode)
-                                && (List.isEmpty model.modals)
-                                && (not model.timeline.editorOpen)
-                                && (not model.searchInputFocus)
-                        then
-                            openNewEditor Nothing model
-                        else
-                            ( model, Cmd.none )
-                   )
-
-        KeyUp keyCode ->
-            ( { model | context = App.Types.Context.keyUp keyCode model.context }
-            , Cmd.none
-            )
+            if keyCode == escape.keyCode then
+                ( closeActiveModal model, Cmd.none )
+            else if
+                (keyCode == n.keyCode)
+                    && (List.isEmpty model.modals)
+                    && (not model.timeline.editorOpen)
+                    && (not model.searchInputFocus)
+            then
+                openNewEditor Nothing model
+            else
+                ( model, Cmd.none )
 
         AppClick ->
             ( { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }

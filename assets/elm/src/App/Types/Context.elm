@@ -3,10 +3,8 @@ module App.Types.Context exposing (..)
 import Set exposing (Set)
 import Uuid
 import Random.Pcg exposing (initialSeed, step)
-import Keyboard exposing (KeyCode)
 import Exts.Maybe exposing (isNothing)
 import Util.HttpUtil exposing (ClientId(ClientId))
-import Util.Keys exposing (Modifier(..), isModifier, toModifier)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma)
 
@@ -26,7 +24,6 @@ type alias Context =
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
-    , modifierKeys : Set KeyCode
     }
 
 
@@ -45,7 +42,6 @@ initContext seed =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
-    , modifierKeys = Set.empty
     }
 
 
@@ -170,69 +166,6 @@ finishBeingDeselected context =
                 context.selection
         , deselecting = Set.empty
     }
-
-
-keyDown : KeyCode -> Context -> Context
-keyDown keyCode context =
-    if isModifier keyCode then
-        { context
-            | modifierKeys = Set.insert keyCode context.modifierKeys
-        }
-    else
-        context
-
-
-keyUp : KeyCode -> Context -> Context
-keyUp keyCode context =
-    if isModifier keyCode then
-        { context
-            | modifierKeys = Set.remove keyCode context.modifierKeys
-        }
-    else
-        context
-
-
-isCtrlDown : Context -> Bool
-isCtrlDown context =
-    context.modifierKeys
-        |> Set.toList
-        |> List.any
-            (\keyCode ->
-                toModifier keyCode
-                    |> Maybe.map
-                        (\modifier ->
-                            case modifier of
-                                Ctrl ->
-                                    True
-
-                                Meta ->
-                                    True
-
-                                _ ->
-                                    False
-                        )
-                    |> Maybe.withDefault False
-            )
-
-
-isAltDown : Context -> Bool
-isAltDown context =
-    context.modifierKeys
-        |> Set.toList
-        |> List.any
-            (\keyCode ->
-                toModifier keyCode
-                    |> Maybe.map
-                        (\modifier ->
-                            case modifier of
-                                Alt ->
-                                    True
-
-                                _ ->
-                                    False
-                        )
-                    |> Maybe.withDefault False
-            )
 
 
 orignatedHere : Context -> Coto -> Bool
