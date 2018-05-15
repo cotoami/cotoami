@@ -8,8 +8,7 @@ module Util.Keyboard.Event
         , decodeKey
         )
 
-{-|
-    Original version: https://github.com/Gizra/elm-keyboard-event
+{-| Original version: <https://github.com/Gizra/elm-keyboard-event>
 -}
 
 import Json.Decode exposing (Decoder, map, map7, int, field, oneOf, andThen, maybe, succeed, fail, bool, string)
@@ -25,7 +24,7 @@ type alias KeyCode =
 
 {-| Decodes `keyCode`, `which` or `charCode` from a [keyboard event][keyboard-event]
 to get a numeric code for the key that was pressed.
-[keyboard-event]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+[keyboard-event]: <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent>
 -}
 decodeKeyCode : Decoder KeyCode
 decodeKeyCode =
@@ -33,8 +32,9 @@ decodeKeyCode =
         [ field "keyCode" decodeNonZero
         , field "which" decodeNonZero
         , field "charCode" decodeNonZero
-          -- In principle, we should always get some code, so instead
-          -- of making this a Maybe, we succeed with 0.
+
+        -- In principle, we should always get some code, so instead
+        -- of making this a Maybe, we succeed with 0.
         , succeed 0
         ]
 
@@ -55,7 +55,7 @@ decodeNonZero =
 
 {-| Decodes the `key` field from a [keyboard event][keyboard-event].
 Results in `Nothing` if the `key` field is not present, or blank.
-[keyboard-event]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+[keyboard-event]: <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent>
 -}
 decodeKey : Decoder (Maybe String)
 decodeKey =
@@ -79,8 +79,8 @@ The `keyCode` is normalized by `decodeKeyboardEvent` to use whichever of
 `Keyboard.Key`
 (see the excellent [SwiftsNamesake/proper-keyboard][proper-keyboard-pkg] for
 further manipulation of a `Key`).
-[keyboard-event]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-[proper-keyboard-pkg]: http://package.elm-lang.org/packages/SwiftsNamesake/proper-keyboard/latest
+[keyboard-event]: <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent>
+[proper-keyboard-pkg]: <http://package.elm-lang.org/packages/SwiftsNamesake/proper-keyboard/latest>
 -}
 type alias KeyboardEvent =
     { altKey : Bool
@@ -94,7 +94,7 @@ type alias KeyboardEvent =
 
 
 {-| Decodes a `KeyboardEvent` from a [keyboard event][keyboard-event].
-[keyboard-event]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+[keyboard-event]: <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent>
 -}
 decodeKeyboardEvent : Decoder KeyboardEvent
 decodeKeyboardEvent =

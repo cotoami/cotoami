@@ -1,7 +1,6 @@
 module Util.Keyboard.Key exposing (..)
 
-{-|
-    Original version: https://github.com/SwiftsNamesake/proper-keyboard
+{-| Original version: <https://github.com/SwiftsNamesake/proper-keyboard>
 -}
 
 import Keyboard exposing (KeyCode)
@@ -17,8 +16,7 @@ nKeyCode =
     78
 
 
-{-|
-    Represents a Key. Currently incomplete.
+{-| Represents a Key. Currently incomplete.
 -}
 type Key
     = -- Letters
@@ -123,9 +121,8 @@ type Key
     | Unknown KeyCode
 
 
-{-|
-    Type used to distinguish between multiple instances of the same key
-    (such as Left Ctrl and Right Ctrl)
+{-| Type used to distinguish between multiple instances of the same key
+(such as Left Ctrl and Right Ctrl)
 -}
 type Side
     = LeftHand
@@ -714,9 +711,8 @@ code key =
             Nothing
 
 
-{-|
-    Attempt to transform a Key into a Char.
-    This does not work for 'special' keys that are not used to type symbols.
+{-| Attempt to transform a Key into a Char.
+This does not work for 'special' keys that are not used to type symbols.
 -}
 toChar : Key -> Maybe Char
 toChar key =
