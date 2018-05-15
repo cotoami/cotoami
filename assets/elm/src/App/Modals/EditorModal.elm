@@ -14,14 +14,16 @@ module App.Modals.EditorModal
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (on, onClick, onInput)
 import Http exposing (Error(..))
+import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
+import Util.Keyboard.Event
 import App.Types.Coto exposing (Coto)
 import App.Types.Context exposing (Context)
 import App.Server.Coto
@@ -129,7 +131,7 @@ update context msg model =
         TogglePreview ->
             ( { model | preview = not model.preview }, Cmd.none )
 
-        EditorKeyDown keyCode ->
+        EditorKeyDown keyboardEvent ->
             ( model, Cmd.none )
 
         Post ->
@@ -250,7 +252,10 @@ cotoEditor model =
                     , placeholder "Write your Coto in Markdown"
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
-                    , onKeyDown (AppMsg.EditorModalMsg << EditorKeyDown)
+                    , on "keydown" <|
+                        Decode.map
+                            (AppMsg.EditorModalMsg << EditorKeyDown)
+                            Util.Keyboard.Event.decodeKeyboardEvent
                     ]
                     []
                 ]

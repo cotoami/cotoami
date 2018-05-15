@@ -1,13 +1,13 @@
 module App.Modals.EditorModalMsg exposing (..)
 
-import Keyboard exposing (KeyCode)
+import Util.Keyboard.Event exposing (KeyboardEvent)
 
 
 type Msg
     = EditorInput String
     | SummaryInput String
     | TogglePreview
-    | EditorKeyDown KeyCode
+    | EditorKeyDown KeyboardEvent
     | Post
     | PostCotonoma
     | Save

@@ -4,11 +4,13 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode as Decode
 import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation)
+import Util.Keyboard.Event
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -166,7 +168,8 @@ postEditor context session model =
                     , defaultValue model.newContent
                     , onFocus EditorFocus
                     , onInput EditorInput
-                    , onKeyDown EditorKeyDown
+                    , on "keydown" <|
+                        Decode.map EditorKeyDown Util.Keyboard.Event.decodeKeyboardEvent
                     , onClickWithoutPropagation NoOp
                     ]
                     []

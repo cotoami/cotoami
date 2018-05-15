@@ -9,6 +9,8 @@ import Keyboard exposing (KeyCode)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Util.Keys exposing (enter, escape, n)
+import Util.Keyboard.Key
+import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
@@ -696,8 +698,8 @@ update msg model =
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
 
-        EditorKeyDown keyCode ->
-            handleEditorShortcut keyCode Nothing model.timeline.newContent model
+        EditorKeyDown keyboardEvent ->
+            handleEditorShortcut keyboardEvent Nothing model.timeline.newContent model
                 |> \( model, cmd ) ->
                     ( model
                     , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
@@ -928,8 +930,8 @@ update msg model =
                             App.Modals.EditorModalMsg.PostCotonoma ->
                                 postCotonomaFromEditorModal model
 
-                            App.Modals.EditorModalMsg.EditorKeyDown keyCode ->
-                                handleEditorModalShortcut keyCode model
+                            App.Modals.EditorModalMsg.EditorKeyDown keyboardEvent ->
+                                handleEditorModalShortcut keyboardEvent model
 
                             _ ->
                                 ( model, cmd )
@@ -1116,17 +1118,16 @@ confirmPostAndConnect summary content model =
     )
 
 
-handleEditorShortcut : KeyCode -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-handleEditorShortcut keyCode summary content model =
+handleEditorShortcut : KeyboardEvent -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+handleEditorShortcut keyboardEvent summary content model =
     if
-        (keyCode == enter.keyCode)
-            && not (Set.isEmpty model.context.modifierKeys)
+        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
             && isNotBlank content
     then
-        if App.Types.Context.isCtrlDown model.context then
+        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
             postAndConnectToSelection Nothing summary content model
         else if
-            App.Types.Context.isAltDown model.context
+            keyboardEvent.altKey
                 && App.Types.Context.anySelection model.context
         then
             confirmPostAndConnect summary content model
@@ -1136,16 +1137,15 @@ handleEditorShortcut keyCode summary content model =
         ( model, Cmd.none )
 
 
-handleEditorModalShortcut : KeyCode -> Model -> ( Model, Cmd Msg )
-handleEditorModalShortcut keyCode model =
+handleEditorModalShortcut : KeyboardEvent -> Model -> ( Model, Cmd Msg )
+handleEditorModalShortcut keyboardEvent model =
     if
-        (keyCode == enter.keyCode)
-            && not (Set.isEmpty model.context.modifierKeys)
+        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
             && isNotBlank model.editorModal.content
     then
         case model.editorModal.mode of
             App.Modals.EditorModal.Edit coto ->
-                if App.Types.Context.isCtrlDown model.context then
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
                     ( model
                     , App.Server.Coto.updateContent
                         model.context.clientId
@@ -1157,10 +1157,10 @@ handleEditorModalShortcut keyCode model =
                     ( model, Cmd.none )
 
             _ ->
-                if App.Types.Context.isCtrlDown model.context then
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
                     postFromEditorModal model
                 else if
-                    App.Types.Context.isAltDown model.context
+                    keyboardEvent.altKey
                         && App.Types.Context.anySelection model.context
                 then
                     confirmPostAndConnect
