@@ -226,14 +226,22 @@ div.sub-cotos {
     }
 
     div.coto-inner {
+      padding: 3px 8px;
+      padding-right: 0;
+    }
+
+    div.coto-header {
+      position: relative;
+      min-height: auto;
+    }
+
+    div.sub-coto-body {
       display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      padding: 3px 8px;
-      padding-right: 0;
 
-      div.coto-inner-main {
+      div.coto-body {
         flex: 1;
       }
 
@@ -244,10 +252,6 @@ div.sub-cotos {
           margin-top: -8px;
         }
       }
-    }
-
-    div.coto-header {
-      min-height: auto;
     }
 
     div.coto-body {

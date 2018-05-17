@@ -600,20 +600,20 @@ subCotoDiv context graph parentElementId inbound coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ div [ class "coto-inner-main" ]
-                    [ headerDiv
-                        context
-                        graph
-                        (Just inbound)
-                        { defaultActionConfig
-                            | toggleReorderMode = Just ToggleReorderMode
-                        }
-                        elementId
-                        coto
-                    , parentsDiv graph maybeParentId coto.id
-                    , bodyDivByCoto context elementId coto
+                [ headerDiv
+                    context
+                    graph
+                    (Just inbound)
+                    { defaultActionConfig
+                        | toggleReorderMode = Just ToggleReorderMode
+                    }
+                    elementId
+                    coto
+                , parentsDiv graph maybeParentId coto.id
+                , div [ class "sub-coto-body" ]
+                    [ bodyDivByCoto context elementId coto
+                    , subCotosEllipsisDiv (Just coto.id) graph
                     ]
-                , subCotosEllipsisDiv (Just coto.id) graph
                 ]
             ]
 
