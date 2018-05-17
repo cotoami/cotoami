@@ -226,7 +226,24 @@ div.sub-cotos {
     }
 
     div.coto-inner {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
       padding: 3px 8px;
+      padding-right: 0;
+
+      div.coto-inner-main {
+        flex: 1;
+      }
+
+      div.sub-cotos-button {
+        width: 24px;
+
+        i {
+          margin-top: -8px;
+        }
+      }
     }
 
     div.coto-header {
