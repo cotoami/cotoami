@@ -3,11 +3,13 @@ div.coto {
   box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
   padding: 0;
   background-color: #fff;
+}
 
-  div.main-sub-border {
-    padding-top: 3px;
-    border-bottom: 1px solid #eee;
-  }
+div.coto-inner {
+  padding: 12px;
+  padding-top: 0;
+  margin: 0;
+  border: transparent 2px solid;
 
   div.sub-cotos-button {
     padding-top: 5px;
@@ -17,13 +19,11 @@ div.coto {
       vertical-align: bottom;
     }
   }
-}
 
-div.coto-inner {
-  padding: 12px;
-  padding-top: 0;
-  margin: 0;
-  border: transparent 2px solid;
+  div.main-sub-border {
+    padding-top: 3px;
+    border-bottom: 1px solid #eee;
+  }
 }
 
 div.coto-header {
