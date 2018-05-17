@@ -37,7 +37,7 @@ view context graph post =
                     authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId markdown post
                 , footerDiv post
-                , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
+                , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
                 ]
             ]
 

@@ -86,7 +86,7 @@ postDiv context graph post =
                     App.Views.Post.authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown post
                 , footerDiv context post
-                , App.Views.Coto.subCotosEllipsisDiv post.cotoId graph
+                , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
                 ]
             ]
 

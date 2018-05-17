@@ -137,6 +137,6 @@ cotoDiv beingDeselected context graph coto =
                     elementId
                     coto
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
-                , App.Views.Coto.subCotosEllipsisDiv (Just coto.id) graph
+                , App.Views.Coto.subCotosButtonDiv graph Nothing (Just coto.id)
                 ]
             ]

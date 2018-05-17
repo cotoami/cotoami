@@ -10,7 +10,7 @@ module App.Views.Coto
         , headerDiv
         , toolButtonsSpan
         , parentsDiv
-        , subCotosEllipsisDiv
+        , subCotosButtonDiv
         , subCotosDiv
         , abbreviate
         , cotonomaLink
@@ -509,8 +509,8 @@ parentsDiv graph exclude childId =
 --
 
 
-subCotosEllipsisDiv : Maybe CotoId -> Graph -> Html Msg
-subCotosEllipsisDiv maybeCotoId graph =
+subCotosButtonDiv : Graph -> Maybe String -> Maybe CotoId -> Html Msg
+subCotosButtonDiv graph maybeIconName maybeCotoId =
     maybeCotoId
         |> Maybe.map
             (\cotoId ->
@@ -520,7 +520,10 @@ subCotosEllipsisDiv maybeCotoId graph =
                             [ class "tool-button"
                             , onLinkButtonClick (OpenTraversal cotoId)
                             ]
-                            [ materialIcon "more_horiz" Nothing ]
+                            [ materialIcon
+                                (Maybe.withDefault "more_horiz" maybeIconName)
+                                Nothing
+                            ]
                         ]
                 else
                     div [] []
@@ -612,7 +615,7 @@ subCotoDiv context graph parentElementId inbound coto =
                 , parentsDiv graph maybeParentId coto.id
                 , div [ class "sub-coto-body" ]
                     [ bodyDivByCoto context elementId coto
-                    , subCotosEllipsisDiv (Just coto.id) graph
+                    , subCotosButtonDiv graph (Just "more_vert") (Just coto.id)
                     ]
                 ]
             ]
