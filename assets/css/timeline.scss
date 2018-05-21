@@ -8,6 +8,10 @@
   width: 100%;
   overflow: hidden;
 
+  div.timeline-toolbar {
+    height: 36px;
+  }
+
   div.timeline {
     flex: 1;
   }
@@ -42,6 +46,13 @@
         display: none;
       }
     }
+  }
+}
+
+div.timeline-toolbar {
+  a.timeline-toggle i {
+    margin-top: 4px;
+    font-size: 30px;
   }
 }
 

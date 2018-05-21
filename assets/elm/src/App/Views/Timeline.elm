@@ -32,9 +32,21 @@ view context session graph ready timeline =
             div [ class "loading-overlay" ] []
           else
             div [] []
+        , toolbarDiv context
         , timelineDiv context graph timeline
         , postEditor context session timeline
         , newCotoButton timeline
+        ]
+
+
+toolbarDiv : Context -> Html Msg
+toolbarDiv context =
+    div [ class "timeline-toolbar" ]
+        [ a
+            [ class "tool-button timeline-toggle"
+            , title "Hide timeline"
+            ]
+            [ materialIcon "arrow_left" Nothing ]
         ]
 
 
