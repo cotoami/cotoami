@@ -21,6 +21,11 @@ div.traversal {
     a.close-traversal {
       position: absolute;
       right: 4px;
+
+      @media (#{$wide-viewport}) {
+        left: 6px;
+        right: auto;
+      }
     }
   }
 
