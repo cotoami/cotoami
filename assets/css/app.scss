@@ -147,7 +147,7 @@ div.main-traversal {
 }
 
 #view-switch-container {
-  z-index: 4;
+  z-index: 5;
   display: inline-block;
   position: absolute;
   top: 0;
@@ -227,7 +227,7 @@ div.main-traversal {
   }
 
   #main-timeline {
-    z-index: 3;
+    z-index: 4;
     flex: none;
     width: 500px;
     display: flex;
