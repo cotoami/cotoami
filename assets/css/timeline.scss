@@ -75,8 +75,8 @@ div.timeline {
   padding-bottom: 30px;
  
   @media (#{$wide-viewport}) {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   div.posts-on-day {
