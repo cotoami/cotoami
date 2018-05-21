@@ -2,9 +2,9 @@ module App.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Exts.Maybe exposing (isJust)
 import Html.Events exposing (onClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
+import App.Types.Session exposing (Session)
 import App.Types.Traversal
 import App.Types.SearchResults
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
@@ -106,28 +106,35 @@ timelineColumn model =
     model.context.session
         |> Maybe.map
             (\session ->
-                let
-                    active =
-                        model.activeViewOnMobile == TimelineView
-                in
-                    div
-                        [ id "main-timeline"
-                        , classList
-                            [ ( "main-column", True )
-                            , ( "activeOnMobile", active )
-                            , ( "animated", active )
-                            , ( "fadeIn", active )
-                            ]
-                        ]
-                        [ App.Views.Timeline.view
-                            model.context
-                            session
-                            model.graph
-                            (App.Model.isTimelineReady model)
-                            model.timeline
-                        ]
+                if model.timeline.hidden then
+                    Util.HtmlUtil.none
+                else
+                    timelineDiv
+                        session
+                        (model.activeViewOnMobile == TimelineView)
+                        model
             )
-        |> Maybe.withDefault (div [] [])
+        |> Maybe.withDefault Util.HtmlUtil.none
+
+
+timelineDiv : Session -> Bool -> Model -> Html Msg
+timelineDiv session active model =
+    div
+        [ id "main-timeline"
+        , classList
+            [ ( "main-column", True )
+            , ( "activeOnMobile", active )
+            , ( "animated", active )
+            , ( "fadeIn", active )
+            ]
+        ]
+        [ App.Views.Timeline.view
+            model.context
+            session
+            model.graph
+            (App.Model.isTimelineReady model)
+            model.timeline
+        ]
 
 
 pinnedCotosColumn : Model -> Html Msg

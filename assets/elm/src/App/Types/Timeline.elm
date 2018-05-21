@@ -13,7 +13,8 @@ import App.Types.Session
 
 
 type alias Timeline =
-    { editorOpen : Bool
+    { hidden : Bool
+    , editorOpen : Bool
     , newContent : String
     , editorCounter : Int
     , postIdCounter : Int
@@ -28,7 +29,8 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { editorOpen = False
+    { hidden = False
+    , editorOpen = False
     , newContent = ""
     , editorCounter = 0
     , postIdCounter = 0
