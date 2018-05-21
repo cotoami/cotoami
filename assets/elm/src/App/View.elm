@@ -60,8 +60,8 @@ view model =
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     [ navColumn model
-                    , graphExplorationDiv model
                     , timelineColumn model
+                    , graphExplorationDiv model
                     , selectionColumn model
                     , searchResultsColumn model
                     , viewSwitchContainerDiv model

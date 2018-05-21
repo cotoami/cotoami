@@ -248,6 +248,17 @@ div.main-traversal {
     }
   }
 
+  #main-timeline {
+    z-index: 3;
+    flex: none;
+    width: 500px;
+    display: flex;
+    padding: 0 5px;
+    background-color: #f8f8f8;
+    border-right: solid 1px #ddd;
+    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+  }
+
   #graph-exploration {
     flex: 1;
     display: flex;
@@ -284,17 +295,6 @@ div.main-traversal {
     margin: 0;
     padding: 0;
     background-color: #e8e8e8;
-  }
-
-  #main-timeline {
-    z-index: 3;
-    flex: none;
-    width: 500px;
-    display: flex;
-    padding: 0 5px;
-    background-color: #f8f8f8;
-    border-left: solid 1px #ddd;
-    box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
   }
 
   #main-selection,
