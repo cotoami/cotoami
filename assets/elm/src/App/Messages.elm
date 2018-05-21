@@ -24,6 +24,7 @@ type Msg
     | OnLocationChange Location
     | NavigationToggle
     | SwitchViewOnMobile ActiveViewOnMobile
+    | ToggleTimeline
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value

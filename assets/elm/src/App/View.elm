@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
+import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Session exposing (Session)
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -112,6 +113,7 @@ openTimelineButton model =
             [ a
                 [ class "tool-button timeline-toggle"
                 , title "Open timeline"
+                , onLinkButtonClick ToggleTimeline
                 ]
                 [ materialIcon "arrow_right" Nothing ]
             ]

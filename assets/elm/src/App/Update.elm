@@ -96,6 +96,11 @@ update msg model =
             , Cmd.none
             )
 
+        ToggleTimeline ->
+            ( { model | timeline = App.Types.Timeline.toggle model.timeline }
+            , Cmd.none
+            )
+
         HomeClick ->
             changeLocationToHome model
 

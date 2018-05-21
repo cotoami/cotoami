@@ -9,7 +9,7 @@ import List.Extra exposing (groupWhile)
 import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
-import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation)
+import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
 import Util.Keyboard.Event
 import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Post exposing (Post, toCoto)
@@ -45,6 +45,7 @@ toolbarDiv context =
         [ a
             [ class "tool-button timeline-toggle"
             , title "Hide timeline"
+            , onLinkButtonClick ToggleTimeline
             ]
             [ materialIcon "arrow_left" Nothing ]
         ]

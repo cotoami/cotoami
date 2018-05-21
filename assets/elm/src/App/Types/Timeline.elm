@@ -29,7 +29,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { hidden = True
+    { hidden = False
     , editorOpen = False
     , newContent = ""
     , editorCounter = 0
@@ -41,6 +41,11 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     }
+
+
+toggle : Timeline -> Timeline
+toggle timeline =
+    { timeline | hidden = not timeline.hidden }
 
 
 isEmpty : Timeline -> Bool
