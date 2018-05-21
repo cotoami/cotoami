@@ -1,7 +1,14 @@
-module Util.HtmlUtil exposing (faIcon, materialIcon)
+module Util.HtmlUtil exposing (none, faIcon, materialIcon)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+
+
+{-| <https://github.com/elm-lang/html/issues/72>
+-}
+none : Html msg
+none =
+    text ""
 
 
 faIcon : String -> Maybe String -> Html msg

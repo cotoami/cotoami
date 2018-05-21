@@ -68,25 +68,8 @@ view model =
                     ]
                 ]
             , App.Views.CotoSelection.statusBar model
-            , newCotoButton model
             , div [] (modals model)
             ]
-
-
-newCotoButton : Model -> Html Msg
-newCotoButton model =
-    if (isJust model.context.session) && (App.Model.isTimelineReady model) then
-        a
-            [ class "tool-button new-coto-button"
-            , title "New Coto"
-            , hidden (model.timeline.editorOpen)
-            , onClick OpenNewEditorModal
-            ]
-            [ materialIcon "create" Nothing
-            , span [ class "shortcut" ] [ text "(Press N key)" ]
-            ]
-    else
-        span [] []
 
 
 navColumn : Model -> Html Msg

@@ -55,28 +55,6 @@ a {
 
 #app {
   position: relative;
-
-  a.new-coto-button {
-    z-index: 10;
-    position: absolute;
-    bottom: 6px;
-    right: 20px;
-
-    i.material-icons {
-      font-size: 32px;
-    }
-
-    span.shortcut {
-      vertical-align: 10px;
-      font-size: 90%;
-      font-weight: bold;
-      opacity: .6;
-
-      @media (#{$narrow-viewport}) {
-        display: none;
-      }
-    }
-  }
 }
 
 #app-body {

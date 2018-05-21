@@ -34,6 +34,7 @@ view context session graph ready timeline =
             div [] []
         , timelineDiv context graph timeline
         , postEditor context session timeline
+        , newCotoButton timeline
         ]
 
 
@@ -92,7 +93,7 @@ moreButton context timeline =
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 postsDiv : Context -> Graph -> List Post -> Html Msg
@@ -131,7 +132,7 @@ postEditor context session model =
                 ]
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then
-                    span [] []
+                    Util.HtmlUtil.none
                   else
                     span [ class "connect-buttons" ]
                         [ button
@@ -175,4 +176,17 @@ postEditor context session model =
                     []
               )
             ]
+        ]
+
+
+newCotoButton : Timeline -> Html Msg
+newCotoButton timeline =
+    a
+        [ class "tool-button new-coto-button"
+        , title "New Coto"
+        , hidden (timeline.editorOpen)
+        , onClick OpenNewEditorModal
+        ]
+        [ materialIcon "create" Nothing
+        , span [ class "shortcut" ] [ text "(Press N key)" ]
         ]
