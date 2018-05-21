@@ -96,9 +96,27 @@ graphExplorationDiv model =
             [ ( "activeOnMobile"
               , List.member model.activeViewOnMobile [ PinnedView, TraversalsView ]
               )
+            , ( "timeline-hidden", model.timeline.hidden )
             ]
         ]
-        (pinnedCotosColumn model :: (traversalColumns model))
+        (openTimelineButton model
+            :: pinnedCotosColumn model
+            :: traversalColumns model
+        )
+
+
+openTimelineButton : Model -> Html Msg
+openTimelineButton model =
+    if model.timeline.hidden then
+        div [ id "open-timeline" ]
+            [ a
+                [ class "tool-button timeline-toggle"
+                , title "Open timeline"
+                ]
+                [ materialIcon "arrow_right" Nothing ]
+            ]
+    else
+        Util.HtmlUtil.none
 
 
 timelineColumn : Model -> Html Msg

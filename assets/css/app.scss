@@ -146,6 +146,10 @@ div.main-traversal {
   -webkit-overflow-scrolling: touch;
 }
 
+#open-timeline {
+  display: none;
+}
+
 #view-switch-container {
   z-index: 5;
   display: inline-block;
@@ -247,6 +251,11 @@ div.main-traversal {
     overflow-x: auto;
     overflow-y: hidden;
     background-color: #f2f2f2;
+    position: relative;
+
+    &.timeline-hidden {
+      padding-top: 20px;
+    }
 
     div.main-column {
       display: flex;
@@ -295,6 +304,25 @@ div.main-traversal {
     &.empty,
     &.hidden {
       display: none;
+    }
+  }
+
+  #open-timeline {
+    z-index: 6;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 36px;
+    background-color: #f8f8f8;
+    border-right: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+
+    a.timeline-toggle i {
+      margin-top: 4px;
+      font-size: 30px;
     }
   }
 
