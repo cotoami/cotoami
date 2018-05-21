@@ -53,6 +53,10 @@ div.timeline-toolbar {
   a.timeline-toggle i {
     margin-top: 4px;
     font-size: 30px;
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
   }
 }
 
