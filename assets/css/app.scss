@@ -313,7 +313,7 @@ div.main-traversal {
     position: absolute;
     left: 0;
     top: 0;
-    width: 30px;
+    width: 36px;
     height: 36px;
     background-color: #f8f8f8;
     border-right: solid 1px #ddd;
@@ -321,8 +321,8 @@ div.main-traversal {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
     a.timeline-toggle i {
-      margin-top: 4px;
-      font-size: 30px;
+      margin-top: 8px;
+      margin-left: 6px;
     }
   }
 

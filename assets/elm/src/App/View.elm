@@ -115,7 +115,7 @@ openTimelineButton model =
                 , title "Open timeline"
                 , onLinkButtonClick ToggleTimeline
                 ]
-                [ materialIcon "arrow_right" Nothing ]
+                [ materialIcon "chat" Nothing ]
             ]
     else
         Util.HtmlUtil.none
