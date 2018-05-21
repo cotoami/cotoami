@@ -107,26 +107,34 @@ timelineColumn model =
         |> Maybe.map
             (\session ->
                 if model.timeline.hidden then
-                    Util.HtmlUtil.none
-                else
                     timelineDiv
                         session
-                        (model.activeViewOnMobile == TimelineView)
+                        [ ( "main-column", True )
+                        , ( "hidden", True )
+                        ]
                         model
+                else
+                    let
+                        active =
+                            model.activeViewOnMobile == TimelineView
+                    in
+                        timelineDiv
+                            session
+                            [ ( "main-column", True )
+                            , ( "activeOnMobile", active )
+                            , ( "animated", active )
+                            , ( "fadeIn", active )
+                            ]
+                            model
             )
         |> Maybe.withDefault Util.HtmlUtil.none
 
 
-timelineDiv : Session -> Bool -> Model -> Html Msg
-timelineDiv session active model =
+timelineDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
+timelineDiv session classes model =
     div
         [ id "main-timeline"
-        , classList
-            [ ( "main-column", True )
-            , ( "activeOnMobile", active )
-            , ( "animated", active )
-            , ( "fadeIn", active )
-            ]
+        , classList classes
         ]
         [ App.Views.Timeline.view
             model.context
