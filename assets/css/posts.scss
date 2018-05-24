@@ -14,9 +14,14 @@ div.posts {
   div.coto {
     position: relative;
     border-radius: 8px;
-    border-color: #eee;
+    border-color: #ddd;
     box-shadow: none;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+
+    &.coto-focus > div.coto-inner,
+    &.selected > div.coto-inner {
+      border-radius: 8px;
+    }
     
     &.posting {
       opacity: 0.3;

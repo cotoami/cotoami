@@ -37,6 +37,14 @@
   div.pinned-coto {
     margin-top: 10px;
     margin-bottom: 20px;
+    animation-duration: 1s;
+
+    & > div.coto-inner > div.coto-header {
+      i.pinned,
+      i.connected {
+        display: none;
+      }
+    }
 
     div.unpin-button {
       position: relative;
@@ -57,20 +65,5 @@
         color: #ccc;
       }
     }
-  }
-
-  div.coto {
-    animation-duration: 1s;
-
-    div.coto-header {
-      i.pinned,
-      i.connected {
-        display: none;
-      }
-    }
-  }
-
-  div.sub-cotos div.coto {
-    font-size: 90%;
   }
 }
