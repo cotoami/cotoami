@@ -272,7 +272,8 @@ div.coto.selectable {
   }
 
   &.coto-focus > div.coto-inner {
-    border: 2px dotted #eee !important;
+    border: 2px dotted #ccc !important;
+    background-color: #fafafa;
   }
 
   &.selected > div.coto-inner {
