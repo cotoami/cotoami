@@ -1,0 +1,29 @@
+{
+  "name": "cotoami",
+  "version": "1.0.0",
+  "repository": {},
+  "license": "MIT",
+  "scripts": {
+    "deploy": "NPM_BIN=$(npm bin) brunch build --production",
+    "watch": "NPM_BIN=$(npm bin) brunch watch --stdin",
+    "elm-install": "cd elm && elm-install",
+    "elm-format": "elm-format --elm-version 0.18 elm",
+    "elm-format:validate": "elm-format --validate --elm-version 0.18 elm",
+    "postinstall": "npm run elm-install"
+  },
+  "dependencies": {
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_html": "file:../deps/phoenix_html"
+  },
+  "devDependencies": {
+    "babel-brunch": "6.1.1",
+    "brunch": "2.10.9",
+    "clean-css-brunch": "2.10.0",
+    "uglify-js-brunch": "2.10.0",
+    "sass-brunch": "brunch/sass-brunch#master",
+    "elm": "0.18.0",
+    "elm-brunch": "0.10.0",
+    "elm-format": "0.6.1-alpha",
+    "elm-github-install": "1.6.1"
+  }
+}

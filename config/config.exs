@@ -10,10 +10,10 @@ config :cotoami,
   ecto_repos: [Cotoami.Repo]
 
 # Configures the endpoint
-config :cotoami, Cotoami.Endpoint,
+config :cotoami, CotoamiWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ykbmEEU9u3Hoeh7tt8X6XMhLwRFPZw2PF3qZw1uO0+r6+3zbVD5s8b12rpiN7CzU",
-  render_errors: [view: Cotoami.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: CotoamiWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Cotoami.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
@@ -59,7 +59,7 @@ case System.get_env("SENDGRID_USERNAME") do
       api_key: System.get_env("SENDGRID_API_KEY")
 end
 
-config :cotoami, Cotoami.Email,
+config :cotoami, CotoamiWeb.Email,
   from: System.get_env("COTOAMI_EMAIL_FROM")
 
 # Neo4j

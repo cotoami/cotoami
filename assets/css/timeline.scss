@@ -1,0 +1,193 @@
+@import "variables.scss";
+
+#timeline-and-input {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+
+  div.timeline-toolbar {
+    height: 36px;
+  }
+
+  div.timeline {
+    flex: 1;
+  }
+
+  div.quick-coto-editor {
+    height: 48px;
+  }
+  &.editing div.quick-coto-editor {
+    height: 190px !important;
+  }
+  &.editing div.quick-coto-editor textarea.coto {
+    height: 140px !important;
+  }
+
+  a.new-coto-button {
+    z-index: 10;
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+
+    i.material-icons {
+      font-size: 32px;
+    }
+
+    span.shortcut {
+      vertical-align: 10px;
+      font-size: 90%;
+      font-weight: bold;
+      opacity: .6;
+
+      @media (#{$narrow-viewport}) {
+        display: none;
+      }
+    }
+  }
+}
+
+div.timeline-toolbar {
+  a.timeline-toggle i {
+    margin-top: 4px;
+    font-size: 30px;
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
+  }
+}
+
+div.more-button-div {
+  margin-top: 10px;
+  padding-left: 2px;
+  padding-right: 2px;
+  text-align: center;
+
+  button {
+    width: 100%;
+    background-color: #fff;
+
+    &.loading {
+      padding-top: 4px;
+      background-color: rgba(255, 255, 255, 0) !important;
+    }
+  }
+
+  i.material-icons {
+    vertical-align: middle;
+    font-size: 36px;
+  }
+}
+
+div.timeline {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 10px;
+  padding-bottom: 30px;
+
+  @media (#{$wide-viewport}) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  div.posts-on-day {
+    margin-top: 20px;
+
+    div.date-header {
+      z-index: 10;
+      position: -webkit-sticky;
+      position: sticky;
+      top: -8px;
+      left: 0;
+      padding: 10px;
+      padding-left: 0;
+
+      span.date {
+        color: #999;
+        background-color: #f8f8f8;
+        padding: 10px;
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+div.quick-coto-editor {
+  padding: 0 5px;
+
+  div.toolbar {
+    position: relative;
+    height: 40px;
+
+    span.user {
+      margin-left: 5px;
+      line-height: 40px;
+      vertical-align: middle;
+      font-weight: bold;
+      color: gray;
+
+      .material-icons {
+        margin-right: 3px;
+        vertical-align: -6px;
+      }
+
+      &.session {
+        img.avatar {
+          margin: 0;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          margin-right: 8px;
+          border-radius: 4px;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    div.tool-buttons {
+      display: inline-block;
+      position: absolute;
+      right: 0;
+    }
+
+    span.shortcut-help {
+      margin-left: 4px;
+      text-transform: none;
+      opacity: 0.7;
+    }
+
+    span.connect-buttons {
+      button {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-right: 5px;
+        background-color: #fff;
+
+        @media (#{$narrow-viewport}) {
+          margin-right: 10px;
+        }
+
+        i {
+          font-size: 18px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+
+  textarea.coto {
+    margin: 0;
+    width: 100%;
+    height: 38px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+
+    @media (#{$narrow-viewport}) {
+      // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+      font-size: 16px;
+    }
+  }
+}

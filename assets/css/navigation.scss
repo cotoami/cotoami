@@ -1,0 +1,157 @@
+@import 'variables';
+
+#navigation-content {
+  div.home-nav {
+    padding-left: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+
+    &.in {
+      background-color: #f8f8f8;
+      border: 2px solid #f8f8f8;
+    }
+
+    span.home {
+      opacity: 0.5;
+    }
+
+    i {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    @media (#{$narrow-viewport}) {
+      display: none;
+    }
+  }
+
+  div.cotonomas-nav {
+    @media (#{$wide-viewport}) {
+      padding-left: 10px;
+    }
+  }
+
+  div.navigation-title {
+    margin-bottom: 4px;
+    color: #ccc;
+    font-weight: bold;
+  }
+
+  div.owner {
+    margin-bottom: 20px;
+
+    div.amishi {
+      margin-bottom: 5px;
+
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        margin-right: 4px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+
+      span.name {
+        color: #666;
+        font-weight: bold;
+      }
+    }
+  }
+
+  div.sub-cotonomas,
+  div.pinned-cotonomas,
+  div.recent-cotonomas {
+    margin-bottom: 20px;
+  }
+
+  div.coto-as-cotonoma {
+    position: relative;
+    display: flex;
+    padding-left: 1px;
+    margin-bottom: 1px;
+    border: 2px solid #fff;
+
+    &.in {
+      background-color: #f8f8f8;
+      border: 2px solid #f8f8f8;
+
+      span.cotonoma-name {
+        opacity: 0.5;
+      }
+    }
+
+    &.coto-focus {
+      border: 2px dotted #eee;
+      background-color: #fafafa;
+    }
+
+    &.selected {
+      border: 2px solid #ffa500;
+    }
+
+    i {
+      vertical-align: middle;
+    }
+
+    div.cotonoma-link {
+      flex: 1;
+      padding-right: 4px;
+
+      img.avatar {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    div.touch-space-to-open-tools {
+      width: 20px;
+
+      @media (#{$wide-viewport}) {
+        display: none;
+      }
+    }
+
+    span.coto-tool-buttons {
+      top: -30px;
+      right: 0;
+      height: 24px;
+      padding: 0;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      padding-right: 10px;
+      background-color: rgba(255, 255, 255, .9);
+
+      a.tool-button {
+        margin-left: 10px;
+
+        i.material-icons {
+          font-size: 22px;
+        }
+
+        i.fa {
+          width: 22px;
+          text-align: center;
+          font-size: 20px;
+        }
+      }
+
+      @media (#{$wide-viewport}) {
+        padding-right: 4px;
+
+        a.tool-button {
+          margin-left: 4px;
+        }
+      }
+    }
+
+    &.element-focus span.coto-tool-buttons {
+      display: inline-block !important;
+    }
+  }
+
+  div.recent-cotonomas div.not-active div.cotonoma-link {
+    opacity: .3;
+  }
+}
