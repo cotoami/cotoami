@@ -652,6 +652,9 @@ update msg model =
         --
         -- Timeline
         --
+        SwitchTimelineView view ->
+            ( { model | timeline = App.Types.Timeline.switchView view model.timeline }, Cmd.none )
+
         PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = App.Types.Context.setCotonoma Nothing model.context
