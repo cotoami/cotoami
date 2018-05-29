@@ -9,7 +9,7 @@
   overflow: hidden;
 
   div.timeline-toolbar {
-    height: 36px;
+    height: 40px;
   }
 
   div.timeline {
@@ -50,12 +50,42 @@
 }
 
 div.timeline-toolbar {
+  position: relative;
+
   a.timeline-toggle i {
     margin-top: 4px;
     font-size: 30px;
 
     @media (#{$narrow-viewport}) {
       display: none;
+    }
+  }
+
+  div.view-switch {
+    position: absolute;
+    top: 7px;
+    right: 4px;
+    display: inline-block;
+
+    @media (#{$narrow-viewport}) {
+      right: 0;
+    }
+
+    button {
+      margin: 0;
+      padding-left: 12px;
+      padding-right: 12px;
+      height: 26px;
+      background-color: #fff;
+    }
+
+    button.stream-view {
+      border-radius: 4px 0 0 4px;
+      border-right-style: none;
+    }
+
+    button.tile-view {
+      border-radius: 0 4px 4px 0;
     }
   }
 }

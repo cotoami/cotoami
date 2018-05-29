@@ -48,6 +48,18 @@ toolbarDiv context =
             , onLinkButtonClick ToggleTimeline
             ]
             [ materialIcon "arrow_left" Nothing ]
+        , div [ class "view-switch" ]
+            [ button
+                [ class "stream-view"
+                , disabled True
+                ]
+                [ materialIcon "view_stream" Nothing ]
+            , button
+                [ class "tile-view"
+                , disabled False
+                ]
+                [ materialIcon "view_module" Nothing ]
+            ]
         ]
 
 
