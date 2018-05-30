@@ -28,22 +28,24 @@
   padding-top: 20px;
   padding-bottom: 50px;
 
-  display: flex;
-  justify-content: center; 
-
   @media (#{$wide-viewport}) {
+    display: flex;
+    justify-content: center; 
     padding: 5px;
     padding-top: 20px;
     padding-bottom: 50px;
   }
 
   div.pinned-coto {
-    flex: 1;
-    min-width: 460px;
-    max-width: 640px;
     margin-top: 10px;
     margin-bottom: 20px;
     animation-duration: 1s;
+
+    @media (#{$wide-viewport}) {
+      flex: 1;
+      min-width: 460px;
+      max-width: 640px;
+    }
 
     & > div.coto-inner > div.coto-header {
       i.pinned,
