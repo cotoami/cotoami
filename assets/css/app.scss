@@ -253,7 +253,7 @@ div.main-traversal {
     background-color: #e8e8e8;
     position: relative;
 
-    div.main-column {
+    div.main-traversal {
       display: flex;
       min-width: 500px;
       max-width: 640px;
@@ -264,6 +264,8 @@ div.main-traversal {
     flex: 1;
     position: relative;
     top: auto;
+    display: flex;
+    min-width: 500px;
     animation-name: none;
     overflow-y: hidden;
     background-color: #f2f2f2;
@@ -271,6 +273,10 @@ div.main-traversal {
     padding-right: 6px;
     border-right: solid 1px #ddd;
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+
+    &.empty {
+      display: flex;
+    }
   }
 
   #graph-exploration.timeline-hidden #main-pinned-cotos {
