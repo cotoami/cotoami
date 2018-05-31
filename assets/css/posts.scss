@@ -100,6 +100,10 @@ div.timeline.stream {
       border-left: 10px solid transparent;
     }
   }
+
+  img.author-icon-in-tile {
+    display: none;
+  }
 }
 
 div.timeline.tile div.posts {
@@ -113,6 +117,7 @@ div.timeline.tile div.posts {
     border-radius: 4px;
     margin-bottom: 4px;
     margin-right: 4px;
+    position: relative;
 
     div.coto-inner {
       height: 100%;
@@ -132,7 +137,7 @@ div.timeline.tile div.posts {
     }
 
     div.coto-body {
-      max-height: 100px;
+      max-height: 120px;
       overflow: hidden;
     }
 
@@ -161,6 +166,16 @@ div.timeline.tile div.posts {
     a.tool-button.edit-coto,
     a.tool-button.add-coto {
       display: none;
+    }
+
+    img.author-icon-in-tile {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      opacity: 0.8;
     }
   }
 }

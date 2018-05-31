@@ -39,6 +39,7 @@ view context graph post =
                 , App.Views.Coto.bodyDiv context elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
+                , authorIcon context post
                 ]
             ]
 
@@ -101,6 +102,26 @@ authorDiv context post =
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
                     ]
+            else
+                Util.HtmlUtil.none
+        )
+        context.session
+        post.amishi
+    )
+        |> Maybe.withDefault Util.HtmlUtil.none
+
+
+authorIcon : Context -> Post -> Html Msg
+authorIcon context post =
+    (Maybe.map2
+        (\session author ->
+            if author.id /= session.id then
+                img
+                    [ class "author-icon-in-tile"
+                    , src author.avatarUrl
+                    , title author.displayName
+                    ]
+                    []
             else
                 Util.HtmlUtil.none
         )
