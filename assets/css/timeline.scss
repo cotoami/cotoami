@@ -71,21 +71,8 @@ div.timeline-toolbar {
       right: 0;
     }
 
-    button {
-      margin: 0;
-      padding-left: 12px;
-      padding-right: 12px;
-      height: 26px;
-      background-color: #fff;
-    }
-
-    button.stream-view {
-      border-radius: 4px 0 0 4px;
-      border-right-style: none;
-    }
-
-    button.tile-view {
-      border-radius: 0 4px 4px 0;
+    a.stream-view {
+      margin-right: 10px;
     }
   }
 }
