@@ -9,7 +9,7 @@
   overflow: hidden;
 
   div.timeline-toolbar {
-    height: 36px;
+    height: 40px;
   }
 
   div.timeline {
@@ -50,12 +50,29 @@
 }
 
 div.timeline-toolbar {
+  position: relative;
+
   a.timeline-toggle i {
     margin-top: 4px;
     font-size: 30px;
 
     @media (#{$narrow-viewport}) {
       display: none;
+    }
+  }
+
+  div.view-switch {
+    position: absolute;
+    top: 7px;
+    right: 12px;
+    display: inline-block;
+
+    @media (#{$narrow-viewport}) {
+      right: 0;
+    }
+
+    a.stream-view {
+      margin-right: 10px;
     }
   }
 }

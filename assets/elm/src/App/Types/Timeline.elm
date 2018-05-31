@@ -8,12 +8,14 @@ import App.Types.Context exposing (Context)
 import App.Types.Session
 
 
--- editorCounter: avoid unwanted cursor jump with onInput
--- https://github.com/elm-lang/html/issues/105#issuecomment-309524197
+type TimelineView
+    = StreamView
+    | TileView
 
 
 type alias Timeline =
     { hidden : Bool
+    , view : TimelineView
     , editorOpen : Bool
     , newContent : String
     , editorCounter : Int
@@ -30,6 +32,7 @@ type alias Timeline =
 defaultTimeline : Timeline
 defaultTimeline =
     { hidden = False
+    , view = StreamView
     , editorOpen = False
     , newContent = ""
     , editorCounter = 0
@@ -46,6 +49,11 @@ defaultTimeline =
 toggle : Timeline -> Timeline
 toggle timeline =
     { timeline | hidden = not timeline.hidden }
+
+
+switchView : TimelineView -> Timeline -> Timeline
+switchView view timeline =
+    { timeline | view = view }
 
 
 isEmpty : Timeline -> Bool

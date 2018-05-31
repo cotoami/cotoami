@@ -15,7 +15,7 @@ import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
-import App.Types.Timeline exposing (Timeline)
+import App.Types.Timeline exposing (Timeline, TimelineView(..))
 import App.Messages exposing (..)
 import App.Views.Post
 
@@ -32,15 +32,15 @@ view context session graph ready timeline =
             div [ class "loading-overlay" ] []
           else
             div [] []
-        , toolbarDiv context
+        , toolbarDiv context timeline
         , timelineDiv context graph timeline
         , postEditor context session timeline
         , newCotoButton timeline
         ]
 
 
-toolbarDiv : Context -> Html Msg
-toolbarDiv context =
+toolbarDiv : Context -> Timeline -> Html Msg
+toolbarDiv context timeline =
     div [ class "timeline-toolbar" ]
         [ a
             [ class "tool-button timeline-toggle"
@@ -48,12 +48,39 @@ toolbarDiv context =
             , onLinkButtonClick ToggleTimeline
             ]
             [ materialIcon "arrow_left" Nothing ]
+        , div [ class "view-switch" ]
+            [ a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "stream-view", True )
+                    , ( "disabled", timeline.view == StreamView )
+                    ]
+                , onClick (SwitchTimelineView StreamView)
+                ]
+                [ materialIcon "view_stream" Nothing ]
+            , a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "tile-view", True )
+                    , ( "disabled", timeline.view == TileView )
+                    ]
+                , onClick (SwitchTimelineView TileView)
+                ]
+                [ materialIcon "view_module" Nothing ]
+            ]
         ]
 
 
 timelineDiv : Context -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
-    div [ id "timeline", class "timeline" ]
+    div
+        [ id "timeline"
+        , classList
+            [ ( "timeline", True )
+            , ( "stream", model.view == StreamView )
+            , ( "tile", model.view == TileView )
+            ]
+        ]
         [ moreButton context model
         , model.posts
             |> List.reverse

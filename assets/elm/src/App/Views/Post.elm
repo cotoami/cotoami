@@ -7,6 +7,7 @@ import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
+import Util.HtmlUtil
 import Util.EventUtil exposing (onLoad)
 import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (ElementId)
@@ -30,14 +31,15 @@ view context graph post =
                 [ headerDiv context graph elementId post
                 , post.cotoId
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
-                    |> Maybe.withDefault (div [] [])
+                    |> Maybe.withDefault Util.HtmlUtil.none
                 , if post.asCotonoma then
-                    div [] []
+                    Util.HtmlUtil.none
                   else
                     authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
+                , authorIcon context post
                 ]
             ]
 
@@ -101,12 +103,32 @@ authorDiv context post =
                     , span [ class "name" ] [ text author.displayName ]
                     ]
             else
-                span [] []
+                Util.HtmlUtil.none
         )
         context.session
         post.amishi
     )
-        |> Maybe.withDefault (span [] [])
+        |> Maybe.withDefault Util.HtmlUtil.none
+
+
+authorIcon : Context -> Post -> Html Msg
+authorIcon context post =
+    (Maybe.map2
+        (\session author ->
+            if author.id /= session.id then
+                img
+                    [ class "author-icon-in-tile"
+                    , src author.avatarUrl
+                    , title author.displayName
+                    ]
+                    []
+            else
+                Util.HtmlUtil.none
+        )
+        context.session
+        post.amishi
+    )
+        |> Maybe.withDefault Util.HtmlUtil.none
 
 
 markdown : String -> Html Msg
@@ -128,7 +150,7 @@ footerDiv post =
                     span [ class "posted-at" ]
                         [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
                 )
-            |> Maybe.withDefault (span [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
         ]
 
 

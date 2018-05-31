@@ -29,9 +29,16 @@
   padding-bottom: 50px;
 
   @media (#{$wide-viewport}) {
-    padding: 5px;
+    display: flex;
+    justify-content: center; 
+    padding: 10px;
     padding-top: 20px;
     padding-bottom: 50px;
+
+    div.root-connections {
+      min-width: 460px;
+      max-width: 640px;
+    }
   }
 
   div.pinned-coto {
