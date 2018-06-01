@@ -9,7 +9,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph)
+import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
 import App.Types.Timeline exposing (TimelineView)
 import App.Types.Traversal exposing (Traversal)
 import App.Modals.SigninModalMsg
@@ -119,6 +119,10 @@ type Msg
     | PostedAndConnectToCoto Int Coto (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
     | TimelineScrollPosInitialized
+      --
+      -- PinnedCotos
+      --
+    | SwitchPinnedCotosView PinnedCotosView
       --
       -- Traversals
       --

@@ -775,6 +775,12 @@ update msg model =
                 |> \timeline -> ( { model | timeline = timeline }, Cmd.none )
 
         --
+        -- PinnedCotos
+        --
+        SwitchPinnedCotosView view ->
+            ( { model | pinnedCotosView = view }, Cmd.none )
+
+        --
         -- Traversals
         --
         Traverse traversal nextCotoId stepIndex ->
