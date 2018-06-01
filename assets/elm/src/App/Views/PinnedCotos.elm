@@ -43,7 +43,13 @@ view context view graph =
             ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]
-            [ pinnedCotos context graph ]
+            [ case view of
+                DocumentView ->
+                    pinnedCotos context graph
+
+                GraphView ->
+                    div [ id "coto-graph-view" ] []
+            ]
         ]
 
 
