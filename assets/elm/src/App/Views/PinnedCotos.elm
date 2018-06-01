@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Context exposing (CotoSelection, Context, isSelected, isServerOwner)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph, Connection)
@@ -20,7 +20,24 @@ view context graph =
     div [ id "pinned-cotos" ]
         [ div
             [ class "column-header" ]
-            []
+            [ div [ class "view-switch" ]
+                [ a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "document-view", True )
+                        , ( "disabled", True )
+                        ]
+                    ]
+                    [ materialIcon "view_stream" Nothing ]
+                , a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "graph-view", True )
+                        ]
+                    ]
+                    [ materialIcon "share" Nothing ]
+                ]
+            ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]
             [ pinnedCotos context graph ]
