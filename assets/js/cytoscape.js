@@ -13,7 +13,8 @@ const style = cytoscape.stylesheet()
     'text-wrap': 'ellipsis',
     'text-valign': 'bottom',
     'text-margin-y': 5,
-    'color': '#333'
+    'color': '#333',
+    'font-family': '"Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif'
   })
   .selector('edge').css({
     'curve-style': 'bezier',
