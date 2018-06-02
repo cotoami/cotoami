@@ -7,7 +7,6 @@ const style = cytoscape.stylesheet()
     'content': (node) => {
       return node.data('name')
     },
-    'shape': 'ellipse',
     'width': 10,
     'height': 10,
     'font-size': 8,
@@ -35,6 +34,18 @@ const style = cytoscape.stylesheet()
     'opacity': 0.25,
     'text-opacity': 0
   })
+  .selector('.cotonoma').css({
+    'shape': 'roundrectangle',
+    'width': 20,
+    'height': 20,
+    'background-fit': 'contain',
+    'background-color': 'white',
+    'background-image': (node) => {
+      return node.data('imageUrl')
+    },
+    'font-size': 10,
+    'font-weight': 'bold'
+  });
 
 const layout = {
   name: 'cose',

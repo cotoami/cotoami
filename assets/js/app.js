@@ -24,6 +24,11 @@ const elmApp = Elm.Main.embed(elmDiv, {
 elmApp.ports.renderGraph.subscribe(([nodes, edges]) => {
   Cytoscape.render(
     document.getElementById('coto-graph-view'), 
-    map(nodes.concat(edges), element => { return {data: element} })
+    map(nodes.concat(edges), element => { 
+      return {
+        data: element,
+        classes: element.asCotonoma ? 'cotonoma' : ''
+      } 
+    })
   )
 })
