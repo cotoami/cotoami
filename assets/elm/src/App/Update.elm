@@ -44,6 +44,7 @@ import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Pushed
+import App.Ports
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -778,7 +779,9 @@ update msg model =
         -- PinnedCotos
         --
         SwitchPinnedCotosView view ->
-            ( { model | pinnedCotosView = view }, Cmd.none )
+            ( { model | pinnedCotosView = view }
+            , App.Ports.renderGraph ()
+            )
 
         --
         -- Traversals
