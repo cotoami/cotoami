@@ -5,21 +5,22 @@ const style = cytoscape.stylesheet()
     'content': (node) => {
       return node.data('name')
     },
-    'shape': 'roundrectangle',
+    'shape': 'ellipse',
     'width': 10,
     'height': 10,
-    'font-size': 12,
+    'font-size': 8,
     'text-max-width': 200,
     'text-wrap': 'ellipsis',
     'text-valign': 'bottom',
-    'text-margin-y': 5
+    'text-margin-y': 5,
+    'color': '#333'
   })
   .selector('edge').css({
     'curve-style': 'bezier',
     'width': 1,
-    'line-color': '#eee',
-    'target-arrow-color': '#eee',
-    'target-arrow-shape': 'triangle'
+    'line-color': '#ddd',
+    'target-arrow-color': '#ddd',
+    'target-arrow-shape': 'vee'
   })
   .selector(':selected').css({
     'background-color': 'black',
