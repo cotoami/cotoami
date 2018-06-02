@@ -24,7 +24,7 @@ const style = cytoscape.stylesheet()
     'target-arrow-shape': 'vee'
   })
   .selector(':selected').css({
-    'background-color': '#333',
+    'background-color': '#ffa500',
     'line-color': '#888',
     'source-arrow-color': '#888',
     'target-arrow-color': '#888'
