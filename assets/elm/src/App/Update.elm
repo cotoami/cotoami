@@ -789,7 +789,7 @@ update msg model =
             )
 
         RenderGraph ->
-            ( model, App.Ports.renderGraph () )
+            ( model, App.Ports.renderCotoGraph model.context.cotonoma model.graph )
 
         --
         -- Traversals

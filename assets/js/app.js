@@ -12,6 +12,7 @@
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
+import map from 'lodash/map'
 import Cytoscape from "js/cytoscape"
 
 // Set up our Elm App
@@ -20,27 +21,9 @@ const elmApp = Elm.Main.embed(elmDiv, {
   seed: Math.floor(Math.random() * 0x0FFFFFFF)
 })
 
-elmApp.ports.renderGraph.subscribe(() => {
+elmApp.ports.renderGraph.subscribe(([nodes, edges]) => {
   Cytoscape.render(
     document.getElementById('coto-graph-view'), 
-    [
-      {"data":{"id":"room","name":"Cotoami開発","root":true,"hiddenNodes":0}},
-      {"data":{"id":"11512","name":"Client-side tasks","root":false,"hiddenNodes":2}},
-      {"data":{"id":"11513","name":"高城れに","root":false,"hiddenNodes":0}},
-      {"data":{"id":"11516","name":"Server-side tasks","root":false,"hiddenNodes":3}},
-      {"data":{"id":"12604","name":"百田夏菜子","root":false,"hiddenNodes":0}},
-      {"data":{"id":"12605","name":"玉井詩織","root":false,"hiddenNodes":0}},
-      {"data":{"id":"12606","name":"佐々木彩夏","root":false,"hiddenNodes":0}},
-      {"data":{"id":"11535","name":"Both-sides tasks","root":false,"hiddenNodes":3}},
-      {"data":{"id":"11538","name":"直接Pinツールボタン","root":false,"hiddenNodes":0}},
-      {"data":{"source":"room","target":"11512"}},
-      {"data":{"source":"room","target":"11513"}},
-      {"data":{"source":"room","target":"11516"}},
-      {"data":{"source":"room","target":"12604"}},
-      {"data":{"source":"room","target":"12605"}},
-      {"data":{"source":"room","target":"12606"}},
-      {"data":{"source":"room","target":"11535"}},
-      {"data":{"source":"11535","target":"11538"}}
-    ]
+    map(nodes.concat(edges), element => { return {data: element} })
   )
 })
