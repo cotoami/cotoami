@@ -24,10 +24,10 @@ const style = cytoscape.stylesheet()
     'target-arrow-shape': 'vee'
   })
   .selector(':selected').css({
-    'background-color': 'black',
-    'line-color': '#aaa',
-    'source-arrow-color': '#aaa',
-    'target-arrow-color': '#aaa'
+    'background-color': '#333',
+    'line-color': '#888',
+    'source-arrow-color': '#888',
+    'target-arrow-color': '#888'
   })
   .selector('.faded').css({
     'opacity': 0.25,
@@ -42,11 +42,21 @@ const layout = {
 
 export default class {
   static render(container, data) {
-    cytoscape({
+    const graph = cytoscape({
       container: container,
       elements: data,
       style: style,
       layout: layout
+    })
+    graph.on('tap', 'node', (e) => {
+      graph.elements().addClass('faded')
+      const node = e.target
+      node.neighborhood().add(node).removeClass('faded')
+    })
+    graph.on('tap', (e) => {
+      if (e.target === graph) {
+        graph.elements().removeClass('faded')
+      }
     })
   }
 }
