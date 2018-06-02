@@ -1,5 +1,7 @@
 // Graph rendering by Cytoscape.js
 
+import debounce from 'lodash/debounce'
+
 const style = cytoscape.stylesheet()
   .selector('node').css({
     'content': (node) => {
@@ -56,8 +58,10 @@ export default class {
     graph.on('tap', (e) => {
       if (e.target === graph) {
         graph.elements().removeClass('faded')
-        // graph.makeLayout(layout).run()
       }
     })
+    new ResizeSensor(container, debounce(() => {
+      graph.makeLayout(layout).run()
+    }, 500))
   }
 }
