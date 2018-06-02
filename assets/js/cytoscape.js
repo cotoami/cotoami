@@ -56,6 +56,7 @@ export default class {
     graph.on('tap', (e) => {
       if (e.target === graph) {
         graph.elements().removeClass('faded')
+        // graph.makeLayout(layout).run()
       }
     })
   }
