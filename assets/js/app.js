@@ -21,9 +21,10 @@ const elmApp = Elm.Main.embed(elmDiv, {
   seed: Math.floor(Math.random() * 0x0FFFFFFF)
 })
 
-elmApp.ports.renderGraph.subscribe(([nodes, edges]) => {
+elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
   Cytoscape.render(
-    document.getElementById('coto-graph-view'), 
+    document.getElementById('coto-graph-view'),
+    rootNodeId,
     map(nodes.concat(edges), element => { 
       return {
         data: element,

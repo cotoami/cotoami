@@ -6,7 +6,9 @@ import App.Types.Coto exposing (Coto, Cotonoma)
 import App.Views.Coto
 
 
-port renderGraph : ( List Node, List Edge ) -> Cmd msg
+port renderGraph :
+    { rootNodeId : String, nodes : List Node, edges : List Edge }
+    -> Cmd msg
 
 
 type alias Node =
@@ -80,4 +82,8 @@ renderCotoGraph maybeCotonoma graph =
                     )
                 |> List.concat
     in
-        renderGraph ( homeNode ++ nodes, rootEdges ++ edges )
+        renderGraph
+            { rootNodeId = rootId
+            , nodes = homeNode ++ nodes
+            , edges = rootEdges ++ edges
+            }

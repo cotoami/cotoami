@@ -54,17 +54,23 @@ const style = cytoscape.stylesheet()
 const layout = {
   name: 'cose',
   padding: 30,
-  nodeDimensionsIncludeLabels: true
+  nodeDimensionsIncludeLabels: true,
+  fit: false
 }
 
 export default class {
-  static render(container, data) {
+  static render(container, rootNodeId, data) {
     console.log("data: " + JSON.stringify(data))
     const graph = cytoscape({
       container: container,
       elements: data,
       style: style,
-      layout: layout
+      layout: layout,
+      zoom: 1.2,
+      ready: () => {
+        const root = graph.getElementById(rootNodeId)
+        graph.center(root)
+      }
     })
     graph.on('tap', 'node', (e) => {
       graph.elements().addClass('faded')
