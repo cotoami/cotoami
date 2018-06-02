@@ -60,7 +60,6 @@ const layout = {
 
 export default class {
   static render(container, rootNodeId, data) {
-    console.log("data: " + JSON.stringify(data))
     const graph = cytoscape({
       container: container,
       elements: data,
