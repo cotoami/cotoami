@@ -35,35 +35,32 @@ cotoToNode coto =
 renderCotoGraph : Maybe Cotonoma -> Graph -> Cmd msg
 renderCotoGraph maybeCotonoma graph =
     let
-        rootNode =
+        homeNode =
             maybeCotonoma
-                |> Maybe.map
-                    (\cotonoma ->
-                        { id = "root"
-                        , name = cotonoma.name
-                        , asCotonoma = True
-                        , imageUrl =
-                            cotonoma.owner
-                                |> Maybe.map (\amishi -> amishi.avatarUrl)
-                        }
-                    )
+                |> Maybe.map (\_ -> [])
                 |> Maybe.withDefault
-                    { id = "root"
-                    , name = "My Home"
-                    , asCotonoma = False
-                    , imageUrl = Nothing
-                    }
+                    [ { id = "home"
+                      , name = ""
+                      , asCotonoma = False
+                      , imageUrl = Nothing
+                      }
+                    ]
 
         nodes =
             graph.cotos
                 |> Dict.values
                 |> List.map cotoToNode
 
+        rootId =
+            maybeCotonoma
+                |> Maybe.map (\cotonoma -> cotonoma.cotoId)
+                |> Maybe.withDefault "home"
+
         rootEdges =
             graph.rootConnections
                 |> List.map
                     (\conn ->
-                        { source = "root"
+                        { source = rootId
                         , target = conn.end
                         }
                     )
@@ -83,4 +80,4 @@ renderCotoGraph maybeCotonoma graph =
                     )
                 |> List.concat
     in
-        renderGraph ( rootNode :: nodes, rootEdges ++ edges )
+        renderGraph ( homeNode ++ nodes, rootEdges ++ edges )

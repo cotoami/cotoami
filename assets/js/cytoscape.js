@@ -34,6 +34,10 @@ const style = cytoscape.stylesheet()
     'opacity': 0.25,
     'text-opacity': 0
   })
+  .selector('#home').css({
+    'shape': 'roundrectangle',
+    'background-color': '#ddd'
+  })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
     'width': 20,
