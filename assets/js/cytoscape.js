@@ -67,9 +67,11 @@ export default class {
       layout: layout,
       zoom: 1.2,
       ready: () => {
-        const root = graph.getElementById(rootNodeId)
-        graph.center(root)
+        graph.center(graph.getElementById(rootNodeId))
       }
+    })
+    graph.on('layoutstop', (e) => {
+      graph.center(graph.getElementById(rootNodeId))
     })
     graph.on('tap', 'node', (e) => {
       graph.elements().addClass('faded')
