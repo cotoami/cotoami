@@ -123,6 +123,7 @@ type Msg
       -- PinnedCotos
       --
     | SwitchPinnedCotosView PinnedCotosView
+    | RenderGraph
       --
       -- Traversals
       --

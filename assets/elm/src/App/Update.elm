@@ -780,8 +780,16 @@ update msg model =
         --
         SwitchPinnedCotosView view ->
             ( { model | pinnedCotosView = view }
-            , App.Ports.renderGraph ()
+            , if view == GraphView then
+                Process.sleep (100 * Time.millisecond)
+                    |> Task.andThen (\_ -> Task.succeed ())
+                    |> Task.perform (\_ -> RenderGraph)
+              else
+                Cmd.none
             )
+
+        RenderGraph ->
+            ( model, App.Ports.renderGraph () )
 
         --
         -- Traversals

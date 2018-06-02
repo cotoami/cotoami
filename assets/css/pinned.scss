@@ -37,15 +37,12 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 10px;
-  padding-top: 0;
+  padding-top: 18px;
   padding-bottom: 50px;
 
   @media (#{$wide-viewport}) {
     display: flex;
     justify-content: center; 
-    padding: 10px;
-    padding-top: 0;
-    padding-bottom: 50px;
 
     div.root-connections {
       min-width: 460px;
