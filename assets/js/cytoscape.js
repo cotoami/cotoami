@@ -52,6 +52,7 @@ const style = cytoscape.stylesheet()
     'background-image': (node) => {
       return node.data('imageUrl')
     },
+    'background-image-opacity': 1,
     'font-size': 10,
     'font-weight': 'bold'
   });

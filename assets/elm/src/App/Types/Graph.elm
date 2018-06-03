@@ -1,6 +1,6 @@
 module App.Types.Graph exposing (..)
 
-import Dict
+import Dict exposing (Dict)
 import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
@@ -31,11 +31,11 @@ initConnection amishiId maybeStart end =
 
 
 type alias ConnectionDict =
-    Dict.Dict CotoId (List Connection)
+    Dict CotoId (List Connection)
 
 
 type alias Graph =
-    { cotos : Dict.Dict CotoId Coto
+    { cotos : Dict CotoId Coto
     , rootConnections : List Connection
     , connections : ConnectionDict
     }

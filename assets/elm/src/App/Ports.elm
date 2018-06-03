@@ -42,7 +42,20 @@ renderCotoGraph maybeCotonoma graph =
     let
         homeNode =
             maybeCotonoma
-                |> Maybe.map (\_ -> [])
+                |> Maybe.map
+                    (\cotonoma ->
+                        if Dict.member cotonoma.cotoId graph.cotos then
+                            []
+                        else
+                            [ { id = cotonoma.cotoId
+                              , name = cotonoma.name
+                              , asCotonoma = True
+                              , imageUrl =
+                                    cotonoma.owner
+                                        |> Maybe.map (\owner -> owner.avatarUrl)
+                              }
+                            ]
+                    )
                 |> Maybe.withDefault
                     [ { id = "home"
                       , name = ""
