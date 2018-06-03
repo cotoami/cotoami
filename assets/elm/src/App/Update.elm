@@ -99,7 +99,7 @@ update msg model =
 
         ToggleTimeline ->
             ( { model | timeline = App.Types.Timeline.toggle model.timeline }
-            , Cmd.none
+            , renderGraphWithDelay model
             )
 
         HomeClick ->
@@ -782,9 +782,7 @@ update msg model =
         SwitchPinnedCotosView view ->
             ( { model | pinnedCotosView = view }
             , if view == GraphView then
-                Process.sleep (100 * Time.millisecond)
-                    |> Task.andThen (\_ -> Task.succeed ())
-                    |> Task.perform (\_ -> RenderGraph)
+                renderGraphWithDelay model
               else
                 Cmd.none
             )
@@ -1271,3 +1269,10 @@ renderGraph model =
         App.Ports.renderCotoGraph model.context.cotonoma model.graph
     else
         Cmd.none
+
+
+renderGraphWithDelay : Model -> Cmd Msg
+renderGraphWithDelay model =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> RenderGraph)
