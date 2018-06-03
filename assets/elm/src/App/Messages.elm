@@ -124,6 +124,7 @@ type Msg
       --
     | SwitchPinnedCotosView PinnedCotosView
     | RenderGraph
+    | ResizeGraph
       --
       -- Traversals
       --

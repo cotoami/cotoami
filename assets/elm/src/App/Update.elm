@@ -99,7 +99,7 @@ update msg model =
 
         ToggleTimeline ->
             ( { model | timeline = App.Types.Timeline.toggle model.timeline }
-            , renderGraphWithDelay model
+            , resizeGraphWithDelay
             )
 
         HomeClick ->
@@ -362,6 +362,7 @@ update msg model =
                         [ App.Commands.scrollGraphExplorationToRight NoOp
                         , App.Commands.scrollTraversalsPaginationToRight NoOp
                         , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
+                        , resizeGraphWithDelay
                         ]
                     )
 
@@ -784,13 +785,21 @@ update msg model =
         SwitchPinnedCotosView view ->
             ( { model | pinnedCotosView = view }
             , if view == GraphView then
-                renderGraphWithDelay model
+                renderGraphWithDelay
               else
                 Cmd.none
             )
 
         RenderGraph ->
             ( model, renderGraph model )
+
+        ResizeGraph ->
+            ( model
+            , if model.pinnedCotosView == GraphView then
+                App.Ports.resizeGraph ()
+              else
+                Cmd.none
+            )
 
         --
         -- Traversals
@@ -821,7 +830,7 @@ update msg model =
             ( { model
                 | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals
               }
-            , Cmd.none
+            , resizeGraphWithDelay
             )
 
         SwitchTraversal pageIndex ->
@@ -1275,8 +1284,15 @@ renderGraph model =
         Cmd.none
 
 
-renderGraphWithDelay : Model -> Cmd Msg
-renderGraphWithDelay model =
+renderGraphWithDelay : Cmd Msg
+renderGraphWithDelay =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Task.succeed ())
         |> Task.perform (\_ -> RenderGraph)
+
+
+resizeGraphWithDelay : Cmd Msg
+resizeGraphWithDelay =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> ResizeGraph)
