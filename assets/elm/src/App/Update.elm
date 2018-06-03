@@ -495,7 +495,7 @@ update msg model =
             )
 
         CotoPinned (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         CotoPinned (Err _) ->
             ( model, Cmd.none )
@@ -519,7 +519,7 @@ update msg model =
                   ]
 
         CotoUnpinned (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         CotoUnpinned (Err _) ->
             ( model, Cmd.none )
@@ -560,7 +560,7 @@ update msg model =
             )
 
         Connected (Ok _) ->
-            model ! []
+            ( model, renderGraph model )
 
         Connected (Err _) ->
             model ! []
@@ -587,7 +587,7 @@ update msg model =
             )
 
         ConnectionDeleted (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         ConnectionDeleted (Err _) ->
             ( model, Cmd.none )
