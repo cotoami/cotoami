@@ -2,7 +2,7 @@
 
 import debounce from 'lodash/debounce'
 
-const style = cytoscape.stylesheet()
+const _style = cytoscape.stylesheet()
   .selector('node').css({
     'content': (node) => {
       return node.data('name')
@@ -57,52 +57,64 @@ const style = cytoscape.stylesheet()
     'font-weight': 'bold'
   });
 
-const layout = {
+const _layout = {
   name: 'cose',
   padding: 30,
   nodeDimensionsIncludeLabels: true,
   fit: false
 }
 
-let graph = null
+let _graph = null
+let _rootNodeId = null
+let _resizeSensor = null
 
 export default class {
   static render(container, rootNodeId, data) {
-    graph = cytoscape({
+    _rootNodeId = rootNodeId
+    _graph = cytoscape({
       container: container,
       elements: data,
-      style: style,
-      layout: layout,
+      style: _style,
+      layout: _layout,
       zoom: 1.2,
       ready: () => {
-        graph.center(graph.getElementById(rootNodeId))
+        _graph.center(_graph.getElementById(_rootNodeId))
       }
     })
-    graph.on('layoutstop', (e) => {
-      graph.center(graph.getElementById(rootNodeId))
+    _graph.on('layoutstop', (e) => {
+      _graph.center(_graph.getElementById(_rootNodeId))
     })
-    graph.on('tap', 'node', (e) => {
-      graph.elements().addClass('faded')
+    _graph.on('tap', 'node', (e) => {
+      _graph.elements().addClass('faded')
       const node = e.target
       node.neighborhood().add(node).removeClass('faded')
     })
-    graph.on('tap', (e) => {
-      if (e.target === graph) {
-        graph.elements().removeClass('faded')
+    _graph.on('tap', (e) => {
+      if (e.target === _graph) {
+        _graph.elements().removeClass('faded')
       }
     })
-    new ResizeSensor(container, debounce(() => {
-      if (graph != null) {
-        graph.resize()
-        graph.center(graph.getElementById(rootNodeId))
+    _resizeSensor = new ResizeSensor(container, debounce(() => {
+      if (_graph != null) {
+        _graph.resize()
+        _graph.center(_graph.getElementById(_rootNodeId))
       }
     }, 500))
   }
 
+  static resize() {
+    if (_graph != null) {
+      _graph.resize()
+      _graph.center(_graph.getElementById(_rootNodeId))
+    }
+  }
+
   static destroy() {
-    if (graph != null) {
-      graph.destroy()
-      graph = null
+    if (_graph != null) {
+      _graph.destroy()
+      _graph = null
+      _rootNodeId = null
+      _resizeSensor = null
     }
   }
 }

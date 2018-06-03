@@ -1,4 +1,4 @@
-port module App.Ports exposing (renderCotoGraph, destroyGraph)
+port module App.Ports exposing (renderCotoGraph, resizeGraph, destroyGraph)
 
 import Dict
 import App.Types.Graph exposing (Graph)
@@ -9,6 +9,9 @@ import App.Views.Coto
 port renderGraph :
     { rootNodeId : String, nodes : List Node, edges : List Edge }
     -> Cmd msg
+
+
+port resizeGraph : () -> Cmd msg
 
 
 port destroyGraph : () -> Cmd msg
