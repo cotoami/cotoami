@@ -86,7 +86,10 @@ export default class {
       }
     })
     new ResizeSensor(container, debounce(() => {
-      graph.makeLayout(layout).run()
+      if (graph != null) {
+        graph.resize()
+        graph.center(graph.getElementById(rootNodeId))
+      }
     }, 500))
   }
 
