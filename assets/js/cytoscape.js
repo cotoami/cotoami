@@ -58,9 +58,11 @@ const layout = {
   fit: false
 }
 
+let graph = null
+
 export default class {
   static render(container, rootNodeId, data) {
-    const graph = cytoscape({
+    graph = cytoscape({
       container: container,
       elements: data,
       style: style,
@@ -86,5 +88,12 @@ export default class {
     new ResizeSensor(container, debounce(() => {
       graph.makeLayout(layout).run()
     }, 500))
+  }
+
+  static destroy() {
+    if (graph != null) {
+      graph.destroy()
+      graph = null
+    }
   }
 }

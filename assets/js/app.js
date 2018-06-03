@@ -33,3 +33,8 @@ elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
     })
   )
 })
+
+elmApp.ports.destroyGraph.subscribe(() => {
+  Cytoscape.destroy()
+})
+

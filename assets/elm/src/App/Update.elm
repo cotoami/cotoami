@@ -1000,6 +1000,7 @@ loadHome model =
         [ App.Server.Post.fetchPosts 0
         , App.Server.Cotonoma.fetchCotonomas
         , App.Server.Graph.fetchGraph Nothing
+        , App.Ports.destroyGraph ()
         ]
     )
 
@@ -1029,6 +1030,7 @@ loadCotonoma key model =
         [ App.Server.Cotonoma.fetchCotonomas
         , App.Server.Post.fetchCotonomaPosts key 0
         , App.Server.Graph.fetchGraph (Just key)
+        , App.Ports.destroyGraph ()
         ]
     )
 
