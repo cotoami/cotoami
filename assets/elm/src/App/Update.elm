@@ -259,7 +259,9 @@ update msg model =
             model ! []
 
         SubgraphFetched (Ok subgraph) ->
-            { model | graph = mergeSubgraph subgraph model.graph } ! []
+            ( { model | graph = mergeSubgraph subgraph model.graph }
+            , renderGraph model
+            )
 
         SubgraphFetched (Err _) ->
             model ! []
