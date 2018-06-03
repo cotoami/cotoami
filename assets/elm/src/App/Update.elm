@@ -44,6 +44,7 @@ import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Pushed
+import App.Ports
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -98,7 +99,7 @@ update msg model =
 
         ToggleTimeline ->
             ( { model | timeline = App.Types.Timeline.toggle model.timeline }
-            , Cmd.none
+            , renderGraphWithDelay model
             )
 
         HomeClick ->
@@ -250,6 +251,7 @@ update msg model =
                     , Cmd.batch
                         [ initScrollPositionOfTimeline model
                         , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                        , renderGraph model
                         ]
                     )
 
@@ -257,7 +259,9 @@ update msg model =
             model ! []
 
         SubgraphFetched (Ok subgraph) ->
-            { model | graph = mergeSubgraph subgraph model.graph } ! []
+            ( { model | graph = mergeSubgraph subgraph model.graph }
+            , renderGraph model
+            )
 
         SubgraphFetched (Err _) ->
             model ! []
@@ -491,7 +495,7 @@ update msg model =
             )
 
         CotoPinned (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         CotoPinned (Err _) ->
             ( model, Cmd.none )
@@ -515,7 +519,7 @@ update msg model =
                   ]
 
         CotoUnpinned (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         CotoUnpinned (Err _) ->
             ( model, Cmd.none )
@@ -556,7 +560,7 @@ update msg model =
             )
 
         Connected (Ok _) ->
-            model ! []
+            ( model, renderGraph model )
 
         Connected (Err _) ->
             model ! []
@@ -583,7 +587,7 @@ update msg model =
             )
 
         ConnectionDeleted (Ok _) ->
-            ( model, Cmd.none )
+            ( model, renderGraph model )
 
         ConnectionDeleted (Err _) ->
             ( model, Cmd.none )
@@ -773,6 +777,20 @@ update msg model =
             model.timeline
                 |> (\timeline -> { timeline | initializingScrollPos = False })
                 |> \timeline -> ( { model | timeline = timeline }, Cmd.none )
+
+        --
+        -- PinnedCotos
+        --
+        SwitchPinnedCotosView view ->
+            ( { model | pinnedCotosView = view }
+            , if view == GraphView then
+                renderGraphWithDelay model
+              else
+                Cmd.none
+            )
+
+        RenderGraph ->
+            ( model, renderGraph model )
 
         --
         -- Traversals
@@ -982,6 +1000,7 @@ loadHome model =
         [ App.Server.Post.fetchPosts 0
         , App.Server.Cotonoma.fetchCotonomas
         , App.Server.Graph.fetchGraph Nothing
+        , App.Ports.destroyGraph ()
         ]
     )
 
@@ -1011,6 +1030,7 @@ loadCotonoma key model =
         [ App.Server.Cotonoma.fetchCotonomas
         , App.Server.Post.fetchCotonomaPosts key 0
         , App.Server.Graph.fetchGraph (Just key)
+        , App.Ports.destroyGraph ()
         ]
     )
 
@@ -1245,3 +1265,18 @@ makeReorderCmd maybeParentId model =
                 maybeParentId
             )
         |> Maybe.withDefault Cmd.none
+
+
+renderGraph : Model -> Cmd Msg
+renderGraph model =
+    if model.pinnedCotosView == GraphView then
+        App.Ports.renderCotoGraph model.context.cotonoma model.graph
+    else
+        Cmd.none
+
+
+renderGraphWithDelay : Model -> Cmd Msg
+renderGraphWithDelay model =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> RenderGraph)

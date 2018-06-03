@@ -388,3 +388,8 @@ reorder maybeParentId newOrder graph =
                     )
         )
         graph
+
+
+type PinnedCotosView
+    = DocumentView
+    | GraphView

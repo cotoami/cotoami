@@ -9,11 +9,11 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
-import App.Types.Graph exposing (Direction(..), Graph, defaultGraph, batchConnect)
-import App.Types.Timeline exposing (Timeline, defaultTimeline)
-import App.Types.Traversal exposing (Traversals, defaultTraversals)
+import App.Types.Graph exposing (Direction(..), Graph, PinnedCotosView(..))
+import App.Types.Timeline exposing (Timeline)
+import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Confirmation exposing (Confirmation, defaultConfirmation)
+import App.Confirmation exposing (Confirmation)
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
@@ -68,6 +68,7 @@ type alias Model =
     , loadingGraph : Bool
     , traversals : Traversals
     , importModal : App.Modals.ImportModal.Model
+    , pinnedCotosView : PinnedCotosView
     }
 
 
@@ -80,7 +81,7 @@ initModel seed route =
     , navigationOpen = False
     , presences = Dict.empty
     , modals = []
-    , confirmation = defaultConfirmation
+    , confirmation = App.Confirmation.defaultConfirmation
     , searchInputFocus = False
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
@@ -91,16 +92,17 @@ initModel seed route =
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
-    , timeline = defaultTimeline
+    , timeline = App.Types.Timeline.defaultTimeline
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
     , connectingTarget = Nothing
     , connectingDirection = App.Types.Graph.Outbound
-    , graph = defaultGraph
+    , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
-    , traversals = defaultTraversals
+    , traversals = App.Types.Traversal.defaultTraversals
     , importModal = App.Modals.ImportModal.defaultModel
+    , pinnedCotosView = DocumentView
     }
 
 
@@ -276,7 +278,7 @@ connect direction cotos target model =
     model.context.session
         |> Maybe.map
             (\session ->
-                batchConnect session.id direction cotos target model.graph
+                App.Types.Graph.batchConnect session.id direction cotos target model.graph
                     |> (\graph ->
                             { model
                                 | graph = graph
