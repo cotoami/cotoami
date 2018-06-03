@@ -1,8 +1,9 @@
 port module App.Ports exposing (renderCotoGraph, destroyGraph)
 
 import Dict
+import Set exposing (Set)
 import App.Types.Graph exposing (Graph)
-import App.Types.Coto exposing (Coto, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Views.Coto
 
 
@@ -37,24 +38,62 @@ cotoToNode coto =
     }
 
 
+collectReachableCotoIds : Set CotoId -> Graph -> Set CotoId -> Set CotoId
+collectReachableCotoIds sourceIds graph collectedIds =
+    let
+        unexploredSourceIds =
+            Set.diff sourceIds collectedIds
+
+        nextCotoIds =
+            unexploredSourceIds
+                |> Set.toList
+                |> List.map
+                    (\cotoId ->
+                        graph.connections
+                            |> Dict.get cotoId
+                            |> Maybe.map (List.map (\conn -> conn.end))
+                            |> Maybe.withDefault []
+                    )
+                |> List.concat
+                |> Set.fromList
+
+        updatedCollectedIds =
+            Set.union collectedIds unexploredSourceIds
+    in
+        if Set.isEmpty nextCotoIds then
+            updatedCollectedIds
+        else
+            collectReachableCotoIds nextCotoIds graph updatedCollectedIds
+
+
+getReachableCotosFromPinnedCotos : Graph -> List Coto
+getReachableCotosFromPinnedCotos graph =
+    let
+        pinnedCotoIds =
+            graph.rootConnections
+                |> List.map (\conn -> conn.end)
+                |> Set.fromList
+    in
+        collectReachableCotoIds pinnedCotoIds graph Set.empty
+            |> Set.toList
+            |> List.filterMap (\id -> Dict.get id graph.cotos)
+
+
 renderCotoGraph : Maybe Cotonoma -> Graph -> Cmd msg
 renderCotoGraph maybeCotonoma graph =
     let
-        homeNode =
+        root =
             maybeCotonoma
                 |> Maybe.map
                     (\cotonoma ->
-                        if Dict.member cotonoma.cotoId graph.cotos then
-                            []
-                        else
-                            [ { id = cotonoma.cotoId
-                              , name = cotonoma.name
-                              , asCotonoma = True
-                              , imageUrl =
-                                    cotonoma.owner
-                                        |> Maybe.map (\owner -> owner.avatarUrl)
-                              }
-                            ]
+                        [ { id = cotonoma.cotoId
+                          , name = cotonoma.name
+                          , asCotonoma = True
+                          , imageUrl =
+                                cotonoma.owner
+                                    |> Maybe.map (\owner -> owner.avatarUrl)
+                          }
+                        ]
                     )
                 |> Maybe.withDefault
                     [ { id = "home"
@@ -64,15 +103,20 @@ renderCotoGraph maybeCotonoma graph =
                       }
                     ]
 
-        nodes =
-            graph.cotos
-                |> Dict.values
-                |> List.map cotoToNode
-
         rootId =
             maybeCotonoma
                 |> Maybe.map (\cotonoma -> cotonoma.cotoId)
                 |> Maybe.withDefault "home"
+
+        nodes =
+            graph
+                |> getReachableCotosFromPinnedCotos
+                |> List.map cotoToNode
+
+        nodeIds =
+            nodes
+                |> List.map (\node -> node.id)
+                |> Set.fromList
 
         rootEdges =
             graph.rootConnections
@@ -89,17 +133,21 @@ renderCotoGraph maybeCotonoma graph =
                 |> List.map
                     (\( cotoId, conns ) ->
                         conns
-                            |> List.map
+                            |> List.filterMap
                                 (\conn ->
-                                    { source = cotoId
-                                    , target = conn.end
-                                    }
+                                    if Set.member cotoId nodeIds && Set.member conn.end nodeIds then
+                                        Just
+                                            { source = cotoId
+                                            , target = conn.end
+                                            }
+                                    else
+                                        Nothing
                                 )
                     )
                 |> List.concat
     in
         renderGraph
             { rootNodeId = rootId
-            , nodes = homeNode ++ nodes
+            , nodes = root ++ nodes
             , edges = rootEdges ++ edges
             }
