@@ -36,7 +36,12 @@ const style = cytoscape.stylesheet()
   })
   .selector('#home').css({
     'shape': 'roundrectangle',
-    'background-color': '#ddd'
+    'width': 20,
+    'height': 20,
+    'background-fit': 'contain',
+    'background-color': 'white',
+    'background-image': '/images/home.svg',
+    'background-image-opacity': 0.6
   })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
