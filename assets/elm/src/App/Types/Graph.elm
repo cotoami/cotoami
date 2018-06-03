@@ -1,6 +1,7 @@
 module App.Types.Graph exposing (..)
 
 import Dict exposing (Dict)
+import Set exposing (Set)
 import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
@@ -388,6 +389,69 @@ reorder maybeParentId newOrder graph =
                     )
         )
         graph
+
+
+collectReachableCotoIds : Set CotoId -> Graph -> Set CotoId -> Set CotoId
+collectReachableCotoIds sourceIds graph collectedIds =
+    let
+        unexploredSourceIds =
+            Set.diff sourceIds collectedIds
+
+        nextCotoIds =
+            unexploredSourceIds
+                |> Set.toList
+                |> List.map
+                    (\cotoId ->
+                        graph.connections
+                            |> Dict.get cotoId
+                            |> Maybe.map (List.map (\conn -> conn.end))
+                            |> Maybe.withDefault []
+                    )
+                |> List.concat
+                |> Set.fromList
+
+        updatedCollectedIds =
+            Set.union collectedIds unexploredSourceIds
+    in
+        if Set.isEmpty nextCotoIds then
+            updatedCollectedIds
+        else
+            collectReachableCotoIds nextCotoIds graph updatedCollectedIds
+
+
+excludeUnreachables : Graph -> Graph
+excludeUnreachables graph =
+    let
+        pinnedCotoIds =
+            graph.rootConnections
+                |> List.map (\conn -> conn.end)
+                |> Set.fromList
+
+        reachableIds =
+            collectReachableCotoIds pinnedCotoIds graph Set.empty
+
+        reachableCotos =
+            graph.cotos
+                |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
+
+        reachableConns =
+            graph.connections
+                |> Dict.toList
+                |> List.filterMap
+                    (\( sourceId, conns ) ->
+                        if Set.member sourceId reachableIds then
+                            Just
+                                ( sourceId
+                                , List.filter
+                                    (\conn -> Set.member conn.end reachableIds)
+                                    conns
+                                )
+                        else
+                            Nothing
+                    )
+                |> Dict.fromList
+    in
+        { graph | cotos = reachableCotos, connections = reachableConns }
 
 
 type PinnedCotosView
