@@ -1,7 +1,8 @@
 defmodule CotoamiWeb.AmishiController do
   use CotoamiWeb, :controller
   require Logger
-  alias Cotoami.{AmishiService, RedisService, AmishiView}
+  alias Cotoami.{AmishiService, RedisService}
+  alias CotoamiWeb.AmishiView
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])

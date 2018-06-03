@@ -2,11 +2,8 @@ defmodule CotoamiWeb.DatabaseController do
   use CotoamiWeb, :controller
   require Logger
   alias Bolt.Sips
-  alias Cotoami.{
-    Amishi, Coto, Cotonoma,
-    CotoService, CotoGraphService,
-    AmishiView, CotoView
-  }
+  alias Cotoami.{Amishi, Coto, Cotonoma, CotoService, CotoGraphService}
+  alias CotoamiWeb.{AmishiView, CotoView}
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
