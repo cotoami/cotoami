@@ -179,6 +179,7 @@ pinnedCotosColumn model =
         ]
         [ App.Views.PinnedCotos.view
             model.context
+            model.loadingGraph
             model.pinnedCotosView
             model.graph
         ]

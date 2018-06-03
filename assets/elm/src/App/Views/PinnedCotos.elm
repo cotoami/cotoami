@@ -15,8 +15,8 @@ import App.Messages exposing (..)
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
-view : Context -> PinnedCotosView -> Graph -> Html Msg
-view context view graph =
+view : Context -> Bool -> PinnedCotosView -> Graph -> Html Msg
+view context loadingGraph view graph =
     div [ id "pinned-cotos" ]
         [ div
             [ class "column-header" ]
@@ -48,7 +48,11 @@ view context view graph =
                     pinnedCotos context graph
 
                 GraphView ->
-                    div [ id "coto-graph-view" ] []
+                    div
+                        [ id "coto-graph-view"
+                        , classList [ ( "loading", loadingGraph ) ]
+                        ]
+                        []
             ]
         ]
 
