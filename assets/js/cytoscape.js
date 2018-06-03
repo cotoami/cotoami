@@ -10,7 +10,7 @@ const style = cytoscape.stylesheet()
     'width': 10,
     'height': 10,
     'font-size': 8,
-    'text-max-width': 200,
+    'text-max-width': 150,
     'text-wrap': 'ellipsis',
     'text-valign': 'bottom',
     'text-margin-y': 5,
