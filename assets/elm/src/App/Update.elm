@@ -251,6 +251,7 @@ update msg model =
                     , Cmd.batch
                         [ initScrollPositionOfTimeline model
                         , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                        , renderGraph model
                         ]
                     )
 
@@ -789,7 +790,7 @@ update msg model =
             )
 
         RenderGraph ->
-            ( model, App.Ports.renderCotoGraph model.context.cotonoma model.graph )
+            ( model, renderGraph model )
 
         --
         -- Traversals
@@ -1262,3 +1263,11 @@ makeReorderCmd maybeParentId model =
                 maybeParentId
             )
         |> Maybe.withDefault Cmd.none
+
+
+renderGraph : Model -> Cmd Msg
+renderGraph model =
+    if model.pinnedCotosView == GraphView then
+        App.Ports.renderCotoGraph model.context.cotonoma model.graph
+    else
+        Cmd.none
