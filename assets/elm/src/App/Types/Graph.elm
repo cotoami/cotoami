@@ -419,6 +419,25 @@ collectReachableCotoIds sourceIds graph collectedIds =
             collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
+filterConnections : Set CotoId -> ConnectionDict -> ConnectionDict
+filterConnections cotoIdsInGraph connections =
+    connections
+        |> Dict.toList
+        |> List.filterMap
+            (\( sourceId, conns ) ->
+                if Set.member sourceId cotoIdsInGraph then
+                    Just
+                        ( sourceId
+                        , List.filter
+                            (\conn -> Set.member conn.end cotoIdsInGraph)
+                            conns
+                        )
+                else
+                    Nothing
+            )
+        |> Dict.fromList
+
+
 excludeUnreachables : Graph -> Graph
 excludeUnreachables graph =
     let
@@ -435,21 +454,7 @@ excludeUnreachables graph =
                 |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
 
         reachableConns =
-            graph.connections
-                |> Dict.toList
-                |> List.filterMap
-                    (\( sourceId, conns ) ->
-                        if Set.member sourceId reachableIds then
-                            Just
-                                ( sourceId
-                                , List.filter
-                                    (\conn -> Set.member conn.end reachableIds)
-                                    conns
-                                )
-                        else
-                            Nothing
-                    )
-                |> Dict.fromList
+            filterConnections reachableIds graph.connections
     in
         { graph | cotos = reachableCotos, connections = reachableConns }
 
