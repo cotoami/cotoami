@@ -6,6 +6,7 @@ import Phoenix.Socket as Socket exposing (Socket)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Channels exposing (globalChannel, cotonomaChannel)
+import App.Ports
 
 
 socket : String -> String -> Socket Msg
@@ -39,4 +40,5 @@ subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
         , phoenixChannels model
+        , App.Ports.nodeClicked OpenTraversal
         ]

@@ -30,7 +30,12 @@ elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
         data: element,
         classes: element.asCotonoma ? 'cotonoma' : ''
       } 
-    })
+    }),
+    (nodeId) => {
+      if (nodeId != 'home') {
+        elmApp.ports.nodeClicked.send(nodeId)
+      }
+    }
   )
 })
 

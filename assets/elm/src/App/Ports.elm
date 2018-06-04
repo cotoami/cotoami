@@ -1,4 +1,10 @@
-port module App.Ports exposing (renderCotoGraph, resizeGraph, destroyGraph)
+port module App.Ports
+    exposing
+        ( renderCotoGraph
+        , resizeGraph
+        , destroyGraph
+        , nodeClicked
+        )
 
 import Dict
 import App.Types.Graph exposing (Graph)
@@ -15,6 +21,9 @@ port resizeGraph : () -> Cmd msg
 
 
 port destroyGraph : () -> Cmd msg
+
+
+port nodeClicked : (String -> msg) -> Sub msg
 
 
 type alias Node =

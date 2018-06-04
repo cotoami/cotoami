@@ -69,7 +69,7 @@ let _rootNodeId = null
 let _resizeSensor = null
 
 export default class {
-  static render(container, rootNodeId, data) {
+  static render(container, rootNodeId, data, onNodeClick) {
     _rootNodeId = rootNodeId
     _graph = cytoscape({
       container: container,
@@ -81,19 +81,24 @@ export default class {
         _graph.center(_graph.getElementById(_rootNodeId))
       }
     })
+
     _graph.on('layoutstop', (e) => {
       _graph.center(_graph.getElementById(_rootNodeId))
     })
+
     _graph.on('tap', 'node', (e) => {
       _graph.elements().addClass('faded')
       const node = e.target
       node.neighborhood().add(node).removeClass('faded')
+      onNodeClick(node.data('id'))
     })
+
     _graph.on('tap', (e) => {
       if (e.target === _graph) {
         _graph.elements().removeClass('faded')
       }
     })
+
     _resizeSensor = new ResizeSensor(container, debounce(() => {
       if (_graph != null) {
         _graph.resize()
