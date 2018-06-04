@@ -94,7 +94,10 @@ update msg model =
 
         SwitchViewOnMobile view ->
             ( { model | activeViewOnMobile = view }
-            , Cmd.none
+            , if view == PinnedView then
+                resizeGraphWithDelay
+              else
+                Cmd.none
             )
 
         ToggleTimeline ->
