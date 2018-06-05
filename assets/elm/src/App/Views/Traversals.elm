@@ -71,6 +71,11 @@ type alias TraversalStep =
     }
 
 
+getElementId : TraversalStep -> String
+getElementId step =
+    "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
+
+
 traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
 traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
@@ -90,7 +95,12 @@ traversalDiv context graph traversal connections startCoto =
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
                 [ parentsDiv graph traversal startCoto.id
-                , startCotoDiv context graph traversal connections startCoto
+                , stepCotoDiv
+                    context
+                    graph
+                    connections
+                    (TraversalStep traversal -1 startCoto.id)
+                    startCoto
                 ]
             , div [ class "steps" ]
                 (traversal.steps
@@ -132,11 +142,11 @@ parentsDiv graph traversal childId =
                 ]
 
 
-startCotoDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
-startCotoDiv context graph traversal connections coto =
+stepCotoDiv : Context -> Graph -> List Connection -> TraversalStep -> Coto -> Html Msg
+stepCotoDiv context graph connections step coto =
     let
         elementId =
-            "traversal-" ++ traversal.start
+            getElementId step
     in
         div
             [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
@@ -151,7 +161,7 @@ startCotoDiv context graph traversal connections coto =
                 , connectionsDiv
                     context
                     graph
-                    (TraversalStep traversal -1 coto.id)
+                    step
                     elementId
                     coto
                     connections
