@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
     <script src="<%= static_path(@conn, "/js/lodash.core.min.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/cytoscape.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/cytoscape-cose-bilkent.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/ResizeSensor.js") %>"></script>
   </head>
   <body>

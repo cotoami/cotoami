@@ -58,10 +58,11 @@ const _style = cytoscape.stylesheet()
   });
 
 const _layout = {
-  name: 'cose',
+  name: 'cose-bilkent',
   padding: 30,
   nodeDimensionsIncludeLabels: true,
-  fit: false
+  fit: false,
+  animate: 'during'
 }
 
 let _graph = null
@@ -78,7 +79,7 @@ export default class {
       layout: _layout,
       zoom: 1.2,
       ready: () => {
-        _graph.center(_graph.getElementById(_rootNodeId))
+        // _graph.center(_graph.getElementById(_rootNodeId))
       }
     })
 
