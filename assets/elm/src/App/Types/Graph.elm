@@ -419,23 +419,31 @@ collectReachableCotoIds sourceIds graph collectedIds =
             collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
-filterConnections : Set CotoId -> ConnectionDict -> ConnectionDict
-filterConnections cotoIdsInGraph connections =
-    connections
-        |> Dict.toList
-        |> List.filterMap
-            (\( sourceId, conns ) ->
-                if Set.member sourceId cotoIdsInGraph then
-                    Just
-                        ( sourceId
-                        , List.filter
-                            (\conn -> Set.member conn.end cotoIdsInGraph)
-                            conns
-                        )
-                else
-                    Nothing
-            )
-        |> Dict.fromList
+deleteInvalidConnections : Graph -> Graph
+deleteInvalidConnections graph =
+    let
+        rootConnections =
+            graph.rootConnections
+                |> List.filter (\conn -> Dict.member conn.end graph.cotos)
+
+        connections =
+            graph.connections
+                |> Dict.toList
+                |> List.filterMap
+                    (\( sourceId, conns ) ->
+                        if Dict.member sourceId graph.cotos then
+                            Just
+                                ( sourceId
+                                , List.filter
+                                    (\conn -> Dict.member conn.end graph.cotos)
+                                    conns
+                                )
+                        else
+                            Nothing
+                    )
+                |> Dict.fromList
+    in
+        { graph | rootConnections = rootConnections, connections = connections }
 
 
 excludeUnreachables : Graph -> Graph
@@ -452,11 +460,9 @@ excludeUnreachables graph =
         reachableCotos =
             graph.cotos
                 |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
-
-        reachableConns =
-            filterConnections reachableIds graph.connections
     in
-        { graph | cotos = reachableCotos, connections = reachableConns }
+        { graph | cotos = reachableCotos }
+            |> deleteInvalidConnections
 
 
 type PinnedCotosView
