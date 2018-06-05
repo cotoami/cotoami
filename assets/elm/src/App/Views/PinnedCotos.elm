@@ -7,23 +7,53 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon)
-import App.Types.Context exposing (CotoSelection, Context, isSelected, isServerOwner)
+import Util.HtmlUtil exposing (faIcon, materialIcon)
+import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Graph exposing (Graph, Connection)
+import App.Types.Graph exposing (Graph, Connection, PinnedCotosView(..))
 import App.Messages exposing (..)
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
-view : Context -> Graph -> Html Msg
-view context graph =
+view : Context -> Bool -> PinnedCotosView -> Graph -> Html Msg
+view context loadingGraph view graph =
     div [ id "pinned-cotos" ]
         [ div
             [ class "column-header" ]
-            []
+            [ div [ class "view-switch" ]
+                [ a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "document-view", True )
+                        , ( "disabled", view == DocumentView )
+                        ]
+                    , onClick (SwitchPinnedCotosView DocumentView)
+                    ]
+                    [ materialIcon "view_stream" Nothing ]
+                , a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "graph-view", True )
+                        , ( "disabled", view == GraphView )
+                        ]
+                    , onClick (SwitchPinnedCotosView GraphView)
+                    ]
+                    [ materialIcon "share" Nothing ]
+                ]
+            ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]
-            [ pinnedCotos context graph ]
+            [ case view of
+                DocumentView ->
+                    pinnedCotos context graph
+
+                GraphView ->
+                    div
+                        [ id "coto-graph-view"
+                        , classList [ ( "loading", loadingGraph ) ]
+                        ]
+                        []
+            ]
         ]
 
 
@@ -115,7 +145,7 @@ unpinButtonDiv context connection cotoId =
                 |> Maybe.map (\owner -> owner.id)
 
         unpinnable =
-            isServerOwner context
+            App.Types.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || ((isJust maybeAmishiId) && maybeAmishiId == maybeCotonomaOwnerId)
     in

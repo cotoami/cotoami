@@ -177,7 +177,11 @@ pinnedCotosColumn model =
             , ( "fadeIn", model.activeViewOnMobile == PinnedView )
             ]
         ]
-        [ App.Views.PinnedCotos.view model.context model.graph
+        [ App.Views.PinnedCotos.view
+            model.context
+            model.loadingGraph
+            model.pinnedCotosView
+            model.graph
         ]
 
 

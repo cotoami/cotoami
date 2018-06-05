@@ -12,16 +12,38 @@
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
-
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
-
-// import socket from "./socket"
+import map from 'lodash/map'
+import Cytoscape from "js/cytoscape"
 
 // Set up our Elm App
 const elmDiv = document.querySelector("#elm-container")
 const elmApp = Elm.Main.embed(elmDiv, {
   seed: Math.floor(Math.random() * 0x0FFFFFFF)
 })
+
+elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
+  Cytoscape.render(
+    document.getElementById('coto-graph-view'),
+    rootNodeId,
+    map(nodes.concat(edges), element => { 
+      return {
+        data: element,
+        classes: element.asCotonoma ? 'cotonoma' : ''
+      } 
+    }),
+    (nodeId) => {
+      if (nodeId != 'home') {
+        elmApp.ports.nodeClicked.send(nodeId)
+      }
+    }
+  )
+})
+
+elmApp.ports.resizeGraph.subscribe(() => {
+  Cytoscape.resize()
+})
+
+elmApp.ports.destroyGraph.subscribe(() => {
+  Cytoscape.destroy()
+})
+

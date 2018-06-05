@@ -48,25 +48,29 @@ toolbarDiv context timeline =
             , onLinkButtonClick ToggleTimeline
             ]
             [ materialIcon "arrow_left" Nothing ]
-        , div [ class "view-switch" ]
-            [ a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "stream-view", True )
-                    , ( "disabled", timeline.view == StreamView )
+        , div [ class "tools" ]
+            [ span [ class "view-switch" ]
+                [ a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "stream-view", True )
+                        , ( "disabled", timeline.view == StreamView )
+                        ]
+                    , title "Stream View"
+                    , onClick (SwitchTimelineView StreamView)
                     ]
-                , onClick (SwitchTimelineView StreamView)
-                ]
-                [ materialIcon "view_stream" Nothing ]
-            , a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "tile-view", True )
-                    , ( "disabled", timeline.view == TileView )
+                    [ materialIcon "view_stream" Nothing ]
+                , a
+                    [ classList
+                        [ ( "tool-button", True )
+                        , ( "tile-view", True )
+                        , ( "disabled", timeline.view == TileView )
+                        ]
+                    , title "Tile View"
+                    , onClick (SwitchTimelineView TileView)
                     ]
-                , onClick (SwitchTimelineView TileView)
+                    [ materialIcon "view_module" Nothing ]
                 ]
-                [ materialIcon "view_module" Nothing ]
             ]
         ]
 

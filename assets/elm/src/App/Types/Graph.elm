@@ -1,6 +1,7 @@
 module App.Types.Graph exposing (..)
 
-import Dict
+import Dict exposing (Dict)
+import Set exposing (Set)
 import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
@@ -31,11 +32,11 @@ initConnection amishiId maybeStart end =
 
 
 type alias ConnectionDict =
-    Dict.Dict CotoId (List Connection)
+    Dict CotoId (List Connection)
 
 
 type alias Graph =
-    { cotos : Dict.Dict CotoId Coto
+    { cotos : Dict CotoId Coto
     , rootConnections : List Connection
     , connections : ConnectionDict
     }
@@ -388,3 +389,97 @@ reorder maybeParentId newOrder graph =
                     )
         )
         graph
+
+
+collectReachableCotoIds : Set CotoId -> Graph -> Set CotoId -> Set CotoId
+collectReachableCotoIds sourceIds graph collectedIds =
+    let
+        unexploredSourceIds =
+            Set.diff sourceIds collectedIds
+
+        nextCotoIds =
+            unexploredSourceIds
+                |> Set.toList
+                |> List.map
+                    (\cotoId ->
+                        graph.connections
+                            |> Dict.get cotoId
+                            |> Maybe.map (List.map (\conn -> conn.end))
+                            |> Maybe.withDefault []
+                    )
+                |> List.concat
+                |> Set.fromList
+
+        updatedCollectedIds =
+            Set.union collectedIds unexploredSourceIds
+    in
+        if Set.isEmpty nextCotoIds then
+            updatedCollectedIds
+        else
+            collectReachableCotoIds nextCotoIds graph updatedCollectedIds
+
+
+deleteInvalidConnections : Graph -> Graph
+deleteInvalidConnections graph =
+    let
+        rootConnections =
+            graph.rootConnections
+                |> List.filter (\conn -> Dict.member conn.end graph.cotos)
+
+        connections =
+            graph.connections
+                |> Dict.toList
+                |> List.filterMap
+                    (\( sourceId, conns ) ->
+                        if Dict.member sourceId graph.cotos then
+                            Just
+                                ( sourceId
+                                , List.filter
+                                    (\conn -> Dict.member conn.end graph.cotos)
+                                    conns
+                                )
+                        else
+                            Nothing
+                    )
+                |> Dict.fromList
+    in
+        { graph | rootConnections = rootConnections, connections = connections }
+
+
+excludeUnreachables : Graph -> Graph
+excludeUnreachables graph =
+    let
+        pinnedCotoIds =
+            graph.rootConnections
+                |> List.map (\conn -> conn.end)
+                |> Set.fromList
+
+        reachableIds =
+            collectReachableCotoIds pinnedCotoIds graph Set.empty
+
+        reachableCotos =
+            graph.cotos
+                |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
+    in
+        { graph | cotos = reachableCotos }
+            |> deleteInvalidConnections
+
+
+toTopicGraph : Graph -> Graph
+toTopicGraph graph =
+    let
+        topicCotos =
+            graph.cotos
+                |> Dict.filter
+                    (\cotoId coto ->
+                        isJust (App.Types.Coto.toTopic coto)
+                    )
+    in
+        { graph | cotos = topicCotos }
+            |> deleteInvalidConnections
+            |> excludeUnreachables
+
+
+type PinnedCotosView
+    = DocumentView
+    | GraphView

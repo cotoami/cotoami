@@ -89,6 +89,7 @@
     position: relative;
     display: inline-block;
     margin-right: 10px;
+    margin-bottom: 0;
     vertical-align: top;
 
     @media (#{$narrow-viewport}) {

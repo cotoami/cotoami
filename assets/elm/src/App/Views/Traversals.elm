@@ -71,6 +71,11 @@ type alias TraversalStep =
     }
 
 
+getElementId : TraversalStep -> String
+getElementId step =
+    "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
+
+
 traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
 traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
@@ -90,7 +95,12 @@ traversalDiv context graph traversal connections startCoto =
             [ class "column-body" ]
             [ div [ class "traversal-start" ]
                 [ parentsDiv graph traversal startCoto.id
-                , startCotoDiv context graph traversal connections startCoto
+                , stepCotoDiv
+                    context
+                    graph
+                    connections
+                    (TraversalStep traversal -1 startCoto.id)
+                    startCoto
                 ]
             , div [ class "steps" ]
                 (traversal.steps
@@ -103,33 +113,6 @@ traversalDiv context graph traversal connections startCoto =
                 )
             ]
         ]
-
-
-startCotoDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
-startCotoDiv context graph traversal connections coto =
-    let
-        elementId =
-            "traversal-" ++ traversal.start
-    in
-        div
-            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
-            , onClickWithoutPropagation (CotoClick elementId coto.id)
-            , onMouseEnter (CotoMouseEnter elementId coto.id)
-            , onMouseLeave (CotoMouseLeave elementId coto.id)
-            ]
-            [ div [ class "coto-inner" ]
-                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
-                , App.Views.Coto.bodyDivByCoto context elementId coto
-                , div [ class "main-sub-border" ] []
-                , connectionsDiv
-                    context
-                    graph
-                    (TraversalStep traversal -1 coto.id)
-                    elementId
-                    coto
-                    connections
-                ]
-            ]
 
 
 parentsDiv : Graph -> Traversal -> CotoId -> Html Msg
@@ -159,14 +142,39 @@ parentsDiv graph traversal childId =
                 ]
 
 
+stepCotoDiv : Context -> Graph -> List Connection -> TraversalStep -> Coto -> Html Msg
+stepCotoDiv context graph connections step coto =
+    let
+        elementId =
+            getElementId step
+    in
+        div
+            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
+            ]
+            [ div [ class "coto-inner" ]
+                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
+                , App.Views.Coto.bodyDivByCoto context elementId coto
+                , div [ class "main-sub-border" ] []
+                , connectionsDiv
+                    context
+                    graph
+                    step
+                    elementId
+                    coto
+                    connections
+                ]
+            ]
+
+
 stepDiv : Context -> Graph -> TraversalStep -> Maybe (Html Msg)
 stepDiv context graph step =
     let
-        elementIdPrefix =
-            "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
-
         connections =
-            Dict.get step.cotoId graph.connections |> Maybe.withDefault []
+            Dict.get step.cotoId graph.connections
+                |> Maybe.withDefault []
     in
         graph.cotos
             |> Dict.get step.cotoId
@@ -176,16 +184,7 @@ stepDiv context graph step =
                         [ div
                             [ class "arrow" ]
                             [ materialIcon "arrow_downward" Nothing ]
-                        , div
-                            [ class "step-content" ]
-                            [ connectionsDiv
-                                context
-                                graph
-                                step
-                                elementIdPrefix
-                                coto
-                                connections
-                            ]
+                        , stepCotoDiv context graph connections step coto
                         ]
                 )
 
@@ -257,8 +256,10 @@ subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
                     elementId
                     coto
                 , App.Views.Coto.parentsDiv graph maybeParentId coto.id
-                , App.Views.Coto.bodyDivByCoto context elementId coto
-                , traverseButtonDiv graph traversalStep coto
+                , div [ class "sub-coto-body" ]
+                    [ App.Views.Coto.bodyDivByCoto context elementId coto
+                    , traverseButtonDiv graph traversalStep coto
+                    ]
                 ]
             ]
 
@@ -307,21 +308,17 @@ toPageLabel defaultLabel { content, summary } =
 traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
-        (if coto.asCotonoma then
-            [ openTraversalButton coto.id ]
-         else
-            (if hasChildren coto.id graph then
-                [ a
-                    [ class "tool-button traverse"
-                    , onLinkButtonClick (Traverse traversal coto.id index)
-                    ]
-                    [ materialIcon "arrow_downward" Nothing ]
-                , openTraversalButton coto.id
+        [ if coto.asCotonoma then
+            openTraversalButton coto.id
+          else if hasChildren coto.id graph then
+            a
+                [ class "tool-button traverse"
+                , onLinkButtonClick (Traverse traversal coto.id index)
                 ]
-             else
-                []
-            )
-        )
+                [ materialIcon "arrow_downward" Nothing ]
+          else
+            Util.HtmlUtil.none
+        ]
 
 
 openTraversalButton : CotoId -> Html Msg
