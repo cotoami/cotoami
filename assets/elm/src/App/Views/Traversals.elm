@@ -172,11 +172,9 @@ stepCotoDiv context graph connections step coto =
 stepDiv : Context -> Graph -> TraversalStep -> Maybe (Html Msg)
 stepDiv context graph step =
     let
-        elementIdPrefix =
-            "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
-
         connections =
-            Dict.get step.cotoId graph.connections |> Maybe.withDefault []
+            Dict.get step.cotoId graph.connections
+                |> Maybe.withDefault []
     in
         graph.cotos
             |> Dict.get step.cotoId
@@ -186,16 +184,7 @@ stepDiv context graph step =
                         [ div
                             [ class "arrow" ]
                             [ materialIcon "arrow_downward" Nothing ]
-                        , div
-                            [ class "step-content" ]
-                            [ connectionsDiv
-                                context
-                                graph
-                                step
-                                elementIdPrefix
-                                coto
-                                connections
-                            ]
+                        , stepCotoDiv context graph connections step coto
                         ]
                 )
 
