@@ -67,7 +67,20 @@ const _layout = {
 
 let _graph = null
 let _rootNodeId = null
+let _focusNodeId = null
 let _resizeSensor = null
+
+const _getCenterNodeId = () => {
+  return _focusNodeId ? _focusNodeId : _rootNodeId
+}
+
+const _setFocus = (nodeId) => {
+  if (_graph != null) {
+    _graph.elements().addClass('faded')
+    const node = _graph.getElementById(nodeId)
+    node.neighborhood().add(node).removeClass('faded')
+  }
+}
 
 export default class {
   static render(container, rootNodeId, data, onNodeClick) {
@@ -77,33 +90,34 @@ export default class {
       elements: data,
       style: _style,
       layout: _layout,
-      zoom: 1.2,
-      ready: () => {
-        // _graph.center(_graph.getElementById(_rootNodeId))
-      }
+      zoom: 1.2
     })
 
     _graph.on('layoutstop', (e) => {
-      _graph.center(_graph.getElementById(_rootNodeId))
+      if (_focusNodeId != null) {
+        _setFocus(_focusNodeId)
+      }
+      _graph.center(_graph.getElementById(_getCenterNodeId()))
     })
 
     _graph.on('tap', 'node', (e) => {
-      _graph.elements().addClass('faded')
       const node = e.target
-      node.neighborhood().add(node).removeClass('faded')
-      onNodeClick(node.data('id'))
+      _focusNodeId = node.data('id')
+      _setFocus(_focusNodeId)
+      onNodeClick(_focusNodeId)
     })
 
     _graph.on('tap', (e) => {
       if (e.target === _graph) {
         _graph.elements().removeClass('faded')
+        _focusNodeId = null
       }
     })
 
     _resizeSensor = new ResizeSensor(container, debounce(() => {
       if (_graph != null) {
         _graph.resize()
-        _graph.center(_graph.getElementById(_rootNodeId))
+        _graph.center(_graph.getElementById(_getCenterNodeId()))
       }
     }, 500))
   }
@@ -111,7 +125,7 @@ export default class {
   static resize() {
     if (_graph != null) {
       _graph.resize()
-      _graph.center(_graph.getElementById(_rootNodeId))
+      _graph.center(_graph.getElementById(_getCenterNodeId()))
     }
   }
 
@@ -119,8 +133,9 @@ export default class {
     if (_graph != null) {
       _graph.destroy()
       _graph = null
-      _rootNodeId = null
-      _resizeSensor = null
     }
+    _rootNodeId = null
+    _focusNodeId = null
+    _resizeSensor = null
   }
 }
