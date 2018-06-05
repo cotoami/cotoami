@@ -105,33 +105,6 @@ traversalDiv context graph traversal connections startCoto =
         ]
 
 
-startCotoDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
-startCotoDiv context graph traversal connections coto =
-    let
-        elementId =
-            "traversal-" ++ traversal.start
-    in
-        div
-            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
-            , onClickWithoutPropagation (CotoClick elementId coto.id)
-            , onMouseEnter (CotoMouseEnter elementId coto.id)
-            , onMouseLeave (CotoMouseLeave elementId coto.id)
-            ]
-            [ div [ class "coto-inner" ]
-                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
-                , App.Views.Coto.bodyDivByCoto context elementId coto
-                , div [ class "main-sub-border" ] []
-                , connectionsDiv
-                    context
-                    graph
-                    (TraversalStep traversal -1 coto.id)
-                    elementId
-                    coto
-                    connections
-                ]
-            ]
-
-
 parentsDiv : Graph -> Traversal -> CotoId -> Html Msg
 parentsDiv graph traversal childId =
     let
@@ -157,6 +130,33 @@ parentsDiv graph traversal childId =
                     [ class "arrow" ]
                     [ materialIcon "arrow_downward" Nothing ]
                 ]
+
+
+startCotoDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
+startCotoDiv context graph traversal connections coto =
+    let
+        elementId =
+            "traversal-" ++ traversal.start
+    in
+        div
+            [ App.Views.Coto.cotoClassList context elementId (Just coto.id) []
+            , onClickWithoutPropagation (CotoClick elementId coto.id)
+            , onMouseEnter (CotoMouseEnter elementId coto.id)
+            , onMouseLeave (CotoMouseLeave elementId coto.id)
+            ]
+            [ div [ class "coto-inner" ]
+                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
+                , App.Views.Coto.bodyDivByCoto context elementId coto
+                , div [ class "main-sub-border" ] []
+                , connectionsDiv
+                    context
+                    graph
+                    (TraversalStep traversal -1 coto.id)
+                    elementId
+                    coto
+                    connections
+                ]
+            ]
 
 
 stepDiv : Context -> Graph -> TraversalStep -> Maybe (Html Msg)
