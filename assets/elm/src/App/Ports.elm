@@ -40,6 +40,20 @@ type alias Edge =
     }
 
 
+isTopic : Coto -> Bool
+isTopic coto =
+    if coto.asCotonoma then
+        True
+    else
+        let
+            text =
+                App.Views.Coto.abbreviate coto
+                    |> String.trim
+        in
+            (String.length text <= App.Types.Coto.cotonomaNameMaxlength)
+                && (not (String.contains "\n" text))
+
+
 cotoToNode : Coto -> Node
 cotoToNode coto =
     { id = coto.id
