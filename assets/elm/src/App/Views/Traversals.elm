@@ -257,8 +257,10 @@ subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
                     elementId
                     coto
                 , App.Views.Coto.parentsDiv graph maybeParentId coto.id
-                , App.Views.Coto.bodyDivByCoto context elementId coto
-                , traverseButtonDiv graph traversalStep coto
+                , div [ class "sub-coto-body" ]
+                    [ App.Views.Coto.bodyDivByCoto context elementId coto
+                    , traverseButtonDiv graph traversalStep coto
+                    ]
                 ]
             ]
 
@@ -307,21 +309,17 @@ toPageLabel defaultLabel { content, summary } =
 traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
-        (if coto.asCotonoma then
-            [ openTraversalButton coto.id ]
-         else
-            (if hasChildren coto.id graph then
-                [ a
-                    [ class "tool-button traverse"
-                    , onLinkButtonClick (Traverse traversal coto.id index)
-                    ]
-                    [ materialIcon "arrow_downward" Nothing ]
-                , openTraversalButton coto.id
+        [ if coto.asCotonoma then
+            openTraversalButton coto.id
+          else if hasChildren coto.id graph then
+            a
+                [ class "tool-button traverse"
+                , onLinkButtonClick (Traverse traversal coto.id index)
                 ]
-             else
-                []
-            )
-        )
+                [ materialIcon "arrow_downward" Nothing ]
+          else
+            Util.HtmlUtil.none
+        ]
 
 
 openTraversalButton : CotoId -> Html Msg
