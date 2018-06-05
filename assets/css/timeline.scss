@@ -52,19 +52,24 @@
 div.timeline-toolbar {
   position: relative;
 
-  a.timeline-toggle i {
-    margin-top: 4px;
-    font-size: 30px;
+  a.timeline-toggle {
+    position: absolute;
+    top: 4px;
+    right: -3px;
 
     @media (#{$narrow-viewport}) {
       display: none;
     }
+
+    i {
+      font-size: 30px;
+    }
   }
 
-  div.view-switch {
+  div.tools {
     position: absolute;
     top: 7px;
-    right: 12px;
+    right: 35px;
     display: inline-block;
 
     @media (#{$narrow-viewport}) {
