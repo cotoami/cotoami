@@ -7,6 +7,7 @@ module App.Types.Coto
         , summaryMaxlength
         , updateContent
         , checkWritePermission
+        , isTopic
         , Cotonoma
         , toCoto
         , cotonomaNameMaxlength
@@ -16,6 +17,7 @@ module App.Types.Coto
         )
 
 import Date exposing (Date)
+import App.Markdown
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
 import Util.StringUtil exposing (isBlank)
@@ -58,6 +60,29 @@ updateContent content coto =
 checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
 checkWritePermission session coto =
     (Maybe.map (\amishi -> amishi.id) coto.amishi) == (Just session.id)
+
+
+isTopic : Coto -> Bool
+isTopic coto =
+    if coto.asCotonoma then
+        True
+    else
+        let
+            trimmedContent =
+                coto.content |> String.trim
+
+            textInEachBlock =
+                App.Markdown.extractTextFromMarkdown trimmedContent
+
+            firstLine =
+                textInEachBlock
+                    |> List.head
+                    |> Maybe.withDefault ""
+        in
+            if String.contains "\n" trimmedContent || List.length textInEachBlock > 1 then
+                False
+            else
+                firstLine /= "" && String.length firstLine <= cotonomaNameMaxlength
 
 
 type alias Cotonoma =
