@@ -9,7 +9,6 @@ port module App.Ports
 import Dict
 import App.Types.Graph exposing (Graph)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Views.Coto
 
 
 port renderGraph :
@@ -43,7 +42,7 @@ type alias Edge =
 cotoToNode : Coto -> Node
 cotoToNode coto =
     { id = coto.id
-    , name = App.Views.Coto.abbreviate coto
+    , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
     , asCotonoma = coto.asCotonoma
     , imageUrl = coto.amishi |> Maybe.map (\amishi -> amishi.avatarUrl)
     }

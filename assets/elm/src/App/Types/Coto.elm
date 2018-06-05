@@ -7,7 +7,7 @@ module App.Types.Coto
         , summaryMaxlength
         , updateContent
         , checkWritePermission
-        , isTopic
+        , toTopic
         , Cotonoma
         , toCoto
         , cotonomaNameMaxlength
@@ -62,27 +62,40 @@ checkWritePermission session coto =
     (Maybe.map (\amishi -> amishi.id) coto.amishi) == (Just session.id)
 
 
-isTopic : Coto -> Bool
-isTopic coto =
+toTopic : Coto -> Maybe String
+toTopic coto =
     if coto.asCotonoma then
-        True
+        Just coto.content
     else
-        let
-            trimmedContent =
-                coto.content |> String.trim
+        case coto.summary of
+            Just summary ->
+                if String.length summary <= cotonomaNameMaxlength then
+                    Just summary
+                else
+                    Nothing
 
-            textInEachBlock =
-                App.Markdown.extractTextFromMarkdown trimmedContent
+            Nothing ->
+                let
+                    trimmedContent =
+                        coto.content |> String.trim
 
-            firstLine =
-                textInEachBlock
-                    |> List.head
-                    |> Maybe.withDefault ""
-        in
-            if String.contains "\n" trimmedContent || List.length textInEachBlock > 1 then
-                False
-            else
-                firstLine /= "" && String.length firstLine <= cotonomaNameMaxlength
+                    textInEachBlock =
+                        App.Markdown.extractTextFromMarkdown trimmedContent
+
+                    firstLine =
+                        textInEachBlock
+                            |> List.head
+                            |> Maybe.withDefault ""
+                in
+                    if
+                        (not (String.contains "\n" trimmedContent))
+                            && (List.length textInEachBlock == 1)
+                            && (firstLine /= "")
+                            && (String.length firstLine <= cotonomaNameMaxlength)
+                    then
+                        Just firstLine
+                    else
+                        Nothing
 
 
 type alias Cotonoma =

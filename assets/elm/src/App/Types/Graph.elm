@@ -470,7 +470,10 @@ toTopicGraph graph =
     let
         topicCotos =
             graph.cotos
-                |> Dict.filter (\cotoId coto -> App.Types.Coto.isTopic coto)
+                |> Dict.filter
+                    (\cotoId coto ->
+                        isJust (App.Types.Coto.toTopic coto)
+                    )
     in
         { graph | cotos = topicCotos }
             |> deleteInvalidConnections
