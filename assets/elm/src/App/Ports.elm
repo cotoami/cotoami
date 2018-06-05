@@ -70,7 +70,7 @@ renderCotoGraph maybeCotonoma graph =
                 , imageUrl = Nothing
                 }
         )
-        (App.Types.Graph.excludeUnreachables graph)
+        (App.Types.Graph.toTopicGraph graph)
 
 
 doRenderCotoGraph : Node -> Graph -> Cmd msg

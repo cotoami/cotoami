@@ -465,6 +465,18 @@ excludeUnreachables graph =
             |> deleteInvalidConnections
 
 
+toTopicGraph : Graph -> Graph
+toTopicGraph graph =
+    let
+        topicCotos =
+            graph.cotos
+                |> Dict.filter (\cotoId coto -> App.Types.Coto.isTopic coto)
+    in
+        { graph | cotos = topicCotos }
+            |> deleteInvalidConnections
+            |> excludeUnreachables
+
+
 type PinnedCotosView
     = DocumentView
     | GraphView
