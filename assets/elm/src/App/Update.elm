@@ -269,19 +269,16 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            ( closeActiveModal model, Cmd.none )
+            closeActiveModal model |> withoutCmd
 
         Confirm ->
-            ( closeActiveModal model
-            , App.Commands.sendMsg model.confirmation.msgOnConfirm
-            )
+            closeActiveModal model
+                |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
 
         OpenSigninModal ->
-            { model
-                | signinModal =
-                    App.Modals.SigninModal.initModel model.signinModal.signupEnabled
-            }
-                |> \model -> ( openModal App.Model.SigninModal model, Cmd.none )
+            { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
+                |> openModal App.Model.SigninModal
+                |> withoutCmd
 
         OpenNewEditorModal ->
             openNewEditor Nothing model
@@ -291,32 +288,33 @@ update msg model =
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> \model -> ( openModal App.Model.InviteModal model, Cmd.none )
+                |> openModal App.Model.InviteModal
+                |> withoutCmd
 
         OpenProfileModal ->
-            ( openModal App.Model.ProfileModal model, Cmd.none )
+            openModal App.Model.ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
-            ( openCotoMenuModal coto model
-            , coto.cotonomaKey
-                |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
-                |> Maybe.withDefault Cmd.none
-            )
+            openCotoMenuModal coto model
+                |> withCmd
+                    (\_ ->
+                        coto.cotonomaKey
+                            |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+                            |> Maybe.withDefault Cmd.none
+                    )
 
         OpenEditorModal coto ->
-            ( { model
-                | editorModal = App.Modals.EditorModal.modelForEdit coto
-              }
+            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
                 |> openModal EditorModal
-            , App.Commands.focus "editor-modal-content-input" NoOp
-            )
+                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         OpenCotoModal coto ->
             openCoto coto model
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> \model -> ( openModal App.Model.ImportModal model, Cmd.none )
+                |> openModal App.Model.ImportModal
+                |> withoutCmd
 
         --
         -- Coto
