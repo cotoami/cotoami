@@ -51,7 +51,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         KeyDown keyCode ->
             if keyCode == Util.Keyboard.Key.escapeKeyCode then
@@ -64,7 +64,7 @@ update msg model =
             then
                 openNewEditor Nothing model
             else
-                ( model, Cmd.none )
+                model |> withoutCmd
 
         AppClick ->
             { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
@@ -82,7 +82,7 @@ update msg model =
                             loadCotonoma key model
 
                         NotFoundRoute ->
-                            ( model, Cmd.none )
+                            model |> withoutCmd
 
         NavigationToggle ->
             { model
@@ -162,7 +162,7 @@ update msg model =
                 |> withoutCmd
 
         SearchResultsFetched (Err _) ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         --
         -- Fetched
@@ -190,12 +190,12 @@ update msg model =
                                )
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> openModal App.Model.SigninModal
-                            |> \model -> model ! []
+                            |> withoutCmd
                     else
-                        model ! []
+                        model |> withoutCmd
 
                 _ ->
-                    model ! []
+                    model |> withoutCmd
 
         CotonomasFetched (Ok ( pinned, recent )) ->
             { model
@@ -203,16 +203,16 @@ update msg model =
                 , recentCotonomas = recent
                 , cotonomasLoading = False
             }
-                ! []
+                |> withoutCmd
 
         CotonomasFetched (Err _) ->
-            { model | cotonomasLoading = False } ! []
+            { model | cotonomasLoading = False } |> withoutCmd
 
         SubCotonomasFetched (Ok cotonomas) ->
-            { model | subCotonomas = cotonomas } ! []
+            { model | subCotonomas = cotonomas } |> withoutCmd
 
         SubCotonomasFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model
@@ -220,50 +220,50 @@ update msg model =
                 , navigationOpen = False
                 , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
-                |> \model ->
-                    ( model
-                    , Cmd.batch
-                        [ if paginatedPosts.pageIndex == 0 then
-                            initScrollPositionOfTimeline model
-                          else
-                            Cmd.none
-                        , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
-                        ]
+                |> withCmd
+                    (\model ->
+                        Cmd.batch
+                            [ if paginatedPosts.pageIndex == 0 then
+                                initScrollPositionOfTimeline model
+                              else
+                                Cmd.none
+                            , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
+                            ]
                     )
 
         CotonomaFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         CotonomaStatsFetched (Ok stats) ->
             model.cotoMenuModal
                 |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
                 |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
                 |> Maybe.withDefault model
-                |> \model -> ( model, Cmd.none )
+                |> withoutCmd
 
         CotonomaStatsFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         GraphFetched (Ok graph) ->
             { model | graph = graph, loadingGraph = False }
-                |> \model ->
-                    ( model
-                    , Cmd.batch
-                        [ initScrollPositionOfTimeline model
-                        , App.Commands.initScrollPositionOfPinnedCotos NoOp
-                        , renderGraph model
-                        ]
+                |> withCmd
+                    (\model ->
+                        Cmd.batch
+                            [ initScrollPositionOfTimeline model
+                            , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                            , renderGraph model
+                            ]
                     )
 
         GraphFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         SubgraphFetched (Ok subgraph) ->
             { model | graph = mergeSubgraph subgraph model.graph }
-                |> \model -> ( model, renderGraph model )
+                |> withCmd (\model -> renderGraph model)
 
         SubgraphFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         --
         -- Modal
