@@ -67,9 +67,8 @@ update msg model =
                 ( model, Cmd.none )
 
         AppClick ->
-            ( { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
-            , Cmd.none
-            )
+            { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
+                |> withoutCmd
 
         OnLocationChange location ->
             App.Route.parseLocation location
@@ -90,20 +89,21 @@ update msg model =
                 | navigationToggled = True
                 , navigationOpen = (not model.navigationOpen)
             }
-                ! []
+                |> withoutCmd
 
         SwitchViewOnMobile view ->
-            ( { model | activeViewOnMobile = view }
-            , if view == PinnedView then
-                resizeGraphWithDelay
-              else
-                Cmd.none
-            )
+            { model | activeViewOnMobile = view }
+                |> withCmd
+                    (\model ->
+                        if view == PinnedView then
+                            resizeGraphWithDelay
+                        else
+                            Cmd.none
+                    )
 
         ToggleTimeline ->
-            ( { model | timeline = App.Types.Timeline.toggle model.timeline }
-            , resizeGraphWithDelay
-            )
+            { model | timeline = App.Types.Timeline.toggle model.timeline }
+                |> withCmd (\_ -> resizeGraphWithDelay)
 
         HomeClick ->
             changeLocationToHome model
@@ -976,6 +976,16 @@ update msg model =
             App.Modals.ImportModal.update model.context subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
+
+
+withCmd : (Model -> Cmd msg) -> Model -> ( Model, Cmd msg )
+withCmd createCmd model =
+    ( model, createCmd model )
+
+
+withoutCmd : Model -> ( Model, Cmd msg )
+withoutCmd model =
+    ( model, Cmd.none )
 
 
 addCmd : (Model -> Cmd msg) -> ( Model, Cmd msg ) -> ( Model, Cmd msg )
