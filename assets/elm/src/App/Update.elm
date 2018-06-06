@@ -398,7 +398,9 @@ update msg model =
             )
 
         DeleteCotoInClientSide coto ->
-            ( App.Model.deleteCoto coto model, Cmd.none )
+            model
+                |> App.Model.deleteCoto coto
+                |> \model -> ( model, renderGraph model )
 
         CotoDeleted (Ok _) ->
             ( model
