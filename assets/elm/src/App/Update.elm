@@ -459,14 +459,18 @@ update msg model =
             ( model, App.Server.Coto.cotonomatize model.context.clientId cotoId )
 
         Cotonomatized (Ok coto) ->
-            ( model
+            model
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
                 |> clearModals
-            , Cmd.batch
-                [ App.Server.Cotonoma.fetchCotonomas
-                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-                ]
-            )
+                |> (\model ->
+                        ( model
+                        , Cmd.batch
+                            [ App.Server.Cotonoma.fetchCotonomas
+                            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                            , renderGraph model
+                            ]
+                        )
+                   )
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
