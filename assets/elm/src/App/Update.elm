@@ -412,19 +412,22 @@ update msg model =
             ( model, Cmd.none )
 
         CotoUpdated (Ok coto) ->
-            ( (model
+            model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
                 |> clearModals
-              )
-            , if coto.asCotonoma then
-                Cmd.batch
-                    [ App.Server.Cotonoma.fetchCotonomas
-                    , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-                    ]
-              else
-                Cmd.none
-            )
+                |> (\model ->
+                        ( model
+                        , if coto.asCotonoma then
+                            Cmd.batch
+                                [ App.Server.Cotonoma.fetchCotonomas
+                                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                                , renderGraph model
+                                ]
+                          else
+                            renderGraph model
+                        )
+                   )
 
         CotoUpdated (Err error) ->
             model.editorModal
