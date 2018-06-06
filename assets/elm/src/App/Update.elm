@@ -143,22 +143,23 @@ update msg model =
                 |> withoutCmd
 
         Search ->
-            ( { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
-            , if App.Types.SearchResults.hasQuery model.searchResults then
-                App.Server.Post.search model.searchResults.query
-              else
-                Cmd.none
-            )
+            { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
+                |> withCmd
+                    (\model ->
+                        if App.Types.SearchResults.hasQuery model.searchResults then
+                            App.Server.Post.search model.searchResults.query
+                        else
+                            Cmd.none
+                    )
 
         SearchResultsFetched (Ok paginatedPosts) ->
-            ( { model
+            { model
                 | searchResults =
                     App.Types.SearchResults.setPosts
                         paginatedPosts.posts
                         model.searchResults
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         SearchResultsFetched (Err _) ->
             ( model, Cmd.none )
