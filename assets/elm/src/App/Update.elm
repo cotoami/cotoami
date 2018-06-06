@@ -713,17 +713,11 @@ update msg model =
 
         EditorKeyDown keyboardEvent ->
             handleEditorShortcut keyboardEvent Nothing model.timeline.newContent model
-                |> \( model, cmd ) ->
-                    ( model
-                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
-                    )
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Post ->
             postAndConnectToSelection Nothing Nothing model.timeline.newContent model
-                |> \( model, cmd ) ->
-                    ( model
-                    , Cmd.batch [ cmd, App.Commands.focus "quick-coto-input" NoOp ]
-                    )
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Posted postId (Ok response) ->
             ( { model | timeline = setCotoSaved postId response model.timeline }
@@ -982,6 +976,11 @@ update msg model =
             App.Modals.ImportModal.update model.context subMsg model.importModal
                 |> \( importModal, subCmd ) ->
                     { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
+
+
+addCmd : (Model -> Cmd msg) -> ( Model, Cmd msg ) -> ( Model, Cmd msg )
+addCmd createCmd ( model, cmd ) =
+    ( model, Cmd.batch [ cmd, createCmd model ] )
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
