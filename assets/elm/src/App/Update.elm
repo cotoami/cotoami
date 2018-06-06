@@ -109,42 +109,38 @@ update msg model =
             changeLocationToHome model
 
         CotonomaPresenceState payload ->
-            { model | presences = App.Channels.decodePresenceState payload } ! []
+            { model | presences = App.Channels.decodePresenceState payload }
+                |> withoutCmd
 
         CotonomaPresenceDiff payload ->
             App.Channels.decodePresenceDiff payload
                 |> (\diff -> App.Types.Amishi.applyPresenceDiff diff model.presences)
-                |> \presences -> { model | presences = presences } ! []
+                |> (\presences -> { model | presences = presences })
+                |> withoutCmd
 
         SearchInputFocusChanged focus ->
-            ( { model | searchInputFocus = focus }, Cmd.none )
+            { model | searchInputFocus = focus } |> withoutCmd
 
         ClearQuickSearchInput ->
-            ( { model
+            { model
                 | searchResults =
                     App.Types.SearchResults.clearQuery model.searchResults
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         QuickSearchInput query ->
-            ( { model
-                | searchResults =
-                    App.Types.SearchResults.setQuerying query model.searchResults
-              }
-            , if isNotBlank query then
-                App.Server.Post.search query
-              else
-                Cmd.none
-            )
+            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
+                |> withCmd
+                    (\_ ->
+                        if isNotBlank query then
+                            App.Server.Post.search query
+                        else
+                            Cmd.none
+                    )
 
         SearchInput query ->
-            ( { model
-                | searchResults =
-                    App.Types.SearchResults.setQuery query model.searchResults
-              }
-            , Cmd.none
-            )
+            { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
+                |> withoutCmd
 
         Search ->
             ( { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
