@@ -829,16 +829,17 @@ update msg model =
         --
         DeselectingCoto cotoId ->
             { model | context = App.Types.Context.setBeingDeselected cotoId model.context }
-                ! [ Process.sleep (1 * Time.second)
-                        |> Task.andThen (\_ -> Task.succeed ())
-                        |> Task.perform (\_ -> DeselectCoto)
-                  ]
+                |> withCmd
+                    (\model ->
+                        Process.sleep (1 * Time.second)
+                            |> Task.andThen (\_ -> Task.succeed ())
+                            |> Task.perform (\_ -> DeselectCoto)
+                    )
 
         DeselectCoto ->
-            ( { model | context = App.Types.Context.finishBeingDeselected model.context }
+            { model | context = App.Types.Context.finishBeingDeselected model.context }
                 |> closeSelectionColumnIfEmpty
-            , Cmd.none
-            )
+                |> withoutCmd
 
         ClearSelection ->
             { model
@@ -853,13 +854,11 @@ update msg model =
                         anotherView ->
                             anotherView
             }
-                ! []
+                |> withoutCmd
 
         CotoSelectionColumnToggle ->
-            { model
-                | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen)
-            }
-                ! []
+            { model | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen) }
+                |> withoutCmd
 
         --
         -- Pushed
