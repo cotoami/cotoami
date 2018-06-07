@@ -70,6 +70,11 @@ defaultTraversals =
     }
 
 
+setActiveIndexOnMobile : Int -> Traversals -> Traversals
+setActiveIndexOnMobile index traversals =
+    { traversals | activeIndexOnMobile = index }
+
+
 isEmpty : Traversals -> Bool
 isEmpty traversals =
     Dict.isEmpty traversals.entries

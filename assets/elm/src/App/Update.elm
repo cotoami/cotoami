@@ -773,15 +773,17 @@ update msg model =
         -- PinnedCotos
         --
         SwitchPinnedCotosView view ->
-            ( { model | pinnedCotosView = view }
-            , if view == GraphView then
-                renderGraphWithDelay
-              else
-                Cmd.none
-            )
+            { model | pinnedCotosView = view }
+                |> withCmd
+                    (\model ->
+                        if view == GraphView then
+                            renderGraphWithDelay
+                        else
+                            Cmd.none
+                    )
 
         RenderGraph ->
-            ( model, renderGraph model )
+            model |> withCmd renderGraph
 
         ResizeGraph ->
             ( model
@@ -795,40 +797,32 @@ update msg model =
         -- Traversals
         --
         Traverse traversal nextCotoId stepIndex ->
-            ( { model
+            { model
                 | traversals =
                     App.Types.Traversal.updateTraversal
                         traversal.start
                         (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
                         model.traversals
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         TraverseToParent traversal parentId ->
-            ( { model
+            { model
                 | traversals =
                     App.Types.Traversal.updateTraversal
                         traversal.start
                         (App.Types.Traversal.traverseToParent model.graph parentId traversal)
                         model.traversals
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         CloseTraversal cotoId ->
-            ( { model
-                | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals
-              }
-            , resizeGraphWithDelay
-            )
+            { model | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals }
+                |> withCmd (\_ -> resizeGraphWithDelay)
 
-        SwitchTraversal pageIndex ->
-            ( { model
-                | traversals = model.traversals |> \t -> { t | activeIndexOnMobile = pageIndex }
-              }
-            , Cmd.none
-            )
+        SwitchTraversal index ->
+            { model | traversals = App.Types.Traversal.setActiveIndexOnMobile index model.traversals }
+                |> withoutCmd
 
         --
         -- CotoSelection
