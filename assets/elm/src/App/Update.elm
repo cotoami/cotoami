@@ -636,68 +636,69 @@ update msg model =
             )
 
         CotonomaPinnedOrUnpinned (Ok _) ->
-            ( { model | cotonomasLoading = True }
+            { model | cotonomasLoading = True }
                 |> closeModal App.Model.CotoMenuModal
-            , App.Server.Cotonoma.fetchCotonomas
-            )
+                |> withCmd (\_ -> App.Server.Cotonoma.fetchCotonomas)
 
         CotonomaPinnedOrUnpinned (Err _) ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         LoadMorePostsInCotonoma cotonomaKey ->
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> \model ->
-                    ( model
-                    , App.Server.Post.fetchCotonomaPosts
-                        cotonomaKey
-                        (App.Types.Timeline.nextPageIndex model.timeline)
+                |> withCmd
+                    (\model ->
+                        App.Server.Post.fetchCotonomaPosts
+                            cotonomaKey
+                            (App.Types.Timeline.nextPageIndex model.timeline)
                     )
 
         --
         -- Timeline
         --
         SwitchTimelineView view ->
-            ( { model | timeline = App.Types.Timeline.switchView view model.timeline }, Cmd.none )
+            { model | timeline = App.Types.Timeline.switchView view model.timeline }
+                |> withoutCmd
 
         PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = App.Types.Context.setCotonoma Nothing model.context
                 , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
             }
-                |> \model ->
-                    ( model
-                    , if paginatedPosts.pageIndex == 0 then
-                        initScrollPositionOfTimeline model
-                      else
-                        Cmd.none
+                |> withCmd
+                    (\model ->
+                        if paginatedPosts.pageIndex == 0 then
+                            initScrollPositionOfTimeline model
+                        else
+                            Cmd.none
                     )
 
         PostsFetched (Err _) ->
-            model ! []
+            model |> withoutCmd
 
         LoadMorePosts ->
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> \model ->
-                    ( model
-                    , App.Server.Post.fetchPosts
-                        (App.Types.Timeline.nextPageIndex model.timeline)
+                |> withCmd
+                    (\model ->
+                        App.Server.Post.fetchPosts
+                            (App.Types.Timeline.nextPageIndex model.timeline)
                     )
 
         ImageLoaded ->
-            model ! [ App.Commands.scrollTimelineToBottom NoOp ]
+            ( model, App.Commands.scrollTimelineToBottom NoOp )
 
         EditorFocus ->
-            App.Types.Timeline.openOrCloseEditor True model.timeline
-                |> \timeline ->
-                    ( { model | timeline = timeline }
-                    , if timeline.editorOpen then
-                        App.Commands.scrollTimelineByQuickEditorOpen NoOp
-                      else
-                        Cmd.none
+            { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
+                |> withCmd
+                    (\model ->
+                        if model.timeline.editorOpen then
+                            App.Commands.scrollTimelineByQuickEditorOpen NoOp
+                        else
+                            Cmd.none
                     )
 
         EditorInput content ->
-            { model | timeline = model.timeline |> \t -> { t | newContent = content } } ! []
+            { model | timeline = model.timeline |> \t -> { t | newContent = content } }
+                |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
             handleEditorShortcut keyboardEvent Nothing model.timeline.newContent model
@@ -708,14 +709,13 @@ update msg model =
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Posted postId (Ok response) ->
-            ( { model | timeline = setCotoSaved postId response model.timeline }
+            { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
                 |> clearModals
-            , Cmd.none
-            )
+                |> withoutCmd
 
         Posted postId (Err _) ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         ConfirmPostAndConnect content summary ->
             confirmPostAndConnect summary content model
@@ -734,7 +734,7 @@ update msg model =
                 |> connectPostToSelection model.context.clientId response
 
         PostedAndConnectToSelection postId (Err _) ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         PostedAndConnectToCoto postId coto (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
@@ -742,35 +742,32 @@ update msg model =
                 |> connectPostToCoto model.context.clientId coto response
 
         PostedAndConnectToCoto postId coto (Err _) ->
-            ( model, Cmd.none )
+            model |> withoutCmd
 
         CotonomaPosted postId (Ok response) ->
-            ( { model
+            { model
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
-              }
+            }
                 |> clearModals
-            , Cmd.batch
-                [ App.Server.Cotonoma.fetchCotonomas
-                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-                ]
-            )
-
-        CotonomaPosted postId (Err error) ->
-            model.editorModal
-                |> App.Modals.EditorModal.setCotoSaveError error
-                |> \editorModal ->
-                    ( { model
-                        | editorModal = editorModal
-                        , timeline = deletePendingPost postId model.timeline
-                      }
-                    , Cmd.none
+                |> withCmd
+                    (\model ->
+                        Cmd.batch
+                            [ App.Server.Cotonoma.fetchCotonomas
+                            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                            ]
                     )
 
+        CotonomaPosted postId (Err error) ->
+            { model
+                | editorModal = App.Modals.EditorModal.setCotoSaveError error model.editorModal
+                , timeline = deletePendingPost postId model.timeline
+            }
+                |> withoutCmd
+
         TimelineScrollPosInitialized ->
-            model.timeline
-                |> (\timeline -> { timeline | initializingScrollPos = False })
-                |> \timeline -> ( { model | timeline = timeline }, Cmd.none )
+            { model | timeline = App.Types.Timeline.setScrollPosInitialized model.timeline }
+                |> withoutCmd
 
         --
         -- PinnedCotos
