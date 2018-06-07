@@ -929,9 +929,10 @@ update msg model =
         --
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
-                |> \( signinModal, subCmd ) ->
-                    { model | signinModal = signinModal }
-                        ! [ Cmd.map SigninModalMsg subCmd ]
+                |> (\( signinModal, subCmd ) ->
+                        { model | signinModal = signinModal }
+                            |> withCmd (\_ -> Cmd.map SigninModalMsg subCmd)
+                   )
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model.context subMsg model.editorModal
@@ -955,14 +956,17 @@ update msg model =
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
-                |> \( inviteModal, subCmd ) ->
-                    { model | inviteModal = inviteModal }
-                        ! [ Cmd.map InviteModalMsg subCmd ]
+                |> (\( inviteModal, subCmd ) ->
+                        { model | inviteModal = inviteModal }
+                            |> withCmd (\_ -> Cmd.map InviteModalMsg subCmd)
+                   )
 
         ImportModalMsg subMsg ->
             App.Modals.ImportModal.update model.context subMsg model.importModal
-                |> \( importModal, subCmd ) ->
-                    { model | importModal = importModal } ! [ Cmd.map ImportModalMsg subCmd ]
+                |> (\( importModal, subCmd ) ->
+                        { model | importModal = importModal }
+                            |> withCmd (\_ -> Cmd.map ImportModalMsg subCmd)
+                   )
 
 
 withCmd : (Model -> Cmd msg) -> Model -> ( Model, Cmd msg )
