@@ -3,7 +3,7 @@
 import debounce from 'lodash/debounce'
 
 const _hankakuOnly = (text) => {
-  return text.match(/^[\x01-\x7E\uFF65-\uFF9F]+$/) != null
+  return text.match(/^[\x01-\x7E\uFF65-\uFF9F\u2019]+$/) != null
 }
 
 const _insertSpaces = (text, chunkSize) => {
