@@ -7,7 +7,8 @@ const _hankakuOnly = (text) => {
 }
 
 const _insertSpaces = (text, chunkSize) => {
-  return text.match(new RegExp('.{1,' + chunkSize + '}', 'g')).join(" ")
+  const chunks = text.match(new RegExp('.{1,' + chunkSize + '}', 'g'))
+  return chunks != null ? chunks.join(" ") : text
 }
 
 const _makeTextBreakable = (text) => {
