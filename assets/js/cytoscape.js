@@ -78,6 +78,7 @@ const _setFocus = (nodeId) => {
   if (_graph != null) {
     _graph.elements().addClass('faded')
     const node = _graph.getElementById(nodeId)
+    node.select()
     node.neighborhood().add(node).removeClass('faded')
   }
 }
