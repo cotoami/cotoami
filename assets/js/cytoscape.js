@@ -2,16 +2,33 @@
 
 import debounce from 'lodash/debounce'
 
+const _hankakuOnly = (text) => {
+  return text.match(/^[\x01-\x7E\uFF65-\uFF9F\u2019]+$/) != null
+}
+
+const _insertSpaces = (text, chunkSize) => {
+  return text.match(new RegExp('.{1,' + chunkSize + '}', 'g')).join(" ")
+}
+
+const _makeTextBreakable = (text) => {
+  if (_hankakuOnly(text)) {
+    return text
+  }
+  else {
+    return _insertSpaces(text, 15)
+  }
+}
+
 const _style = cytoscape.stylesheet()
   .selector('node').css({
-    'content': (node) => {
-      return node.data('name')
+    'label': (node) => {
+      return _makeTextBreakable(node.data('name'))
     },
+    'font-size': 10,
     'width': 10,
     'height': 10,
-    'font-size': 8,
     'text-max-width': 150,
-    'text-wrap': 'ellipsis',
+    'text-wrap': 'wrap',
     'text-valign': 'bottom',
     'text-margin-y': 5,
     'color': '#333',
@@ -78,6 +95,7 @@ const _setFocus = (nodeId) => {
   if (_graph != null) {
     _graph.elements().addClass('faded')
     const node = _graph.getElementById(nodeId)
+    node.select()
     node.neighborhood().add(node).removeClass('faded')
   }
 }

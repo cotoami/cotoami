@@ -56,6 +56,11 @@ switchView view timeline =
     { timeline | view = view }
 
 
+setScrollPosInitialized : Timeline -> Timeline
+setScrollPosInitialized timeline =
+    { timeline | initializingScrollPos = False }
+
+
 isEmpty : Timeline -> Bool
 isEmpty timeline =
     List.isEmpty timeline.posts
