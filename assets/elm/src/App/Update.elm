@@ -864,21 +864,26 @@ update msg model =
         -- Pushed
         --
         UpdatePushed payload ->
-            App.Pushed.handle
+            (App.Pushed.handle
                 App.Server.Coto.decodeCoto
                 App.Pushed.handleUpdate
                 payload
                 model
+            )
+                |> addCmd renderGraph
 
         DeletePushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+                |> addCmd renderGraph
 
         CotonomatizePushed payload ->
-            App.Pushed.handle
+            (App.Pushed.handle
                 App.Server.Cotonoma.decodeCotonoma
                 App.Pushed.handleCotonomatize
                 payload
                 model
+            )
+                |> addCmd renderGraph
 
         CotonomaPushed payload ->
             App.Pushed.handle
@@ -888,18 +893,22 @@ update msg model =
                 model
 
         ConnectPushed payload ->
-            App.Pushed.handle
+            (App.Pushed.handle
                 App.Pushed.decodeConnectPayloadBody
                 App.Pushed.handleConnect
                 payload
                 model
+            )
+                |> addCmd renderGraph
 
         DisconnectPushed payload ->
-            App.Pushed.handle
+            (App.Pushed.handle
                 App.Pushed.decodeDisconnectPayloadBody
                 App.Pushed.handleDisconnect
                 payload
                 model
+            )
+                |> addCmd renderGraph
 
         ReorderPushed payload ->
             App.Pushed.handle
