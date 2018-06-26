@@ -12,16 +12,16 @@ defmodule CotoamiWeb.CotoGraphController do
   def index(conn, params, amishi) do
     case get_cotonoma_if_specified(params) do
       nil ->
-        json conn, CotoGraphService.get_graph(Sips.conn, amishi)
+        json conn, CotoGraphService.get_graph_in_amishi(Sips.conn, amishi)
       cotonoma ->
-        json conn, CotoGraphService.get_graph(Sips.conn, cotonoma)
+        json conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn, cotonoma)
     end
   end
 
   def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, _amishi) do
     case CotonomaService.get_by_key(cotonoma_key) do
       nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
-      cotonoma -> json conn, CotoGraphService.get_subgraph(Sips.conn, cotonoma)
+      cotonoma -> json conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn, cotonoma)
     end
   end
 
