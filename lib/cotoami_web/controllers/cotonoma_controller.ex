@@ -61,9 +61,14 @@ defmodule CotoamiWeb.CotonomaController do
     conn |> put_status(:ok) |> json("")
   end
 
-  def cotos(conn, %{"key" => key, "page" => page}, amishi) do
+  def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
     page_index = String.to_integer(page)
-    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index) do
+    cotos = 
+      CotoService.get_cotos_by_cotonoma(key, amishi, page_index,
+        [:exclude_pinned_graph, :exclude_other_origins]
+        |> Enum.map(&({&1, Map.has_key?(params, &1)}))
+      )
+    case cotos do
       nil ->
         send_resp(conn, :not_found, "")
       paginated_results ->
