@@ -76,7 +76,7 @@ defmodule Cotoami.CotoService do
 
   defp query_to_exclude_other_origins(query, %Amishi{}, options) do
     if Keyword.get(options, :exclude_other_origins, false) do
-      from coto in query, where: is_nil(coto.posted_in)
+      from coto in query, where: is_nil(coto.posted_in_id)
     else
       query
     end

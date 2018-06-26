@@ -22,7 +22,7 @@ defmodule Cotoami.CotoServiceTest do
     end
   end
 
-  describe "when there are various cotos in amishi" do
+  describe "when there are various cotos" do
     setup ~M{conn, amishi} do
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi, "test")
 
@@ -31,7 +31,7 @@ defmodule Cotoami.CotoServiceTest do
       CotoGraphService.pin(conn, coto2, amishi)
       {coto3, _} = CotoService.create!(amishi, "coto3")
       CotoGraphService.connect(conn, coto2, coto3, amishi)
-      {coto4, _} = CotoService.create!(amishi, "coto4", cotonoma.id)
+      {coto4, _} = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end
@@ -44,6 +44,39 @@ defmodule Cotoami.CotoServiceTest do
         %Coto{content: "coto1"},
         %Coto{content: "test", as_cotonoma: true}
       ] = CotoService.get_cotos_by_amishi(amishi, 0).rows
+    end
+
+    test "get_cotos_by_cotonoma", ~M{amishi, cotonoma} do
+      assert [
+        %Coto{content: "coto4"}
+      ] = CotoService.get_cotos_by_cotonoma(cotonoma.key, amishi, 0).rows
+    end
+
+    test "get_cotos_by_amishi with :exclude_pinned_graph", ~M{amishi} do
+      assert [
+        %Coto{content: "coto4"},
+        %Coto{content: "coto1"},
+        %Coto{content: "test", as_cotonoma: true}
+      ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_pinned_graph: true).rows
+    end
+
+    test "get_cotos_by_amishi with :exclude_other_origins", ~M{amishi} do
+      assert [
+        %Coto{content: "coto3"},
+        %Coto{content: "coto2"},
+        %Coto{content: "coto1"},
+        %Coto{content: "test", as_cotonoma: true}
+      ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_other_origins: true).rows
+    end
+
+    test "get_cotos_by_amishi with :exclude_pinned_graph and :exclude_other_origins", ~M{amishi} do
+      assert [
+        %Coto{content: "coto1"},
+        %Coto{content: "test", as_cotonoma: true}
+      ] = CotoService.get_cotos_by_amishi(amishi, 0, 
+        exclude_pinned_graph: true, 
+        exclude_other_origins: true
+      ).rows
     end
   end
 end
