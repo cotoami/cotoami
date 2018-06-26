@@ -58,6 +58,10 @@ defmodule Cotoami.CotoService do
     end
   end
 
+  # defp get_reachable_coto_ids_from(uuid) do
+  #   CotoGraphService
+  # end
+
   def search(query, %Amishi{} = amishi) do
     Coto
     |> CotoSearchService.search(amishi, query)
