@@ -22,6 +22,7 @@ type Modal
     | CotoModal
     | ConnectModal
     | ImportModal
+    | TimelineFilterModal
 
 
 type alias Model a =

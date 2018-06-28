@@ -1,0 +1,30 @@
+@import "variables.scss";
+
+#timeline-filter-modal {
+  div.modal-content-inner {
+    padding-top: 20px;
+  }
+
+  .modal-buttons-seperator {
+    display: none;
+  }
+
+  div.filter-option {
+    margin-bottom: 1.5rem;
+
+    label {
+      font-weight: normal;
+      font-size: 1.5rem;
+    }
+
+    input {
+      margin: 0;
+      margin-right: 8px;
+    }
+
+    span.my-home {
+      font-weight: bold;
+      opacity: 0.5;
+    }
+  }
+}

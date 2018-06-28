@@ -317,6 +317,11 @@ update msg model =
                 |> App.Modals.openModal ImportModal
                 |> withoutCmd
 
+        OpenTimelineFilterModal ->
+            model
+                |> App.Modals.openModal TimelineFilterModal
+                |> withoutCmd
+
         --
         -- Coto
         --

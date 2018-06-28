@@ -28,6 +28,7 @@ import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.ConfirmModal
 import App.Modals.ImportModal
+import App.Modals.TimelineFilterModal
 
 
 view : Model -> Html Msg
@@ -325,5 +326,8 @@ modals model =
 
                 ImportModal ->
                     App.Modals.ImportModal.view model.importModal
+
+                TimelineFilterModal ->
+                    App.Modals.TimelineFilterModal.view model.context model.timeline.filter
         )
         (List.reverse model.modals)

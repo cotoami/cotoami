@@ -59,6 +59,7 @@ type Msg
     | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
+    | OpenTimelineFilterModal
       --
       -- Coto
       --

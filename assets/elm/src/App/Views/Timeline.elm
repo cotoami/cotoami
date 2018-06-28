@@ -55,6 +55,7 @@ toolbarDiv context timeline =
                     , ( "open-filter", True )
                     ]
                 , title "Filter"
+                , onClick OpenTimelineFilterModal
                 ]
                 [ materialIcon "filter_list" Nothing ]
             , span [ class "view-switch" ]
