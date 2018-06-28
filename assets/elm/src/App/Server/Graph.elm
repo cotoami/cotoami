@@ -8,7 +8,7 @@ import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
 import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
-import App.Types.Graph exposing (Direction, Connection, initConnection, Graph, getCoto)
+import App.Types.Graph exposing (Direction, Connection, Graph)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma)
@@ -16,7 +16,7 @@ import App.Server.Cotonoma exposing (decodeCotonoma)
 
 decodeConnection : Decode.Decoder Connection
 decodeConnection =
-    Decode.map3 initConnection
+    Decode.map3 App.Types.Graph.initConnection
         (Decode.field "created_by" Decode.string)
         (Decode.maybe (Decode.field "start" Decode.string))
         (Decode.field "end" Decode.string)
@@ -42,7 +42,7 @@ decodeCotonomaKeyField =
 
 decodeGraph : Decode.Decoder Graph
 decodeGraph =
-    Decode.map3 Graph
+    Decode.map3 App.Types.Graph.initGraph
         (Decode.field "cotos" (Decode.dict decodeCoto))
         (Decode.field "root_connections" (Decode.list decodeConnection))
         (Decode.field "connections" (Decode.dict <| Decode.list decodeConnection))
@@ -72,7 +72,7 @@ fetchSubgraph cotonomaKey =
 fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
 fetchSubgraphIfCotonoma graph cotoId =
     graph
-        |> getCoto cotoId
+        |> App.Types.Graph.getCoto cotoId
         |> Maybe.andThen (\coto -> coto.cotonomaKey)
         |> Maybe.map fetchSubgraph
         |> Maybe.withDefault Cmd.none

@@ -17,7 +17,7 @@ import App.Types.Context exposing (Context)
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post)
-import App.Types.Graph exposing (..)
+import App.Types.Graph exposing (Direction(..), PinnedCotosView(..))
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
     exposing
@@ -262,7 +262,7 @@ update msg model =
             model |> withoutCmd
 
         SubgraphFetched (Ok subgraph) ->
-            { model | graph = mergeSubgraph subgraph model.graph }
+            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
                 |> withCmd (\model -> renderGraph model)
 
         SubgraphFetched (Err _) ->
@@ -483,7 +483,7 @@ update msg model =
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = pinCoto session.id coto model.graph }
+                    { model | graph = App.Types.Graph.pinCoto session.id coto model.graph }
                         |> withCmd
                             (\model ->
                                 Cmd.batch
@@ -521,7 +521,7 @@ update msg model =
                 |> withoutCmd
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> unpinCoto cotoId }
+            { model | graph = model.graph |> App.Types.Graph.unpinCoto cotoId }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.unpinCoto
@@ -588,7 +588,7 @@ update msg model =
                 |> withoutCmd
 
         DeleteConnection ( startId, endId ) ->
-            { model | graph = disconnect ( startId, endId ) model.graph }
+            { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.disconnect
@@ -994,7 +994,7 @@ loadHome model =
         , subCotonomas = []
         , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
-        , graph = defaultGraph
+        , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -1024,7 +1024,7 @@ loadCotonoma key model =
         , cotonomasLoading = True
         , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
-        , graph = defaultGraph
+        , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView

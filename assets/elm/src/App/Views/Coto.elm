@@ -30,7 +30,7 @@ import App.Types.Context exposing (Context, isSelected, orignatedHere, contentOp
 import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Graph exposing (Direction(..), Graph, Connection, pinned, hasChildren)
+import App.Types.Graph exposing (Direction(..), Graph, Connection)
 import App.Messages exposing (..)
 
 
@@ -206,7 +206,7 @@ headerDiv context graph maybeInbound config elementId coto =
                             [ text postedIn.name ]
                 )
             |> Maybe.withDefault (span [] [])
-        , if pinned coto.id graph then
+        , if App.Types.Graph.pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
           else
             span [] []
@@ -245,7 +245,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
             )
     , [ Maybe.map
             (\pinCoto ->
-                if pinned coto.id graph then
+                if App.Types.Graph.pinned coto.id graph then
                     span [] []
                 else
                     a
@@ -514,7 +514,7 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
     maybeCotoId
         |> Maybe.map
             (\cotoId ->
-                if hasChildren cotoId graph then
+                if App.Types.Graph.hasChildren cotoId graph then
                     div [ class "sub-cotos-button" ]
                         [ a
                             [ class "tool-button"

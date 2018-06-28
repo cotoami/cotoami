@@ -12,7 +12,7 @@ import Util.EventUtil exposing (onLoad)
 import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
-import App.Types.Graph exposing (Direction(..), Graph, member, getParents)
+import App.Types.Graph exposing (Direction(..), Graph)
 import App.Messages exposing (..)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto

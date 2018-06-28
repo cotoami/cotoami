@@ -1,4 +1,34 @@
-module App.Types.Graph exposing (..)
+module App.Types.Graph
+    exposing
+        ( Direction(..)
+        , Connection
+        , initConnection
+        , Graph
+        , defaultGraph
+        , initGraph
+        , pinned
+        , member
+        , hasChildren
+        , getCoto
+        , getParents
+        , getOutboundConnections
+        , pinCoto
+        , unpinCoto
+        , addCoto
+        , connect
+        , disconnect
+        , batchConnect
+        , removeCoto
+        , updateContent
+        , reorder
+        , swapOrder
+        , moveToFirst
+        , moveToLast
+        , cotonomatize
+        , mergeSubgraph
+        , toTopicGraph
+        , PinnedCotosView(..)
+        )
 
 import Dict exposing (Dict)
 import Set exposing (Set)
@@ -39,6 +69,7 @@ type alias Graph =
     { cotos : Dict CotoId Coto
     , rootConnections : List Connection
     , connections : ConnectionDict
+    , reachableCotoIds : List CotoId
     }
 
 
@@ -47,6 +78,16 @@ defaultGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty
+    , reachableCotoIds = []
+    }
+
+
+initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
+initGraph cotos rootConnections connections =
+    { cotos = cotos
+    , rootConnections = rootConnections
+    , connections = connections
+    , reachableCotoIds = []
     }
 
 
