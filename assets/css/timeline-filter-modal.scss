@@ -41,6 +41,11 @@
     span.my-home {
       font-weight: bold;
       opacity: 0.5;
+
+      i {
+        font-size: 20px;
+        vertical-align: -5px;
+      }
     }
   }
 }

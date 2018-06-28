@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
 import Util.Modal as Modal
 import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Util.HtmlUtil exposing (materialIcon)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
 import App.Types.Context exposing (Context)
@@ -83,7 +84,10 @@ excludePostsInCotonomaOption context filter =
             [ label []
                 [ span []
                     [ text "Hide cotos posted in a cotonoma (enabled only in "
-                    , span [ class "my-home" ] [ text "My Home" ]
+                    , span [ class "my-home" ]
+                        [ materialIcon "home" Nothing
+                        , text "My Home"
+                        ]
                     , text ")"
                     ]
                 ]
