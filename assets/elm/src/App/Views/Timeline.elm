@@ -94,7 +94,7 @@ timelineDiv context graph model =
             , ( "tile", model.view == TileView )
             ]
         ]
-        [ moreButton context model
+        [ moreButton model
         , model.posts
             |> List.reverse
             |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
@@ -126,8 +126,8 @@ timelineDiv context graph model =
         ]
 
 
-moreButton : Context -> Timeline -> Html Msg
-moreButton context timeline =
+moreButton : Timeline -> Html Msg
+moreButton timeline =
     if timeline.more then
         div [ class "more-button-div" ]
             [ if timeline.loadingMore then
@@ -137,11 +137,7 @@ moreButton context timeline =
               else
                 button
                     [ class "button more-button"
-                    , onClick
-                        (context.cotonoma
-                            |> Maybe.map (\cotonoma -> LoadMorePostsInCotonoma cotonoma.key)
-                            |> Maybe.withDefault LoadMorePosts
-                        )
+                    , onClick LoadMorePosts
                     ]
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]

@@ -15,6 +15,7 @@ import App.Messages
             , CotonomaPosted
             )
         )
+import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Types.Timeline exposing (Filter)
@@ -83,6 +84,13 @@ fetchCotonomaPosts pageIndex filter key =
                 Decode.map2 (,)
                     (Decode.field "cotonoma" decodeCotonoma)
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
+
+
+fetchPostsByContext : Int -> Filter -> Context -> Cmd Msg
+fetchPostsByContext pageIndex filter context =
+    context.cotonoma
+        |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
+        |> Maybe.withDefault (fetchPosts pageIndex filter)
 
 
 search : String -> Cmd Msg

@@ -651,16 +651,6 @@ update msg model =
         CotonomaPinnedOrUnpinned (Err _) ->
             model |> withoutCmd
 
-        LoadMorePostsInCotonoma cotonomaKey ->
-            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> withCmd
-                    (\model ->
-                        App.Server.Post.fetchCotonomaPosts
-                            (App.Types.Timeline.nextPageIndex model.timeline)
-                            model.timeline.filter
-                            cotonomaKey
-                    )
-
         --
         -- Timeline
         --
@@ -688,9 +678,10 @@ update msg model =
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
                 |> withCmd
                     (\model ->
-                        App.Server.Post.fetchPosts
+                        App.Server.Post.fetchPostsByContext
                             (App.Types.Timeline.nextPageIndex model.timeline)
                             model.timeline.filter
+                            model.context
                     )
 
         ImageLoaded ->

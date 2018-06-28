@@ -102,7 +102,6 @@ type Msg
       --
     | PinOrUnpinCotonoma CotonomaKey Bool
     | CotonomaPinnedOrUnpinned (Result Http.Error String)
-    | LoadMorePostsInCotonoma CotonomaKey
       --
       -- Timeline
       --
