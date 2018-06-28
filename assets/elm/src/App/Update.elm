@@ -221,7 +221,7 @@ update msg model =
             { model
                 | context = App.Types.Context.setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmd
                     (\model ->
@@ -671,7 +671,7 @@ update msg model =
         PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = App.Types.Context.setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmd
                     (\model ->
@@ -979,7 +979,7 @@ update msg model =
                    )
 
         TimelineFilterModalMsg subMsg ->
-            App.Modals.TimelineFilterModal.update subMsg model.timeline.filter
+            App.Modals.TimelineFilterModal.update model.context subMsg model.timeline.filter
                 |> (\( filter, subCmd ) ->
                         { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
                             |> withCmd (\_ -> Cmd.map TimelineFilterModalMsg subCmd)

@@ -96,13 +96,17 @@ addPost post timeline =
     { timeline | posts = post :: timeline.posts }
 
 
-addPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
-addPaginatedPosts paginatedPosts timeline =
+setPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+setPaginatedPosts paginatedPosts timeline =
     { timeline
-        | posts = List.append timeline.posts paginatedPosts.posts
-        , loading = False
+        | posts =
+            if paginatedPosts.pageIndex == 0 then
+                paginatedPosts.posts
+            else
+                timeline.posts ++ paginatedPosts.posts
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
+        , loading = False
         , loadingMore = False
     }
 

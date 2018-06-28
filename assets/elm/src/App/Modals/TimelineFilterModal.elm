@@ -11,14 +11,16 @@ import App.Types.Context exposing (Context)
 import App.Types.Timeline exposing (Filter)
 
 
-update : TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd TimelineFilterModalMsg.Msg )
-update msg filter =
+update : Context -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd TimelineFilterModalMsg.Msg )
+update context msg filter =
     case msg of
         ExcludePinnedGraphOptionCheck check ->
-            { filter | excludePinnedGraph = check } |> withoutCmd
+            { filter | excludePinnedGraph = check }
+                |> withoutCmd
 
         ExcludePostsInCotonomaOptionCheck check ->
-            { filter | excludePostsInCotonoma = check } |> withoutCmd
+            { filter | excludePostsInCotonoma = check }
+                |> withoutCmd
 
 
 view : Context -> Filter -> Html AppMsg.Msg
