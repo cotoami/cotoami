@@ -21,7 +21,13 @@ update context msg filter =
 
         ExcludePostsInCotonomaOptionCheck check ->
             { filter | excludePostsInCotonoma = check }
-                |> withCmd (\filter -> App.Server.Post.fetchPostsByContext 0 filter context)
+                |> withCmd
+                    (\filter ->
+                        if App.Types.Context.atHome context then
+                            App.Server.Post.fetchPostsByContext 0 filter context
+                        else
+                            Cmd.none
+                    )
 
 
 view : Context -> Filter -> Html AppMsg.Msg
