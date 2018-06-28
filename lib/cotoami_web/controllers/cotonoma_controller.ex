@@ -65,7 +65,7 @@ defmodule CotoamiWeb.CotonomaController do
     page_index = String.to_integer(page)
     cotos = 
       CotoService.get_cotos_by_cotonoma(key, amishi, page_index,
-        [:exclude_pinned_graph, :exclude_other_origins]
+        [:exclude_pinned_graph]
         |> Enum.map(&({&1, Map.has_key?(params, &1)}))
       )
     case cotos do

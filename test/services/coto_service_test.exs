@@ -60,22 +60,22 @@ defmodule Cotoami.CotoServiceTest do
       ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_pinned_graph: true).rows
     end
 
-    test "get_cotos_by_amishi with :exclude_other_origins", ~M{amishi} do
+    test "get_cotos_by_amishi with :exclude_posts_in_cotonoma", ~M{amishi} do
       assert [
         %Coto{content: "coto3"},
         %Coto{content: "coto2"},
         %Coto{content: "coto1"},
         %Coto{content: "test", as_cotonoma: true}
-      ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_other_origins: true).rows
+      ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_posts_in_cotonoma: true).rows
     end
 
-    test "get_cotos_by_amishi with :exclude_pinned_graph and :exclude_other_origins", ~M{amishi} do
+    test "get_cotos_by_amishi with :exclude_pinned_graph and :exclude_posts_in_cotonoma", ~M{amishi} do
       assert [
         %Coto{content: "coto1"},
         %Coto{content: "test", as_cotonoma: true}
       ] = CotoService.get_cotos_by_amishi(amishi, 0, 
         exclude_pinned_graph: true, 
-        exclude_other_origins: true
+        exclude_posts_in_cotonoma: true
       ).rows
     end
   end

@@ -14,7 +14,7 @@ defmodule CotoamiWeb.CotoController do
     page_index = String.to_integer(page)
     paginated_results = 
       CotoService.get_cotos_by_amishi(amishi, page_index,
-        [:exclude_pinned_graph, :exclude_other_origins]
+        [:exclude_pinned_graph, :exclude_posts_in_cotonoma]
         |> Enum.map(&({&1, Map.has_key?(params, &1)}))
       )
     render(conn, "cotos.json", paginated_results)
