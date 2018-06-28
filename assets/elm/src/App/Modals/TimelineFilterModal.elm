@@ -18,7 +18,7 @@ view context filter =
 modalConfig : Context -> Filter -> Modal.Config Msg
 modalConfig context filter =
     { closeMessage = CloseModal
-    , title = text ""
+    , title = text "Timeline Filter"
     , content =
         div []
             [ excludePinnedGraphOption context filter
@@ -30,16 +30,17 @@ modalConfig context filter =
 
 excludePinnedGraphOption : Context -> Filter -> Html Msg
 excludePinnedGraphOption context filter =
-    div [ class "filter-option" ]
-        [ label [ class "option-description" ]
-            [ input
-                [ type_ "checkbox"
-                , class "exclude-pinned-graph"
-                , checked filter.excludePinnedGraph
-                ]
-                []
-            , span []
-                [ text "Hide cotos connected from the pinned cotos"
+    div [ class "filter-option pretty p-default p-curve p-smooth" ]
+        [ input
+            [ type_ "checkbox"
+            , class "exclude-pinned-graph"
+            , checked filter.excludePinnedGraph
+            ]
+            []
+        , div [ class "state" ]
+            [ label []
+                [ span []
+                    [ text "Hide cotos connected from the pinned cotos" ]
                 ]
             ]
         ]
@@ -47,18 +48,20 @@ excludePinnedGraphOption context filter =
 
 excludePostsInCotonomaOption : Context -> Filter -> Html Msg
 excludePostsInCotonomaOption context filter =
-    div [ class "filter-option" ]
-        [ label [ class "option-description" ]
-            [ input
-                [ type_ "checkbox"
-                , class "exclude-posts-in-cotonoma"
-                , checked filter.excludePinnedGraph
-                ]
-                []
-            , span []
-                [ text "Hide cotos posted in a cotonoma (enabled only in "
-                , span [ class "my-home" ] [ text "My Home" ]
-                , text ")"
+    div [ class "filter-option pretty p-default p-curve p-smooth" ]
+        [ input
+            [ type_ "checkbox"
+            , class "exclude-posts-in-cotonoma"
+            , checked filter.excludePostsInCotonoma
+            ]
+            []
+        , div [ class "state" ]
+            [ label []
+                [ span []
+                    [ text "Hide cotos posted in a cotonoma (enabled only in "
+                    , span [ class "my-home" ] [ text "My Home" ]
+                    , text ")"
+                    ]
                 ]
             ]
         ]
