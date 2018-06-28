@@ -648,8 +648,9 @@ update msg model =
                 |> withCmd
                     (\model ->
                         App.Server.Post.fetchCotonomaPosts
-                            cotonomaKey
                             (App.Types.Timeline.nextPageIndex model.timeline)
+                            model.timeline.filter
+                            cotonomaKey
                     )
 
         --
@@ -681,6 +682,7 @@ update msg model =
                     (\model ->
                         App.Server.Post.fetchPosts
                             (App.Types.Timeline.nextPageIndex model.timeline)
+                            model.timeline.filter
                     )
 
         ImageLoaded ->
@@ -1017,7 +1019,7 @@ loadHome model =
         , navigationOpen = False
       }
     , Cmd.batch
-        [ App.Server.Post.fetchPosts 0
+        [ App.Server.Post.fetchPosts 0 model.timeline.filter
         , App.Server.Cotonoma.fetchCotonomas
         , App.Server.Graph.fetchGraph Nothing
         , App.Ports.destroyGraph ()
@@ -1048,7 +1050,7 @@ loadCotonoma key model =
       }
     , Cmd.batch
         [ App.Server.Cotonoma.fetchCotonomas
-        , App.Server.Post.fetchCotonomaPosts key 0
+        , App.Server.Post.fetchCotonomaPosts 0 model.timeline.filter key
         , App.Server.Graph.fetchGraph (Just key)
         , App.Ports.destroyGraph ()
         ]
