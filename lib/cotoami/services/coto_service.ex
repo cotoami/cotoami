@@ -54,7 +54,7 @@ defmodule Cotoami.CotoService do
       cotonoma ->
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
-        |> query_to_exclude_pinned_graph(cotonoma.id, options)
+        |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
         |> preload([:amishi, :posted_in, :cotonoma])
         |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
         |> Map.put(:cotonoma, cotonoma)
