@@ -69,7 +69,7 @@ type alias Graph =
     { cotos : Dict CotoId Coto
     , rootConnections : List Connection
     , connections : ConnectionDict
-    , reachableCotoIds : List CotoId
+    , reachableCotoIds : Set CotoId
     }
 
 
@@ -78,7 +78,7 @@ defaultGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty
-    , reachableCotoIds = []
+    , reachableCotoIds = Set.empty
     }
 
 
@@ -87,8 +87,9 @@ initGraph cotos rootConnections connections =
     { cotos = cotos
     , rootConnections = rootConnections
     , connections = connections
-    , reachableCotoIds = []
+    , reachableCotoIds = Set.empty
     }
+        |> updateReachableCotoIds
 
 
 mergeSubgraph : Graph -> Graph -> Graph
@@ -97,6 +98,7 @@ mergeSubgraph subgraph graph =
         | cotos = Dict.union subgraph.cotos graph.cotos
         , connections = Dict.union subgraph.connections graph.connections
     }
+        |> updateReachableCotoIds
 
 
 pinned : CotoId -> Graph -> Bool
@@ -487,20 +489,27 @@ deleteInvalidConnections graph =
         { graph | rootConnections = rootConnections, connections = connections }
 
 
-excludeUnreachables : Graph -> Graph
-excludeUnreachables graph =
+updateReachableCotoIds : Graph -> Graph
+updateReachableCotoIds graph =
     let
         pinnedCotoIds =
             graph.rootConnections
                 |> List.map (\conn -> conn.end)
                 |> Set.fromList
 
-        reachableIds =
+        reachableCotoIds =
             collectReachableCotoIds pinnedCotoIds graph Set.empty
+    in
+        { graph | reachableCotoIds = reachableCotoIds }
 
+
+excludeUnreachables : Graph -> Graph
+excludeUnreachables graph =
+    let
         reachableCotos =
-            graph.cotos
-                |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
+            Dict.filter
+                (\cotoId coto -> Set.member cotoId graph.reachableCotoIds)
+                graph.cotos
     in
         { graph | cotos = reachableCotos }
             |> deleteInvalidConnections
