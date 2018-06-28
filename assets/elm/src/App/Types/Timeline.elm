@@ -71,6 +71,11 @@ switchView view timeline =
     { timeline | view = view }
 
 
+setFilter : Filter -> Timeline -> Timeline
+setFilter filter timeline =
+    { timeline | filter = filter }
+
+
 setScrollPosInitialized : Timeline -> Timeline
 setScrollPosInitialized timeline =
     { timeline | initializingScrollPos = False }

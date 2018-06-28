@@ -11,6 +11,7 @@ import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context)
 import App.Types.Amishi exposing (Presences)
@@ -44,6 +45,7 @@ import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
+import App.Modals.TimelineFilterModal
 import App.Pushed
 import App.Ports
 
@@ -976,20 +978,12 @@ update msg model =
                             |> withCmd (\_ -> Cmd.map ImportModalMsg subCmd)
                    )
 
-
-withCmd : (Model -> Cmd msg) -> Model -> ( Model, Cmd msg )
-withCmd createCmd model =
-    ( model, createCmd model )
-
-
-withoutCmd : Model -> ( Model, Cmd msg )
-withoutCmd model =
-    ( model, Cmd.none )
-
-
-addCmd : (Model -> Cmd msg) -> ( Model, Cmd msg ) -> ( Model, Cmd msg )
-addCmd createCmd ( model, cmd ) =
-    ( model, Cmd.batch [ cmd, createCmd model ] )
+        TimelineFilterModalMsg subMsg ->
+            App.Modals.TimelineFilterModal.update subMsg model.timeline.filter
+                |> (\( filter, subCmd ) ->
+                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
+                            |> withCmd (\_ -> Cmd.map TimelineFilterModalMsg subCmd)
+                   )
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )

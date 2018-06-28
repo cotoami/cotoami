@@ -16,6 +16,7 @@ import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
+import App.Modals.TimelineFilterModalMsg
 
 
 type Msg
@@ -158,3 +159,4 @@ type Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
+    | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg
