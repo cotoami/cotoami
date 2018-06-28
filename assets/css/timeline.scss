@@ -69,11 +69,23 @@ div.timeline-toolbar {
   div.tools {
     position: absolute;
     top: 7px;
-    right: 35px;
+    right: 40px;
     display: inline-block;
 
     @media (#{$narrow-viewport}) {
       right: 0;
+    }
+
+    i {
+      vertical-align: middle;
+    }
+
+    a.open-filter {
+      margin-right: 20px;
+
+      i {
+        vertical-align: -7px;
+      }
     }
 
     a.stream-view {

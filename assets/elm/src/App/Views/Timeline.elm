@@ -49,7 +49,15 @@ toolbarDiv context timeline =
             ]
             [ materialIcon "arrow_left" Nothing ]
         , div [ class "tools" ]
-            [ span [ class "view-switch" ]
+            [ a
+                [ classList
+                    [ ( "tool-button", True )
+                    , ( "open-filter", True )
+                    ]
+                , title "Filter"
+                ]
+                [ materialIcon "filter_list" Nothing ]
+            , span [ class "view-switch" ]
                 [ a
                     [ classList
                         [ ( "tool-button", True )
