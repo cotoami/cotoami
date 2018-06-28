@@ -6,6 +6,7 @@ module App.Types.Graph
         , Graph
         , defaultGraph
         , initGraph
+        , mergeSubgraph
         , pinned
         , member
         , hasChildren
@@ -25,7 +26,6 @@ module App.Types.Graph
         , moveToFirst
         , moveToLast
         , cotonomatize
-        , mergeSubgraph
         , toTopicGraph
         , PinnedCotosView(..)
         )
@@ -111,16 +111,48 @@ member cotoId graph =
     Dict.member cotoId graph.cotos
 
 
+connected : CotoId -> CotoId -> Graph -> Bool
+connected startId endId graph =
+    graph.connections
+        |> Dict.get startId
+        |> Maybe.map (List.any (\conn -> conn.end == endId))
+        |> Maybe.withDefault False
+
+
+hasChildren : CotoId -> Graph -> Bool
+hasChildren cotoId graph =
+    graph.connections |> Dict.member cotoId
+
+
 getCoto : CotoId -> Graph -> Maybe Coto
 getCoto cotoId graph =
     Dict.get cotoId graph.cotos
 
 
+getParents : CotoId -> Graph -> List Coto
+getParents cotoId graph =
+    List.filterMap
+        (\parentId ->
+            graph.connections
+                |> Dict.get parentId
+                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
+                |> Maybe.andThen (\_ -> getCoto parentId graph)
+        )
+        (Dict.keys graph.connections)
+
+
+getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
+getOutboundConnections maybeCotoId graph =
+    if isJust maybeCotoId then
+        maybeCotoId
+            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
+    else
+        Just graph.rootConnections
+
+
 addCoto : Coto -> Graph -> Graph
 addCoto coto graph =
-    { graph
-        | cotos = Dict.insert coto.id coto graph.cotos
-    }
+    { graph | cotos = Dict.insert coto.id coto graph.cotos }
 
 
 updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
@@ -152,55 +184,6 @@ cotonomatize cotoId cotonomaKey graph =
             }
         )
         graph
-
-
-connected : CotoId -> CotoId -> Graph -> Bool
-connected startId endId graph =
-    case Dict.get startId graph.connections of
-        Nothing ->
-            False
-
-        Just conns ->
-            List.any (\conn -> conn.end == endId) conns
-
-
-inGraph : CotoId -> Graph -> Bool
-inGraph cotoId graph =
-    (graph.rootConnections |> List.any (\conn -> conn.end == cotoId))
-        || (graph.connections |> Dict.member cotoId)
-        || (graph.connections
-                |> Dict.values
-                |> List.any
-                    (\conns ->
-                        conns |> List.any (\conn -> conn.end == cotoId)
-                    )
-           )
-
-
-getParents : CotoId -> Graph -> List Coto
-getParents cotoId graph =
-    List.filterMap
-        (\parentId ->
-            graph.connections
-                |> Dict.get parentId
-                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
-                |> Maybe.andThen (\_ -> getCoto parentId graph)
-        )
-        (Dict.keys graph.connections)
-
-
-hasChildren : CotoId -> Graph -> Bool
-hasChildren cotoId graph =
-    graph.connections |> Dict.member cotoId
-
-
-getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
-getOutboundConnections maybeCotoId graph =
-    if isJust maybeCotoId then
-        maybeCotoId
-            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
-    else
-        Just graph.rootConnections
 
 
 pinCoto : AmishiId -> Coto -> Graph -> Graph
