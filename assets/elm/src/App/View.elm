@@ -18,6 +18,7 @@ import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Views.SearchResults
+import App.Modals exposing (Modal(..))
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal

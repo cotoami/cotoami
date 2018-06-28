@@ -14,24 +14,13 @@ import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Confirmation exposing (Confirmation)
+import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
-
-
-type Modal
-    = ConfirmModal
-    | SigninModal
-    | EditorModal
-    | ProfileModal
-    | InviteModal
-    | CotoMenuModal
-    | CotoModal
-    | ConnectModal
-    | ImportModal
 
 
 type ConnectingTarget
@@ -171,58 +160,20 @@ updateRecentCotonomasByCoto post model =
         |> Maybe.withDefault model
 
 
-openModal : Modal -> Model -> Model
-openModal modal model =
-    if List.member modal model.modals then
-        model
-    else
-        { model | modals = modal :: model.modals }
-
-
-closeActiveModal : Model -> Model
-closeActiveModal model =
-    { model | modals = Maybe.withDefault [] (List.tail model.modals) }
-
-
-closeModal : Modal -> Model -> Model
-closeModal modal model =
-    { model | modals = List.filter (\m -> m /= modal) model.modals }
-
-
-clearModals : Model -> Model
-clearModals model =
-    { model | modals = [] }
-
-
-confirm : Confirmation -> Model -> Model
-confirm confirmation model =
-    { model | confirmation = confirmation }
-        |> openModal ConfirmModal
-
-
-maybeConfirm : Maybe Confirmation -> Model -> Model
-maybeConfirm maybeConfirmation model =
-    maybeConfirmation
-        |> Maybe.map (\confirmation -> confirm confirmation model)
-        |> Maybe.withDefault model
-
-
 openCotoMenuModal : Coto -> Model -> Model
 openCotoMenuModal coto model =
     coto
         |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
-        |> Just
-        |> (\modal -> { model | cotoMenuModal = modal })
-        |> openModal CotoMenuModal
+        |> (\modal -> { model | cotoMenuModal = Just modal })
+        |> App.Modals.openModal CotoMenuModal
 
 
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto
         |> App.Modals.CotoModal.initModel
-        |> Just
-        |> (\modal -> { model | cotoModal = modal })
-        |> openModal CotoModal
+        |> (\modal -> { model | cotoModal = Just modal })
+        |> App.Modals.openModal CotoModal
 
 
 confirmPostAndConnect : Maybe String -> String -> Model -> Model
@@ -231,7 +182,7 @@ confirmPostAndConnect summary content model =
         | connectingTarget = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
-        |> \model -> openModal ConnectModal model
+        |> \model -> App.Modals.openModal ConnectModal model
 
 
 isNavigationEmpty : Model -> Bool
