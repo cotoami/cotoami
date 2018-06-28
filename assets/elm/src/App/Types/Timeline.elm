@@ -13,9 +13,23 @@ type TimelineView
     | TileView
 
 
+type alias Filter =
+    { excludePinnedGraph : Bool
+    , excludePostsInCotonoma : Bool
+    }
+
+
+defaultFilter : Filter
+defaultFilter =
+    { excludePinnedGraph = False
+    , excludePostsInCotonoma = False
+    }
+
+
 type alias Timeline =
     { hidden : Bool
     , view : TimelineView
+    , filter : Filter
     , editorOpen : Bool
     , newContent : String
     , editorCounter : Int
@@ -33,6 +47,7 @@ defaultTimeline : Timeline
 defaultTimeline =
     { hidden = False
     , view = StreamView
+    , filter = defaultFilter
     , editorOpen = False
     , newContent = ""
     , editorCounter = 0
