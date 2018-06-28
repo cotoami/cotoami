@@ -930,10 +930,7 @@ update msg model =
         --
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
-                |> (\( modal, subCmd ) ->
-                        { model | signinModal = modal }
-                            |> withCmd (\_ -> Cmd.map SigninModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model.context subMsg model.editorModal
@@ -957,24 +954,18 @@ update msg model =
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
-                |> (\( modal, subCmd ) ->
-                        { model | inviteModal = modal }
-                            |> withCmd (\_ -> Cmd.map InviteModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
 
         ImportModalMsg subMsg ->
             App.Modals.ImportModal.update model.context subMsg model.importModal
-                |> (\( modal, subCmd ) ->
-                        { model | importModal = modal }
-                            |> withCmd (\_ -> Cmd.map ImportModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | importModal = modal })
 
         TimelineFilterModalMsg subMsg ->
             App.Modals.TimelineFilterModal.update model.context subMsg model.timeline.filter
-                |> (\( filter, subCmd ) ->
+                |> Tuple.mapFirst
+                    (\filter ->
                         { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
-                            |> withCmd (\_ -> Cmd.map TimelineFilterModalMsg subCmd)
-                   )
+                    )
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )

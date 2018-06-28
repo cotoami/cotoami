@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Server.Amishi exposing (decodeAmishi)
@@ -35,24 +36,23 @@ defaultModel =
     }
 
 
-update : InviteModalMsg.Msg -> Model -> ( Model, Cmd InviteModalMsg.Msg )
+update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         EmailInput content ->
-            ( { model | email = content }, Cmd.none )
+            { model | email = content } |> withoutCmd
 
         SendInviteClick ->
             { model | requestProcessing = True }
-                ! [ sendInvite model.email ]
+                |> withCmd (\model -> sendInvite model.email)
 
         SendInviteDone (Ok _) ->
-            ( { model
+            { model
                 | email = ""
                 , requestProcessing = False
                 , requestStatus = Approved model.email
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         SendInviteDone (Err error) ->
             (case error of
@@ -66,26 +66,24 @@ update msg model =
                 |> Maybe.andThen Result.toMaybe
                 |> Maybe.map
                     (\invitee ->
-                        ( { model
+                        { model
                             | requestProcessing = False
                             , requestStatus = Conflict invitee
-                          }
-                        , Cmd.none
-                        )
+                        }
                     )
                 |> Maybe.withDefault
-                    ( { model
+                    { model
                         | requestProcessing = False
                         , requestStatus = Rejected
-                      }
-                    , Cmd.none
-                    )
+                    }
+                |> withoutCmd
 
 
-sendInvite : String -> Cmd InviteModalMsg.Msg
+sendInvite : String -> Cmd AppMsg.Msg
 sendInvite email =
-    Http.send SendInviteDone <|
-        Http.get ("/api/invite/" ++ email) Decode.string
+    Http.send
+        (AppMsg.InviteModalMsg << SendInviteDone)
+        (Http.get ("/api/invite/" ++ email) Decode.string)
 
 
 view : Model -> Html AppMsg.Msg
