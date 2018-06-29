@@ -207,8 +207,8 @@ unpinCoto cotoId graph =
     }
 
 
-connect : AmishiId -> Coto -> Coto -> Graph -> Graph
-connect amishiId start end graph =
+connect_ : AmishiId -> Coto -> Coto -> Graph -> Graph
+connect_ amishiId start end graph =
     let
         cotos =
             graph.cotos
@@ -237,14 +237,14 @@ connect amishiId start end graph =
 
 connectOneToMany_ : AmishiId -> Coto -> List Coto -> Graph -> Graph
 connectOneToMany_ amishiId startCoto endCotos graph =
-    List.foldr (connect amishiId startCoto) graph endCotos
+    List.foldr (connect_ amishiId startCoto) graph endCotos
 
 
 connectManyToOne_ : AmishiId -> List Coto -> Coto -> Graph -> Graph
 connectManyToOne_ amishiId startCotos endCoto graph =
     List.foldr
         (\startCoto graph ->
-            connect amishiId startCoto endCoto graph
+            connect_ amishiId startCoto endCoto graph
         )
         graph
         startCotos
@@ -258,6 +258,11 @@ batchConnect amishiId direction cotos subject graph =
 
         Inbound ->
             connectManyToOne_ amishiId cotos subject graph
+
+
+connect : AmishiId -> Coto -> Coto -> Graph -> Graph
+connect amishiId start end graph =
+    batchConnect amishiId Outbound [ end ] start graph
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
