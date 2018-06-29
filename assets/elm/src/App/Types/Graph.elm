@@ -195,6 +195,7 @@ pinCoto amishiId coto graph =
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
                 (initConnection amishiId Nothing coto.id) :: graph.rootConnections
+            , reachableCotoIds = graph.reachableCotoIds |> Set.insert coto.id
         }
 
 
@@ -205,6 +206,7 @@ unpinCoto cotoId graph =
             graph.rootConnections
                 |> List.filter (\conn -> conn.end /= cotoId)
     }
+        |> updateReachableCotoIds_
 
 
 connect_ : AmishiId -> Coto -> Coto -> Graph -> Graph
@@ -252,12 +254,14 @@ connectManyToOne_ amishiId startCotos endCoto graph =
 
 batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
 batchConnect amishiId direction cotos subject graph =
-    case direction of
+    (case direction of
         Outbound ->
             connectOneToMany_ amishiId subject cotos graph
 
         Inbound ->
             connectManyToOne_ amishiId cotos subject graph
+    )
+        |> updateReachableCotoIds_
 
 
 connect : AmishiId -> Coto -> Coto -> Graph -> Graph
@@ -285,6 +289,7 @@ disconnect ( fromId, toId ) graph =
                 graph.connections
     in
         { graph | connections = connections }
+            |> updateReachableCotoIds_
 
 
 removeCoto : CotoId -> Graph -> ( Graph, List Connection )
@@ -322,8 +327,8 @@ removeCoto cotoId graph =
         )
 
 
-updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
-updateConnections maybeParentId update graph =
+updateConnections_ : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
+updateConnections_ maybeParentId update graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
@@ -340,7 +345,7 @@ updateConnections maybeParentId update graph =
 
 swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
 swapOrder maybeParentId index1 index2 graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             connections
@@ -353,7 +358,7 @@ swapOrder maybeParentId index1 index2 graph =
 
 moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
 moveToFirst maybeParentId index graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             let
@@ -376,7 +381,7 @@ moveToFirst maybeParentId index graph =
 
 moveToLast : Maybe CotoId -> Int -> Graph -> Graph
 moveToLast maybeParentId index graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             let
@@ -399,7 +404,7 @@ moveToLast maybeParentId index graph =
 
 reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
 reorder maybeParentId newOrder graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             newOrder
@@ -442,8 +447,8 @@ collectReachableCotoIds sourceIds graph collectedIds =
             collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
-deleteInvalidConnections : Graph -> Graph
-deleteInvalidConnections graph =
+deleteInvalidConnections_ : Graph -> Graph
+deleteInvalidConnections_ graph =
     let
         rootConnections =
             graph.rootConnections
@@ -483,8 +488,8 @@ updateReachableCotoIds_ graph =
         { graph | reachableCotoIds = reachableCotoIds }
 
 
-excludeUnreachables : Graph -> Graph
-excludeUnreachables graph =
+excludeUnreachables_ : Graph -> Graph
+excludeUnreachables_ graph =
     let
         reachableCotos =
             Dict.filter
@@ -492,7 +497,7 @@ excludeUnreachables graph =
                 graph.cotos
     in
         { graph | cotos = reachableCotos }
-            |> deleteInvalidConnections
+            |> deleteInvalidConnections_
 
 
 toTopicGraph : Graph -> Graph
@@ -506,8 +511,8 @@ toTopicGraph graph =
                     )
     in
         { graph | cotos = topicCotos }
-            |> deleteInvalidConnections
-            |> excludeUnreachables
+            |> deleteInvalidConnections_
+            |> excludeUnreachables_
 
 
 type PinnedCotosView
