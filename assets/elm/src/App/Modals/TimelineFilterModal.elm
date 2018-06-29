@@ -41,18 +41,18 @@ view : Context -> Filter -> Html AppMsg.Msg
 view context filter =
     Modal.view
         "timeline-filter-modal"
-        (Just (modalConfig context filter))
+        (Just (modalConfig_ context filter))
 
 
-modalConfig : Context -> Filter -> Modal.Config AppMsg.Msg
-modalConfig context filter =
+modalConfig_ : Context -> Filter -> Modal.Config AppMsg.Msg
+modalConfig_ context filter =
     { closeMessage = CloseModal
     , title = text "Timeline Filter"
     , content =
         div []
-            [ excludePinnedGraphOption context filter
+            [ excludePinnedGraphOption_ context filter
             , if App.Types.Context.atHome context then
-                excludePostsInCotonomaOption context filter
+                excludePostsInCotonomaOption_ context filter
               else
                 Util.HtmlUtil.none
             ]
@@ -60,8 +60,8 @@ modalConfig context filter =
     }
 
 
-excludePinnedGraphOption : Context -> Filter -> Html AppMsg.Msg
-excludePinnedGraphOption context filter =
+excludePinnedGraphOption_ : Context -> Filter -> Html AppMsg.Msg
+excludePinnedGraphOption_ context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"
@@ -79,8 +79,8 @@ excludePinnedGraphOption context filter =
         ]
 
 
-excludePostsInCotonomaOption : Context -> Filter -> Html AppMsg.Msg
-excludePostsInCotonomaOption context filter =
+excludePostsInCotonomaOption_ : Context -> Filter -> Html AppMsg.Msg
+excludePostsInCotonomaOption_ context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"
