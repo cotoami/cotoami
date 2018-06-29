@@ -47,7 +47,7 @@ import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
 import App.Pushed
-import App.Ports
+import App.Ports.Graph
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -789,7 +789,7 @@ update msg model =
         ResizeGraph ->
             ( model
             , if model.pinnedCotosView == GraphView then
-                App.Ports.resizeGraph ()
+                App.Ports.Graph.resizeGraph ()
               else
                 Cmd.none
             )
@@ -1004,7 +1004,7 @@ loadHome model =
         [ App.Server.Post.fetchPosts 0 model.timeline.filter
         , App.Server.Cotonoma.fetchCotonomas
         , App.Server.Graph.fetchGraph Nothing
-        , App.Ports.destroyGraph ()
+        , App.Ports.Graph.destroyGraph ()
         ]
     )
 
@@ -1034,7 +1034,7 @@ loadCotonoma key model =
         [ App.Server.Cotonoma.fetchCotonomas
         , App.Server.Post.fetchCotonomaPosts 0 model.timeline.filter key
         , App.Server.Graph.fetchGraph (Just key)
-        , App.Ports.destroyGraph ()
+        , App.Ports.Graph.destroyGraph ()
         ]
     )
 
@@ -1274,7 +1274,7 @@ makeReorderCmd maybeParentId model =
 renderGraph : Model -> Cmd Msg
 renderGraph model =
     if model.pinnedCotosView == GraphView then
-        App.Ports.renderCotoGraph model.context.cotonoma model.graph
+        App.Ports.Graph.renderCotoGraph model.context.cotonoma model.graph
     else
         Cmd.none
 
