@@ -1,6 +1,8 @@
 module App.Types.Timeline exposing (..)
 
 import Maybe
+import Json.Decode as Decode
+import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
@@ -24,6 +26,21 @@ defaultFilter =
     { excludePinnedGraph = False
     , excludePostsInCotonoma = False
     }
+
+
+decodeFilter : Decode.Decoder Filter
+decodeFilter =
+    Decode.map2 Filter
+        (Decode.field "excludePinnedGraph" Decode.bool)
+        (Decode.field "excludePostsInCotonoma" Decode.bool)
+
+
+encodeFilter : Filter -> Encode.Value
+encodeFilter filter =
+    Encode.object
+        [ ( "excludePinnedGraph", Encode.bool filter.excludePinnedGraph )
+        , ( "excludePostsInCotonoma", Encode.bool filter.excludePostsInCotonoma )
+        ]
 
 
 type alias Timeline =

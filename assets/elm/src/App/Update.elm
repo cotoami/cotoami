@@ -47,6 +47,7 @@ import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
 import App.Pushed
+import App.Ports.Storage
 import App.Ports.Graph
 
 
@@ -55,6 +56,9 @@ update msg model =
     case msg of
         NoOp ->
             model |> withoutCmd
+
+        LocalStorageItemFetched item ->
+            App.Model.setConfig item model |> withoutCmd
 
         KeyDown keyCode ->
             if keyCode == Util.Keyboard.Key.escapeKeyCode then
@@ -180,6 +184,7 @@ update msg model =
                             _ ->
                                 loadHome model
                    )
+                |> addCmd (\_ -> App.Ports.Storage.getAllItems ())
 
         SessionFetched (Err error) ->
             case error of

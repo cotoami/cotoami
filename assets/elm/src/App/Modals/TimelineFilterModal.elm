@@ -11,6 +11,7 @@ import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg
 import App.Types.Context exposing (Context)
 import App.Types.Timeline exposing (Filter)
 import App.Server.Post
+import App.Ports.Storage
 
 
 update : Context -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
@@ -18,17 +19,22 @@ update context msg filter =
     case msg of
         ExcludePinnedGraphOptionCheck check ->
             { filter | excludePinnedGraph = check }
-                |> withCmd (\filter -> App.Server.Post.fetchPostsByContext 0 filter context)
+                |> withCmd (cmdOnFilterUpdate_ context)
 
         ExcludePostsInCotonomaOptionCheck check ->
             { filter | excludePostsInCotonoma = check }
-                |> withCmd
-                    (\filter ->
-                        if App.Types.Context.atHome context then
-                            App.Server.Post.fetchPostsByContext 0 filter context
-                        else
-                            Cmd.none
-                    )
+                |> withCmd (cmdOnFilterUpdate_ context)
+
+
+cmdOnFilterUpdate_ : Context -> Filter -> Cmd AppMsg.Msg
+cmdOnFilterUpdate_ context filter =
+    Cmd.batch
+        [ App.Server.Post.fetchPostsByContext 0 filter context
+        , App.Ports.Storage.setItem
+            ( "timeline.filter"
+            , App.Types.Timeline.encodeFilter filter
+            )
+        ]
 
 
 view : Context -> Filter -> Html AppMsg.Msg

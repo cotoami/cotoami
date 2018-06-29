@@ -2,6 +2,8 @@ module App.Model exposing (..)
 
 import Dict
 import Date
+import Json.Encode exposing (Value)
+import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
 import List.Extra
 import App.Route exposing (Route)
@@ -93,6 +95,23 @@ initModel seed route =
     , importModal = App.Modals.ImportModal.defaultModel
     , pinnedCotosView = DocumentView
     }
+
+
+setConfig : ( String, Value ) -> Model -> Model
+setConfig ( key, value ) model =
+    case key of
+        "timeline.filter" ->
+            value
+                |> Decode.decodeValue (Decode.maybe App.Types.Timeline.decodeFilter)
+                |> Result.withDefault Nothing
+                |> Maybe.map
+                    (\filter ->
+                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
+                    )
+                |> Maybe.withDefault model
+
+        _ ->
+            model
 
 
 getCoto : CotoId -> Model -> Maybe Coto

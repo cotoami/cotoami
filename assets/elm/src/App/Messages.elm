@@ -21,6 +21,7 @@ import App.Modals.TimelineFilterModalMsg
 
 type Msg
     = NoOp
+    | LocalStorageItemFetched ( String, Value )
     | KeyDown KeyCode
     | AppClick
     | OnLocationChange Location
