@@ -195,8 +195,8 @@ pinCoto amishiId coto graph =
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
                 (initConnection amishiId Nothing coto.id) :: graph.rootConnections
-            , reachableCotoIds = graph.reachableCotoIds |> Set.insert coto.id
         }
+            |> updateReachableCotoIds_
 
 
 unpinCoto : CotoId -> Graph -> Graph
@@ -311,8 +311,8 @@ removeCoto cotoId graph =
             | cotos = graph.cotos |> Dict.remove cotoId
             , rootConnections = rootConnections
             , connections = connections
-            , reachableCotoIds = graph.reachableCotoIds |> Set.remove cotoId
         }
+            |> updateReachableCotoIds_
 
 
 updateConnections_ : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
