@@ -18,6 +18,7 @@ import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Views.SearchResults
+import App.Modals exposing (Modal(..))
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
@@ -27,6 +28,7 @@ import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.ConfirmModal
 import App.Modals.ImportModal
+import App.Modals.TimelineFilterModal
 
 
 view : Model -> Html Msg
@@ -324,5 +326,8 @@ modals model =
 
                 ImportModal ->
                     App.Modals.ImportModal.view model.importModal
+
+                TimelineFilterModal ->
+                    App.Modals.TimelineFilterModal.view model.context model.timeline.filter
         )
         (List.reverse model.modals)

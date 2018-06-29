@@ -1,4 +1,4 @@
-port module App.Ports
+port module App.Ports.Graph
     exposing
         ( renderCotoGraph
         , resizeGraph

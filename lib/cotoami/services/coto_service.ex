@@ -39,22 +39,45 @@ defmodule Cotoami.CotoService do
 
   @page_size 30
 
-  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index) do
+  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
     Coto
     |> Coto.for_amishi(amishi_id)
+    |> query_to_exclude_pinned_graph(amishi_id, options)
+    |> query_to_exclude_posts_in_cotonoma(amishi, options)
     |> preload([:posted_in, :cotonoma])
     |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
   end
 
-  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index) do
+  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
     case CotonomaService.get_by_key(key) do
       nil -> nil
       cotonoma ->
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
+        |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
         |> preload([:amishi, :posted_in, :cotonoma])
         |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
         |> Map.put(:cotonoma, cotonoma)
+    end
+  end
+
+  defp query_to_exclude_pinned_graph(query, uuid, options) do
+    if Keyword.get(options, :exclude_pinned_graph, false) do
+      coto_ids = 
+        CotoGraphService.get_graph_from_uuid(Bolt.Sips.conn, uuid)
+        |> Map.get(:cotos)
+        |> Map.keys()
+      from coto in query, where: not(coto.id in ^coto_ids)
+    else
+      query
+    end
+  end
+
+  defp query_to_exclude_posts_in_cotonoma(query, %Amishi{}, options) do
+    if Keyword.get(options, :exclude_posts_in_cotonoma, false) do
+      from coto in query, where: is_nil(coto.posted_in_id)
+    else
+      query
     end
   end
 

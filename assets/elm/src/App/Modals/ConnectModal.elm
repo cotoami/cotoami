@@ -9,8 +9,16 @@ import Util.Modal as Modal
 import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph exposing (Direction(..))
-import App.Messages exposing (..)
-import App.Model exposing (..)
+import App.Messages
+    exposing
+        ( Msg
+            ( CloseModal
+            , ReverseDirection
+            , Connect
+            , PostAndConnectToSelection
+            )
+        )
+import App.Model exposing (Model, ConnectingTarget(..))
 import App.Markdown
 
 
@@ -21,7 +29,7 @@ view model =
             (\target ->
                 modalConfig
                     model.connectingDirection
-                    (getSelectedCotos model)
+                    (App.Model.getSelectedCotos model)
                     target
             )
         |> Modal.view "connect-modal"
@@ -74,7 +82,7 @@ modalContent direction selectedCotos target =
                             [ contentDiv coto.summary coto.content ]
                         )
                     )
-                    (List.reverse selectedCotos)
+                    selectedCotos
                 )
 
         targetHtml =

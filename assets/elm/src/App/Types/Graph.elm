@@ -1,4 +1,34 @@
-module App.Types.Graph exposing (..)
+module App.Types.Graph
+    exposing
+        ( Direction(..)
+        , Connection
+        , initConnection
+        , Graph
+        , defaultGraph
+        , initGraph
+        , mergeSubgraph
+        , pinned
+        , member
+        , hasChildren
+        , getCoto
+        , getParents
+        , getOutboundConnections
+        , pinCoto
+        , unpinCoto
+        , addCoto
+        , connect
+        , disconnect
+        , batchConnect
+        , removeCoto
+        , updateContent
+        , reorder
+        , swapOrder
+        , moveToFirst
+        , moveToLast
+        , cotonomatize
+        , toTopicGraph
+        , PinnedCotosView(..)
+        )
 
 import Dict exposing (Dict)
 import Set exposing (Set)
@@ -39,6 +69,7 @@ type alias Graph =
     { cotos : Dict CotoId Coto
     , rootConnections : List Connection
     , connections : ConnectionDict
+    , reachableCotoIds : Set CotoId
     }
 
 
@@ -47,7 +78,18 @@ defaultGraph =
     { cotos = Dict.empty
     , rootConnections = []
     , connections = Dict.empty
+    , reachableCotoIds = Set.empty
     }
+
+
+initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
+initGraph cotos rootConnections connections =
+    { cotos = cotos
+    , rootConnections = rootConnections
+    , connections = connections
+    , reachableCotoIds = Set.empty
+    }
+        |> updateReachableCotoIds_
 
 
 mergeSubgraph : Graph -> Graph -> Graph
@@ -56,6 +98,7 @@ mergeSubgraph subgraph graph =
         | cotos = Dict.union subgraph.cotos graph.cotos
         , connections = Dict.union subgraph.connections graph.connections
     }
+        |> updateReachableCotoIds_
 
 
 pinned : CotoId -> Graph -> Bool
@@ -68,16 +111,48 @@ member cotoId graph =
     Dict.member cotoId graph.cotos
 
 
+connected : CotoId -> CotoId -> Graph -> Bool
+connected startId endId graph =
+    graph.connections
+        |> Dict.get startId
+        |> Maybe.map (List.any (\conn -> conn.end == endId))
+        |> Maybe.withDefault False
+
+
+hasChildren : CotoId -> Graph -> Bool
+hasChildren cotoId graph =
+    graph.connections |> Dict.member cotoId
+
+
 getCoto : CotoId -> Graph -> Maybe Coto
 getCoto cotoId graph =
     Dict.get cotoId graph.cotos
 
 
+getParents : CotoId -> Graph -> List Coto
+getParents cotoId graph =
+    List.filterMap
+        (\parentId ->
+            graph.connections
+                |> Dict.get parentId
+                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
+                |> Maybe.andThen (\_ -> getCoto parentId graph)
+        )
+        (Dict.keys graph.connections)
+
+
+getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
+getOutboundConnections maybeCotoId graph =
+    if isJust maybeCotoId then
+        maybeCotoId
+            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
+    else
+        Just graph.rootConnections
+
+
 addCoto : Coto -> Graph -> Graph
 addCoto coto graph =
-    { graph
-        | cotos = Dict.insert coto.id coto graph.cotos
-    }
+    { graph | cotos = Dict.insert coto.id coto graph.cotos }
 
 
 updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
@@ -111,55 +186,6 @@ cotonomatize cotoId cotonomaKey graph =
         graph
 
 
-connected : CotoId -> CotoId -> Graph -> Bool
-connected startId endId graph =
-    case Dict.get startId graph.connections of
-        Nothing ->
-            False
-
-        Just conns ->
-            List.any (\conn -> conn.end == endId) conns
-
-
-inGraph : CotoId -> Graph -> Bool
-inGraph cotoId graph =
-    (graph.rootConnections |> List.any (\conn -> conn.end == cotoId))
-        || (graph.connections |> Dict.member cotoId)
-        || (graph.connections
-                |> Dict.values
-                |> List.any
-                    (\conns ->
-                        conns |> List.any (\conn -> conn.end == cotoId)
-                    )
-           )
-
-
-getParents : CotoId -> Graph -> List Coto
-getParents cotoId graph =
-    List.filterMap
-        (\parentId ->
-            graph.connections
-                |> Dict.get parentId
-                |> Maybe.andThen (List.Extra.find (\c -> c.end == cotoId))
-                |> Maybe.andThen (\_ -> getCoto parentId graph)
-        )
-        (Dict.keys graph.connections)
-
-
-hasChildren : CotoId -> Graph -> Bool
-hasChildren cotoId graph =
-    graph.connections |> Dict.member cotoId
-
-
-getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
-getOutboundConnections maybeCotoId graph =
-    if isJust maybeCotoId then
-        maybeCotoId
-            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
-    else
-        Just graph.rootConnections
-
-
 pinCoto : AmishiId -> Coto -> Graph -> Graph
 pinCoto amishiId coto graph =
     if pinned coto.id graph then
@@ -170,6 +196,7 @@ pinCoto amishiId coto graph =
             , rootConnections =
                 (initConnection amishiId Nothing coto.id) :: graph.rootConnections
         }
+            |> updateReachableCotoIds_
 
 
 unpinCoto : CotoId -> Graph -> Graph
@@ -179,10 +206,11 @@ unpinCoto cotoId graph =
             graph.rootConnections
                 |> List.filter (\conn -> conn.end /= cotoId)
     }
+        |> updateReachableCotoIds_
 
 
-connect : AmishiId -> Coto -> Coto -> Graph -> Graph
-connect amishiId start end graph =
+connect_ : AmishiId -> Coto -> Coto -> Graph -> Graph
+connect_ amishiId start end graph =
     let
         cotos =
             graph.cotos
@@ -209,98 +237,86 @@ connect amishiId start end graph =
         { graph | cotos = cotos, connections = connections }
 
 
-connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany amishiId startCoto endCotos graph =
-    List.foldr
-        (\endCoto graph ->
-            connect amishiId startCoto endCoto graph
-        )
-        graph
-        endCotos
+connectOneToMany_ : AmishiId -> Coto -> List Coto -> Graph -> Graph
+connectOneToMany_ amishiId startCoto endCotos graph =
+    List.foldl (connect_ amishiId startCoto) graph endCotos
 
 
-connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne amishiId startCotos endCoto graph =
-    List.foldr
+connectManyToOne_ : AmishiId -> List Coto -> Coto -> Graph -> Graph
+connectManyToOne_ amishiId startCotos endCoto graph =
+    List.foldl
         (\startCoto graph ->
-            connect amishiId startCoto endCoto graph
+            connect_ amishiId startCoto endCoto graph
         )
         graph
         startCotos
 
 
 batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
-batchConnect amishiId direction cotos target graph =
-    case direction of
+batchConnect amishiId direction cotos subject graph =
+    (case direction of
         Outbound ->
-            connectOneToMany amishiId target cotos graph
+            connectOneToMany_ amishiId subject cotos graph
 
         Inbound ->
-            connectManyToOne amishiId cotos target graph
+            connectManyToOne_ amishiId cotos subject graph
+    )
+        |> updateReachableCotoIds_
+
+
+connect : AmishiId -> Coto -> Coto -> Graph -> Graph
+connect amishiId start end graph =
+    batchConnect amishiId Outbound [ end ] start graph
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
-    { graph
-        | connections = deleteConnection ( fromId, toId ) graph.connections
-    }
+    let
+        connections =
+            Dict.update
+                fromId
+                (\maybeConns ->
+                    maybeConns
+                        |> Maybe.map (List.filter (\conn -> conn.end /= toId))
+                        |> Maybe.andThen
+                            (\conns ->
+                                if List.isEmpty conns then
+                                    Nothing
+                                else
+                                    Just conns
+                            )
+                )
+                graph.connections
+    in
+        { graph | connections = connections }
+            |> updateReachableCotoIds_
 
 
-deleteConnection : ( CotoId, CotoId ) -> ConnectionDict -> ConnectionDict
-deleteConnection ( fromId, toId ) connections =
-    connections
-        |> Dict.update
-            fromId
-            (\maybeConns ->
-                maybeConns
-                    |> Maybe.map (List.filter (\conn -> conn.end /= toId))
-                    |> Maybe.andThen
-                        (\conns ->
-                            if List.isEmpty conns then
-                                Nothing
-                            else
-                                Just conns
-                        )
-            )
-
-
-removeCoto : CotoId -> Graph -> ( Graph, List Connection )
+removeCoto : CotoId -> Graph -> Graph
 removeCoto cotoId graph =
     let
-        ( remainedRoots, removedRoots ) =
+        rootConnections =
             graph.rootConnections
-                |> List.partition (\conn -> conn.end /= cotoId)
+                |> List.filter (\conn -> conn.end /= cotoId)
 
-        ( connectionDict1, startMissingConns ) =
-            case graph.connections |> Dict.get cotoId of
-                Nothing ->
-                    ( graph.connections, [] )
-
-                Just removedConns ->
-                    ( Dict.remove cotoId graph.connections, removedConns )
-
-        ( connectionDict2, endMissingConns ) =
-            Dict.foldl
-                (\startId children ( connDict, removedConns ) ->
-                    children
-                        |> List.partition (\conn -> conn.end /= cotoId)
-                        |> \( remained, removed ) ->
-                            ( connDict |> Dict.insert startId remained, removedConns ++ removed )
-                )
-                ( Dict.empty, [] )
-                connectionDict1
+        connections =
+            graph.connections
+                |> Dict.remove cotoId
+                |> Dict.map
+                    (\startId children ->
+                        List.filter (\conn -> conn.end /= cotoId) children
+                    )
     in
-        ( { graph
+        { graph
             | cotos = graph.cotos |> Dict.remove cotoId
-            , rootConnections = remainedRoots
-            , connections = connectionDict2
-          }
-        , removedRoots ++ startMissingConns ++ endMissingConns
-        )
+            , rootConnections = rootConnections
+            , connections = connections
+        }
+            |> updateReachableCotoIds_
 
 
-updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
-updateConnections maybeParentId update graph =
+updateConnections_ : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
+updateConnections_ maybeParentId update graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
@@ -317,7 +333,7 @@ updateConnections maybeParentId update graph =
 
 swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
 swapOrder maybeParentId index1 index2 graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             connections
@@ -330,7 +346,7 @@ swapOrder maybeParentId index1 index2 graph =
 
 moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
 moveToFirst maybeParentId index graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             let
@@ -353,7 +369,7 @@ moveToFirst maybeParentId index graph =
 
 moveToLast : Maybe CotoId -> Int -> Graph -> Graph
 moveToLast maybeParentId index graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             let
@@ -376,7 +392,7 @@ moveToLast maybeParentId index graph =
 
 reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
 reorder maybeParentId newOrder graph =
-    updateConnections
+    updateConnections_
         maybeParentId
         (\connections ->
             newOrder
@@ -419,8 +435,8 @@ collectReachableCotoIds sourceIds graph collectedIds =
             collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
-deleteInvalidConnections : Graph -> Graph
-deleteInvalidConnections graph =
+deleteInvalidConnections_ : Graph -> Graph
+deleteInvalidConnections_ graph =
     let
         rootConnections =
             graph.rootConnections
@@ -446,23 +462,30 @@ deleteInvalidConnections graph =
         { graph | rootConnections = rootConnections, connections = connections }
 
 
-excludeUnreachables : Graph -> Graph
-excludeUnreachables graph =
+updateReachableCotoIds_ : Graph -> Graph
+updateReachableCotoIds_ graph =
     let
         pinnedCotoIds =
             graph.rootConnections
                 |> List.map (\conn -> conn.end)
                 |> Set.fromList
 
-        reachableIds =
+        reachableCotoIds =
             collectReachableCotoIds pinnedCotoIds graph Set.empty
+    in
+        { graph | reachableCotoIds = reachableCotoIds }
 
+
+excludeUnreachables_ : Graph -> Graph
+excludeUnreachables_ graph =
+    let
         reachableCotos =
-            graph.cotos
-                |> Dict.filter (\cotoId coto -> Set.member cotoId reachableIds)
+            Dict.filter
+                (\cotoId coto -> Set.member cotoId graph.reachableCotoIds)
+                graph.cotos
     in
         { graph | cotos = reachableCotos }
-            |> deleteInvalidConnections
+            |> deleteInvalidConnections_
 
 
 toTopicGraph : Graph -> Graph
@@ -476,8 +499,8 @@ toTopicGraph graph =
                     )
     in
         { graph | cotos = topicCotos }
-            |> deleteInvalidConnections
-            |> excludeUnreachables
+            |> deleteInvalidConnections_
+            |> excludeUnreachables_
 
 
 type PinnedCotosView

@@ -2,6 +2,8 @@ module App.Model exposing (..)
 
 import Dict
 import Date
+import Json.Encode exposing (Value)
+import Json.Decode as Decode
 import Exts.Maybe exposing (isNothing)
 import List.Extra
 import App.Route exposing (Route)
@@ -14,24 +16,13 @@ import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Confirmation exposing (Confirmation)
+import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
-
-
-type Modal
-    = ConfirmModal
-    | SigninModal
-    | EditorModal
-    | ProfileModal
-    | InviteModal
-    | CotoMenuModal
-    | CotoModal
-    | ConnectModal
-    | ImportModal
 
 
 type ConnectingTarget
@@ -106,6 +97,23 @@ initModel seed route =
     }
 
 
+setConfig : ( String, Value ) -> Model -> Model
+setConfig ( key, value ) model =
+    case key of
+        "timeline.filter" ->
+            value
+                |> Decode.decodeValue (Decode.maybe App.Types.Timeline.decodeFilter)
+                |> Result.withDefault Nothing
+                |> Maybe.map
+                    (\filter ->
+                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
+                    )
+                |> Maybe.withDefault model
+
+        _ ->
+            model
+
+
 getCoto : CotoId -> Model -> Maybe Coto
 getCoto cotoId model =
     Exts.Maybe.oneOf
@@ -149,9 +157,9 @@ cotonomatize cotoId maybeCotonomaKey model =
 
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
-    List.filterMap
-        (\cotoId -> getCoto cotoId model)
-        model.context.selection
+    model.context.selection
+        |> List.filterMap (\cotoId -> getCoto cotoId model)
+        |> List.reverse
 
 
 updateRecentCotonomas : Cotonoma -> Model -> Model
@@ -171,58 +179,20 @@ updateRecentCotonomasByCoto post model =
         |> Maybe.withDefault model
 
 
-openModal : Modal -> Model -> Model
-openModal modal model =
-    if List.member modal model.modals then
-        model
-    else
-        { model | modals = modal :: model.modals }
-
-
-closeActiveModal : Model -> Model
-closeActiveModal model =
-    { model | modals = Maybe.withDefault [] (List.tail model.modals) }
-
-
-closeModal : Modal -> Model -> Model
-closeModal modal model =
-    { model | modals = List.filter (\m -> m /= modal) model.modals }
-
-
-clearModals : Model -> Model
-clearModals model =
-    { model | modals = [] }
-
-
-confirm : Confirmation -> Model -> Model
-confirm confirmation model =
-    { model | confirmation = confirmation }
-        |> openModal ConfirmModal
-
-
-maybeConfirm : Maybe Confirmation -> Model -> Model
-maybeConfirm maybeConfirmation model =
-    maybeConfirmation
-        |> Maybe.map (\confirmation -> confirm confirmation model)
-        |> Maybe.withDefault model
-
-
 openCotoMenuModal : Coto -> Model -> Model
 openCotoMenuModal coto model =
     coto
         |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
-        |> Just
-        |> (\modal -> { model | cotoMenuModal = modal })
-        |> openModal CotoMenuModal
+        |> (\modal -> { model | cotoMenuModal = Just modal })
+        |> App.Modals.openModal CotoMenuModal
 
 
 openCoto : Coto -> Model -> Model
 openCoto coto model =
     coto
         |> App.Modals.CotoModal.initModel
-        |> Just
-        |> (\modal -> { model | cotoModal = modal })
-        |> openModal CotoModal
+        |> (\modal -> { model | cotoModal = Just modal })
+        |> App.Modals.openModal CotoModal
 
 
 confirmPostAndConnect : Maybe String -> String -> Model -> Model
@@ -231,7 +201,7 @@ confirmPostAndConnect summary content model =
         | connectingTarget = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
-        |> \model -> openModal ConnectModal model
+        |> \model -> App.Modals.openModal ConnectModal model
 
 
 isNavigationEmpty : Model -> Bool
@@ -320,7 +290,7 @@ deleteCoto : Coto -> Model -> Model
 deleteCoto coto model =
     { model
         | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-        , graph = App.Types.Graph.removeCoto coto.id model.graph |> \( graph, _ ) -> graph
+        , graph = App.Types.Graph.removeCoto coto.id model.graph
         , traversals = App.Types.Traversal.closeTraversal coto.id model.traversals
         , context = deleteSelection coto.id model.context
     }

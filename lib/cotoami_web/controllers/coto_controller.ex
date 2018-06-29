@@ -10,9 +10,15 @@ defmodule CotoamiWeb.CotoController do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
 
-  def index(conn, %{"page" => page}, amishi) do
+  @index_options ["exclude_pinned_graph", "exclude_posts_in_cotonoma"]
+
+  def index(conn, %{"page" => page} = params, amishi) do
     page_index = String.to_integer(page)
-    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index)
+    options = 
+      Enum.map(@index_options, fn (key) -> 
+        {String.to_atom(key), Map.has_key?(params, key)}
+      end)
+    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index, options)
     render(conn, "cotos.json", paginated_results)
   end
 

@@ -20,21 +20,7 @@ defmodule Cotoami.CotoGraphService do
 
   @rel_type_has_a "HAS_A"
 
-  def get_graph(bolt_conn, %Amishi{id: _} = amishi) do
-    do_get_graph(bolt_conn, amishi)
-  end
-
-  def get_graph(bolt_conn, %Cotonoma{id: _, coto: %Coto{id: _}} = cotonoma) do
-    do_get_graph(bolt_conn, cotonoma)
-  end
-
-  def get_subgraph(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
-    bolt_conn
-    |> Bolt.Sips.query!(query_graph_from_uuid(), %{uuid: cotonoma_coto_id})
-    |> build_graph_from_query_result(cotonoma_coto_id, false)
-  end
-
-  defp do_get_graph(bolt_conn, %Amishi{id: amishi_id}) do
+  def get_graph_in_amishi(bolt_conn, %Amishi{id: amishi_id}) do
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
@@ -53,7 +39,8 @@ defmodule Cotoami.CotoGraphService do
     |> Bolt.Sips.query!(query, %{uuid: amishi_id, created_by: amishi_id})
     |> build_graph_from_query_result(amishi_id, true)
   end
-  defp do_get_graph(bolt_conn, %Cotonoma{id: cotonoma_id, coto: %Coto{id: cotonoma_coto_id}}) do
+
+  def get_graph_in_cotonoma(bolt_conn, %Cotonoma{id: cotonoma_id, coto: %Coto{id: cotonoma_coto_id}}) do
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
@@ -70,6 +57,16 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
     |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonoma_id})
     |> build_graph_from_query_result(cotonoma_coto_id, true)
+  end
+
+  def get_graph_from_uuid(bolt_conn, uuid) do
+    bolt_conn
+    |> Bolt.Sips.query!(query_graph_from_uuid(), %{uuid: uuid})
+    |> build_graph_from_query_result(uuid, false)
+  end
+
+  def get_graph_from_cotonoma(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
   end
 
   # start with the uuid node and traverse HAS_A relationships
