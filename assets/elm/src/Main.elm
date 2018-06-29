@@ -28,13 +28,9 @@ main =
 
 init : Flags -> Location -> ( Model, Cmd Msg )
 init flags location =
-    let
-        route =
-            parseLocation location
-    in
-        ( initModel flags.seed route
-        , Cmd.batch
-            [ App.Ports.LocalStorage.getAllItems ()
-            , fetchSession
-            ]
-        )
+    ( initModel flags.seed (parseLocation location)
+    , Cmd.batch
+        [ App.Ports.LocalStorage.getAllItems ()
+        , fetchSession
+        ]
+    )
