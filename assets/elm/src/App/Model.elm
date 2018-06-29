@@ -138,9 +138,9 @@ cotonomatize cotoId maybeCotonomaKey model =
 
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
-    List.filterMap
-        (\cotoId -> getCoto cotoId model)
-        model.context.selection
+    model.context.selection
+        |> List.filterMap (\cotoId -> getCoto cotoId model)
+        |> List.reverse
 
 
 updateRecentCotonomas : Cotonoma -> Model -> Model

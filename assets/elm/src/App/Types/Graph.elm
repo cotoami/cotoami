@@ -237,12 +237,12 @@ connect_ amishiId start end graph =
 
 connectOneToMany_ : AmishiId -> Coto -> List Coto -> Graph -> Graph
 connectOneToMany_ amishiId startCoto endCotos graph =
-    List.foldr (connect_ amishiId startCoto) graph endCotos
+    List.foldl (connect_ amishiId startCoto) graph endCotos
 
 
 connectManyToOne_ : AmishiId -> List Coto -> Coto -> Graph -> Graph
 connectManyToOne_ amishiId startCotos endCoto graph =
-    List.foldr
+    List.foldl
         (\startCoto graph ->
             connect_ amishiId startCoto endCoto graph
         )
