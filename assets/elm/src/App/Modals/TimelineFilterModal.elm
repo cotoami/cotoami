@@ -45,7 +45,10 @@ modalConfig context filter =
     , content =
         div []
             [ excludePinnedGraphOption context filter
-            , excludePostsInCotonomaOption context filter
+            , if App.Types.Context.atHome context then
+                excludePostsInCotonomaOption context filter
+              else
+                Util.HtmlUtil.none
             ]
     , buttons = []
     }
@@ -64,7 +67,7 @@ excludePinnedGraphOption context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos connected from the pinned cotos" ]
+                    [ text "Hide cotos incorporated in the pinned documents" ]
                 ]
             ]
         ]
@@ -83,12 +86,11 @@ excludePostsInCotonomaOption context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos posted in a cotonoma (enabled only in "
+                    [ text "Hide cotos posted in a cotonoma other than "
                     , span [ class "my-home" ]
                         [ materialIcon "home" Nothing
                         , text "My Home"
                         ]
-                    , text ")"
                     ]
                 ]
             ]
