@@ -47,7 +47,6 @@ import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
 import App.Pushed
-import App.Ports.Storage
 import App.Ports.Graph
 
 
@@ -184,7 +183,6 @@ update msg model =
                             _ ->
                                 loadHome model
                    )
-                |> addCmd (\_ -> App.Ports.Storage.getAllItems ())
 
         SessionFetched (Err error) ->
             case error of

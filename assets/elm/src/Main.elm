@@ -8,6 +8,7 @@ import App.Update exposing (update)
 import App.Server.Session exposing (fetchSession)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
+import App.Ports.LocalStorage
 
 
 type alias Flags =
@@ -31,4 +32,9 @@ init flags location =
         route =
             parseLocation location
     in
-        initModel flags.seed route ! [ fetchSession ]
+        ( initModel flags.seed route
+        , Cmd.batch
+            [ App.Ports.LocalStorage.getAllItems ()
+            , fetchSession
+            ]
+        )

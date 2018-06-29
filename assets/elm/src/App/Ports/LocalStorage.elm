@@ -1,4 +1,4 @@
-port module App.Ports.Storage
+port module App.Ports.LocalStorage
     exposing
         ( setItem
         , getItem

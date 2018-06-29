@@ -11,7 +11,7 @@ import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg
 import App.Types.Context exposing (Context)
 import App.Types.Timeline exposing (Filter)
 import App.Server.Post
-import App.Ports.Storage
+import App.Ports.LocalStorage
 
 
 update : Context -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
@@ -30,7 +30,7 @@ cmdOnFilterUpdate_ : Context -> Filter -> Cmd AppMsg.Msg
 cmdOnFilterUpdate_ context filter =
     Cmd.batch
         [ App.Server.Post.fetchPostsByContext 0 filter context
-        , App.Ports.Storage.setItem
+        , App.Ports.LocalStorage.setItem
             ( "timeline.filter"
             , App.Types.Timeline.encodeFilter filter
             )

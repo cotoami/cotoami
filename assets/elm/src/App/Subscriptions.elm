@@ -6,7 +6,7 @@ import Phoenix.Socket as Socket exposing (Socket)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Channels exposing (globalChannel, cotonomaChannel)
-import App.Ports.Storage
+import App.Ports.LocalStorage
 import App.Ports.Graph
 
 
@@ -41,6 +41,6 @@ subscriptions model =
     Sub.batch
         [ Keyboard.downs KeyDown
         , phoenixChannels model
-        , App.Ports.Storage.receiveItem LocalStorageItemFetched
+        , App.Ports.LocalStorage.receiveItem LocalStorageItemFetched
         , App.Ports.Graph.nodeClicked OpenTraversal
         ]
