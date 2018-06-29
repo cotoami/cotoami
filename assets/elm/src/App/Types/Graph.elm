@@ -89,7 +89,7 @@ initGraph cotos rootConnections connections =
     , connections = connections
     , reachableCotoIds = Set.empty
     }
-        |> updateReachableCotoIds
+        |> updateReachableCotoIds_
 
 
 mergeSubgraph : Graph -> Graph -> Graph
@@ -98,7 +98,7 @@ mergeSubgraph subgraph graph =
         | cotos = Dict.union subgraph.cotos graph.cotos
         , connections = Dict.union subgraph.connections graph.connections
     }
-        |> updateReachableCotoIds
+        |> updateReachableCotoIds_
 
 
 pinned : CotoId -> Graph -> Bool
@@ -235,13 +235,13 @@ connect amishiId start end graph =
         { graph | cotos = cotos, connections = connections }
 
 
-connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany amishiId startCoto endCotos graph =
+connectOneToMany_ : AmishiId -> Coto -> List Coto -> Graph -> Graph
+connectOneToMany_ amishiId startCoto endCotos graph =
     List.foldr (connect amishiId startCoto) graph endCotos
 
 
-connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne amishiId startCotos endCoto graph =
+connectManyToOne_ : AmishiId -> List Coto -> Coto -> Graph -> Graph
+connectManyToOne_ amishiId startCotos endCoto graph =
     List.foldr
         (\startCoto graph ->
             connect amishiId startCoto endCoto graph
@@ -251,13 +251,13 @@ connectManyToOne amishiId startCotos endCoto graph =
 
 
 batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
-batchConnect amishiId direction cotos target graph =
+batchConnect amishiId direction cotos subject graph =
     case direction of
         Outbound ->
-            connectOneToMany amishiId target cotos graph
+            connectOneToMany_ amishiId subject cotos graph
 
         Inbound ->
-            connectManyToOne amishiId cotos target graph
+            connectManyToOne_ amishiId cotos subject graph
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
@@ -464,8 +464,8 @@ deleteInvalidConnections graph =
         { graph | rootConnections = rootConnections, connections = connections }
 
 
-updateReachableCotoIds : Graph -> Graph
-updateReachableCotoIds graph =
+updateReachableCotoIds_ : Graph -> Graph
+updateReachableCotoIds_ graph =
     let
         pinnedCotoIds =
             graph.rootConnections
