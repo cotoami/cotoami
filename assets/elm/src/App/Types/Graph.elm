@@ -267,27 +267,24 @@ batchConnect amishiId direction cotos target graph =
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( fromId, toId ) graph =
-    { graph
-        | connections = deleteConnection ( fromId, toId ) graph.connections
-    }
-
-
-deleteConnection : ( CotoId, CotoId ) -> ConnectionDict -> ConnectionDict
-deleteConnection ( fromId, toId ) connections =
-    connections
-        |> Dict.update
-            fromId
-            (\maybeConns ->
-                maybeConns
-                    |> Maybe.map (List.filter (\conn -> conn.end /= toId))
-                    |> Maybe.andThen
-                        (\conns ->
-                            if List.isEmpty conns then
-                                Nothing
-                            else
-                                Just conns
-                        )
-            )
+    let
+        connections =
+            Dict.update
+                fromId
+                (\maybeConns ->
+                    maybeConns
+                        |> Maybe.map (List.filter (\conn -> conn.end /= toId))
+                        |> Maybe.andThen
+                            (\conns ->
+                                if List.isEmpty conns then
+                                    Nothing
+                                else
+                                    Just conns
+                            )
+                )
+                graph.connections
+    in
+        { graph | connections = connections }
 
 
 removeCoto : CotoId -> Graph -> ( Graph, List Connection )
