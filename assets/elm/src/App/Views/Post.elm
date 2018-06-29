@@ -1,5 +1,6 @@
 module App.Views.Post exposing (view, postDivAttrs, headerDiv, authorDiv)
 
+import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -25,7 +26,7 @@ view context graph post =
             "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (postDivAttrs context elementId post)
+            (postDivAttrs context graph elementId post)
             [ div
                 [ class "coto-inner" ]
                 [ headerDiv context graph elementId post
@@ -44,8 +45,8 @@ view context graph post =
             ]
 
 
-postDivAttrs : Context -> String -> Post -> List (Attribute Msg)
-postDivAttrs context elementId post =
+postDivAttrs : Context -> Graph -> String -> Post -> List (Attribute Msg)
+postDivAttrs context graph elementId post =
     let
         classAttr =
             App.Views.Coto.cotoClassList context
@@ -54,6 +55,11 @@ postDivAttrs context elementId post =
                 [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "by-another-amishi", not (isAuthor context post) )
+                , ( "in-pinned-graph"
+                  , post.cotoId
+                        |> Maybe.map (\cotoId -> Set.member cotoId graph.reachableCotoIds)
+                        |> Maybe.withDefault False
+                  )
                 ]
 
         eventAttrs =

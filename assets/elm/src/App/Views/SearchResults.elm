@@ -73,7 +73,7 @@ postDiv context graph post =
             "search-result-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (App.Views.Post.postDivAttrs context elementId post)
+            (App.Views.Post.postDivAttrs context graph elementId post)
             [ div
                 [ class "coto-inner" ]
                 [ App.Views.Post.headerDiv context graph elementId post

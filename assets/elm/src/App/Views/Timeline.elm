@@ -92,6 +92,7 @@ timelineDiv context graph model =
             [ ( "timeline", True )
             , ( "stream", model.view == StreamView )
             , ( "tile", model.view == TileView )
+            , ( "exclude-pinned-graph", model.filter.excludePinnedGraph )
             ]
         ]
         [ moreButton model
