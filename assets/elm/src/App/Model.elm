@@ -271,7 +271,7 @@ deleteCoto : Coto -> Model -> Model
 deleteCoto coto model =
     { model
         | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-        , graph = App.Types.Graph.removeCoto coto.id model.graph |> \( graph, _ ) -> graph
+        , graph = App.Types.Graph.removeCoto coto.id model.graph
         , traversals = App.Types.Traversal.closeTraversal coto.id model.traversals
         , context = deleteSelection coto.id model.context
     }

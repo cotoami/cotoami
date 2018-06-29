@@ -292,39 +292,27 @@ disconnect ( fromId, toId ) graph =
             |> updateReachableCotoIds_
 
 
-removeCoto : CotoId -> Graph -> ( Graph, List Connection )
+removeCoto : CotoId -> Graph -> Graph
 removeCoto cotoId graph =
     let
-        ( remainedRoots, removedRoots ) =
+        rootConnections =
             graph.rootConnections
-                |> List.partition (\conn -> conn.end /= cotoId)
+                |> List.filter (\conn -> conn.end /= cotoId)
 
-        ( connectionDict1, startMissingConns ) =
-            case graph.connections |> Dict.get cotoId of
-                Nothing ->
-                    ( graph.connections, [] )
-
-                Just removedConns ->
-                    ( Dict.remove cotoId graph.connections, removedConns )
-
-        ( connectionDict2, endMissingConns ) =
-            Dict.foldl
-                (\startId children ( connDict, removedConns ) ->
-                    children
-                        |> List.partition (\conn -> conn.end /= cotoId)
-                        |> \( remained, removed ) ->
-                            ( connDict |> Dict.insert startId remained, removedConns ++ removed )
-                )
-                ( Dict.empty, [] )
-                connectionDict1
+        connections =
+            graph.connections
+                |> Dict.remove cotoId
+                |> Dict.map
+                    (\startId children ->
+                        List.filter (\conn -> conn.end /= cotoId) children
+                    )
     in
-        ( { graph
+        { graph
             | cotos = graph.cotos |> Dict.remove cotoId
-            , rootConnections = remainedRoots
-            , connections = connectionDict2
-          }
-        , removedRoots ++ startMissingConns ++ endMissingConns
-        )
+            , rootConnections = rootConnections
+            , connections = connections
+            , reachableCotoIds = graph.reachableCotoIds |> Set.remove cotoId
+        }
 
 
 updateConnections_ : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
