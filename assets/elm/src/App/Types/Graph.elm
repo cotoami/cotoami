@@ -237,12 +237,7 @@ connect amishiId start end graph =
 
 connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
 connectOneToMany amishiId startCoto endCotos graph =
-    List.foldr
-        (\endCoto graph ->
-            connect amishiId startCoto endCoto graph
-        )
-        graph
-        endCotos
+    List.foldr (connect amishiId startCoto) graph endCotos
 
 
 connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
