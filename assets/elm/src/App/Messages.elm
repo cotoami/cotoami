@@ -16,10 +16,12 @@ import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
+import App.Modals.TimelineFilterModalMsg
 
 
 type Msg
     = NoOp
+    | LocalStorageItemFetched ( String, Value )
     | KeyDown KeyCode
     | AppClick
     | OnLocationChange Location
@@ -59,6 +61,7 @@ type Msg
     | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
+    | OpenTimelineFilterModal
       --
       -- Coto
       --
@@ -100,7 +103,6 @@ type Msg
       --
     | PinOrUnpinCotonoma CotonomaKey Bool
     | CotonomaPinnedOrUnpinned (Result Http.Error String)
-    | LoadMorePostsInCotonoma CotonomaKey
       --
       -- Timeline
       --
@@ -157,3 +159,4 @@ type Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
+    | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg

@@ -15,8 +15,10 @@ import App.Messages
             , CotonomaPosted
             )
         )
+import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
+import App.Types.Timeline exposing (Filter)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
 
@@ -44,27 +46,51 @@ decodePaginatedPosts =
         |> required "total_pages" int
 
 
-fetchPosts : Int -> Cmd Msg
-fetchPosts pageIndex =
+fetchPosts : Int -> Filter -> Cmd Msg
+fetchPosts pageIndex filter =
     let
         url =
-            "/api/cotos?page=" ++ (toString pageIndex)
+            "/api/cotos"
+                ++ ("?page=" ++ (toString pageIndex))
+                ++ (if filter.excludePinnedGraph then
+                        "&exclude_pinned_graph=true"
+                    else
+                        ""
+                   )
+                ++ (if filter.excludePostsInCotonoma then
+                        "&exclude_posts_in_cotonoma=true"
+                    else
+                        ""
+                   )
     in
         Http.send PostsFetched <|
             Http.get url decodePaginatedPosts
 
 
-fetchCotonomaPosts : CotonomaKey -> Int -> Cmd Msg
-fetchCotonomaPosts key pageIndex =
+fetchCotonomaPosts : Int -> Filter -> CotonomaKey -> Cmd Msg
+fetchCotonomaPosts pageIndex filter key =
     let
         url =
-            "/api/cotonomas/" ++ key ++ "/cotos?page=" ++ (toString pageIndex)
+            ("/api/cotonomas/" ++ key ++ "/cotos")
+                ++ ("?page=" ++ (toString pageIndex))
+                ++ (if filter.excludePinnedGraph then
+                        "&exclude_pinned_graph=true"
+                    else
+                        ""
+                   )
     in
         Http.send CotonomaFetched <|
             Http.get url <|
                 Decode.map2 (,)
                     (Decode.field "cotonoma" decodeCotonoma)
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
+
+
+fetchPostsByContext : Int -> Filter -> Context -> Cmd Msg
+fetchPostsByContext pageIndex filter context =
+    context.cotonoma
+        |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
+        |> Maybe.withDefault (fetchPosts pageIndex filter)
 
 
 search : String -> Cmd Msg

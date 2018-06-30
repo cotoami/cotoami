@@ -7,6 +7,7 @@ import Http exposing (Error(..))
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Util.Modal as Modal
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.StringUtil exposing (isBlank)
 import Util.HttpUtil exposing (ClientId, httpPost)
 import App.Types.Context exposing (Context)
@@ -42,24 +43,23 @@ defaultModel =
     }
 
 
-update : Context -> ImportModalMsg.Msg -> Model -> ( Model, Cmd ImportModalMsg.Msg )
+update : Context -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         DataInput data ->
-            ( { model | data = data }, Cmd.none )
+            { model | data = data } |> withoutCmd
 
         ImportClick ->
             { model | requestProcessing = True }
-                ! [ importData context.clientId model.data ]
+                |> withCmd (\model -> importData context.clientId model.data)
 
         ImportDone (Ok results) ->
-            ( { model
+            { model
                 | data = ""
                 , requestProcessing = False
                 , requestStatus = Imported results
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         ImportDone (Err error) ->
             (case error of
@@ -70,16 +70,15 @@ update context msg model =
                     "Error"
             )
                 |> (\message ->
-                        ( { model
+                        { model
                             | requestProcessing = False
                             , requestStatus = Rejected message
-                          }
-                        , Cmd.none
-                        )
+                        }
                    )
+                |> withoutCmd
 
 
-importData : ClientId -> String -> Cmd ImportModalMsg.Msg
+importData : ClientId -> String -> Cmd AppMsg.Msg
 importData clientId data =
     let
         requestBody =
@@ -108,7 +107,9 @@ importData clientId data =
                     )
                 )
     in
-        Http.send ImportDone (httpPost "/api/import" clientId requestBody decodeResult)
+        Http.send
+            (AppMsg.ImportModalMsg << ImportDone)
+            (httpPost "/api/import" clientId requestBody decodeResult)
 
 
 view : Model -> Html AppMsg.Msg

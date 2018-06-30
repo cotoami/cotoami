@@ -1,6 +1,8 @@
 module App.Types.Timeline exposing (..)
 
 import Maybe
+import Json.Decode as Decode
+import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
@@ -13,9 +15,38 @@ type TimelineView
     | TileView
 
 
+type alias Filter =
+    { excludePinnedGraph : Bool
+    , excludePostsInCotonoma : Bool
+    }
+
+
+defaultFilter : Filter
+defaultFilter =
+    { excludePinnedGraph = False
+    , excludePostsInCotonoma = False
+    }
+
+
+decodeFilter : Decode.Decoder Filter
+decodeFilter =
+    Decode.map2 Filter
+        (Decode.field "excludePinnedGraph" Decode.bool)
+        (Decode.field "excludePostsInCotonoma" Decode.bool)
+
+
+encodeFilter : Filter -> Encode.Value
+encodeFilter filter =
+    Encode.object
+        [ ( "excludePinnedGraph", Encode.bool filter.excludePinnedGraph )
+        , ( "excludePostsInCotonoma", Encode.bool filter.excludePostsInCotonoma )
+        ]
+
+
 type alias Timeline =
     { hidden : Bool
     , view : TimelineView
+    , filter : Filter
     , editorOpen : Bool
     , newContent : String
     , editorCounter : Int
@@ -33,6 +64,7 @@ defaultTimeline : Timeline
 defaultTimeline =
     { hidden = False
     , view = StreamView
+    , filter = defaultFilter
     , editorOpen = False
     , newContent = ""
     , editorCounter = 0
@@ -56,6 +88,11 @@ switchView view timeline =
     { timeline | view = view }
 
 
+setFilter : Filter -> Timeline -> Timeline
+setFilter filter timeline =
+    { timeline | filter = filter }
+
+
 setScrollPosInitialized : Timeline -> Timeline
 setScrollPosInitialized timeline =
     { timeline | initializingScrollPos = False }
@@ -76,13 +113,17 @@ addPost post timeline =
     { timeline | posts = post :: timeline.posts }
 
 
-addPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
-addPaginatedPosts paginatedPosts timeline =
+setPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+setPaginatedPosts paginatedPosts timeline =
     { timeline
-        | posts = List.append timeline.posts paginatedPosts.posts
-        , loading = False
+        | posts =
+            if paginatedPosts.pageIndex == 0 then
+                paginatedPosts.posts
+            else
+                timeline.posts ++ paginatedPosts.posts
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
+        , loading = False
         , loadingMore = False
     }
 

@@ -11,12 +11,13 @@ import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context)
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Post exposing (Post)
-import App.Types.Graph exposing (..)
+import App.Types.Graph exposing (Direction(..), PinnedCotosView(..))
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
     exposing
@@ -38,13 +39,15 @@ import App.Server.Coto
 import App.Server.Graph
 import App.Commands
 import App.Channels exposing (Payload)
+import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
+import App.Modals.TimelineFilterModal
 import App.Pushed
-import App.Ports
+import App.Ports.Graph
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -53,9 +56,12 @@ update msg model =
         NoOp ->
             model |> withoutCmd
 
+        LocalStorageItemFetched item ->
+            App.Model.setConfig item model |> withoutCmd
+
         KeyDown keyCode ->
             if keyCode == Util.Keyboard.Key.escapeKeyCode then
-                ( closeActiveModal model, Cmd.none )
+                ( App.Modals.closeActiveModal model, Cmd.none )
             else if
                 (keyCode == Util.Keyboard.Key.nKeyCode)
                     && (List.isEmpty model.modals)
@@ -189,7 +195,7 @@ update msg model =
                                         model.signinModal
                                )
                             |> (\signinModal -> { model | signinModal = signinModal })
-                            |> openModal App.Model.SigninModal
+                            |> App.Modals.openModal SigninModal
                             |> withoutCmd
                     else
                         model |> withoutCmd
@@ -218,7 +224,7 @@ update msg model =
             { model
                 | context = App.Types.Context.setCotonoma (Just cotonoma) model.context
                 , navigationOpen = False
-                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmd
                     (\model ->
@@ -259,7 +265,7 @@ update msg model =
             model |> withoutCmd
 
         SubgraphFetched (Ok subgraph) ->
-            { model | graph = mergeSubgraph subgraph model.graph }
+            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
                 |> withCmd (\model -> renderGraph model)
 
         SubgraphFetched (Err _) ->
@@ -269,15 +275,15 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            closeActiveModal model |> withoutCmd
+            App.Modals.closeActiveModal model |> withoutCmd
 
         Confirm ->
-            closeActiveModal model
+            App.Modals.closeActiveModal model
                 |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
-                |> openModal App.Model.SigninModal
+                |> App.Modals.openModal SigninModal
                 |> withoutCmd
 
         OpenNewEditorModal ->
@@ -288,11 +294,11 @@ update msg model =
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> openModal App.Model.InviteModal
+                |> App.Modals.openModal InviteModal
                 |> withoutCmd
 
         OpenProfileModal ->
-            openModal App.Model.ProfileModal model |> withoutCmd
+            App.Modals.openModal ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
             openCotoMenuModal coto model
@@ -305,7 +311,7 @@ update msg model =
 
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> openModal EditorModal
+                |> App.Modals.openModal EditorModal
                 |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         OpenCotoModal coto ->
@@ -313,7 +319,12 @@ update msg model =
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> openModal App.Model.ImportModal
+                |> App.Modals.openModal ImportModal
+                |> withoutCmd
+
+        OpenTimelineFilterModal ->
+            model
+                |> App.Modals.openModal TimelineFilterModal
                 |> withoutCmd
 
         --
@@ -348,7 +359,7 @@ update msg model =
         OpenTraversal cotoId ->
             model
                 |> openTraversal cotoId
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -367,7 +378,7 @@ update msg model =
                 |> withoutCmd
 
         ConfirmDeleteCoto coto ->
-            (confirm
+            (App.Modals.confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
                     (DeleteCotoInServerSide coto)
@@ -378,7 +389,7 @@ update msg model =
 
         DeleteCotoInServerSide coto ->
             { model | timeline = setBeingDeleted coto model.timeline }
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -409,7 +420,7 @@ update msg model =
             model
                 |> updateCotoContent coto
                 |> updateRecentCotonomasByCoto coto
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
                         if coto.asCotonoma then
@@ -430,7 +441,7 @@ update msg model =
 
         ConfirmCotonomatize coto ->
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
-                (confirm
+                (App.Modals.confirm
                     (Confirmation
                         ("You are about to promote this coto to a Cotonoma "
                             ++ "to discuss with others about: '"
@@ -444,7 +455,7 @@ update msg model =
                     |> withoutCmd
             else
                 { model | editorModal = App.Modals.EditorModal.modelForEditToCotonomatize coto }
-                    |> openModal EditorModal
+                    |> App.Modals.openModal EditorModal
                     |> withoutCmd
 
         Cotonomatize cotoId ->
@@ -453,7 +464,7 @@ update msg model =
         Cotonomatized (Ok coto) ->
             model
                 |> App.Model.cotonomatize coto.id coto.cotonomaKey
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -468,14 +479,14 @@ update msg model =
                 |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.modelForEdit cotoMenuModal.coto)
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
                 |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
-                |> Maybe.map (openModal EditorModal)
+                |> Maybe.map (App.Modals.openModal EditorModal)
                 |> Maybe.withDefault model
                 |> withoutCmd
 
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = pinCoto session.id coto model.graph }
+                    { model | graph = App.Types.Graph.pinCoto session.id coto model.graph }
                         |> withCmd
                             (\model ->
                                 Cmd.batch
@@ -493,7 +504,7 @@ update msg model =
                 |> Maybe.withDefault (model |> withoutCmd)
 
         PinCotoToMyHome cotoId ->
-            clearModals model
+            App.Modals.clearModals model
                 |> withCmd (\model -> App.Server.Graph.pinCotos model.context.clientId Nothing [ cotoId ])
 
         CotoPinned (Ok _) ->
@@ -503,7 +514,7 @@ update msg model =
             model |> withoutCmd
 
         ConfirmUnpinCoto cotoId ->
-            (confirm
+            (App.Modals.confirm
                 (Confirmation
                     "Are you sure you want to unpin this coto?"
                     (UnpinCoto cotoId)
@@ -513,7 +524,7 @@ update msg model =
                 |> withoutCmd
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> unpinCoto cotoId }
+            { model | graph = model.graph |> App.Types.Graph.unpinCoto cotoId }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.unpinCoto
@@ -535,7 +546,7 @@ update msg model =
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
             }
-                |> openModal App.Model.ConnectModal
+                |> App.Modals.openModal ConnectModal
                 |> withCmd (\_ -> App.Commands.focus "connect-modal-primary-button" NoOp)
 
         ReverseDirection ->
@@ -552,7 +563,7 @@ update msg model =
 
         Connect target objects direction ->
             App.Model.connect direction objects target model
-                |> closeModal App.Model.ConnectModal
+                |> App.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
@@ -570,7 +581,7 @@ update msg model =
             model |> withoutCmd
 
         ConfirmDeleteConnection conn ->
-            (confirm
+            (App.Modals.confirm
                 (Confirmation
                     "Are you sure you want to delete this connection?"
                     (DeleteConnection conn)
@@ -580,7 +591,7 @@ update msg model =
                 |> withoutCmd
 
         DeleteConnection ( startId, endId ) ->
-            { model | graph = disconnect ( startId, endId ) model.graph }
+            { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.disconnect
@@ -637,20 +648,11 @@ update msg model =
 
         CotonomaPinnedOrUnpinned (Ok _) ->
             { model | cotonomasLoading = True }
-                |> closeModal App.Model.CotoMenuModal
+                |> App.Modals.closeModal CotoMenuModal
                 |> withCmd (\_ -> App.Server.Cotonoma.fetchCotonomas)
 
         CotonomaPinnedOrUnpinned (Err _) ->
             model |> withoutCmd
-
-        LoadMorePostsInCotonoma cotonomaKey ->
-            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> withCmd
-                    (\model ->
-                        App.Server.Post.fetchCotonomaPosts
-                            cotonomaKey
-                            (App.Types.Timeline.nextPageIndex model.timeline)
-                    )
 
         --
         -- Timeline
@@ -662,7 +664,7 @@ update msg model =
         PostsFetched (Ok paginatedPosts) ->
             { model
                 | context = App.Types.Context.setCotonoma Nothing model.context
-                , timeline = App.Types.Timeline.addPaginatedPosts paginatedPosts model.timeline
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmd
                     (\model ->
@@ -679,12 +681,19 @@ update msg model =
             { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
                 |> withCmd
                     (\model ->
-                        App.Server.Post.fetchPosts
+                        App.Server.Post.fetchPostsByContext
                             (App.Types.Timeline.nextPageIndex model.timeline)
+                            model.timeline.filter
+                            model.context
                     )
 
         ImageLoaded ->
-            ( model, App.Commands.scrollTimelineToBottom NoOp )
+            ( model
+            , if model.timeline.pageIndex == 0 then
+                App.Commands.scrollTimelineToBottom NoOp
+              else
+                Cmd.none
+            )
 
         EditorFocus ->
             { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
@@ -711,7 +720,7 @@ update msg model =
         Posted postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> updateRecentCotonomasByCoto response
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withoutCmd
 
         Posted postId (Err _) ->
@@ -722,7 +731,7 @@ update msg model =
 
         PostAndConnectToSelection content summary ->
             model
-                |> closeModal App.Model.ConnectModal
+                |> App.Modals.closeModal ConnectModal
                 |> postAndConnectToSelection
                     (Just model.connectingDirection)
                     summary
@@ -730,7 +739,7 @@ update msg model =
 
         PostedAndConnectToSelection postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> clearModals
+                |> App.Modals.clearModals
                 |> connectPostToSelection model.context.clientId response
 
         PostedAndConnectToSelection postId (Err _) ->
@@ -738,7 +747,7 @@ update msg model =
 
         PostedAndConnectToCoto postId coto (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> clearModals
+                |> App.Modals.clearModals
                 |> connectPostToCoto model.context.clientId coto response
 
         PostedAndConnectToCoto postId coto (Err _) ->
@@ -749,7 +758,7 @@ update msg model =
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
             }
-                |> clearModals
+                |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -788,7 +797,7 @@ update msg model =
         ResizeGraph ->
             ( model
             , if model.pinnedCotosView == GraphView then
-                App.Ports.resizeGraph ()
+                App.Ports.Graph.resizeGraph ()
               else
                 Cmd.none
             )
@@ -929,10 +938,7 @@ update msg model =
         --
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
-                |> (\( modal, subCmd ) ->
-                        { model | signinModal = modal }
-                            |> withCmd (\_ -> Cmd.map SigninModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model.context subMsg model.editorModal
@@ -956,32 +962,18 @@ update msg model =
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
-                |> (\( modal, subCmd ) ->
-                        { model | inviteModal = modal }
-                            |> withCmd (\_ -> Cmd.map InviteModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
 
         ImportModalMsg subMsg ->
             App.Modals.ImportModal.update model.context subMsg model.importModal
-                |> (\( modal, subCmd ) ->
-                        { model | importModal = modal }
-                            |> withCmd (\_ -> Cmd.map ImportModalMsg subCmd)
-                   )
+                |> Tuple.mapFirst (\modal -> { model | importModal = modal })
 
-
-withCmd : (Model -> Cmd msg) -> Model -> ( Model, Cmd msg )
-withCmd createCmd model =
-    ( model, createCmd model )
-
-
-withoutCmd : Model -> ( Model, Cmd msg )
-withoutCmd model =
-    ( model, Cmd.none )
-
-
-addCmd : (Model -> Cmd msg) -> ( Model, Cmd msg ) -> ( Model, Cmd msg )
-addCmd createCmd ( model, cmd ) =
-    ( model, Cmd.batch [ cmd, createCmd model ] )
+        TimelineFilterModalMsg subMsg ->
+            App.Modals.TimelineFilterModal.update model.context subMsg model.timeline.filter
+                |> Tuple.mapFirst
+                    (\filter ->
+                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
+                    )
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
@@ -994,7 +986,7 @@ openNewEditor source model =
     ( { model
         | editorModal = App.Modals.EditorModal.modelForNew source
       }
-        |> openModal EditorModal
+        |> App.Modals.openModal EditorModal
     , App.Commands.focus "editor-modal-content-input" NoOp
     )
 
@@ -1010,17 +1002,17 @@ loadHome model =
         , subCotonomas = []
         , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
-        , graph = defaultGraph
+        , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
         , navigationOpen = False
       }
     , Cmd.batch
-        [ App.Server.Post.fetchPosts 0
+        [ App.Server.Post.fetchPosts 0 model.timeline.filter
         , App.Server.Cotonoma.fetchCotonomas
         , App.Server.Graph.fetchGraph Nothing
-        , App.Ports.destroyGraph ()
+        , App.Ports.Graph.destroyGraph ()
         ]
     )
 
@@ -1040,7 +1032,7 @@ loadCotonoma key model =
         , cotonomasLoading = True
         , timeline = App.Types.Timeline.setLoading model.timeline
         , connectingTarget = Nothing
-        , graph = defaultGraph
+        , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeViewOnMobile = TimelineView
@@ -1048,9 +1040,9 @@ loadCotonoma key model =
       }
     , Cmd.batch
         [ App.Server.Cotonoma.fetchCotonomas
-        , App.Server.Post.fetchCotonomaPosts key 0
+        , App.Server.Post.fetchCotonomaPosts 0 model.timeline.filter key
         , App.Server.Graph.fetchGraph (Just key)
-        , App.Ports.destroyGraph ()
+        , App.Ports.Graph.destroyGraph ()
         ]
     )
 
@@ -1290,7 +1282,7 @@ makeReorderCmd maybeParentId model =
 renderGraph : Model -> Cmd Msg
 renderGraph model =
     if model.pinnedCotosView == GraphView then
-        App.Ports.renderCotoGraph model.context.cotonoma model.graph
+        App.Ports.Graph.renderCotoGraph model.context.cotonoma model.graph
     else
         Cmd.none
 

@@ -47,3 +47,47 @@ elmApp.ports.destroyGraph.subscribe(() => {
   Cytoscape.destroy()
 })
 
+elmApp.ports.setItem.subscribe(([key, value]) => {
+  if (value === null) {
+    localStorage.removeItem(key)
+  } 
+  else {
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+})
+
+elmApp.ports.getItem.subscribe((key) => {
+  var value = null
+  try {
+    value = JSON.parse(localStorage.getItem(key))
+  } 
+  catch (e) {}
+  elmApp.ports.receiveItem.send([key, value])
+})
+
+elmApp.ports.getAllItems.subscribe(() => {
+  for (var i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    var value = null
+    try {
+      value = JSON.parse(localStorage.getItem(key))
+    } 
+    catch (e) {}
+    elmApp.ports.receiveItem.send([key, value])
+  }
+})
+
+elmApp.ports.getItem.clearStorage.subscribe((prefix) => {
+  if (prefix) {
+    for (var i = localStorage.length - 1; i >= 0; --i) {
+      var key = localStorage.key(i)
+      if (key && key.startsWith(prefix)) {
+        localStorage.removeItem(key)
+      }
+    }
+  } 
+  else {
+    localStorage.clear()
+  }
+})
+

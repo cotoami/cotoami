@@ -13,6 +13,7 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Util.StringUtil exposing (validateEmail)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.Modal as Modal
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
@@ -46,41 +47,41 @@ setSignupEnabled signupEnabled model =
     { model | signupEnabled = signupEnabled }
 
 
-update : SigninModalMsg.Msg -> Model -> ( Model, Cmd SigninModalMsg.Msg )
+update : SigninModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         EmailInput content ->
-            ( { model | email = content }, Cmd.none )
+            { model | email = content } |> withoutCmd
 
         RequestClick ->
             { model | requestProcessing = True }
-                ! [ requestSignin model.email ]
+                |> withCmd (\model -> requestSignin model.email)
 
         RequestDone (Ok _) ->
-            ( { model
+            { model
                 | email = ""
                 , requestProcessing = False
                 , requestStatus = Approved
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
         RequestDone (Err _) ->
-            ( { model
+            { model
                 | requestProcessing = False
                 , requestStatus = Rejected
-              }
-            , Cmd.none
-            )
+            }
+                |> withoutCmd
 
 
-requestSignin : String -> Cmd SigninModalMsg.Msg
+requestSignin : String -> Cmd AppMsg.Msg
 requestSignin email =
     let
         url =
             "/api/public/signin/request/" ++ email
     in
-        Http.send RequestDone (Http.get url Decode.string)
+        Http.send
+            (AppMsg.SigninModalMsg << RequestDone)
+            (Http.get url Decode.string)
 
 
 view : Model -> Html AppMsg.Msg
