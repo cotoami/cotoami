@@ -688,7 +688,12 @@ update msg model =
                     )
 
         ImageLoaded ->
-            ( model, App.Commands.scrollTimelineToBottom NoOp )
+            ( model
+            , if model.timeline.pageIndex == 0 then
+                App.Commands.scrollTimelineToBottom NoOp
+              else
+                Cmd.none
+            )
 
         EditorFocus ->
             { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
