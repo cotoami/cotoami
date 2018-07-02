@@ -65,8 +65,8 @@ defmodule Cotoami.Cotonoma do
       graph_revision: coto_json["cotonoma_graph_rev"],
       coto_id: coto_json["id"],
       owner_id: amishi_id,
-      inserted_at: unixtime_to_datetime!(coto_json["inserted_at"]),
-      updated_at: unixtime_to_datetime!(coto_json["updated_at"])
+      inserted_at: unixtime_to_datetime!(coto_json["cotonoma_inserted_at"] || coto_json["inserted_at"]),
+      updated_at: unixtime_to_datetime!(coto_json["cotonoma_updated_at"] || coto_json["updated_at"])
     }
     struct
     |> cast(data, Map.keys(data))

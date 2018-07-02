@@ -43,13 +43,21 @@ defmodule CotoamiWeb.CotoView do
       amishi: amishi_as_json,
       posted_in: posted_in_as_json,
       as_cotonoma: coto.as_cotonoma,
+      inserted_at: coto.inserted_at |> to_unixtime(),
+      updated_at: coto.updated_at |> to_unixtime(),
+
+      # as_cotonoma
       cotonoma_id: Map.get(cotonoma, :id),
       cotonoma_key: Map.get(cotonoma, :key),
       cotonoma_pinned: Map.get(cotonoma, :pinned),
       cotonoma_timeline_rev: Map.get(cotonoma, :timeline_revision),
       cotonoma_graph_rev: Map.get(cotonoma, :graph_revision),
-      inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
+      cotonoma_inserted_at: Map.get(cotonoma, :inserted_at) |> to_unixtime(),
+      cotonoma_updated_at: Map.get(cotonoma, :updated_at) |> to_unixtime()
     }
+  end
+
+  defp to_unixtime(datetime) do
+    if datetime, do: DateTime.to_unix(datetime, :millisecond), else: nil
   end
 end
