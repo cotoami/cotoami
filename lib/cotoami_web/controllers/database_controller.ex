@@ -84,29 +84,36 @@ defmodule CotoamiWeb.DatabaseController do
         fn(coto_json, {pendings, results}) ->
           # check if the posted_in cotonoma exists before importing a coto_json
           posted_in_id = coto_json["posted_in"]["id"]
-          if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
-            if Enum.any?(cotos_json, &(&1["cotonoma_id"] == posted_in_id)) do
-              # put this coto_json in pending until the posted_in cotonoma is imported
+          if cotonoma_missing?(posted_in_id) do
+            if cotos_json_contains_cotonoma?(cotos_json, posted_in_id) do
+              # [pending] put this coto_json in pending until the posted_in cotonoma is imported
               {[coto_json | pendings], results}
             else
-              # reject this coto_json because the posted_in cotonoma is not found in
-              # both the db and import data
+              # [reject] reject this coto_json because the posted_in cotonoma is 
+              # not found in both the db and import data
               reject = %{id: coto_json["id"], reason: "cotonoma not found: #{posted_in_id}"}
               {inserts, updates, cotonomas, rejected} = results
               {pendings, {inserts, updates, cotonomas, [reject | rejected]}}
             end
           else
+            # [import]
             {pendings, import_coto(coto_json, results, amishi)}
           end
         end
       )
 
     if Enum.empty?(pendings) do
+      # done!
       results
     else
+      # retry pending data
       import_cotos(pendings, results, amishi)
     end
   end
+
+  defp cotonoma_missing?(id), do: id && Repo.get(Cotonoma, id) == nil
+  defp cotos_json_contains_cotonoma?(cotos_json, id),
+    do: Enum.any?(cotos_json, &(&1["cotonoma_id"] == id))
 
   defp import_coto(
     coto_json,
