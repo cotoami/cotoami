@@ -149,11 +149,10 @@ defmodule CotoamiWeb.DatabaseController do
     cotonomas
   end
   defp import_cotonoma(
-    %{"as_cotonoma" => true} = coto_json,
+    %{"as_cotonoma" => true, "cotonoma_id" => cotonoma_id} = coto_json,
     cotonomas,
     %Amishi{} = amishi
   ) do
-    cotonoma_id = coto_json["cotonoma_id"]
     changeset =
       case Repo.get(Cotonoma, cotonoma_id) do
         nil -> Cotonoma.changeset_to_import(%Cotonoma{}, coto_json, amishi)
