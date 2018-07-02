@@ -53,6 +53,7 @@ defmodule Cotoami.Coto do
     |> cast(data, [
       :id,
       :content,
+      :summary,
       :as_cotonoma,
       :posted_in_id,
       :amishi_id,
