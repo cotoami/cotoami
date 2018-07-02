@@ -39,12 +39,8 @@ defmodule CotoamiWeb.DatabaseController do
             "amishi" => %{"id" => _} = amishi_json
           } ->
             try do
-              case import_by_amishi(cotos_json, connections_json, amishi_json, amishi) do
-                {:ok, result} ->
-                  json conn, result
-                _ ->
-                  send_resp(conn, :internal_server_error, "Transaction error.")
-              end
+              result = import_by_amishi(cotos_json, connections_json, amishi_json, amishi)
+              json conn, result
             rescue
               e -> 
                 Logger.error "Import error: #{inspect e}"
@@ -60,24 +56,22 @@ defmodule CotoamiWeb.DatabaseController do
   end
 
   defp import_by_amishi(cotos_json, connections_json, amishi_json, %Amishi{} = amishi) do
-    Repo.transaction(fn ->
-      {coto_inserts, coto_updates, cotonomas, coto_rejected} =
-        import_cotos(cotos_json, {0, 0, 0, []}, amishi)
-      {connection_ok, connection_rejected} =
-        import_connections(connections_json, amishi_json, {0, []}, amishi)
-      %{
-        cotos: %{
-          inserts: coto_inserts,
-          updates: coto_updates,
-          cotonomas: cotonomas,
-          rejected: coto_rejected
-        },
-        connections: %{
-          ok: connection_ok,
-          rejected: connection_rejected
-        }
+    {coto_inserts, coto_updates, cotonomas, coto_rejected} =
+      import_cotos(cotos_json, {0, 0, 0, []}, amishi)
+    {connection_ok, connection_rejected} =
+      import_connections(connections_json, amishi_json, {0, []}, amishi)
+    %{
+      cotos: %{
+        inserts: coto_inserts,
+        updates: coto_updates,
+        cotonomas: cotonomas,
+        rejected: coto_rejected
+      },
+      connections: %{
+        ok: connection_ok,
+        rejected: connection_rejected
       }
-    end)
+    }
   end
 
   defp import_cotos(
