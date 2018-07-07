@@ -119,7 +119,7 @@ There should be a line like `You can check sign-up/in mails at <url>` in the out
 You can access the test mail server via the `<url>` to check sign-up/in mails.
 
 
-### Special Thanks
+## Special Thanks
 
 * Sponsored by [UNIVA Paycast](https://www.univapay.com) until Aug 2018.
 * The logo is designed by [@reallinfo](https://github.com/reallinfo)
