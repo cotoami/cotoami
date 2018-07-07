@@ -1,5 +1,5 @@
-Cotoami
-=======
+<p align="center"><img src="assets/static/images/logo/vertical.png" alt="cotoami" height="200px"></p>
+
 
 [![CircleCI](https://circleci.com/gh/cotoami/cotoami.svg?style=svg)](https://circleci.com/gh/cotoami/cotoami)
 
