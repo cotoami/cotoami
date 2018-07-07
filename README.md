@@ -5,12 +5,12 @@
 
 Cotoami (言編み・言網) is a platform where people can weave a large network of knowledge from tiny ideas.
 
-Cotoami is an open source project, sponsored by [UNIVA Paycast](https://www.univapay.com) under the Apache 2.0 Licence.
-
 
 ## Screenshots
 
-![](docs/images/screenshot-pc.png)
+![](docs/images/timeline-and-pinned-docs.png)
+
+![](docs/images/timeline-and-graph.png)
 
 ![](docs/images/screenshot-mobile.png)
 
@@ -91,18 +91,19 @@ Cotonoma or connected to other Cotos.
 ## Requirements
 
 * Node.js 5.0.0 or greater
-* Elixir 1.3.x
+* Elixir 1.5.x or greater
     * https://elixir-lang.org/install.html
-* Phoenix 1.2.x
+* Phoenix 1.3.x
     * http://www.phoenixframework.org/docs/installation
 
 
 ## Run application on localhost
 
-If you have a Docker environment running (`docker info` outputs some info), just execute the following command:
+If you have a Docker environment running (`docker info` outputs some info), just execute the following commands:
 
 ```
-$ ./launch-on-local.sh
+$ ./run-backend-containers.sh
+$ mix phx.server
 ...
 [info] Running Cotoami.Endpoint with Cowboy using http://localhost:4000
 [info] Running migrations on start...
@@ -116,6 +117,13 @@ Now you can visit `localhost:4000` from your browser.
 
 There should be a line like `You can check sign-up/in mails at <url>` in the output log.
 You can access the test mail server via the `<url>` to check sign-up/in mails.
+
+
+### Special Thanks
+
+* Sponsored by [UNIVA Paycast](https://www.univapay.com) until Aug 2018.
+* The logo is designed by [@reallinfo](https://github.com/reallinfo)
+    * https://github.com/cotoami/cotoami/pull/107
 
 ## License
 
