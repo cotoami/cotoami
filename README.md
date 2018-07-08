@@ -102,7 +102,7 @@ Cotonoma or connected to other Cotos.
 If you have a Docker environment running (`docker info` outputs some info), just execute the following commands:
 
 ```
-$ ./run-backend-containers.sh
+$ source run-backend-containers.sh
 $ mix phx.server
 ...
 [info] Running Cotoami.Endpoint with Cowboy using http://localhost:4000
