@@ -88,14 +88,6 @@ defmodule Cotoami.Cotonoma do
       where: coto.posted_in_id == ^cotonoma_id
   end
 
-  def exclude_empty_by_others(query, amishi_id) do
-    from c in query,
-      where:
-        c.timeline_revision > 0 or
-        c.graph_revision > 0 or
-        c.owner_id == ^amishi_id
-  end
-
   def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
     %{target | coto: from.coto, owner: from.owner}
   end
