@@ -872,6 +872,17 @@ update msg model =
         --
         -- Pushed
         --
+        DeletePushed payload ->
+            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+                |> addCmd renderGraph
+
+        PostPushed payload ->
+            App.Pushed.handle
+                App.Server.Post.decodePost
+                App.Pushed.handlePost
+                payload
+                model
+
         UpdatePushed payload ->
             (App.Pushed.handle
                 App.Server.Coto.decodeCoto
@@ -879,10 +890,6 @@ update msg model =
                 payload
                 model
             )
-                |> addCmd renderGraph
-
-        DeletePushed payload ->
-            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
                 |> addCmd renderGraph
 
         CotonomatizePushed payload ->
@@ -916,13 +923,6 @@ update msg model =
             App.Pushed.handle
                 App.Pushed.decodeReorderPayloadBody
                 App.Pushed.handleReorder
-                payload
-                model
-
-        PostPushed payload ->
-            App.Pushed.handle
-                App.Server.Post.decodePost
-                App.Pushed.handlePost
                 payload
                 model
 
