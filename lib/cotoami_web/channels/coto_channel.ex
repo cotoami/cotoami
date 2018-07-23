@@ -5,7 +5,7 @@ defmodule CotoamiWeb.CotoChannel do
 
   use CotoamiWeb, :channel
 
-  def join("cotos:" <> coto_id, _params, socket) do
+  def join("cotos:" <> _coto_id, _params, socket) do
     {:ok, socket}
   end
 end

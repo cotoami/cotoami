@@ -47,13 +47,6 @@ handleDelete payload model =
         |> \model -> ( model, Cmd.none )
 
 
-handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
-handleCotonomatize payload model =
-    ( App.Model.cotonomatize payload.body.cotoId (Just payload.body.key) model
-    , Cmd.none
-    )
-
-
 handleCotonoma : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonoma payload model =
     ( App.Model.updateRecentCotonomas payload.body model
@@ -211,3 +204,10 @@ handleUpdate payload model =
         |> App.Model.updateCotoContent payload.body
         |> App.Model.updateRecentCotonomasByCoto payload.body
         |> \model -> ( model, Cmd.none )
+
+
+handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
+handleCotonomatize payload model =
+    ( App.Model.cotonomatize payload.body.cotoId (Just payload.body.key) model
+    , Cmd.none
+    )
