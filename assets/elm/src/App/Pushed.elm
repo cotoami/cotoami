@@ -113,35 +113,6 @@ decodeReorderPayloadBody =
         (Decode.field "endIds" (Decode.list Decode.string))
 
 
-handleReorder : Payload ReorderPayloadBody -> Model -> ( Model, Cmd Msg )
-handleReorder payload model =
-    let
-        -- Reorder connections
-        graph1 =
-            App.Types.Graph.reorder
-                (Just payload.body.startId)
-                payload.body.endIds
-                model.graph
-
-        -- Reorder pinned cotos if the start coto is the current cotonoma
-        graph2 =
-            model.context.cotonoma
-                |> Maybe.andThen
-                    (\cotonoma ->
-                        if cotonoma.cotoId == payload.body.startId then
-                            Just <|
-                                App.Types.Graph.reorder
-                                    Nothing
-                                    payload.body.endIds
-                                    graph1
-                        else
-                            Nothing
-                    )
-                |> Maybe.withDefault graph1
-    in
-        ( { model | graph = graph2 }, Cmd.none )
-
-
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
@@ -197,6 +168,35 @@ handleConnect payload model =
                                 App.Types.Graph.pinCoto
                                     payload.amishi.id
                                     payload.body.end
+                                    graph1
+                        else
+                            Nothing
+                    )
+                |> Maybe.withDefault graph1
+    in
+        ( { model | graph = graph2 }, Cmd.none )
+
+
+handleReorder : Payload ReorderPayloadBody -> Model -> ( Model, Cmd Msg )
+handleReorder payload model =
+    let
+        -- Reorder connections
+        graph1 =
+            App.Types.Graph.reorder
+                (Just payload.body.startId)
+                payload.body.endIds
+                model.graph
+
+        -- Reorder pinned cotos if the start coto is the current cotonoma
+        graph2 =
+            model.context.cotonoma
+                |> Maybe.andThen
+                    (\cotonoma ->
+                        if cotonoma.cotoId == payload.body.startId then
+                            Just <|
+                                App.Types.Graph.reorder
+                                    Nothing
+                                    payload.body.endIds
                                     graph1
                         else
                             Nothing

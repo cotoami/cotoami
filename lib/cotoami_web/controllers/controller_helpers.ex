@@ -41,11 +41,6 @@ defmodule CotoamiWeb.ControllerHelpers do
     |> broadcast("global", "disconnect", amishi, client_id)
   end
 
-  def broadcast_reorder(start_id, end_ids, %Amishi{} = amishi, client_id) do
-    %{startId: start_id, endIds: end_ids}
-    |> broadcast("global", "reorder", amishi, client_id)
-  end
-
   #
   # Channel: 'cotonomas:*'
   #
@@ -78,5 +73,10 @@ defmodule CotoamiWeb.ControllerHelpers do
       end: Phoenix.View.render_one(end_coto, CotoamiWeb.CotoView, "coto.json")
     }
     |> broadcast("cotos:#{start_coto.id}", "connect", amishi, client_id)
+  end
+
+  def broadcast_reorder(start_id, end_ids, %Amishi{} = amishi, client_id) do
+    %{startId: start_id, endIds: end_ids}
+    |> broadcast("cotos:#{start_id}", "reorder", amishi, client_id)
   end
 end

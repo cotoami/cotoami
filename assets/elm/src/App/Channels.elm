@@ -19,8 +19,6 @@ globalChannel =
             (\payload -> DeletePushed payload)
         |> Channel.on "disconnect"
             (\payload -> DisconnectPushed payload)
-        |> Channel.on "reorder"
-            (\payload -> ReorderPushed payload)
 
 
 cotonomaChannel : CotonomaKey -> Channel Msg
@@ -47,6 +45,8 @@ cotoChannels cotoIds =
                         (\payload -> CotonomatizePushed payload)
                     |> Channel.on "connect"
                         (\payload -> ConnectPushed payload)
+                    |> Channel.on "reorder"
+                        (\payload -> ReorderPushed payload)
             )
 
 
