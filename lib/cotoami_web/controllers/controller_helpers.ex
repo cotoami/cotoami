@@ -31,12 +31,6 @@ defmodule CotoamiWeb.ControllerHelpers do
   # Channel: 'global'
   #
 
-  def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
-    coto
-    |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
-    |> broadcast("global", "update", amishi, client_id)
-  end
-
   def broadcast_delete(coto_id, %Amishi{} = amishi, client_id) do
     coto_id
     |> broadcast("global", "delete", amishi, client_id)
@@ -80,5 +74,15 @@ defmodule CotoamiWeb.ControllerHelpers do
     coto
     |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
     |> broadcast("cotonomas:#{cotonoma_key}", "post", amishi, client_id)
+  end
+
+  #
+  # Channel: 'coto:*'
+  #
+
+  def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
+    coto
+    |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
+    |> broadcast("cotos:#{coto.id}", "update", amishi, client_id)
   end
 end

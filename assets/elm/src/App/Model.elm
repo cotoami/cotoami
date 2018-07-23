@@ -1,6 +1,7 @@
 module App.Model exposing (..)
 
 import Dict
+import Set exposing (Set)
 import Date
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
@@ -124,6 +125,20 @@ getCoto cotoId model =
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
         ]
+
+
+getCotoIds : Model -> Set CotoId
+getCotoIds model =
+    Set.empty
+        |> Set.union
+            (model.timeline.posts
+                |> List.filterMap (\post -> post.cotoId)
+                |> Set.fromList
+            )
+        |> Set.union
+            (Dict.keys model.graph.cotos
+                |> Set.fromList
+            )
 
 
 getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto

@@ -39,14 +39,6 @@ handle payloadDecoder handler payload model =
             Debug.log err ( model, Cmd.none )
 
 
-handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
-handleUpdate payload model =
-    model
-        |> App.Model.updateCotoContent payload.body
-        |> App.Model.updateRecentCotonomasByCoto payload.body
-        |> \model -> ( model, Cmd.none )
-
-
 handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
 handleDelete payload model =
     App.Model.getCoto payload.body model
@@ -211,3 +203,11 @@ handlePost payload model =
       else
         App.Commands.scrollTimelineToBottom NoOp
     )
+
+
+handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
+handleUpdate payload model =
+    model
+        |> App.Model.updateCotoContent payload.body
+        |> App.Model.updateRecentCotonomasByCoto payload.body
+        |> \model -> ( model, Cmd.none )
