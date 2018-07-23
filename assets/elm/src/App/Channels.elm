@@ -17,8 +17,6 @@ globalChannel =
     Channel.init ("global")
         |> Channel.on "delete"
             (\payload -> DeletePushed payload)
-        |> Channel.on "connect"
-            (\payload -> ConnectPushed payload)
         |> Channel.on "disconnect"
             (\payload -> DisconnectPushed payload)
         |> Channel.on "reorder"
@@ -47,6 +45,8 @@ cotoChannels cotoIds =
                         (\payload -> UpdatePushed payload)
                     |> Channel.on "cotonomatize"
                         (\payload -> CotonomatizePushed payload)
+                    |> Channel.on "connect"
+                        (\payload -> ConnectPushed payload)
             )
 
 

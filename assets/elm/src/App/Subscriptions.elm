@@ -28,7 +28,7 @@ phoenixChannelsInSession : Model -> Session -> Sub Msg
 phoenixChannelsInSession model session =
     Phoenix.connect
         (socket session.token session.websocketUrl)
-        (App.Channels.cotoChannels (App.Model.getCotoIds model)
+        (App.Channels.cotoChannels (App.Model.getCotoIdsToWatch model)
             |> (::) App.Channels.globalChannel
             |> (\channels ->
                     model.context.cotonoma

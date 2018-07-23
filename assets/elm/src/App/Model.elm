@@ -127,18 +127,17 @@ getCoto cotoId model =
         ]
 
 
-getCotoIds : Model -> Set CotoId
-getCotoIds model =
-    Set.empty
-        |> Set.union
-            (model.timeline.posts
-                |> List.filterMap (\post -> post.cotoId)
-                |> Set.fromList
+getCotoIdsToWatch : Model -> Set CotoId
+getCotoIdsToWatch model =
+    model.timeline.posts
+        |> List.filterMap (\post -> post.cotoId)
+        |> List.append (Dict.keys model.graph.cotos)
+        |> List.append
+            (model.context.cotonoma
+                |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
+                |> Maybe.withDefault []
             )
-        |> Set.union
-            (Dict.keys model.graph.cotos
-                |> Set.fromList
-            )
+        |> Set.fromList
 
 
 getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
