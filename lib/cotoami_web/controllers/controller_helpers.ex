@@ -36,12 +36,6 @@ defmodule CotoamiWeb.ControllerHelpers do
     |> broadcast("global", "delete", amishi, client_id)
   end
 
-  def broadcast_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, client_id) do
-    cotonoma
-    |> Phoenix.View.render_one(CotoamiWeb.CotonomaView, "cotonoma.json")
-    |> broadcast("global", "cotonoma", amishi, client_id)
-  end
-
   def broadcast_connect(%Coto{} = start_coto, %Coto{} = end_coto, %Amishi{} = amishi, client_id) do
     %{
       start: Phoenix.View.render_one(start_coto, CotoamiWeb.CotoView, "coto.json"), 

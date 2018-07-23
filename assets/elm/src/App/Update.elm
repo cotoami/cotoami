@@ -894,13 +894,6 @@ update msg model =
             )
                 |> addCmd renderGraph
 
-        CotonomaPushed payload ->
-            App.Pushed.handle
-                App.Server.Cotonoma.decodeCotonoma
-                App.Pushed.handleCotonoma
-                payload
-                model
-
         ConnectPushed payload ->
             (App.Pushed.handle
                 App.Pushed.decodeConnectPayloadBody

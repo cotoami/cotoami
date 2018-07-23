@@ -47,13 +47,6 @@ handleDelete payload model =
         |> \model -> ( model, Cmd.none )
 
 
-handleCotonoma : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
-handleCotonoma payload model =
-    ( App.Model.updateRecentCotonomas payload.body model
-    , Cmd.none
-    )
-
-
 type alias ConnectPayloadBody =
     { start : Coto
     , end : Coto

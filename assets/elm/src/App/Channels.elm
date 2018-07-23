@@ -17,8 +17,6 @@ globalChannel =
     Channel.init ("global")
         |> Channel.on "delete"
             (\payload -> DeletePushed payload)
-        |> Channel.on "cotonoma"
-            (\payload -> CotonomaPushed payload)
         |> Channel.on "connect"
             (\payload -> ConnectPushed payload)
         |> Channel.on "disconnect"

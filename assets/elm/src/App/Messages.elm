@@ -147,7 +147,6 @@ type Msg
     | UpdatePushed Value
     | DeletePushed Value
     | CotonomatizePushed Value
-    | CotonomaPushed Value
     | ConnectPushed Value
     | DisconnectPushed Value
     | ReorderPushed Value
