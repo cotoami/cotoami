@@ -16,15 +16,13 @@ import App.Messages exposing (Msg(..))
 type alias Model =
     { coto : Coto
     , cotonomaStats : Maybe CotonomaStats
-    , cotonomaPinned : Bool
     }
 
 
-initModel : Bool -> Coto -> Model
-initModel cotonomaPinned coto =
+initModel : Coto -> Model
+initModel coto =
     { coto = coto
     , cotonomaStats = Nothing
-    , cotonomaPinned = cotonomaPinned
     }
 
 
@@ -57,8 +55,7 @@ modalConfig context session graph model =
             [ menuItemPinCotoToMyHome context graph model
             , menuItemPinUnpin context graph model
             ]
-        , [ menuItemPinUnpinCotonoma session model
-          , menuItemEdit session model
+        , [ menuItemEdit session model
           , menuItemAddCoto model
           , menuItemCotonomatize session model
           , menuItemDelete session model
@@ -163,42 +160,6 @@ pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
                     )
                 |> Maybe.withDefault [ text (prefix ++ "My Home") ]
             )
-
-
-menuItemPinUnpinCotonoma : Session -> Model -> Html Msg
-menuItemPinUnpinCotonoma session model =
-    if session.owner then
-        model.coto.asCotonoma
-            |> Maybe.map
-                (\cotonoma ->
-                    div
-                        [ class "menu-item"
-                        , onLinkButtonClick
-                            (PinOrUnpinCotonoma
-                                cotonoma.key
-                                (not model.cotonomaPinned)
-                            )
-                        ]
-                        [ if model.cotonomaPinned then
-                            a
-                                [ class "unpin-cotonoma" ]
-                                [ faIcon "thumb-tack" Nothing
-                                , faIcon "remove" Nothing
-                                , span [ class "menu-title" ]
-                                    [ text "Unpin from the main nav" ]
-                                ]
-                          else
-                            a
-                                [ class "pin-cotonoma" ]
-                                [ faIcon "thumb-tack" Nothing
-                                , span [ class "menu-title" ]
-                                    [ text "Pin to the main nav" ]
-                                ]
-                        ]
-                )
-            |> Maybe.withDefault Util.HtmlUtil.none
-    else
-        Util.HtmlUtil.none
 
 
 menuItemEdit : Session -> Model -> Html Msg

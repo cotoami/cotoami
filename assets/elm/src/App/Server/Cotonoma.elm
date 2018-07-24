@@ -5,7 +5,6 @@ import Http
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
-import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
@@ -18,7 +17,6 @@ decodeCotonoma =
         |> required "key" string
         |> required "name" string
         |> required "shared" bool
-        |> required "pinned" bool
         |> required "coto_id" string
         |> optional "owner" (maybe decodeAmishi) Nothing
         |> required "inserted_at" (Decode.map Date.fromTime float)
@@ -29,11 +27,8 @@ decodeCotonoma =
 
 fetchCotonomas : Cmd Msg
 fetchCotonomas =
-    Http.send CotonomasFetched <|
-        Http.get "/api/cotonomas" <|
-            Decode.map2 (,)
-                (Decode.field "pinned" (Decode.list decodeCotonoma))
-                (Decode.field "recent" (Decode.list decodeCotonoma))
+    (Http.get "/api/cotonomas" (Decode.list decodeCotonoma))
+        |> Http.send CotonomasFetched
 
 
 fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
@@ -64,20 +59,6 @@ encodeCotonoma maybeCotonoma name =
             )
           )
         ]
-
-
-pinOrUnpinCotonoma : ClientId -> Bool -> CotonomaKey -> Cmd Msg
-pinOrUnpinCotonoma clientId pinOrUnpin cotonomaKey =
-    let
-        url =
-            "/api/cotonomas/pin/" ++ cotonomaKey
-    in
-        Http.send CotonomaPinnedOrUnpinned
-            (if pinOrUnpin then
-                httpPut url clientId Http.emptyBody Decode.string
-             else
-                httpDelete url clientId
-            )
 
 
 fetchStats : CotonomaKey -> Cmd Msg

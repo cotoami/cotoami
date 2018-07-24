@@ -158,12 +158,6 @@ defmodule Cotoami.CotonomaService do
     |> do_query_for_cotonomas()
   end
 
-  def pinned_cotonomas() do
-    Cotonoma
-    |> where([c], c.pinned == true)
-    |> do_query_for_cotonomas()
-  end
-
   defp do_query_for_cotonomas(query) do
     query
     |> preload([:coto, :owner])

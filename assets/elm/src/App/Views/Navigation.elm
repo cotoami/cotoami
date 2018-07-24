@@ -25,7 +25,6 @@ view model =
                 |> Maybe.map cotonomaNav
                 |> Maybe.withDefault (div [] [])
             , cotonomasDiv model.context model.graph "sub-cotonomas" "Sub" model.subCotonomas
-            , cotonomasDiv model.context model.graph "pinned-cotonomas" "Pinned" model.pinnedCotonomas
             , cotonomasDiv model.context model.graph "recent-cotonomas" "Recent" model.recentCotonomas
             ]
         ]

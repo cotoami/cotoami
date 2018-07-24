@@ -46,7 +46,6 @@ type alias Model =
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
-    , pinnedCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -80,7 +79,6 @@ initModel seed route =
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.initModel False
     , inviteModal = App.Modals.InviteModal.defaultModel
-    , pinnedCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -121,7 +119,6 @@ getCoto cotoId model =
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
         , App.Types.SearchResults.getCoto cotoId model.searchResults
-        , getCotoFromCotonomaList cotoId model.pinnedCotonomas
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
         ]
@@ -191,7 +188,7 @@ updateRecentCotonomasByCoto post model =
 openCotoMenuModal : Coto -> Model -> Model
 openCotoMenuModal coto model =
     coto
-        |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
+        |> App.Modals.CotoMenuModal.initModel
         |> (\modal -> { model | cotoMenuModal = Just modal })
         |> App.Modals.openModal CotoMenuModal
 
@@ -223,14 +220,6 @@ isNavigationEmpty model =
 isStockEmpty : Model -> Bool
 isStockEmpty model =
     List.isEmpty model.graph.rootConnections
-
-
-isCotonomaAndPinned : Coto -> Model -> Bool
-isCotonomaAndPinned coto model =
-    coto.asCotonoma
-        |> Maybe.map
-            (\cotonoma -> List.any (\c -> c.key == cotonoma.key) model.pinnedCotonomas)
-        |> Maybe.withDefault False
 
 
 openTraversal : CotoId -> Model -> Model

@@ -41,7 +41,7 @@ type Msg
       -- Fetched
       --
     | SessionFetched (Result Http.Error Session)
-    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
+    | CotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | CotonomaFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
     | CotonomaStatsFetched (Result Http.Error CotonomaStats)
@@ -98,11 +98,6 @@ type Msg
     | MoveToFirst (Maybe CotoId) Int
     | MoveToLast (Maybe CotoId) Int
     | ConnectionsReordered (Result Http.Error String)
-      --
-      -- Cotonoma
-      --
-    | PinOrUnpinCotonoma CotonomaKey Bool
-    | CotonomaPinnedOrUnpinned (Result Http.Error String)
       --
       -- Timeline
       --

@@ -204,10 +204,9 @@ update msg model =
                 _ ->
                     model |> withoutCmd
 
-        CotonomasFetched (Ok ( pinned, recent )) ->
+        CotonomasFetched (Ok recentCotonomas) ->
             { model
-                | pinnedCotonomas = pinned
-                , recentCotonomas = recent
+                | recentCotonomas = recentCotonomas
                 , cotonomasLoading = False
             }
                 |> withoutCmd
@@ -635,25 +634,6 @@ update msg model =
             model |> withoutCmd
 
         ConnectionsReordered (Err _) ->
-            model |> withoutCmd
-
-        --
-        -- Cotonoma
-        --
-        PinOrUnpinCotonoma cotonomaKey pinOrUnpin ->
-            ( model
-            , App.Server.Cotonoma.pinOrUnpinCotonoma
-                model.context.clientId
-                pinOrUnpin
-                cotonomaKey
-            )
-
-        CotonomaPinnedOrUnpinned (Ok _) ->
-            { model | cotonomasLoading = True }
-                |> App.Modals.closeModal CotoMenuModal
-                |> withCmd (\_ -> App.Server.Cotonoma.fetchCotonomas)
-
-        CotonomaPinnedOrUnpinned (Err _) ->
             model |> withoutCmd
 
         --

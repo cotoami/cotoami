@@ -12,15 +12,14 @@ defmodule CotoamiWeb.CotonomaController do
   end
 
   def index(conn, _params, amishi) do
-    render(conn, "index.json", %{
-      pinned: CotonomaService.pinned_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(amishi),
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.recent_cotonomas(amishi)
     })
   end
 
   def sub(conn, %{"cotonoma_id" => cotonoma_id}, _amishi) do
-    render(conn, "sub.json", %{
-      rows: CotonomaService.sub_cotonomas(cotonoma_id)
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.sub_cotonomas(cotonoma_id)
     })
   end
 

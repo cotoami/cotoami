@@ -103,7 +103,6 @@ type alias Cotonoma =
     , key : CotonomaKey
     , name : String
     , shared : Bool
-    , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
     , postedAt : Date
