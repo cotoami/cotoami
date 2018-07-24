@@ -70,7 +70,13 @@ handleUpdate payload model =
     model
         |> App.Model.updateCoto payload.body
         |> App.Model.updateRecentCotonomasByCoto payload.body
-        |> withoutCmd
+        |> withCmd
+            (\model ->
+                if isJust payload.body.asCotonoma then
+                    App.Server.Cotonoma.fetchSubCotonomas model.context
+                else
+                    Cmd.none
+            )
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )

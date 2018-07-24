@@ -188,8 +188,8 @@ updateRecentCotonomas cotonoma model =
 
 
 updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
-updateRecentCotonomasByCoto post model =
-    post.postedIn
+updateRecentCotonomasByCoto coto model =
+    coto.postedIn
         |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
         |> Maybe.withDefault model
 
