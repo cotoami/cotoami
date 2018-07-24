@@ -121,6 +121,15 @@ getCoto cotoId model =
         , App.Types.SearchResults.getCoto cotoId model.searchResults
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
+        , model.context.cotonoma
+            |> Maybe.map
+                (\cotonoma ->
+                    if cotonoma.cotoId == cotoId then
+                        Just (App.Types.Coto.toCoto cotonoma)
+                    else
+                        Nothing
+                )
+            |> Maybe.withDefault Nothing
         ]
 
 
