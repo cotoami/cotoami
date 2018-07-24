@@ -58,17 +58,14 @@ toCoto post =
 
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
 isPostedInCotonoma maybeCotonoma post =
-    case maybeCotonoma of
-        Nothing ->
-            isNothing post.postedIn
-
-        Just cotonoma ->
-            case post.postedIn of
-                Nothing ->
-                    False
-
-                Just postedIn ->
-                    postedIn.id == cotonoma.id
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                post.postedIn
+                    |> Maybe.map (\postedIn -> postedIn.id == cotonoma.id)
+                    |> Maybe.withDefault False
+            )
+        |> Maybe.withDefault (isNothing post.postedIn)
 
 
 isPostedInCoto : Coto -> Post -> Bool
