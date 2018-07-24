@@ -51,16 +51,6 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp_by_constraint_error(conn, e)
   end
 
-  def pin(conn, %{"key" => key}, %{owner: true}) do
-    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.pin()
-    conn |> put_status(:ok) |> json("")
-  end
-
-  def unpin(conn, %{"key" => key}, %{owner: true}) do
-    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.unpin()
-    conn |> put_status(:ok) |> json("")
-  end
-
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do

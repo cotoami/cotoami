@@ -166,12 +166,6 @@ defmodule Cotoami.CotonomaService do
     |> complement_owners()
   end
 
-  def pin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, true)
-  def unpin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, false)
-  defp set_pinned(cotonoma, pinned) do
-    cotonoma |> change(pinned: pinned) |> Repo.update!()
-  end
-
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
