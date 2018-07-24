@@ -59,7 +59,7 @@ encodeCotonoma maybeCotonoma name =
                         |> Maybe.withDefault Encode.null
                   )
                 , ( "name", Encode.string name )
-                , ( "shared", Encode.bool True )
+                , ( "shared", Encode.bool False )
                 ]
             )
           )

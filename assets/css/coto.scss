@@ -310,3 +310,16 @@ span.cotonoma-label {
     vertical-align: middle;
   }
 }
+
+span.not-accessible {
+  span.cotonoma-name {
+    color: #aaa;
+  }
+
+  i {
+    color: #ccc;
+    margin-left: 4px;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+}

@@ -73,7 +73,7 @@ bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.asCotonoma
-            |> Maybe.map (cotonomaLink CotonomaClick model.amishi)
+            |> Maybe.map (cotonomaLink context CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Context.inReorderMode elementId context then
                     contentDivInReorder model
@@ -645,14 +645,34 @@ abbreviate { content, summary } =
             summary
 
 
-cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
-cotonomaLink cotonomaClick maybeOwner cotonoma =
-    a
-        [ class "cotonoma-link"
-        , href ("/cotonomas/" ++ cotonoma.key)
-        , onLinkButtonClick (cotonomaClick cotonoma.key)
-        ]
-        [ cotonomaLabel maybeOwner cotonoma ]
+cotonomaLink : Context -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
+cotonomaLink context cotonomaClick maybeOwner cotonoma =
+    if isCotonomaAccessible context maybeOwner cotonoma then
+        a
+            [ class "cotonoma-link"
+            , href ("/cotonomas/" ++ cotonoma.key)
+            , onLinkButtonClick (cotonomaClick cotonoma.key)
+            ]
+            [ cotonomaLabel maybeOwner cotonoma ]
+    else
+        span [ class "not-accessible" ]
+            [ cotonomaLabel maybeOwner cotonoma
+            , span [ class "private", title "Private" ]
+                [ materialIcon "lock" Nothing ]
+            ]
+
+
+isCotonomaAccessible : Context -> Maybe Amishi -> Cotonoma -> Bool
+isCotonomaAccessible context maybeOwner cotonoma =
+    if cotonoma.shared then
+        True
+    else
+        (Maybe.map2
+            (\session owner -> session.id == owner.id)
+            context.session
+            maybeOwner
+        )
+            |> Maybe.withDefault False
 
 
 cotonomaLabel : Maybe Amishi -> Cotonoma -> Html msg
