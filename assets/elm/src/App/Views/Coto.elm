@@ -192,7 +192,7 @@ headerDiv context graph maybeInbound config elementId coto =
             |> Maybe.map
                 (\postedIn ->
                     if orignatedHere context coto then
-                        span [] []
+                        Util.HtmlUtil.none
                     else
                         a
                             [ class "posted-in"
@@ -201,11 +201,11 @@ headerDiv context graph maybeInbound config elementId coto =
                             ]
                             [ text postedIn.name ]
                 )
-            |> Maybe.withDefault (span [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
           else
-            span [] []
+            Util.HtmlUtil.none
         ]
 
 
@@ -242,7 +242,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
     , [ Maybe.map
             (\pinCoto ->
                 if App.Types.Graph.pinned coto.id graph then
-                    span [] []
+                    Util.HtmlUtil.none
                 else
                     a
                         [ class "tool-button pin-coto"
@@ -262,7 +262,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                         ]
                         [ materialIcon "edit" Nothing ]
                 else
-                    span [] []
+                    Util.HtmlUtil.none
             )
             config.editCoto
             context.session
@@ -484,7 +484,7 @@ parentsDiv graph exclude childId =
                 |> List.filter (\parent -> (Just parent.id) /= exclude)
     in
         if List.isEmpty parents then
-            div [] []
+            Util.HtmlUtil.none
         else
             div [ class "parents" ]
                 (List.map
@@ -522,9 +522,9 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                             ]
                         ]
                 else
-                    div [] []
+                    Util.HtmlUtil.none
             )
-        |> Maybe.withDefault (div [] [])
+        |> Maybe.withDefault Util.HtmlUtil.none
 
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
@@ -546,7 +546,7 @@ subCotosDiv context graph parentElementId coto =
                             connections
                         ]
                 )
-            |> Maybe.withDefault (div [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
 
 
 connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
@@ -577,7 +577,7 @@ connectionsDiv context graph parentElementId parentCoto connections =
                             )
                         )
                     |> Maybe.withDefault
-                        ( connection.key, div [] [] )
+                        ( connection.key, Util.HtmlUtil.none )
             )
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
@@ -661,6 +661,10 @@ cotonomaLabel maybeOwner cotonoma =
         [ class "cotonoma-label" ]
         [ maybeOwner
             |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
-            |> Maybe.withDefault (span [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+        , if cotonoma.shared then
+            span [ class "shared" ] [ materialIcon "people" Nothing ]
+          else
+            Util.HtmlUtil.none
         ]
