@@ -43,8 +43,8 @@ fetchSubCotonomas maybeCotonoma =
         |> Maybe.withDefault Cmd.none
 
 
-encodeCotonoma : Maybe Cotonoma -> String -> Encode.Value
-encodeCotonoma maybeCotonoma name =
+encodeCotonoma : Maybe Cotonoma -> Bool -> String -> Encode.Value
+encodeCotonoma maybeCotonoma shared name =
     Encode.object
         [ ( "cotonoma"
           , (Encode.object
@@ -54,7 +54,7 @@ encodeCotonoma maybeCotonoma name =
                         |> Maybe.withDefault Encode.null
                   )
                 , ( "name", Encode.string name )
-                , ( "shared", Encode.bool False )
+                , ( "shared", Encode.bool shared )
                 ]
             )
           )

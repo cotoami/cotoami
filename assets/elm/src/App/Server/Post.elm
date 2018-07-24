@@ -118,14 +118,15 @@ post clientId maybeCotonoma msgAfterPosted post =
         |> Http.send msgAfterPosted
 
 
-postCotonoma : ClientId -> Maybe Cotonoma -> Int -> String -> Cmd Msg
-postCotonoma clientId maybeCotonoma postId name =
-    Http.send (CotonomaPosted postId) <|
-        httpPost
-            "/api/cotonomas"
-            clientId
-            (Http.jsonBody (App.Server.Cotonoma.encodeCotonoma maybeCotonoma name))
-            decodePost
+postCotonoma : ClientId -> Maybe Cotonoma -> Int -> Bool -> String -> Cmd Msg
+postCotonoma clientId maybeCotonoma postId shared name =
+    let
+        body =
+            App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
+                |> Http.jsonBody
+    in
+        httpPost "/api/cotonomas" clientId body decodePost
+            |> Http.send (CotonomaPosted postId)
 
 
 encodePost : Maybe Cotonoma -> Post -> Encode.Value

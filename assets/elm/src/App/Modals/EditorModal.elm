@@ -14,7 +14,7 @@ module App.Modals.EditorModal
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onInput)
+import Html.Events exposing (on, onClick, onInput, onCheck)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
@@ -22,6 +22,7 @@ import Util.Modal as Modal
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.Markdown
 import Util.Keyboard.Event
 import App.Types.Coto exposing (Coto)
@@ -37,6 +38,7 @@ type alias Model =
     , source : Maybe Coto
     , summary : String
     , content : String
+    , shareCotonoma : Bool
     , preview : Bool
     , requestProcessing : Bool
     , requestStatus : RequestStatus
@@ -62,6 +64,7 @@ defaultModel =
     , source = Nothing
     , summary = ""
     , content = ""
+    , shareCotonoma = False
     , preview = False
     , requestProcessing = False
     , requestStatus = None
@@ -83,6 +86,10 @@ modelForEdit coto =
         | mode = Edit coto
         , summary = Maybe.withDefault "" coto.summary
         , content = coto.content
+        , shareCotonoma =
+            coto.asCotonoma
+                |> Maybe.map (\cotonoma -> cotonoma.shared)
+                |> Maybe.withDefault False
     }
 
 
@@ -123,42 +130,47 @@ update : Context -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         EditorInput content ->
-            ( { model | content = content }, Cmd.none )
+            { model | content = content } |> withoutCmd
 
         SummaryInput summary ->
-            ( { model | summary = summary }, Cmd.none )
+            { model | summary = summary } |> withoutCmd
 
         TogglePreview ->
-            ( { model | preview = not model.preview }, Cmd.none )
+            { model | preview = not model.preview } |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
-            ( model, Cmd.none )
+            model |> withoutCmd
+
+        ShareCotonomaCheck check ->
+            { model | shareCotonoma = check } |> withoutCmd
 
         Post ->
-            ( { model | requestProcessing = True }, Cmd.none )
+            { model | requestProcessing = True } |> withoutCmd
 
         PostCotonoma ->
-            ( { model | requestProcessing = True }, Cmd.none )
+            { model | requestProcessing = True } |> withoutCmd
 
         Save ->
-            ( { model | requestProcessing = True }
-            , case model.mode of
-                Edit coto ->
-                    App.Server.Coto.updateContent
-                        context.clientId
-                        coto.id
-                        model.summary
-                        model.content
+            { model | requestProcessing = True }
+                |> withCmd
+                    (\model ->
+                        case model.mode of
+                            Edit coto ->
+                                App.Server.Coto.updateContent
+                                    context.clientId
+                                    coto.id
+                                    model.summary
+                                    model.content
 
-                _ ->
-                    Cmd.none
-            )
+                            _ ->
+                                Cmd.none
+                    )
 
         SetNewCotoMode ->
-            ( { model | mode = NewCoto }, Cmd.none )
+            { model | mode = NewCoto } |> withoutCmd
 
         SetNewCotonomaMode ->
-            ( { model | mode = NewCotonoma }, Cmd.none )
+            { model | mode = NewCotonoma } |> withoutCmd
 
 
 view : Context -> Model -> Html AppMsg.Msg
@@ -322,6 +334,8 @@ cotonomaEditor model =
         , div [ class "shared-checkbox pretty p-default p-curve p-smooth" ]
             [ input
                 [ type_ "checkbox"
+                , checked model.shareCotonoma
+                , onCheck (AppMsg.EditorModalMsg << ShareCotonomaCheck)
                 ]
                 []
             , div [ class "state" ]

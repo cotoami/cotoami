@@ -1111,6 +1111,7 @@ postCotonomaFromEditorModal model =
                     model.context.clientId
                     model.context.cotonoma
                     timeline.postIdCounter
+                    model.editorModal.shareCotonoma
                     cotonomaName
               ]
 

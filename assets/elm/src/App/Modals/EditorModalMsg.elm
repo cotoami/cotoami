@@ -8,6 +8,7 @@ type Msg
     | SummaryInput String
     | TogglePreview
     | EditorKeyDown KeyboardEvent
+    | ShareCotonomaCheck Bool
     | Post
     | PostCotonoma
     | Save
