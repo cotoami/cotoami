@@ -17,6 +17,7 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
+    field :shared, :boolean
     field :pinned, :boolean
     field :timeline_revision, :integer
     field :graph_revision, :integer
