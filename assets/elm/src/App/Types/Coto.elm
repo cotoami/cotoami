@@ -43,7 +43,7 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Bool
-    , cotonomaKey : Maybe CotonomaKey
+    , cotonoma : Maybe Cotonoma
     }
 
 
@@ -123,7 +123,7 @@ toCoto cotonoma =
         Nothing
         cotonoma.postedAt
         True
-        (Just cotonoma.key)
+        (Just cotonoma)
 
 
 cotonomaNameMaxlength : Int

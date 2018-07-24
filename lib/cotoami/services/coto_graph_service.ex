@@ -111,7 +111,7 @@ defmodule Cotoami.CotoGraphService do
           %{graph | connections: connections}
         end
       end)
-    |> (fn(graph) -> %{graph | cotos: complement_relations(graph.cotos)} end).()
+    |> (fn(graph) -> %{graph | cotos: complement_coto_nodes(graph.cotos)} end).()
   end
 
   defp add_coto(%{} = cotos, %Node{labels: labels, properties: properties}) do
@@ -123,40 +123,55 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  defp complement_relations(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
-    id_to_amishi_json =
-      id_to_coto_nodes
-      |> Map.values()
-      |> Enum.map(&(&1["amishi_id"]))
-      |> get_structs_by_ids(Amishi)
-      |> Enum.map(&(AmishiService.append_gravatar_profile(&1)))
-      |> Enum.map(&({&1.id, View.render_one(&1, AmishiView, "amishi.json")}))
-      |> Map.new()
-
-    id_to_cotonoma_json =
-      id_to_coto_nodes
-      |> Map.values()
-      |> Enum.map(&(&1["posted_in_id"]))
-      |> get_structs_by_ids(Cotonoma)
-      |> Enum.map(&({&1.id, View.render_one(&1, CotonomaView, "cotonoma.json")}))
-      |> Map.new()
+  defp complement_coto_nodes(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
+    coto_nodes = Map.values(id_to_coto_nodes)
+    amishi_jsons = get_amishi_jsons_in_coto_nodes(coto_nodes)
+    posted_in_jsons = get_posted_in_jsons_in_coto_nodes(coto_nodes)
+    cotonoma_jsons = get_cotonoma_jsons_in_coto_nodes(coto_nodes)
 
     id_to_coto_nodes
     |> Enum.map(fn({id, node}) ->
         {id,
           node
-          |> Map.put("amishi", id_to_amishi_json[node["amishi_id"]])
-          |> Map.put("posted_in", id_to_cotonoma_json[node["posted_in_id"]])
+          |> Map.put("id", node["uuid"])
+          |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
+          |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
+          |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
+          |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])
         }
       end)
     |> Map.new()
   end
 
-  defp get_structs_by_ids(ids, struct_name) do
-    ids
-    |> Enum.filter(&(&1))   # filter out nil IDs
+  defp get_amishi_jsons_in_coto_nodes(coto_nodes) do
+    coto_nodes
+    |> Enum.map(&(&1["amishi_id"]))
+    |> Enum.filter(&(&1))
     |> Enum.uniq()
-    |> (fn(ids) -> Repo.all(from q in struct_name, where: q.id in ^ids) end).()
+    |> (fn(ids) -> Repo.all(from a in Amishi, where: a.id in ^ids) end).()
+    |> Enum.map(&(AmishiService.append_gravatar_profile(&1)))
+    |> Enum.map(&({&1.id, View.render_one(&1, AmishiView, "amishi.json")}))
+    |> Map.new()
+  end
+
+  defp get_posted_in_jsons_in_coto_nodes(coto_nodes) do
+    coto_nodes
+    |> Enum.map(&(&1["posted_in_id"]))
+    |> Enum.filter(&(&1))
+    |> Enum.uniq()
+    |> (fn(ids) -> Repo.all(from c in Cotonoma, where: c.id in ^ids) end).()
+    |> Enum.map(&({&1.id, View.render_one(&1, CotonomaView, "cotonoma.json")}))
+    |> Map.new()
+  end
+
+  defp get_cotonoma_jsons_in_coto_nodes(coto_nodes) do
+    coto_nodes
+    |> Enum.map(&(&1["cotonoma_key"]))
+    |> Enum.filter(&(&1))
+    |> Enum.uniq()
+    |> (fn(keys) -> Repo.all(from c in Cotonoma, where: c.key in ^keys) end).()
+    |> Enum.map(&({&1.key, View.render_one(&1, CotonomaView, "cotonoma.json")}))
+    |> Map.new()
   end
 
   def export_connections_by_amishi(bolt_conn, %Amishi{id: amishi_id}) do

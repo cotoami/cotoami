@@ -34,8 +34,8 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    model.coto.cotonomaKey
-        |> Maybe.map (\key -> cotonomaModalConfig key session model)
+    model.coto.cotonoma
+        |> Maybe.map (\cotonoma -> cotonomaModalConfig cotonoma.key session model)
         |> Maybe.withDefault (cotoModalConfig session model)
 
 

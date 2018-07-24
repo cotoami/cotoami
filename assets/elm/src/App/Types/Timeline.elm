@@ -193,14 +193,14 @@ updateContent coto timeline =
         timeline
 
 
-cotonomatize : CotoId -> CotonomaKey -> Timeline -> Timeline
-cotonomatize cotoId cotonomaKey timeline =
+cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
+cotonomatize cotonoma cotoId timeline =
     updatePost
         (\post -> post.cotoId == Just cotoId)
         (\post ->
             { post
                 | asCotonoma = True
-                , cotonomaKey = Just cotonomaKey
+                , cotonoma = Just cotonoma
             }
         )
         timeline
@@ -215,7 +215,7 @@ setCotoSaved postId apiResponse timeline =
                 | postId = Just postId
                 , cotoId = apiResponse.cotoId
                 , postedAt = apiResponse.postedAt
-                , cotonomaKey = apiResponse.cotonomaKey
+                , cotonoma = apiResponse.cotonoma
             }
         )
         timeline

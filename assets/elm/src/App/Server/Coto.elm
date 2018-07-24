@@ -3,25 +3,26 @@ module App.Server.Coto exposing (..)
 import Date
 import Http exposing (Request)
 import Json.Encode as Encode
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (maybe, string, bool, float)
+import Json.Decode.Pipeline exposing (required, optional)
 import Util.HttpUtil exposing (ClientId, httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, CotoUpdated, Cotonomatized))
 import App.Types.Coto exposing (CotoId, Coto, Cotonoma)
-import App.Server.Amishi exposing (decodeAmishi)
-import App.Server.Cotonoma exposing (decodeCotonoma)
+import App.Server.Amishi
+import App.Server.Cotonoma
 
 
 decodeCoto : Decode.Decoder Coto
 decodeCoto =
-    Decode.map8 Coto
-        (Decode.field "id" Decode.string)
-        (Decode.field "content" Decode.string)
-        (Decode.maybe (Decode.field "summary" Decode.string))
-        (Decode.maybe (Decode.field "amishi" decodeAmishi))
-        (Decode.maybe (Decode.field "posted_in" decodeCotonoma))
-        (Decode.field "inserted_at" (Decode.map Date.fromTime Decode.float))
-        (Decode.field "as_cotonoma" Decode.bool)
-        (Decode.maybe (Decode.field "cotonoma_key" Decode.string))
+    Json.Decode.Pipeline.decode Coto
+        |> required "id" string
+        |> required "content" string
+        |> optional "summary" (maybe string) Nothing
+        |> optional "amishi" (maybe App.Server.Amishi.decodeAmishi) Nothing
+        |> optional "posted_in" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
+        |> required "inserted_at" (Decode.map Date.fromTime float)
+        |> required "as_cotonoma" bool
+        |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
 
 
 deleteCoto : ClientId -> CotoId -> Cmd Msg

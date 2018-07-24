@@ -304,8 +304,8 @@ update msg model =
             openCotoMenuModal coto model
                 |> withCmd
                     (\_ ->
-                        coto.cotonomaKey
-                            |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+                        coto.cotonoma
+                            |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
                             |> Maybe.withDefault Cmd.none
                     )
 
@@ -462,8 +462,9 @@ update msg model =
             ( model, App.Server.Coto.cotonomatize model.context.clientId cotoId )
 
         Cotonomatized (Ok coto) ->
-            model
-                |> App.Model.cotonomatize coto.id coto.cotonomaKey
+            coto.cotonoma
+                |> Maybe.map (\cotonoma -> App.Model.cotonomatize cotonoma coto.id model)
+                |> Maybe.withDefault model
                 |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
@@ -1198,8 +1199,8 @@ handleEditorModalShortcut keyboardEvent model =
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
 openCoto coto model =
     ( App.Model.openCoto coto model
-    , coto.cotonomaKey
-        |> Maybe.map (\key -> App.Server.Cotonoma.fetchStats key)
+    , coto.cotonoma
+        |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
         |> Maybe.withDefault Cmd.none
     )
 

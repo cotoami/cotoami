@@ -156,17 +156,12 @@ updateCotoContent coto model =
     }
 
 
-cotonomatize : CotoId -> Maybe CotonomaKey -> Model -> Model
-cotonomatize cotoId maybeCotonomaKey model =
-    maybeCotonomaKey
-        |> Maybe.map
-            (\key ->
-                { model
-                    | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
-                    , graph = App.Types.Graph.cotonomatize cotoId key model.graph
-                }
-            )
-        |> Maybe.withDefault model
+cotonomatize : Cotonoma -> CotoId -> Model -> Model
+cotonomatize cotonoma cotoId model =
+    { model
+        | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId model.timeline
+        , graph = App.Types.Graph.cotonomatize cotonoma cotoId model.graph
+    }
 
 
 getSelectedCotos : Model -> List Coto
@@ -232,9 +227,9 @@ isStockEmpty model =
 
 isCotonomaAndPinned : Coto -> Model -> Bool
 isCotonomaAndPinned coto model =
-    coto.cotonomaKey
+    coto.cotonoma
         |> Maybe.map
-            (\key -> List.any (\c -> c.key == key) model.pinnedCotonomas)
+            (\cotonoma -> List.any (\c -> c.key == cotonoma.key) model.pinnedCotonomas)
         |> Maybe.withDefault False
 
 

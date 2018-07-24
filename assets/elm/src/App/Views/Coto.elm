@@ -62,7 +62,7 @@ type alias BodyModel r =
         , summary : Maybe String
         , amishi : Maybe Amishi
         , asCotonoma : Bool
-        , cotonomaKey : Maybe CotonomaKey
+        , cotonoma : Maybe Cotonoma
     }
 
 
@@ -73,10 +73,10 @@ type alias Markdown =
 bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
-        [ model.cotonomaKey
+        [ model.cotonoma
             |> Maybe.map
-                (\key ->
-                    cotonomaLink CotonomaClick model.amishi key model.content
+                (\cotonoma ->
+                    cotonomaLink CotonomaClick model.amishi cotonoma.key model.content
                 )
             |> Maybe.withDefault
                 (if App.Types.Context.inReorderMode elementId context then

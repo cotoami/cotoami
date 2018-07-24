@@ -9,7 +9,7 @@ defmodule Cotoami.CotoSearchServiceTest do
   setup do
     amishi_a = AmishiService.create!("amishi_a@example.com")
     amishi_b = AmishiService.create!("amishi_b@example.com")
-    {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi_b, "cotonoma")
+    {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi_b, "cotonoma", false)
     ~M{amishi_a, amishi_b, cotonoma}
   end
 

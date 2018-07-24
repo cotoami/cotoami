@@ -167,14 +167,14 @@ pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
 menuItemPinUnpinCotonoma : Session -> Model -> Html Msg
 menuItemPinUnpinCotonoma session model =
     if session.owner then
-        model.coto.cotonomaKey
+        model.coto.cotonoma
             |> Maybe.map
-                (\cotonomaKey ->
+                (\cotonoma ->
                     div
                         [ class "menu-item"
                         , onLinkButtonClick
                             (PinOrUnpinCotonoma
-                                cotonomaKey
+                                cotonoma.key
                                 (not model.cotonomaPinned)
                             )
                         ]

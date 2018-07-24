@@ -3,7 +3,7 @@ defmodule Cotoami.CotonomaTest do
 
   alias Cotoami.Cotonoma
 
-  @valid_attrs %{name: "cotonoma name", coto_id: "uuid", owner_id: "uuid"}
+  @valid_attrs %{name: "cotonoma name", shared: false, coto_id: "uuid", owner_id: "uuid"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

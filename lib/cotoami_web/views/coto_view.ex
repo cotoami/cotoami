@@ -1,6 +1,6 @@
 defmodule CotoamiWeb.CotoView do
   use CotoamiWeb, :view
-  alias Cotoami.{Coto, Cotonoma}
+  alias Cotoami.{Coto}
   alias CotoamiWeb.{CotonomaView, AmishiView}
 
   def render("cotos.json", %{
@@ -21,39 +21,31 @@ defmodule CotoamiWeb.CotoView do
   end
 
   def render("coto.json", %{coto: coto}) do
-    amishi_as_json =
+    amishi =
       case coto.amishi do
         %Ecto.Association.NotLoaded{} -> nil
         amishi -> render_one(amishi, AmishiView, "amishi.json")
       end
-    posted_in_as_json =
+    posted_in =
       case coto.posted_in do
         %Ecto.Association.NotLoaded{} -> nil
         posted_in -> render_one(posted_in, CotonomaView, "cotonoma.json")
       end
     cotonoma =
       case coto.cotonoma do
-        %Cotonoma{} = cotonoma -> cotonoma
-        _ -> %{}
+        %Ecto.Association.NotLoaded{} -> nil
+        cotonoma -> render_one(cotonoma, CotonomaView, "cotonoma.json")
       end
     %{
       id: coto.id,
       content: Coto.get_content(coto),
       summary: coto.summary,
-      amishi: amishi_as_json,
-      posted_in: posted_in_as_json,
+      amishi: amishi,
+      posted_in: posted_in,
       as_cotonoma: coto.as_cotonoma,
+      cotonoma: cotonoma,
       inserted_at: coto.inserted_at |> to_unixtime(),
       updated_at: coto.updated_at |> to_unixtime(),
-
-      # as_cotonoma
-      cotonoma_id: Map.get(cotonoma, :id),
-      cotonoma_key: Map.get(cotonoma, :key),
-      cotonoma_pinned: Map.get(cotonoma, :pinned),
-      cotonoma_timeline_rev: Map.get(cotonoma, :timeline_revision),
-      cotonoma_graph_rev: Map.get(cotonoma, :graph_revision),
-      cotonoma_inserted_at: Map.get(cotonoma, :inserted_at) |> to_unixtime(),
-      cotonoma_updated_at: Map.get(cotonoma, :updated_at) |> to_unixtime()
     }
   end
 

@@ -71,7 +71,7 @@ handleUpdate payload model =
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
-    ( App.Model.cotonomatize payload.body.cotoId (Just payload.body.key) model
+    ( App.Model.cotonomatize payload.body payload.body.cotoId model
     , Cmd.none
     )
 

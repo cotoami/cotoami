@@ -18,7 +18,7 @@ type alias Post =
     , postedIn : Maybe Cotonoma
     , postedAt : Maybe Date
     , asCotonoma : Bool
-    , cotonomaKey : Maybe CotonomaKey
+    , cotonoma : Maybe Cotonoma
     , beingDeleted : Bool
     }
 
@@ -33,7 +33,7 @@ defaultPost =
     , postedIn = Nothing
     , postedAt = Nothing
     , asCotonoma = False
-    , cotonomaKey = Nothing
+    , cotonoma = Nothing
     , beingDeleted = False
     }
 
@@ -50,7 +50,7 @@ toCoto post =
                 post.postedIn
                 postedAt
                 post.asCotonoma
-                post.cotonomaKey
+                post.cotonoma
         )
         post.cotoId
         post.postedAt
@@ -73,15 +73,14 @@ isPostedInCotonoma maybeCotonoma post =
 
 isPostedInCoto : Coto -> Post -> Bool
 isPostedInCoto coto post =
-    if coto.asCotonoma then
-        case post.postedIn of
-            Nothing ->
-                False
-
-            Just postedIn ->
-                (Just postedIn.key) == coto.cotonomaKey
-    else
-        False
+    coto.cotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                post.postedIn
+                    |> Maybe.map (\postedIn -> postedIn.key == cotonoma.key)
+                    |> Maybe.withDefault False
+            )
+        |> Maybe.withDefault False
 
 
 isSelfOrPostedIn : Coto -> Post -> Bool

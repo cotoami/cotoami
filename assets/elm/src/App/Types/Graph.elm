@@ -36,7 +36,7 @@ import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
 import App.Types.Amishi exposing (AmishiId)
-import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 
 
 type Direction
@@ -173,14 +173,14 @@ updateContent coto graph =
         graph
 
 
-cotonomatize : CotoId -> CotonomaKey -> Graph -> Graph
-cotonomatize cotoId cotonomaKey graph =
+cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
+cotonomatize cotonoma cotoId graph =
     updateCoto
         cotoId
         (\coto ->
             { coto
                 | asCotonoma = True
-                , cotonomaKey = Just cotonomaKey
+                , cotonoma = Just cotonoma
             }
         )
         graph
