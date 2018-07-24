@@ -17,6 +17,7 @@ decodeCotonoma =
         |> required "id" string
         |> required "key" string
         |> required "name" string
+        |> required "shared" bool
         |> required "pinned" bool
         |> required "coto_id" string
         |> optional "owner" (maybe decodeAmishi) Nothing
@@ -47,21 +48,18 @@ fetchSubCotonomas maybeCotonoma =
         |> Maybe.withDefault Cmd.none
 
 
-encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value
-encodeCotonoma maybeCotonoma postId name =
+encodeCotonoma : Maybe Cotonoma -> String -> Encode.Value
+encodeCotonoma maybeCotonoma name =
     Encode.object
         [ ( "cotonoma"
           , (Encode.object
                 [ ( "cotonoma_id"
-                  , case maybeCotonoma of
-                        Nothing ->
-                            Encode.null
-
-                        Just cotonoma ->
-                            Encode.string cotonoma.id
+                  , maybeCotonoma
+                        |> Maybe.map (\cotonoma -> Encode.string cotonoma.id)
+                        |> Maybe.withDefault Encode.null
                   )
-                , ( "postId", Encode.int postId )
                 , ( "name", Encode.string name )
+                , ( "shared", Encode.bool False )
                 ]
             )
           )

@@ -40,6 +40,7 @@ defmodule CotoamiWeb.CotonomaView do
       id: cotonoma.id,
       key: cotonoma.key,
       name: cotonoma.name,
+      shared: cotonoma.shared,
       pinned: cotonoma.pinned,
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,

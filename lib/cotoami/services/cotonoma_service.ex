@@ -12,7 +12,7 @@ defmodule Cotoami.CotonomaService do
   }
   alias Cotoami.Exceptions.NotFound
 
-  def create!(%Amishi{} = amishi, name, cotonoma_id \\ nil) do
+  def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
     posted_in = get!(cotonoma_id)
 
     cotonoma_coto =
@@ -25,7 +25,7 @@ defmodule Cotoami.CotonomaService do
         })
       |> Repo.insert!()
 
-    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id)
+    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id, shared)
 
     cotonoma_coto = %{cotonoma_coto |
       amishi: amishi,
@@ -39,12 +39,13 @@ defmodule Cotoami.CotonomaService do
     {cotonoma_coto, posted_in}
   end
 
-  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
+  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do
     %Cotonoma{}
     |> Cotonoma.changeset_to_insert(%{
         name: name,
         coto_id: coto.id,
-        owner_id: amishi_id
+        owner_id: amishi_id,
+        shared: shared
       })
     |> Repo.insert!()
   end
@@ -58,7 +59,13 @@ defmodule Cotoami.CotonomaService do
       |> change(content: cotonoma_name)
       |> Repo.update!()
 
-    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id)
+    shared =
+      case coto.posted_in do
+        nil -> false
+        posted_in -> posted_in.shared
+      end
+
+    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id, shared)
 
     cotonoma_coto =
       %{cotonoma_coto |

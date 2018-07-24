@@ -124,7 +124,7 @@ postCotonoma clientId maybeCotonoma postId name =
         httpPost
             "/api/cotonomas"
             clientId
-            (Http.jsonBody (encodeCotonoma maybeCotonoma postId name))
+            (Http.jsonBody (encodeCotonoma maybeCotonoma name))
             decodePost
 
 

@@ -102,6 +102,7 @@ type alias Cotonoma =
     { id : String
     , key : CotonomaKey
     , name : String
+    , shared : Bool
     , pinned : Bool
     , cotoId : CotoId
     , owner : Maybe Amishi
