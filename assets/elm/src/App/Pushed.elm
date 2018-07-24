@@ -58,7 +58,7 @@ handlePost payload model =
                     Cmd.batch
                         [ App.Commands.scrollTimelineToBottom NoOp
                         , App.Server.Cotonoma.fetchCotonomas
-                        , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                        , App.Server.Cotonoma.fetchSubCotonomas model.context
                         ]
                 else
                     App.Commands.scrollTimelineToBottom NoOp

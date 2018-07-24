@@ -233,7 +233,7 @@ update msg model =
                                 initScrollPositionOfTimeline model
                               else
                                 Cmd.none
-                            , App.Server.Cotonoma.fetchSubCotonomas (Just cotonoma)
+                            , App.Server.Cotonoma.fetchSubCotonomas model.context
                             ]
                     )
 
@@ -409,7 +409,7 @@ update msg model =
             ( model
             , Cmd.batch
                 [ App.Server.Cotonoma.fetchCotonomas
-                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                , App.Server.Cotonoma.fetchSubCotonomas model.context
                 ]
             )
 
@@ -426,7 +426,7 @@ update msg model =
                         if isJust coto.asCotonoma then
                             Cmd.batch
                                 [ App.Server.Cotonoma.fetchCotonomas
-                                , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                                , App.Server.Cotonoma.fetchSubCotonomas model.context
                                 , renderGraph model
                                 ]
                         else
@@ -470,7 +470,7 @@ update msg model =
                     (\model ->
                         Cmd.batch
                             [ App.Server.Cotonoma.fetchCotonomas
-                            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                            , App.Server.Cotonoma.fetchSubCotonomas model.context
                             , renderGraph model
                             ]
                     )
@@ -745,7 +745,7 @@ update msg model =
                     (\model ->
                         Cmd.batch
                             [ App.Server.Cotonoma.fetchCotonomas
-                            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                            , App.Server.Cotonoma.fetchSubCotonomas model.context
                             ]
                     )
 
