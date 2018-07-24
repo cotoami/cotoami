@@ -4,6 +4,7 @@ import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Util.HttpUtil exposing (ClientId(ClientId))
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Types.Graph
@@ -34,7 +35,7 @@ handle payloadDecoder handler payload model =
                 if senderId /= selfId then
                     handler decodedPayload model
                 else
-                    ( model, Cmd.none )
+                    model |> withoutCmd
 
         Err err ->
             Debug.log err ( model, Cmd.none )
@@ -45,21 +46,23 @@ handleDelete payload model =
     App.Model.getCoto payload.body model
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
-        |> \model -> ( model, Cmd.none )
+        |> withoutCmd
 
 
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
-    ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
-    , if isJust payload.body.asCotonoma then
-        Cmd.batch
-            [ App.Commands.scrollTimelineToBottom NoOp
-            , App.Server.Cotonoma.fetchCotonomas
-            , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
-            ]
-      else
-        App.Commands.scrollTimelineToBottom NoOp
-    )
+    { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
+        |> withCmd
+            (\model ->
+                if isJust payload.body.asCotonoma then
+                    Cmd.batch
+                        [ App.Commands.scrollTimelineToBottom NoOp
+                        , App.Server.Cotonoma.fetchCotonomas
+                        , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
+                        ]
+                else
+                    App.Commands.scrollTimelineToBottom NoOp
+            )
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
@@ -67,14 +70,13 @@ handleUpdate payload model =
     model
         |> App.Model.updateCoto payload.body
         |> App.Model.updateRecentCotonomasByCoto payload.body
-        |> \model -> ( model, Cmd.none )
+        |> withoutCmd
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
-    ( App.Model.cotonomatize payload.body payload.body.cotoId model
-    , Cmd.none
-    )
+    App.Model.cotonomatize payload.body payload.body.cotoId model
+        |> withoutCmd
 
 
 type alias ConnectPayloadBody =
@@ -122,7 +124,7 @@ handleConnect payload model =
                     )
                 |> Maybe.withDefault graph1
     in
-        ( { model | graph = graph2 }, Cmd.none )
+        { model | graph = graph2 } |> withoutCmd
 
 
 type alias DisconnectPayloadBody =
@@ -162,7 +164,7 @@ handleDisconnect payload model =
                     )
                 |> Maybe.withDefault graph1
     in
-        ( { model | graph = graph2 }, Cmd.none )
+        { model | graph = graph2 } |> withoutCmd
 
 
 type alias ReorderPayloadBody =
@@ -204,4 +206,4 @@ handleReorder payload model =
                     )
                 |> Maybe.withDefault graph1
     in
-        ( { model | graph = graph2 }, Cmd.none )
+        { model | graph = graph2 } |> withoutCmd
