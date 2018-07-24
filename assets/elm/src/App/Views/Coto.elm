@@ -241,7 +241,10 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
             )
     , [ Maybe.map
             (\pinCoto ->
-                if App.Types.Graph.pinned coto.id graph then
+                if
+                    App.Types.Graph.pinned coto.id graph
+                        || ((Just coto.id) == (context.cotonoma |> Maybe.map (\c -> c.cotoId)))
+                then
                     Util.HtmlUtil.none
                 else
                     a
