@@ -100,4 +100,13 @@
       vertical-align: middle;
     }
   }
+
+  div.shared-checkbox {
+    margin-top: 6px;
+    margin-bottom: 6px;
+
+    span.label {
+      font-weight: bold;
+    }
+  }
 }

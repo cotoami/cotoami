@@ -307,7 +307,7 @@ cotonomaEditor model =
                     ]
 
             _ ->
-                div [] []
+                Util.HtmlUtil.none
         , div [ class "name-input" ]
             [ input
                 [ type_ "text"
@@ -318,6 +318,22 @@ cotonomaEditor model =
                 , onInput (AppMsg.EditorModalMsg << EditorInput)
                 ]
                 []
+            ]
+        , div [ class "shared-checkbox pretty p-default p-curve p-smooth" ]
+            [ input
+                [ type_ "checkbox"
+                ]
+                []
+            , div [ class "state" ]
+                [ label []
+                    [ span []
+                        [ span [ class "label" ]
+                            [ text "Share it with other users." ]
+                        , span [ class "note" ]
+                            [ text " (Only those who know the Cotonoma URL can access it)" ]
+                        ]
+                    ]
+                ]
             ]
         , errorDiv model
         ]
