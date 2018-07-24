@@ -199,8 +199,8 @@ cotonomatize cotonoma cotoId timeline =
         (\post -> post.cotoId == Just cotoId)
         (\post ->
             { post
-                | asCotonoma = True
-                , cotonoma = Just cotonoma
+                | isCotonoma = True
+                , asCotonoma = Just cotonoma
             }
         )
         timeline
@@ -215,7 +215,7 @@ setCotoSaved postId apiResponse timeline =
                 | postId = Just postId
                 , cotoId = apiResponse.cotoId
                 , postedAt = apiResponse.postedAt
-                , cotonoma = apiResponse.cotonoma
+                , asCotonoma = apiResponse.asCotonoma
             }
         )
         timeline
@@ -230,28 +230,29 @@ setBeingDeleted coto timeline =
 
 
 post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
-post context asCotonoma summary content timeline =
+post context isCotonoma summary content timeline =
     let
         defaultPost =
             App.Types.Post.defaultPost
 
         postId =
             timeline.postIdCounter + 1
+
+        newPost =
+            { defaultPost
+                | postId = Just postId
+                , content = content
+                , summary = summary
+                , amishi = Maybe.map App.Types.Session.toAmishi context.session
+                , isCotonoma = isCotonoma
+                , postedIn = context.cotonoma
+            }
     in
-        { defaultPost
-            | postId = Just postId
-            , content = content
-            , summary = summary
-            , amishi = Maybe.map App.Types.Session.toAmishi context.session
-            , asCotonoma = asCotonoma
-            , postedIn = context.cotonoma
-        }
-            |> \newPost ->
-                ( { timeline
-                    | posts = newPost :: timeline.posts
-                    , postIdCounter = postId
-                    , newContent = ""
-                    , editorCounter = timeline.editorCounter + 1
-                  }
-                , newPost
-                )
+        ( { timeline
+            | posts = newPost :: timeline.posts
+            , postIdCounter = postId
+            , newContent = ""
+            , editorCounter = timeline.editorCounter + 1
+          }
+        , newPost
+        )

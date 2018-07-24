@@ -165,7 +165,7 @@ view : Context -> Model -> Html AppMsg.Msg
 view context model =
     (case model.mode of
         Edit coto ->
-            if coto.asCotonoma then
+            if isJust coto.asCotonoma then
                 cotonomaEditorConfig context model
             else
                 cotoEditorConfig context model
@@ -230,7 +230,7 @@ cotoEditor model =
         [ div [ class "summary-input" ]
             [ adviceOnCotonomaNameDiv model
             , if model.editingToCotonomatize then
-                div [] []
+                Util.HtmlUtil.none
               else
                 input
                     [ type_ "text"
@@ -375,13 +375,13 @@ sourceCotoDiv context model =
                         [ materialIcon "arrow_downward" Nothing ]
                     ]
             )
-        |> Maybe.withDefault (div [] [])
+        |> Maybe.withDefault Util.HtmlUtil.none
 
 
 buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if List.isEmpty context.selection || isJust model.source then
-        span [] []
+        Util.HtmlUtil.none
       else
         button
             [ class "button connect"
@@ -432,8 +432,8 @@ buttonsForEdit coto model =
             [ text "Saving..." ]
          else
             [ text "Save"
-            , if coto.asCotonoma then
-                span [] []
+            , if isJust coto.asCotonoma then
+                Util.HtmlUtil.none
               else
                 span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
@@ -457,7 +457,7 @@ errorDiv model =
                 ]
 
         _ ->
-            div [] []
+            Util.HtmlUtil.none
 
 
 adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
@@ -487,4 +487,4 @@ adviceOnCotonomaNameDiv model =
                     [ text (toString contentLength) ]
                 ]
     else
-        div [] []
+        Util.HtmlUtil.none

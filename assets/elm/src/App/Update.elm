@@ -6,6 +6,7 @@ import Time
 import Maybe
 import Http exposing (Error(..))
 import Json.Decode as Decode
+import Exts.Maybe exposing (isJust)
 import Util.Keyboard.Key
 import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
@@ -304,7 +305,7 @@ update msg model =
             openCotoMenuModal coto model
                 |> withCmd
                     (\_ ->
-                        coto.cotonoma
+                        coto.asCotonoma
                             |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
                             |> Maybe.withDefault Cmd.none
                     )
@@ -423,7 +424,7 @@ update msg model =
                 |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
-                        if coto.asCotonoma then
+                        if isJust coto.asCotonoma then
                             Cmd.batch
                                 [ App.Server.Cotonoma.fetchCotonomas
                                 , App.Server.Cotonoma.fetchSubCotonomas model.context.cotonoma
@@ -462,7 +463,7 @@ update msg model =
             ( model, App.Server.Coto.cotonomatize model.context.clientId cotoId )
 
         Cotonomatized (Ok coto) ->
-            coto.cotonoma
+            coto.asCotonoma
                 |> Maybe.map (\cotonoma -> App.Model.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Modals.clearModals
@@ -1199,7 +1200,7 @@ handleEditorModalShortcut keyboardEvent model =
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
 openCoto coto model =
     ( App.Model.openCoto coto model
-    , coto.cotonoma
+    , coto.asCotonoma
         |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
         |> Maybe.withDefault Cmd.none
     )

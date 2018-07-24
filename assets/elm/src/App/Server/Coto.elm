@@ -21,7 +21,6 @@ decodeCoto =
         |> optional "amishi" (maybe App.Server.Amishi.decodeAmishi) Nothing
         |> optional "posted_in" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
         |> required "inserted_at" (Decode.map Date.fromTime float)
-        |> required "as_cotonoma" bool
         |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
 
 

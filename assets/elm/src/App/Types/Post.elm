@@ -17,8 +17,8 @@ type alias Post =
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Maybe Date
-    , asCotonoma : Bool
-    , cotonoma : Maybe Cotonoma
+    , isCotonoma : Bool
+    , asCotonoma : Maybe Cotonoma
     , beingDeleted : Bool
     }
 
@@ -32,8 +32,8 @@ defaultPost =
     , amishi = Nothing
     , postedIn = Nothing
     , postedAt = Nothing
-    , asCotonoma = False
-    , cotonoma = Nothing
+    , isCotonoma = False
+    , asCotonoma = Nothing
     , beingDeleted = False
     }
 
@@ -50,7 +50,6 @@ toCoto post =
                 post.postedIn
                 postedAt
                 post.asCotonoma
-                post.cotonoma
         )
         post.cotoId
         post.postedAt
@@ -70,7 +69,7 @@ isPostedInCotonoma maybeCotonoma post =
 
 isPostedInCoto : Coto -> Post -> Bool
 isPostedInCoto coto post =
-    coto.cotonoma
+    coto.asCotonoma
         |> Maybe.map
             (\cotonoma ->
                 post.postedIn

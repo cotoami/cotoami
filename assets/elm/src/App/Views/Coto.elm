@@ -61,8 +61,7 @@ type alias BodyModel r =
         | content : String
         , summary : Maybe String
         , amishi : Maybe Amishi
-        , asCotonoma : Bool
-        , cotonoma : Maybe Cotonoma
+        , asCotonoma : Maybe Cotonoma
     }
 
 
@@ -73,7 +72,7 @@ type alias Markdown =
 bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
-        [ model.cotonoma
+        [ model.asCotonoma
             |> Maybe.map
                 (\cotonoma ->
                     cotonomaLink CotonomaClick model.amishi cotonoma.key model.content

@@ -175,15 +175,7 @@ updateContent coto graph =
 
 cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
 cotonomatize cotonoma cotoId graph =
-    updateCoto
-        cotoId
-        (\coto ->
-            { coto
-                | asCotonoma = True
-                , cotonoma = Just cotonoma
-            }
-        )
-        graph
+    updateCoto cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
 
 
 pinCoto : AmishiId -> Coto -> Graph -> Graph

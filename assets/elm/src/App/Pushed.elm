@@ -2,6 +2,7 @@ module App.Pushed exposing (..)
 
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
+import Exts.Maybe exposing (isJust)
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
@@ -50,7 +51,7 @@ handleDelete payload model =
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     ( { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
-    , if payload.body.asCotonoma then
+    , if isJust payload.body.asCotonoma then
         Cmd.batch
             [ App.Commands.scrollTimelineToBottom NoOp
             , App.Server.Cotonoma.fetchCotonomas

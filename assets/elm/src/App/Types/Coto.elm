@@ -17,6 +17,7 @@ module App.Types.Coto
         )
 
 import Date exposing (Date)
+import Exts.Maybe exposing (isJust)
 import App.Markdown
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
@@ -42,8 +43,7 @@ type alias Coto =
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Date
-    , asCotonoma : Bool
-    , cotonoma : Maybe Cotonoma
+    , asCotonoma : Maybe Cotonoma
     }
 
 
@@ -64,7 +64,7 @@ checkWritePermission session coto =
 
 toTopic : Coto -> Maybe String
 toTopic coto =
-    if coto.asCotonoma then
+    if isJust coto.asCotonoma then
         Just coto.content
     else
         case coto.summary of
@@ -122,7 +122,6 @@ toCoto cotonoma =
         cotonoma.owner
         Nothing
         cotonoma.postedAt
-        True
         (Just cotonoma)
 
 

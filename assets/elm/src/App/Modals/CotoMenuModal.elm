@@ -2,6 +2,7 @@ module App.Modals.CotoMenuModal exposing (Model, initModel, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Exts.Maybe exposing (isJust, isNothing)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
@@ -167,7 +168,7 @@ pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
 menuItemPinUnpinCotonoma : Session -> Model -> Html Msg
 menuItemPinUnpinCotonoma session model =
     if session.owner then
-        model.coto.cotonoma
+        model.coto.asCotonoma
             |> Maybe.map
                 (\cotonoma ->
                     div
@@ -195,9 +196,9 @@ menuItemPinUnpinCotonoma session model =
                                 ]
                         ]
                 )
-            |> Maybe.withDefault (div [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 menuItemEdit : Session -> Model -> Html Msg
@@ -214,7 +215,7 @@ menuItemEdit session model =
                 ]
             ]
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 menuItemAddCoto : Model -> Html Msg
@@ -233,7 +234,7 @@ menuItemAddCoto model =
 
 menuItemCotonomatize : Session -> Model -> Html Msg
 menuItemCotonomatize session model =
-    if (not model.coto.asCotonoma) && (checkWritePermission session model) then
+    if (isNothing model.coto.asCotonoma) && (checkWritePermission session model) then
         div
             [ class "menu-item"
             , onLinkButtonClick (ConfirmCotonomatize model.coto)
@@ -246,19 +247,19 @@ menuItemCotonomatize session model =
                 ]
             ]
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 menuItemDelete : Session -> Model -> Html Msg
 menuItemDelete session model =
     let
-        cotonomaNotDeletable =
+        nonEmptyCotonoma =
             model.cotonomaStats
                 |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
-                |> Maybe.withDefault model.coto.asCotonoma
+                |> Maybe.withDefault (isJust model.coto.asCotonoma)
     in
         if checkWritePermission session model then
-            if cotonomaNotDeletable then
+            if nonEmptyCotonoma then
                 div [ class "menu-item disabled" ]
                     [ span
                         [ class "delete" ]
@@ -278,4 +279,4 @@ menuItemDelete session model =
                         ]
                     ]
         else
-            div [] []
+            Util.HtmlUtil.none

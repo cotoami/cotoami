@@ -227,7 +227,7 @@ isStockEmpty model =
 
 isCotonomaAndPinned : Coto -> Model -> Bool
 isCotonomaAndPinned coto model =
-    coto.cotonoma
+    coto.asCotonoma
         |> Maybe.map
             (\cotonoma -> List.any (\c -> c.key == cotonoma.key) model.pinnedCotonomas)
         |> Maybe.withDefault False

@@ -57,7 +57,7 @@ fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
 fetchSubgraphIfCotonoma graph cotoId =
     graph
         |> App.Types.Graph.getCoto cotoId
-        |> Maybe.andThen (\coto -> coto.cotonoma)
+        |> Maybe.andThen (\coto -> coto.asCotonoma)
         |> Maybe.map (\cotonoma -> cotonoma.key)
         |> Maybe.map fetchSubgraph
         |> Maybe.withDefault Cmd.none
