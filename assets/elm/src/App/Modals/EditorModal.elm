@@ -72,11 +72,15 @@ defaultModel =
     }
 
 
-modelForNew : Maybe Coto -> Model
-modelForNew source =
+modelForNew : Context -> Maybe Coto -> Model
+modelForNew context source =
     { defaultModel
         | mode = NewCoto
         , source = source
+        , shareCotonoma =
+            context.cotonoma
+                |> Maybe.map (\cotonoma -> cotonoma.shared)
+                |> Maybe.withDefault False
     }
 
 

@@ -958,12 +958,9 @@ changeLocationToHome model =
 
 openNewEditor : Maybe Coto -> Model -> ( Model, Cmd Msg )
 openNewEditor source model =
-    ( { model
-        | editorModal = App.Modals.EditorModal.modelForNew source
-      }
+    { model | editorModal = App.Modals.EditorModal.modelForNew model.context source }
         |> App.Modals.openModal EditorModal
-    , App.Commands.focus "editor-modal-content-input" NoOp
-    )
+        |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" NoOp)
 
 
 loadHome : Model -> ( Model, Cmd Msg )
