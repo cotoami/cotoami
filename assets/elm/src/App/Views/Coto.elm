@@ -73,10 +73,7 @@ bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.asCotonoma
-            |> Maybe.map
-                (\cotonoma ->
-                    cotonomaLink CotonomaClick model.amishi cotonoma.key model.content
-                )
+            |> Maybe.map (cotonomaLink CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Context.inReorderMode elementId context then
                     contentDivInReorder model
@@ -648,22 +645,22 @@ abbreviate { content, summary } =
             summary
 
 
-cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> CotonomaKey -> String -> Html Msg
-cotonomaLink cotonomaClick maybeOwner cotonomaKey name =
+cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
+cotonomaLink cotonomaClick maybeOwner cotonoma =
     a
         [ class "cotonoma-link"
-        , href ("/cotonomas/" ++ cotonomaKey)
-        , onLinkButtonClick (cotonomaClick cotonomaKey)
+        , href ("/cotonomas/" ++ cotonoma.key)
+        , onLinkButtonClick (cotonomaClick cotonoma.key)
         ]
-        [ cotonomaLabel maybeOwner name ]
+        [ cotonomaLabel maybeOwner cotonoma ]
 
 
-cotonomaLabel : Maybe Amishi -> String -> Html msg
-cotonomaLabel maybeOwner name =
+cotonomaLabel : Maybe Amishi -> Cotonoma -> Html msg
+cotonomaLabel maybeOwner cotonoma =
     span
         [ class "cotonoma-label" ]
         [ maybeOwner
             |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
             |> Maybe.withDefault (span [] [])
-        , span [ class "cotonoma-name" ] [ text name ]
+        , span [ class "cotonoma-name" ] [ text cotonoma.name ]
         ]
