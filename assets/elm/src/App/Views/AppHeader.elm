@@ -34,6 +34,11 @@ view model =
                             [ materialIcon "home" Nothing ]
                         , materialIcon "navigate_next" (Just "arrow")
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+                        , if cotonoma.shared then
+                            span [ class "shared", title "Shared" ]
+                                [ materialIcon "people" Nothing ]
+                          else
+                            Util.HtmlUtil.none
                         , navigationToggle model
                         ]
                     )
