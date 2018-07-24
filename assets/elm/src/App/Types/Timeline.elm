@@ -167,8 +167,8 @@ setLoadingMore timeline =
     { timeline | loadingMore = True }
 
 
-updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
-updatePost predicate update timeline =
+updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+updatePost_ predicate update timeline =
     timeline.posts
         |> List.map
             (\post ->
@@ -180,14 +180,15 @@ updatePost predicate update timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-updateContent : Coto -> Timeline -> Timeline
-updateContent coto timeline =
-    updatePost
+updatePost : Coto -> Timeline -> Timeline
+updatePost coto timeline =
+    updatePost_
         (\post -> post.cotoId == Just coto.id)
         (\post ->
             { post
                 | content = coto.content
                 , summary = coto.summary
+                , asCotonoma = coto.asCotonoma
             }
         )
         timeline
@@ -195,7 +196,7 @@ updateContent coto timeline =
 
 cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
 cotonomatize cotonoma cotoId timeline =
-    updatePost
+    updatePost_
         (\post -> post.cotoId == Just cotoId)
         (\post ->
             { post
@@ -208,7 +209,7 @@ cotonomatize cotonoma cotoId timeline =
 
 setCotoSaved : Int -> Post -> Timeline -> Timeline
 setCotoSaved postId apiResponse timeline =
-    updatePost
+    updatePost_
         (\post -> post.postId == Just postId)
         (\post ->
             { post
@@ -223,7 +224,7 @@ setCotoSaved postId apiResponse timeline =
 
 setBeingDeleted : Coto -> Timeline -> Timeline
 setBeingDeleted coto timeline =
-    updatePost
+    updatePost_
         (\post -> App.Types.Post.isSelfOrPostedIn coto post)
         (\post -> { post | beingDeleted = True })
         timeline

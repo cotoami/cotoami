@@ -418,7 +418,7 @@ update msg model =
 
         CotoUpdated (Ok coto) ->
             model
-                |> updateCotoContent coto
+                |> updateCoto coto
                 |> updateRecentCotonomasByCoto coto
                 |> App.Modals.clearModals
                 |> withCmd

@@ -65,7 +65,7 @@ handlePost payload model =
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
 handleUpdate payload model =
     model
-        |> App.Model.updateCotoContent payload.body
+        |> App.Model.updateCoto payload.body
         |> App.Model.updateRecentCotonomasByCoto payload.body
         |> \model -> ( model, Cmd.none )
 

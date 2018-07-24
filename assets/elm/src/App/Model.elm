@@ -154,11 +154,11 @@ getCotoFromCotonomaList cotoId cotonomas =
         |> Maybe.map App.Types.Coto.toCoto
 
 
-updateCotoContent : Coto -> Model -> Model
-updateCotoContent coto model =
+updateCoto : Coto -> Model -> Model
+updateCoto coto model =
     { model
-        | timeline = App.Types.Timeline.updateContent coto model.timeline
-        , graph = App.Types.Graph.updateContent coto model.graph
+        | timeline = App.Types.Timeline.updatePost coto model.timeline
+        , graph = App.Types.Graph.updateCoto coto model.graph
     }
 
 

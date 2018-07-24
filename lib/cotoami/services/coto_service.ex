@@ -147,15 +147,21 @@ defmodule Cotoami.CotoService do
     |> Repo.update!()
 
     coto = get(id)  # updated struct with the relations
-    if coto.as_cotonoma do
-      coto.cotonoma
-      |> Cotonoma.changeset_to_update(%{name: coto.content, shared: shared})
-      |> Repo.update!()
-    end
+    cotonoma = 
+      if coto.as_cotonoma do
+        coto.cotonoma
+        |> Cotonoma.changeset_to_update(%{name: coto.content, shared: shared})
+        |> Repo.update!()
+      else
+        nil
+      end
 
     CotoGraphService.sync_coto_props(Bolt.Sips.conn, coto)
 
-    %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in)}
+    %{coto | 
+      posted_in: CotonomaService.complement_owner(coto.posted_in),
+      cotonoma: cotonoma
+    }
     |> complement_amishi(amishi)
   end
 

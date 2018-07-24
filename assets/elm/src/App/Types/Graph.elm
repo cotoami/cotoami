@@ -20,7 +20,7 @@ module App.Types.Graph
         , disconnect
         , batchConnect
         , removeCoto
-        , updateContent
+        , updateCoto
         , reorder
         , swapOrder
         , moveToFirst
@@ -155,19 +155,20 @@ addCoto coto graph =
     { graph | cotos = Dict.insert coto.id coto graph.cotos }
 
 
-updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
-updateCoto cotoId update graph =
+updateCoto_ : CotoId -> (Coto -> Coto) -> Graph -> Graph
+updateCoto_ cotoId update graph =
     { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
 
 
-updateContent : Coto -> Graph -> Graph
-updateContent coto graph =
-    updateCoto
+updateCoto : Coto -> Graph -> Graph
+updateCoto coto graph =
+    updateCoto_
         coto.id
         (\currentCoto ->
             { currentCoto
                 | content = coto.content
                 , summary = coto.summary
+                , asCotonoma = coto.asCotonoma
             }
         )
         graph
@@ -175,7 +176,7 @@ updateContent coto graph =
 
 cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
 cotonomatize cotonoma cotoId graph =
-    updateCoto cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
+    updateCoto_ cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
 
 
 pinCoto : AmishiId -> Coto -> Graph -> Graph
