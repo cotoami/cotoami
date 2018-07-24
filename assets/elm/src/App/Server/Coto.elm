@@ -29,8 +29,8 @@ deleteCoto clientId cotoId =
     Http.send CotoDeleted (httpDelete ("/api/cotos/" ++ cotoId) clientId)
 
 
-updateContent : ClientId -> CotoId -> String -> String -> Cmd Msg
-updateContent clientId cotoId summary content =
+updateContent : ClientId -> CotoId -> Bool -> String -> String -> Cmd Msg
+updateContent clientId cotoId shared summary content =
     let
         url =
             "/api/cotos/" ++ cotoId
@@ -42,6 +42,7 @@ updateContent clientId cotoId summary content =
                       , Encode.object
                             [ ( "content", Encode.string content )
                             , ( "summary", Encode.string summary )
+                            , ( "shared", Encode.bool shared )
                             ]
                       )
                     ]

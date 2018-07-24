@@ -139,17 +139,17 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content!(id, %{"content" => _} = params, %Amishi{id: amishi_id} = amishi) do
+  def update!(id, %{"content" => _, "shared" => shared} = params, %Amishi{id: amishi_id} = amishi) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> Repo.get!(id)
-    |> Coto.changeset_to_update_content(params)
+    |> Coto.changeset_to_update(params)
     |> Repo.update!()
 
     coto = get(id)  # updated struct with the relations
     if coto.as_cotonoma do
       coto.cotonoma
-      |> Cotonoma.changeset_to_update_name(%{name: coto.content})
+      |> Cotonoma.changeset_to_update(%{name: coto.content, shared: shared})
       |> Repo.update!()
     end
 

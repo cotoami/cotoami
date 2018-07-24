@@ -45,10 +45,10 @@ defmodule Cotoami.Cotonoma do
     |> validate_name()
   end
 
-  def changeset_to_update_name(struct, params \\ %{}) do
+  def changeset_to_update(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :shared])
+    |> validate_required([:name, :shared])
     |> validate_name()
   end
 

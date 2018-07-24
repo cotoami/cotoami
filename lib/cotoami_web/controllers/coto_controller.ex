@@ -56,7 +56,7 @@ defmodule CotoamiWeb.CotoController do
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
     {:ok, coto} =
       Repo.transaction(fn ->
-        case CotoService.update_content!(id, coto_params, amishi) do
+        case CotoService.update!(id, coto_params, amishi) do
           %Coto{posted_in: nil} = coto -> coto
           %Coto{posted_in: posted_in} = coto ->
             %{coto | posted_in: increment_timeline_revision(posted_in)}

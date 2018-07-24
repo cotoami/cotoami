@@ -34,7 +34,7 @@ defmodule Cotoami.Coto do
     |> store_long_content()
   end
 
-  def changeset_to_update_content(struct, params \\ %{}) do
+  def changeset_to_update(struct, params \\ %{}) do
     struct
     |> cast(params, [:content, :summary])
     |> validate_required([:content])

@@ -1152,6 +1152,7 @@ handleEditorModalShortcut keyboardEvent model =
                     , App.Server.Coto.updateContent
                         model.context.clientId
                         coto.id
+                        model.editorModal.shareCotonoma
                         model.editorModal.summary
                         model.editorModal.content
                     )

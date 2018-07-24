@@ -163,6 +163,7 @@ update context msg model =
                                 App.Server.Coto.updateContent
                                     context.clientId
                                     coto.id
+                                    model.shareCotonoma
                                     model.summary
                                     model.content
 
