@@ -72,7 +72,7 @@ handleUpdate payload model =
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
     App.Model.cotonomatize payload.body payload.body.cotoId model
-        |> withoutCmd
+        |> withCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
 
 type alias ConnectPayloadBody =
