@@ -12,6 +12,7 @@ import App.Types.Timeline
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Commands
+import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Server.Coto
 import App.Server.Cotonoma
@@ -55,14 +56,11 @@ handlePost payload model =
         |> withCmd
             (\model ->
                 if isJust payload.body.asCotonoma then
-                    Cmd.batch
-                        [ App.Commands.scrollTimelineToBottom NoOp
-                        , App.Server.Cotonoma.fetchCotonomas
-                        , App.Server.Cotonoma.fetchSubCotonomas model.context
-                        ]
+                    App.Commands.Cotonoma.refreshCotonomaList model
                 else
-                    App.Commands.scrollTimelineToBottom NoOp
+                    Cmd.none
             )
+        |> addCmd (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )

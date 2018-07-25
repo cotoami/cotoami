@@ -40,6 +40,7 @@ import App.Server.Coto
 import App.Server.Graph
 import App.Commands
 import App.Commands.Graph
+import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
@@ -407,7 +408,7 @@ update msg model =
                 |> withCmd App.Commands.Graph.renderGraph
 
         CotoDeleted (Ok _) ->
-            model |> withCmd refreshCotonomaList
+            model |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
         CotoDeleted (Err error) ->
             model |> withoutCmd
@@ -420,7 +421,7 @@ update msg model =
                 |> withCmd
                     (\model ->
                         if isJust coto.asCotonoma then
-                            refreshCotonomaList model
+                            App.Commands.Cotonoma.refreshCotonomaList model
                         else
                             Cmd.none
                     )
@@ -459,7 +460,7 @@ update msg model =
                 |> Maybe.map (\cotonoma -> App.Model.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Modals.clearModals
-                |> withCmd refreshCotonomaList
+                |> withCmd App.Commands.Cotonoma.refreshCotonomaList
                 |> addCmd App.Commands.Graph.renderGraph
 
         Cotonomatized (Err error) ->
@@ -728,7 +729,7 @@ update msg model =
                 , timeline = setCotoSaved postId response model.timeline
             }
                 |> App.Modals.clearModals
-                |> withCmd refreshCotonomaList
+                |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
         CotonomaPosted postId (Err error) ->
             { model
@@ -1232,11 +1233,3 @@ makeReorderCmd maybeParentId model =
                 maybeParentId
             )
         |> Maybe.withDefault Cmd.none
-
-
-refreshCotonomaList : Model -> Cmd Msg
-refreshCotonomaList model =
-    Cmd.batch
-        [ App.Server.Cotonoma.fetchCotonomas
-        , App.Server.Cotonoma.fetchSubCotonomas model.context
-        ]
