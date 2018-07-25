@@ -15,7 +15,6 @@ import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Server.Coto
-import App.Server.Cotonoma
 
 
 type alias Handler body =
@@ -56,23 +55,22 @@ handleDelete payload model =
     App.Model.getCoto payload.body model
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
-        |> withCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
+        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
 handleUpdate payload model =
     model
         |> App.Model.updateCoto payload.body
-        |> App.Model.updateRecentCotonomas payload.body.postedIn
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
-            (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
+            App.Commands.Cotonoma.refreshCotonomaList
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
     App.Model.cotonomatize payload.body payload.body.cotoId model
-        |> withCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
+        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
 
 type alias ConnectPayloadBody =
