@@ -15,8 +15,6 @@ import App.Messages exposing (..)
 globalChannel : Channel Msg
 globalChannel =
     Channel.init ("global")
-        |> Channel.on "delete"
-            (\payload -> DeletePushed payload)
 
 
 cotonomaChannel : CotonomaKey -> Channel Msg
@@ -37,6 +35,8 @@ cotoChannels cotoIds =
         |> List.map
             (\cotoId ->
                 Channel.init ("cotos:" ++ cotoId)
+                    |> Channel.on "delete"
+                        (\payload -> DeletePushed payload)
                     |> Channel.on "update"
                         (\payload -> UpdatePushed payload)
                     |> Channel.on "cotonomatize"

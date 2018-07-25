@@ -28,15 +28,6 @@ defmodule CotoamiWeb.ControllerHelpers do
   end
 
   #
-  # Channel: 'global'
-  #
-
-  def broadcast_delete(coto_id, %Amishi{} = amishi, client_id) do
-    coto_id
-    |> broadcast("global", "delete", amishi, client_id)
-  end
-
-  #
   # Channel: 'cotonomas:*'
   #
 
@@ -49,6 +40,11 @@ defmodule CotoamiWeb.ControllerHelpers do
   #
   # Channel: 'coto:*'
   #
+
+  def broadcast_delete(coto_id, %Amishi{} = amishi, client_id) do
+    coto_id
+    |> broadcast("cotos:#{coto_id}", "delete", amishi, client_id)
+  end
 
   def broadcast_update(%Coto{} = coto, %Amishi{} = amishi, client_id) do
     coto

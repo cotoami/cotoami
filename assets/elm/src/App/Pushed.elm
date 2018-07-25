@@ -42,14 +42,6 @@ handle payloadDecoder handler payload model =
             Debug.log err ( model, Cmd.none )
 
 
-handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
-handleDelete payload model =
-    App.Model.getCoto payload.body model
-        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
-        |> Maybe.withDefault model
-        |> withoutCmd
-
-
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
@@ -57,6 +49,14 @@ handlePost payload model =
             (\_ -> isJust payload.body.asCotonoma)
             App.Commands.Cotonoma.refreshCotonomaList
         |> addCmd (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+
+
+handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
+handleDelete payload model =
+    App.Model.getCoto payload.body model
+        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
+        |> Maybe.withDefault model
+        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
