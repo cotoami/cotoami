@@ -9,14 +9,14 @@ defmodule Cotoami.CotoSearchServiceTest do
   setup do
     amishi_a = AmishiService.create!("amishi_a@example.com")
     amishi_b = AmishiService.create!("amishi_b@example.com")
-    {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi_b, "cotonoma", false)
-    ~M{amishi_a, amishi_b, cotonoma}
+    {%Coto{cotonoma: cotonoma_a}, _} = CotonomaService.create!(amishi_a, "cotonoma a", false)
+    ~M{amishi_a, amishi_b, cotonoma_a}
   end
 
   describe "when there are private cotos by amishi_a" do
-    setup ~M{amishi_a} do
+    setup ~M{amishi_a, cotonoma_a} do
       CotoService.create!(amishi_a, "Search has become an important feature.")
-      CotoService.create!(amishi_a, "You are often asked to add search.")
+      CotoService.create!(amishi_a, "You are often asked to add search.", nil, cotonoma_a.id)
       :ok
     end
 
@@ -35,20 +35,6 @@ defmodule Cotoami.CotoSearchServiceTest do
 
     test "no cotos can be searched by amishi_b", ~M{amishi_b} do
       assert search(amishi_b, "search") == []
-    end
-  end
-
-  describe "when there are cotos by amishi_b" do
-    setup ~M{amishi_b, cotonoma} do
-      CotoService.create!(amishi_b, "Search has become an important feature.")
-      CotoService.create!(amishi_b, "You are often asked to add search.", nil, cotonoma.id)
-      :ok
-    end
-
-    test "cotos in a cotonoma can be searched by other amishis", ~M{amishi_a} do
-      assert search(amishi_a, "search") == [
-        "You are often asked to add search."
-      ]
     end
   end
 
