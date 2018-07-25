@@ -406,12 +406,7 @@ update msg model =
                 |> withCmd renderGraph
 
         CotoDeleted (Ok _) ->
-            ( model
-            , Cmd.batch
-                [ App.Server.Cotonoma.fetchCotonomas
-                , App.Server.Cotonoma.fetchSubCotonomas model.context
-                ]
-            )
+            model |> withCmd refreshCotonomaList
 
         CotoDeleted (Err error) ->
             model |> withoutCmd
@@ -424,14 +419,11 @@ update msg model =
                 |> withCmd
                     (\model ->
                         if isJust coto.asCotonoma then
-                            Cmd.batch
-                                [ App.Server.Cotonoma.fetchCotonomas
-                                , App.Server.Cotonoma.fetchSubCotonomas model.context
-                                , renderGraph model
-                                ]
+                            refreshCotonomaList model
                         else
-                            renderGraph model
+                            Cmd.none
                     )
+                |> addCmd renderGraph
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -466,14 +458,8 @@ update msg model =
                 |> Maybe.map (\cotonoma -> App.Model.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Modals.clearModals
-                |> withCmd
-                    (\model ->
-                        Cmd.batch
-                            [ App.Server.Cotonoma.fetchCotonomas
-                            , App.Server.Cotonoma.fetchSubCotonomas model.context
-                            , renderGraph model
-                            ]
-                    )
+                |> withCmd refreshCotonomaList
+                |> addCmd renderGraph
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
@@ -741,13 +727,7 @@ update msg model =
                 , timeline = setCotoSaved postId response model.timeline
             }
                 |> App.Modals.clearModals
-                |> withCmd
-                    (\model ->
-                        Cmd.batch
-                            [ App.Server.Cotonoma.fetchCotonomas
-                            , App.Server.Cotonoma.fetchSubCotonomas model.context
-                            ]
-                    )
+                |> withCmd refreshCotonomaList
 
         CotonomaPosted postId (Err error) ->
             { model
@@ -1273,3 +1253,11 @@ resizeGraphWithDelay =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Task.succeed ())
         |> Task.perform (\_ -> ResizeGraph)
+
+
+refreshCotonomaList : Model -> Cmd Msg
+refreshCotonomaList model =
+    Cmd.batch
+        [ App.Server.Cotonoma.fetchCotonomas
+        , App.Server.Cotonoma.fetchSubCotonomas model.context
+        ]
