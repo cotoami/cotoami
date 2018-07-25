@@ -54,7 +54,7 @@ handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
         |> withCmdIf
-            (isJust payload.body.asCotonoma)
+            (\_ -> isJust payload.body.asCotonoma)
             App.Commands.Cotonoma.refreshCotonomaList
         |> addCmd (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
@@ -65,7 +65,7 @@ handleUpdate payload model =
         |> App.Model.updateCoto payload.body
         |> App.Model.updateRecentCotonomas payload.body.postedIn
         |> withCmdIf
-            (isJust payload.body.asCotonoma)
+            (\_ -> isJust payload.body.asCotonoma)
             (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
 

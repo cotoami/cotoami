@@ -140,7 +140,7 @@ update msg model =
         QuickSearchInput query ->
             { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
                 |> withCmdIf
-                    (isNotBlank query)
+                    (\_ -> isNotBlank query)
                     (\_ -> App.Server.Post.search query)
 
         SearchInput query ->
@@ -150,8 +150,8 @@ update msg model =
         Search ->
             { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
                 |> withCmdIf
-                    (App.Types.SearchResults.hasQuery model.searchResults)
-                    (\_ -> App.Server.Post.search model.searchResults.query)
+                    (\model -> App.Types.SearchResults.hasQuery model.searchResults)
+                    (\model -> App.Server.Post.search model.searchResults.query)
 
         SearchResultsFetched (Ok paginatedPosts) ->
             { model
@@ -221,7 +221,7 @@ update msg model =
                 , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmdIf
-                    (paginatedPosts.pageIndex == 0)
+                    (\_ -> paginatedPosts.pageIndex == 0)
                     initScrollPositionOfTimeline
                 |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
@@ -405,7 +405,7 @@ update msg model =
                 |> App.Model.updateRecentCotonomas coto.postedIn
                 |> App.Modals.clearModals
                 |> withCmdIf
-                    (isJust coto.asCotonoma)
+                    (\_ -> isJust coto.asCotonoma)
                     App.Commands.Cotonoma.refreshCotonomaList
                 |> addCmd App.Commands.Graph.renderGraph
 
@@ -625,7 +625,7 @@ update msg model =
                 , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
                 |> withCmdIf
-                    (paginatedPosts.pageIndex == 0)
+                    (\_ -> paginatedPosts.pageIndex == 0)
                     initScrollPositionOfTimeline
 
         PostsFetched (Err _) ->
@@ -644,13 +644,13 @@ update msg model =
         ImageLoaded ->
             model
                 |> withCmdIf
-                    (model.timeline.pageIndex == 0)
+                    (\model -> model.timeline.pageIndex == 0)
                     (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
         EditorFocus ->
             { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
                 |> withCmdIf
-                    (model.timeline.editorOpen)
+                    (\model -> model.timeline.editorOpen)
                     (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
         EditorInput content ->
@@ -726,7 +726,7 @@ update msg model =
         SwitchPinnedCotosView view ->
             { model | pinnedCotosView = view }
                 |> withCmdIf
-                    (view == GraphView)
+                    (\_ -> view == GraphView)
                     (\_ -> App.Commands.Graph.renderGraphWithDelay)
 
         RenderGraph ->
@@ -735,7 +735,7 @@ update msg model =
         ResizeGraph ->
             model
                 |> withCmdIf
-                    (model.pinnedCotosView == GraphView)
+                    (\model -> model.pinnedCotosView == GraphView)
                     (\_ -> App.Ports.Graph.resizeGraph ())
 
         --

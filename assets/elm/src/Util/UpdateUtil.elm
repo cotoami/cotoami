@@ -6,9 +6,9 @@ withCmd createCmd model =
     ( model, createCmd model )
 
 
-withCmdIf : Bool -> (model -> Cmd msg) -> model -> ( model, Cmd msg )
+withCmdIf : (model -> Bool) -> (model -> Cmd msg) -> model -> ( model, Cmd msg )
 withCmdIf condition createCmd model =
-    if condition then
+    if condition model then
         withCmd createCmd model
     else
         ( model, Cmd.none )
