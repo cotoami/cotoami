@@ -7,7 +7,7 @@ defmodule Cotoami.Cotonoma do
   import Ecto.Changeset
   import Ecto.Query, warn: false
   import Cotoami.Helpers
-  alias Cotoami.Amishi
+  alias Cotoami.{Amishi, Cotonoma}
 
   @key_length 10
   @name_max_length 50
@@ -91,5 +91,15 @@ defmodule Cotoami.Cotonoma do
 
   def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
     %{target | coto: from.coto, owner: from.owner}
+  end
+
+  def accessible_by?(%Cotonoma{owner: owner, shared: shared}, %Amishi{id: amishi_id}) do
+    owner.id == amishi_id or shared
+  end
+
+  def ensure_accessible_by(%Cotonoma{} = cotonoma, %Amishi{} = amishi) do
+    unless accessible_by?(cotonoma, amishi) do
+      raise Cotoami.Exceptions.NoPermission
+    end
   end
 end

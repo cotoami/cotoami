@@ -52,6 +52,7 @@ defmodule Cotoami.CotoService do
     case CotonomaService.get_by_key(key) do
       nil -> nil
       cotonoma ->
+        Cotonoma.ensure_accessible_by(cotonoma, amishi)
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
         |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)

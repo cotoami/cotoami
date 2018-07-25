@@ -59,13 +59,15 @@ defmodule CotoamiWeb.CotonomaController do
       Enum.map(@cotos_options, fn (key) -> 
         {String.to_atom(key), Map.has_key?(params, key)}
       end)
-    cotos = CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options)
-    case cotos do
+    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options) do
       nil ->
         send_resp(conn, :not_found, "")
       paginated_results ->
         render(conn, "cotos.json", paginated_results)
     end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
   end
 
   def stats(conn, %{"key" => key}, _amishi) do
