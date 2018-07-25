@@ -4,7 +4,7 @@ import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Util.HttpUtil exposing (ClientId(ClientId))
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Util.UpdateUtil exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Types.Graph
@@ -53,13 +53,9 @@ handleDelete payload model =
 handlePost : Payload Post -> Model -> ( Model, Cmd Msg )
 handlePost payload model =
     { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
-        |> withCmd
-            (\model ->
-                if isJust payload.body.asCotonoma then
-                    App.Commands.Cotonoma.refreshCotonomaList model
-                else
-                    Cmd.none
-            )
+        |> withCmdIf
+            (isJust payload.body.asCotonoma)
+            App.Commands.Cotonoma.refreshCotonomaList
         |> addCmd (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
 
@@ -68,13 +64,9 @@ handleUpdate payload model =
     model
         |> App.Model.updateCoto payload.body
         |> App.Model.updateRecentCotonomas payload.body.postedIn
-        |> withCmd
-            (\model ->
-                if isJust payload.body.asCotonoma then
-                    App.Server.Cotonoma.fetchSubCotonomas model.context
-                else
-                    Cmd.none
-            )
+        |> withCmdIf
+            (isJust payload.body.asCotonoma)
+            (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )

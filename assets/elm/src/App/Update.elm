@@ -12,7 +12,7 @@ import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Util.UpdateUtil exposing (..)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Context exposing (Context)
 import App.Types.Amishi exposing (Presences)
@@ -139,13 +139,9 @@ update msg model =
 
         QuickSearchInput query ->
             { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
-                |> withCmd
-                    (\_ ->
-                        if isNotBlank query then
-                            App.Server.Post.search query
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (isNotBlank query)
+                    (\_ -> App.Server.Post.search query)
 
         SearchInput query ->
             { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
@@ -153,13 +149,9 @@ update msg model =
 
         Search ->
             { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
-                |> withCmd
-                    (\model ->
-                        if App.Types.SearchResults.hasQuery model.searchResults then
-                            App.Server.Post.search model.searchResults.query
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (App.Types.SearchResults.hasQuery model.searchResults)
+                    (\_ -> App.Server.Post.search model.searchResults.query)
 
         SearchResultsFetched (Ok paginatedPosts) ->
             { model
@@ -228,16 +220,10 @@ update msg model =
                 , navigationOpen = False
                 , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
-                |> withCmd
-                    (\model ->
-                        Cmd.batch
-                            [ if paginatedPosts.pageIndex == 0 then
-                                initScrollPositionOfTimeline model
-                              else
-                                Cmd.none
-                            , App.Server.Cotonoma.fetchSubCotonomas model.context
-                            ]
-                    )
+                |> withCmdIf
+                    (paginatedPosts.pageIndex == 0)
+                    initScrollPositionOfTimeline
+                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
         CotonomaFetched (Err _) ->
             model |> withoutCmd
@@ -418,13 +404,9 @@ update msg model =
                 |> App.Model.updateCoto coto
                 |> App.Model.updateRecentCotonomas coto.postedIn
                 |> App.Modals.clearModals
-                |> withCmd
-                    (\model ->
-                        if isJust coto.asCotonoma then
-                            App.Commands.Cotonoma.refreshCotonomaList model
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (isJust coto.asCotonoma)
+                    App.Commands.Cotonoma.refreshCotonomaList
                 |> addCmd App.Commands.Graph.renderGraph
 
         CotoUpdated (Err error) ->
@@ -494,7 +476,13 @@ update msg model =
 
         PinCotoToMyHome cotoId ->
             App.Modals.clearModals model
-                |> withCmd (\model -> App.Server.Graph.pinCotos model.context.clientId Nothing [ cotoId ])
+                |> withCmd
+                    (\model ->
+                        App.Server.Graph.pinCotos
+                            model.context.clientId
+                            Nothing
+                            [ cotoId ]
+                    )
 
         CotoPinned (Ok _) ->
             model |> withCmd App.Commands.Graph.renderGraph
@@ -636,13 +624,9 @@ update msg model =
                 | context = App.Types.Context.setCotonoma Nothing model.context
                 , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
             }
-                |> withCmd
-                    (\model ->
-                        if paginatedPosts.pageIndex == 0 then
-                            initScrollPositionOfTimeline model
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (paginatedPosts.pageIndex == 0)
+                    initScrollPositionOfTimeline
 
         PostsFetched (Err _) ->
             model |> withoutCmd
@@ -658,22 +642,16 @@ update msg model =
                     )
 
         ImageLoaded ->
-            ( model
-            , if model.timeline.pageIndex == 0 then
-                App.Commands.scrollTimelineToBottom NoOp
-              else
-                Cmd.none
-            )
+            model
+                |> withCmdIf
+                    (model.timeline.pageIndex == 0)
+                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
         EditorFocus ->
             { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
-                |> withCmd
-                    (\model ->
-                        if model.timeline.editorOpen then
-                            App.Commands.scrollTimelineByQuickEditorOpen NoOp
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (model.timeline.editorOpen)
+                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } }
@@ -747,24 +725,18 @@ update msg model =
         --
         SwitchPinnedCotosView view ->
             { model | pinnedCotosView = view }
-                |> withCmd
-                    (\model ->
-                        if view == GraphView then
-                            App.Commands.Graph.renderGraphWithDelay
-                        else
-                            Cmd.none
-                    )
+                |> withCmdIf
+                    (view == GraphView)
+                    (\_ -> App.Commands.Graph.renderGraphWithDelay)
 
         RenderGraph ->
             model |> withCmd App.Commands.Graph.renderGraph
 
         ResizeGraph ->
-            ( model
-            , if model.pinnedCotosView == GraphView then
-                App.Ports.Graph.resizeGraph ()
-              else
-                Cmd.none
-            )
+            model
+                |> withCmdIf
+                    (model.pinnedCotosView == GraphView)
+                    (\_ -> App.Ports.Graph.resizeGraph ())
 
         --
         -- Traversals
