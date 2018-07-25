@@ -177,20 +177,18 @@ getSelectedCotos model =
         |> List.reverse
 
 
-updateRecentCotonomas : Cotonoma -> Model -> Model
-updateRecentCotonomas cotonoma model =
-    model.recentCotonomas
-        |> (::) cotonoma
-        |> List.Extra.uniqueBy (\c -> c.id)
-        |> List.sortBy (\c -> Date.toTime c.updatedAt)
-        |> List.reverse
-        |> (\cotonomas -> { model | recentCotonomas = cotonomas })
-
-
-updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
-updateRecentCotonomasByCoto coto model =
-    coto.postedIn
-        |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
+updateRecentCotonomas : Maybe Cotonoma -> Model -> Model
+updateRecentCotonomas maybeCotonoma model =
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                model.recentCotonomas
+                    |> (::) cotonoma
+                    |> List.Extra.uniqueBy (\c -> c.id)
+                    |> List.sortBy (\c -> Date.toTime c.updatedAt)
+                    |> List.reverse
+                    |> (\cotonomas -> { model | recentCotonomas = cotonomas })
+            )
         |> Maybe.withDefault model
 
 

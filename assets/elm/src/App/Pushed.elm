@@ -69,7 +69,7 @@ handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
 handleUpdate payload model =
     model
         |> App.Model.updateCoto payload.body
-        |> App.Model.updateRecentCotonomasByCoto payload.body
+        |> App.Model.updateRecentCotonomas payload.body.postedIn
         |> withCmd
             (\model ->
                 if isJust payload.body.asCotonoma then

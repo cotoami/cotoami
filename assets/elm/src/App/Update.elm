@@ -29,7 +29,7 @@ import App.Types.Timeline
         )
 import App.Types.Traversal
 import App.Types.SearchResults
-import App.Model exposing (..)
+import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Confirmation exposing (Confirmation)
 import App.Route exposing (Route(..))
@@ -301,7 +301,7 @@ update msg model =
             App.Modals.openModal ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
-            openCotoMenuModal coto model
+            App.Model.openCotoMenuModal coto model
                 |> withCmd
                     (\_ ->
                         coto.asCotonoma
@@ -331,7 +331,7 @@ update msg model =
         -- Coto
         --
         CotoClick elementId cotoId ->
-            clickCoto elementId cotoId model |> withoutCmd
+            App.Model.clickCoto elementId cotoId model |> withoutCmd
 
         CotoMouseEnter elementId cotoId ->
             { model
@@ -353,12 +353,12 @@ update msg model =
 
         SelectCoto cotoId ->
             { model | context = App.Types.Context.updateSelection cotoId model.context }
-                |> closeSelectionColumnIfEmpty
+                |> App.Model.closeSelectionColumnIfEmpty
                 |> withoutCmd
 
         OpenTraversal cotoId ->
             model
-                |> openTraversal cotoId
+                |> App.Model.openTraversal cotoId
                 |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
@@ -418,8 +418,8 @@ update msg model =
 
         CotoUpdated (Ok coto) ->
             model
-                |> updateCoto coto
-                |> updateRecentCotonomasByCoto coto
+                |> App.Model.updateCoto coto
+                |> App.Model.updateRecentCotonomas coto.postedIn
                 |> App.Modals.clearModals
                 |> withCmd
                     (\model ->
@@ -701,7 +701,7 @@ update msg model =
 
         Posted postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> updateRecentCotonomasByCoto response
+                |> App.Model.updateRecentCotonomas response.postedIn
                 |> App.Modals.clearModals
                 |> withoutCmd
 
@@ -829,7 +829,7 @@ update msg model =
 
         DeselectCoto ->
             { model | context = App.Types.Context.finishBeingDeselected model.context }
-                |> closeSelectionColumnIfEmpty
+                |> App.Model.closeSelectionColumnIfEmpty
                 |> withoutCmd
 
         ClearSelection ->
@@ -1196,7 +1196,7 @@ connectPostToSelection clientId post model =
                         model.connectingDirection
 
                     objects =
-                        getSelectedCotos model
+                        App.Model.getSelectedCotos model
 
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.context.cotonoma
