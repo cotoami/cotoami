@@ -56,7 +56,7 @@ handleDelete payload model =
     App.Model.getCoto payload.body model
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
-        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+        |> withCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model.context)
 
 
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
