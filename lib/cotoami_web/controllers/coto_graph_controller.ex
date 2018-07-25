@@ -14,15 +14,23 @@ defmodule CotoamiWeb.CotoGraphController do
       nil ->
         json conn, CotoGraphService.get_graph_in_amishi(Sips.conn, amishi)
       cotonoma ->
-        json conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn, cotonoma)
+        json conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn, cotonoma, amishi)
     end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
   end
 
-  def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, _amishi) do
+  def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
     case CotonomaService.get_by_key(cotonoma_key) do
-      nil -> send_resp(conn, :not_found, "cotonoma not found: #{cotonoma_key}")
-      cotonoma -> json conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn, cotonoma)
+      nil -> 
+        send_resp(conn, :not_found, "")
+      cotonoma -> 
+        json conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn, cotonoma, amishi)
     end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
   end
 
   def pin(conn, %{"coto_ids" => coto_ids} = params, amishi) do

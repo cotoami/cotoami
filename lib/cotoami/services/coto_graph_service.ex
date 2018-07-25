@@ -40,7 +40,12 @@ defmodule Cotoami.CotoGraphService do
     |> build_graph_from_query_result(amishi_id, true)
   end
 
-  def get_graph_in_cotonoma(bolt_conn, %Cotonoma{id: cotonoma_id, coto: %Coto{id: cotonoma_coto_id}}) do
+  def get_graph_in_cotonoma(
+    bolt_conn, 
+    %Cotonoma{id: cotonoma_id, coto: %Coto{id: cotonoma_coto_id}} = cotonoma,
+    %Amishi{} = amishi
+  ) do
+    Cotonoma.ensure_accessible_by(cotonoma, amishi)
     query = query_graph_from_uuid() <>
       ~s"""
         UNION
@@ -65,7 +70,12 @@ defmodule Cotoami.CotoGraphService do
     |> build_graph_from_query_result(uuid, false)
   end
 
-  def get_graph_from_cotonoma(bolt_conn, %Cotonoma{coto: %Coto{id: cotonoma_coto_id}}) do
+  def get_graph_from_cotonoma(
+    bolt_conn, 
+    %Cotonoma{coto: %Coto{id: cotonoma_coto_id}} = cotonoma,
+    %Amishi{} = amishi
+  ) do
+    Cotonoma.ensure_accessible_by(cotonoma, amishi)
     get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
   end
 
