@@ -19,8 +19,8 @@ import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Types.Timeline exposing (Filter)
-import App.Server.Amishi exposing (decodeAmishi)
-import App.Server.Cotonoma exposing (decodeCotonoma, encodeCotonoma)
+import App.Server.Amishi
+import App.Server.Cotonoma
 
 
 decodePost : Decode.Decoder Post
@@ -30,11 +30,11 @@ decodePost =
         |> optional "id" (maybe string) Nothing
         |> required "content" string
         |> optional "summary" (maybe string) Nothing
-        |> optional "amishi" (maybe decodeAmishi) Nothing
-        |> optional "posted_in" (maybe decodeCotonoma) Nothing
+        |> optional "amishi" (maybe App.Server.Amishi.decodeAmishi) Nothing
+        |> optional "posted_in" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
         |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing
         |> required "as_cotonoma" bool
-        |> optional "cotonoma_key" (maybe string) Nothing
+        |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
         |> hardcoded False
 
 
@@ -82,7 +82,7 @@ fetchCotonomaPosts pageIndex filter key =
         Http.send CotonomaFetched <|
             Http.get url <|
                 Decode.map2 (,)
-                    (Decode.field "cotonoma" decodeCotonoma)
+                    (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
@@ -118,14 +118,15 @@ post clientId maybeCotonoma msgAfterPosted post =
         |> Http.send msgAfterPosted
 
 
-postCotonoma : ClientId -> Maybe Cotonoma -> Int -> String -> Cmd Msg
-postCotonoma clientId maybeCotonoma postId name =
-    Http.send (CotonomaPosted postId) <|
-        httpPost
-            "/api/cotonomas"
-            clientId
-            (Http.jsonBody (encodeCotonoma maybeCotonoma postId name))
-            decodePost
+postCotonoma : ClientId -> Maybe Cotonoma -> Int -> Bool -> String -> Cmd Msg
+postCotonoma clientId maybeCotonoma postId shared name =
+    let
+        body =
+            App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
+                |> Http.jsonBody
+    in
+        httpPost "/api/cotonomas" clientId body decodePost
+            |> Http.send (CotonomaPosted postId)
 
 
 encodePost : Maybe Cotonoma -> Post -> Encode.Value

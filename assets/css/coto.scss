@@ -302,4 +302,24 @@ span.cotonoma-label {
     font-weight: bold;
     vertical-align: middle;
   }
+
+  span.shared i {
+    color: #ccc;
+    margin-left: 6px;
+    font-size: 20px;
+    vertical-align: middle;
+  }
+}
+
+span.not-accessible {
+  span.cotonoma-name {
+    color: #aaa;
+  }
+
+  i {
+    color: #ccc;
+    margin-left: 4px;
+    font-size: 18px;
+    vertical-align: -4px;
+  }
 }

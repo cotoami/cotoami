@@ -24,7 +24,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there are various cotos" do
     setup ~M{conn, amishi} do
-      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi, "test")
+      {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi, "test", false)
 
       {coto1, _} = CotoService.create!(amishi, "coto1")
       {coto2, _} = CotoService.create!(amishi, "coto2")

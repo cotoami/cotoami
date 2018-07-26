@@ -61,8 +61,7 @@ type alias BodyModel r =
         | content : String
         , summary : Maybe String
         , amishi : Maybe Amishi
-        , asCotonoma : Bool
-        , cotonomaKey : Maybe CotonomaKey
+        , asCotonoma : Maybe Cotonoma
     }
 
 
@@ -73,11 +72,8 @@ type alias Markdown =
 bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
-        [ model.cotonomaKey
-            |> Maybe.map
-                (\key ->
-                    cotonomaLink CotonomaClick model.amishi key model.content
-                )
+        [ model.asCotonoma
+            |> Maybe.map (cotonomaLink context CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Context.inReorderMode elementId context then
                     contentDivInReorder model
@@ -196,7 +192,7 @@ headerDiv context graph maybeInbound config elementId coto =
             |> Maybe.map
                 (\postedIn ->
                     if orignatedHere context coto then
-                        span [] []
+                        Util.HtmlUtil.none
                     else
                         a
                             [ class "posted-in"
@@ -205,11 +201,11 @@ headerDiv context graph maybeInbound config elementId coto =
                             ]
                             [ text postedIn.name ]
                 )
-            |> Maybe.withDefault (span [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
           else
-            span [] []
+            Util.HtmlUtil.none
         ]
 
 
@@ -245,8 +241,11 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
             )
     , [ Maybe.map
             (\pinCoto ->
-                if App.Types.Graph.pinned coto.id graph then
-                    span [] []
+                if
+                    App.Types.Graph.pinned coto.id graph
+                        || ((Just coto.id) == (context.cotonoma |> Maybe.map (\c -> c.cotoId)))
+                then
+                    Util.HtmlUtil.none
                 else
                     a
                         [ class "tool-button pin-coto"
@@ -266,7 +265,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                         ]
                         [ materialIcon "edit" Nothing ]
                 else
-                    span [] []
+                    Util.HtmlUtil.none
             )
             config.editCoto
             context.session
@@ -488,7 +487,7 @@ parentsDiv graph exclude childId =
                 |> List.filter (\parent -> (Just parent.id) /= exclude)
     in
         if List.isEmpty parents then
-            div [] []
+            Util.HtmlUtil.none
         else
             div [ class "parents" ]
                 (List.map
@@ -526,9 +525,9 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                             ]
                         ]
                 else
-                    div [] []
+                    Util.HtmlUtil.none
             )
-        |> Maybe.withDefault (div [] [])
+        |> Maybe.withDefault Util.HtmlUtil.none
 
 
 subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
@@ -550,7 +549,7 @@ subCotosDiv context graph parentElementId coto =
                             connections
                         ]
                 )
-            |> Maybe.withDefault (div [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
 
 
 connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
@@ -581,7 +580,7 @@ connectionsDiv context graph parentElementId parentCoto connections =
                             )
                         )
                     |> Maybe.withDefault
-                        ( connection.key, div [] [] )
+                        ( connection.key, Util.HtmlUtil.none )
             )
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
@@ -649,22 +648,47 @@ abbreviate { content, summary } =
             summary
 
 
-cotonomaLink : (CotonomaKey -> Msg) -> Maybe Amishi -> CotonomaKey -> String -> Html Msg
-cotonomaLink cotonomaClick maybeOwner cotonomaKey name =
-    a
-        [ class "cotonoma-link"
-        , href ("/cotonomas/" ++ cotonomaKey)
-        , onLinkButtonClick (cotonomaClick cotonomaKey)
-        ]
-        [ cotonomaLabel maybeOwner name ]
+cotonomaLink : Context -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
+cotonomaLink context cotonomaClick maybeOwner cotonoma =
+    if isCotonomaAccessible context maybeOwner cotonoma then
+        a
+            [ class "cotonoma-link"
+            , href ("/cotonomas/" ++ cotonoma.key)
+            , onLinkButtonClick (cotonomaClick cotonoma.key)
+            ]
+            [ cotonomaLabel maybeOwner cotonoma ]
+    else
+        span [ class "not-accessible" ]
+            [ cotonomaLabel maybeOwner cotonoma
+            , span [ class "private", title "Private" ]
+                [ materialIcon "lock" Nothing ]
+            ]
 
 
-cotonomaLabel : Maybe Amishi -> String -> Html msg
-cotonomaLabel maybeOwner name =
+isCotonomaAccessible : Context -> Maybe Amishi -> Cotonoma -> Bool
+isCotonomaAccessible context maybeOwner cotonoma =
+    if cotonoma.shared then
+        True
+    else
+        (Maybe.map2
+            (\session owner -> session.id == owner.id)
+            context.session
+            maybeOwner
+        )
+            |> Maybe.withDefault False
+
+
+cotonomaLabel : Maybe Amishi -> Cotonoma -> Html msg
+cotonomaLabel maybeOwner cotonoma =
     span
         [ class "cotonoma-label" ]
         [ maybeOwner
             |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
-            |> Maybe.withDefault (span [] [])
-        , span [ class "cotonoma-name" ] [ text name ]
+            |> Maybe.withDefault Util.HtmlUtil.none
+        , span [ class "cotonoma-name" ] [ text cotonoma.name ]
+        , if cotonoma.shared then
+            span [ class "shared", title "Shared" ]
+                [ materialIcon "people" Nothing ]
+          else
+            Util.HtmlUtil.none
         ]

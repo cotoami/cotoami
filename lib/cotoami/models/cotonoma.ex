@@ -7,7 +7,7 @@ defmodule Cotoami.Cotonoma do
   import Ecto.Changeset
   import Ecto.Query, warn: false
   import Cotoami.Helpers
-  alias Cotoami.Amishi
+  alias Cotoami.{Amishi, Cotonoma}
 
   @key_length 10
   @name_max_length 50
@@ -17,6 +17,7 @@ defmodule Cotoami.Cotonoma do
   schema "cotonomas" do
     field :key, :string
     field :name, :string
+    field :shared, :boolean
     field :pinned, :boolean
     field :timeline_revision, :integer
     field :graph_revision, :integer
@@ -35,19 +36,19 @@ defmodule Cotoami.Cotonoma do
 
   def changeset_to_insert(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :coto_id, :owner_id])
+    |> cast(params, [:name, :coto_id, :owner_id, :shared])
     |> generate_key()
     |> put_change(:pinned, false)
     |> put_change(:timeline_revision, 0)
     |> put_change(:graph_revision, 0)
-    |> validate_required([:key, :name, :coto_id, :owner_id])
+    |> validate_required([:key, :name, :coto_id, :owner_id, :shared])
     |> validate_name()
   end
 
-  def changeset_to_update_name(struct, params \\ %{}) do
+  def changeset_to_update(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :shared])
+    |> validate_required([:name, :shared])
     |> validate_name()
   end
 
@@ -88,15 +89,17 @@ defmodule Cotoami.Cotonoma do
       where: coto.posted_in_id == ^cotonoma_id
   end
 
-  def exclude_empty_by_others(query, amishi_id) do
-    from c in query,
-      where:
-        c.timeline_revision > 0 or
-        c.graph_revision > 0 or
-        c.owner_id == ^amishi_id
-  end
-
   def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
     %{target | coto: from.coto, owner: from.owner}
+  end
+
+  def accessible_by?(%Cotonoma{owner: owner, shared: shared}, %Amishi{id: amishi_id}) do
+    owner.id == amishi_id or shared
+  end
+
+  def ensure_accessible_by(%Cotonoma{} = cotonoma, %Amishi{} = amishi) do
+    unless accessible_by?(cotonoma, amishi) do
+      raise Cotoami.Exceptions.NoPermission
+    end
   end
 end

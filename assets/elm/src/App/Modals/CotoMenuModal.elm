@@ -2,6 +2,7 @@ module App.Modals.CotoMenuModal exposing (Model, initModel, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Exts.Maybe exposing (isJust, isNothing)
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
@@ -15,15 +16,13 @@ import App.Messages exposing (Msg(..))
 type alias Model =
     { coto : Coto
     , cotonomaStats : Maybe CotonomaStats
-    , cotonomaPinned : Bool
     }
 
 
-initModel : Bool -> Coto -> Model
-initModel cotonomaPinned coto =
+initModel : Coto -> Model
+initModel coto =
     { coto = coto
     , cotonomaStats = Nothing
-    , cotonomaPinned = cotonomaPinned
     }
 
 
@@ -56,8 +55,7 @@ modalConfig context session graph model =
             [ menuItemPinCotoToMyHome context graph model
             , menuItemPinUnpin context graph model
             ]
-        , [ menuItemPinUnpinCotonoma session model
-          , menuItemEdit session model
+        , [ menuItemEdit session model
           , menuItemAddCoto model
           , menuItemCotonomatize session model
           , menuItemDelete session model
@@ -164,42 +162,6 @@ pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
             )
 
 
-menuItemPinUnpinCotonoma : Session -> Model -> Html Msg
-menuItemPinUnpinCotonoma session model =
-    if session.owner then
-        model.coto.cotonomaKey
-            |> Maybe.map
-                (\cotonomaKey ->
-                    div
-                        [ class "menu-item"
-                        , onLinkButtonClick
-                            (PinOrUnpinCotonoma
-                                cotonomaKey
-                                (not model.cotonomaPinned)
-                            )
-                        ]
-                        [ if model.cotonomaPinned then
-                            a
-                                [ class "unpin-cotonoma" ]
-                                [ faIcon "thumb-tack" Nothing
-                                , faIcon "remove" Nothing
-                                , span [ class "menu-title" ]
-                                    [ text "Unpin from the main nav" ]
-                                ]
-                          else
-                            a
-                                [ class "pin-cotonoma" ]
-                                [ faIcon "thumb-tack" Nothing
-                                , span [ class "menu-title" ]
-                                    [ text "Pin to the main nav" ]
-                                ]
-                        ]
-                )
-            |> Maybe.withDefault (div [] [])
-    else
-        div [] []
-
-
 menuItemEdit : Session -> Model -> Html Msg
 menuItemEdit session model =
     if checkWritePermission session model then
@@ -214,7 +176,7 @@ menuItemEdit session model =
                 ]
             ]
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 menuItemAddCoto : Model -> Html Msg
@@ -233,7 +195,7 @@ menuItemAddCoto model =
 
 menuItemCotonomatize : Session -> Model -> Html Msg
 menuItemCotonomatize session model =
-    if (not model.coto.asCotonoma) && (checkWritePermission session model) then
+    if (isNothing model.coto.asCotonoma) && (checkWritePermission session model) then
         div
             [ class "menu-item"
             , onLinkButtonClick (ConfirmCotonomatize model.coto)
@@ -246,19 +208,19 @@ menuItemCotonomatize session model =
                 ]
             ]
     else
-        div [] []
+        Util.HtmlUtil.none
 
 
 menuItemDelete : Session -> Model -> Html Msg
 menuItemDelete session model =
     let
-        cotonomaNotDeletable =
+        nonEmptyCotonoma =
             model.cotonomaStats
                 |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
-                |> Maybe.withDefault model.coto.asCotonoma
+                |> Maybe.withDefault (isJust model.coto.asCotonoma)
     in
         if checkWritePermission session model then
-            if cotonomaNotDeletable then
+            if nonEmptyCotonoma then
                 div [ class "menu-item disabled" ]
                     [ span
                         [ class "delete" ]
@@ -278,4 +240,4 @@ menuItemDelete session model =
                         ]
                     ]
         else
-            div [] []
+            Util.HtmlUtil.none

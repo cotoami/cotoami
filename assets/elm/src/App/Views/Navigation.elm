@@ -18,15 +18,13 @@ view model =
     [ div [ id "navigation-content" ]
         [ model.context.session
             |> Maybe.map (\_ -> homeNav model)
-            |> Maybe.withDefault (div [] [])
+            |> Maybe.withDefault Util.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
             [ model.context.cotonoma
-                |> Maybe.map cotonomaNav
-                |> Maybe.withDefault (div [] [])
-            , cotonomasDiv model.context model.graph "sub-cotonomas" "Sub" model.subCotonomas
-            , cotonomasDiv model.context model.graph "pinned-cotonomas" "Pinned" model.pinnedCotonomas
-            , cotonomasDiv model.context model.graph "recent-cotonomas" "Recent" model.recentCotonomas
+                |> Maybe.map (cotonomaNav model)
+                |> Maybe.withDefault Util.HtmlUtil.none
+            , recentCotonomasDiv model.context model.graph model.recentCotonomas
             ]
         ]
     ]
@@ -52,29 +50,31 @@ homeNav model =
         ]
 
 
-cotonomaNav : Cotonoma -> Html Msg
-cotonomaNav cotonoma =
-    div [ class "owner" ]
-        [ div [ class "navigation-title" ] [ text "Owner" ]
-        , cotonoma.owner
-            |> Maybe.map
-                (\owner ->
-                    div
-                        [ class "amishi" ]
-                        [ img [ class "avatar", src owner.avatarUrl ] []
-                        , span [ class "name" ] [ text owner.displayName ]
-                        ]
-                )
-            |> Maybe.withDefault (div [] [])
+cotonomaNav : Model -> Cotonoma -> Html Msg
+cotonomaNav model cotonoma =
+    div [ class "current-cotonoma" ]
+        [ div [ class "navigation-title" ] [ text "Current" ]
+        , App.Views.Cotonomas.cotonomaDiv
+            model.context
+            model.graph
+            "current-cotonoma"
+            cotonoma
+        , div [ class "sub-cotonomas" ]
+            [ App.Views.Cotonomas.view
+                model.context
+                model.graph
+                "sub-cotonomas"
+                model.subCotonomas
+            ]
         ]
 
 
-cotonomasDiv : Context -> Graph -> String -> String -> List Cotonoma -> Html Msg
-cotonomasDiv context graph divClass title cotonomas =
+recentCotonomasDiv : Context -> Graph -> List Cotonoma -> Html Msg
+recentCotonomasDiv context graph cotonomas =
     if List.isEmpty cotonomas then
-        div [] []
+        Util.HtmlUtil.none
     else
-        div [ class divClass ]
-            [ div [ class "navigation-title" ] [ text title ]
-            , App.Views.Cotonomas.view context graph divClass cotonomas
+        div [ class "recent-cotonomas" ]
+            [ div [ class "navigation-title" ] [ text "Recent" ]
+            , App.Views.Cotonomas.view context graph "recent-cotonomas" cotonomas
             ]

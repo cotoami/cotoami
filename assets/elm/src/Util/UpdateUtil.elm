@@ -1,9 +1,17 @@
-module Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+module Util.UpdateUtil exposing (withCmd, withCmdIf, withoutCmd, addCmd)
 
 
 withCmd : (model -> Cmd msg) -> model -> ( model, Cmd msg )
 withCmd createCmd model =
     ( model, createCmd model )
+
+
+withCmdIf : (model -> Bool) -> (model -> Cmd msg) -> model -> ( model, Cmd msg )
+withCmdIf condition createCmd model =
+    if condition model then
+        withCmd createCmd model
+    else
+        ( model, Cmd.none )
 
 
 withoutCmd : model -> ( model, Cmd msg )

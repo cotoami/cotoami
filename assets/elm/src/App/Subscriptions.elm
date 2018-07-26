@@ -5,9 +5,10 @@ import Phoenix
 import Phoenix.Socket as Socket exposing (Socket)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
-import App.Channels exposing (globalChannel, cotonomaChannel)
+import App.Channels
 import App.Ports.LocalStorage
 import App.Ports.Graph
+import App.Types.Session exposing (Session)
 
 
 socket : String -> String -> Socket Msg
@@ -19,21 +20,25 @@ socket token websocketUrl =
 phoenixChannels : Model -> Sub Msg
 phoenixChannels model =
     model.context.session
-        |> Maybe.map
-            (\session ->
-                Phoenix.connect
-                    (socket session.token session.websocketUrl)
-                    (model.context.cotonoma
+        |> Maybe.map (phoenixChannelsInSession model)
+        |> Maybe.withDefault Sub.none
+
+
+phoenixChannelsInSession : Model -> Session -> Sub Msg
+phoenixChannelsInSession model session =
+    Phoenix.connect
+        (socket session.token session.websocketUrl)
+        (App.Channels.cotoChannels (App.Model.getCotoIdsToWatch model)
+            |> (::) App.Channels.globalChannel
+            |> (\channels ->
+                    model.context.cotonoma
                         |> Maybe.map
                             (\cotonoma ->
-                                [ globalChannel
-                                , cotonomaChannel cotonoma.key
-                                ]
+                                App.Channels.cotonomaChannel cotonoma.key :: channels
                             )
-                        |> Maybe.withDefault [ globalChannel ]
-                    )
-            )
-        |> Maybe.withDefault Sub.none
+                        |> Maybe.withDefault channels
+               )
+        )
 
 
 subscriptions : Model -> Sub Msg

@@ -12,7 +12,7 @@ defmodule Cotoami.CotonomaService do
   }
   alias Cotoami.Exceptions.NotFound
 
-  def create!(%Amishi{} = amishi, name, cotonoma_id \\ nil) do
+  def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
     posted_in = get!(cotonoma_id)
 
     cotonoma_coto =
@@ -25,7 +25,7 @@ defmodule Cotoami.CotonomaService do
         })
       |> Repo.insert!()
 
-    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id)
+    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id, shared)
 
     cotonoma_coto = %{cotonoma_coto |
       amishi: amishi,
@@ -39,12 +39,13 @@ defmodule Cotoami.CotonomaService do
     {cotonoma_coto, posted_in}
   end
 
-  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id) do
+  defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do
     %Cotonoma{}
     |> Cotonoma.changeset_to_insert(%{
         name: name,
         coto_id: coto.id,
-        owner_id: amishi_id
+        owner_id: amishi_id,
+        shared: shared
       })
     |> Repo.insert!()
   end
@@ -58,7 +59,13 @@ defmodule Cotoami.CotonomaService do
       |> change(content: cotonoma_name)
       |> Repo.update!()
 
-    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id)
+    shared =
+      case coto.posted_in do
+        nil -> false
+        posted_in -> posted_in.shared
+      end
+
+    cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id, shared)
 
     cotonoma_coto =
       %{cotonoma_coto |
@@ -70,21 +77,7 @@ defmodule Cotoami.CotonomaService do
         }
       }
 
-    bolt_conn = Bolt.Sips.conn
-
-    CotoGraphService.sync_coto_props(bolt_conn, cotonoma_coto)
-
-    # Increment the revision if it has connections, which in turn displays it
-    # in the "recent cotonomas" for other amishis even if its timeline is empty.
-    subgraph = CotoGraphService.get_graph_from_cotonoma(bolt_conn, cotonoma_coto.cotonoma)
-    cotonoma_coto =
-      if map_size(subgraph.connections) > 0 do
-        %{cotonoma_coto | 
-          cotonoma: increment_graph_revision(cotonoma_coto.cotonoma)
-        }
-      else
-        cotonoma_coto
-      end
+    CotoGraphService.sync_coto_props(Bolt.Sips.conn, cotonoma_coto)
 
     cotonoma_coto
   end
@@ -139,8 +132,7 @@ defmodule Cotoami.CotonomaService do
 
   def recent_cotonomas(%Amishi{id: amishi_id}) do
     Cotonoma
-    |> Cotonoma.exclude_empty_by_others(amishi_id)
-    |> where([c], c.pinned == false)
+    |> where([c], c.pinned == false and c.owner_id == ^amishi_id)
     |> limit(100)
     |> do_query_for_cotonomas()
   end
@@ -152,24 +144,12 @@ defmodule Cotoami.CotonomaService do
     |> do_query_for_cotonomas()
   end
 
-  def pinned_cotonomas() do
-    Cotonoma
-    |> where([c], c.pinned == true)
-    |> do_query_for_cotonomas()
-  end
-
   defp do_query_for_cotonomas(query) do
     query
     |> preload([:coto, :owner])
     |> order_by(desc: :updated_at)
     |> Repo.all()
     |> complement_owners()
-  end
-
-  def pin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, true)
-  def unpin(%Cotonoma{} = cotonoma), do: set_pinned(cotonoma, false)
-  defp set_pinned(cotonoma, pinned) do
-    cotonoma |> change(pinned: pinned) |> Repo.update!()
   end
 
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do

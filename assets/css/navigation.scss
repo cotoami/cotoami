@@ -37,31 +37,14 @@
     font-weight: bold;
   }
 
-  div.owner {
+  div.current-cotonoma {
     margin-bottom: 20px;
 
-    div.amishi {
-      margin-bottom: 5px;
-
-      img.avatar {
-        margin: 0;
-        padding: 0;
-        width: 20px;
-        height: 20px;
-        margin-right: 4px;
-        border-radius: 4px;
-        vertical-align: middle;
-      }
-
-      span.name {
-        color: #666;
-        font-weight: bold;
-      }
+    div.sub-cotonomas {
+      margin-left: 10px;
     }
   }
 
-  div.sub-cotonomas,
-  div.pinned-cotonomas,
   div.recent-cotonomas {
     margin-bottom: 20px;
   }
@@ -103,6 +86,15 @@
         width: 20px;
         height: 20px;
       }
+
+      span.shared i {
+        font-size: 16px;
+      }
+    }
+
+    span.not-accessible i {
+      font-size: 16px;
+      vertical-align: -4px;
     }
 
     div.touch-space-to-open-tools {
@@ -149,9 +141,5 @@
     &.element-focus span.coto-tool-buttons {
       display: inline-block !important;
     }
-  }
-
-  div.recent-cotonomas div.not-active div.cotonoma-link {
-    opacity: .3;
   }
 }

@@ -33,7 +33,7 @@ view context graph post =
                 , post.cotoId
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
                     |> Maybe.withDefault Util.HtmlUtil.none
-                , if post.asCotonoma then
+                , if post.isCotonoma then
                     Util.HtmlUtil.none
                   else
                     authorDiv context post

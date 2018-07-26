@@ -6,6 +6,7 @@ defmodule CotoamiWeb.UserSocket do
   ## Channels
   channel "global", CotoamiWeb.GlobalChannel
   channel "cotonomas:*", CotoamiWeb.CotonomaChannel
+  channel "cotos:*", CotoamiWeb.CotoChannel
 
   ## Transports
   # https://hexdocs.pm/phoenix/heroku.html

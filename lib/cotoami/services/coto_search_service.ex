@@ -40,10 +40,11 @@ defmodule Cotoami.CotoSearchService do
   defp add_query(query, %Amishi{id: amishi_id} , search_string) do
     from coto in query,
       join: id_and_rank in matching_coto_ids_and_ranks(search_string),
-      on: id_and_rank.id == coto.id,
+        on: id_and_rank.id == coto.id,
+      left_join: cotonoma in assoc(coto, :posted_in),
       where: 
-        not is_nil(coto.posted_in_id) or
-        coto.amishi_id == ^amishi_id,
+        coto.amishi_id == ^amishi_id or 
+        cotonoma.owner_id == ^amishi_id,
       order_by: [desc: id_and_rank.rank, desc: coto.inserted_at]
   end
 

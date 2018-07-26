@@ -65,8 +65,6 @@ defmodule CotoamiWeb.Router do
 
     resources "/cotonomas", CotonomaController, only: [:index, :create]
     get "/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub
-    put "/cotonomas/pin/:key", CotonomaController, :pin
-    delete "/cotonomas/pin/:key", CotonomaController, :unpin
     get "/cotonomas/:key/cotos", CotonomaController, :cotos
     get "/cotonomas/:key/stats", CotonomaController, :stats
 

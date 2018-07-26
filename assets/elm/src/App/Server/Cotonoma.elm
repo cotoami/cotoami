@@ -5,10 +5,10 @@ import Http
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
-import Util.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
+import App.Types.Context exposing (Context)
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
@@ -17,7 +17,7 @@ decodeCotonoma =
         |> required "id" string
         |> required "key" string
         |> required "name" string
-        |> required "pinned" bool
+        |> required "shared" bool
         |> required "coto_id" string
         |> optional "owner" (maybe decodeAmishi) Nothing
         |> required "inserted_at" (Decode.map Date.fromTime float)
@@ -28,16 +28,13 @@ decodeCotonoma =
 
 fetchCotonomas : Cmd Msg
 fetchCotonomas =
-    Http.send CotonomasFetched <|
-        Http.get "/api/cotonomas" <|
-            Decode.map2 (,)
-                (Decode.field "pinned" (Decode.list decodeCotonoma))
-                (Decode.field "recent" (Decode.list decodeCotonoma))
+    (Http.get "/api/cotonomas" (Decode.list decodeCotonoma))
+        |> Http.send CotonomasFetched
 
 
-fetchSubCotonomas : Maybe Cotonoma -> Cmd Msg
-fetchSubCotonomas maybeCotonoma =
-    maybeCotonoma
+fetchSubCotonomas : Context -> Cmd Msg
+fetchSubCotonomas context =
+    context.cotonoma
         |> Maybe.map
             (\cotonoma ->
                 Decode.list decodeCotonoma
@@ -47,39 +44,22 @@ fetchSubCotonomas maybeCotonoma =
         |> Maybe.withDefault Cmd.none
 
 
-encodeCotonoma : Maybe Cotonoma -> Int -> String -> Encode.Value
-encodeCotonoma maybeCotonoma postId name =
+encodeCotonoma : Maybe Cotonoma -> Bool -> String -> Encode.Value
+encodeCotonoma maybeCotonoma shared name =
     Encode.object
         [ ( "cotonoma"
           , (Encode.object
                 [ ( "cotonoma_id"
-                  , case maybeCotonoma of
-                        Nothing ->
-                            Encode.null
-
-                        Just cotonoma ->
-                            Encode.string cotonoma.id
+                  , maybeCotonoma
+                        |> Maybe.map (\cotonoma -> Encode.string cotonoma.id)
+                        |> Maybe.withDefault Encode.null
                   )
-                , ( "postId", Encode.int postId )
                 , ( "name", Encode.string name )
+                , ( "shared", Encode.bool shared )
                 ]
             )
           )
         ]
-
-
-pinOrUnpinCotonoma : ClientId -> Bool -> CotonomaKey -> Cmd Msg
-pinOrUnpinCotonoma clientId pinOrUnpin cotonomaKey =
-    let
-        url =
-            "/api/cotonomas/pin/" ++ cotonomaKey
-    in
-        Http.send CotonomaPinnedOrUnpinned
-            (if pinOrUnpin then
-                httpPut url clientId Http.emptyBody Decode.string
-             else
-                httpDelete url clientId
-            )
 
 
 fetchStats : CotonomaKey -> Cmd Msg

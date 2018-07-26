@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
+import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
@@ -308,7 +309,7 @@ toPageLabel defaultLabel { content, summary } =
 traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
-        [ if coto.asCotonoma then
+        [ if isJust coto.asCotonoma then
             openTraversalButton coto.id
           else if hasChildren coto.id graph then
             a

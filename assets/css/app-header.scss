@@ -50,7 +50,7 @@
 
     span.cotonoma-name {
       display: inline-block;
-      max-width: 50vw;
+      max-width: 40vw;
       height: 100%;
       vertical-align: top;
       overflow-x: hidden;
@@ -58,6 +58,13 @@
       white-space: nowrap;
       font-weight: bold;
       opacity: 0.5;
+    }
+
+    span.shared i {
+      color: #ccc;
+      margin-left: 6px;
+      font-size: 26px;
+      vertical-align: 2px;
     }
   }
 

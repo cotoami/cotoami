@@ -53,13 +53,9 @@ cotonomaDiv context graph listTitle cotonoma =
             ]
             [ div [ class "cotonoma-link" ]
                 [ if inCotonoma then
-                    App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma.name
+                    App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma
                   else
-                    App.Views.Coto.cotonomaLink
-                        CotonomaClick
-                        cotonoma.owner
-                        cotonoma.key
-                        cotonoma.name
+                    App.Views.Coto.cotonomaLink context CotonomaClick cotonoma.owner cotonoma
                 ]
             , div [ class "touch-space-to-open-tools" ] []
             , App.Types.Coto.toCoto cotonoma

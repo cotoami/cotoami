@@ -2,15 +2,34 @@ defmodule CotoamiWeb.CotonomaView do
   use CotoamiWeb, :view
   alias CotoamiWeb.{CotoView, AmishiView}
 
-  def render("index.json", %{pinned: pinned, recent: recent}) do
-    %{
-      pinned: render_many(pinned, __MODULE__, "cotonoma.json"),
-      recent: render_many(recent, __MODULE__, "cotonoma.json")
-    }
+  def render("cotonomas.json", %{cotonomas: cotonomas}) do
+    render_many(cotonomas, __MODULE__, "cotonoma.json")
   end
 
-  def render("sub.json", %{rows: rows}) do
-    render_many(rows, __MODULE__, "cotonoma.json")
+  def render("cotonoma.json", %{cotonoma: cotonoma}) do
+    owner_as_json =
+      case cotonoma.owner do
+        %Ecto.Association.NotLoaded{} -> nil
+        owner ->
+          render_one(owner, AmishiView, "amishi.json")
+      end
+    %{
+      id: cotonoma.id,
+      key: cotonoma.key,
+      name: cotonoma.name,
+      shared: cotonoma.shared,
+      pinned: cotonoma.pinned,
+      timeline_revision: cotonoma.timeline_revision,
+      graph_revision: cotonoma.graph_revision,
+      coto_id:
+        case cotonoma.coto do
+          %Ecto.Association.NotLoaded{} -> ""
+          coto -> coto.id
+        end,
+      owner: owner_as_json,
+      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:millisecond),
+      updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
+    }
   end
 
   def render("cotos.json", %{
@@ -26,31 +45,6 @@ defmodule CotoamiWeb.CotonomaView do
         page_index: page_index, 
         total_pages: total_pages
       )
-    }
-  end
-
-  def render("cotonoma.json", %{cotonoma: cotonoma}) do
-    owner_as_json =
-      case cotonoma.owner do
-        %Ecto.Association.NotLoaded{} -> nil
-        owner ->
-          render_one(owner, AmishiView, "amishi.json")
-      end
-    %{
-      id: cotonoma.id,
-      key: cotonoma.key,
-      name: cotonoma.name,
-      pinned: cotonoma.pinned,
-      timeline_revision: cotonoma.timeline_revision,
-      graph_revision: cotonoma.graph_revision,
-      coto_id:
-        case cotonoma.coto do
-          %Ecto.Association.NotLoaded{} -> ""
-          coto -> coto.id
-        end,
-      owner: owner_as_json,
-      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
     }
   end
 end

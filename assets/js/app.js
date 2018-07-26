@@ -77,7 +77,7 @@ elmApp.ports.getAllItems.subscribe(() => {
   }
 })
 
-elmApp.ports.getItem.clearStorage.subscribe((prefix) => {
+elmApp.ports.clearStorage.subscribe((prefix) => {
   if (prefix) {
     for (var i = localStorage.length - 1; i >= 0; --i) {
       var key = localStorage.key(i)
