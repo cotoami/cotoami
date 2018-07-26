@@ -6,7 +6,6 @@ defmodule CotoamiWeb.GlobalChannel do
   use CotoamiWeb, :channel
 
   def join("global", _params, socket) do
-    send(self(), :after_join)
     {:ok, socket}
   end
 end

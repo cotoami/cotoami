@@ -7,6 +7,7 @@ port module App.Ports.Graph
         )
 
 import Dict
+import Exts.Maybe exposing (isJust)
 import App.Types.Graph exposing (Graph)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 
@@ -43,7 +44,7 @@ cotoToNode : Coto -> Node
 cotoToNode coto =
     { id = coto.id
     , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
-    , asCotonoma = coto.asCotonoma
+    , asCotonoma = isJust coto.asCotonoma
     , imageUrl = coto.amishi |> Maybe.map (\amishi -> amishi.avatarUrl)
     }
 

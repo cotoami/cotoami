@@ -17,8 +17,8 @@ type alias Post =
     , amishi : Maybe Amishi
     , postedIn : Maybe Cotonoma
     , postedAt : Maybe Date
-    , asCotonoma : Bool
-    , cotonomaKey : Maybe CotonomaKey
+    , isCotonoma : Bool
+    , asCotonoma : Maybe Cotonoma
     , beingDeleted : Bool
     }
 
@@ -32,8 +32,8 @@ defaultPost =
     , amishi = Nothing
     , postedIn = Nothing
     , postedAt = Nothing
-    , asCotonoma = False
-    , cotonomaKey = Nothing
+    , isCotonoma = False
+    , asCotonoma = Nothing
     , beingDeleted = False
     }
 
@@ -50,7 +50,6 @@ toCoto post =
                 post.postedIn
                 postedAt
                 post.asCotonoma
-                post.cotonomaKey
         )
         post.cotoId
         post.postedAt
@@ -58,30 +57,26 @@ toCoto post =
 
 isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
 isPostedInCotonoma maybeCotonoma post =
-    case maybeCotonoma of
-        Nothing ->
-            isNothing post.postedIn
-
-        Just cotonoma ->
-            case post.postedIn of
-                Nothing ->
-                    False
-
-                Just postedIn ->
-                    postedIn.id == cotonoma.id
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                post.postedIn
+                    |> Maybe.map (\postedIn -> postedIn.id == cotonoma.id)
+                    |> Maybe.withDefault False
+            )
+        |> Maybe.withDefault (isNothing post.postedIn)
 
 
 isPostedInCoto : Coto -> Post -> Bool
 isPostedInCoto coto post =
-    if coto.asCotonoma then
-        case post.postedIn of
-            Nothing ->
-                False
-
-            Just postedIn ->
-                (Just postedIn.key) == coto.cotonomaKey
-    else
-        False
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                post.postedIn
+                    |> Maybe.map (\postedIn -> postedIn.key == cotonoma.key)
+                    |> Maybe.withDefault False
+            )
+        |> Maybe.withDefault False
 
 
 isSelfOrPostedIn : Coto -> Post -> Bool

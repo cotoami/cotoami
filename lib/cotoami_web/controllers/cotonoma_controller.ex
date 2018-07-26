@@ -12,15 +12,14 @@ defmodule CotoamiWeb.CotonomaController do
   end
 
   def index(conn, _params, amishi) do
-    render(conn, "index.json", %{
-      pinned: CotonomaService.pinned_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(amishi),
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.recent_cotonomas(amishi)
     })
   end
 
   def sub(conn, %{"cotonoma_id" => cotonoma_id}, _amishi) do
-    render(conn, "sub.json", %{
-      rows: CotonomaService.sub_cotonomas(cotonoma_id)
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.sub_cotonomas(cotonoma_id)
     })
   end
 
@@ -29,14 +28,15 @@ defmodule CotoamiWeb.CotonomaController do
     %{
       "cotonoma" => %{
         "cotonoma_id" => cotonoma_id,
-        "name" => name
+        "name" => name,
+        "shared" => shared
       }
     },
     amishi
   ) do
     {:ok, {cotonoma_coto, posted_in}} =
       Repo.transaction(fn ->
-        case CotonomaService.create!(amishi, name, cotonoma_id) do
+        case CotonomaService.create!(amishi, name, shared, cotonoma_id) do
           {cotonoma_coto, nil} -> {cotonoma_coto, nil}
           {cotonoma_coto, posted_in} ->
             {cotonoma_coto, increment_timeline_revision(posted_in)}
@@ -51,16 +51,6 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp_by_constraint_error(conn, e)
   end
 
-  def pin(conn, %{"key" => key}, %{owner: true}) do
-    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.pin()
-    conn |> put_status(:ok) |> json("")
-  end
-
-  def unpin(conn, %{"key" => key}, %{owner: true}) do
-    Cotonoma |> Repo.get_by!(key: key) |> CotonomaService.unpin()
-    conn |> put_status(:ok) |> json("")
-  end
-
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
@@ -69,13 +59,15 @@ defmodule CotoamiWeb.CotonomaController do
       Enum.map(@cotos_options, fn (key) -> 
         {String.to_atom(key), Map.has_key?(params, key)}
       end)
-    cotos = CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options)
-    case cotos do
+    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options) do
       nil ->
         send_resp(conn, :not_found, "")
       paginated_results ->
         render(conn, "cotos.json", paginated_results)
     end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
   end
 
   def stats(conn, %{"key" => key}, _amishi) do

@@ -52,6 +52,7 @@ defmodule Cotoami.CotoService do
     case CotonomaService.get_by_key(key) do
       nil -> nil
       cotonoma ->
+        Cotonoma.ensure_accessible_by(cotonoma, amishi)
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
         |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
@@ -139,23 +140,29 @@ defmodule Cotoami.CotoService do
     {coto, posted_in}
   end
 
-  def update_content!(id, %{"content" => _} = params, %Amishi{id: amishi_id} = amishi) do
+  def update!(id, %{"content" => _, "shared" => shared} = params, %Amishi{id: amishi_id} = amishi) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> Repo.get!(id)
-    |> Coto.changeset_to_update_content(params)
+    |> Coto.changeset_to_update(params)
     |> Repo.update!()
 
     coto = get(id)  # updated struct with the relations
-    if coto.as_cotonoma do
-      coto.cotonoma
-      |> Cotonoma.changeset_to_update_name(%{name: coto.content})
-      |> Repo.update!()
-    end
+    cotonoma = 
+      if coto.as_cotonoma do
+        coto.cotonoma
+        |> Cotonoma.changeset_to_update(%{name: coto.content, shared: shared})
+        |> Repo.update!()
+      else
+        nil
+      end
 
     CotoGraphService.sync_coto_props(Bolt.Sips.conn, coto)
 
-    %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in)}
+    %{coto | 
+      posted_in: CotonomaService.complement_owner(coto.posted_in),
+      cotonoma: cotonoma
+    }
     |> complement_amishi(amishi)
   end
 

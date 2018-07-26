@@ -80,8 +80,8 @@ postDiv context graph post =
                 , post.cotoId
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
                     |> Maybe.withDefault (div [] [])
-                , if post.asCotonoma then
-                    div [] []
+                , if post.isCotonoma then
+                    Util.HtmlUtil.none
                   else
                     App.Views.Post.authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown post

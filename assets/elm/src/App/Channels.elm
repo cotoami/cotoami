@@ -1,11 +1,12 @@
 module App.Channels exposing (..)
 
 import Dict
+import Set exposing (Set)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
 import Util.HttpUtil exposing (ClientId(ClientId))
-import App.Types.Coto exposing (CotonomaKey)
+import App.Types.Coto exposing (CotonomaKey, CotoId)
 import App.Types.Amishi exposing (Amishi, Presences)
 import App.Server.Amishi
 import App.Messages exposing (..)
@@ -14,20 +15,6 @@ import App.Messages exposing (..)
 globalChannel : Channel Msg
 globalChannel =
     Channel.init ("global")
-        |> Channel.on "update"
-            (\payload -> UpdatePushed payload)
-        |> Channel.on "delete"
-            (\payload -> DeletePushed payload)
-        |> Channel.on "cotonomatize"
-            (\payload -> CotonomatizePushed payload)
-        |> Channel.on "cotonoma"
-            (\payload -> CotonomaPushed payload)
-        |> Channel.on "connect"
-            (\payload -> ConnectPushed payload)
-        |> Channel.on "disconnect"
-            (\payload -> DisconnectPushed payload)
-        |> Channel.on "reorder"
-            (\payload -> ReorderPushed payload)
 
 
 cotonomaChannel : CotonomaKey -> Channel Msg
@@ -39,6 +26,28 @@ cotonomaChannel key =
             (\payload -> CotonomaPresenceDiff payload)
         |> Channel.on "post"
             (\payload -> PostPushed payload)
+
+
+cotoChannels : Set CotoId -> List (Channel Msg)
+cotoChannels cotoIds =
+    cotoIds
+        |> Set.toList
+        |> List.map
+            (\cotoId ->
+                Channel.init ("cotos:" ++ cotoId)
+                    |> Channel.on "delete"
+                        (\payload -> DeletePushed payload)
+                    |> Channel.on "update"
+                        (\payload -> UpdatePushed payload)
+                    |> Channel.on "cotonomatize"
+                        (\payload -> CotonomatizePushed payload)
+                    |> Channel.on "connect"
+                        (\payload -> ConnectPushed payload)
+                    |> Channel.on "disconnect"
+                        (\payload -> DisconnectPushed payload)
+                    |> Channel.on "reorder"
+                        (\payload -> ReorderPushed payload)
+            )
 
 
 type alias Payload body =

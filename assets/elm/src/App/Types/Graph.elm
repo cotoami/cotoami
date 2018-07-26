@@ -20,7 +20,7 @@ module App.Types.Graph
         , disconnect
         , batchConnect
         , removeCoto
-        , updateContent
+        , updateCoto
         , reorder
         , swapOrder
         , moveToFirst
@@ -36,7 +36,7 @@ import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
 import App.Types.Amishi exposing (AmishiId)
-import App.Types.Coto exposing (Coto, CotoId, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 
 
 type Direction
@@ -155,35 +155,28 @@ addCoto coto graph =
     { graph | cotos = Dict.insert coto.id coto graph.cotos }
 
 
-updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
-updateCoto cotoId update graph =
+updateCoto_ : CotoId -> (Coto -> Coto) -> Graph -> Graph
+updateCoto_ cotoId update graph =
     { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
 
 
-updateContent : Coto -> Graph -> Graph
-updateContent coto graph =
-    updateCoto
+updateCoto : Coto -> Graph -> Graph
+updateCoto coto graph =
+    updateCoto_
         coto.id
         (\currentCoto ->
             { currentCoto
                 | content = coto.content
                 , summary = coto.summary
+                , asCotonoma = coto.asCotonoma
             }
         )
         graph
 
 
-cotonomatize : CotoId -> CotonomaKey -> Graph -> Graph
-cotonomatize cotoId cotonomaKey graph =
-    updateCoto
-        cotoId
-        (\coto ->
-            { coto
-                | asCotonoma = True
-                , cotonomaKey = Just cotonomaKey
-            }
-        )
-        graph
+cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
+cotonomatize cotonoma cotoId graph =
+    updateCoto_ cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
 
 
 pinCoto : AmishiId -> Coto -> Graph -> Graph

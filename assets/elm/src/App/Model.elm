@@ -1,6 +1,7 @@
 module App.Model exposing (..)
 
 import Dict
+import Set exposing (Set)
 import Date
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
@@ -45,7 +46,6 @@ type alias Model =
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
-    , pinnedCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -79,7 +79,6 @@ initModel seed route =
     , cotoModal = Nothing
     , signinModal = App.Modals.SigninModal.initModel False
     , inviteModal = App.Modals.InviteModal.defaultModel
-    , pinnedCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -120,10 +119,31 @@ getCoto cotoId model =
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
         , App.Types.SearchResults.getCoto cotoId model.searchResults
-        , getCotoFromCotonomaList cotoId model.pinnedCotonomas
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
+        , model.context.cotonoma
+            |> Maybe.map
+                (\cotonoma ->
+                    if cotonoma.cotoId == cotoId then
+                        Just (App.Types.Coto.toCoto cotonoma)
+                    else
+                        Nothing
+                )
+            |> Maybe.withDefault Nothing
         ]
+
+
+getCotoIdsToWatch : Model -> Set CotoId
+getCotoIdsToWatch model =
+    model.timeline.posts
+        |> List.filterMap (\post -> post.cotoId)
+        |> List.append (Dict.keys model.graph.cotos)
+        |> List.append
+            (model.context.cotonoma
+                |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
+                |> Maybe.withDefault []
+            )
+        |> Set.fromList
 
 
 getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
@@ -134,25 +154,20 @@ getCotoFromCotonomaList cotoId cotonomas =
         |> Maybe.map App.Types.Coto.toCoto
 
 
-updateCotoContent : Coto -> Model -> Model
-updateCotoContent coto model =
+updateCoto : Coto -> Model -> Model
+updateCoto coto model =
     { model
-        | timeline = App.Types.Timeline.updateContent coto model.timeline
-        , graph = App.Types.Graph.updateContent coto model.graph
+        | timeline = App.Types.Timeline.updatePost coto model.timeline
+        , graph = App.Types.Graph.updateCoto coto model.graph
     }
 
 
-cotonomatize : CotoId -> Maybe CotonomaKey -> Model -> Model
-cotonomatize cotoId maybeCotonomaKey model =
-    maybeCotonomaKey
-        |> Maybe.map
-            (\key ->
-                { model
-                    | timeline = App.Types.Timeline.cotonomatize cotoId key model.timeline
-                    , graph = App.Types.Graph.cotonomatize cotoId key model.graph
-                }
-            )
-        |> Maybe.withDefault model
+cotonomatize : Cotonoma -> CotoId -> Model -> Model
+cotonomatize cotonoma cotoId model =
+    { model
+        | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId model.timeline
+        , graph = App.Types.Graph.cotonomatize cotonoma cotoId model.graph
+    }
 
 
 getSelectedCotos : Model -> List Coto
@@ -162,27 +177,25 @@ getSelectedCotos model =
         |> List.reverse
 
 
-updateRecentCotonomas : Cotonoma -> Model -> Model
-updateRecentCotonomas cotonoma model =
-    model.recentCotonomas
-        |> (::) cotonoma
-        |> List.Extra.uniqueBy (\c -> c.id)
-        |> List.sortBy (\c -> Date.toTime c.updatedAt)
-        |> List.reverse
-        |> (\cotonomas -> { model | recentCotonomas = cotonomas })
-
-
-updateRecentCotonomasByCoto : { r | postedIn : Maybe Cotonoma } -> Model -> Model
-updateRecentCotonomasByCoto post model =
-    post.postedIn
-        |> Maybe.map (\cotonoma -> updateRecentCotonomas cotonoma model)
+updateRecentCotonomas : Maybe Cotonoma -> Model -> Model
+updateRecentCotonomas maybeCotonoma model =
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                model.recentCotonomas
+                    |> (::) cotonoma
+                    |> List.Extra.uniqueBy (\c -> c.id)
+                    |> List.sortBy (\c -> Date.toTime c.updatedAt)
+                    |> List.reverse
+                    |> (\cotonomas -> { model | recentCotonomas = cotonomas })
+            )
         |> Maybe.withDefault model
 
 
 openCotoMenuModal : Coto -> Model -> Model
 openCotoMenuModal coto model =
     coto
-        |> App.Modals.CotoMenuModal.initModel (isCotonomaAndPinned coto model)
+        |> App.Modals.CotoMenuModal.initModel
         |> (\modal -> { model | cotoMenuModal = Just modal })
         |> App.Modals.openModal CotoMenuModal
 
@@ -214,14 +227,6 @@ isNavigationEmpty model =
 isStockEmpty : Model -> Bool
 isStockEmpty model =
     List.isEmpty model.graph.rootConnections
-
-
-isCotonomaAndPinned : Coto -> Model -> Bool
-isCotonomaAndPinned coto model =
-    coto.cotonomaKey
-        |> Maybe.map
-            (\key -> List.any (\c -> c.key == key) model.pinnedCotonomas)
-        |> Maybe.withDefault False
 
 
 openTraversal : CotoId -> Model -> Model

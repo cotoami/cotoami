@@ -167,8 +167,8 @@ setLoadingMore timeline =
     { timeline | loadingMore = True }
 
 
-updatePost : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
-updatePost predicate update timeline =
+updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+updatePost_ predicate update timeline =
     timeline.posts
         |> List.map
             (\post ->
@@ -180,27 +180,28 @@ updatePost predicate update timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-updateContent : Coto -> Timeline -> Timeline
-updateContent coto timeline =
-    updatePost
+updatePost : Coto -> Timeline -> Timeline
+updatePost coto timeline =
+    updatePost_
         (\post -> post.cotoId == Just coto.id)
         (\post ->
             { post
                 | content = coto.content
                 , summary = coto.summary
+                , asCotonoma = coto.asCotonoma
             }
         )
         timeline
 
 
-cotonomatize : CotoId -> CotonomaKey -> Timeline -> Timeline
-cotonomatize cotoId cotonomaKey timeline =
-    updatePost
+cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
+cotonomatize cotonoma cotoId timeline =
+    updatePost_
         (\post -> post.cotoId == Just cotoId)
         (\post ->
             { post
-                | asCotonoma = True
-                , cotonomaKey = Just cotonomaKey
+                | isCotonoma = True
+                , asCotonoma = Just cotonoma
             }
         )
         timeline
@@ -208,14 +209,14 @@ cotonomatize cotoId cotonomaKey timeline =
 
 setCotoSaved : Int -> Post -> Timeline -> Timeline
 setCotoSaved postId apiResponse timeline =
-    updatePost
+    updatePost_
         (\post -> post.postId == Just postId)
         (\post ->
             { post
                 | postId = Just postId
                 , cotoId = apiResponse.cotoId
                 , postedAt = apiResponse.postedAt
-                , cotonomaKey = apiResponse.cotonomaKey
+                , asCotonoma = apiResponse.asCotonoma
             }
         )
         timeline
@@ -223,35 +224,36 @@ setCotoSaved postId apiResponse timeline =
 
 setBeingDeleted : Coto -> Timeline -> Timeline
 setBeingDeleted coto timeline =
-    updatePost
+    updatePost_
         (\post -> App.Types.Post.isSelfOrPostedIn coto post)
         (\post -> { post | beingDeleted = True })
         timeline
 
 
 post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
-post context asCotonoma summary content timeline =
+post context isCotonoma summary content timeline =
     let
         defaultPost =
             App.Types.Post.defaultPost
 
         postId =
             timeline.postIdCounter + 1
+
+        newPost =
+            { defaultPost
+                | postId = Just postId
+                , content = content
+                , summary = summary
+                , amishi = Maybe.map App.Types.Session.toAmishi context.session
+                , isCotonoma = isCotonoma
+                , postedIn = context.cotonoma
+            }
     in
-        { defaultPost
-            | postId = Just postId
-            , content = content
-            , summary = summary
-            , amishi = Maybe.map App.Types.Session.toAmishi context.session
-            , asCotonoma = asCotonoma
-            , postedIn = context.cotonoma
-        }
-            |> \newPost ->
-                ( { timeline
-                    | posts = newPost :: timeline.posts
-                    , postIdCounter = postId
-                    , newContent = ""
-                    , editorCounter = timeline.editorCounter + 1
-                  }
-                , newPost
-                )
+        ( { timeline
+            | posts = newPost :: timeline.posts
+            , postIdCounter = postId
+            , newContent = ""
+            , editorCounter = timeline.editorCounter + 1
+          }
+        , newPost
+        )

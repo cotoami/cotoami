@@ -4,6 +4,7 @@ defmodule CotoamiWeb.CotonomaChannel do
   """
 
   use CotoamiWeb, :channel
+  alias Cotoami.Cotonoma
   alias Cotoami.CotonomaService
   alias CotoamiWeb.Presence
 
@@ -11,9 +12,13 @@ defmodule CotoamiWeb.CotonomaChannel do
     case CotonomaService.get_by_key(cotonoma_key) do
       nil ->
         {:error, %{reason: "unauthorized"}}
-      _cotonoma ->
-        send(self(), :after_join)
-        {:ok, socket}
+      cotonoma ->
+        if Cotonoma.accessible_by?(cotonoma, socket.assigns.amishi) do
+          send(self(), :after_join)
+          {:ok, socket}
+        else
+          {:error, %{reason: "no-permission"}}
+        end
     end
   end
 

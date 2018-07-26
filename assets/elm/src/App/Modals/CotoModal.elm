@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Util.Modal as Modal
 import Util.DateUtil
 import App.Markdown
-import App.Types.Coto exposing (Coto, CotonomaKey)
+import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
 import App.Types.Session exposing (Session)
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
@@ -34,8 +34,8 @@ view maybeSession maybeModel =
 
 modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
 modalConfig session model =
-    model.coto.cotonomaKey
-        |> Maybe.map (\key -> cotonomaModalConfig key session model)
+    model.coto.asCotonoma
+        |> Maybe.map (\cotonoma -> cotonomaModalConfig session model cotonoma)
         |> Maybe.withDefault (cotoModalConfig session model)
 
 
@@ -60,15 +60,15 @@ cotoModalConfig session model =
     }
 
 
-cotonomaModalConfig : CotonomaKey -> Session -> Model -> Modal.Config AppMsg.Msg
-cotonomaModalConfig cotonomaKey session model =
+cotonomaModalConfig : Session -> Model -> Cotonoma -> Modal.Config AppMsg.Msg
+cotonomaModalConfig session model cotonoma =
     { closeMessage = CloseModal
     , title = text "Cotonoma"
     , content =
         div []
             [ div [ class "cotonoma-view" ]
                 [ div [ class "cotonoma" ]
-                    [ cotonomaLabel model.coto.amishi model.coto.content
+                    [ cotonomaLabel model.coto.amishi cotonoma
                     ]
                 , cotoInfo model.coto
                 ]

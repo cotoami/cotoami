@@ -39,12 +39,8 @@ defmodule CotoamiWeb.DatabaseController do
             "amishi" => %{"id" => _} = amishi_json
           } ->
             try do
-              case import_by_amishi(cotos_json, connections_json, amishi_json, amishi) do
-                {:ok, result} ->
-                  json conn, result
-                _ ->
-                  send_resp(conn, :internal_server_error, "Transaction error.")
-              end
+              result = import_by_amishi(cotos_json, connections_json, amishi_json, amishi)
+              json conn, result
             rescue
               e -> 
                 Logger.error "Import error: #{inspect e}"
@@ -60,24 +56,22 @@ defmodule CotoamiWeb.DatabaseController do
   end
 
   defp import_by_amishi(cotos_json, connections_json, amishi_json, %Amishi{} = amishi) do
-    Repo.transaction(fn ->
-      {coto_inserts, coto_updates, cotonomas, coto_rejected} =
-        import_cotos(cotos_json, {0, 0, 0, []}, amishi)
-      {connection_ok, connection_rejected} =
-        import_connections(connections_json, amishi_json, {0, []}, amishi)
-      %{
-        cotos: %{
-          inserts: coto_inserts,
-          updates: coto_updates,
-          cotonomas: cotonomas,
-          rejected: coto_rejected
-        },
-        connections: %{
-          ok: connection_ok,
-          rejected: connection_rejected
-        }
+    {coto_inserts, coto_updates, cotonomas, coto_rejected} =
+      import_cotos(cotos_json, {0, 0, 0, []}, amishi)
+    {connection_ok, connection_rejected} =
+      import_connections(connections_json, amishi_json, {0, []}, amishi)
+    %{
+      cotos: %{
+        inserts: coto_inserts,
+        updates: coto_updates,
+        cotonomas: cotonomas,
+        rejected: coto_rejected
+      },
+      connections: %{
+        ok: connection_ok,
+        rejected: connection_rejected
       }
-    end)
+    }
   end
 
   defp import_cotos(
@@ -90,29 +84,36 @@ defmodule CotoamiWeb.DatabaseController do
         fn(coto_json, {pendings, results}) ->
           # check if the posted_in cotonoma exists before importing a coto_json
           posted_in_id = coto_json["posted_in"]["id"]
-          if posted_in_id && Repo.get(Cotonoma, posted_in_id) == nil do
-            if Enum.any?(cotos_json, &(&1["cotonoma_id"] == posted_in_id)) do
-              # put this coto_json in pending until the posted_in cotonoma is imported
+          if cotonoma_missing?(posted_in_id) do
+            if cotos_json_contains_cotonoma?(cotos_json, posted_in_id) do
+              # [pending] put this coto_json in pending until the posted_in cotonoma is imported
               {[coto_json | pendings], results}
             else
-              # reject this coto_json because the posted_in cotonoma is not found in
-              # both the db and import data
+              # [reject] reject this coto_json because the posted_in cotonoma is 
+              # not found in both the db and import data
               reject = %{id: coto_json["id"], reason: "cotonoma not found: #{posted_in_id}"}
               {inserts, updates, cotonomas, rejected} = results
               {pendings, {inserts, updates, cotonomas, [reject | rejected]}}
             end
           else
+            # [import]
             {pendings, import_coto(coto_json, results, amishi)}
           end
         end
       )
 
     if Enum.empty?(pendings) do
+      # done!
       results
     else
+      # retry pending data
       import_cotos(pendings, results, amishi)
     end
   end
+
+  defp cotonoma_missing?(id), do: id && Repo.get(Cotonoma, id) == nil
+  defp cotos_json_contains_cotonoma?(cotos_json, id),
+    do: Enum.any?(cotos_json, &(&1["cotonoma_id"] == id))
 
   defp import_coto(
     coto_json,
@@ -148,11 +149,10 @@ defmodule CotoamiWeb.DatabaseController do
     cotonomas
   end
   defp import_cotonoma(
-    %{"as_cotonoma" => true} = coto_json,
+    %{"as_cotonoma" => true, "cotonoma_id" => cotonoma_id} = coto_json,
     cotonomas,
     %Amishi{} = amishi
   ) do
-    cotonoma_id = coto_json["cotonoma_id"]
     changeset =
       case Repo.get(Cotonoma, cotonoma_id) do
         nil -> Cotonoma.changeset_to_import(%Cotonoma{}, coto_json, amishi)
