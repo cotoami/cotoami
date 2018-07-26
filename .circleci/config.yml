@@ -128,12 +128,12 @@ workflows:
           filters:
             branches:
               only: develop
-      - deploy-develop:
-          requires:
-            - release-develop
-          filters:
-            branches:
-              only: develop
+      # - deploy-develop:
+      #     requires:
+      #       - release-develop
+      #     filters:
+      #       branches:
+      #         only: develop
       - release:
           requires:
             - build
@@ -142,11 +142,11 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy:
-          requires:
-            - release
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+      # - deploy:
+      #     requires:
+      #       - release
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
