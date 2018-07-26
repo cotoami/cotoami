@@ -88,10 +88,20 @@ decodeConnectPayloadBody =
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleConnect payload model =
-    let
-        -- Create the connection only if the start coto exists in the model
-        graph1 =
-            App.Model.getCoto payload.body.start.id model
+    model.context.cotonoma
+        |> Maybe.andThen
+            (\cotonoma ->
+                if cotonoma.cotoId == payload.body.start.id then
+                    Just <|
+                        App.Types.Graph.pinCoto
+                            payload.amishi.id
+                            payload.body.end
+                            model.graph
+                else
+                    Nothing
+            )
+        |> Maybe.withDefault
+            (App.Model.getCoto payload.body.start.id model
                 |> Maybe.map
                     (\startCoto ->
                         App.Types.Graph.connect
@@ -101,24 +111,9 @@ handleConnect payload model =
                             model.graph
                     )
                 |> Maybe.withDefault model.graph
-
-        -- Do pinning if the start coto is the current cotonoma
-        graph2 =
-            model.context.cotonoma
-                |> Maybe.andThen
-                    (\cotonoma ->
-                        if cotonoma.cotoId == payload.body.start.id then
-                            Just <|
-                                App.Types.Graph.pinCoto
-                                    payload.amishi.id
-                                    payload.body.end
-                                    graph1
-                        else
-                            Nothing
-                    )
-                |> Maybe.withDefault graph1
-    in
-        { model | graph = graph2 } |> withoutCmd
+            )
+        |> (\graph -> { model | graph = graph })
+        |> withoutCmd
 
 
 type alias DisconnectPayloadBody =
