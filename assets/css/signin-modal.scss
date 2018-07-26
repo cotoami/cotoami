@@ -6,4 +6,12 @@
   input.email {
     margin-bottom: 1rem;
   }
+
+  p.notice {
+    border: 1px dotted #ff8c00;
+    border-radius: 4px;
+    padding: 10px;
+    color: #ff8c00;
+    font-weight: bold;
+  }
 }

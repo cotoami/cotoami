@@ -117,6 +117,7 @@ modalConfigWithSignupEnabled model =
             [ p [] [ text "Welcome to Cotoami!" ]
             , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , signinForm model
+            , p [ class "notice" ] [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
             ]
     , buttons =
         [ signinButton "Sign in/up" model ]
