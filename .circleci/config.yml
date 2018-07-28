@@ -71,6 +71,8 @@ jobs:
             docker push cotoami/cotoami:develop
 
   deploy-develop:
+    docker:
+      - image: circleci/node:latest-browsers
     steps:
       - checkout
       - run:
