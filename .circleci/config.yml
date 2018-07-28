@@ -76,9 +76,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Deploy develop branch to Heroku
+          name: Deploy to Heroku
           command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_STAGING_APP_NAME.git develop
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_STAGING_APP_NAME.git master
 
   release:
     docker:
