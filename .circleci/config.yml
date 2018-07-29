@@ -80,6 +80,16 @@ jobs:
           command: |
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_STAGING_APP_NAME.git develop:master
 
+  deploy-demo:
+    docker:
+      - image: circleci/node:latest-browsers
+    steps:
+      - checkout
+      - run:
+          name: Deploy demo branch to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_DEMO_APP_NAME.git demo:master
+
   release:
     docker:
       - image: docker:17.06
@@ -133,6 +143,12 @@ workflows:
           filters:
             branches:
               only: develop
+      - deploy-demo:
+          requires:
+            - build
+          filters:
+            branches:
+              only: demo
       - release:
           requires:
             - build
