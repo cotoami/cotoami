@@ -61,7 +61,8 @@ update msg model =
             model |> withoutCmd
 
         LocalStorageItemFetched item ->
-            App.Model.setConfig item model |> withoutCmd
+            App.Model.configure item model
+                |> withoutCmd
 
         KeyDown keyCode ->
             if keyCode == Util.Keyboard.Key.escapeKeyCode then

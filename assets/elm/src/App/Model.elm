@@ -107,8 +107,8 @@ initModel seed route =
     }
 
 
-setConfig : ( String, Value ) -> Model -> Model
-setConfig ( key, value ) model =
+configure : ( String, Value ) -> Model -> Model
+configure ( key, value ) model =
     case key of
         "timeline.filter" ->
             value
