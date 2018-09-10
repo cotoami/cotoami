@@ -1,6 +1,7 @@
 module App.Submodels.Context
     exposing
         ( Context
+        , generateClientId
         , isServerOwner
         , atHome
         , focusCoto
@@ -22,6 +23,8 @@ module App.Submodels.Context
         )
 
 import Set exposing (Set)
+import Random.Pcg
+import Uuid
 import Exts.Maybe exposing (isNothing)
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Session exposing (Session)
@@ -41,6 +44,13 @@ type alias Context a =
         , selection : CotoSelection
         , deselecting : Set CotoId
     }
+
+
+generateClientId : Int -> ClientId
+generateClientId seed =
+    Random.Pcg.initialSeed seed
+        |> Random.Pcg.step Uuid.uuidGenerator
+        |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
 
 
 isServerOwner : Context a -> Bool

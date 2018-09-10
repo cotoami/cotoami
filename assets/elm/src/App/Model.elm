@@ -4,8 +4,6 @@ import Dict
 import Set exposing (Set)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
-import Random.Pcg
-import Uuid
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
@@ -71,7 +69,7 @@ type alias Model =
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
-    , clientId = generateClientId seed
+    , clientId = App.Submodels.Context.generateClientId seed
     , session = Nothing
     , cotonoma = Nothing
     , cotonomaLoading = False
@@ -107,13 +105,6 @@ initModel seed route =
     , importModal = App.Modals.ImportModal.defaultModel
     , pinnedCotosView = DocumentView
     }
-
-
-generateClientId : Int -> ClientId
-generateClientId seed =
-    Random.Pcg.initialSeed seed
-        |> Random.Pcg.step Uuid.uuidGenerator
-        |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
 
 
 setConfig : ( String, Value ) -> Model -> Model
