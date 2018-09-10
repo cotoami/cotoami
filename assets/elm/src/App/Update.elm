@@ -32,7 +32,6 @@ import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
-import App.Submodels.Connecting
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Route exposing (Route(..))
 import App.Server.Session
@@ -50,6 +49,7 @@ import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
+import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Pushed
 import App.Ports.Graph
 
@@ -514,34 +514,21 @@ update msg model =
             model |> withoutCmd
 
         ConfirmConnect cotoId direction ->
-            { model
-                | connectingTarget =
-                    App.Submodels.LocalCotos.getCoto cotoId model
-                        |> Maybe.map App.Submodels.Connecting.Coto
-                , connectingDirection = direction
-            }
-                |> App.Submodels.Modals.openModal ConnectModal
-                |> withCmd (\_ -> App.Commands.focus "connect-modal-primary-button" NoOp)
-
-        ReverseDirection ->
-            { model
-                | connectingDirection =
-                    case model.connectingDirection of
-                        Outbound ->
-                            Inbound
-
-                        Inbound ->
-                            Outbound
-            }
-                |> withoutCmd
+            model
+                |> App.Submodels.LocalCotos.getCoto cotoId
+                |> Maybe.map
+                    (\coto ->
+                        model
+                            |> App.Submodels.Modals.confirmConnect
+                                direction
+                                (App.Modals.ConnectModal.Coto coto)
+                            |> withCmd (\_ -> App.Commands.focus "connect-modal-primary-button" NoOp)
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         Connect target objects direction ->
-            model.session
-                |> Maybe.map
-                    (\session ->
-                        App.Submodels.Connecting.connect session direction objects target model
-                    )
-                |> Maybe.withDefault model
+            model
+                |> App.Submodels.LocalCotos.connect model.session direction objects target
                 |> App.Submodels.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
@@ -663,7 +650,7 @@ update msg model =
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Post ->
-            postAndConnectToSelection Nothing Nothing model.timeline.newContent model
+            post Nothing model.timeline.newContent model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Posted postId (Ok response) ->
@@ -678,20 +665,17 @@ update msg model =
         ConfirmPostAndConnect content summary ->
             confirmPostAndConnect summary content model
 
-        PostAndConnectToSelection content summary ->
+        PostAndConnectToSelection content summary direction ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection
-                    (Just model.connectingDirection)
-                    summary
-                    content
+                |> postAndConnectToSelection direction summary content
 
-        PostedAndConnectToSelection postId (Ok response) ->
+        PostedAndConnectToSelection postId direction (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> App.Submodels.Modals.clearModals
-                |> connectPostToSelection model.clientId response
+                |> connectPostToSelection model.clientId direction response
 
-        PostedAndConnectToSelection postId (Err _) ->
+        PostedAndConnectToSelection postId direction (Err _) ->
             model |> withoutCmd
 
         PostedAndConnectToCoto postId coto (Ok response) ->
@@ -791,8 +775,7 @@ update msg model =
 
         ClearSelection ->
             { model
-                | connectingTarget = Nothing
-                , cotoSelectionColumnOpen = False
+                | cotoSelectionColumnOpen = False
                 , activeViewOnMobile =
                     case model.activeViewOnMobile of
                         SelectionView ->
@@ -926,7 +909,6 @@ loadHome model =
         | cotonomasLoading = True
         , subCotonomas = []
         , timeline = App.Types.Timeline.setLoading model.timeline
-        , connectingTarget = Nothing
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
@@ -956,7 +938,6 @@ loadCotonoma key model =
     { model
         | cotonomasLoading = True
         , timeline = App.Types.Timeline.setLoading model.timeline
-        , connectingTarget = Nothing
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
@@ -984,30 +965,40 @@ initScrollPositionOfTimeline model =
         Cmd.none
 
 
-postAndConnectToSelection : Maybe Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-postAndConnectToSelection maybeDirection summary content model =
+post : Maybe String -> String -> Model -> ( Model, Cmd Msg )
+post summary content model =
     let
         ( timeline, newPost ) =
-            model.timeline
-                |> App.Types.Timeline.post model False summary content
+            App.Types.Timeline.post model False summary content model.timeline
 
-        postMsg =
-            maybeDirection
-                |> Maybe.map (\_ -> PostedAndConnectToSelection timeline.postIdCounter)
-                |> Maybe.withDefault (Posted timeline.postIdCounter)
+        tag =
+            Posted timeline.postIdCounter
     in
-        { model
-            | timeline = timeline
-            , connectingDirection =
-                Maybe.withDefault Outbound maybeDirection
-        }
-            ! [ App.Commands.scrollTimelineToBottom NoOp
-              , App.Server.Post.post
-                    model.clientId
-                    model.cotonoma
-                    postMsg
-                    newPost
-              ]
+        { model | timeline = timeline }
+            |> withCmds
+                (\model ->
+                    [ App.Commands.scrollTimelineToBottom NoOp
+                    , App.Server.Post.post model.clientId model.cotonoma tag newPost
+                    ]
+                )
+
+
+postAndConnectToSelection : Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
+postAndConnectToSelection direction summary content model =
+    let
+        ( timeline, newPost ) =
+            App.Types.Timeline.post model False summary content model.timeline
+
+        tag =
+            PostedAndConnectToSelection timeline.postIdCounter direction
+    in
+        { model | timeline = timeline }
+            |> withCmds
+                (\model ->
+                    [ App.Commands.scrollTimelineToBottom NoOp
+                    , App.Server.Post.post model.clientId model.cotonoma tag newPost
+                    ]
+                )
 
 
 postAndConnectToCoto : Coto -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
@@ -1041,8 +1032,7 @@ postFromEditorModal model =
                 (\source ->
                     postAndConnectToCoto source summary content model
                 )
-            |> Maybe.withDefault
-                (postAndConnectToSelection Nothing summary content model)
+            |> Maybe.withDefault (post summary content model)
 
 
 postCotonomaFromEditorModal : Model -> ( Model, Cmd Msg )
@@ -1072,9 +1062,9 @@ postCotonomaFromEditorModal model =
 
 confirmPostAndConnect : Maybe String -> String -> Model -> ( Model, Cmd Msg )
 confirmPostAndConnect summary content model =
-    ( App.Model.confirmPostAndConnect summary content model
-    , App.Commands.focus "connect-modal-primary-button" NoOp
-    )
+    model
+        |> App.Submodels.Modals.confirmConnect Inbound (NewPost content summary)
+        |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" NoOp)
 
 
 handleEditorShortcut : KeyboardEvent -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
@@ -1084,7 +1074,7 @@ handleEditorShortcut keyboardEvent summary content model =
             && isNotBlank content
     then
         if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            postAndConnectToSelection Nothing summary content model
+            post summary content model
         else if
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection model
@@ -1142,33 +1132,25 @@ openCoto coto model =
     )
 
 
-connectPostToSelection : ClientId -> Post -> Model -> ( Model, Cmd Msg )
-connectPostToSelection clientId post model =
+connectPostToSelection : ClientId -> Direction -> Post -> Model -> ( Model, Cmd Msg )
+connectPostToSelection clientId direction post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
             (\target ->
                 let
-                    direction =
-                        model.connectingDirection
-
                     objects =
                         App.Model.getSelectedCotos model
 
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( model.session
-                        |> Maybe.map
-                            (\session ->
-                                App.Submodels.Connecting.connect
-                                    session
-                                    direction
-                                    objects
-                                    target
-                                    model
-                            )
-                        |> Maybe.withDefault model
+                    ( App.Submodels.LocalCotos.connect
+                        model.session
+                        direction
+                        objects
+                        target
+                        model
                     , App.Server.Graph.connect
                         clientId
                         maybeCotonomaKey
@@ -1193,17 +1175,12 @@ connectPostToCoto clientId coto post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( model.session
-                        |> Maybe.map
-                            (\session ->
-                                App.Submodels.Connecting.connect
-                                    session
-                                    direction
-                                    [ coto ]
-                                    target
-                                    model
-                            )
-                        |> Maybe.withDefault model
+                    ( App.Submodels.LocalCotos.connect
+                        model.session
+                        direction
+                        [ coto ]
+                        target
+                        model
                     , App.Server.Graph.connect
                         clientId
                         maybeCotonomaKey

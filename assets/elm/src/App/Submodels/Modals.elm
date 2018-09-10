@@ -9,9 +9,12 @@ module App.Submodels.Modals
         , clearModals
         , confirm
         , maybeConfirm
+        , confirmConnect
         )
 
 import App.Messages exposing (Msg)
+import App.Types.Graph exposing (Direction(..))
+import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 
 
 type Modal
@@ -44,6 +47,7 @@ type alias Modals a =
     { a
         | modals : List Modal
         , confirmation : Confirmation
+        , connectModal : Maybe App.Modals.ConnectModal.Model
     }
 
 
@@ -81,3 +85,13 @@ maybeConfirm maybeConfirmation model =
     maybeConfirmation
         |> Maybe.map (\confirmation -> confirm confirmation model)
         |> Maybe.withDefault model
+
+
+confirmConnect : Direction -> ConnectingTarget -> Modals a -> Modals a
+confirmConnect direction target model =
+    let
+        connectModal =
+            App.Modals.ConnectModal.initModel target direction
+    in
+        { model | connectModal = Just connectModal }
+            |> openModal ConnectModal

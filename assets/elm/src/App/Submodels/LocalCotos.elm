@@ -9,6 +9,7 @@ module App.Submodels.LocalCotos
         , updateRecentCotonomas
         , isStockEmpty
         , isNavigationEmpty
+        , connect
         )
 
 import Set exposing (Set)
@@ -19,7 +20,8 @@ import Exts.Maybe
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Types.Graph exposing (Graph)
+import App.Types.Graph exposing (Graph, Direction)
+import App.Types.Session exposing (Session)
 
 
 type alias LocalCotos a =
@@ -123,3 +125,22 @@ isNavigationEmpty localCotos =
     (Exts.Maybe.isNothing localCotos.cotonoma)
         && (List.isEmpty localCotos.recentCotonomas)
         && (List.isEmpty localCotos.subCotonomas)
+
+
+connect : Maybe Session -> Direction -> List Coto -> Coto -> LocalCotos a -> LocalCotos a
+connect maybeSession direction cotos target localCotos =
+    let
+        graph =
+            maybeSession
+                |> Maybe.map
+                    (\session ->
+                        App.Types.Graph.batchConnect
+                            session.id
+                            direction
+                            cotos
+                            target
+                            localCotos.graph
+                    )
+                |> Maybe.withDefault localCotos.graph
+    in
+        { localCotos | graph = graph }

@@ -1,4 +1,10 @@
-module App.Modals.ConnectModal exposing (view)
+module App.Modals.ConnectModal
+    exposing
+        ( ConnectingTarget(..)
+        , Model
+        , initModel
+        , view
+        )
 
 import Maybe exposing (andThen)
 import Html exposing (..)
@@ -13,46 +19,55 @@ import App.Messages
     exposing
         ( Msg
             ( CloseModal
-            , ReverseDirection
             , Connect
             , PostAndConnectToSelection
             )
         )
-import App.Model exposing (Model)
-import App.Submodels.Connecting exposing (ConnectingTarget(..))
 import App.Markdown
 
 
-view : Model -> Html Msg
-view model =
-    model.connectingTarget
-        |> Maybe.map
-            (\target ->
-                modalConfig
-                    model.connectingDirection
-                    (App.Model.getSelectedCotos model)
-                    target
-            )
+type ConnectingTarget
+    = Coto Coto
+    | NewPost String (Maybe String)
+
+
+type alias Model =
+    { target : ConnectingTarget
+    , direction : Direction
+    }
+
+
+initModel : ConnectingTarget -> Direction -> Model
+initModel target direction =
+    { target = target
+    , direction = direction
+    }
+
+
+view : List Coto -> Maybe Model -> Html Msg
+view cotos maybeModel =
+    maybeModel
+        |> Maybe.map (modalConfig cotos)
         |> Modal.view "connect-modal"
 
 
-modalConfig : Direction -> List Coto -> ConnectingTarget -> Modal.Config Msg
-modalConfig direction selectedCotos target =
+modalConfig : List Coto -> Model -> Modal.Config Msg
+modalConfig selectedCotos model =
     let
         primaryButtonId =
             "connect-modal-primary-button"
     in
         { closeMessage = CloseModal
         , title = text "Connect Preview"
-        , content = modalContent direction selectedCotos target
+        , content = modalContent selectedCotos model
         , buttons =
-            case target of
+            case model.target of
                 Coto coto ->
                     [ button
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (Connect coto selectedCotos direction)
+                        , onClick (Connect coto selectedCotos model.direction)
                         ]
                         [ text "Connect" ]
                     ]
@@ -62,15 +77,15 @@ modalConfig direction selectedCotos target =
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (PostAndConnectToSelection content summary)
+                        , onClick (PostAndConnectToSelection content summary model.direction)
                         ]
                         [ text "Post and connect" ]
                     ]
         }
 
 
-modalContent : Direction -> List Coto -> ConnectingTarget -> Html Msg
-modalContent direction selectedCotos target =
+modalContent : List Coto -> Model -> Html Msg
+modalContent selectedCotos model =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -87,7 +102,7 @@ modalContent direction selectedCotos target =
                 )
 
         targetHtml =
-            case target of
+            case model.target of
                 Coto coto ->
                     div [ class "target-coto coto-content" ]
                         [ contentDiv coto.summary coto.content ]
@@ -97,7 +112,7 @@ modalContent direction selectedCotos target =
                         [ contentDiv summary content ]
 
         ( start, end ) =
-            case direction of
+            case model.direction of
                 Outbound ->
                     ( targetHtml, selectedCotosHtml )
 
@@ -109,7 +124,8 @@ modalContent direction selectedCotos target =
                 [ class "tools" ]
                 [ button
                     [ class "button reverse-direction"
-                    , onClick ReverseDirection
+
+                    --, onClick ReverseDirection
                     ]
                     [ text "Reverse" ]
                 ]

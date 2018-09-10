@@ -18,13 +18,13 @@ import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
-import App.Submodels.Connecting exposing (ConnectingTarget(..))
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
+import App.Modals.ConnectModal
 import App.Modals.ImportModal
 
 
@@ -50,6 +50,7 @@ type alias Model =
     , editorModal : App.Modals.EditorModal.Model
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
+    , connectModal : Maybe App.Modals.ConnectModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     , recentCotonomas : List Cotonoma
@@ -59,8 +60,6 @@ type alias Model =
     , searchResults : SearchResults
     , cotoSelectionColumnOpen : Bool
     , cotoSelectionTitle : String
-    , connectingTarget : Maybe ConnectingTarget
-    , connectingDirection : Direction
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
@@ -92,6 +91,7 @@ initModel seed route =
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
+    , connectModal = Nothing
     , signinModal = App.Modals.SigninModal.initModel False
     , inviteModal = App.Modals.InviteModal.defaultModel
     , recentCotonomas = []
@@ -101,8 +101,6 @@ initModel seed route =
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , cotoSelectionColumnOpen = False
     , cotoSelectionTitle = ""
-    , connectingTarget = Nothing
-    , connectingDirection = App.Types.Graph.Outbound
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
@@ -163,15 +161,6 @@ openCoto coto model =
         |> App.Modals.CotoModal.initModel
         |> (\modal -> { model | cotoModal = Just modal })
         |> App.Submodels.Modals.openModal CotoModal
-
-
-confirmPostAndConnect : Maybe String -> String -> Model -> Model
-confirmPostAndConnect summary content model =
-    { model
-        | connectingTarget = Just (NewPost content summary)
-        , connectingDirection = Inbound
-    }
-        |> \model -> App.Submodels.Modals.openModal ConnectModal model
 
 
 openTraversal : CotoId -> Model -> Model
