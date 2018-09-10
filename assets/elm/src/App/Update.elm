@@ -290,7 +290,7 @@ update msg model =
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
-            App.Model.openCotoMenuModal coto model
+            App.Submodels.Modals.openCotoMenu coto model
                 |> withCmd
                     (\_ ->
                         coto.asCotonoma
@@ -1125,7 +1125,7 @@ handleEditorModalShortcut keyboardEvent model =
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
 openCoto coto model =
-    ( App.Model.openCoto coto model
+    ( App.Submodels.Modals.openCoto coto model
     , coto.asCotonoma
         |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
         |> Maybe.withDefault Cmd.none

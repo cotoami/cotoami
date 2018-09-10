@@ -147,22 +147,6 @@ deleteCoto coto model =
         |> App.Submodels.Context.deleteSelection coto.id
 
 
-openCotoMenuModal : Coto -> Model -> Model
-openCotoMenuModal coto model =
-    coto
-        |> App.Modals.CotoMenuModal.initModel
-        |> (\modal -> { model | cotoMenuModal = Just modal })
-        |> App.Submodels.Modals.openModal CotoMenuModal
-
-
-openCoto : Coto -> Model -> Model
-openCoto coto model =
-    coto
-        |> App.Modals.CotoModal.initModel
-        |> (\modal -> { model | cotoModal = Just modal })
-        |> App.Submodels.Modals.openModal CotoModal
-
-
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     { model

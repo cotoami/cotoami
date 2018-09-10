@@ -10,11 +10,16 @@ module App.Submodels.Modals
         , confirm
         , maybeConfirm
         , confirmConnect
+        , openCotoMenu
+        , openCoto
         )
 
 import App.Messages exposing (Msg)
+import App.Types.Coto exposing (Coto)
 import App.Types.Graph exposing (Direction(..))
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
+import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
 
 
 type Modal
@@ -48,6 +53,8 @@ type alias Modals a =
         | modals : List Modal
         , confirmation : Confirmation
         , connectModal : Maybe App.Modals.ConnectModal.Model
+        , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
+        , cotoModal : Maybe App.Modals.CotoModal.Model
     }
 
 
@@ -95,3 +102,19 @@ confirmConnect direction target model =
     in
         { model | connectModal = Just connectModal }
             |> openModal ConnectModal
+
+
+openCotoMenu : Coto -> Modals a -> Modals a
+openCotoMenu coto model =
+    coto
+        |> App.Modals.CotoMenuModal.initModel
+        |> (\modal -> { model | cotoMenuModal = Just modal })
+        |> openModal CotoMenuModal
+
+
+openCoto : Coto -> Modals a -> Modals a
+openCoto coto model =
+    coto
+        |> App.Modals.CotoModal.initModel
+        |> (\modal -> { model | cotoModal = Just modal })
+        |> openModal CotoModal
