@@ -1,4 +1,25 @@
-module App.Submodels.Context exposing (..)
+module App.Submodels.Context
+    exposing
+        ( Context
+        , isServerOwner
+        , atHome
+        , focusCoto
+        , clearCotoFocus
+        , toggleContent
+        , toggleReorderMode
+        , inReorderMode
+        , contentOpen
+        , anySelection
+        , isSelected
+        , updateSelection
+        , clearSelection
+        , deleteSelection
+        , setBeingDeselected
+        , finishBeingDeselected
+        , setCotonomaLoading
+        , setCotonoma
+        , orignatedHere
+        )
 
 import Set exposing (Set)
 import Exts.Maybe exposing (isNothing)
@@ -107,16 +128,6 @@ updateSelection cotoId context =
     }
 
 
-setCotonomaLoading : Context a -> Context a
-setCotonomaLoading context =
-    { context | cotonoma = Nothing, cotonomaLoading = True }
-
-
-setCotonoma : Maybe Cotonoma -> Context a -> Context a
-setCotonoma maybeCotonoma context =
-    { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
-
-
 clearSelection : Context a -> Context a
 clearSelection context =
     { context | selection = [] }
@@ -144,6 +155,16 @@ finishBeingDeselected context =
                 context.selection
         , deselecting = Set.empty
     }
+
+
+setCotonomaLoading : Context a -> Context a
+setCotonomaLoading context =
+    { context | cotonoma = Nothing, cotonomaLoading = True }
+
+
+setCotonoma : Maybe Cotonoma -> Context a -> Context a
+setCotonoma maybeCotonoma context =
+    { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
 
 
 orignatedHere : Context a -> Coto -> Bool

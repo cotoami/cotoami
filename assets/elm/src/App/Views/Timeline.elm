@@ -11,7 +11,6 @@ import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
 import Util.Keyboard.Event
-import App.Types.Coto exposing (CotoSelection)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
