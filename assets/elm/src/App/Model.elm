@@ -18,6 +18,7 @@ import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
+import App.Submodels.Connecting exposing (ConnectingTarget(..))
 import App.Confirmation exposing (Confirmation)
 import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
@@ -26,11 +27,6 @@ import App.Modals.InviteModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.ImportModal
-
-
-type ConnectingTarget
-    = Coto Coto
-    | NewPost String (Maybe String)
 
 
 type alias Model =
@@ -196,22 +192,6 @@ openTraversal cotoId model =
             App.Types.Traversal.openTraversal cotoId model.traversals
         , activeViewOnMobile = TraversalsView
     }
-
-
-connect : Direction -> List Coto -> Coto -> Model -> Model
-connect direction cotos target model =
-    model.session
-        |> Maybe.map
-            (\session ->
-                App.Types.Graph.batchConnect session.id direction cotos target model.graph
-                    |> (\graph ->
-                            { model
-                                | graph = graph
-                                , connectingTarget = Nothing
-                            }
-                       )
-            )
-        |> Maybe.withDefault model
 
 
 closeSelectionColumnIfEmpty : Model -> Model

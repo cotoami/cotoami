@@ -32,6 +32,7 @@ import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
+import App.Submodels.Connecting
 import App.Confirmation exposing (Confirmation)
 import App.Route exposing (Route(..))
 import App.Server.Session
@@ -517,7 +518,7 @@ update msg model =
             { model
                 | connectingTarget =
                     App.Submodels.LocalCotos.getCoto cotoId model
-                        |> Maybe.map App.Model.Coto
+                        |> Maybe.map App.Submodels.Connecting.Coto
                 , connectingDirection = direction
             }
                 |> App.Modals.openModal ConnectModal
@@ -536,7 +537,12 @@ update msg model =
                 |> withoutCmd
 
         Connect target objects direction ->
-            App.Model.connect direction objects target model
+            model.session
+                |> Maybe.map
+                    (\session ->
+                        App.Submodels.Connecting.connect session direction objects target model
+                    )
+                |> Maybe.withDefault model
                 |> App.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
@@ -1153,7 +1159,17 @@ connectPostToSelection clientId post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( App.Model.connect direction objects target model
+                    ( model.session
+                        |> Maybe.map
+                            (\session ->
+                                App.Submodels.Connecting.connect
+                                    session
+                                    direction
+                                    objects
+                                    target
+                                    model
+                            )
+                        |> Maybe.withDefault model
                     , App.Server.Graph.connect
                         clientId
                         maybeCotonomaKey
@@ -1178,7 +1194,17 @@ connectPostToCoto clientId coto post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( App.Model.connect direction [ coto ] target model
+                    ( model.session
+                        |> Maybe.map
+                            (\session ->
+                                App.Submodels.Connecting.connect
+                                    session
+                                    direction
+                                    [ coto ]
+                                    target
+                                    model
+                            )
+                        |> Maybe.withDefault model
                     , App.Server.Graph.connect
                         clientId
                         maybeCotonomaKey

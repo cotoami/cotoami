@@ -18,7 +18,8 @@ import App.Messages
             , PostAndConnectToSelection
             )
         )
-import App.Model exposing (Model, ConnectingTarget(..))
+import App.Model exposing (Model)
+import App.Submodels.Connecting exposing (ConnectingTarget(..))
 import App.Markdown
 
 
