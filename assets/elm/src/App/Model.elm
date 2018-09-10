@@ -5,7 +5,6 @@ import Set exposing (Set)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Random.Pcg
-import Exts.Maybe exposing (isNothing)
 import Uuid
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
@@ -178,13 +177,6 @@ confirmPostAndConnect summary content model =
         , connectingDirection = Inbound
     }
         |> \model -> App.Modals.openModal ConnectModal model
-
-
-isNavigationEmpty : Model -> Bool
-isNavigationEmpty model =
-    (isNothing model.cotonoma)
-        && (List.isEmpty model.recentCotonomas)
-        && (List.isEmpty model.subCotonomas)
 
 
 openTraversal : CotoId -> Model -> Model

@@ -8,6 +8,7 @@ module App.Submodels.LocalCotos
         , cotonomatize
         , updateRecentCotonomas
         , isStockEmpty
+        , isNavigationEmpty
         )
 
 import Set exposing (Set)
@@ -115,3 +116,10 @@ updateRecentCotonomas maybeCotonoma localCotos =
 isStockEmpty : LocalCotos a -> Bool
 isStockEmpty localCotos =
     List.isEmpty localCotos.graph.rootConnections
+
+
+isNavigationEmpty : LocalCotos a -> Bool
+isNavigationEmpty localCotos =
+    (Exts.Maybe.isNothing localCotos.cotonoma)
+        && (List.isEmpty localCotos.recentCotonomas)
+        && (List.isEmpty localCotos.subCotonomas)

@@ -82,8 +82,8 @@ navColumn model =
         [ id "main-nav"
         , classList
             [ ( "neverToggled", not model.navigationToggled )
-            , ( "empty", isNavigationEmpty model )
-            , ( "notEmpty", not (isNavigationEmpty model) )
+            , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
+            , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
             , ( "animated", model.navigationToggled )
             , ( "slideInDown", model.navigationToggled && model.navigationOpen )
             , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
