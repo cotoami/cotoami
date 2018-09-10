@@ -1,78 +1,56 @@
-module App.Types.Context exposing (..)
+module App.Submodels.Context exposing (..)
 
 import Set exposing (Set)
-import Uuid
-import Random.Pcg exposing (initialSeed, step)
 import Exts.Maybe exposing (isNothing)
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
 
 
-type alias CotoSelection =
-    List CotoId
-
-
-type alias Context =
-    { clientId : ClientId
-    , session : Maybe Session
-    , cotonoma : Maybe Cotonoma
-    , cotonomaLoading : Bool
-    , elementFocus : Maybe ElementId
-    , contentOpenElements : Set ElementId
-    , reorderModeElements : Set ElementId
-    , cotoFocus : Maybe CotoId
-    , selection : CotoSelection
-    , deselecting : Set CotoId
+type alias Context a =
+    { a
+        | clientId : ClientId
+        , session : Maybe Session
+        , cotonoma : Maybe Cotonoma
+        , cotonomaLoading : Bool
+        , elementFocus : Maybe ElementId
+        , contentOpenElements : Set ElementId
+        , reorderModeElements : Set ElementId
+        , cotoFocus : Maybe CotoId
+        , selection : CotoSelection
+        , deselecting : Set CotoId
     }
 
 
-initContext : Int -> Context
-initContext seed =
-    { clientId =
-        initialSeed seed
-            |> step Uuid.uuidGenerator
-            |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
-    , session = Nothing
-    , cotonoma = Nothing
-    , cotonomaLoading = False
-    , elementFocus = Nothing
-    , contentOpenElements = Set.empty
-    , reorderModeElements = Set.empty
-    , cotoFocus = Nothing
-    , selection = []
-    , deselecting = Set.empty
-    }
-
-
-setSession : Session -> Context -> Context
-setSession session context =
-    { context | session = Just session }
-
-
-isServerOwner : Context -> Bool
+isServerOwner : Context a -> Bool
 isServerOwner context =
     context.session
         |> Maybe.map (\session -> session.owner)
         |> Maybe.withDefault False
 
 
-atHome : Context -> Bool
+atHome : Context a -> Bool
 atHome context =
     isNothing context.cotonoma
 
 
-setElementFocus : Maybe String -> Context -> Context
-setElementFocus maybeElementId context =
-    { context | elementFocus = maybeElementId }
+focusCoto : ElementId -> CotoId -> Context a -> Context a
+focusCoto elementId cotoId context =
+    { context
+        | elementFocus = Just elementId
+        , cotoFocus = Just cotoId
+    }
 
 
-setCotoFocus : Maybe CotoId -> Context -> Context
-setCotoFocus maybeCotoId context =
-    { context | cotoFocus = maybeCotoId }
+clearCotoFocus : Context a -> Context a
+clearCotoFocus context =
+    { context
+        | elementFocus = Nothing
+        , cotoFocus = Nothing
+    }
 
 
-toggleContent : ElementId -> Context -> Context
+toggleContent : ElementId -> Context a -> Context a
 toggleContent elementId context =
     { context
         | contentOpenElements =
@@ -80,7 +58,7 @@ toggleContent elementId context =
     }
 
 
-toggleReorderMode : ElementId -> Context -> Context
+toggleReorderMode : ElementId -> Context a -> Context a
 toggleReorderMode elementId context =
     { context
         | reorderModeElements =
@@ -96,29 +74,29 @@ toggleSetMember value set =
         Set.insert value set
 
 
-inReorderMode : ElementId -> Context -> Bool
+inReorderMode : ElementId -> Context a -> Bool
 inReorderMode elementId context =
     Set.member elementId context.reorderModeElements
 
 
-contentOpen : ElementId -> Context -> Bool
+contentOpen : ElementId -> Context a -> Bool
 contentOpen elementId context =
     Set.member elementId context.contentOpenElements
 
 
-anySelection : Context -> Bool
+anySelection : Context a -> Bool
 anySelection context =
     not (List.isEmpty context.selection)
 
 
-isSelected : Maybe CotoId -> Context -> Bool
+isSelected : Maybe CotoId -> Context a -> Bool
 isSelected maybeCotoId context =
     maybeCotoId
         |> Maybe.map (\cotoId -> List.member cotoId context.selection)
         |> Maybe.withDefault False
 
 
-updateSelection : CotoId -> Context -> Context
+updateSelection : CotoId -> Context a -> Context a
 updateSelection cotoId context =
     { context
         | selection =
@@ -129,27 +107,27 @@ updateSelection cotoId context =
     }
 
 
-setCotonomaLoading : Context -> Context
+setCotonomaLoading : Context a -> Context a
 setCotonomaLoading context =
     { context | cotonoma = Nothing, cotonomaLoading = True }
 
 
-setCotonoma : Maybe Cotonoma -> Context -> Context
+setCotonoma : Maybe Cotonoma -> Context a -> Context a
 setCotonoma maybeCotonoma context =
     { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
 
 
-clearSelection : Context -> Context
+clearSelection : Context a -> Context a
 clearSelection context =
     { context | selection = [] }
 
 
-deleteSelection : CotoId -> Context -> Context
+deleteSelection : CotoId -> Context a -> Context a
 deleteSelection cotoId context =
     { context | selection = List.filter (\id -> cotoId /= id) context.selection }
 
 
-setBeingDeselected : CotoId -> Context -> Context
+setBeingDeselected : CotoId -> Context a -> Context a
 setBeingDeselected cotoId context =
     { context
         | deselecting =
@@ -157,7 +135,7 @@ setBeingDeselected cotoId context =
     }
 
 
-finishBeingDeselected : Context -> Context
+finishBeingDeselected : Context a -> Context a
 finishBeingDeselected context =
     { context
         | selection =
@@ -168,7 +146,7 @@ finishBeingDeselected context =
     }
 
 
-orignatedHere : Context -> Coto -> Bool
+orignatedHere : Context a -> Coto -> Bool
 orignatedHere context coto =
     (Maybe.map2
         (\here postedIn -> here.id == postedIn.id)

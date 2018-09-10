@@ -17,7 +17,7 @@ import App.Ports.Graph
 renderGraph : Model -> Cmd Msg
 renderGraph model =
     if model.pinnedCotosView == GraphView then
-        App.Ports.Graph.renderCotoGraph model.context.cotonoma model.graph
+        App.Ports.Graph.renderCotoGraph model.cotonoma model.graph
     else
         Cmd.none
 

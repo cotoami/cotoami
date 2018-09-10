@@ -27,7 +27,7 @@ view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
-            (model.context.cotonoma
+            (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
                         [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
@@ -48,7 +48,7 @@ view model =
                     ]
             )
         , div [ class "user" ]
-            (model.context.session
+            (model.session
                 |> Maybe.map
                     (\session ->
                         [ quickSearchForm model.searchResults

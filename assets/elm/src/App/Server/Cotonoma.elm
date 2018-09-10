@@ -8,7 +8,7 @@ import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
-import App.Types.Context exposing (Context)
+import App.Submodels.Context exposing (Context)
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
@@ -32,7 +32,7 @@ fetchCotonomas =
         |> Http.send CotonomasFetched
 
 
-fetchSubCotonomas : Context -> Cmd Msg
+fetchSubCotonomas : Context a -> Cmd Msg
 fetchSubCotonomas context =
     context.cotonoma
         |> Maybe.map

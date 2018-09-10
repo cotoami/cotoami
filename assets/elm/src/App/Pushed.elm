@@ -30,7 +30,7 @@ handle payloadDecoder handler payload model =
                     decodedPayload.clientId
 
                 (ClientId selfId) =
-                    model.context.clientId
+                    model.clientId
             in
                 if senderId /= selfId then
                     handler decodedPayload model
@@ -88,7 +88,7 @@ decodeConnectPayloadBody =
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
 handleConnect payload model =
-    model.context.cotonoma
+    model.cotonoma
         |> Maybe.andThen
             (\cotonoma ->
                 if cotonoma.cotoId == payload.body.start.id then
@@ -140,7 +140,7 @@ handleDisconnect payload model =
 
         -- Do unpinning if the start coto is the current cotonoma
         graph2 =
-            model.context.cotonoma
+            model.cotonoma
                 |> Maybe.andThen
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then
@@ -181,7 +181,7 @@ handleReorder payload model =
 
         -- Reorder pinned cotos if the start coto is the current cotonoma
         graph2 =
-            model.context.cotonoma
+            model.cotonoma
                 |> Maybe.andThen
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then

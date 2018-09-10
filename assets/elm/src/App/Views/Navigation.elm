@@ -7,24 +7,24 @@ import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
-import App.Types.Context exposing (Context)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(HomeClick))
+import App.Submodels.Context exposing (Context)
 import App.Views.Cotonomas
 
 
 view : Model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
-        [ model.context.session
+        [ model.session
             |> Maybe.map (\_ -> homeNav model)
             |> Maybe.withDefault Util.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
-            [ model.context.cotonoma
+            [ model.cotonoma
                 |> Maybe.map (cotonomaNav model)
                 |> Maybe.withDefault Util.HtmlUtil.none
-            , recentCotonomasDiv model.context model.graph model.recentCotonomas
+            , recentCotonomasDiv model model.graph model.recentCotonomas
             ]
         ]
     ]
@@ -35,10 +35,10 @@ homeNav model =
     div
         [ classList
             [ ( "home-nav", True )
-            , ( "in", isNothing model.context.cotonoma )
+            , ( "in", isNothing model.cotonoma )
             ]
         ]
-        [ (model.context.cotonoma
+        [ (model.cotonoma
             |> Maybe.map
                 (\_ -> a [ class "home", onLinkButtonClick HomeClick ])
             |> Maybe.withDefault
@@ -55,13 +55,13 @@ cotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ] [ text "Current" ]
         , App.Views.Cotonomas.cotonomaDiv
-            model.context
+            model
             model.graph
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
             [ App.Views.Cotonomas.view
-                model.context
+                model
                 model.graph
                 "sub-cotonomas"
                 model.subCotonomas
@@ -69,7 +69,7 @@ cotonomaNav model cotonoma =
         ]
 
 
-recentCotonomasDiv : Context -> Graph -> List Cotonoma -> Html Msg
+recentCotonomasDiv : Context a -> Graph -> List Cotonoma -> Html Msg
 recentCotonomasDiv context graph cotonomas =
     if List.isEmpty cotonomas then
         Util.HtmlUtil.none

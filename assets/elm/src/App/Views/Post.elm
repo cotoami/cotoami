@@ -10,16 +10,16 @@ import Exts.Maybe exposing (isJust, isNothing)
 import Util.DateUtil
 import Util.HtmlUtil
 import Util.EventUtil exposing (onLoad)
-import App.Types.Context exposing (Context)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto
 
 
-view : Context -> Graph -> Post -> Html Msg
+view : Context a -> Graph -> Post -> Html Msg
 view context graph post =
     let
         elementId =
@@ -45,7 +45,7 @@ view context graph post =
             ]
 
 
-postDivAttrs : Context -> Graph -> String -> Post -> List (Attribute Msg)
+postDivAttrs : Context a -> Graph -> String -> Post -> List (Attribute Msg)
 postDivAttrs context graph elementId post =
     let
         classAttr =
@@ -76,7 +76,7 @@ postDivAttrs context graph elementId post =
         classAttr :: eventAttrs
 
 
-isAuthor : Context -> Post -> Bool
+isAuthor : Context a -> Post -> Bool
 isAuthor context post =
     (Maybe.map2
         (\session author -> author.id == session.id)
@@ -86,7 +86,7 @@ isAuthor context post =
         |> Maybe.withDefault False
 
 
-headerDiv : Context -> Graph -> ElementId -> Post -> Html Msg
+headerDiv : Context a -> Graph -> ElementId -> Post -> Html Msg
 headerDiv context graph elementId post =
     toCoto post
         |> Maybe.map
@@ -99,7 +99,7 @@ headerDiv context graph elementId post =
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
-authorDiv : Context -> Post -> Html Msg
+authorDiv : Context a -> Post -> Html Msg
 authorDiv context post =
     (Maybe.map2
         (\session author ->
@@ -117,7 +117,7 @@ authorDiv context post =
         |> Maybe.withDefault Util.HtmlUtil.none
 
 
-authorIcon : Context -> Post -> Html Msg
+authorIcon : Context a -> Post -> Html Msg
 authorIcon context post =
     (Maybe.map2
         (\session author ->

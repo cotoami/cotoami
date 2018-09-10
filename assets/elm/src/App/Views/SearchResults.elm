@@ -7,17 +7,17 @@ import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
 import Util.DateUtil
-import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Messages exposing (..)
+import App.Submodels.Context exposing (Context)
 import App.Views.Coto
 import App.Views.Post
 import App.Markdown
 
 
-view : Context -> Graph -> SearchResults -> Html Msg
+view : Context a -> Graph -> SearchResults -> Html Msg
 view context graph model =
     div [ id "search-results" ]
         [ div
@@ -66,7 +66,7 @@ view context graph model =
         ]
 
 
-postDiv : Context -> Graph -> Post -> Html Msg
+postDiv : Context a -> Graph -> Post -> Html Msg
 postDiv context graph post =
     let
         elementId =
@@ -91,7 +91,7 @@ postDiv context graph post =
             ]
 
 
-footerDiv : Context -> Post -> Html Msg
+footerDiv : Context a -> Post -> Html Msg
 footerDiv context post =
     post.postedAt
         |> Maybe.map

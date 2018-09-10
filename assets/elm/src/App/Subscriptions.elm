@@ -19,7 +19,7 @@ socket token websocketUrl =
 
 phoenixChannels : Model -> Sub Msg
 phoenixChannels model =
-    model.context.session
+    model.session
         |> Maybe.map (phoenixChannelsInSession model)
         |> Maybe.withDefault Sub.none
 
@@ -31,7 +31,7 @@ phoenixChannelsInSession model session =
         (App.Channels.cotoChannels (App.Model.getCotoIdsToWatch model)
             |> (::) App.Channels.globalChannel
             |> (\channels ->
-                    model.context.cotonoma
+                    model.cotonoma
                         |> Maybe.map
                             (\cotonoma ->
                                 App.Channels.cotonomaChannel cotonoma.key :: channels

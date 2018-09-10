@@ -125,7 +125,7 @@ openTimelineButton model =
 
 timelineColumn : Model -> Html Msg
 timelineColumn model =
-    model.context.session
+    model.session
         |> Maybe.map
             (\session ->
                 if model.timeline.hidden then
@@ -159,7 +159,7 @@ timelineDiv session classes model =
         , classList classes
         ]
         [ App.Views.Timeline.view
-            model.context
+            model
             session
             model.graph
             (App.Model.isTimelineReady model)
@@ -180,7 +180,7 @@ pinnedCotosColumn model =
             ]
         ]
         [ App.Views.PinnedCotos.view
-            model.context
+            model
             model.loadingGraph
             model.pinnedCotosView
             model.graph
@@ -191,7 +191,7 @@ traversalColumns : Model -> List (Html Msg)
 traversalColumns model =
     App.Views.Traversals.view
         (model.activeViewOnMobile == TraversalsView)
-        model.context
+        model
         model.graph
         model.traversals
 
@@ -204,8 +204,8 @@ selectionColumn model =
             [ ( "main-column", True )
             , ( "activeOnMobile", model.activeViewOnMobile == SelectionView )
             , ( "animated", True )
-            , ( "fadeIn", not (List.isEmpty model.context.selection) )
-            , ( "empty", List.isEmpty model.context.selection )
+            , ( "fadeIn", not (List.isEmpty model.selection) )
+            , ( "empty", List.isEmpty model.selection )
             , ( "hidden", not model.cotoSelectionColumnOpen )
             ]
         ]
@@ -225,7 +225,7 @@ searchResultsColumn model =
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
-        [ App.Views.SearchResults.view model.context model.graph model.searchResults
+        [ App.Views.SearchResults.view model model.graph model.searchResults
         ]
 
 
@@ -259,7 +259,7 @@ viewSwitchContainerDiv model =
             "check-square-o"
             "Switch to coto selection"
             (model.activeViewOnMobile == SelectionView)
-            (List.isEmpty model.context.selection)
+            (List.isEmpty model.selection)
             (SwitchViewOnMobile SelectionView)
         , viewSwitchDiv
             "switch-to-search"
@@ -307,19 +307,19 @@ modals model =
                     App.Modals.SigninModal.view model.signinModal
 
                 EditorModal ->
-                    App.Modals.EditorModal.view model.context model.editorModal
+                    App.Modals.EditorModal.view model model.editorModal
 
                 ProfileModal ->
-                    App.Modals.ProfileModal.view model.context.session
+                    App.Modals.ProfileModal.view model.session
 
                 InviteModal ->
                     App.Modals.InviteModal.view model.inviteModal
 
                 CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model.context model.graph model.cotoMenuModal
+                    App.Modals.CotoMenuModal.view model model.graph model.cotoMenuModal
 
                 CotoModal ->
-                    App.Modals.CotoModal.view model.context.session model.cotoModal
+                    App.Modals.CotoModal.view model.session model.cotoModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view model
@@ -328,6 +328,6 @@ modals model =
                     App.Modals.ImportModal.view model.importModal
 
                 TimelineFilterModal ->
-                    App.Modals.TimelineFilterModal.view model.context model.timeline.filter
+                    App.Modals.TimelineFilterModal.view model model.timeline.filter
         )
         (List.reverse model.modals)

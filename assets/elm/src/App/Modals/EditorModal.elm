@@ -26,7 +26,7 @@ import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.Markdown
 import Util.Keyboard.Event
 import App.Types.Coto exposing (Coto)
-import App.Types.Context exposing (Context)
+import App.Submodels.Context exposing (Context)
 import App.Server.Coto
 import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
 import App.Views.Coto
@@ -72,7 +72,7 @@ defaultModel =
     }
 
 
-modelForNew : Context -> Maybe Coto -> Model
+modelForNew : Context a -> Maybe Coto -> Model
 modelForNew context source =
     { defaultModel
         | mode = NewCoto
@@ -130,7 +130,7 @@ setCotoSaveError error model =
             }
 
 
-update : Context -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : Context a -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         EditorInput content ->
@@ -178,7 +178,7 @@ update context msg model =
             { model | mode = NewCotonoma } |> withoutCmd
 
 
-view : Context -> Model -> Html AppMsg.Msg
+view : Context a -> Model -> Html AppMsg.Msg
 view context model =
     (case model.mode of
         Edit coto ->
@@ -203,7 +203,7 @@ view context model =
 --
 
 
-cotoEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
+cotoEditorConfig : Context a -> Model -> Modal.Config AppMsg.Msg
 cotoEditorConfig context model =
     { closeMessage = CloseModal
     , title =
@@ -286,7 +286,7 @@ cotoEditor model =
 --
 
 
-cotonomaEditorConfig : Context -> Model -> Modal.Config AppMsg.Msg
+cotonomaEditorConfig : Context a -> Model -> Modal.Config AppMsg.Msg
 cotonomaEditorConfig context model =
     { closeMessage = CloseModal
     , title =
@@ -395,7 +395,7 @@ newEditorTitle model =
         |> (div [])
 
 
-sourceCotoDiv : Context -> Model -> Html AppMsg.Msg
+sourceCotoDiv : Context a -> Model -> Html AppMsg.Msg
 sourceCotoDiv context model =
     model.source
         |> Maybe.map
@@ -413,7 +413,7 @@ sourceCotoDiv context model =
         |> Maybe.withDefault Util.HtmlUtil.none
 
 
-buttonsForNewCoto : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCoto : Context a -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if List.isEmpty context.selection || isJust model.source then
         Util.HtmlUtil.none
@@ -441,7 +441,7 @@ buttonsForNewCoto context model =
     ]
 
 
-buttonsForNewCotonoma : Context -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCotonoma : Context a -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCotonoma context model =
     [ button
         [ class "button button-primary"

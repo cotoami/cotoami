@@ -5,17 +5,21 @@ import Set exposing (Set)
 import Date
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
+import Random.Pcg
 import Exts.Maybe exposing (isNothing)
 import List.Extra
+import Uuid
+import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
-import App.Types.Context exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
+import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, PinnedCotosView(..))
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
+import App.Submodels.Context exposing (Context)
 import App.Confirmation exposing (Confirmation)
 import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
@@ -33,7 +37,16 @@ type ConnectingTarget
 
 type alias Model =
     { route : Route
-    , context : Context
+    , clientId : ClientId
+    , session : Maybe Session
+    , cotonoma : Maybe Cotonoma
+    , cotonomaLoading : Bool
+    , elementFocus : Maybe ElementId
+    , contentOpenElements : Set ElementId
+    , reorderModeElements : Set ElementId
+    , cotoFocus : Maybe CotoId
+    , selection : CotoSelection
+    , deselecting : Set CotoId
     , activeViewOnMobile : ActiveViewOnMobile
     , navigationToggled : Bool
     , navigationOpen : Bool
@@ -66,7 +79,16 @@ type alias Model =
 initModel : Int -> Route -> Model
 initModel seed route =
     { route = route
-    , context = initContext seed
+    , clientId = generateClientId seed
+    , session = Nothing
+    , cotonoma = Nothing
+    , cotonomaLoading = False
+    , elementFocus = Nothing
+    , contentOpenElements = Set.empty
+    , reorderModeElements = Set.empty
+    , cotoFocus = Nothing
+    , selection = []
+    , deselecting = Set.empty
     , activeViewOnMobile = TimelineView
     , navigationToggled = False
     , navigationOpen = False
@@ -96,6 +118,13 @@ initModel seed route =
     }
 
 
+generateClientId : Int -> ClientId
+generateClientId seed =
+    Random.Pcg.initialSeed seed
+        |> Random.Pcg.step Uuid.uuidGenerator
+        |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
+
+
 setConfig : ( String, Value ) -> Model -> Model
 setConfig ( key, value ) model =
     case key of
@@ -121,7 +150,7 @@ getCoto cotoId model =
         , App.Types.SearchResults.getCoto cotoId model.searchResults
         , getCotoFromCotonomaList cotoId model.recentCotonomas
         , getCotoFromCotonomaList cotoId model.subCotonomas
-        , model.context.cotonoma
+        , model.cotonoma
             |> Maybe.map
                 (\cotonoma ->
                     if cotonoma.cotoId == cotoId then
@@ -139,7 +168,7 @@ getCotoIdsToWatch model =
         |> List.filterMap (\post -> post.cotoId)
         |> List.append (Dict.keys model.graph.cotos)
         |> List.append
-            (model.context.cotonoma
+            (model.cotonoma
                 |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
                 |> Maybe.withDefault []
             )
@@ -172,7 +201,7 @@ cotonomatize cotonoma cotoId model =
 
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
-    model.context.selection
+    model.selection
         |> List.filterMap (\cotoId -> getCoto cotoId model)
         |> List.reverse
 
@@ -219,7 +248,7 @@ confirmPostAndConnect summary content model =
 
 isNavigationEmpty : Model -> Bool
 isNavigationEmpty model =
-    (isNothing model.context.cotonoma)
+    (isNothing model.cotonoma)
         && (List.isEmpty model.recentCotonomas)
         && (List.isEmpty model.subCotonomas)
 
@@ -250,7 +279,7 @@ openTraversal cotoId model =
 
 connect : Direction -> List Coto -> Coto -> Model -> Model
 connect direction cotos target model =
-    model.context.session
+    model.session
         |> Maybe.map
             (\session ->
                 App.Types.Graph.batchConnect session.id direction cotos target model.graph
@@ -266,18 +295,10 @@ connect direction cotos target model =
 
 closeSelectionColumnIfEmpty : Model -> Model
 closeSelectionColumnIfEmpty model =
-    if List.isEmpty model.context.selection then
+    if List.isEmpty model.selection then
         { model | cotoSelectionColumnOpen = False }
     else
         model
-
-
-clickCoto : ElementId -> CotoId -> Model -> Model
-clickCoto elementId cotoId model =
-    model.context
-        |> setElementFocus (Just elementId)
-        |> setCotoFocus (Just cotoId)
-        |> \context -> { model | context = context }
 
 
 areTimelineAndGraphLoaded : Model -> Bool
@@ -297,5 +318,5 @@ deleteCoto coto model =
         | timeline = App.Types.Timeline.deleteCoto coto model.timeline
         , graph = App.Types.Graph.removeCoto coto.id model.graph
         , traversals = App.Types.Traversal.closeTraversal coto.id model.traversals
-        , context = deleteSelection coto.id model.context
     }
+        |> App.Submodels.Context.deleteSelection coto.id
