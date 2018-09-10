@@ -19,8 +19,7 @@ import App.Types.SearchResults exposing (SearchResults)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Connecting exposing (ConnectingTarget(..))
-import App.Confirmation exposing (Confirmation)
-import App.Modals exposing (Modal(..))
+import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
@@ -88,7 +87,7 @@ initModel seed route =
     , navigationOpen = False
     , presences = Dict.empty
     , modals = []
-    , confirmation = App.Confirmation.defaultConfirmation
+    , confirmation = App.Submodels.Modals.defaultConfirmation
     , searchInputFocus = False
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
@@ -155,7 +154,7 @@ openCotoMenuModal coto model =
     coto
         |> App.Modals.CotoMenuModal.initModel
         |> (\modal -> { model | cotoMenuModal = Just modal })
-        |> App.Modals.openModal CotoMenuModal
+        |> App.Submodels.Modals.openModal CotoMenuModal
 
 
 openCoto : Coto -> Model -> Model
@@ -163,7 +162,7 @@ openCoto coto model =
     coto
         |> App.Modals.CotoModal.initModel
         |> (\modal -> { model | cotoModal = Just modal })
-        |> App.Modals.openModal CotoModal
+        |> App.Submodels.Modals.openModal CotoModal
 
 
 confirmPostAndConnect : Maybe String -> String -> Model -> Model
@@ -172,7 +171,7 @@ confirmPostAndConnect summary content model =
         | connectingTarget = Just (NewPost content summary)
         , connectingDirection = Inbound
     }
-        |> \model -> App.Modals.openModal ConnectModal model
+        |> \model -> App.Submodels.Modals.openModal ConnectModal model
 
 
 openTraversal : CotoId -> Model -> Model

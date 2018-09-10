@@ -33,7 +33,7 @@ import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
 import App.Submodels.Connecting
-import App.Confirmation exposing (Confirmation)
+import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Route exposing (Route(..))
 import App.Server.Session
 import App.Server.Cotonoma
@@ -44,7 +44,6 @@ import App.Commands
 import App.Commands.Graph
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
-import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
@@ -66,7 +65,7 @@ update msg model =
 
         KeyDown keyCode ->
             if keyCode == Util.Keyboard.Key.escapeKeyCode then
-                ( App.Modals.closeActiveModal model, Cmd.none )
+                ( App.Submodels.Modals.closeActiveModal model, Cmd.none )
             else if
                 (keyCode == Util.Keyboard.Key.nKeyCode)
                     && (List.isEmpty model.modals)
@@ -192,7 +191,7 @@ update msg model =
                                         model.signinModal
                                )
                             |> (\signinModal -> { model | signinModal = signinModal })
-                            |> App.Modals.openModal SigninModal
+                            |> App.Submodels.Modals.openModal SigninModal
                             |> withoutCmd
                     else
                         model |> withoutCmd
@@ -265,15 +264,15 @@ update msg model =
         -- Modal
         --
         CloseModal ->
-            App.Modals.closeActiveModal model |> withoutCmd
+            App.Submodels.Modals.closeActiveModal model |> withoutCmd
 
         Confirm ->
-            App.Modals.closeActiveModal model
+            App.Submodels.Modals.closeActiveModal model
                 |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
 
         OpenSigninModal ->
             { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
-                |> App.Modals.openModal SigninModal
+                |> App.Submodels.Modals.openModal SigninModal
                 |> withoutCmd
 
         OpenNewEditorModal ->
@@ -284,11 +283,11 @@ update msg model =
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> App.Modals.openModal InviteModal
+                |> App.Submodels.Modals.openModal InviteModal
                 |> withoutCmd
 
         OpenProfileModal ->
-            App.Modals.openModal ProfileModal model |> withoutCmd
+            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
             App.Model.openCotoMenuModal coto model
@@ -301,7 +300,7 @@ update msg model =
 
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> App.Modals.openModal EditorModal
+                |> App.Submodels.Modals.openModal EditorModal
                 |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         OpenCotoModal coto ->
@@ -309,12 +308,12 @@ update msg model =
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> App.Modals.openModal ImportModal
+                |> App.Submodels.Modals.openModal ImportModal
                 |> withoutCmd
 
         OpenTimelineFilterModal ->
             model
-                |> App.Modals.openModal TimelineFilterModal
+                |> App.Submodels.Modals.openModal TimelineFilterModal
                 |> withoutCmd
 
         --
@@ -344,7 +343,7 @@ update msg model =
         OpenTraversal cotoId ->
             model
                 |> App.Model.openTraversal cotoId
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -364,7 +363,7 @@ update msg model =
                 |> withoutCmd
 
         ConfirmDeleteCoto coto ->
-            (App.Modals.confirm
+            (App.Submodels.Modals.confirm
                 (Confirmation
                     "Are you sure you want to delete this coto?"
                     (DeleteCotoInServerSide coto)
@@ -375,7 +374,7 @@ update msg model =
 
         DeleteCotoInServerSide coto ->
             { model | timeline = setBeingDeleted coto model.timeline }
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
@@ -401,7 +400,7 @@ update msg model =
             model
                 |> App.Submodels.LocalCotos.updateCoto coto
                 |> App.Submodels.LocalCotos.updateRecentCotonomas coto.postedIn
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
                     App.Commands.Cotonoma.refreshCotonomaList
@@ -415,7 +414,7 @@ update msg model =
 
         ConfirmCotonomatize coto ->
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
-                (App.Modals.confirm
+                (App.Submodels.Modals.confirm
                     (Confirmation
                         ("You are about to promote this coto to a Cotonoma "
                             ++ "to discuss with others about: '"
@@ -429,7 +428,7 @@ update msg model =
                     |> withoutCmd
             else
                 { model | editorModal = App.Modals.EditorModal.modelForEditToCotonomatize coto }
-                    |> App.Modals.openModal EditorModal
+                    |> App.Submodels.Modals.openModal EditorModal
                     |> withoutCmd
 
         Cotonomatize cotoId ->
@@ -439,7 +438,7 @@ update msg model =
             coto.asCotonoma
                 |> Maybe.map (\cotonoma -> App.Submodels.LocalCotos.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withCmd App.Commands.Cotonoma.refreshCotonomaList
                 |> addCmd App.Commands.Graph.renderGraph
 
@@ -448,7 +447,7 @@ update msg model =
                 |> Maybe.map (\cotoMenuModal -> App.Modals.EditorModal.modelForEdit cotoMenuModal.coto)
                 |> Maybe.map (App.Modals.EditorModal.setCotoSaveError error)
                 |> Maybe.map (\editorModal -> { model | editorModal = editorModal })
-                |> Maybe.map (App.Modals.openModal EditorModal)
+                |> Maybe.map (App.Submodels.Modals.openModal EditorModal)
                 |> Maybe.withDefault model
                 |> withoutCmd
 
@@ -473,7 +472,7 @@ update msg model =
                 |> Maybe.withDefault (model |> withoutCmd)
 
         PinCotoToMyHome cotoId ->
-            App.Modals.clearModals model
+            App.Submodels.Modals.clearModals model
                 |> withCmd
                     (\model ->
                         App.Server.Graph.pinCotos
@@ -489,7 +488,7 @@ update msg model =
             model |> withoutCmd
 
         ConfirmUnpinCoto cotoId ->
-            (App.Modals.confirm
+            (App.Submodels.Modals.confirm
                 (Confirmation
                     "Are you sure you want to unpin this coto?"
                     (UnpinCoto cotoId)
@@ -521,7 +520,7 @@ update msg model =
                         |> Maybe.map App.Submodels.Connecting.Coto
                 , connectingDirection = direction
             }
-                |> App.Modals.openModal ConnectModal
+                |> App.Submodels.Modals.openModal ConnectModal
                 |> withCmd (\_ -> App.Commands.focus "connect-modal-primary-button" NoOp)
 
         ReverseDirection ->
@@ -543,7 +542,7 @@ update msg model =
                         App.Submodels.Connecting.connect session direction objects target model
                     )
                 |> Maybe.withDefault model
-                |> App.Modals.closeModal ConnectModal
+                |> App.Submodels.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
@@ -561,7 +560,7 @@ update msg model =
             model |> withoutCmd
 
         ConfirmDeleteConnection conn ->
-            (App.Modals.confirm
+            (App.Submodels.Modals.confirm
                 (Confirmation
                     "Are you sure you want to delete this connection?"
                     (DeleteConnection conn)
@@ -670,7 +669,7 @@ update msg model =
         Posted postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
                 |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withoutCmd
 
         Posted postId (Err _) ->
@@ -681,7 +680,7 @@ update msg model =
 
         PostAndConnectToSelection content summary ->
             model
-                |> App.Modals.closeModal ConnectModal
+                |> App.Submodels.Modals.closeModal ConnectModal
                 |> postAndConnectToSelection
                     (Just model.connectingDirection)
                     summary
@@ -689,7 +688,7 @@ update msg model =
 
         PostedAndConnectToSelection postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> connectPostToSelection model.clientId response
 
         PostedAndConnectToSelection postId (Err _) ->
@@ -697,7 +696,7 @@ update msg model =
 
         PostedAndConnectToCoto postId coto (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> connectPostToCoto model.clientId coto response
 
         PostedAndConnectToCoto postId coto (Err _) ->
@@ -708,7 +707,7 @@ update msg model =
                 | cotonomasLoading = True
                 , timeline = setCotoSaved postId response model.timeline
             }
-                |> App.Modals.clearModals
+                |> App.Submodels.Modals.clearModals
                 |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
         CotonomaPosted postId (Err error) ->
@@ -917,7 +916,7 @@ changeLocationToHome model =
 openNewEditor : Maybe Coto -> Model -> ( Model, Cmd Msg )
 openNewEditor source model =
     { model | editorModal = App.Modals.EditorModal.modelForNew model source }
-        |> App.Modals.openModal EditorModal
+        |> App.Submodels.Modals.openModal EditorModal
         |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" NoOp)
 
 

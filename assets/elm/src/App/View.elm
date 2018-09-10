@@ -12,6 +12,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
+import App.Submodels.Modals exposing (Modal(..))
 import App.Views.AppHeader
 import App.Views.Timeline
 import App.Views.Traversals
@@ -19,7 +20,6 @@ import App.Views.Navigation
 import App.Views.PinnedCotos
 import App.Views.CotoSelection
 import App.Views.SearchResults
-import App.Modals exposing (Modal(..))
 import App.Modals.ConnectModal
 import App.Modals.ProfileModal
 import App.Modals.InviteModal
