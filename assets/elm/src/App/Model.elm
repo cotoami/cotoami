@@ -2,12 +2,10 @@ module App.Model exposing (..)
 
 import Dict
 import Set exposing (Set)
-import Date
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Random.Pcg
 import Exts.Maybe exposing (isNothing)
-import List.Extra
 import Uuid
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
@@ -19,7 +17,8 @@ import App.Types.Graph exposing (Direction(..), Graph, PinnedCotosView(..))
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Submodels.Context exposing (Context)
+import App.Submodels.Context
+import App.Submodels.LocalCotos
 import App.Confirmation exposing (Confirmation)
 import App.Modals exposing (Modal(..))
 import App.Modals.SigninModal
@@ -142,83 +141,18 @@ setConfig ( key, value ) model =
             model
 
 
-getCoto : CotoId -> Model -> Maybe Coto
-getCoto cotoId model =
-    Exts.Maybe.oneOf
-        [ Dict.get cotoId model.graph.cotos
-        , App.Types.Timeline.getCoto cotoId model.timeline
-        , App.Types.SearchResults.getCoto cotoId model.searchResults
-        , getCotoFromCotonomaList cotoId model.recentCotonomas
-        , getCotoFromCotonomaList cotoId model.subCotonomas
-        , model.cotonoma
-            |> Maybe.map
-                (\cotonoma ->
-                    if cotonoma.cotoId == cotoId then
-                        Just (App.Types.Coto.toCoto cotonoma)
-                    else
-                        Nothing
-                )
-            |> Maybe.withDefault Nothing
-        ]
-
-
-getCotoIdsToWatch : Model -> Set CotoId
-getCotoIdsToWatch model =
-    model.timeline.posts
-        |> List.filterMap (\post -> post.cotoId)
-        |> List.append (Dict.keys model.graph.cotos)
-        |> List.append
-            (model.cotonoma
-                |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
-                |> Maybe.withDefault []
-            )
-        |> Set.fromList
-
-
-getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
-getCotoFromCotonomaList cotoId cotonomas =
-    cotonomas
-        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
-        |> List.head
-        |> Maybe.map App.Types.Coto.toCoto
-
-
-updateCoto : Coto -> Model -> Model
-updateCoto coto model =
-    { model
-        | timeline = App.Types.Timeline.updatePost coto model.timeline
-        , graph = App.Types.Graph.updateCoto coto model.graph
-    }
-
-
-cotonomatize : Cotonoma -> CotoId -> Model -> Model
-cotonomatize cotonoma cotoId model =
-    { model
-        | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId model.timeline
-        , graph = App.Types.Graph.cotonomatize cotonoma cotoId model.graph
-    }
-
-
 getSelectedCotos : Model -> List Coto
 getSelectedCotos model =
     model.selection
-        |> List.filterMap (\cotoId -> getCoto cotoId model)
+        |> List.filterMap (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> List.reverse
 
 
-updateRecentCotonomas : Maybe Cotonoma -> Model -> Model
-updateRecentCotonomas maybeCotonoma model =
-    maybeCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                model.recentCotonomas
-                    |> (::) cotonoma
-                    |> List.Extra.uniqueBy (\c -> c.id)
-                    |> List.sortBy (\c -> Date.toTime c.updatedAt)
-                    |> List.reverse
-                    |> (\cotonomas -> { model | recentCotonomas = cotonomas })
-            )
-        |> Maybe.withDefault model
+deleteCoto : Coto -> Model -> Model
+deleteCoto coto model =
+    { model | traversals = App.Types.Traversal.closeTraversal coto.id model.traversals }
+        |> App.Submodels.LocalCotos.deleteCoto coto
+        |> App.Submodels.Context.deleteSelection coto.id
 
 
 openCotoMenuModal : Coto -> Model -> Model
@@ -253,11 +187,6 @@ isNavigationEmpty model =
         && (List.isEmpty model.subCotonomas)
 
 
-isStockEmpty : Model -> Bool
-isStockEmpty model =
-    List.isEmpty model.graph.rootConnections
-
-
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     { model
@@ -265,7 +194,7 @@ openTraversal cotoId model =
             if App.Types.Graph.member cotoId model.graph then
                 model.graph
             else
-                case getCoto cotoId model of
+                case App.Submodels.LocalCotos.getCoto cotoId model of
                     Nothing ->
                         model.graph
 
@@ -310,13 +239,3 @@ isTimelineReady : Model -> Bool
 isTimelineReady model =
     (areTimelineAndGraphLoaded model)
         && (not model.timeline.initializingScrollPos)
-
-
-deleteCoto : Coto -> Model -> Model
-deleteCoto coto model =
-    { model
-        | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-        , graph = App.Types.Graph.removeCoto coto.id model.graph
-        , traversals = App.Types.Traversal.closeTraversal coto.id model.traversals
-    }
-        |> App.Submodels.Context.deleteSelection coto.id

@@ -9,8 +9,9 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Types.Graph
 import App.Types.Timeline
-import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
+import App.Model exposing (Model)
+import App.Submodels.LocalCotos
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
@@ -52,7 +53,7 @@ handlePost payload model =
 
 handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
 handleDelete payload model =
-    App.Model.getCoto payload.body model
+    App.Submodels.LocalCotos.getCoto payload.body model
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
         |> withCmd App.Commands.Cotonoma.refreshCotonomaList
@@ -61,7 +62,7 @@ handleDelete payload model =
 handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
 handleUpdate payload model =
     model
-        |> App.Model.updateCoto payload.body
+        |> App.Submodels.LocalCotos.updateCoto payload.body
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
             App.Commands.Cotonoma.refreshCotonomaList
@@ -69,7 +70,7 @@ handleUpdate payload model =
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
-    App.Model.cotonomatize payload.body payload.body.cotoId model
+    App.Submodels.LocalCotos.cotonomatize payload.body payload.body.cotoId model
         |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
 
@@ -101,7 +102,7 @@ handleConnect payload model =
                     Nothing
             )
         |> Maybe.withDefault
-            (App.Model.getCoto payload.body.start.id model
+            (App.Submodels.LocalCotos.getCoto payload.body.start.id model
                 |> Maybe.map
                     (\startCoto ->
                         App.Types.Graph.connect

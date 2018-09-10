@@ -9,8 +9,9 @@ import App.Types.Session exposing (Session)
 import App.Types.Traversal
 import App.Types.SearchResults
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
-import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Model exposing (..)
+import App.Submodels.LocalCotos
 import App.Views.AppHeader
 import App.Views.Timeline
 import App.Views.Traversals
@@ -245,7 +246,7 @@ viewSwitchContainerDiv model =
             "thumb-tack"
             "Switch to pinned cotos"
             (model.activeViewOnMobile == PinnedView)
-            (isStockEmpty model)
+            (App.Submodels.LocalCotos.isStockEmpty model)
             (SwitchViewOnMobile PinnedView)
         , viewSwitchDiv
             "switch-to-traversals"

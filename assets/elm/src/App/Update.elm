@@ -31,6 +31,7 @@ import App.Types.SearchResults
 import App.Model exposing (Model)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos
 import App.Confirmation exposing (Confirmation)
 import App.Route exposing (Route(..))
 import App.Server.Session
@@ -397,8 +398,8 @@ update msg model =
 
         CotoUpdated (Ok coto) ->
             model
-                |> App.Model.updateCoto coto
-                |> App.Model.updateRecentCotonomas coto.postedIn
+                |> App.Submodels.LocalCotos.updateCoto coto
+                |> App.Submodels.LocalCotos.updateRecentCotonomas coto.postedIn
                 |> App.Modals.clearModals
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
@@ -435,7 +436,7 @@ update msg model =
 
         Cotonomatized (Ok coto) ->
             coto.asCotonoma
-                |> Maybe.map (\cotonoma -> App.Model.cotonomatize cotonoma coto.id model)
+                |> Maybe.map (\cotonoma -> App.Submodels.LocalCotos.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Modals.clearModals
                 |> withCmd App.Commands.Cotonoma.refreshCotonomaList
@@ -466,7 +467,7 @@ update msg model =
                             )
                 )
                 model.session
-                (App.Model.getCoto cotoId model)
+                (App.Submodels.LocalCotos.getCoto cotoId model)
             )
                 |> Maybe.withDefault (model |> withoutCmd)
 
@@ -515,7 +516,7 @@ update msg model =
         ConfirmConnect cotoId direction ->
             { model
                 | connectingTarget =
-                    App.Model.getCoto cotoId model
+                    App.Submodels.LocalCotos.getCoto cotoId model
                         |> Maybe.map App.Model.Coto
                 , connectingDirection = direction
             }
@@ -662,7 +663,7 @@ update msg model =
 
         Posted postId (Ok response) ->
             { model | timeline = setCotoSaved postId response model.timeline }
-                |> App.Model.updateRecentCotonomas response.postedIn
+                |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
                 |> App.Modals.clearModals
                 |> withoutCmd
 
@@ -1139,7 +1140,7 @@ openCoto coto model =
 connectPostToSelection : ClientId -> Post -> Model -> ( Model, Cmd Msg )
 connectPostToSelection clientId post model =
     post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
             (\target ->
                 let
@@ -1167,7 +1168,7 @@ connectPostToSelection clientId post model =
 connectPostToCoto : ClientId -> Coto -> Post -> Model -> ( Model, Cmd Msg )
 connectPostToCoto clientId coto post model =
     post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Model.getCoto cotoId model)
+        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
             (\target ->
                 let

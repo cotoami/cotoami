@@ -13,6 +13,7 @@ import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos
 import App.Markdown
 import App.Views.Coto
 
@@ -74,7 +75,7 @@ selectedCotosDiv model =
         [ id "selected-cotos" ]
         (List.filterMap
             (\cotoId ->
-                case getCoto cotoId model of
+                case App.Submodels.LocalCotos.getCoto cotoId model of
                     Nothing ->
                         Nothing
 
