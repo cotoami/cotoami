@@ -4,6 +4,9 @@ jobs:
     docker:
       - image: cotoami/cotoami-elixir:1.6
       - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cotoami_test
       - image: redis:alpine
       - image: neo4j:3.2.2
         environment:
