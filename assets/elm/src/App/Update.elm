@@ -623,16 +623,12 @@ update msg model =
                     (\model -> model.timeline.pageIndex == 0)
                     (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
-        EditorInput content ->
-            { model | timeline = model.timeline |> \t -> { t | newContent = content } }
-                |> withoutCmd
-
         EditorKeyDown keyboardEvent ->
-            handleEditorShortcut keyboardEvent Nothing model.timeline.newContent model
+            handleEditorShortcut keyboardEvent Nothing model.timeline.editorContent model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Post ->
-            post Nothing model.timeline.newContent model
+            post Nothing model.timeline.editorContent model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Posted postId (Ok response) ->

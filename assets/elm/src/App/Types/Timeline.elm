@@ -1,4 +1,33 @@
-module App.Types.Timeline exposing (..)
+module App.Types.Timeline
+    exposing
+        ( TimelineView(..)
+        , Filter
+        , defaultFilter
+        , decodeFilter
+        , encodeFilter
+        , Timeline
+        , defaultTimeline
+        , toggle
+        , switchView
+        , setFilter
+        , setScrollPosInitialized
+        , isEmpty
+        , openOrCloseEditor
+        , addPost
+        , setPaginatedPosts
+        , nextPageIndex
+        , getCoto
+        , deleteCoto
+        , deletePendingPost
+        , setLoading
+        , setLoadingMore
+        , setEditorContent
+        , updatePost
+        , cotonomatize
+        , setCotoSaved
+        , setBeingDeleted
+        , post
+        )
 
 import Maybe
 import Json.Decode as Decode
@@ -48,7 +77,7 @@ type alias Timeline =
     , view : TimelineView
     , filter : Filter
     , editorOpen : Bool
-    , newContent : String
+    , editorContent : String
     , editorCounter : Int
     , postIdCounter : Int
     , posts : List Post
@@ -66,7 +95,7 @@ defaultTimeline =
     , view = StreamView
     , filter = defaultFilter
     , editorOpen = False
-    , newContent = ""
+    , editorContent = ""
     , editorCounter = 0
     , postIdCounter = 0
     , posts = []
@@ -167,6 +196,11 @@ setLoadingMore timeline =
     { timeline | loadingMore = True }
 
 
+setEditorContent : String -> Timeline -> Timeline
+setEditorContent content timeline =
+    { timeline | editorContent = content }
+
+
 updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
 updatePost_ predicate update timeline =
     timeline.posts
@@ -252,7 +286,7 @@ post context isCotonoma summary content timeline =
         ( { timeline
             | posts = newPost :: timeline.posts
             , postIdCounter = postId
-            , newContent = ""
+            , editorContent = ""
             , editorCounter = timeline.editorCounter + 1
           }
         , newPost

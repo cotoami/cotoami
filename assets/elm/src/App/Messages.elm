@@ -10,7 +10,6 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, 
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
-import App.Types.Timeline exposing (TimelineView)
 import App.Types.Traversal exposing (Traversal)
 import App.Views.TimelineMsg
 import App.Modals.SigninModalMsg
@@ -104,7 +103,6 @@ type Msg
       --
     | PostsFetched (Result Http.Error PaginatedPosts)
     | ImageLoaded
-    | EditorInput String
     | EditorKeyDown KeyboardEvent
     | Post
     | Posted Int (Result Http.Error Post)

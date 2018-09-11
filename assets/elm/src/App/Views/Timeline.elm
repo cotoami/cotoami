@@ -48,6 +48,10 @@ update context msg model =
                     (\model -> model.timeline.editorOpen)
                     (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
+        EditorInput content ->
+            { model | timeline = App.Types.Timeline.setEditorContent content model.timeline }
+                |> withoutCmd
+
 
 view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
 view context session model =
@@ -216,10 +220,10 @@ postEditor context session model =
                     span [ class "connect-buttons" ]
                         [ button
                             [ class "button connect"
-                            , disabled (isBlank model.newContent)
+                            , disabled (isBlank model.editorContent)
                             , onMouseDown
                                 (AppMsg.ConfirmPostAndConnect
-                                    model.newContent
+                                    model.editorContent
                                     Nothing
                                 )
                             ]
@@ -229,7 +233,7 @@ postEditor context session model =
                         ]
                 , button
                     [ class "button-primary post"
-                    , disabled (isBlank model.newContent)
+                    , disabled (isBlank model.editorContent)
                     , onMouseDown AppMsg.Post
                     ]
                     [ text "Post"
@@ -245,9 +249,9 @@ postEditor context session model =
                     [ class "coto"
                     , id "quick-coto-input"
                     , placeholder "Write your Coto in Markdown"
-                    , defaultValue model.newContent
+                    , defaultValue model.editorContent
                     , onFocus (AppMsg.TimelineMsg EditorFocus)
-                    , onInput EditorInput
+                    , onInput (AppMsg.TimelineMsg << EditorInput)
                     , on "keydown" <|
                         Decode.map EditorKeyDown Util.Keyboard.Event.decodeKeyboardEvent
                     , onClickWithoutPropagation NoOp

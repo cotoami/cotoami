@@ -7,3 +7,4 @@ type Msg
     = SwitchView TimelineView
     | LoadMorePosts
     | EditorFocus
+    | EditorInput String
