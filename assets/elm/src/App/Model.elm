@@ -1,4 +1,13 @@
-module App.Model exposing (..)
+module App.Model
+    exposing
+        ( Model
+        , initModel
+        , configure
+        , getSelectedCotos
+        , deleteCoto
+        , openTraversal
+        , closeSelectionColumnIfEmpty
+        )
 
 import Dict
 import Set exposing (Set)
