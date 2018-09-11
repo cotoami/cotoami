@@ -14,6 +14,7 @@ import App.Types.Timeline exposing (TimelineView)
 import App.Types.Traversal exposing (Traversal)
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
+import App.Modals.ConnectModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.TimelineFilterModalMsg
@@ -150,6 +151,7 @@ type Msg
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
+    | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg
