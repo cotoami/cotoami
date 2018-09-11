@@ -6,3 +6,4 @@ import App.Types.Timeline exposing (TimelineView)
 type Msg
     = SwitchView TimelineView
     | LoadMorePosts
+    | EditorFocus

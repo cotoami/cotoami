@@ -21,6 +21,7 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
 import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
 import App.Views.Post
+import App.Commands
 import App.Server.Post
 
 
@@ -40,6 +41,12 @@ update context msg model =
                             model.timeline.filter
                             context
                     )
+
+        EditorFocus ->
+            { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
+                |> withCmdIf
+                    (\model -> model.timeline.editorOpen)
+                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
 
 view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
@@ -239,7 +246,7 @@ postEditor context session model =
                     , id "quick-coto-input"
                     , placeholder "Write your Coto in Markdown"
                     , defaultValue model.newContent
-                    , onFocus EditorFocus
+                    , onFocus (AppMsg.TimelineMsg EditorFocus)
                     , onInput EditorInput
                     , on "keydown" <|
                         Decode.map EditorKeyDown Util.Keyboard.Event.decodeKeyboardEvent

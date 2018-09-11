@@ -104,7 +104,6 @@ type Msg
       --
     | PostsFetched (Result Http.Error PaginatedPosts)
     | ImageLoaded
-    | EditorFocus
     | EditorInput String
     | EditorKeyDown KeyboardEvent
     | Post

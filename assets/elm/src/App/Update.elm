@@ -623,12 +623,6 @@ update msg model =
                     (\model -> model.timeline.pageIndex == 0)
                     (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
-        EditorFocus ->
-            { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
-                |> withCmdIf
-                    (\model -> model.timeline.editorOpen)
-                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
-
         EditorInput content ->
             { model | timeline = model.timeline |> \t -> { t | newContent = content } }
                 |> withoutCmd
