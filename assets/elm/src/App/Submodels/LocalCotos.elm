@@ -30,11 +30,11 @@ type alias LocalCotos a =
     { a
         | cotonoma : Maybe Cotonoma
         , timeline : Timeline
-        , searchResults : SearchResults
         , graph : Graph
         , loadingGraph : Bool
         , recentCotonomas : List Cotonoma
         , subCotonomas : List Cotonoma
+        , searchResults : SearchResults
     }
 
 
