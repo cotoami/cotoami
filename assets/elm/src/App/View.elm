@@ -163,7 +163,7 @@ timelineDiv session classes model =
             model
             session
             model.graph
-            (App.Model.isTimelineReady model)
+            (App.Submodels.LocalCotos.isTimelineReady model)
             model.timeline
         ]
 

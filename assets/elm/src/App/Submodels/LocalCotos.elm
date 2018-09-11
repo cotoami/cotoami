@@ -10,6 +10,8 @@ module App.Submodels.LocalCotos
         , isStockEmpty
         , isNavigationEmpty
         , connect
+        , areTimelineAndGraphLoaded
+        , isTimelineReady
         )
 
 import Set exposing (Set)
@@ -30,6 +32,7 @@ type alias LocalCotos a =
         , timeline : Timeline
         , searchResults : SearchResults
         , graph : Graph
+        , loadingGraph : Bool
         , recentCotonomas : List Cotonoma
         , subCotonomas : List Cotonoma
     }
@@ -144,3 +147,14 @@ connect maybeSession direction cotos target localCotos =
                 |> Maybe.withDefault localCotos.graph
     in
         { localCotos | graph = graph }
+
+
+areTimelineAndGraphLoaded : LocalCotos a -> Bool
+areTimelineAndGraphLoaded localCotos =
+    (not localCotos.timeline.loading) && (not localCotos.loadingGraph)
+
+
+isTimelineReady : LocalCotos a -> Bool
+isTimelineReady localCotos =
+    (areTimelineAndGraphLoaded localCotos)
+        && (not localCotos.timeline.initializingScrollPos)

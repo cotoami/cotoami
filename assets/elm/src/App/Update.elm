@@ -960,7 +960,7 @@ loadCotonoma key model =
 
 initScrollPositionOfTimeline : Model -> Cmd Msg
 initScrollPositionOfTimeline model =
-    if App.Model.areTimelineAndGraphLoaded model then
+    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded model then
         App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
     else
         Cmd.none

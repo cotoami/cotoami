@@ -163,14 +163,3 @@ closeSelectionColumnIfEmpty model =
         { model | cotoSelectionColumnOpen = False }
     else
         model
-
-
-areTimelineAndGraphLoaded : Model -> Bool
-areTimelineAndGraphLoaded model =
-    (not model.timeline.loading) && (not model.loadingGraph)
-
-
-isTimelineReady : Model -> Bool
-isTimelineReady model =
-    (areTimelineAndGraphLoaded model)
-        && (not model.timeline.initializingScrollPos)
