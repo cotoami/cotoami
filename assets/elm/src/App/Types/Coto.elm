@@ -2,6 +2,7 @@ module App.Types.Coto
     exposing
         ( ElementId
         , CotoId
+        , CotoSelection
         , CotonomaKey
         , Coto
         , summaryMaxlength
@@ -30,6 +31,10 @@ type alias ElementId =
 
 type alias CotoId =
     String
+
+
+type alias CotoSelection =
+    List CotoId
 
 
 type alias CotonomaKey =

@@ -8,8 +8,8 @@ import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
-import App.Types.Context exposing (Context)
 import App.Types.Graph exposing (Graph)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (Msg(..))
 
 
@@ -31,7 +31,7 @@ isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
 
 
-view : Context -> Graph -> Maybe Model -> Html Msg
+view : Context a -> Graph -> Maybe Model -> Html Msg
 view context graph maybeModel =
     (Maybe.map2
         (\session model -> modalConfig context session graph model)
@@ -41,7 +41,7 @@ view context graph maybeModel =
         |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Context -> Session -> Graph -> Model -> Modal.Config Msg
+modalConfig : Context a -> Session -> Graph -> Model -> Modal.Config Msg
 modalConfig context session graph model =
     { closeMessage = CloseModal
     , title = text ""
@@ -49,7 +49,7 @@ modalConfig context session graph model =
         [ [ menuItemInfo model
           , menuItemExplore model
           ]
-        , if App.Types.Context.atHome context then
+        , if App.Submodels.Context.atHome context then
             [ menuItemPinUnpin context graph model ]
           else
             [ menuItemPinCotoToMyHome context graph model
@@ -100,7 +100,7 @@ menuItemExplore model =
         ]
 
 
-menuItemPinUnpin : Context -> Graph -> Model -> Html Msg
+menuItemPinUnpin : Context a -> Graph -> Model -> Html Msg
 menuItemPinUnpin context graph model =
     if App.Types.Graph.pinned model.coto.id graph then
         div
@@ -127,7 +127,7 @@ menuItemPinUnpin context graph model =
             ]
 
 
-menuItemPinCotoToMyHome : Context -> Graph -> Model -> Html Msg
+menuItemPinCotoToMyHome : Context a -> Graph -> Model -> Html Msg
 menuItemPinCotoToMyHome context graph model =
     div
         [ class "menu-item"

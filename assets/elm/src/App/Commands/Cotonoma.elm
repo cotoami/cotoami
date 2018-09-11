@@ -9,5 +9,5 @@ refreshCotonomaList : Model -> Cmd Msg
 refreshCotonomaList model =
     Cmd.batch
         [ App.Server.Cotonoma.fetchCotonomas
-        , App.Server.Cotonoma.fetchSubCotonomas model.context
+        , App.Server.Cotonoma.fetchSubCotonomas model
         ]

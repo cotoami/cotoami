@@ -26,15 +26,15 @@ import Html.Keyed
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
-import App.Types.Context exposing (Context, isSelected, orignatedHere, contentOpen)
 import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Direction(..), Graph, Connection)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 
 
-cotoClassList : Context -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
+cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
 cotoClassList context elementId maybeCotoId additionalClasses =
     classList
         ([ ( "coto", True )
@@ -44,7 +44,7 @@ cotoClassList context elementId maybeCotoId additionalClasses =
            , Maybe.map2 (==) maybeCotoId context.cotoFocus
                 |> Maybe.withDefault False
            )
-         , ( "selected", isSelected maybeCotoId context )
+         , ( "selected", App.Submodels.Context.isSelected maybeCotoId context )
          ]
             ++ additionalClasses
         )
@@ -69,13 +69,13 @@ type alias Markdown =
     String -> Html Msg
 
 
-bodyDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg
 bodyDiv context elementId markdown model =
     div [ class "coto-body" ]
         [ model.asCotonoma
             |> Maybe.map (cotonomaLink context CotonomaClick model.amishi)
             |> Maybe.withDefault
-                (if App.Types.Context.inReorderMode elementId context then
+                (if App.Submodels.Context.inReorderMode elementId context then
                     contentDivInReorder model
                  else
                     contentDiv context elementId markdown model
@@ -83,12 +83,12 @@ bodyDiv context elementId markdown model =
         ]
 
 
-bodyDivByCoto : Context -> ElementId -> Coto -> Html Msg
+bodyDivByCoto : Context a -> ElementId -> Coto -> Html Msg
 bodyDivByCoto context elementId coto =
     bodyDiv context elementId App.Markdown.markdown coto
 
 
-contentDiv : Context -> ElementId -> Markdown -> BodyModel r -> Html Msg
+contentDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg
 contentDiv context elementId markdown model =
     model.summary
         |> Maybe.map
@@ -102,7 +102,7 @@ contentDiv context elementId markdown model =
                             , onLinkButtonClick (ToggleCotoContent elementId)
                             ]
                             [ faIcon
-                                (if contentOpen elementId context then
+                                (if App.Submodels.Context.contentOpen elementId context then
                                     "angle-double-up"
                                  else
                                     "angle-double-down"
@@ -114,7 +114,7 @@ contentDiv context elementId markdown model =
                     , div
                         [ classList
                             [ ( "coto-collapsible-content", True )
-                            , ( "open", contentOpen elementId context )
+                            , ( "open", App.Submodels.Context.contentOpen elementId context )
                             ]
                         ]
                         [ markdown model.content ]
@@ -171,16 +171,16 @@ defaultActionConfig =
     }
 
 
-headerDivWithDefaultConfig : Context -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
+headerDivWithDefaultConfig : Context a -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
 headerDivWithDefaultConfig context graph maybeInbound elementId coto =
     headerDiv context graph maybeInbound defaultActionConfig elementId coto
 
 
-headerDiv : Context -> Graph -> Maybe InboundConnection -> ActionConfig -> ElementId -> Coto -> Html Msg
+headerDiv : Context a -> Graph -> Maybe InboundConnection -> ActionConfig -> ElementId -> Coto -> Html Msg
 headerDiv context graph maybeInbound config elementId coto =
     div
         [ class "coto-header" ]
-        [ if App.Types.Context.inReorderMode elementId context then
+        [ if App.Submodels.Context.inReorderMode elementId context then
             maybeInbound
                 |> Maybe.map
                     (\inbound -> reorderToolButtonsSpan context inbound elementId)
@@ -191,7 +191,7 @@ headerDiv context graph maybeInbound config elementId coto =
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
-                    if orignatedHere context coto then
+                    if App.Submodels.Context.orignatedHere context coto then
                         Util.HtmlUtil.none
                     else
                         a
@@ -210,7 +210,7 @@ headerDiv context graph maybeInbound config elementId coto =
 
 
 toolButtonsSpan :
-    Context
+    Context a
     -> Graph
     -> Maybe InboundConnection
     -> ActionConfig
@@ -218,7 +218,10 @@ toolButtonsSpan :
     -> Coto
     -> Html Msg
 toolButtonsSpan context graph maybeInbound config elementId coto =
-    [ if List.isEmpty context.selection || isSelected (Just coto.id) context then
+    [ if
+        List.isEmpty context.selection
+            || App.Submodels.Context.isSelected (Just coto.id) context
+      then
         Nothing
       else
         Maybe.map
@@ -288,7 +291,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                     ]
                     [ materialIcon
                         (if
-                            isSelected (Just coto.id) context
+                            App.Submodels.Context.isSelected (Just coto.id) context
                                 && not (Set.member coto.id context.deselecting)
                          then
                             "check_box"
@@ -319,7 +322,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
 
 
 subCotoButtonsSpan :
-    Context
+    Context a
     -> Graph
     -> InboundConnection
     -> ActionConfig
@@ -380,7 +383,7 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-isReorderble : Context -> Session -> InboundConnection -> Coto -> Bool
+isReorderble : Context a -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
     if inbound.siblings < 2 then
         False
@@ -408,7 +411,7 @@ isReorderble context session inbound child =
                 )
 
 
-reorderToolButtonsSpan : Context -> InboundConnection -> ElementId -> Html Msg
+reorderToolButtonsSpan : Context a -> InboundConnection -> ElementId -> Html Msg
 reorderToolButtonsSpan context inbound elementId =
     let
         maybeParentId =
@@ -530,9 +533,9 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
         |> Maybe.withDefault Util.HtmlUtil.none
 
 
-subCotosDiv : Context -> Graph -> ElementId -> Coto -> Html Msg
+subCotosDiv : Context a -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
-    if App.Types.Context.inReorderMode parentElementId context then
+    if App.Submodels.Context.inReorderMode parentElementId context then
         div [] []
     else
         graph.connections
@@ -552,7 +555,7 @@ subCotosDiv context graph parentElementId coto =
             |> Maybe.withDefault Util.HtmlUtil.none
 
 
-connectionsDiv : Context -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
+connectionsDiv : Context a -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
 connectionsDiv context graph parentElementId parentCoto connections =
     connections
         |> List.reverse
@@ -585,7 +588,7 @@ connectionsDiv context graph parentElementId parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context -> Graph -> ElementId -> InboundConnection -> Coto -> Html Msg
+subCotoDiv : Context a -> Graph -> ElementId -> InboundConnection -> Coto -> Html Msg
 subCotoDiv context graph parentElementId inbound coto =
     let
         elementId =
@@ -648,7 +651,7 @@ abbreviate { content, summary } =
             summary
 
 
-cotonomaLink : Context -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
+cotonomaLink : Context a -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
 cotonomaLink context cotonomaClick maybeOwner cotonoma =
     if isCotonomaAccessible context maybeOwner cotonoma then
         a
@@ -665,7 +668,7 @@ cotonomaLink context cotonomaClick maybeOwner cotonoma =
             ]
 
 
-isCotonomaAccessible : Context -> Maybe Amishi -> Cotonoma -> Bool
+isCotonomaAccessible : Context a -> Maybe Amishi -> Cotonoma -> Bool
 isCotonomaAccessible context maybeOwner cotonoma =
     if cotonoma.shared then
         True

@@ -14,6 +14,7 @@ import App.Types.Timeline exposing (TimelineView)
 import App.Types.Traversal exposing (Traversal)
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
+import App.Modals.ConnectModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.TimelineFilterModalMsg
@@ -87,7 +88,6 @@ type Msg
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
     | ConfirmConnect CotoId Direction
-    | ReverseDirection
     | Connect Coto (List Coto) Direction
     | Connected (Result Http.Error (List String))
     | ConfirmDeleteConnection ( CotoId, CotoId )
@@ -111,8 +111,8 @@ type Msg
     | Post
     | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect String (Maybe String)
-    | PostAndConnectToSelection String (Maybe String)
-    | PostedAndConnectToSelection Int (Result Http.Error Post)
+    | PostAndConnectToSelection String (Maybe String) Direction
+    | PostedAndConnectToSelection Int Direction (Result Http.Error Post)
     | PostedAndConnectToCoto Int Coto (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
     | TimelineScrollPosInitialized
@@ -151,6 +151,7 @@ type Msg
       --
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
+    | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg

@@ -9,15 +9,15 @@ import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
-import App.Types.Context exposing (CotoSelection, Context)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
-view : Bool -> Context -> Graph -> Traversals -> List (Html Msg)
+view : Bool -> Context a -> Graph -> Traversals -> List (Html Msg)
 view activeOnMobile context graph model =
     model.order
         |> List.filterMap
@@ -49,7 +49,7 @@ view activeOnMobile context graph model =
         |> (::) (traversalsPaginationDiv graph model)
 
 
-maybeTraversalDiv : Context -> Graph -> Traversal -> Maybe (Html Msg)
+maybeTraversalDiv : Context a -> Graph -> Traversal -> Maybe (Html Msg)
 maybeTraversalDiv context graph traversal =
     Dict.get traversal.start graph.cotos
         |> Maybe.map
@@ -77,7 +77,7 @@ getElementId step =
     "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
 
 
-traversalDiv : Context -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
+traversalDiv : Context a -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
 traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
@@ -143,7 +143,7 @@ parentsDiv graph traversal childId =
                 ]
 
 
-stepCotoDiv : Context -> Graph -> List Connection -> TraversalStep -> Coto -> Html Msg
+stepCotoDiv : Context a -> Graph -> List Connection -> TraversalStep -> Coto -> Html Msg
 stepCotoDiv context graph connections step coto =
     let
         elementId =
@@ -170,7 +170,7 @@ stepCotoDiv context graph connections step coto =
             ]
 
 
-stepDiv : Context -> Graph -> TraversalStep -> Maybe (Html Msg)
+stepDiv : Context a -> Graph -> TraversalStep -> Maybe (Html Msg)
 stepDiv context graph step =
     let
         connections =
@@ -190,7 +190,7 @@ stepDiv context graph step =
                 )
 
 
-connectionsDiv : Context -> Graph -> TraversalStep -> String -> Coto -> List Connection -> Html Msg
+connectionsDiv : Context a -> Graph -> TraversalStep -> String -> Coto -> List Connection -> Html Msg
 connectionsDiv context graph step elementIdPrefix parentCoto connections =
     connections
         |> List.reverse
@@ -230,7 +230,7 @@ connectionsDiv context graph step elementIdPrefix parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context -> Graph -> TraversalStep -> String -> InboundConnection -> Coto -> Html Msg
+subCotoDiv : Context a -> Graph -> TraversalStep -> String -> InboundConnection -> Coto -> Html Msg
 subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
     let
         elementId =

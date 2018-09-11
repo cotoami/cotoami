@@ -8,11 +8,12 @@ import Html.Events exposing (onClick, onInput)
 import Util.StringUtil exposing (isBlank)
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
-import App.Types.Context exposing (CotoSelection, Context)
-import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotoSelection)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (..)
 import App.Messages exposing (..)
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos
 import App.Markdown
 import App.Views.Coto
 
@@ -22,7 +23,7 @@ statusBar model =
     div
         [ id "coto-selection-bar"
         , classList
-            [ ( "empty", List.isEmpty model.context.selection )
+            [ ( "empty", List.isEmpty model.selection )
             ]
         ]
         [ a [ class "close", onClick ClearSelection ]
@@ -31,7 +32,7 @@ statusBar model =
             [ faIcon "check-square-o" Nothing
             , span
                 [ class "selection-count" ]
-                [ text (model.context.selection |> List.length |> toString) ]
+                [ text (model.selection |> List.length |> toString) ]
             , span
                 [ class "text" ]
                 [ text " cotos selected" ]
@@ -74,7 +75,7 @@ selectedCotosDiv model =
         [ id "selected-cotos" ]
         (List.filterMap
             (\cotoId ->
-                case getCoto cotoId model of
+                case App.Submodels.LocalCotos.getCoto cotoId model of
                     Nothing ->
                         Nothing
 
@@ -82,17 +83,17 @@ selectedCotosDiv model =
                         Just
                             ( toString cotoId
                             , cotoDiv
-                                (model.context.deselecting |> Set.member cotoId)
-                                model.context
+                                (model.deselecting |> Set.member cotoId)
+                                model
                                 model.graph
                                 coto
                             )
             )
-            (List.reverse model.context.selection)
+            (List.reverse model.selection)
         )
 
 
-cotoDiv : Bool -> Context -> Graph -> Coto -> Html Msg
+cotoDiv : Bool -> Context a -> Graph -> Coto -> Html Msg
 cotoDiv beingDeselected context graph coto =
     let
         elementId =

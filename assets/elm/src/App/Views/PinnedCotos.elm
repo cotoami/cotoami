@@ -8,14 +8,14 @@ import Html.Events exposing (..)
 import Exts.Maybe exposing (isJust)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
-import App.Types.Context exposing (CotoSelection, Context)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Graph exposing (Graph, Connection, PinnedCotosView(..))
 import App.Messages exposing (..)
+import App.Submodels.Context exposing (Context)
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
-view : Context -> Bool -> PinnedCotosView -> Graph -> Html Msg
+view : Context a -> Bool -> PinnedCotosView -> Graph -> Html Msg
 view context loadingGraph view graph =
     div [ id "pinned-cotos" ]
         [ div
@@ -57,7 +57,7 @@ view context loadingGraph view graph =
         ]
 
 
-pinnedCotos : Context -> Graph -> Html Msg
+pinnedCotos : Context a -> Graph -> Html Msg
 pinnedCotos context graph =
     graph.rootConnections
         |> List.reverse
@@ -76,7 +76,7 @@ pinnedCotos context graph =
         |> Html.Keyed.node "div" [ class "root-connections" ]
 
 
-connectionDiv : Context -> Graph -> InboundConnection -> ( String, Html Msg )
+connectionDiv : Context a -> Graph -> InboundConnection -> ( String, Html Msg )
 connectionDiv context graph inbound =
     graph.cotos
         |> Dict.get inbound.connection.end
@@ -92,7 +92,7 @@ connectionDiv context graph inbound =
             ( inbound.connection.key, div [] [] )
 
 
-cotoDiv : Context -> Graph -> InboundConnection -> Coto -> Html Msg
+cotoDiv : Context a -> Graph -> InboundConnection -> Coto -> Html Msg
 cotoDiv context graph inbound coto =
     let
         elementId =
@@ -132,7 +132,7 @@ cotoDiv context graph inbound coto =
             ]
 
 
-unpinButtonDiv : Context -> Connection -> CotoId -> Html Msg
+unpinButtonDiv : Context a -> Connection -> CotoId -> Html Msg
 unpinButtonDiv context connection cotoId =
     let
         maybeAmishiId =
@@ -145,7 +145,7 @@ unpinButtonDiv context connection cotoId =
                 |> Maybe.map (\owner -> owner.id)
 
         unpinnable =
-            App.Types.Context.isServerOwner context
+            App.Submodels.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || ((isJust maybeAmishiId) && maybeAmishiId == maybeCotonomaOwnerId)
     in

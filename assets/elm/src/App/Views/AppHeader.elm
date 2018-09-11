@@ -7,7 +7,8 @@ import Html.Keyed
 import Util.EventUtil exposing (onLinkButtonClick)
 import Util.HtmlUtil exposing (materialIcon)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Model exposing (Model, isNavigationEmpty)
+import App.Model exposing (Model)
+import App.Submodels.LocalCotos
 import App.Messages
     exposing
         ( Msg
@@ -27,7 +28,7 @@ view : Model -> Html Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
-            (model.context.cotonoma
+            (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
                         [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
@@ -48,7 +49,7 @@ view model =
                     ]
             )
         , div [ class "user" ]
-            (model.context.session
+            (model.session
                 |> Maybe.map
                     (\session ->
                         [ quickSearchForm model.searchResults
@@ -107,7 +108,7 @@ navigationToggle model =
         [ classList
             [ ( "tool-button", True )
             , ( "toggle-navigation", True )
-            , ( "hidden", isNavigationEmpty model )
+            , ( "hidden", App.Submodels.LocalCotos.isNavigationEmpty model )
             ]
         , onClick NavigationToggle
         ]

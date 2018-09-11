@@ -8,13 +8,13 @@ import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.HtmlUtil exposing (materialIcon)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
-import App.Types.Context exposing (Context)
 import App.Types.Timeline exposing (Filter)
+import App.Submodels.Context exposing (Context)
 import App.Server.Post
 import App.Ports.LocalStorage
 
 
-update : Context -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
+update : Context a -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
 update context msg filter =
     case msg of
         ExcludePinnedGraphOptionCheck check ->
@@ -26,7 +26,7 @@ update context msg filter =
                 |> withCmd (cmdOnFilterUpdate_ context)
 
 
-cmdOnFilterUpdate_ : Context -> Filter -> Cmd AppMsg.Msg
+cmdOnFilterUpdate_ : Context a -> Filter -> Cmd AppMsg.Msg
 cmdOnFilterUpdate_ context filter =
     Cmd.batch
         [ App.Server.Post.fetchPostsByContext 0 filter context
@@ -37,21 +37,21 @@ cmdOnFilterUpdate_ context filter =
         ]
 
 
-view : Context -> Filter -> Html AppMsg.Msg
+view : Context a -> Filter -> Html AppMsg.Msg
 view context filter =
     Modal.view
         "timeline-filter-modal"
         (Just (modalConfig_ context filter))
 
 
-modalConfig_ : Context -> Filter -> Modal.Config AppMsg.Msg
+modalConfig_ : Context a -> Filter -> Modal.Config AppMsg.Msg
 modalConfig_ context filter =
     { closeMessage = CloseModal
     , title = text "Timeline Filter"
     , content =
         div []
             [ excludePinnedGraphOption_ context filter
-            , if App.Types.Context.atHome context then
+            , if App.Submodels.Context.atHome context then
                 excludePostsInCotonomaOption_ context filter
               else
                 Util.HtmlUtil.none
@@ -60,7 +60,7 @@ modalConfig_ context filter =
     }
 
 
-excludePinnedGraphOption_ : Context -> Filter -> Html AppMsg.Msg
+excludePinnedGraphOption_ : Context a -> Filter -> Html AppMsg.Msg
 excludePinnedGraphOption_ context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
@@ -79,7 +79,7 @@ excludePinnedGraphOption_ context filter =
         ]
 
 
-excludePostsInCotonomaOption_ : Context -> Filter -> Html AppMsg.Msg
+excludePostsInCotonomaOption_ : Context a -> Filter -> Html AppMsg.Msg
 excludePostsInCotonomaOption_ context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input

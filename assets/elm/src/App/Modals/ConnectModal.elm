@@ -1,4 +1,11 @@
-module App.Modals.ConnectModal exposing (view)
+module App.Modals.ConnectModal
+    exposing
+        ( ConnectingTarget(..)
+        , Model
+        , initModel
+        , update
+        , view
+        )
 
 import Maybe exposing (andThen)
 import Html exposing (..)
@@ -7,51 +14,80 @@ import Html.Events exposing (onClick)
 import Html.Keyed
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (materialIcon)
+import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph exposing (Direction(..))
-import App.Messages
+import App.Messages as AppMsg
     exposing
         ( Msg
             ( CloseModal
-            , ReverseDirection
             , Connect
             , PostAndConnectToSelection
             )
         )
-import App.Model exposing (Model, ConnectingTarget(..))
+import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
 import App.Markdown
 
 
-view : Model -> Html Msg
-view model =
-    model.connectingTarget
-        |> Maybe.map
-            (\target ->
-                modalConfig
-                    model.connectingDirection
-                    (App.Model.getSelectedCotos model)
-                    target
-            )
+type ConnectingTarget
+    = Coto Coto
+    | NewPost String (Maybe String)
+
+
+type alias Model =
+    { target : ConnectingTarget
+    , direction : Direction
+    }
+
+
+initModel : ConnectingTarget -> Direction -> Model
+initModel target direction =
+    { target = target
+    , direction = direction
+    }
+
+
+update : Context a -> ConnectModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        ReverseDirection ->
+            { model
+                | direction =
+                    case model.direction of
+                        Outbound ->
+                            Inbound
+
+                        Inbound ->
+                            Outbound
+            }
+                |> withoutCmd
+
+
+view : List Coto -> Maybe Model -> Html AppMsg.Msg
+view cotos maybeModel =
+    maybeModel
+        |> Maybe.map (modalConfig cotos)
         |> Modal.view "connect-modal"
 
 
-modalConfig : Direction -> List Coto -> ConnectingTarget -> Modal.Config Msg
-modalConfig direction selectedCotos target =
+modalConfig : List Coto -> Model -> Modal.Config AppMsg.Msg
+modalConfig selectedCotos model =
     let
         primaryButtonId =
             "connect-modal-primary-button"
     in
         { closeMessage = CloseModal
         , title = text "Connect Preview"
-        , content = modalContent direction selectedCotos target
+        , content = modalContent selectedCotos model
         , buttons =
-            case target of
+            case model.target of
                 Coto coto ->
                     [ button
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (Connect coto selectedCotos direction)
+                        , onClick (Connect coto selectedCotos model.direction)
                         ]
                         [ text "Connect" ]
                     ]
@@ -61,15 +97,15 @@ modalConfig direction selectedCotos target =
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (PostAndConnectToSelection content summary)
+                        , onClick (PostAndConnectToSelection content summary model.direction)
                         ]
                         [ text "Post and connect" ]
                     ]
         }
 
 
-modalContent : Direction -> List Coto -> ConnectingTarget -> Html Msg
-modalContent direction selectedCotos target =
+modalContent : List Coto -> Model -> Html AppMsg.Msg
+modalContent selectedCotos model =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -86,7 +122,7 @@ modalContent direction selectedCotos target =
                 )
 
         targetHtml =
-            case target of
+            case model.target of
                 Coto coto ->
                     div [ class "target-coto coto-content" ]
                         [ contentDiv coto.summary coto.content ]
@@ -96,7 +132,7 @@ modalContent direction selectedCotos target =
                         [ contentDiv summary content ]
 
         ( start, end ) =
-            case direction of
+            case model.direction of
                 Outbound ->
                     ( targetHtml, selectedCotosHtml )
 
@@ -108,7 +144,7 @@ modalContent direction selectedCotos target =
                 [ class "tools" ]
                 [ button
                     [ class "button reverse-direction"
-                    , onClick ReverseDirection
+                    , onClick (AppMsg.ConnectModalMsg ReverseDirection)
                     ]
                     [ text "Reverse" ]
                 ]
@@ -128,7 +164,7 @@ modalContent direction selectedCotos target =
             ]
 
 
-contentDiv : Maybe String -> String -> Html Msg
+contentDiv : Maybe String -> String -> Html AppMsg.Msg
 contentDiv maybeSummary content =
     maybeSummary
         |> Maybe.map

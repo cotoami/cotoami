@@ -11,16 +11,16 @@ import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
 import Util.Keyboard.Event
-import App.Types.Context exposing (CotoSelection, Context)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline, TimelineView(..))
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Views.Post
 
 
-view : Context -> Session -> Graph -> Bool -> Timeline -> Html Msg
+view : Context a -> Session -> Graph -> Bool -> Timeline -> Html Msg
 view context session graph ready timeline =
     div
         [ id "timeline-and-input"
@@ -39,7 +39,7 @@ view context session graph ready timeline =
         ]
 
 
-toolbarDiv : Context -> Timeline -> Html Msg
+toolbarDiv : Context a -> Timeline -> Html Msg
 toolbarDiv context timeline =
     div [ class "timeline-toolbar" ]
         [ a
@@ -84,7 +84,7 @@ toolbarDiv context timeline =
         ]
 
 
-timelineDiv : Context -> Graph -> Timeline -> Html Msg
+timelineDiv : Context a -> Graph -> Timeline -> Html Msg
 timelineDiv context graph model =
     div
         [ id "timeline"
@@ -146,7 +146,7 @@ moreButton timeline =
         Util.HtmlUtil.none
 
 
-postsDiv : Context -> Graph -> List Post -> Html Msg
+postsDiv : Context a -> Graph -> List Post -> Html Msg
 postsDiv context graph posts =
     Html.Keyed.node
         "div"
@@ -172,7 +172,7 @@ getKey post =
             )
 
 
-postEditor : Context -> Session -> Timeline -> Html Msg
+postEditor : Context a -> Session -> Timeline -> Html Msg
 postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]

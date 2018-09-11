@@ -6,8 +6,8 @@ import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
-import App.Types.Context exposing (Context)
 import App.Types.Session
+import App.Submodels.Context exposing (Context)
 
 
 type TimelineView
@@ -230,7 +230,7 @@ setBeingDeleted coto timeline =
         timeline
 
 
-post : Context -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
+post : Context a -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
 post context isCotonoma summary content timeline =
     let
         defaultPost =

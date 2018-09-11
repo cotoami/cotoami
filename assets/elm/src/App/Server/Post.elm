@@ -15,10 +15,10 @@ import App.Messages
             , CotonomaPosted
             )
         )
-import App.Types.Context exposing (Context)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
 import App.Types.Timeline exposing (Filter)
+import App.Submodels.Context exposing (Context)
 import App.Server.Amishi
 import App.Server.Cotonoma
 
@@ -86,7 +86,7 @@ fetchCotonomaPosts pageIndex filter key =
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
-fetchPostsByContext : Int -> Filter -> Context -> Cmd Msg
+fetchPostsByContext : Int -> Filter -> Context a -> Cmd Msg
 fetchPostsByContext pageIndex filter context =
     context.cotonoma
         |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
