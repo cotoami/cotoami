@@ -159,13 +159,7 @@ timelineDiv session classes model =
         [ id "main-timeline"
         , classList classes
         ]
-        [ App.Views.Timeline.view
-            model
-            session
-            model.graph
-            (App.Submodels.LocalCotos.isTimelineReady model)
-            model.timeline
-        ]
+        [ App.Views.Timeline.view model session model ]
 
 
 pinnedCotosColumn : Model -> Html Msg

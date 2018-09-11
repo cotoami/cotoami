@@ -16,26 +16,27 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline, TimelineView(..))
 import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages exposing (..)
 import App.Views.Post
 
 
-view : Context a -> Session -> Graph -> Bool -> Timeline -> Html Msg
-view context session graph ready timeline =
+view : Context a -> Session -> LocalCotos b -> Html Msg
+view context session localCotos =
     div
         [ id "timeline-and-input"
         , classList
-            [ ( "editing", timeline.editorOpen )
+            [ ( "editing", localCotos.timeline.editorOpen )
             ]
         ]
-        [ if not ready then
+        [ if not (App.Submodels.LocalCotos.isTimelineReady localCotos) then
             div [ class "loading-overlay" ] []
           else
             div [] []
-        , toolbarDiv context timeline
-        , timelineDiv context graph timeline
-        , postEditor context session timeline
-        , newCotoButton timeline
+        , toolbarDiv context localCotos.timeline
+        , timelineDiv context localCotos.graph localCotos.timeline
+        , postEditor context session localCotos.timeline
+        , newCotoButton localCotos.timeline
         ]
 
 
