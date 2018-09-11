@@ -103,7 +103,6 @@ type Msg
       -- Timeline
       --
     | PostsFetched (Result Http.Error PaginatedPosts)
-    | LoadMorePosts
     | ImageLoaded
     | EditorFocus
     | EditorInput String

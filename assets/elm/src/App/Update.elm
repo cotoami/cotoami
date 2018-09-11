@@ -617,16 +617,6 @@ update msg model =
         PostsFetched (Err _) ->
             model |> withoutCmd
 
-        LoadMorePosts ->
-            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
-                |> withCmd
-                    (\model ->
-                        App.Server.Post.fetchPostsByContext
-                            (App.Types.Timeline.nextPageIndex model.timeline)
-                            model.timeline.filter
-                            model
-                    )
-
         ImageLoaded ->
             model
                 |> withCmdIf

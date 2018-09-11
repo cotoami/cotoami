@@ -21,6 +21,7 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
 import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
 import App.Views.Post
+import App.Server.Post
 
 
 update : Context a -> TimelineMsg.Msg -> LocalCotos b -> ( LocalCotos b, Cmd AppMsg.Msg )
@@ -29,6 +30,16 @@ update context msg model =
         SwitchView view ->
             { model | timeline = App.Types.Timeline.switchView view model.timeline }
                 |> withoutCmd
+
+        LoadMorePosts ->
+            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+                |> withCmd
+                    (\model ->
+                        App.Server.Post.fetchPostsByContext
+                            (App.Types.Timeline.nextPageIndex model.timeline)
+                            model.timeline.filter
+                            context
+                    )
 
 
 view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
@@ -149,7 +160,7 @@ moreButton timeline =
               else
                 button
                     [ class "button more-button"
-                    , onClick LoadMorePosts
+                    , onClick (AppMsg.TimelineMsg LoadMorePosts)
                     ]
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
