@@ -141,20 +141,10 @@ deleteCoto coto model =
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     { model
-        | graph =
-            if App.Types.Graph.member cotoId model.graph then
-                model.graph
-            else
-                case App.Submodels.LocalCotos.getCoto cotoId model of
-                    Nothing ->
-                        model.graph
-
-                    Just coto ->
-                        App.Types.Graph.addCoto coto model.graph
-        , traversals =
-            App.Types.Traversal.openTraversal cotoId model.traversals
+        | traversals = App.Types.Traversal.openTraversal cotoId model.traversals
         , activeViewOnMobile = TraversalsView
     }
+        |> App.Submodels.LocalCotos.incorporateLocalCotoInGraph cotoId
 
 
 closeSelectionColumnIfEmpty : Model -> Model

@@ -6,6 +6,7 @@ module App.Submodels.LocalCotos
         , updateCoto
         , deleteCoto
         , cotonomatize
+        , incorporateLocalCotoInGraph
         , updateRecentCotonomas
         , isStockEmpty
         , isNavigationEmpty
@@ -100,6 +101,22 @@ cotonomatize cotonoma cotoId localCotos =
     { localCotos
         | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId localCotos.timeline
         , graph = App.Types.Graph.cotonomatize cotonoma cotoId localCotos.graph
+    }
+
+
+incorporateLocalCotoInGraph : CotoId -> LocalCotos a -> LocalCotos a
+incorporateLocalCotoInGraph cotoId localCotos =
+    { localCotos
+        | graph =
+            if App.Types.Graph.member cotoId localCotos.graph then
+                localCotos.graph
+            else
+                case getCoto cotoId localCotos of
+                    Nothing ->
+                        localCotos.graph
+
+                    Just coto ->
+                        App.Types.Graph.addCoto coto localCotos.graph
     }
 
 
