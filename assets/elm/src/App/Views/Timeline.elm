@@ -1,4 +1,4 @@
-module App.Views.Timeline exposing (..)
+module App.Views.Timeline exposing (update, view)
 
 import Html exposing (..)
 import Html.Keyed
@@ -10,6 +10,7 @@ import Util.StringUtil exposing (isBlank)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
+import Util.UpdateUtil exposing (..)
 import Util.Keyboard.Event
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -17,30 +18,39 @@ import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline, TimelineView(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Messages exposing (..)
+import App.Messages as AppMsg exposing (..)
+import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
 import App.Views.Post
 
 
-view : Context a -> Session -> LocalCotos b -> Html Msg
-view context session localCotos =
+update : Context a -> TimelineMsg.Msg -> LocalCotos b -> ( LocalCotos b, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        SwitchView view ->
+            { model | timeline = App.Types.Timeline.switchView view model.timeline }
+                |> withoutCmd
+
+
+view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
+view context session model =
     div
         [ id "timeline-and-input"
         , classList
-            [ ( "editing", localCotos.timeline.editorOpen )
+            [ ( "editing", model.timeline.editorOpen )
             ]
         ]
-        [ if not (App.Submodels.LocalCotos.isTimelineReady localCotos) then
+        [ if not (App.Submodels.LocalCotos.isTimelineReady model) then
             div [ class "loading-overlay" ] []
           else
             div [] []
-        , toolbarDiv context localCotos.timeline
-        , timelineDiv context localCotos.graph localCotos.timeline
-        , postEditor context session localCotos.timeline
-        , newCotoButton localCotos.timeline
+        , toolbarDiv context model.timeline
+        , timelineDiv context model.graph model.timeline
+        , postEditor context session model.timeline
+        , newCotoButton model.timeline
         ]
 
 
-toolbarDiv : Context a -> Timeline -> Html Msg
+toolbarDiv : Context a -> Timeline -> Html AppMsg.Msg
 toolbarDiv context timeline =
     div [ class "timeline-toolbar" ]
         [ a
@@ -67,7 +77,7 @@ toolbarDiv context timeline =
                         , ( "disabled", timeline.view == StreamView )
                         ]
                     , title "Stream View"
-                    , onClick (SwitchTimelineView StreamView)
+                    , onClick (AppMsg.TimelineMsg (SwitchView StreamView))
                     ]
                     [ materialIcon "view_stream" Nothing ]
                 , a
@@ -77,7 +87,7 @@ toolbarDiv context timeline =
                         , ( "disabled", timeline.view == TileView )
                         ]
                     , title "Tile View"
-                    , onClick (SwitchTimelineView TileView)
+                    , onClick (AppMsg.TimelineMsg (SwitchView TileView))
                     ]
                     [ materialIcon "view_module" Nothing ]
                 ]
@@ -85,7 +95,7 @@ toolbarDiv context timeline =
         ]
 
 
-timelineDiv : Context a -> Graph -> Timeline -> Html Msg
+timelineDiv : Context a -> Graph -> Timeline -> Html AppMsg.Msg
 timelineDiv context graph model =
     div
         [ id "timeline"
@@ -128,7 +138,7 @@ timelineDiv context graph model =
         ]
 
 
-moreButton : Timeline -> Html Msg
+moreButton : Timeline -> Html AppMsg.Msg
 moreButton timeline =
     if timeline.more then
         div [ class "more-button-div" ]
@@ -147,7 +157,7 @@ moreButton timeline =
         Util.HtmlUtil.none
 
 
-postsDiv : Context a -> Graph -> List Post -> Html Msg
+postsDiv : Context a -> Graph -> List Post -> Html AppMsg.Msg
 postsDiv context graph posts =
     Html.Keyed.node
         "div"
@@ -173,7 +183,7 @@ getKey post =
             )
 
 
-postEditor : Context a -> Session -> Timeline -> Html Msg
+postEditor : Context a -> Session -> Timeline -> Html AppMsg.Msg
 postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
@@ -190,7 +200,7 @@ postEditor context session model =
                             [ class "button connect"
                             , disabled (isBlank model.newContent)
                             , onMouseDown
-                                (App.Messages.ConfirmPostAndConnect
+                                (AppMsg.ConfirmPostAndConnect
                                     model.newContent
                                     Nothing
                                 )
@@ -202,7 +212,7 @@ postEditor context session model =
                 , button
                     [ class "button-primary post"
                     , disabled (isBlank model.newContent)
-                    , onMouseDown App.Messages.Post
+                    , onMouseDown AppMsg.Post
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -230,7 +240,7 @@ postEditor context session model =
         ]
 
 
-newCotoButton : Timeline -> Html Msg
+newCotoButton : Timeline -> Html AppMsg.Msg
 newCotoButton timeline =
     a
         [ class "tool-button new-coto-button"

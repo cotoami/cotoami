@@ -12,6 +12,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
 import App.Types.Timeline exposing (TimelineView)
 import App.Types.Traversal exposing (Traversal)
+import App.Views.TimelineMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.ConnectModalMsg
@@ -101,7 +102,6 @@ type Msg
       --
       -- Timeline
       --
-    | SwitchTimelineView TimelineView
     | PostsFetched (Result Http.Error PaginatedPosts)
     | LoadMorePosts
     | ImageLoaded
@@ -149,6 +149,7 @@ type Msg
       --
       -- Sub components
       --
+    | TimelineMsg App.Views.TimelineMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg

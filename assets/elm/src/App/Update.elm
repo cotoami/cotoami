@@ -43,6 +43,7 @@ import App.Commands
 import App.Commands.Graph
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
+import App.Views.Timeline
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.EditorModalMsg
@@ -606,10 +607,6 @@ update msg model =
         --
         -- Timeline
         --
-        SwitchTimelineView view ->
-            { model | timeline = App.Types.Timeline.switchView view model.timeline }
-                |> withoutCmd
-
         PostsFetched (Ok paginatedPosts) ->
             { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
                 |> App.Submodels.Context.setCotonoma Nothing
@@ -852,6 +849,9 @@ update msg model =
         --
         -- Sub components
         --
+        TimelineMsg subMsg ->
+            App.Views.Timeline.update model subMsg model
+
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
