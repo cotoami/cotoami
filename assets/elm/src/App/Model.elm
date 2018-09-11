@@ -17,6 +17,7 @@ import App.Types.SearchResults exposing (SearchResults)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
+import App.Submodels.Traversals
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
@@ -133,18 +134,17 @@ getSelectedCotos model =
 
 deleteCoto : Coto -> Model -> Model
 deleteCoto coto model =
-    { model | traversals = App.Types.Traversal.closeTraversal coto.id model.traversals }
+    model
         |> App.Submodels.LocalCotos.deleteCoto coto
         |> App.Submodels.Context.deleteSelection coto.id
+        |> App.Submodels.Traversals.closeTraversal coto.id
 
 
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
-    { model
-        | traversals = App.Types.Traversal.openTraversal cotoId model.traversals
-        , activeViewOnMobile = TraversalsView
-    }
+    model
         |> App.Submodels.LocalCotos.incorporateLocalCotoInGraph cotoId
+        |> App.Submodels.Traversals.openTraversal cotoId
 
 
 closeSelectionColumnIfEmpty : Model -> Model
