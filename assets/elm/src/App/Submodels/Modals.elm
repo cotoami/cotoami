@@ -10,15 +10,9 @@ module App.Submodels.Modals
         , clearModals
         , confirm
         , maybeConfirm
-        , openCoto
         )
 
-import Util.UpdateUtil exposing (..)
 import App.Messages exposing (Msg(NoOp))
-import App.Commands
-import App.Types.Coto exposing (Coto)
-import App.Types.Graph exposing (Direction(..))
-import App.Modals.CotoModal
 
 
 type Modal
@@ -51,7 +45,6 @@ type alias Modals a =
     { a
         | modals : List Modal
         , confirmation : Confirmation
-        , cotoModal : Maybe App.Modals.CotoModal.Model
     }
 
 
@@ -89,11 +82,3 @@ maybeConfirm maybeConfirmation model =
     maybeConfirmation
         |> Maybe.map (\confirmation -> confirm confirmation model)
         |> Maybe.withDefault model
-
-
-openCoto : Coto -> Modals a -> Modals a
-openCoto coto model =
-    coto
-        |> App.Modals.CotoModal.initModel
-        |> (\modal -> { model | cotoModal = Just modal })
-        |> openModal CotoModal

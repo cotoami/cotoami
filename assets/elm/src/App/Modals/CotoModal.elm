@@ -1,4 +1,4 @@
-module App.Modals.CotoModal exposing (Model, initModel, view)
+module App.Modals.CotoModal exposing (Model, initModel, open, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -9,6 +9,7 @@ import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
 import App.Types.Session exposing (Session)
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Submodels.Modals exposing (Modal(CotoModal), Modals)
 
 
 type alias Model =
@@ -20,6 +21,16 @@ initModel : Coto -> Model
 initModel coto =
     { coto = coto
     }
+
+
+type alias WithCotoModal a =
+    { a | cotoModal : Maybe Model }
+
+
+open : Coto -> Modals (WithCotoModal a) -> Modals (WithCotoModal a)
+open coto model =
+    { model | cotoModal = Just (initModel coto) }
+        |> App.Submodels.Modals.openModal CotoModal
 
 
 view : Maybe Session -> Maybe Model -> Html AppMsg.Msg

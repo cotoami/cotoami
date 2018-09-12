@@ -39,6 +39,7 @@ import App.Channels exposing (Payload)
 import App.Views.Timeline
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.ImportModal
@@ -886,7 +887,7 @@ postAndConnectToSelection direction summary content model =
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
 openCoto coto model =
-    ( App.Submodels.Modals.openCoto coto model
+    ( App.Modals.CotoModal.open coto model
     , coto.asCotonoma
         |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
         |> Maybe.withDefault Cmd.none
