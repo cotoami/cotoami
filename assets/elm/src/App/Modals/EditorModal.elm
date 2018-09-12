@@ -35,6 +35,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
+import App.Commands.Cotonoma
 import App.Server.Coto
 import App.Server.Post
 import App.Server.Graph
@@ -186,6 +187,21 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> postCotonoma context
 
+        CotonomaPosted postId (Ok response) ->
+            { model
+                | cotonomasLoading = True
+                , timeline = App.Types.Timeline.setCotoSaved postId response timeline
+            }
+                |> App.Submodels.Modals.clearModals
+                |> withCmd (\_ -> App.Commands.Cotonoma.refreshCotonomaList context)
+
+        CotonomaPosted postId (Err error) ->
+            { model
+                | editorModal = setCotoSaveError error editorModal
+                , timeline = App.Types.Timeline.deletePendingPost postId timeline
+            }
+                |> withoutCmd
+
         Save ->
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> withCmd
@@ -333,8 +349,10 @@ postCotonoma context model =
             ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
               , App.Server.Post.postCotonoma
                     context.clientId
-                    model.cotonoma
-                    timeline.postIdCounter
+                    context.cotonoma
+                    (AppMsg.EditorModalMsg
+                        << (CotonomaPosted timeline.postIdCounter)
+                    )
                     model.editorModal.shareCotonoma
                     cotonomaName
               ]

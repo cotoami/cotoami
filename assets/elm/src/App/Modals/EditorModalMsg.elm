@@ -16,6 +16,7 @@ type Msg
     | ConfirmPostAndConnect String (Maybe String)
     | PostedAndSubordinateToCoto Int Coto (Result Http.Error Post)
     | PostCotonoma
+    | CotonomaPosted Int (Result Http.Error Post)
     | Save
     | SetNewCotoMode
     | SetNewCotonomaMode

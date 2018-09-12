@@ -12,7 +12,6 @@ import App.Messages
             ( HomePostsFetched
             , CotonomaPostsFetched
             , SearchResultsFetched
-            , CotonomaPosted
             )
         )
 import App.Types.Post exposing (Post, PaginatedPosts)
@@ -113,20 +112,26 @@ postRequest clientId maybeCotonoma post =
 
 
 post : ClientId -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
-post clientId maybeCotonoma msgAfterPosted post =
+post clientId maybeCotonoma tag post =
     postRequest clientId maybeCotonoma post
-        |> Http.send msgAfterPosted
+        |> Http.send tag
 
 
-postCotonoma : ClientId -> Maybe Cotonoma -> Int -> Bool -> String -> Cmd Msg
-postCotonoma clientId maybeCotonoma postId shared name =
+postCotonoma :
+    ClientId
+    -> Maybe Cotonoma
+    -> (Result Http.Error Post -> msg)
+    -> Bool
+    -> String
+    -> Cmd msg
+postCotonoma clientId maybeCotonoma tag shared name =
     let
         body =
             App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
                 |> Http.jsonBody
     in
         httpPost "/api/cotonomas" clientId body decodePost
-            |> Http.send (CotonomaPosted postId)
+            |> Http.send tag
 
 
 encodePost : Maybe Cotonoma -> Post -> Encode.Value

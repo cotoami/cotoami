@@ -30,11 +30,13 @@ import App.Types.Session exposing (Session)
 type alias LocalCotos a =
     { a
         | cotonoma : Maybe Cotonoma
+        , cotonomaLoading : Bool
         , timeline : Timeline
         , graph : Graph
         , loadingGraph : Bool
         , recentCotonomas : List Cotonoma
         , subCotonomas : List Cotonoma
+        , cotonomasLoading : Bool
         , searchResults : SearchResults
     }
 

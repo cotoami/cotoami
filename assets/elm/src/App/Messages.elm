@@ -104,7 +104,6 @@ type Msg
     | ImageLoaded
     | PostAndConnectToSelection String (Maybe String) Direction
     | PostedAndConnectToSelection Int Direction (Result Http.Error Post)
-    | CotonomaPosted Int (Result Http.Error Post)
       --
       -- PinnedCotos
       --

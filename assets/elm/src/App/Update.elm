@@ -19,12 +19,6 @@ import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Direction(..), PinnedCotosView(..))
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
-    exposing
-        ( updatePost
-        , setCotoSaved
-        , setBeingDeleted
-        , deletePendingPost
-        )
 import App.Types.Traversal
 import App.Types.SearchResults
 import App.Model exposing (Model)
@@ -383,7 +377,7 @@ update msg model =
                 |> withoutCmd
 
         DeleteCotoInServerSide coto ->
-            { model | timeline = setBeingDeleted coto model.timeline }
+            { model | timeline = App.Types.Timeline.setBeingDeleted coto model.timeline }
                 |> App.Submodels.Modals.clearModals
                 |> withCmd
                     (\model ->
@@ -627,27 +621,12 @@ update msg model =
                 |> postAndConnectToSelection direction summary content
 
         PostedAndConnectToSelection postId direction (Ok response) ->
-            { model | timeline = setCotoSaved postId response model.timeline }
+            { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
                 |> App.Submodels.Modals.clearModals
                 |> connectPostToSelection model.clientId direction response
 
         PostedAndConnectToSelection postId direction (Err _) ->
             model |> withoutCmd
-
-        CotonomaPosted postId (Ok response) ->
-            { model
-                | cotonomasLoading = True
-                , timeline = setCotoSaved postId response model.timeline
-            }
-                |> App.Submodels.Modals.clearModals
-                |> withCmd App.Commands.Cotonoma.refreshCotonomaList
-
-        CotonomaPosted postId (Err error) ->
-            { model
-                | editorModal = App.Modals.EditorModal.setCotoSaveError error model.editorModal
-                , timeline = deletePendingPost postId model.timeline
-            }
-                |> withoutCmd
 
         --
         -- PinnedCotos
