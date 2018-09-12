@@ -310,7 +310,8 @@ update msg model =
                 |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         OpenCotoModal coto ->
-            openCoto coto model
+            App.Modals.CotoModal.open coto model
+                |> withoutCmd
 
         OpenImportModal ->
             { model | importModal = App.Modals.ImportModal.defaultModel }
@@ -883,15 +884,6 @@ postAndConnectToSelection direction summary content model =
                     , App.Server.Post.post model.clientId model.cotonoma tag newPost
                     ]
                 )
-
-
-openCoto : Coto -> Model -> ( Model, Cmd Msg )
-openCoto coto model =
-    ( App.Modals.CotoModal.open coto model
-    , coto.asCotonoma
-        |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
-        |> Maybe.withDefault Cmd.none
-    )
 
 
 connectPostToSelection : ClientId -> Direction -> Post -> Model -> ( Model, Cmd Msg )
