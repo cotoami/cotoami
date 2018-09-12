@@ -30,7 +30,7 @@ import App.Messages as AppMsg
         )
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modal(..), Modals)
+import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
 import App.Commands
 import App.Markdown
 

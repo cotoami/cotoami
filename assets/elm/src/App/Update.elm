@@ -38,6 +38,7 @@ import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Views.Timeline
 import App.Modals.SigninModal
+import App.Modals.CotoMenuModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
 import App.Modals.ImportModal
@@ -294,7 +295,7 @@ update msg model =
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
         OpenCotoMenuModal coto ->
-            App.Submodels.Modals.openCotoMenu coto model
+            App.Modals.CotoMenuModal.open coto model
                 |> withCmd
                     (\_ ->
                         coto.asCotonoma

@@ -1,4 +1,11 @@
-module App.Modals.CotoMenuModal exposing (Model, initModel, view)
+module App.Modals.CotoMenuModal
+    exposing
+        ( Model
+        , initModel
+        , WithCotoMenuModal
+        , open
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,6 +17,7 @@ import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modal(CotoMenuModal), Modals)
 import App.Messages exposing (Msg(..))
 
 
@@ -29,6 +37,16 @@ initModel coto =
 isCotonomaEmpty : CotonomaStats -> Bool
 isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
+
+
+type alias WithCotoMenuModal a =
+    { a | cotoMenuModal : Maybe Model }
+
+
+open : Coto -> Modals (WithCotoMenuModal a) -> Modals (WithCotoMenuModal a)
+open coto model =
+    { model | cotoMenuModal = Just (initModel coto) }
+        |> App.Submodels.Modals.openModal CotoMenuModal
 
 
 view : Context a -> Graph -> Maybe Model -> Html Msg
