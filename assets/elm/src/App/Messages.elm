@@ -5,7 +5,7 @@ import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
@@ -13,6 +13,7 @@ import App.Types.Traversal exposing (Traversal)
 import App.Views.TimelineMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
+import App.Modals.CotoMenuModalMsg
 import App.Modals.ConnectModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
@@ -36,7 +37,6 @@ type Msg
     | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
     | CotonomasFetched (Result Http.Error (List Cotonoma))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaStatsFetched (Result Http.Error CotonomaStats)
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
       --
@@ -139,6 +139,7 @@ type Msg
     | TimelineMsg App.Views.TimelineMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
+    | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg

@@ -62,10 +62,10 @@ encodeCotonoma maybeCotonoma shared name =
         ]
 
 
-fetchStats : CotonomaKey -> Cmd Msg
-fetchStats cotonomaKey =
-    Http.send CotonomaStatsFetched <|
-        Http.get ("/api/cotonomas/" ++ cotonomaKey ++ "/stats") decodeStats
+fetchStats : (Result Http.Error CotonomaStats -> msg) -> CotonomaKey -> Cmd msg
+fetchStats tag cotonomaKey =
+    Http.get ("/api/cotonomas/" ++ cotonomaKey ++ "/stats") decodeStats
+        |> Http.send tag
 
 
 decodeStats : Decode.Decoder CotonomaStats

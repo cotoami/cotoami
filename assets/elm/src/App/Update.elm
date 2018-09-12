@@ -194,16 +194,6 @@ update msg model =
         SubCotonomasFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomaStatsFetched (Ok stats) ->
-            model.cotoMenuModal
-                |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
-                |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
-                |> Maybe.withDefault model
-                |> withoutCmd
-
-        CotonomaStatsFetched (Err _) ->
-            model |> withoutCmd
-
         GraphFetched (Ok graph) ->
             { model | graph = graph, loadingGraph = False }
                 |> withCmd
@@ -297,12 +287,6 @@ update msg model =
 
         OpenCotoMenuModal coto ->
             App.Modals.CotoMenuModal.open coto model
-                |> withCmd
-                    (\_ ->
-                        coto.asCotonoma
-                            |> Maybe.map (\cotonoma -> App.Server.Cotonoma.fetchStats cotonoma.key)
-                            |> Maybe.withDefault Cmd.none
-                    )
 
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
@@ -779,6 +763,12 @@ update msg model =
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
+
+        CotoMenuModalMsg subMsg ->
+            model.cotoMenuModal
+                |> Maybe.map (App.Modals.CotoMenuModal.update model subMsg)
+                |> Maybe.map (Tuple.mapFirst (\modal -> { model | cotoMenuModal = Just modal }))
+                |> Maybe.withDefault ( model, Cmd.none )
 
         ConnectModalMsg subMsg ->
             model.connectModal
