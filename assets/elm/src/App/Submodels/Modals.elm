@@ -10,8 +10,6 @@ module App.Submodels.Modals
         , clearModals
         , confirm
         , maybeConfirm
-        , confirmConnect
-        , confirmPostAndConnect
         , openCotoMenu
         , openCoto
         )
@@ -21,7 +19,6 @@ import App.Messages exposing (Msg(NoOp))
 import App.Commands
 import App.Types.Coto exposing (Coto)
 import App.Types.Graph exposing (Direction(..))
-import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 
@@ -56,7 +53,6 @@ type alias Modals a =
     { a
         | modals : List Modal
         , confirmation : Confirmation
-        , connectModal : Maybe App.Modals.ConnectModal.Model
         , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
         , cotoModal : Maybe App.Modals.CotoModal.Model
     }
@@ -96,23 +92,6 @@ maybeConfirm maybeConfirmation model =
     maybeConfirmation
         |> Maybe.map (\confirmation -> confirm confirmation model)
         |> Maybe.withDefault model
-
-
-confirmConnect : Direction -> ConnectingTarget -> Modals a -> Modals a
-confirmConnect direction target model =
-    let
-        connectModal =
-            App.Modals.ConnectModal.initModel target direction
-    in
-        { model | connectModal = Just connectModal }
-            |> openModal ConnectModal
-
-
-confirmPostAndConnect : Maybe String -> String -> Modals a -> ( Modals a, Cmd Msg )
-confirmPostAndConnect summary content model =
-    model
-        |> confirmConnect Inbound (NewPost content summary)
-        |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" NoOp)
 
 
 openCotoMenu : Coto -> Modals a -> Modals a

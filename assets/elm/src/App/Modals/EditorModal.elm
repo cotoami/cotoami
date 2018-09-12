@@ -43,6 +43,7 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Views.Coto
 import App.Views.Timeline
+import App.Modals.ConnectModal exposing (WithConnectModal)
 
 
 type alias Model =
@@ -143,7 +144,7 @@ setCotoSaveError error model =
 
 
 type alias AppModel a =
-    LocalCotos (Modals { a | editorModal : Model })
+    LocalCotos (Modals (WithConnectModal { a | editorModal : Model }))
 
 
 update : Context a -> EditorModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
@@ -173,7 +174,7 @@ update context msg ({ editorModal, timeline } as model) =
                 |> post context
 
         ConfirmPostAndConnect content summary ->
-            App.Submodels.Modals.confirmPostAndConnect summary content model
+            App.Modals.ConnectModal.openWithPost summary content model
 
         PostedAndSubordinateToCoto postId coto (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
@@ -321,7 +322,7 @@ handleShortcut context keyboardEvent model =
                     keyboardEvent.altKey
                         && App.Submodels.Context.anySelection context
                 then
-                    App.Submodels.Modals.confirmPostAndConnect
+                    App.Modals.ConnectModal.openWithPost
                         (getSummary model.editorModal)
                         model.editorModal.content
                         model

@@ -29,12 +29,13 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
 import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
 import App.Views.Post
+import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
 
 
 type alias Model a =
-    LocalCotos (Modals a)
+    LocalCotos (Modals (WithConnectModal a))
 
 
 update : Context a -> TimelineMsg.Msg -> Model b -> ( Model b, Cmd AppMsg.Msg )
@@ -93,7 +94,7 @@ update context msg ({ timeline } as model) =
             model |> withoutCmd
 
         ConfirmPostAndConnect content summary ->
-            App.Submodels.Modals.confirmPostAndConnect summary content model
+            App.Modals.ConnectModal.openWithPost summary content model
 
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
@@ -123,7 +124,7 @@ handleEditorShortcut context keyboardEvent summary content model =
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
         then
-            App.Submodels.Modals.confirmPostAndConnect summary content model
+            App.Modals.ConnectModal.openWithPost summary content model
         else
             ( model, Cmd.none )
     else

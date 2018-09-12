@@ -522,11 +522,10 @@ update msg model =
                 |> App.Submodels.LocalCotos.getCoto cotoId
                 |> Maybe.map
                     (\coto ->
-                        model
-                            |> App.Submodels.Modals.confirmConnect
-                                direction
-                                (App.Modals.ConnectModal.Coto coto)
-                            |> withCmd (\_ -> App.Commands.focus "connect-modal-primary-button" NoOp)
+                        App.Modals.ConnectModal.open
+                            direction
+                            (App.Modals.ConnectModal.Coto coto)
+                            model
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
 

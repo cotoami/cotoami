@@ -3,6 +3,9 @@ module App.Modals.ConnectModal
         ( ConnectingTarget(..)
         , Model
         , initModel
+        , WithConnectModal
+        , open
+        , openWithPost
         , update
         , view
         )
@@ -27,6 +30,8 @@ import App.Messages as AppMsg
         )
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modal(..), Modals)
+import App.Commands
 import App.Markdown
 
 
@@ -46,6 +51,30 @@ initModel target direction =
     { target = target
     , direction = direction
     }
+
+
+type alias WithConnectModal a =
+    { a | connectModal : Maybe Model }
+
+
+open :
+    Direction
+    -> ConnectingTarget
+    -> Modals (WithConnectModal a)
+    -> ( Modals (WithConnectModal a), Cmd AppMsg.Msg )
+open direction target model =
+    { model | connectModal = Just (initModel target direction) }
+        |> App.Submodels.Modals.openModal ConnectModal
+        |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" AppMsg.NoOp)
+
+
+openWithPost :
+    Maybe String
+    -> String
+    -> Modals (WithConnectModal a)
+    -> ( Modals (WithConnectModal a), Cmd AppMsg.Msg )
+openWithPost summary content =
+    open Inbound (NewPost content summary)
 
 
 update : Context a -> ConnectModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
