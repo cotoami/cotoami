@@ -101,7 +101,6 @@ type Msg
       --
       -- Timeline
       --
-    | ImageLoaded
     | PostAndConnectToSelection String (Maybe String) Direction
     | PostedAndConnectToSelection Int Direction (Result Http.Error Post)
       --

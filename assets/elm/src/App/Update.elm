@@ -609,12 +609,6 @@ update msg model =
         --
         -- Timeline
         --
-        ImageLoaded ->
-            model
-                |> withCmdIf
-                    (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
-
         PostAndConnectToSelection content summary direction ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal

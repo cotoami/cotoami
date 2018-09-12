@@ -15,6 +15,7 @@ import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph)
 import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
+import App.Views.TimelineMsg
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto
 
@@ -167,7 +168,7 @@ customHtmlInline inline =
             img
                 [ src source
                 , title (Maybe.withDefault "" maybeTitle)
-                , onLoad ImageLoaded
+                , onLoad (TimelineMsg App.Views.TimelineMsg.ImageLoaded)
                 ]
                 (List.map customHtmlInline inlines)
 

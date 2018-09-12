@@ -44,6 +44,12 @@ update context msg ({ timeline } as model) =
             { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
                 |> withoutCmd
 
+        ImageLoaded ->
+            model
+                |> withCmdIf
+                    (\model -> model.timeline.pageIndex == 0)
+                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+
         SwitchView view ->
             { model | timeline = App.Types.Timeline.switchView view timeline }
                 |> withoutCmd
