@@ -163,7 +163,7 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma Nothing
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    initScrollPositionOfTimeline
+                    App.Views.Timeline.initScrollPos
 
         HomePostsFetched (Err _) ->
             model |> withoutCmd
@@ -176,7 +176,7 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    initScrollPositionOfTimeline
+                    App.Views.Timeline.initScrollPos
                 |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
 
         CotonomaPostsFetched (Err _) ->
@@ -213,7 +213,7 @@ update msg model =
                 |> withCmd
                     (\model ->
                         Cmd.batch
-                            [ initScrollPositionOfTimeline model
+                            [ App.Views.Timeline.initScrollPos model
                             , App.Commands.initScrollPositionOfPinnedCotos NoOp
                             , App.Commands.Graph.renderGraph model
                             ]
@@ -649,10 +649,6 @@ update msg model =
             }
                 |> withoutCmd
 
-        TimelineScrollPosInitialized ->
-            { model | timeline = App.Types.Timeline.setScrollPosInitialized model.timeline }
-                |> withoutCmd
-
         --
         -- PinnedCotos
         --
@@ -895,14 +891,6 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
-
-
-initScrollPositionOfTimeline : Model -> Cmd Msg
-initScrollPositionOfTimeline model =
-    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded model then
-        App.Commands.scrollTimelineToBottom TimelineScrollPosInitialized
-    else
-        Cmd.none
 
 
 postAndConnectToSelection : Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )

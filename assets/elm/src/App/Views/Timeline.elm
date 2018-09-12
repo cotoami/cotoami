@@ -1,6 +1,7 @@
 module App.Views.Timeline
     exposing
         ( update
+        , initScrollPos
         , post
         , view
         )
@@ -39,6 +40,10 @@ type alias Model a =
 update : Context a -> TimelineMsg.Msg -> Model b -> ( Model b, Cmd AppMsg.Msg )
 update context msg ({ timeline } as model) =
     case msg of
+        TimelineScrollPosInitialized ->
+            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
+                |> withoutCmd
+
         SwitchView view ->
             { model | timeline = App.Types.Timeline.switchView view timeline }
                 |> withoutCmd
@@ -83,6 +88,14 @@ update context msg ({ timeline } as model) =
 
         ConfirmPostAndConnect content summary ->
             App.Submodels.Modals.confirmPostAndConnect summary content model
+
+
+initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
+initScrollPos localCotos =
+    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
+        App.Commands.scrollTimelineToBottom (AppMsg.TimelineMsg TimelineScrollPosInitialized)
+    else
+        Cmd.none
 
 
 handleEditorShortcut :

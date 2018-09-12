@@ -7,7 +7,8 @@ import App.Types.Timeline exposing (TimelineView)
 
 
 type Msg
-    = SwitchView TimelineView
+    = TimelineScrollPosInitialized
+    | SwitchView TimelineView
     | LoadMorePosts
     | EditorFocus
     | EditorInput String
