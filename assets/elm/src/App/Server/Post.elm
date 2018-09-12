@@ -9,8 +9,8 @@ import Util.HttpUtil exposing (ClientId, httpPost)
 import App.Messages
     exposing
         ( Msg
-            ( PostsFetched
-            , CotonomaFetched
+            ( HomePostsFetched
+            , CotonomaPostsFetched
             , SearchResultsFetched
             , CotonomaPosted
             )
@@ -46,8 +46,8 @@ decodePaginatedPosts =
         |> required "total_pages" int
 
 
-fetchPosts : Int -> Filter -> Cmd Msg
-fetchPosts pageIndex filter =
+fetchHomePosts : Int -> Filter -> Cmd Msg
+fetchHomePosts pageIndex filter =
     let
         url =
             "/api/cotos"
@@ -63,7 +63,7 @@ fetchPosts pageIndex filter =
                         ""
                    )
     in
-        Http.send PostsFetched <|
+        Http.send HomePostsFetched <|
             Http.get url decodePaginatedPosts
 
 
@@ -79,7 +79,7 @@ fetchCotonomaPosts pageIndex filter key =
                         ""
                    )
     in
-        Http.send CotonomaFetched <|
+        Http.send CotonomaPostsFetched <|
             Http.get url <|
                 Decode.map2 (,)
                     (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
@@ -90,7 +90,7 @@ fetchPostsByContext : Int -> Filter -> Context a -> Cmd Msg
 fetchPostsByContext pageIndex filter context =
     context.cotonoma
         |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
-        |> Maybe.withDefault (fetchPosts pageIndex filter)
+        |> Maybe.withDefault (fetchHomePosts pageIndex filter)
 
 
 search : String -> Cmd Msg

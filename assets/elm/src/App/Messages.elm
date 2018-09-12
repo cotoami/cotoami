@@ -31,22 +31,23 @@ type Msg
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | SessionFetched (Result Http.Error Session)
+    | HomePostsFetched (Result Http.Error PaginatedPosts)
+    | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
+    | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomaStatsFetched (Result Http.Error CotonomaStats)
+    | GraphFetched (Result Http.Error Graph)
+    | SubgraphFetched (Result Http.Error Graph)
+      --
+      -- Search
+      --
     | SearchInputFocusChanged Bool
     | ClearQuickSearchInput
     | QuickSearchInput String
     | SearchInput String
     | Search
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
-      --
-      -- Fetched
-      --
-    | SessionFetched (Result Http.Error Session)
-    | CotonomasFetched (Result Http.Error (List Cotonoma))
-    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
-    | CotonomaStatsFetched (Result Http.Error CotonomaStats)
-    | GraphFetched (Result Http.Error Graph)
-    | SubgraphFetched (Result Http.Error Graph)
       --
       -- Modal
       --
@@ -100,7 +101,6 @@ type Msg
       --
       -- Timeline
       --
-    | PostsFetched (Result Http.Error PaginatedPosts)
     | ImageLoaded
     | PostAndConnectToSelection String (Maybe String) Direction
     | PostedAndConnectToSelection Int Direction (Result Http.Error Post)

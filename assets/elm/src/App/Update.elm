@@ -128,6 +128,110 @@ update msg model =
                 |> (\presences -> { model | presences = presences })
                 |> withoutCmd
 
+        SessionFetched (Ok session) ->
+            { model | session = Just session }
+                |> (\model ->
+                        case model.route of
+                            CotonomaRoute key ->
+                                loadCotonoma key model
+
+                            _ ->
+                                loadHome model
+                   )
+
+        SessionFetched (Err error) ->
+            case error of
+                BadStatus response ->
+                    if response.status.code == 404 then
+                        App.Server.Session.decodeSessionNotFoundBodyString response.body
+                            |> (\body ->
+                                    App.Modals.SigninModal.setSignupEnabled
+                                        body.signupEnabled
+                                        model.signinModal
+                               )
+                            |> (\signinModal -> { model | signinModal = signinModal })
+                            |> App.Submodels.Modals.openModal SigninModal
+                            |> withoutCmd
+                    else
+                        model |> withoutCmd
+
+                _ ->
+                    model |> withoutCmd
+
+        HomePostsFetched (Ok paginatedPosts) ->
+            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
+                |> App.Submodels.Context.setCotonoma Nothing
+                |> withCmdIf
+                    (\_ -> paginatedPosts.pageIndex == 0)
+                    initScrollPositionOfTimeline
+
+        HomePostsFetched (Err _) ->
+            model |> withoutCmd
+
+        CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
+            { model
+                | navigationOpen = False
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
+            }
+                |> App.Submodels.Context.setCotonoma (Just cotonoma)
+                |> withCmdIf
+                    (\_ -> paginatedPosts.pageIndex == 0)
+                    initScrollPositionOfTimeline
+                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
+
+        CotonomaPostsFetched (Err _) ->
+            model |> withoutCmd
+
+        CotonomasFetched (Ok recentCotonomas) ->
+            { model
+                | recentCotonomas = recentCotonomas
+                , cotonomasLoading = False
+            }
+                |> withoutCmd
+
+        CotonomasFetched (Err _) ->
+            { model | cotonomasLoading = False } |> withoutCmd
+
+        SubCotonomasFetched (Ok cotonomas) ->
+            { model | subCotonomas = cotonomas } |> withoutCmd
+
+        SubCotonomasFetched (Err _) ->
+            model |> withoutCmd
+
+        CotonomaStatsFetched (Ok stats) ->
+            model.cotoMenuModal
+                |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
+                |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
+                |> Maybe.withDefault model
+                |> withoutCmd
+
+        CotonomaStatsFetched (Err _) ->
+            model |> withoutCmd
+
+        GraphFetched (Ok graph) ->
+            { model | graph = graph, loadingGraph = False }
+                |> withCmd
+                    (\model ->
+                        Cmd.batch
+                            [ initScrollPositionOfTimeline model
+                            , App.Commands.initScrollPositionOfPinnedCotos NoOp
+                            , App.Commands.Graph.renderGraph model
+                            ]
+                    )
+
+        GraphFetched (Err _) ->
+            model |> withoutCmd
+
+        SubgraphFetched (Ok subgraph) ->
+            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
+                |> withCmd (\model -> App.Commands.Graph.renderGraph model)
+
+        SubgraphFetched (Err _) ->
+            model |> withoutCmd
+
+        --
+        -- Search
+        --
         SearchInputFocusChanged focus ->
             { model | searchInputFocus = focus } |> withoutCmd
 
@@ -164,100 +268,6 @@ update msg model =
                 |> withoutCmd
 
         SearchResultsFetched (Err _) ->
-            model |> withoutCmd
-
-        --
-        -- Fetched
-        --
-        SessionFetched (Ok session) ->
-            { model | session = Just session }
-                |> (\model ->
-                        case model.route of
-                            CotonomaRoute key ->
-                                loadCotonoma key model
-
-                            _ ->
-                                loadHome model
-                   )
-
-        SessionFetched (Err error) ->
-            case error of
-                BadStatus response ->
-                    if response.status.code == 404 then
-                        App.Server.Session.decodeSessionNotFoundBodyString response.body
-                            |> (\body ->
-                                    App.Modals.SigninModal.setSignupEnabled
-                                        body.signupEnabled
-                                        model.signinModal
-                               )
-                            |> (\signinModal -> { model | signinModal = signinModal })
-                            |> App.Submodels.Modals.openModal SigninModal
-                            |> withoutCmd
-                    else
-                        model |> withoutCmd
-
-                _ ->
-                    model |> withoutCmd
-
-        CotonomasFetched (Ok recentCotonomas) ->
-            { model
-                | recentCotonomas = recentCotonomas
-                , cotonomasLoading = False
-            }
-                |> withoutCmd
-
-        CotonomasFetched (Err _) ->
-            { model | cotonomasLoading = False } |> withoutCmd
-
-        SubCotonomasFetched (Ok cotonomas) ->
-            { model | subCotonomas = cotonomas } |> withoutCmd
-
-        SubCotonomasFetched (Err _) ->
-            model |> withoutCmd
-
-        CotonomaFetched (Ok ( cotonoma, paginatedPosts )) ->
-            { model
-                | navigationOpen = False
-                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
-            }
-                |> App.Submodels.Context.setCotonoma (Just cotonoma)
-                |> withCmdIf
-                    (\_ -> paginatedPosts.pageIndex == 0)
-                    initScrollPositionOfTimeline
-                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
-
-        CotonomaFetched (Err _) ->
-            model |> withoutCmd
-
-        CotonomaStatsFetched (Ok stats) ->
-            model.cotoMenuModal
-                |> Maybe.map (\modal -> { modal | cotonomaStats = Just stats })
-                |> Maybe.map (\modal -> { model | cotoMenuModal = Just modal })
-                |> Maybe.withDefault model
-                |> withoutCmd
-
-        CotonomaStatsFetched (Err _) ->
-            model |> withoutCmd
-
-        GraphFetched (Ok graph) ->
-            { model | graph = graph, loadingGraph = False }
-                |> withCmd
-                    (\model ->
-                        Cmd.batch
-                            [ initScrollPositionOfTimeline model
-                            , App.Commands.initScrollPositionOfPinnedCotos NoOp
-                            , App.Commands.Graph.renderGraph model
-                            ]
-                    )
-
-        GraphFetched (Err _) ->
-            model |> withoutCmd
-
-        SubgraphFetched (Ok subgraph) ->
-            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
-                |> withCmd (\model -> App.Commands.Graph.renderGraph model)
-
-        SubgraphFetched (Err _) ->
             model |> withoutCmd
 
         --
@@ -605,16 +615,6 @@ update msg model =
         --
         -- Timeline
         --
-        PostsFetched (Ok paginatedPosts) ->
-            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
-                |> App.Submodels.Context.setCotonoma Nothing
-                |> withCmdIf
-                    (\_ -> paginatedPosts.pageIndex == 0)
-                    initScrollPositionOfTimeline
-
-        PostsFetched (Err _) ->
-            model |> withoutCmd
-
         ImageLoaded ->
             model
                 |> withCmdIf
@@ -860,7 +860,7 @@ loadHome model =
         |> withCmd
             (\model ->
                 Cmd.batch
-                    [ App.Server.Post.fetchPosts 0 model.timeline.filter
+                    [ App.Server.Post.fetchHomePosts 0 model.timeline.filter
                     , App.Server.Cotonoma.fetchCotonomas
                     , App.Server.Graph.fetchGraph Nothing
                     , App.Ports.Graph.destroyGraph ()
