@@ -19,18 +19,29 @@ import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Util.Modal as Modal
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isBlank, isNotBlank)
 import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Util.Keyboard.Key
+import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.Markdown
 import Util.Keyboard.Event
 import App.Types.Coto exposing (Coto)
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
+import App.Types.Graph
 import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modals)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Commands
 import App.Server.Coto
-import App.Messages as AppMsg exposing (Msg(CloseModal, ConfirmPostAndConnect))
-import App.Views.Coto
+import App.Server.Post
+import App.Server.Graph
+import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
+import App.Views.Coto
+import App.Views.Timeline
 
 
 type alias Model =
@@ -130,52 +141,203 @@ setCotoSaveError error model =
             }
 
 
-update : Context a -> EditorModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update context msg model =
+type alias AppModel a =
+    LocalCotos (Modals { a | editorModal : Model })
+
+
+update : Context a -> EditorModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+update context msg ({ editorModal, timeline } as model) =
     case msg of
         EditorInput content ->
-            { model | content = content } |> withoutCmd
+            { model | editorModal = { editorModal | content = content } }
+                |> withoutCmd
 
         SummaryInput summary ->
-            { model | summary = summary } |> withoutCmd
+            { model | editorModal = { editorModal | summary = summary } }
+                |> withoutCmd
 
         TogglePreview ->
-            { model | preview = not model.preview } |> withoutCmd
+            { model | editorModal = { editorModal | preview = not editorModal.preview } }
+                |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
-            model |> withoutCmd
+            handleShortcut context keyboardEvent model
 
         ShareCotonomaCheck check ->
-            { model | shareCotonoma = check } |> withoutCmd
+            { model | editorModal = { editorModal | shareCotonoma = check } }
+                |> withoutCmd
 
         Post ->
-            { model | requestProcessing = True } |> withoutCmd
+            { model | editorModal = { editorModal | requestProcessing = True } }
+                |> post context
+
+        ConfirmPostAndConnect content summary ->
+            App.Submodels.Modals.confirmPostAndConnect summary content model
+
+        PostedAndSubordinateToCoto postId coto (Ok response) ->
+            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
+                |> App.Submodels.Modals.clearModals
+                |> subordinatePostToCoto context coto response
+
+        PostedAndSubordinateToCoto postId coto (Err _) ->
+            model |> withoutCmd
 
         PostCotonoma ->
-            { model | requestProcessing = True } |> withoutCmd
+            { model | editorModal = { editorModal | requestProcessing = True } }
+                |> postCotonoma context
 
         Save ->
-            { model | requestProcessing = True }
+            { model | editorModal = { editorModal | requestProcessing = True } }
                 |> withCmd
                     (\model ->
-                        case model.mode of
+                        case model.editorModal.mode of
                             Edit coto ->
                                 App.Server.Coto.updateContent
                                     context.clientId
                                     coto.id
-                                    model.shareCotonoma
-                                    model.summary
-                                    model.content
+                                    model.editorModal.shareCotonoma
+                                    model.editorModal.summary
+                                    model.editorModal.content
 
                             _ ->
                                 Cmd.none
                     )
 
         SetNewCotoMode ->
-            { model | mode = NewCoto } |> withoutCmd
+            { model | editorModal = { editorModal | mode = NewCoto } }
+                |> withoutCmd
 
         SetNewCotonomaMode ->
-            { model | mode = NewCotonoma } |> withoutCmd
+            { model | editorModal = { editorModal | mode = NewCotonoma } }
+                |> withoutCmd
+
+
+post : Context a -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+post context ({ editorModal, timeline } as model) =
+    let
+        summary =
+            getSummary editorModal
+
+        content =
+            editorModal.content
+    in
+        editorModal.source
+            |> Maybe.map (\source -> postSubcoto context source summary content model)
+            |> Maybe.withDefault
+                (App.Views.Timeline.post context summary content timeline
+                    |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
+                )
+
+
+postSubcoto : Context a -> Coto -> Maybe String -> String -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postSubcoto context coto summary content model =
+    let
+        ( timeline, newPost ) =
+            model.timeline
+                |> App.Types.Timeline.post context False summary content
+    in
+        { model | timeline = timeline }
+            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+              , App.Server.Post.post
+                    context.clientId
+                    context.cotonoma
+                    (AppMsg.EditorModalMsg
+                        << (PostedAndSubordinateToCoto timeline.postIdCounter coto)
+                    )
+                    newPost
+              ]
+
+
+subordinatePostToCoto : Context a -> Coto -> Post -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+subordinatePostToCoto { clientId, session } coto post model =
+    post.cotoId
+        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
+        |> Maybe.map
+            (\target ->
+                let
+                    direction =
+                        App.Types.Graph.Inbound
+
+                    maybeCotonomaKey =
+                        Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
+                in
+                    ( App.Submodels.LocalCotos.connect
+                        session
+                        direction
+                        [ coto ]
+                        target
+                        model
+                    , App.Server.Graph.connect
+                        clientId
+                        maybeCotonomaKey
+                        direction
+                        [ coto.id ]
+                        target.id
+                    )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+handleShortcut : Context a -> KeyboardEvent -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+handleShortcut context keyboardEvent model =
+    if
+        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
+            && isNotBlank model.editorModal.content
+    then
+        case model.editorModal.mode of
+            Edit coto ->
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+                    ( model
+                    , App.Server.Coto.updateContent
+                        context.clientId
+                        coto.id
+                        model.editorModal.shareCotonoma
+                        model.editorModal.summary
+                        model.editorModal.content
+                    )
+                else
+                    ( model, Cmd.none )
+
+            _ ->
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+                    post context model
+                else if
+                    keyboardEvent.altKey
+                        && App.Submodels.Context.anySelection context
+                then
+                    App.Submodels.Modals.confirmPostAndConnect
+                        (getSummary model.editorModal)
+                        model.editorModal.content
+                        model
+                else
+                    ( model, Cmd.none )
+    else
+        ( model, Cmd.none )
+
+
+postCotonoma : Context a -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postCotonoma context model =
+    let
+        cotonomaName =
+            model.editorModal.content
+
+        ( timeline, _ ) =
+            App.Types.Timeline.post
+                context
+                True
+                Nothing
+                cotonomaName
+                model.timeline
+    in
+        { model | timeline = timeline }
+            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+              , App.Server.Post.postCotonoma
+                    context.clientId
+                    model.cotonoma
+                    timeline.postIdCounter
+                    model.editorModal.shareCotonoma
+                    cotonomaName
+              ]
 
 
 view : Context a -> Model -> Html AppMsg.Msg
@@ -421,7 +583,7 @@ buttonsForNewCoto context model =
         button
             [ class "button connect"
             , disabled (isBlank model.content || model.requestProcessing)
-            , onClick (ConfirmPostAndConnect model.content (getSummary model))
+            , onClick (AppMsg.EditorModalMsg (ConfirmPostAndConnect model.content (getSummary model)))
             ]
             [ faIcon "link" Nothing
             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
@@ -429,7 +591,7 @@ buttonsForNewCoto context model =
     , button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)
-        , onClick (AppMsg.EditorModalMsg Post)
+        , onClick (AppMsg.EditorModalMsg EditorModalMsg.Post)
         ]
         (if model.requestProcessing then
             [ text "Posting..." ]

@@ -8,7 +8,6 @@ import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Util.Keyboard.Key
-import Util.Keyboard.Event exposing (KeyboardEvent)
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.HttpUtil exposing (ClientId)
@@ -46,7 +45,6 @@ import App.Channels exposing (Payload)
 import App.Views.Timeline
 import App.Modals.SigninModal
 import App.Modals.EditorModal
-import App.Modals.EditorModalMsg
 import App.Modals.InviteModal
 import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
@@ -623,26 +621,6 @@ update msg model =
                     (\model -> model.timeline.pageIndex == 0)
                     (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
-        EditorKeyDown keyboardEvent ->
-            handleEditorShortcut keyboardEvent Nothing model.timeline.editorContent model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Post ->
-            post Nothing model.timeline.editorContent model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Posted postId (Ok response) ->
-            { model | timeline = setCotoSaved postId response model.timeline }
-                |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
-                |> App.Submodels.Modals.clearModals
-                |> withoutCmd
-
-        Posted postId (Err _) ->
-            model |> withoutCmd
-
-        ConfirmPostAndConnect content summary ->
-            confirmPostAndConnect summary content model
-
         PostAndConnectToSelection content summary direction ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal
@@ -654,14 +632,6 @@ update msg model =
                 |> connectPostToSelection model.clientId direction response
 
         PostedAndConnectToSelection postId direction (Err _) ->
-            model |> withoutCmd
-
-        PostedAndConnectToCoto postId coto (Ok response) ->
-            { model | timeline = setCotoSaved postId response model.timeline }
-                |> App.Submodels.Modals.clearModals
-                |> connectPostToCoto model.clientId coto response
-
-        PostedAndConnectToCoto postId coto (Err _) ->
             model |> withoutCmd
 
         CotonomaPosted postId (Ok response) ->
@@ -837,24 +807,7 @@ update msg model =
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
 
         EditorModalMsg subMsg ->
-            App.Modals.EditorModal.update model subMsg model.editorModal
-                |> (\( modal, cmd ) ->
-                        ( { model | editorModal = modal }, cmd )
-                   )
-                |> (\( model, cmd ) ->
-                        case subMsg of
-                            App.Modals.EditorModalMsg.Post ->
-                                postFromEditorModal model
-
-                            App.Modals.EditorModalMsg.PostCotonoma ->
-                                postCotonomaFromEditorModal model
-
-                            App.Modals.EditorModalMsg.EditorKeyDown keyboardEvent ->
-                                handleEditorModalShortcut keyboardEvent model
-
-                            _ ->
-                                ( model, cmd )
-                   )
+            App.Modals.EditorModal.update model subMsg model
 
         ConnectModalMsg subMsg ->
             model.connectModal
@@ -952,24 +905,6 @@ initScrollPositionOfTimeline model =
         Cmd.none
 
 
-post : Maybe String -> String -> Model -> ( Model, Cmd Msg )
-post summary content model =
-    let
-        ( timeline, newPost ) =
-            App.Types.Timeline.post model False summary content model.timeline
-
-        tag =
-            Posted timeline.postIdCounter
-    in
-        { model | timeline = timeline }
-            |> withCmds
-                (\model ->
-                    [ App.Commands.scrollTimelineToBottom NoOp
-                    , App.Server.Post.post model.clientId model.cotonoma tag newPost
-                    ]
-                )
-
-
 postAndConnectToSelection : Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
 postAndConnectToSelection direction summary content model =
     let
@@ -986,128 +921,6 @@ postAndConnectToSelection direction summary content model =
                     , App.Server.Post.post model.clientId model.cotonoma tag newPost
                     ]
                 )
-
-
-postAndConnectToCoto : Coto -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-postAndConnectToCoto coto summary content model =
-    let
-        ( timeline, newPost ) =
-            model.timeline
-                |> App.Types.Timeline.post model False summary content
-    in
-        { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom NoOp
-              , App.Server.Post.post
-                    model.clientId
-                    model.cotonoma
-                    (PostedAndConnectToCoto timeline.postIdCounter coto)
-                    newPost
-              ]
-
-
-postFromEditorModal : Model -> ( Model, Cmd Msg )
-postFromEditorModal model =
-    let
-        summary =
-            App.Modals.EditorModal.getSummary model.editorModal
-
-        content =
-            model.editorModal.content
-    in
-        model.editorModal.source
-            |> Maybe.map
-                (\source ->
-                    postAndConnectToCoto source summary content model
-                )
-            |> Maybe.withDefault (post summary content model)
-
-
-postCotonomaFromEditorModal : Model -> ( Model, Cmd Msg )
-postCotonomaFromEditorModal model =
-    let
-        cotonomaName =
-            model.editorModal.content
-
-        ( timeline, _ ) =
-            App.Types.Timeline.post
-                model
-                True
-                Nothing
-                cotonomaName
-                model.timeline
-    in
-        { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom NoOp
-              , App.Server.Post.postCotonoma
-                    model.clientId
-                    model.cotonoma
-                    timeline.postIdCounter
-                    model.editorModal.shareCotonoma
-                    cotonomaName
-              ]
-
-
-confirmPostAndConnect : Maybe String -> String -> Model -> ( Model, Cmd Msg )
-confirmPostAndConnect summary content model =
-    model
-        |> App.Submodels.Modals.confirmConnect Inbound (NewPost content summary)
-        |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" NoOp)
-
-
-handleEditorShortcut : KeyboardEvent -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-handleEditorShortcut keyboardEvent summary content model =
-    if
-        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
-            && isNotBlank content
-    then
-        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            post summary content model
-        else if
-            keyboardEvent.altKey
-                && App.Submodels.Context.anySelection model
-        then
-            confirmPostAndConnect summary content model
-        else
-            ( model, Cmd.none )
-    else
-        ( model, Cmd.none )
-
-
-handleEditorModalShortcut : KeyboardEvent -> Model -> ( Model, Cmd Msg )
-handleEditorModalShortcut keyboardEvent model =
-    if
-        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
-            && isNotBlank model.editorModal.content
-    then
-        case model.editorModal.mode of
-            App.Modals.EditorModal.Edit coto ->
-                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-                    ( model
-                    , App.Server.Coto.updateContent
-                        model.clientId
-                        coto.id
-                        model.editorModal.shareCotonoma
-                        model.editorModal.summary
-                        model.editorModal.content
-                    )
-                else
-                    ( model, Cmd.none )
-
-            _ ->
-                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-                    postFromEditorModal model
-                else if
-                    keyboardEvent.altKey
-                        && App.Submodels.Context.anySelection model
-                then
-                    confirmPostAndConnect
-                        (App.Modals.EditorModal.getSummary model.editorModal)
-                        model.editorModal.content
-                        model
-                else
-                    ( model, Cmd.none )
-    else
-        ( model, Cmd.none )
 
 
 openCoto : Coto -> Model -> ( Model, Cmd Msg )
@@ -1143,36 +956,6 @@ connectPostToSelection clientId direction post model =
                         maybeCotonomaKey
                         direction
                         (List.map (\coto -> coto.id) objects)
-                        target.id
-                    )
-            )
-        |> Maybe.withDefault ( model, Cmd.none )
-
-
-connectPostToCoto : ClientId -> Coto -> Post -> Model -> ( Model, Cmd Msg )
-connectPostToCoto clientId coto post model =
-    post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
-        |> Maybe.map
-            (\target ->
-                let
-                    direction =
-                        App.Types.Graph.Inbound
-
-                    maybeCotonomaKey =
-                        Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
-                in
-                    ( App.Submodels.LocalCotos.connect
-                        model.session
-                        direction
-                        [ coto ]
-                        target
-                        model
-                    , App.Server.Graph.connect
-                        clientId
-                        maybeCotonomaKey
-                        direction
-                        [ coto.id ]
                         target.id
                     )
             )

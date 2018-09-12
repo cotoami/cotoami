@@ -1,4 +1,9 @@
-module App.Views.Timeline exposing (update, view)
+module App.Views.Timeline
+    exposing
+        ( update
+        , post
+        , view
+        )
 
 import Html exposing (..)
 import Html.Keyed
@@ -6,17 +11,19 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Decode
 import List.Extra exposing (groupWhile)
-import Util.StringUtil exposing (isBlank)
+import Util.StringUtil exposing (isBlank, isNotBlank)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
 import Util.UpdateUtil exposing (..)
-import Util.Keyboard.Event
+import Util.Keyboard.Key
+import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline, TimelineView(..))
 import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
 import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
@@ -25,32 +32,101 @@ import App.Commands
 import App.Server.Post
 
 
-update : Context a -> TimelineMsg.Msg -> LocalCotos b -> ( LocalCotos b, Cmd AppMsg.Msg )
-update context msg model =
+type alias Model a =
+    LocalCotos (Modals a)
+
+
+update : Context a -> TimelineMsg.Msg -> Model b -> ( Model b, Cmd AppMsg.Msg )
+update context msg ({ timeline } as model) =
     case msg of
         SwitchView view ->
-            { model | timeline = App.Types.Timeline.switchView view model.timeline }
+            { model | timeline = App.Types.Timeline.switchView view timeline }
                 |> withoutCmd
 
         LoadMorePosts ->
-            { model | timeline = App.Types.Timeline.setLoadingMore model.timeline }
+            { model | timeline = App.Types.Timeline.setLoadingMore timeline }
                 |> withCmd
                     (\model ->
                         App.Server.Post.fetchPostsByContext
-                            (App.Types.Timeline.nextPageIndex model.timeline)
-                            model.timeline.filter
+                            (App.Types.Timeline.nextPageIndex timeline)
+                            timeline.filter
                             context
                     )
 
         EditorFocus ->
-            { model | timeline = App.Types.Timeline.openOrCloseEditor True model.timeline }
+            { model | timeline = App.Types.Timeline.openOrCloseEditor True timeline }
                 |> withCmdIf
-                    (\model -> model.timeline.editorOpen)
+                    (\model -> timeline.editorOpen)
                     (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
         EditorInput content ->
-            { model | timeline = App.Types.Timeline.setEditorContent content model.timeline }
+            { model | timeline = App.Types.Timeline.setEditorContent content timeline }
                 |> withoutCmd
+
+        EditorKeyDown keyboardEvent ->
+            handleEditorShortcut context keyboardEvent Nothing timeline.editorContent model
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+
+        Post ->
+            post context Nothing timeline.editorContent timeline
+                |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+
+        Posted postId (Ok response) ->
+            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
+                |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
+                |> App.Submodels.Modals.clearModals
+                |> withoutCmd
+
+        Posted postId (Err _) ->
+            model |> withoutCmd
+
+        ConfirmPostAndConnect content summary ->
+            App.Submodels.Modals.confirmPostAndConnect summary content model
+
+
+handleEditorShortcut :
+    Context a
+    -> KeyboardEvent
+    -> Maybe String
+    -> String
+    -> Model b
+    -> ( Model b, Cmd AppMsg.Msg )
+handleEditorShortcut context keyboardEvent summary content model =
+    if
+        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
+            && isNotBlank content
+    then
+        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+            post context summary content model.timeline
+                |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
+        else if
+            keyboardEvent.altKey
+                && App.Submodels.Context.anySelection context
+        then
+            App.Submodels.Modals.confirmPostAndConnect summary content model
+        else
+            ( model, Cmd.none )
+    else
+        ( model, Cmd.none )
+
+
+post : Context a -> Maybe String -> String -> Timeline -> ( Timeline, Cmd AppMsg.Msg )
+post context summary content timeline =
+    let
+        ( newTimeline, newPost ) =
+            App.Types.Timeline.post context False summary content timeline
+    in
+        ( newTimeline
+        , Cmd.batch
+            [ App.Commands.scrollTimelineToBottom NoOp
+            , App.Server.Post.post
+                context.clientId
+                context.cotonoma
+                (AppMsg.TimelineMsg << (Posted newTimeline.postIdCounter))
+                newPost
+            ]
+        )
 
 
 view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
@@ -222,9 +298,11 @@ postEditor context session model =
                             [ class "button connect"
                             , disabled (isBlank model.editorContent)
                             , onMouseDown
-                                (AppMsg.ConfirmPostAndConnect
-                                    model.editorContent
-                                    Nothing
+                                (AppMsg.TimelineMsg
+                                    (ConfirmPostAndConnect
+                                        model.editorContent
+                                        Nothing
+                                    )
                                 )
                             ]
                             [ faIcon "link" Nothing
@@ -234,7 +312,7 @@ postEditor context session model =
                 , button
                     [ class "button-primary post"
                     , disabled (isBlank model.editorContent)
-                    , onMouseDown AppMsg.Post
+                    , onMouseDown (AppMsg.TimelineMsg TimelineMsg.Post)
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -253,7 +331,9 @@ postEditor context session model =
                     , onFocus (AppMsg.TimelineMsg EditorFocus)
                     , onInput (AppMsg.TimelineMsg << EditorInput)
                     , on "keydown" <|
-                        Decode.map EditorKeyDown Util.Keyboard.Event.decodeKeyboardEvent
+                        Decode.map
+                            (AppMsg.TimelineMsg << EditorKeyDown)
+                            Util.Keyboard.Event.decodeKeyboardEvent
                     , onClickWithoutPropagation NoOp
                     ]
                     []

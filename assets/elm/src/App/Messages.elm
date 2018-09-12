@@ -4,7 +4,6 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
 import App.Types.Post exposing (Post, PaginatedPosts)
@@ -103,13 +102,8 @@ type Msg
       --
     | PostsFetched (Result Http.Error PaginatedPosts)
     | ImageLoaded
-    | EditorKeyDown KeyboardEvent
-    | Post
-    | Posted Int (Result Http.Error Post)
-    | ConfirmPostAndConnect String (Maybe String)
     | PostAndConnectToSelection String (Maybe String) Direction
     | PostedAndConnectToSelection Int Direction (Result Http.Error Post)
-    | PostedAndConnectToCoto Int Coto (Result Http.Error Post)
     | CotonomaPosted Int (Result Http.Error Post)
     | TimelineScrollPosInitialized
       --
