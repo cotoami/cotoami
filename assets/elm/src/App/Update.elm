@@ -68,7 +68,7 @@ update msg model =
                     && (not model.timeline.editorOpen)
                     && (not model.searchInputFocus)
             then
-                openNewEditor Nothing model
+                App.Modals.EditorModal.openForNew model Nothing model
             else
                 model |> withoutCmd
 
@@ -282,10 +282,10 @@ update msg model =
                 |> withoutCmd
 
         OpenNewEditorModal ->
-            openNewEditor Nothing model
+            App.Modals.EditorModal.openForNew model Nothing model
 
         OpenNewEditorModalWithSourceCoto coto ->
-            openNewEditor (Just coto) model
+            App.Modals.EditorModal.openForNew model (Just coto) model
 
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
@@ -805,13 +805,6 @@ update msg model =
 changeLocationToHome : Model -> ( Model, Cmd Msg )
 changeLocationToHome model =
     ( model, Navigation.newUrl "/" )
-
-
-openNewEditor : Maybe Coto -> Model -> ( Model, Cmd Msg )
-openNewEditor source model =
-    { model | editorModal = App.Modals.EditorModal.modelForNew model source }
-        |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" NoOp)
 
 
 loadHome : Model -> ( Model, Cmd Msg )

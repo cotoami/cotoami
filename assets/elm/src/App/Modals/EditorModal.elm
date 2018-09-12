@@ -8,6 +8,7 @@ module App.Modals.EditorModal
         , modelForEditToCotonomatize
         , getSummary
         , setCotoSaveError
+        , openForNew
         , update
         , view
         )
@@ -32,7 +33,7 @@ import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Types.Graph
 import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modals)
+import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
 import App.Commands.Cotonoma
@@ -143,8 +144,23 @@ setCotoSaveError error model =
             }
 
 
+type alias WithEditorModal a =
+    { a | editorModal : Model }
+
+
+openForNew :
+    Context a
+    -> Maybe Coto
+    -> Modals (WithEditorModal b)
+    -> ( Modals (WithEditorModal b), Cmd AppMsg.Msg )
+openForNew context source model =
+    { model | editorModal = modelForNew context source }
+        |> App.Submodels.Modals.openModal EditorModal
+        |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" AppMsg.NoOp)
+
+
 type alias AppModel a =
-    LocalCotos (Modals (WithConnectModal { a | editorModal : Model }))
+    LocalCotos (Modals (WithConnectModal (WithEditorModal a)))
 
 
 update : Context a -> EditorModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
