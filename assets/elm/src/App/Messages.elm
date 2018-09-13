@@ -9,7 +9,6 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
-import App.Types.Traversal exposing (Traversal)
 import App.Views.FlowMsg
 import App.Views.TraversalsMsg
 import App.Modals.SigninModalMsg
