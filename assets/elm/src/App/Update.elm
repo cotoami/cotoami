@@ -34,6 +34,7 @@ import App.Commands.Graph
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Views.Timeline
+import App.Views.Traversals
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
@@ -576,9 +577,6 @@ update msg model =
             model |> withoutCmd
 
         --
-        -- Timeline
-        --
-        --
         -- PinnedCotos
         --
         SwitchPinnedCotosView view ->
@@ -595,37 +593,6 @@ update msg model =
                 |> withCmdIf
                     (\model -> model.pinnedCotosView == GraphView)
                     (\_ -> App.Ports.Graph.resizeGraph ())
-
-        --
-        -- Traversals
-        --
-        Traverse traversal nextCotoId stepIndex ->
-            { model
-                | traversals =
-                    App.Types.Traversal.updateTraversal
-                        traversal.start
-                        (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
-                        model.traversals
-            }
-                |> withoutCmd
-
-        TraverseToParent traversal parentId ->
-            { model
-                | traversals =
-                    App.Types.Traversal.updateTraversal
-                        traversal.start
-                        (App.Types.Traversal.traverseToParent model.graph parentId traversal)
-                        model.traversals
-            }
-                |> withoutCmd
-
-        CloseTraversal cotoId ->
-            { model | traversals = App.Types.Traversal.closeTraversal cotoId model.traversals }
-                |> withCmd (\_ -> App.Commands.Graph.resizeGraphWithDelay)
-
-        SwitchTraversal index ->
-            { model | traversals = App.Types.Traversal.setActiveIndexOnMobile index model.traversals }
-                |> withoutCmd
 
         --
         -- CotoSelection
@@ -726,6 +693,9 @@ update msg model =
         --
         TimelineMsg subMsg ->
             App.Views.Timeline.update model subMsg model
+
+        TraversalsMsg subMsg ->
+            App.Views.Traversals.update model model.graph subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal

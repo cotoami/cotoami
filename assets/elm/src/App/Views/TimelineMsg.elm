@@ -1,4 +1,4 @@
-module App.Views.TimelineMsg exposing (..)
+module App.Views.TimelineMsg exposing (Msg(..))
 
 import Http
 import Util.Keyboard.Event exposing (KeyboardEvent)

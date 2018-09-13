@@ -34,11 +34,11 @@ import App.Commands
 import App.Server.Post
 
 
-type alias Model a =
+type alias UpdateModel a =
     LocalCotos (Modals (WithConnectModal a))
 
 
-update : Context a -> TimelineMsg.Msg -> Model b -> ( Model b, Cmd AppMsg.Msg )
+update : Context a -> TimelineMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 update context msg ({ timeline } as model) =
     case msg of
         TimelineScrollPosInitialized ->
@@ -110,8 +110,8 @@ handleEditorShortcut :
     -> KeyboardEvent
     -> Maybe String
     -> String
-    -> Model b
-    -> ( Model b, Cmd AppMsg.Msg )
+    -> UpdateModel b
+    -> ( UpdateModel b, Cmd AppMsg.Msg )
 handleEditorShortcut context keyboardEvent summary content model =
     if
         (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)

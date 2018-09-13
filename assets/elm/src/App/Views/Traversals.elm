@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Exts.Maybe exposing (isJust)
+import Util.UpdateUtil exposing (..)
 import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
@@ -13,11 +14,49 @@ import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
 import App.Types.Traversal exposing (..)
 import App.Submodels.Context exposing (Context)
-import App.Messages exposing (..)
+import App.Submodels.Traversals
+import App.Messages as AppMsg exposing (..)
+import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
-view : Bool -> Context a -> Graph -> Traversals -> List (Html Msg)
+type alias UpdateModel a =
+    App.Submodels.Traversals.Traversals a
+
+
+update : Context a -> Graph -> TraversalsMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update context graph msg ({ traversals } as model) =
+    case msg of
+        Traverse traversal nextCotoId stepIndex ->
+            { model
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        traversal.start
+                        (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
+                        traversals
+            }
+                |> withoutCmd
+
+        TraverseToParent traversal parentId ->
+            { model
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        traversal.start
+                        (App.Types.Traversal.traverseToParent graph parentId traversal)
+                        traversals
+            }
+                |> withoutCmd
+
+        CloseTraversal cotoId ->
+            { model | traversals = App.Types.Traversal.closeTraversal cotoId traversals }
+                |> withoutCmd
+
+        SwitchTraversal index ->
+            { model | traversals = App.Types.Traversal.setActiveIndexOnMobile index traversals }
+                |> withoutCmd
+
+
+view : Bool -> Context a -> Graph -> Traversals -> List (Html AppMsg.Msg)
 view activeOnMobile context graph model =
     model.order
         |> List.filterMap
@@ -49,7 +88,7 @@ view activeOnMobile context graph model =
         |> (::) (traversalsPaginationDiv graph model)
 
 
-maybeTraversalDiv : Context a -> Graph -> Traversal -> Maybe (Html Msg)
+maybeTraversalDiv : Context a -> Graph -> Traversal -> Maybe (Html AppMsg.Msg)
 maybeTraversalDiv context graph traversal =
     Dict.get traversal.start graph.cotos
         |> Maybe.map
@@ -77,7 +116,7 @@ getElementId step =
     "traversal-" ++ step.traversal.start ++ "-step-" ++ (toString step.index)
 
 
-traversalDiv : Context a -> Graph -> Traversal -> List Connection -> Coto -> Html Msg
+traversalDiv : Context a -> Graph -> Traversal -> List Connection -> Coto -> Html AppMsg.Msg
 traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
@@ -88,7 +127,7 @@ traversalDiv context graph traversal connections startCoto =
             , a
                 [ class "tool-button close-traversal"
                 , href "/"
-                , onLinkButtonClick (CloseTraversal traversal.start)
+                , onLinkButtonClick (AppMsg.TraversalsMsg (CloseTraversal traversal.start))
                 ]
                 [ materialIcon "close" Nothing ]
             ]
@@ -116,7 +155,7 @@ traversalDiv context graph traversal connections startCoto =
         ]
 
 
-parentsDiv : Graph -> Traversal -> CotoId -> Html Msg
+parentsDiv : Graph -> Traversal -> CotoId -> Html AppMsg.Msg
 parentsDiv graph traversal childId =
     let
         parents =
@@ -131,7 +170,10 @@ parentsDiv graph traversal childId =
                         (\parent ->
                             div
                                 [ class "parent"
-                                , onClick (TraverseToParent traversal parent.id)
+                                , onClick
+                                    (AppMsg.TraversalsMsg
+                                        (TraverseToParent traversal parent.id)
+                                    )
                                 ]
                                 [ text (App.Views.Coto.abbreviate parent) ]
                         )
@@ -143,7 +185,7 @@ parentsDiv graph traversal childId =
                 ]
 
 
-stepCotoDiv : Context a -> Graph -> List Connection -> TraversalStep -> Coto -> Html Msg
+stepCotoDiv : Context a -> Graph -> List Connection -> TraversalStep -> Coto -> Html AppMsg.Msg
 stepCotoDiv context graph connections step coto =
     let
         elementId =
@@ -170,7 +212,7 @@ stepCotoDiv context graph connections step coto =
             ]
 
 
-stepDiv : Context a -> Graph -> TraversalStep -> Maybe (Html Msg)
+stepDiv : Context a -> Graph -> TraversalStep -> Maybe (Html AppMsg.Msg)
 stepDiv context graph step =
     let
         connections =
@@ -190,7 +232,7 @@ stepDiv context graph step =
                 )
 
 
-connectionsDiv : Context a -> Graph -> TraversalStep -> String -> Coto -> List Connection -> Html Msg
+connectionsDiv : Context a -> Graph -> TraversalStep -> String -> Coto -> List Connection -> Html AppMsg.Msg
 connectionsDiv context graph step elementIdPrefix parentCoto connections =
     connections
         |> List.reverse
@@ -230,7 +272,7 @@ connectionsDiv context graph step elementIdPrefix parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context a -> Graph -> TraversalStep -> String -> InboundConnection -> Coto -> Html Msg
+subCotoDiv : Context a -> Graph -> TraversalStep -> String -> InboundConnection -> Coto -> Html AppMsg.Msg
 subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
     let
         elementId =
@@ -265,7 +307,7 @@ subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
             ]
 
 
-traversalsPaginationDiv : Graph -> Traversals -> Html Msg
+traversalsPaginationDiv : Graph -> Traversals -> Html AppMsg.Msg
 traversalsPaginationDiv graph model =
     if App.Types.Traversal.isEmpty model then
         div [] []
@@ -287,7 +329,8 @@ traversalsPaginationDiv graph model =
                             [ button
                                 [ class "button"
                                 , disabled (model.activeIndexOnMobile == index)
-                                , onClickWithoutPropagation (SwitchTraversal index)
+                                , onClickWithoutPropagation
+                                    (AppMsg.TraversalsMsg (SwitchTraversal index))
                                 ]
                                 [ text pageLabel ]
                             ]
@@ -306,7 +349,7 @@ toPageLabel defaultLabel { content, summary } =
         |> (String.left 8)
 
 
-traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html Msg
+traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html AppMsg.Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
         [ if isJust coto.asCotonoma then
@@ -314,7 +357,8 @@ traverseButtonDiv graph { traversal, index } coto =
           else if hasChildren coto.id graph then
             a
                 [ class "tool-button traverse"
-                , onLinkButtonClick (Traverse traversal coto.id index)
+                , onLinkButtonClick
+                    (AppMsg.TraversalsMsg (Traverse traversal coto.id index))
                 ]
                 [ materialIcon "arrow_downward" Nothing ]
           else
@@ -322,7 +366,7 @@ traverseButtonDiv graph { traversal, index } coto =
         ]
 
 
-openTraversalButton : CotoId -> Html Msg
+openTraversalButton : CotoId -> Html AppMsg.Msg
 openTraversalButton cotoId =
     a
         [ class "tool-button open-traversal"

@@ -11,6 +11,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
 import App.Types.Traversal exposing (Traversal)
 import App.Views.TimelineMsg
+import App.Views.TraversalsMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.CotoMenuModalMsg
@@ -104,13 +105,6 @@ type Msg
     | RenderGraph
     | ResizeGraph
       --
-      -- Traversals
-      --
-    | Traverse Traversal CotoId Int
-    | TraverseToParent Traversal CotoId
-    | CloseTraversal CotoId
-    | SwitchTraversal Int
-      --
       -- CotoSelection
       --
     | DeselectingCoto CotoId
@@ -131,6 +125,7 @@ type Msg
       -- Sub components
       --
     | TimelineMsg App.Views.TimelineMsg.Msg
+    | TraversalsMsg App.Views.TraversalsMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
