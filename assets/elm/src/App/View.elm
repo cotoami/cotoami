@@ -14,7 +14,7 @@ import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
 import App.Views.AppHeader
-import App.Views.Timeline
+import App.Views.Flow
 import App.Views.Traversals
 import App.Views.Navigation
 import App.Views.PinnedCotos
@@ -64,7 +64,7 @@ view model =
             , div [ id "app-body" ]
                 [ div [ id "app-layout" ]
                     [ navColumn model
-                    , timelineColumn model
+                    , flowColumn model
                     , graphExplorationDiv model
                     , selectionColumn model
                     , searchResultsColumn model
@@ -114,7 +114,7 @@ openTimelineButton model =
     if model.timeline.hidden then
         div [ id "open-timeline" ]
             [ a
-                [ class "tool-button timeline-toggle"
+                [ class "tool-button flow-toggle"
                 , title "Open timeline"
                 , onLinkButtonClick ToggleTimeline
                 ]
@@ -124,13 +124,13 @@ openTimelineButton model =
         Util.HtmlUtil.none
 
 
-timelineColumn : Model -> Html Msg
-timelineColumn model =
+flowColumn : Model -> Html Msg
+flowColumn model =
     model.session
         |> Maybe.map
             (\session ->
                 if model.timeline.hidden then
-                    timelineDiv
+                    flowDiv
                         session
                         [ ( "main-column", True )
                         , ( "hidden", True )
@@ -141,7 +141,7 @@ timelineColumn model =
                         active =
                             model.activeViewOnMobile == TimelineView
                     in
-                        timelineDiv
+                        flowDiv
                             session
                             [ ( "main-column", True )
                             , ( "activeOnMobile", active )
@@ -153,13 +153,13 @@ timelineColumn model =
         |> Maybe.withDefault Util.HtmlUtil.none
 
 
-timelineDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
-timelineDiv session classes model =
+flowDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
+flowDiv session classes model =
     div
-        [ id "main-timeline"
+        [ id "main-flow"
         , classList classes
         ]
-        [ App.Views.Timeline.view model session model ]
+        [ App.Views.Flow.view model session model ]
 
 
 pinnedCotosColumn : Model -> Html Msg

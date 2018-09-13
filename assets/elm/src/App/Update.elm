@@ -33,7 +33,7 @@ import App.Commands
 import App.Commands.Graph
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
-import App.Views.Timeline
+import App.Views.Flow
 import App.Views.Traversals
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
@@ -157,7 +157,7 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma Nothing
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    App.Views.Timeline.initScrollPos
+                    App.Views.Flow.initScrollPos
 
         HomePostsFetched (Err _) ->
             model |> withoutCmd
@@ -170,7 +170,7 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    App.Views.Timeline.initScrollPos
+                    App.Views.Flow.initScrollPos
                 |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
 
         CotonomaPostsFetched (Err _) ->
@@ -197,7 +197,7 @@ update msg model =
                 |> withCmd
                     (\model ->
                         Cmd.batch
-                            [ App.Views.Timeline.initScrollPos model
+                            [ App.Views.Flow.initScrollPos model
                             , App.Commands.initScrollPositionOfPinnedCotos NoOp
                             , App.Commands.Graph.renderGraph model
                             ]
@@ -691,8 +691,8 @@ update msg model =
         --
         -- Sub components
         --
-        TimelineMsg subMsg ->
-            App.Views.Timeline.update model subMsg model
+        FlowMsg subMsg ->
+            App.Views.Flow.update model subMsg model
 
         TraversalsMsg subMsg ->
             App.Views.Traversals.update model model.graph subMsg model

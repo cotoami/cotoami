@@ -43,7 +43,7 @@ import App.Server.Graph
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Views.Coto
-import App.Views.Timeline
+import App.Views.Flow
 import App.Modals.ConnectModal exposing (WithConnectModal)
 
 
@@ -257,7 +257,7 @@ post context ({ editorModal, timeline } as model) =
         editorModal.source
             |> Maybe.map (\source -> postSubcoto context source summary content model)
             |> Maybe.withDefault
-                (App.Views.Timeline.post context summary content timeline
+                (App.Views.Flow.post context summary content timeline
                     |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
                 )
 

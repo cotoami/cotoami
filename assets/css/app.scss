@@ -63,7 +63,7 @@ div.main-column,
   }
 }
 
-#main-timeline {
+#main-flow {
   width: 100%;
   padding-left: 10px;
   padding-right: 15px;   // for view-switch on mobile
@@ -72,7 +72,7 @@ div.main-column,
 
 // workaround for chrome rendering bug
 .cotonomas-loading {
-  #main-timeline {
+  #main-flow {
     opacity: 0.99;
   }
 }
@@ -187,7 +187,7 @@ div.main-traversal {
     }
   }
 
-  #main-timeline {
+  #main-flow {
     z-index: 4;
     flex: none;
     width: 500px;
@@ -280,7 +280,7 @@ div.main-traversal {
     border-bottom: solid 1px #ddd;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
-    a.timeline-toggle i {
+    a.flow-toggle i {
       margin-top: 8px;
       margin-left: 6px;
     }

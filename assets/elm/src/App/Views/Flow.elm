@@ -1,4 +1,4 @@
-module App.Views.Timeline
+module App.Views.Flow
     exposing
         ( update
         , initScrollPos
@@ -27,7 +27,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
-import App.Views.TimelineMsg as TimelineMsg exposing (Msg(..))
+import App.Views.FlowMsg as FlowMsg exposing (Msg(..))
 import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
@@ -38,7 +38,7 @@ type alias UpdateModel a =
     LocalCotos (Modals (WithConnectModal a))
 
 
-update : Context a -> TimelineMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context a -> FlowMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 update context msg ({ timeline } as model) =
     case msg of
         TimelineScrollPosInitialized ->
@@ -100,7 +100,7 @@ update context msg ({ timeline } as model) =
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
     if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom (AppMsg.TimelineMsg TimelineScrollPosInitialized)
+        App.Commands.scrollTimelineToBottom (AppMsg.FlowMsg TimelineScrollPosInitialized)
     else
         Cmd.none
 
@@ -143,7 +143,7 @@ post context summary content timeline =
             , App.Server.Post.post
                 context.clientId
                 context.cotonoma
-                (AppMsg.TimelineMsg << (Posted newTimeline.postIdCounter))
+                (AppMsg.FlowMsg << (Posted newTimeline.postIdCounter))
                 newPost
             ]
         )
@@ -152,7 +152,7 @@ post context summary content timeline =
 view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
 view context session model =
     div
-        [ id "timeline-and-input"
+        [ id "flow"
         , classList
             [ ( "editing", model.timeline.editorOpen )
             ]
@@ -172,8 +172,8 @@ toolbarDiv : Context a -> Timeline -> Html AppMsg.Msg
 toolbarDiv context timeline =
     div [ class "timeline-toolbar" ]
         [ a
-            [ class "tool-button timeline-toggle"
-            , title "Hide timeline"
+            [ class "tool-button flow-toggle"
+            , title "Hide flow view"
             , onLinkButtonClick ToggleTimeline
             ]
             [ materialIcon "arrow_left" Nothing ]
@@ -195,7 +195,7 @@ toolbarDiv context timeline =
                         , ( "disabled", timeline.view == StreamView )
                         ]
                     , title "Stream View"
-                    , onClick (AppMsg.TimelineMsg (SwitchView StreamView))
+                    , onClick (AppMsg.FlowMsg (SwitchView StreamView))
                     ]
                     [ materialIcon "view_stream" Nothing ]
                 , a
@@ -205,7 +205,7 @@ toolbarDiv context timeline =
                         , ( "disabled", timeline.view == TileView )
                         ]
                     , title "Tile View"
-                    , onClick (AppMsg.TimelineMsg (SwitchView TileView))
+                    , onClick (AppMsg.FlowMsg (SwitchView TileView))
                     ]
                     [ materialIcon "view_module" Nothing ]
                 ]
@@ -267,7 +267,7 @@ moreButton timeline =
               else
                 button
                     [ class "button more-button"
-                    , onClick (AppMsg.TimelineMsg LoadMorePosts)
+                    , onClick (AppMsg.FlowMsg LoadMorePosts)
                     ]
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
@@ -318,7 +318,7 @@ postEditor context session model =
                             [ class "button connect"
                             , disabled (isBlank model.editorContent)
                             , onMouseDown
-                                (AppMsg.TimelineMsg
+                                (AppMsg.FlowMsg
                                     (ConfirmPostAndConnect
                                         model.editorContent
                                         Nothing
@@ -332,7 +332,7 @@ postEditor context session model =
                 , button
                     [ class "button-primary post"
                     , disabled (isBlank model.editorContent)
-                    , onMouseDown (AppMsg.TimelineMsg TimelineMsg.Post)
+                    , onMouseDown (AppMsg.FlowMsg FlowMsg.Post)
                     ]
                     [ text "Post"
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -348,11 +348,11 @@ postEditor context session model =
                     , id "quick-coto-input"
                     , placeholder "Write your Coto in Markdown"
                     , defaultValue model.editorContent
-                    , onFocus (AppMsg.TimelineMsg EditorFocus)
-                    , onInput (AppMsg.TimelineMsg << EditorInput)
+                    , onFocus (AppMsg.FlowMsg EditorFocus)
+                    , onInput (AppMsg.FlowMsg << EditorInput)
                     , on "keydown" <|
                         Decode.map
-                            (AppMsg.TimelineMsg << EditorKeyDown)
+                            (AppMsg.FlowMsg << EditorKeyDown)
                             Util.Keyboard.Event.decodeKeyboardEvent
                     , onClickWithoutPropagation NoOp
                     ]

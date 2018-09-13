@@ -10,7 +10,7 @@ import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
 import App.Types.Traversal exposing (Traversal)
-import App.Views.TimelineMsg
+import App.Views.FlowMsg
 import App.Views.TraversalsMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
@@ -124,7 +124,7 @@ type Msg
       --
       -- Sub components
       --
-    | TimelineMsg App.Views.TimelineMsg.Msg
+    | FlowMsg App.Views.FlowMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
