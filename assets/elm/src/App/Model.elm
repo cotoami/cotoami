@@ -51,15 +51,8 @@ type alias Model =
     , navigationToggled : Bool
     , navigationOpen : Bool
     , presences : Presences
-    , modals : List Modal
     , confirmation : Confirmation
     , searchInputFocus : Bool
-    , editorModal : App.Modals.EditorModal.Model
-    , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
-    , cotoModal : Maybe App.Modals.CotoModal.Model
-    , connectModal : App.Modals.ConnectModal.Model
-    , signinModal : App.Modals.SigninModal.Model
-    , inviteModal : App.Modals.InviteModal.Model
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -70,8 +63,15 @@ type alias Model =
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
-    , importModal : App.Modals.ImportModal.Model
     , pinnedCotosView : PinnedCotosView
+    , modals : List Modal
+    , signinModal : App.Modals.SigninModal.Model
+    , editorModal : App.Modals.EditorModal.Model
+    , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
+    , cotoModal : Maybe App.Modals.CotoModal.Model
+    , connectModal : App.Modals.ConnectModal.Model
+    , importModal : App.Modals.ImportModal.Model
+    , inviteModal : App.Modals.InviteModal.Model
     }
 
 
@@ -92,15 +92,8 @@ initModel seed route =
     , navigationToggled = False
     , navigationOpen = False
     , presences = Dict.empty
-    , modals = []
     , confirmation = App.Submodels.Modals.defaultConfirmation
     , searchInputFocus = False
-    , editorModal = App.Modals.EditorModal.defaultModel
-    , cotoMenuModal = Nothing
-    , cotoModal = Nothing
-    , connectModal = App.Modals.ConnectModal.defaultModel
-    , signinModal = App.Modals.SigninModal.initModel False
-    , inviteModal = App.Modals.InviteModal.defaultModel
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
@@ -111,8 +104,15 @@ initModel seed route =
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
-    , importModal = App.Modals.ImportModal.defaultModel
     , pinnedCotosView = DocumentView
+    , modals = []
+    , signinModal = App.Modals.SigninModal.initModel False
+    , editorModal = App.Modals.EditorModal.defaultModel
+    , cotoMenuModal = Nothing
+    , cotoModal = Nothing
+    , connectModal = App.Modals.ConnectModal.defaultModel
+    , importModal = App.Modals.ImportModal.defaultModel
+    , inviteModal = App.Modals.InviteModal.defaultModel
     }
 
 
