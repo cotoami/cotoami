@@ -159,11 +159,11 @@ openForNew context source model =
         |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" AppMsg.NoOp)
 
 
-type alias AppModel a =
+type alias UpdateModel a =
     LocalCotos (Modals (WithConnectModal (WithEditorModal a)))
 
 
-update : Context a -> EditorModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+update : Context a -> EditorModalMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 update context msg ({ editorModal, timeline } as model) =
     case msg of
         EditorInput content ->
@@ -245,7 +245,7 @@ update context msg ({ editorModal, timeline } as model) =
                 |> withoutCmd
 
 
-post : Context a -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+post : Context a -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 post context ({ editorModal, timeline } as model) =
     let
         summary =
@@ -262,7 +262,13 @@ post context ({ editorModal, timeline } as model) =
                 )
 
 
-postSubcoto : Context a -> Coto -> Maybe String -> String -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postSubcoto :
+    Context a
+    -> Coto
+    -> Maybe String
+    -> String
+    -> UpdateModel b
+    -> ( UpdateModel b, Cmd AppMsg.Msg )
 postSubcoto context coto summary content model =
     let
         ( timeline, newPost ) =
@@ -281,7 +287,7 @@ postSubcoto context coto summary content model =
               ]
 
 
-subordinatePostToCoto : Context a -> Coto -> Post -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+subordinatePostToCoto : Context a -> Coto -> Post -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 subordinatePostToCoto { clientId, session } coto post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
@@ -311,7 +317,7 @@ subordinatePostToCoto { clientId, session } coto post model =
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-handleShortcut : Context a -> KeyboardEvent -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+handleShortcut : Context a -> KeyboardEvent -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 handleShortcut context keyboardEvent model =
     if
         (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
@@ -348,7 +354,7 @@ handleShortcut context keyboardEvent model =
         ( model, Cmd.none )
 
 
-postCotonoma : Context a -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postCotonoma : Context a -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 postCotonoma context model =
     let
         cotonomaName =

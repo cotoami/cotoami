@@ -84,11 +84,11 @@ openWithPost summary content =
     open Inbound (NewPost content summary)
 
 
-type alias AppModel a =
+type alias UpdateModel a =
     LocalCotos (Modals (WithConnectModal a))
 
 
-update : Context a -> ConnectModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+update : Context a -> ConnectModalMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 update context msg ({ connectModal } as model) =
     case msg of
         ReverseDirection ->
@@ -132,7 +132,13 @@ update context msg ({ connectModal } as model) =
             model |> withoutCmd
 
 
-postAndConnectToSelection : Context a -> Direction -> Maybe String -> String -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postAndConnectToSelection :
+    Context a
+    -> Direction
+    -> Maybe String
+    -> String
+    -> UpdateModel b
+    -> ( UpdateModel b, Cmd AppMsg.Msg )
 postAndConnectToSelection context direction summary content model =
     let
         ( timeline, newPost ) =
@@ -150,7 +156,12 @@ postAndConnectToSelection context direction summary content model =
                 )
 
 
-connectPostToSelection : Context a -> Direction -> Post -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+connectPostToSelection :
+    Context a
+    -> Direction
+    -> Post
+    -> UpdateModel b
+    -> ( UpdateModel b, Cmd AppMsg.Msg )
 connectPostToSelection context direction post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
