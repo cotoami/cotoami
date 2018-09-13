@@ -3,7 +3,6 @@ module App.Model
         ( Model
         , initModel
         , configure
-        , getSelectedCotos
         , deleteCoto
         , openTraversal
         , closeSelectionColumnIfEmpty
@@ -132,13 +131,6 @@ configure ( key, value ) model =
 
         _ ->
             model
-
-
-getSelectedCotos : Model -> List Coto
-getSelectedCotos model =
-    model.selection
-        |> List.filterMap (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
-        |> List.reverse
 
 
 deleteCoto : Coto -> Model -> Model

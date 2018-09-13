@@ -317,7 +317,9 @@ modals model =
                     App.Modals.CotoModal.view model.session model.cotoModal
 
                 ConnectModal ->
-                    App.Modals.ConnectModal.view (App.Model.getSelectedCotos model) model.connectModal
+                    App.Modals.ConnectModal.view
+                        (App.Submodels.LocalCotos.getSelectedCotos model model)
+                        model.connectModal
 
                 ImportModal ->
                     App.Modals.ImportModal.view model.importModal

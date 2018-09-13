@@ -99,11 +99,6 @@ type Msg
     | MoveToLast (Maybe CotoId) Int
     | ConnectionsReordered (Result Http.Error String)
       --
-      -- Timeline
-      --
-    | PostAndConnectToSelection String (Maybe String) Direction
-    | PostedAndConnectToSelection Int Direction (Result Http.Error Post)
-      --
       -- PinnedCotos
       --
     | SwitchPinnedCotosView PinnedCotosView

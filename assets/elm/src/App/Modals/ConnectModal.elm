@@ -18,15 +18,16 @@ import Html.Events exposing (onClick)
 import Html.Keyed
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (materialIcon)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Util.UpdateUtil exposing (..)
 import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
 import App.Types.Graph exposing (Direction(..))
 import App.Messages as AppMsg
     exposing
         ( Msg
             ( CloseModal
             , Connect
-            , PostAndConnectToSelection
             )
         )
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
@@ -34,6 +35,8 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
+import App.Server.Post
+import App.Server.Graph
 import App.Markdown
 
 
@@ -107,6 +110,67 @@ update context msg ({ connectModal } as model) =
                 { model | connectModal = { connectModal | direction = direction } }
                     |> withoutCmd
 
+        PostAndConnectToSelection content summary direction ->
+            model
+                |> App.Submodels.Modals.closeModal ConnectModal
+                |> postAndConnectToSelection context direction summary content
+
+        PostedAndConnectToSelection postId direction (Ok response) ->
+            { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
+                |> App.Submodels.Modals.clearModals
+                |> connectPostToSelection context direction response
+
+        PostedAndConnectToSelection postId direction (Err _) ->
+            model |> withoutCmd
+
+
+postAndConnectToSelection : Context a -> Direction -> Maybe String -> String -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+postAndConnectToSelection context direction summary content model =
+    let
+        ( timeline, newPost ) =
+            App.Types.Timeline.post context False summary content model.timeline
+
+        tag =
+            (AppMsg.ConnectModalMsg << (PostedAndConnectToSelection timeline.postIdCounter direction))
+    in
+        { model | timeline = timeline }
+            |> withCmds
+                (\model ->
+                    [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+                    , App.Server.Post.post context.clientId context.cotonoma tag newPost
+                    ]
+                )
+
+
+connectPostToSelection : Context a -> Direction -> Post -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+connectPostToSelection context direction post model =
+    post.cotoId
+        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
+        |> Maybe.map
+            (\target ->
+                let
+                    objects =
+                        App.Submodels.LocalCotos.getSelectedCotos context model
+
+                    maybeCotonomaKey =
+                        Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
+                in
+                    ( App.Submodels.LocalCotos.connect
+                        context.session
+                        direction
+                        objects
+                        target
+                        model
+                    , App.Server.Graph.connect
+                        context.clientId
+                        maybeCotonomaKey
+                        direction
+                        (List.map (\coto -> coto.id) objects)
+                        target.id
+                    )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
+
 
 view : List Coto -> Model -> Html AppMsg.Msg
 view cotos model =
@@ -142,7 +206,10 @@ modalConfig selectedCotos model =
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (PostAndConnectToSelection content summary model.direction)
+                        , onClick
+                            (AppMsg.ConnectModalMsg
+                                (PostAndConnectToSelection content summary model.direction)
+                            )
                         ]
                         [ text "Post and connect" ]
                     ]

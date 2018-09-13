@@ -2,6 +2,7 @@ module App.Submodels.LocalCotos
     exposing
         ( LocalCotos
         , getCoto
+        , getSelectedCotos
         , getCotoIdsToWatch
         , updateCoto
         , deleteCoto
@@ -25,6 +26,7 @@ import App.Types.Timeline exposing (Timeline)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Graph exposing (Graph, Direction)
 import App.Types.Session exposing (Session)
+import App.Submodels.Context exposing (Context)
 
 
 type alias LocalCotos a =
@@ -59,6 +61,13 @@ getCoto cotoId localCotos =
                 )
             |> Maybe.withDefault Nothing
         ]
+
+
+getSelectedCotos : Context a -> LocalCotos b -> List Coto
+getSelectedCotos context localCotos =
+    context.selection
+        |> List.filterMap (\cotoId -> getCoto cotoId localCotos)
+        |> List.reverse
 
 
 getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto

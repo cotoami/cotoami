@@ -10,14 +10,11 @@ import Exts.Maybe exposing (isJust)
 import Util.Keyboard.Key
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
-import Util.HttpUtil exposing (ClientId)
 import Util.UpdateUtil exposing (..)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Direction(..), PinnedCotosView(..))
-import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -595,19 +592,6 @@ update msg model =
         --
         -- Timeline
         --
-        PostAndConnectToSelection content summary direction ->
-            model
-                |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection direction summary content
-
-        PostedAndConnectToSelection postId direction (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
-                |> App.Submodels.Modals.clearModals
-                |> connectPostToSelection model.clientId direction response
-
-        PostedAndConnectToSelection postId direction (Err _) ->
-            model |> withoutCmd
-
         --
         -- PinnedCotos
         --
@@ -846,54 +830,6 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
-
-
-postAndConnectToSelection : Direction -> Maybe String -> String -> Model -> ( Model, Cmd Msg )
-postAndConnectToSelection direction summary content model =
-    let
-        ( timeline, newPost ) =
-            App.Types.Timeline.post model False summary content model.timeline
-
-        tag =
-            PostedAndConnectToSelection timeline.postIdCounter direction
-    in
-        { model | timeline = timeline }
-            |> withCmds
-                (\model ->
-                    [ App.Commands.scrollTimelineToBottom NoOp
-                    , App.Server.Post.post model.clientId model.cotonoma tag newPost
-                    ]
-                )
-
-
-connectPostToSelection : ClientId -> Direction -> Post -> Model -> ( Model, Cmd Msg )
-connectPostToSelection clientId direction post model =
-    post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
-        |> Maybe.map
-            (\target ->
-                let
-                    objects =
-                        App.Model.getSelectedCotos model
-
-                    maybeCotonomaKey =
-                        Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
-                in
-                    ( App.Submodels.LocalCotos.connect
-                        model.session
-                        direction
-                        objects
-                        target
-                        model
-                    , App.Server.Graph.connect
-                        clientId
-                        maybeCotonomaKey
-                        direction
-                        (List.map (\coto -> coto.id) objects)
-                        target.id
-                    )
-            )
-        |> Maybe.withDefault ( model, Cmd.none )
 
 
 makeReorderCmd : Maybe CotoId -> Model -> Cmd Msg
