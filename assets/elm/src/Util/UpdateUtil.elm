@@ -5,6 +5,7 @@ module Util.UpdateUtil
         , withCmdIf
         , withoutCmd
         , addCmd
+        , addCmdIf
         )
 
 
@@ -34,3 +35,11 @@ withoutCmd model =
 addCmd : (model -> Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
 addCmd createCmd ( model, cmd ) =
     ( model, Cmd.batch [ cmd, createCmd model ] )
+
+
+addCmdIf : (model -> Bool) -> (model -> Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+addCmdIf condition createCmd ( model, cmd ) =
+    if condition model then
+        addCmd createCmd ( model, cmd )
+    else
+        ( model, cmd )
