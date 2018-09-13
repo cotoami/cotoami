@@ -23,13 +23,7 @@ import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Types.Graph exposing (Direction(..))
-import App.Messages as AppMsg
-    exposing
-        ( Msg
-            ( CloseModal
-            , Connect
-            )
-        )
+import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
@@ -109,6 +103,20 @@ update context msg ({ connectModal } as model) =
             in
                 { model | connectModal = { connectModal | direction = direction } }
                     |> withoutCmd
+
+        Connect target objects direction ->
+            model
+                |> App.Submodels.LocalCotos.connect context.session direction objects target
+                |> App.Submodels.Modals.closeModal ConnectModal
+                |> withCmd
+                    (\model ->
+                        App.Server.Graph.connect
+                            context.clientId
+                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                            direction
+                            (List.map (\coto -> coto.id) objects)
+                            target.id
+                    )
 
         PostAndConnectToSelection content summary direction ->
             model
@@ -196,7 +204,10 @@ modalConfig selectedCotos model =
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
-                        , onClick (Connect coto selectedCotos model.direction)
+                        , onClick
+                            (AppMsg.ConnectModalMsg
+                                (Connect coto selectedCotos model.direction)
+                            )
                         ]
                         [ text "Connect" ]
                     ]

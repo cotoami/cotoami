@@ -513,20 +513,6 @@ update msg model =
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
 
-        Connect target objects direction ->
-            model
-                |> App.Submodels.LocalCotos.connect model.session direction objects target
-                |> App.Submodels.Modals.closeModal ConnectModal
-                |> withCmd
-                    (\model ->
-                        App.Server.Graph.connect
-                            model.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
-                            direction
-                            (List.map (\coto -> coto.id) objects)
-                            target.id
-                    )
-
         Connected (Ok _) ->
             model |> withCmd App.Commands.Graph.renderGraph
 
