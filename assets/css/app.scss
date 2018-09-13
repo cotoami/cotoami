@@ -77,7 +77,7 @@ div.main-column,
   }
 }
 
-#main-pinned-cotos,
+#main-stock,
 #main-selection,
 #main-search-results {
   position: absolute;
@@ -217,7 +217,7 @@ div.main-traversal {
     }
   }
 
-  #main-pinned-cotos {
+  #main-stock {
     flex: 1;
     position: relative;
     top: auto;
@@ -235,7 +235,7 @@ div.main-traversal {
     }
   }
 
-  #graph-exploration.timeline-hidden #main-pinned-cotos {
+  #graph-exploration.timeline-hidden #main-stock {
     padding-top: 20px;
   }
 

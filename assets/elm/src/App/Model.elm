@@ -18,7 +18,7 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction(..), Graph, PinnedCotosView(..))
+import App.Types.Graph exposing (Direction(..), Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
@@ -26,6 +26,7 @@ import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Submodels.Traversals
+import App.Views.Stock
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
@@ -63,7 +64,7 @@ type alias Model =
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
-    , pinnedCotosView : PinnedCotosView
+    , stockView : App.Views.Stock.Model
     , modals : List Modal
     , signinModal : App.Modals.SigninModal.Model
     , editorModal : App.Modals.EditorModal.Model
@@ -104,7 +105,7 @@ initModel seed route =
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
-    , pinnedCotosView = DocumentView
+    , stockView = App.Views.Stock.defaultModel
     , modals = []
     , signinModal = App.Modals.SigninModal.initModel False
     , editorModal = App.Modals.EditorModal.defaultModel

@@ -14,10 +14,10 @@ import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
 import App.Views.AppHeader
-import App.Views.Flow
-import App.Views.Traversals
 import App.Views.Navigation
-import App.Views.PinnedCotos
+import App.Views.Flow
+import App.Views.Stock
+import App.Views.Traversals
 import App.Views.CotoSelection
 import App.Views.SearchResults
 import App.Modals.ConnectModal
@@ -104,7 +104,7 @@ graphExplorationDiv model =
             ]
         ]
         (openFlowButton model
-            :: pinnedCotosColumn model
+            :: stockColumn model
             :: traversalColumns model
         )
 
@@ -162,10 +162,10 @@ flowDiv session classes model =
         [ App.Views.Flow.view model session model ]
 
 
-pinnedCotosColumn : Model -> Html Msg
-pinnedCotosColumn model =
+stockColumn : Model -> Html Msg
+stockColumn model =
     div
-        [ id "main-pinned-cotos"
+        [ id "main-stock"
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
@@ -174,11 +174,7 @@ pinnedCotosColumn model =
             , ( "fadeIn", model.activeViewOnMobile == PinnedView )
             ]
         ]
-        [ App.Views.PinnedCotos.view
-            model
-            model.loadingGraph
-            model.pinnedCotosView
-            model.graph
+        [ App.Views.Stock.view model model
         ]
 
 

@@ -8,8 +8,9 @@ import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
+import App.Types.Graph exposing (Direction, Graph)
 import App.Views.FlowMsg
+import App.Views.StockMsg
 import App.Views.TraversalsMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
@@ -98,12 +99,6 @@ type Msg
     | MoveToLast (Maybe CotoId) Int
     | ConnectionsReordered (Result Http.Error String)
       --
-      -- PinnedCotos
-      --
-    | SwitchPinnedCotosView PinnedCotosView
-    | RenderGraph
-    | ResizeGraph
-      --
       -- CotoSelection
       --
     | DeselectingCoto CotoId
@@ -124,6 +119,7 @@ type Msg
       -- Sub components
       --
     | FlowMsg App.Views.FlowMsg.Msg
+    | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg

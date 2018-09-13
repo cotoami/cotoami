@@ -27,7 +27,6 @@ module App.Types.Graph
         , moveToLast
         , cotonomatize
         , toTopicGraph
-        , PinnedCotosView(..)
         )
 
 import Dict exposing (Dict)
@@ -494,8 +493,3 @@ toTopicGraph graph =
         { graph | cotos = topicCotos }
             |> deleteInvalidConnections_
             |> excludeUnreachables_
-
-
-type PinnedCotosView
-    = DocumentView
-    | GraphView

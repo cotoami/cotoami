@@ -14,7 +14,7 @@ import Util.UpdateUtil exposing (..)
 import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Graph exposing (Direction(..), PinnedCotosView(..))
+import App.Types.Graph exposing (Direction(..))
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -30,10 +30,10 @@ import App.Server.Post
 import App.Server.Coto
 import App.Server.Graph
 import App.Commands
-import App.Commands.Graph
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Views.Flow
+import App.Views.Stock
 import App.Views.Traversals
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
@@ -100,14 +100,14 @@ update msg model =
                 |> withCmd
                     (\model ->
                         if view == PinnedView then
-                            App.Commands.Graph.resizeGraphWithDelay
+                            App.Views.Stock.resizeGraphWithDelay
                         else
                             Cmd.none
                     )
 
         ToggleTimeline ->
             { model | timeline = App.Types.Timeline.toggle model.timeline }
-                |> withCmd (\_ -> App.Commands.Graph.resizeGraphWithDelay)
+                |> withCmd (\_ -> App.Views.Stock.resizeGraphWithDelay)
 
         HomeClick ->
             changeLocationToHome model
@@ -199,7 +199,7 @@ update msg model =
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
                             , App.Commands.initScrollPositionOfPinnedCotos NoOp
-                            , App.Commands.Graph.renderGraph model
+                            , App.Views.Stock.renderGraph model model
                             ]
                     )
 
@@ -208,7 +208,7 @@ update msg model =
 
         SubgraphFetched (Ok subgraph) ->
             { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
-                |> withCmd (\model -> App.Commands.Graph.renderGraph model)
+                |> withCmd (\model -> App.Views.Stock.renderGraph model model)
 
         SubgraphFetched (Err _) ->
             model |> withoutCmd
@@ -339,7 +339,7 @@ update msg model =
                             [ App.Commands.scrollGraphExplorationToRight NoOp
                             , App.Commands.scrollTraversalsPaginationToRight NoOp
                             , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
-                            , App.Commands.Graph.resizeGraphWithDelay
+                            , App.Views.Stock.resizeGraphWithDelay
                             ]
                     )
 
@@ -377,7 +377,7 @@ update msg model =
         DeleteCotoInClientSide coto ->
             model
                 |> App.Model.deleteCoto coto
-                |> withCmd App.Commands.Graph.renderGraph
+                |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoDeleted (Ok _) ->
             model |> withCmd App.Commands.Cotonoma.refreshCotonomaList
@@ -393,7 +393,7 @@ update msg model =
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
                     App.Commands.Cotonoma.refreshCotonomaList
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -429,7 +429,7 @@ update msg model =
                 |> Maybe.withDefault model
                 |> App.Submodels.Modals.clearModals
                 |> withCmd App.Commands.Cotonoma.refreshCotonomaList
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
@@ -471,7 +471,7 @@ update msg model =
                     )
 
         CotoPinned (Ok _) ->
-            model |> withCmd App.Commands.Graph.renderGraph
+            model |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoPinned (Err _) ->
             model |> withoutCmd
@@ -497,7 +497,7 @@ update msg model =
                     )
 
         CotoUnpinned (Ok _) ->
-            model |> withCmd App.Commands.Graph.renderGraph
+            model |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoUnpinned (Err _) ->
             model |> withoutCmd
@@ -515,7 +515,7 @@ update msg model =
                 |> Maybe.withDefault ( model, Cmd.none )
 
         Connected (Ok _) ->
-            model |> withCmd App.Commands.Graph.renderGraph
+            model |> withCmd (App.Views.Stock.renderGraph model)
 
         Connected (Err _) ->
             model |> withoutCmd
@@ -542,7 +542,7 @@ update msg model =
                     )
 
         ConnectionDeleted (Ok _) ->
-            model |> withCmd App.Commands.Graph.renderGraph
+            model |> withCmd (App.Views.Stock.renderGraph model)
 
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
@@ -575,24 +575,6 @@ update msg model =
 
         ConnectionsReordered (Err _) ->
             model |> withoutCmd
-
-        --
-        -- PinnedCotos
-        --
-        SwitchPinnedCotosView view ->
-            { model | pinnedCotosView = view }
-                |> withCmdIf
-                    (\_ -> view == GraphView)
-                    (\_ -> App.Commands.Graph.renderGraphWithDelay)
-
-        RenderGraph ->
-            model |> withCmd App.Commands.Graph.renderGraph
-
-        ResizeGraph ->
-            model
-                |> withCmdIf
-                    (\model -> model.pinnedCotosView == GraphView)
-                    (\_ -> App.Ports.Graph.resizeGraph ())
 
         --
         -- CotoSelection
@@ -636,7 +618,7 @@ update msg model =
         --
         DeletePushed payload ->
             App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         PostPushed payload ->
             App.Pushed.handle
@@ -652,7 +634,7 @@ update msg model =
                 payload
                 model
             )
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         CotonomatizePushed payload ->
             (App.Pushed.handle
@@ -661,7 +643,7 @@ update msg model =
                 payload
                 model
             )
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         ConnectPushed payload ->
             (App.Pushed.handle
@@ -670,7 +652,7 @@ update msg model =
                 payload
                 model
             )
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         DisconnectPushed payload ->
             (App.Pushed.handle
@@ -679,7 +661,7 @@ update msg model =
                 payload
                 model
             )
-                |> addCmd App.Commands.Graph.renderGraph
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         ReorderPushed payload ->
             App.Pushed.handle
@@ -693,6 +675,9 @@ update msg model =
         --
         FlowMsg subMsg ->
             App.Views.Flow.update model subMsg model
+
+        StockMsg subMsg ->
+            App.Views.Stock.update model subMsg model
 
         TraversalsMsg subMsg ->
             App.Views.Traversals.update model model.graph subMsg model
