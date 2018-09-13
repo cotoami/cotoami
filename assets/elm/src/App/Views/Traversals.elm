@@ -80,7 +80,7 @@ view context ({ traversals } as model) =
         |> List.indexedMap
             (\index traversalDiv ->
                 let
-                    visibleOnMobile =
+                    active =
                         (model.activeView == TraversalsView)
                             && (isActiveIndex index traversals)
                 in
@@ -89,9 +89,9 @@ view context ({ traversals } as model) =
                             [ ( "main-column", True )
                             , ( "main-traversal", True )
                             , ( "main-traversal-" ++ (toString index), True )
-                            , ( "activeOnMobile", visibleOnMobile )
-                            , ( "animated", visibleOnMobile )
-                            , ( "fadeIn", visibleOnMobile )
+                            , ( "active-in-narrow-viewport", active )
+                            , ( "animated", active )
+                            , ( "fadeIn", active )
                             , ( "not-in-active-page", not (isActiveIndex index traversals) )
                             ]
                         ]

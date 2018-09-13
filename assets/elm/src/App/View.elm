@@ -82,7 +82,7 @@ graphExplorationDiv model =
     div
         [ id "graph-exploration"
         , classList
-            [ ( "activeOnMobile"
+            [ ( "active-in-narrow-viewport"
               , List.member model.activeView [ StockView, TraversalsView ]
               )
             , ( "flow-hidden", model.timeline.hidden )
@@ -129,7 +129,7 @@ flowColumn model =
                         flowDiv
                             session
                             [ ( "main-column", True )
-                            , ( "activeOnMobile", active )
+                            , ( "active-in-narrow-viewport", active )
                             , ( "animated", active )
                             , ( "fadeIn", active )
                             ]
@@ -154,7 +154,7 @@ stockColumn model =
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
-            , ( "activeOnMobile", model.activeView == StockView )
+            , ( "active-in-narrow-viewport", model.activeView == StockView )
             , ( "animated", model.activeView == StockView )
             , ( "fadeIn", model.activeView == StockView )
             ]
@@ -169,7 +169,7 @@ selectionColumn model =
         [ id "main-selection"
         , classList
             [ ( "main-column", True )
-            , ( "activeOnMobile", model.activeView == SelectionView )
+            , ( "active-in-narrow-viewport", model.activeView == SelectionView )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
@@ -186,7 +186,7 @@ searchResultsColumn model =
         [ id "main-search-results"
         , classList
             [ ( "main-column", True )
-            , ( "activeOnMobile", model.activeView == SearchResultsView )
+            , ( "active-in-narrow-viewport", model.activeView == SearchResultsView )
             , ( "animated", True )
             , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )

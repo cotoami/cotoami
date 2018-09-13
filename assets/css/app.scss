@@ -33,7 +33,7 @@ div.main-column,
   display: none;
   flex: 1;
 
-  &.activeOnMobile {
+  &.active-in-narrow-viewport {
     display: flex;
   }
 }
