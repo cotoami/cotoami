@@ -8,13 +8,14 @@ import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Session exposing (Session)
 import App.Types.Traversal
 import App.Types.SearchResults
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Messages exposing (..)
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
 import App.Views.AppHeader
 import App.Views.Navigation
+import App.Views.ViewSwitch
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
 import App.Views.Stock
 import App.Views.Traversals
@@ -34,46 +35,31 @@ import App.Modals.TimelineFilterModal
 
 view : Model -> Html Msg
 view model =
-    let
-        activeViewOnMobile =
-            case model.activeViewOnMobile of
-                TimelineView ->
-                    "timeline"
-
-                PinnedView ->
-                    "pinned"
-
-                TraversalsView ->
-                    "traversals"
-
-                SelectionView ->
-                    "selection"
-
-                SearchResultsView ->
-                    "search-results"
-    in
-        div
-            [ id "app"
-            , classList
-                [ ( "cotonomas-loading", model.cotonomasLoading )
-                , ( activeViewOnMobile ++ "-view-on-mobile", True )
-                ]
-            , onClick AppClick
+    div
+        [ id "app"
+        , classList
+            [ ( "cotonomas-loading", model.cotonomasLoading )
+            , ( (App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView)
+                    ++ "-view-on-mobile"
+              , True
+              )
             ]
-            [ App.Views.AppHeader.view model
-            , div [ id "app-body" ]
-                [ div [ id "app-layout" ]
-                    [ navColumn model
-                    , flowColumn model
-                    , graphExplorationDiv model
-                    , selectionColumn model
-                    , searchResultsColumn model
-                    , viewSwitchContainerDiv model
-                    ]
+        , onClick AppClick
+        ]
+        [ App.Views.AppHeader.view model
+        , div [ id "app-body" ]
+            [ div [ id "app-layout" ]
+                [ navColumn model
+                , flowColumn model
+                , graphExplorationDiv model
+                , selectionColumn model
+                , searchResultsColumn model
+                , App.Views.ViewSwitch.view model
                 ]
-            , App.Views.CotoSelection.statusBar model
-            , div [] (modals model)
             ]
+        , App.Views.CotoSelection.statusBar model
+        , div [] (modals model)
+        ]
 
 
 navColumn : Model -> Html Msg
@@ -98,7 +84,7 @@ graphExplorationDiv model =
         [ id "graph-exploration"
         , classList
             [ ( "activeOnMobile"
-              , List.member model.activeViewOnMobile [ PinnedView, TraversalsView ]
+              , List.member model.activeView [ PinnedView, TraversalsView ]
               )
             , ( "timeline-hidden", model.timeline.hidden )
             ]
@@ -139,7 +125,7 @@ flowColumn model =
                 else
                     let
                         active =
-                            model.activeViewOnMobile == TimelineView
+                            model.activeView == TimelineView
                     in
                         flowDiv
                             session
@@ -169,9 +155,9 @@ stockColumn model =
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
-            , ( "activeOnMobile", model.activeViewOnMobile == PinnedView )
-            , ( "animated", model.activeViewOnMobile == PinnedView )
-            , ( "fadeIn", model.activeViewOnMobile == PinnedView )
+            , ( "activeOnMobile", model.activeView == PinnedView )
+            , ( "animated", model.activeView == PinnedView )
+            , ( "fadeIn", model.activeView == PinnedView )
             ]
         ]
         [ App.Views.Stock.view model model
@@ -181,7 +167,7 @@ stockColumn model =
 traversalColumns : Model -> List (Html Msg)
 traversalColumns model =
     App.Views.Traversals.view
-        (model.activeViewOnMobile == TraversalsView)
+        (model.activeView == TraversalsView)
         model
         model.graph
         model.traversals
@@ -193,7 +179,7 @@ selectionColumn model =
         [ id "main-selection"
         , classList
             [ ( "main-column", True )
-            , ( "activeOnMobile", model.activeViewOnMobile == SelectionView )
+            , ( "activeOnMobile", model.activeView == SelectionView )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
@@ -210,79 +196,13 @@ searchResultsColumn model =
         [ id "main-search-results"
         , classList
             [ ( "main-column", True )
-            , ( "activeOnMobile", model.activeViewOnMobile == SearchResultsView )
+            , ( "activeOnMobile", model.activeView == SearchResultsView )
             , ( "animated", True )
             , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
         [ App.Views.SearchResults.view model model.graph model.searchResults
-        ]
-
-
-viewSwitchContainerDiv : Model -> Html Msg
-viewSwitchContainerDiv model =
-    div
-        [ id "view-switch-container" ]
-        [ viewSwitchDiv
-            "switch-to-timeline"
-            "comments"
-            "Switch to timeline"
-            (model.activeViewOnMobile == TimelineView)
-            False
-            (SwitchViewOnMobile TimelineView)
-        , viewSwitchDiv
-            "switch-to-pinned"
-            "thumb-tack"
-            "Switch to pinned cotos"
-            (model.activeViewOnMobile == PinnedView)
-            (App.Submodels.LocalCotos.isStockEmpty model)
-            (SwitchViewOnMobile PinnedView)
-        , viewSwitchDiv
-            "switch-to-traversals"
-            "sitemap"
-            "Switch to explorations"
-            (model.activeViewOnMobile == TraversalsView)
-            (App.Types.Traversal.isEmpty model.traversals)
-            (SwitchViewOnMobile TraversalsView)
-        , viewSwitchDiv
-            "switch-to-selection"
-            "check-square-o"
-            "Switch to coto selection"
-            (model.activeViewOnMobile == SelectionView)
-            (List.isEmpty model.selection)
-            (SwitchViewOnMobile SelectionView)
-        , viewSwitchDiv
-            "switch-to-search"
-            "search"
-            "Switch to search cotos"
-            (model.activeViewOnMobile == SearchResultsView)
-            False
-            (SwitchViewOnMobile SearchResultsView)
-        ]
-
-
-viewSwitchDiv : String -> String -> String -> Bool -> Bool -> Msg -> Html Msg
-viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
-    div
-        [ id divId
-        , classList
-            [ ( "view-switch", True )
-            , ( "selected", selected )
-            , ( "empty", empty )
-            ]
-        ]
-        [ if selected || empty then
-            span
-                [ class "tool-button" ]
-                [ faIcon iconName Nothing ]
-          else
-            a
-                [ class "tool-button"
-                , title buttonTitle
-                , onClick onClickMsg
-                ]
-                [ faIcon iconName Nothing ]
         ]
 
 

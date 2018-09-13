@@ -14,7 +14,6 @@ import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Util.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Session exposing (Session)
@@ -26,6 +25,7 @@ import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Submodels.Traversals
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Stock
 import App.Modals.SigninModal
 import App.Modals.EditorModal
@@ -48,7 +48,7 @@ type alias Model =
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
-    , activeViewOnMobile : ActiveViewOnMobile
+    , activeView : ActiveView
     , navigationToggled : Bool
     , navigationOpen : Bool
     , presences : Presences
@@ -89,7 +89,7 @@ initModel seed route =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
-    , activeViewOnMobile = TimelineView
+    , activeView = TimelineView
     , navigationToggled = False
     , navigationOpen = False
     , presences = Dict.empty

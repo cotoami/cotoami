@@ -4,11 +4,11 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
+import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
 import App.Views.StockMsg
 import App.Views.TraversalsMsg
@@ -28,7 +28,6 @@ type Msg
     | AppClick
     | OnLocationChange Location
     | NavigationToggle
-    | SwitchViewOnMobile ActiveViewOnMobile
     | ToggleTimeline
     | HomeClick
     | CotonomaPresenceState Value
@@ -118,6 +117,7 @@ type Msg
       --
       -- Sub components
       --
+    | ViewSwitchMsg App.Views.ViewSwitchMsg.Msg
     | FlowMsg App.Views.FlowMsg.Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg

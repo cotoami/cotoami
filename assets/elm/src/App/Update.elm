@@ -11,7 +11,6 @@ import Util.Keyboard.Key
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.UpdateUtil exposing (..)
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Graph exposing (Direction(..))
@@ -32,6 +31,8 @@ import App.Server.Graph
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
+import App.Views.ViewSwitch
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
 import App.Views.Stock
 import App.Views.Traversals
@@ -94,16 +95,6 @@ update msg model =
                 , navigationOpen = (not model.navigationOpen)
             }
                 |> withoutCmd
-
-        SwitchViewOnMobile view ->
-            { model | activeViewOnMobile = view }
-                |> withCmd
-                    (\model ->
-                        if view == PinnedView then
-                            App.Views.Stock.resizeGraphWithDelay
-                        else
-                            Cmd.none
-                    )
 
         ToggleTimeline ->
             { model | timeline = App.Types.Timeline.toggle model.timeline }
@@ -598,8 +589,8 @@ update msg model =
         ClearSelection ->
             { model
                 | cotoSelectionColumnOpen = False
-                , activeViewOnMobile =
-                    case model.activeViewOnMobile of
+                , activeView =
+                    case model.activeView of
                         SelectionView ->
                             TimelineView
 
@@ -673,6 +664,9 @@ update msg model =
         --
         -- Sub components
         --
+        ViewSwitchMsg subMsg ->
+            App.Views.ViewSwitch.update model subMsg model
+
         FlowMsg subMsg ->
             App.Views.Flow.update model subMsg model
 
@@ -728,7 +722,7 @@ loadHome model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeViewOnMobile = TimelineView
+        , activeView = TimelineView
         , navigationOpen = False
     }
         |> App.Submodels.Context.setCotonomaLoading
@@ -757,7 +751,7 @@ loadCotonoma key model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeViewOnMobile = TimelineView
+        , activeView = TimelineView
         , navigationOpen = False
     }
         |> App.Submodels.Context.setCotonomaLoading

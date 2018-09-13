@@ -7,13 +7,13 @@ module App.Submodels.Traversals
 
 import App.Types.Coto exposing (CotoId)
 import App.Types.Traversal
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile(..))
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 
 
 type alias Traversals a =
     { a
         | traversals : App.Types.Traversal.Traversals
-        , activeViewOnMobile : ActiveViewOnMobile
+        , activeView : ActiveView
     }
 
 
@@ -26,5 +26,5 @@ openTraversal : CotoId -> Traversals a -> Traversals a
 openTraversal cotoId model =
     { model
         | traversals = App.Types.Traversal.openTraversal cotoId model.traversals
-        , activeViewOnMobile = TraversalsView
+        , activeView = TraversalsView
     }
