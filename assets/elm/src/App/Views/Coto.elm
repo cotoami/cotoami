@@ -415,7 +415,7 @@ reorderToolButtonsSpan : Context a -> InboundConnection -> ElementId -> Html Msg
 reorderToolButtonsSpan context inbound elementId =
     let
         maybeParentId =
-            inbound.parent |> Maybe.map (\parent -> parent.id)
+            Maybe.map (.id) inbound.parent
 
         index =
             inbound.index
