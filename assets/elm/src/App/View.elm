@@ -103,19 +103,19 @@ graphExplorationDiv model =
             , ( "timeline-hidden", model.timeline.hidden )
             ]
         ]
-        (openTimelineButton model
+        (openFlowButton model
             :: pinnedCotosColumn model
             :: traversalColumns model
         )
 
 
-openTimelineButton : Model -> Html Msg
-openTimelineButton model =
+openFlowButton : Model -> Html Msg
+openFlowButton model =
     if model.timeline.hidden then
-        div [ id "open-timeline" ]
+        div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
-                , title "Open timeline"
+                , title "Open flow view"
                 , onLinkButtonClick ToggleTimeline
                 ]
                 [ materialIcon "chat" Nothing ]

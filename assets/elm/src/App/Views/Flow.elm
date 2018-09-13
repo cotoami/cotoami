@@ -170,7 +170,7 @@ view context session model =
 
 toolbarDiv : Context a -> Timeline -> Html AppMsg.Msg
 toolbarDiv context timeline =
-    div [ class "timeline-toolbar" ]
+    div [ class "flow-toolbar" ]
         [ a
             [ class "tool-button flow-toggle"
             , title "Hide flow view"
