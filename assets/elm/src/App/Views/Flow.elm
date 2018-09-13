@@ -19,6 +19,7 @@ import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButt
 import Util.UpdateUtil exposing (..)
 import Util.Keyboard.Key
 import Util.Keyboard.Event exposing (KeyboardEvent)
+import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
@@ -34,11 +35,11 @@ import App.Commands
 import App.Server.Post
 
 
-type alias UpdateModel a =
-    LocalCotos (Modals (WithConnectModal a))
+type alias UpdateModel model =
+    LocalCotos (Modals (WithConnectModal model))
 
 
-update : Context a -> FlowMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ timeline } as model) =
     case msg of
         TimelineScrollPosInitialized ->
@@ -76,11 +77,11 @@ update context msg ({ timeline } as model) =
                 |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
-            handleEditorShortcut context keyboardEvent Nothing timeline.editorContent model
+            handleEditorShortcut context keyboardEvent (CotoContent timeline.editorContent Nothing) model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Post ->
-            post context Nothing timeline.editorContent timeline
+            post context (CotoContent timeline.editorContent Nothing) timeline
                 |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
@@ -93,8 +94,8 @@ update context msg ({ timeline } as model) =
         Posted postId (Err _) ->
             model |> withoutCmd
 
-        ConfirmPostAndConnect content summary ->
-            App.Modals.ConnectModal.openWithPost summary content model
+        ConfirmPostAndConnect content ->
+            App.Modals.ConnectModal.openWithPost content model
 
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
@@ -106,36 +107,35 @@ initScrollPos localCotos =
 
 
 handleEditorShortcut :
-    Context a
+    Context context
     -> KeyboardEvent
-    -> Maybe String
-    -> String
-    -> UpdateModel b
-    -> ( UpdateModel b, Cmd AppMsg.Msg )
-handleEditorShortcut context keyboardEvent summary content model =
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+handleEditorShortcut context keyboardEvent content model =
     if
         (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
-            && isNotBlank content
+            && isNotBlank content.content
     then
         if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            post context summary content model.timeline
+            post context content model.timeline
                 |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
         else if
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
         then
-            App.Modals.ConnectModal.openWithPost summary content model
+            App.Modals.ConnectModal.openWithPost content model
         else
             ( model, Cmd.none )
     else
         ( model, Cmd.none )
 
 
-post : Context a -> Maybe String -> String -> Timeline -> ( Timeline, Cmd AppMsg.Msg )
-post context summary content timeline =
+post : Context context -> CotoContent -> Timeline -> ( Timeline, Cmd AppMsg.Msg )
+post context content timeline =
     let
         ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False summary content timeline
+            App.Types.Timeline.post context False content timeline
     in
         ( newTimeline
         , Cmd.batch
@@ -149,7 +149,7 @@ post context summary content timeline =
         )
 
 
-view : Context a -> Session -> LocalCotos b -> Html AppMsg.Msg
+view : Context context -> Session -> LocalCotos model -> Html AppMsg.Msg
 view context session model =
     div
         [ id "flow"
@@ -168,7 +168,7 @@ view context session model =
         ]
 
 
-toolbarDiv : Context a -> Timeline -> Html AppMsg.Msg
+toolbarDiv : Context context -> Timeline -> Html AppMsg.Msg
 toolbarDiv context timeline =
     div [ class "flow-toolbar" ]
         [ a
@@ -213,7 +213,7 @@ toolbarDiv context timeline =
         ]
 
 
-timelineDiv : Context a -> Graph -> Timeline -> Html AppMsg.Msg
+timelineDiv : Context context -> Graph -> Timeline -> Html AppMsg.Msg
 timelineDiv context graph model =
     div
         [ id "timeline"
@@ -275,7 +275,7 @@ moreButton timeline =
         Util.HtmlUtil.none
 
 
-postsDiv : Context a -> Graph -> List Post -> Html AppMsg.Msg
+postsDiv : Context context -> Graph -> List Post -> Html AppMsg.Msg
 postsDiv context graph posts =
     Html.Keyed.node
         "div"
@@ -301,7 +301,7 @@ getKey post =
             )
 
 
-postEditor : Context a -> Session -> Timeline -> Html AppMsg.Msg
+postEditor : Context context -> Session -> Timeline -> Html AppMsg.Msg
 postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
@@ -320,8 +320,7 @@ postEditor context session model =
                             , onMouseDown
                                 (AppMsg.FlowMsg
                                     (ConfirmPostAndConnect
-                                        model.editorContent
-                                        Nothing
+                                        (CotoContent model.editorContent Nothing)
                                     )
                                 )
                             ]

@@ -28,7 +28,7 @@ import Util.Keyboard.Key
 import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.Markdown
 import Util.Keyboard.Event
-import App.Types.Coto exposing (Coto)
+import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Types.Graph
@@ -86,7 +86,7 @@ defaultModel =
     }
 
 
-modelForNew : Context a -> Maybe Coto -> Model
+modelForNew : Context context -> Maybe Coto -> Model
 modelForNew context source =
     { defaultModel
         | mode = NewCoto
@@ -144,26 +144,26 @@ setCotoSaveError error model =
             }
 
 
-type alias WithEditorModal a =
-    { a | editorModal : Model }
+type alias WithEditorModal model =
+    { model | editorModal : Model }
 
 
 openForNew :
-    Context a
+    Context context
     -> Maybe Coto
-    -> Modals (WithEditorModal b)
-    -> ( Modals (WithEditorModal b), Cmd AppMsg.Msg )
+    -> Modals (WithEditorModal model)
+    -> ( Modals (WithEditorModal model), Cmd AppMsg.Msg )
 openForNew context source model =
     { model | editorModal = modelForNew context source }
         |> App.Submodels.Modals.openModal EditorModal
         |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" AppMsg.NoOp)
 
 
-type alias UpdateModel a =
-    LocalCotos (Modals (WithConnectModal (WithEditorModal a)))
+type alias UpdateModel model =
+    LocalCotos (Modals (WithConnectModal (WithEditorModal model)))
 
 
-update : Context a -> EditorModalMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context context -> EditorModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ editorModal, timeline } as model) =
     case msg of
         EditorInput content ->
@@ -189,8 +189,8 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> post context
 
-        ConfirmPostAndConnect content summary ->
-            App.Modals.ConnectModal.openWithPost summary content model
+        ConfirmPostAndConnect content ->
+            App.Modals.ConnectModal.openWithPost content model
 
         PostedAndSubordinateToCoto postId coto (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
@@ -229,8 +229,10 @@ update context msg ({ editorModal, timeline } as model) =
                                     context.clientId
                                     coto.id
                                     model.editorModal.shareCotonoma
-                                    model.editorModal.summary
-                                    model.editorModal.content
+                                    (CotoContent
+                                        model.editorModal.content
+                                        (Just model.editorModal.summary)
+                                    )
 
                             _ ->
                                 Cmd.none
@@ -245,35 +247,31 @@ update context msg ({ editorModal, timeline } as model) =
                 |> withoutCmd
 
 
-post : Context a -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+post : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 post context ({ editorModal, timeline } as model) =
     let
-        summary =
-            getSummary editorModal
-
         content =
-            editorModal.content
+            CotoContent editorModal.content (getSummary editorModal)
     in
         editorModal.source
-            |> Maybe.map (\source -> postSubcoto context source summary content model)
+            |> Maybe.map (\source -> postSubcoto context source content model)
             |> Maybe.withDefault
-                (App.Views.Flow.post context summary content timeline
+                (App.Views.Flow.post context content timeline
                     |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
                 )
 
 
 postSubcoto :
-    Context a
+    Context context
     -> Coto
-    -> Maybe String
-    -> String
-    -> UpdateModel b
-    -> ( UpdateModel b, Cmd AppMsg.Msg )
-postSubcoto context coto summary content model =
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+postSubcoto context coto content model =
     let
         ( timeline, newPost ) =
             model.timeline
-                |> App.Types.Timeline.post context False summary content
+                |> App.Types.Timeline.post context False content
     in
         { model | timeline = timeline }
             ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
@@ -287,7 +285,12 @@ postSubcoto context coto summary content model =
               ]
 
 
-subordinatePostToCoto : Context a -> Coto -> Post -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+subordinatePostToCoto :
+    Context context
+    -> Coto
+    -> Post
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 subordinatePostToCoto { clientId, session } coto post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
@@ -317,7 +320,11 @@ subordinatePostToCoto { clientId, session } coto post model =
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-handleShortcut : Context a -> KeyboardEvent -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+handleShortcut :
+    Context context
+    -> KeyboardEvent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 handleShortcut context keyboardEvent model =
     if
         (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
@@ -331,8 +338,10 @@ handleShortcut context keyboardEvent model =
                         context.clientId
                         coto.id
                         model.editorModal.shareCotonoma
-                        model.editorModal.summary
-                        model.editorModal.content
+                        (CotoContent
+                            model.editorModal.content
+                            (Just model.editorModal.summary)
+                        )
                     )
                 else
                     ( model, Cmd.none )
@@ -345,8 +354,10 @@ handleShortcut context keyboardEvent model =
                         && App.Submodels.Context.anySelection context
                 then
                     App.Modals.ConnectModal.openWithPost
-                        (getSummary model.editorModal)
-                        model.editorModal.content
+                        (CotoContent
+                            model.editorModal.content
+                            (getSummary model.editorModal)
+                        )
                         model
                 else
                     ( model, Cmd.none )
@@ -354,7 +365,7 @@ handleShortcut context keyboardEvent model =
         ( model, Cmd.none )
 
 
-postCotonoma : Context a -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+postCotonoma : Context context -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
 postCotonoma context model =
     let
         cotonomaName =
@@ -364,8 +375,7 @@ postCotonoma context model =
             App.Types.Timeline.post
                 context
                 True
-                Nothing
-                cotonomaName
+                (CotoContent cotonomaName Nothing)
                 model.timeline
     in
         { model | timeline = timeline }
@@ -381,7 +391,7 @@ postCotonoma context model =
               ]
 
 
-view : Context a -> Model -> Html AppMsg.Msg
+view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     (case model.mode of
         Edit coto ->
@@ -406,7 +416,7 @@ view context model =
 --
 
 
-cotoEditorConfig : Context a -> Model -> Modal.Config AppMsg.Msg
+cotoEditorConfig : Context context -> Model -> Modal.Config AppMsg.Msg
 cotoEditorConfig context model =
     { closeMessage = CloseModal
     , title =
@@ -489,7 +499,7 @@ cotoEditor model =
 --
 
 
-cotonomaEditorConfig : Context a -> Model -> Modal.Config AppMsg.Msg
+cotonomaEditorConfig : Context context -> Model -> Modal.Config AppMsg.Msg
 cotonomaEditorConfig context model =
     { closeMessage = CloseModal
     , title =
@@ -598,7 +608,7 @@ newEditorTitle model =
         |> (div [])
 
 
-sourceCotoDiv : Context a -> Model -> Html AppMsg.Msg
+sourceCotoDiv : Context context -> Model -> Html AppMsg.Msg
 sourceCotoDiv context model =
     model.source
         |> Maybe.map
@@ -624,7 +634,12 @@ buttonsForNewCoto context model =
         button
             [ class "button connect"
             , disabled (isBlank model.content || model.requestProcessing)
-            , onClick (AppMsg.EditorModalMsg (ConfirmPostAndConnect model.content (getSummary model)))
+            , onClick
+                (AppMsg.EditorModalMsg
+                    (ConfirmPostAndConnect
+                        (CotoContent model.content (getSummary model))
+                    )
+                )
             ]
             [ faIcon "link" Nothing
             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]

@@ -5,6 +5,7 @@ module App.Types.Coto
         , CotoSelection
         , CotonomaKey
         , Coto
+        , CotoContent
         , summaryMaxlength
         , updateContent
         , checkWritePermission
@@ -49,6 +50,12 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    }
+
+
+type alias CotoContent =
+    { content : String
+    , summary : Maybe String
     }
 
 

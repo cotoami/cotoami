@@ -33,7 +33,7 @@ import Maybe
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session
 import App.Submodels.Context exposing (Context)
@@ -264,8 +264,8 @@ setBeingDeleted coto timeline =
         timeline
 
 
-post : Context a -> Bool -> Maybe String -> String -> Timeline -> ( Timeline, Post )
-post context isCotonoma summary content timeline =
+post : Context context -> Bool -> CotoContent -> Timeline -> ( Timeline, Post )
+post context isCotonoma content timeline =
     let
         defaultPost =
             App.Types.Post.defaultPost
@@ -276,8 +276,8 @@ post context isCotonoma summary content timeline =
         newPost =
             { defaultPost
                 | postId = Just postId
-                , content = content
-                , summary = summary
+                , content = content.content
+                , summary = content.summary
                 , amishi = Maybe.map App.Types.Session.toAmishi context.session
                 , isCotonoma = isCotonoma
                 , postedIn = context.cotonoma

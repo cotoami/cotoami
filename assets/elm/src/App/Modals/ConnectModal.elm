@@ -19,7 +19,7 @@ import Html.Keyed
 import Util.Modal as Modal
 import Util.HtmlUtil exposing (materialIcon)
 import Util.UpdateUtil exposing (..)
-import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Coto exposing (Coto, CotoId, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Types.Graph exposing (Direction(..))
@@ -37,7 +37,7 @@ import App.Markdown
 type ConnectingTarget
     = None
     | Coto Coto
-    | NewPost String (Maybe String)
+    | NewPost CotoContent
 
 
 type alias Model =
@@ -60,15 +60,15 @@ initModel target direction =
     }
 
 
-type alias WithConnectModal a =
-    { a | connectModal : Model }
+type alias WithConnectModal model =
+    { model | connectModal : Model }
 
 
 open :
     Direction
     -> ConnectingTarget
-    -> Modals (WithConnectModal a)
-    -> ( Modals (WithConnectModal a), Cmd AppMsg.Msg )
+    -> Modals (WithConnectModal model)
+    -> ( Modals (WithConnectModal model), Cmd AppMsg.Msg )
 open direction target model =
     { model | connectModal = initModel target direction }
         |> App.Submodels.Modals.openModal ConnectModal
@@ -76,19 +76,18 @@ open direction target model =
 
 
 openWithPost :
-    Maybe String
-    -> String
-    -> Modals (WithConnectModal a)
-    -> ( Modals (WithConnectModal a), Cmd AppMsg.Msg )
-openWithPost summary content =
-    open Inbound (NewPost content summary)
+    CotoContent
+    -> Modals (WithConnectModal model)
+    -> ( Modals (WithConnectModal model), Cmd AppMsg.Msg )
+openWithPost content =
+    open Inbound (NewPost content)
 
 
-type alias UpdateModel a =
-    LocalCotos (Modals (WithConnectModal a))
+type alias UpdateModel model =
+    LocalCotos (Modals (WithConnectModal model))
 
 
-update : Context a -> ConnectModalMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context context -> ConnectModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ connectModal } as model) =
     case msg of
         ReverseDirection ->
@@ -118,10 +117,10 @@ update context msg ({ connectModal } as model) =
                             target.id
                     )
 
-        PostAndConnectToSelection content summary direction ->
+        PostAndConnectToSelection content direction ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection context direction summary content
+                |> postAndConnectToSelection context direction content
 
         PostedAndConnectToSelection postId direction (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
@@ -133,16 +132,15 @@ update context msg ({ connectModal } as model) =
 
 
 postAndConnectToSelection :
-    Context a
+    Context context
     -> Direction
-    -> Maybe String
-    -> String
-    -> UpdateModel b
-    -> ( UpdateModel b, Cmd AppMsg.Msg )
-postAndConnectToSelection context direction summary content model =
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+postAndConnectToSelection context direction content model =
     let
         ( timeline, newPost ) =
-            App.Types.Timeline.post context False summary content model.timeline
+            App.Types.Timeline.post context False content model.timeline
 
         tag =
             (AppMsg.ConnectModalMsg << (PostedAndConnectToSelection timeline.postIdCounter direction))
@@ -157,11 +155,11 @@ postAndConnectToSelection context direction summary content model =
 
 
 connectPostToSelection :
-    Context a
+    Context context
     -> Direction
     -> Post
-    -> UpdateModel b
-    -> ( UpdateModel b, Cmd AppMsg.Msg )
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 connectPostToSelection context direction post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
@@ -223,14 +221,14 @@ modalConfig selectedCotos model =
                         [ text "Connect" ]
                     ]
 
-                NewPost content summary ->
+                NewPost content ->
                     [ button
                         [ id primaryButtonId
                         , class "button button-primary"
                         , autofocus True
                         , onClick
                             (AppMsg.ConnectModalMsg
-                                (PostAndConnectToSelection content summary model.direction)
+                                (PostAndConnectToSelection content model.direction)
                             )
                         ]
                         [ text "Post and connect" ]
@@ -264,9 +262,9 @@ modalContent selectedCotos model =
                     div [ class "target-coto coto-content" ]
                         [ contentDiv coto.summary coto.content ]
 
-                NewPost content summary ->
+                NewPost content ->
                     div [ class "target-new-post coto-content" ]
-                        [ contentDiv summary content ]
+                        [ contentDiv content.summary content.content ]
 
         ( start, end ) =
             case model.direction of
