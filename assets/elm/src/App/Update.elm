@@ -771,10 +771,7 @@ update msg model =
                 |> Maybe.withDefault ( model, Cmd.none )
 
         ConnectModalMsg subMsg ->
-            model.connectModal
-                |> Maybe.map (App.Modals.ConnectModal.update model subMsg)
-                |> Maybe.map (Tuple.mapFirst (\modal -> { model | connectModal = Just modal }))
-                |> Maybe.withDefault ( model, Cmd.none )
+            App.Modals.ConnectModal.update model subMsg model
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal

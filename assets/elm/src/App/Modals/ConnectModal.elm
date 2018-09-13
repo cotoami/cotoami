@@ -2,6 +2,7 @@ module App.Modals.ConnectModal
     exposing
         ( ConnectingTarget(..)
         , Model
+        , defaultModel
         , initModel
         , WithConnectModal
         , open
@@ -31,18 +32,27 @@ import App.Messages as AppMsg
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
+import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
 import App.Markdown
 
 
 type ConnectingTarget
-    = Coto Coto
+    = None
+    | Coto Coto
     | NewPost String (Maybe String)
 
 
 type alias Model =
     { target : ConnectingTarget
     , direction : Direction
+    }
+
+
+defaultModel : Model
+defaultModel =
+    { target = None
+    , direction = Inbound
     }
 
 
@@ -54,7 +64,7 @@ initModel target direction =
 
 
 type alias WithConnectModal a =
-    { a | connectModal : Maybe Model }
+    { a | connectModal : Model }
 
 
 open :
@@ -63,7 +73,7 @@ open :
     -> Modals (WithConnectModal a)
     -> ( Modals (WithConnectModal a), Cmd AppMsg.Msg )
 open direction target model =
-    { model | connectModal = Just (initModel target direction) }
+    { model | connectModal = initModel target direction }
         |> App.Submodels.Modals.openModal ConnectModal
         |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" AppMsg.NoOp)
 
@@ -77,27 +87,30 @@ openWithPost summary content =
     open Inbound (NewPost content summary)
 
 
-update : Context a -> ConnectModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update context msg model =
+type alias AppModel a =
+    LocalCotos (Modals (WithConnectModal a))
+
+
+update : Context a -> ConnectModalMsg.Msg -> AppModel b -> ( AppModel b, Cmd AppMsg.Msg )
+update context msg ({ connectModal } as model) =
     case msg of
         ReverseDirection ->
-            { model
-                | direction =
-                    case model.direction of
+            let
+                direction =
+                    case connectModal.direction of
                         Outbound ->
                             Inbound
 
                         Inbound ->
                             Outbound
-            }
-                |> withoutCmd
+            in
+                { model | connectModal = { connectModal | direction = direction } }
+                    |> withoutCmd
 
 
-view : List Coto -> Maybe Model -> Html AppMsg.Msg
-view cotos maybeModel =
-    maybeModel
-        |> Maybe.map (modalConfig cotos)
-        |> Modal.view "connect-modal"
+view : List Coto -> Model -> Html AppMsg.Msg
+view cotos model =
+    Modal.view "connect-modal" <| Just (modalConfig cotos model)
 
 
 modalConfig : List Coto -> Model -> Modal.Config AppMsg.Msg
@@ -111,6 +124,9 @@ modalConfig selectedCotos model =
         , content = modalContent selectedCotos model
         , buttons =
             case model.target of
+                None ->
+                    []
+
                 Coto coto ->
                     [ button
                         [ id primaryButtonId
@@ -152,6 +168,9 @@ modalContent selectedCotos model =
 
         targetHtml =
             case model.target of
+                None ->
+                    div [] []
+
                 Coto coto ->
                     div [ class "target-coto coto-content" ]
                         [ contentDiv coto.summary coto.content ]

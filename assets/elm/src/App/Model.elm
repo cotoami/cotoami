@@ -58,7 +58,7 @@ type alias Model =
     , editorModal : App.Modals.EditorModal.Model
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
-    , connectModal : Maybe App.Modals.ConnectModal.Model
+    , connectModal : App.Modals.ConnectModal.Model
     , signinModal : App.Modals.SigninModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     , recentCotonomas : List Cotonoma
@@ -99,7 +99,7 @@ initModel seed route =
     , editorModal = App.Modals.EditorModal.defaultModel
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
-    , connectModal = Nothing
+    , connectModal = App.Modals.ConnectModal.defaultModel
     , signinModal = App.Modals.SigninModal.initModel False
     , inviteModal = App.Modals.InviteModal.defaultModel
     , recentCotonomas = []
