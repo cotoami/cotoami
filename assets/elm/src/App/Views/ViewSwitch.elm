@@ -31,7 +31,7 @@ update context msg model =
             { model | activeView = view }
                 |> withCmd
                     (\model ->
-                        if view == PinnedView then
+                        if view == StockView then
                             App.Views.Stock.resizeGraphWithDelay
                         else
                             Cmd.none
@@ -52,23 +52,23 @@ view model =
     div
         [ id "view-switch-container" ]
         [ viewSwitchDiv
-            "switch-to-timeline"
+            "switch-to-flow"
             "comments"
-            "Switch to timeline"
-            (model.activeView == TimelineView)
+            "Switch to flow view"
+            (model.activeView == FlowView)
             False
-            (AppMsg.ViewSwitchMsg (SwitchView TimelineView))
+            (AppMsg.ViewSwitchMsg (SwitchView FlowView))
         , viewSwitchDiv
-            "switch-to-pinned"
+            "switch-to-stock"
             "thumb-tack"
-            "Switch to pinned cotos"
-            (model.activeView == PinnedView)
+            "Switch to stock view"
+            (model.activeView == StockView)
             (App.Submodels.LocalCotos.isStockEmpty model)
-            (AppMsg.ViewSwitchMsg (SwitchView PinnedView))
+            (AppMsg.ViewSwitchMsg (SwitchView StockView))
         , viewSwitchDiv
             "switch-to-traversals"
             "sitemap"
-            "Switch to explorations"
+            "Switch to traversals"
             (model.activeView == TraversalsView)
             (App.Types.Traversal.isEmpty model.traversals)
             (AppMsg.ViewSwitchMsg (SwitchView TraversalsView))

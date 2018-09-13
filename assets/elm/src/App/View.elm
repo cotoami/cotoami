@@ -6,7 +6,6 @@ import Html.Events exposing (onClick)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.EventUtil exposing (onLinkButtonClick)
 import App.Types.Session exposing (Session)
-import App.Types.Traversal
 import App.Types.SearchResults
 import App.Messages exposing (..)
 import App.Model exposing (..)
@@ -84,9 +83,9 @@ graphExplorationDiv model =
         [ id "graph-exploration"
         , classList
             [ ( "activeOnMobile"
-              , List.member model.activeView [ PinnedView, TraversalsView ]
+              , List.member model.activeView [ StockView, TraversalsView ]
               )
-            , ( "timeline-hidden", model.timeline.hidden )
+            , ( "flow-hidden", model.timeline.hidden )
             ]
         ]
         (openFlowButton model
@@ -125,7 +124,7 @@ flowColumn model =
                 else
                     let
                         active =
-                            model.activeView == TimelineView
+                            model.activeView == FlowView
                     in
                         flowDiv
                             session
@@ -155,9 +154,9 @@ stockColumn model =
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
-            , ( "activeOnMobile", model.activeView == PinnedView )
-            , ( "animated", model.activeView == PinnedView )
-            , ( "fadeIn", model.activeView == PinnedView )
+            , ( "activeOnMobile", model.activeView == StockView )
+            , ( "animated", model.activeView == StockView )
+            , ( "fadeIn", model.activeView == StockView )
             ]
         ]
         [ App.Views.Stock.view model model

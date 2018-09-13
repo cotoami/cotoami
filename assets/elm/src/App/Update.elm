@@ -592,7 +592,7 @@ update msg model =
                 , activeView =
                     case model.activeView of
                         SelectionView ->
-                            TimelineView
+                            FlowView
 
                         anotherView ->
                             anotherView
@@ -722,7 +722,7 @@ loadHome model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = TimelineView
+        , activeView = FlowView
         , navigationOpen = False
     }
         |> App.Submodels.Context.setCotonomaLoading
@@ -751,7 +751,7 @@ loadCotonoma key model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = TimelineView
+        , activeView = FlowView
         , navigationOpen = False
     }
         |> App.Submodels.Context.setCotonomaLoading

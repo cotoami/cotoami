@@ -7,8 +7,8 @@ module App.Views.ViewSwitchMsg
 
 
 type ActiveView
-    = TimelineView
-    | PinnedView
+    = FlowView
+    | StockView
     | TraversalsView
     | SelectionView
     | SearchResultsView
@@ -17,11 +17,11 @@ type ActiveView
 getActiveViewAsString : ActiveView -> String
 getActiveViewAsString view =
     case view of
-        TimelineView ->
-            "timeline"
+        FlowView ->
+            "flow"
 
-        PinnedView ->
-            "pinned"
+        StockView ->
+            "stock"
 
         TraversalsView ->
             "traversals"
