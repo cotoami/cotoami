@@ -89,7 +89,7 @@ resizeGraphWithDelay =
         |> Task.perform (\_ -> (AppMsg.StockMsg ResizeGraph))
 
 
-type alias VieweModel model =
+type alias ViewModel model =
     { model
         | stockView : Model
         , graph : Graph
@@ -97,7 +97,7 @@ type alias VieweModel model =
     }
 
 
-view : Context context -> VieweModel model -> Html AppMsg.Msg
+view : Context context -> ViewModel model -> Html AppMsg.Msg
 view context model =
     div [ id "stock" ]
         [ div

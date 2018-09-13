@@ -90,7 +90,7 @@ graphExplorationDiv model =
         ]
         (openFlowButton model
             :: stockColumn model
-            :: traversalColumns model
+            :: (App.Views.Traversals.view model model)
         )
 
 
@@ -161,15 +161,6 @@ stockColumn model =
         ]
         [ App.Views.Stock.view model model
         ]
-
-
-traversalColumns : Model -> List (Html Msg)
-traversalColumns model =
-    App.Views.Traversals.view
-        (model.activeView == TraversalsView)
-        model
-        model.graph
-        model.traversals
 
 
 selectionColumn : Model -> Html Msg

@@ -40,6 +40,7 @@ type alias Model =
     { route : Route
     , clientId : ClientId
     , session : Maybe Session
+    , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
@@ -48,7 +49,6 @@ type alias Model =
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
-    , activeView : ActiveView
     , navigationToggled : Bool
     , navigationOpen : Bool
     , presences : Presences
@@ -81,6 +81,7 @@ initModel seed route =
     { route = route
     , clientId = App.Submodels.Context.generateClientId seed
     , session = Nothing
+    , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False
     , elementFocus = Nothing
@@ -89,7 +90,6 @@ initModel seed route =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
-    , activeView = FlowView
     , navigationToggled = False
     , navigationOpen = False
     , presences = Dict.empty

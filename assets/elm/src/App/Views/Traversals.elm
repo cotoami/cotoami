@@ -17,6 +17,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Traversals
 import App.Messages as AppMsg exposing (..)
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
 
 
@@ -56,21 +57,32 @@ update context graph msg ({ traversals } as model) =
                 |> withoutCmd
 
 
-view : Bool -> Context a -> Graph -> Traversals -> List (Html AppMsg.Msg)
-view activeOnMobile context graph model =
-    model.order
+type alias ViewModel model =
+    { model
+        | activeView : ActiveView
+        , graph : Graph
+        , traversals : Traversals
+    }
+
+
+view : Context a -> ViewModel model -> List (Html AppMsg.Msg)
+view context ({ traversals } as model) =
+    traversals.order
         |> List.filterMap
             (\cotoId ->
-                Dict.get cotoId model.entries
+                Dict.get cotoId traversals.entries
                     |> Maybe.andThen
-                        (\traversal -> maybeTraversalDiv context graph traversal)
+                        (\traversal ->
+                            maybeTraversalDiv context model.graph traversal
+                        )
             )
         |> List.reverse
         |> List.indexedMap
             (\index traversalDiv ->
                 let
                     visibleOnMobile =
-                        activeOnMobile && (isActiveIndex index model)
+                        (model.activeView == TraversalsView)
+                            && (isActiveIndex index traversals)
                 in
                     div
                         [ classList
@@ -80,12 +92,12 @@ view activeOnMobile context graph model =
                             , ( "activeOnMobile", visibleOnMobile )
                             , ( "animated", visibleOnMobile )
                             , ( "fadeIn", visibleOnMobile )
-                            , ( "not-in-active-page", not (isActiveIndex index model) )
+                            , ( "not-in-active-page", not (isActiveIndex index traversals) )
                             ]
                         ]
                         [ traversalDiv ]
             )
-        |> (::) (traversalsPaginationDiv graph model)
+        |> (::) (traversalsPaginationDiv model.graph traversals)
 
 
 maybeTraversalDiv : Context a -> Graph -> Traversal -> Maybe (Html AppMsg.Msg)

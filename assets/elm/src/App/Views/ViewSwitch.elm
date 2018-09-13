@@ -38,7 +38,7 @@ update context msg model =
                     )
 
 
-type alias VieweModel model =
+type alias ViewModel model =
     LocalCotos
         { model
             | activeView : ActiveView
@@ -47,7 +47,7 @@ type alias VieweModel model =
         }
 
 
-view : VieweModel model -> Html AppMsg.Msg
+view : ViewModel model -> Html AppMsg.Msg
 view model =
     div
         [ id "view-switch-container" ]
