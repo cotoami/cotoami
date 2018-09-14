@@ -1,12 +1,7 @@
 module App.Types.Timeline
     exposing
-        ( Filter
-        , defaultFilter
-        , decodeFilter
-        , encodeFilter
-        , Timeline
+        ( Timeline
         , defaultTimeline
-        , setFilter
         , setScrollPosInitialized
         , isEmpty
         , openOrCloseEditor
@@ -27,8 +22,6 @@ module App.Types.Timeline
         )
 
 import Maybe
-import Json.Decode as Decode
-import Json.Encode as Encode
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
@@ -36,37 +29,8 @@ import App.Types.Session
 import App.Submodels.Context exposing (Context)
 
 
-type alias Filter =
-    { excludePinnedGraph : Bool
-    , excludePostsInCotonoma : Bool
-    }
-
-
-defaultFilter : Filter
-defaultFilter =
-    { excludePinnedGraph = False
-    , excludePostsInCotonoma = False
-    }
-
-
-decodeFilter : Decode.Decoder Filter
-decodeFilter =
-    Decode.map2 Filter
-        (Decode.field "excludePinnedGraph" Decode.bool)
-        (Decode.field "excludePostsInCotonoma" Decode.bool)
-
-
-encodeFilter : Filter -> Encode.Value
-encodeFilter filter =
-    Encode.object
-        [ ( "excludePinnedGraph", Encode.bool filter.excludePinnedGraph )
-        , ( "excludePostsInCotonoma", Encode.bool filter.excludePostsInCotonoma )
-        ]
-
-
 type alias Timeline =
-    { filter : Filter
-    , editorOpen : Bool
+    { editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
     , postIdCounter : Int
@@ -81,8 +45,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { filter = defaultFilter
-    , editorOpen = False
+    { editorOpen = False
     , editorContent = ""
     , editorCounter = 0
     , postIdCounter = 0
@@ -93,11 +56,6 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     }
-
-
-setFilter : Filter -> Timeline -> Timeline
-setFilter filter timeline =
-    { timeline | filter = filter }
 
 
 setScrollPosInitialized : Timeline -> Timeline

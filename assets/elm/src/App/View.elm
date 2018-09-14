@@ -232,6 +232,6 @@ modals model =
                     App.Modals.ImportModal.view model.importModal
 
                 TimelineFilterModal ->
-                    App.Modals.TimelineFilterModal.view model model.timeline.filter
+                    App.Modals.TimelineFilterModal.view model model.flowView.filter
         )
         (List.reverse model.modals)

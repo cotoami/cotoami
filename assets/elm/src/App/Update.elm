@@ -697,11 +697,7 @@ update msg model =
                 |> Tuple.mapFirst (\modal -> { model | importModal = modal })
 
         TimelineFilterModalMsg subMsg ->
-            App.Modals.TimelineFilterModal.update model subMsg model.timeline.filter
-                |> Tuple.mapFirst
-                    (\filter ->
-                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
-                    )
+            App.Modals.TimelineFilterModal.update model subMsg model
 
 
 changeLocationToHome : Model -> ( Model, Cmd Msg )
@@ -726,7 +722,7 @@ loadHome model =
         |> withCmd
             (\model ->
                 Cmd.batch
-                    [ App.Server.Post.fetchHomePosts 0 model.timeline.filter
+                    [ App.Server.Post.fetchHomePosts 0 model.flowView.filter
                     , App.Server.Cotonoma.fetchCotonomas
                     , App.Server.Graph.fetchGraph Nothing
                     , App.Ports.Graph.destroyGraph ()
@@ -756,7 +752,7 @@ loadCotonoma key model =
             (\model ->
                 Cmd.batch
                     [ App.Server.Cotonoma.fetchCotonomas
-                    , App.Server.Post.fetchCotonomaPosts 0 model.timeline.filter key
+                    , App.Server.Post.fetchCotonomaPosts 0 model.flowView.filter key
                     , App.Server.Graph.fetchGraph (Just key)
                     , App.Ports.Graph.destroyGraph ()
                     ]

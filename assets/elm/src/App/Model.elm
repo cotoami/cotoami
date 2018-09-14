@@ -19,6 +19,7 @@ import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph)
 import App.Types.Timeline exposing (Timeline)
+import App.Types.TimelineFilter
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Submodels.Context
@@ -125,11 +126,11 @@ configure ( key, value ) model =
     case key of
         "timeline.filter" ->
             value
-                |> Decode.decodeValue (Decode.maybe App.Types.Timeline.decodeFilter)
+                |> Decode.decodeValue (Decode.maybe App.Types.TimelineFilter.decodeTimelineFilter)
                 |> Result.withDefault Nothing
                 |> Maybe.map
                     (\filter ->
-                        { model | timeline = App.Types.Timeline.setFilter filter model.timeline }
+                        { model | flowView = App.Views.Flow.setFilter filter model.flowView }
                     )
                 |> Maybe.withDefault model
 

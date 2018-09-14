@@ -8,51 +8,64 @@ import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.HtmlUtil exposing (materialIcon)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
-import App.Types.Timeline exposing (Filter)
+import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)
+import App.Views.Flow
 import App.Server.Post
 import App.Ports.LocalStorage
 
 
-update : Context a -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
-update context msg filter =
+type alias UpdateModel model =
+    { model
+        | flowView : App.Views.Flow.Model
+    }
+
+
+update : Context a -> TimelineFilterModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ flowView } as model) =
     case msg of
         ExcludePinnedGraphOptionCheck check ->
-            { filter | excludePinnedGraph = check }
-                |> withCmd (cmdOnFilterUpdate_ context)
+            flowView.filter
+                |> (\filter -> { filter | excludePinnedGraph = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
 
         ExcludePostsInCotonomaOptionCheck check ->
-            { filter | excludePostsInCotonoma = check }
-                |> withCmd (cmdOnFilterUpdate_ context)
+            flowView.filter
+                |> (\filter -> { filter | excludePostsInCotonoma = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
 
 
-cmdOnFilterUpdate_ : Context a -> Filter -> Cmd AppMsg.Msg
-cmdOnFilterUpdate_ context filter =
+saveUpdate : Context a -> TimelineFilter -> Cmd AppMsg.Msg
+saveUpdate context filter =
     Cmd.batch
         [ App.Server.Post.fetchPostsByContext 0 filter context
         , App.Ports.LocalStorage.setItem
             ( "timeline.filter"
-            , App.Types.Timeline.encodeFilter filter
+            , App.Types.TimelineFilter.encodeTimelineFilter filter
             )
         ]
 
 
-view : Context a -> Filter -> Html AppMsg.Msg
+view : Context a -> TimelineFilter -> Html AppMsg.Msg
 view context filter =
     Modal.view
         "timeline-filter-modal"
-        (Just (modalConfig_ context filter))
+        (Just (modalConfig context filter))
 
 
-modalConfig_ : Context a -> Filter -> Modal.Config AppMsg.Msg
-modalConfig_ context filter =
+modalConfig : Context a -> TimelineFilter -> Modal.Config AppMsg.Msg
+modalConfig context filter =
     { closeMessage = CloseModal
     , title = text "Timeline Filter"
     , content =
         div []
-            [ excludePinnedGraphOption_ context filter
+            [ excludePinnedGraphOption context filter
             , if App.Submodels.Context.atHome context then
-                excludePostsInCotonomaOption_ context filter
+                excludePostsInCotonomaOption context filter
               else
                 Util.HtmlUtil.none
             ]
@@ -60,8 +73,8 @@ modalConfig_ context filter =
     }
 
 
-excludePinnedGraphOption_ : Context a -> Filter -> Html AppMsg.Msg
-excludePinnedGraphOption_ context filter =
+excludePinnedGraphOption : Context a -> TimelineFilter -> Html AppMsg.Msg
+excludePinnedGraphOption context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"
@@ -79,8 +92,8 @@ excludePinnedGraphOption_ context filter =
         ]
 
 
-excludePostsInCotonomaOption_ : Context a -> Filter -> Html AppMsg.Msg
-excludePostsInCotonomaOption_ context filter =
+excludePostsInCotonomaOption : Context a -> TimelineFilter -> Html AppMsg.Msg
+excludePostsInCotonomaOption context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"

@@ -2,6 +2,7 @@ module App.Views.Flow
     exposing
         ( Model
         , defaultModel
+        , setFilter
         , update
         , initScrollPos
         , post
@@ -26,6 +27,7 @@ import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
 import App.Types.Timeline exposing (Timeline)
+import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -40,6 +42,7 @@ import App.Server.Post
 type alias Model =
     { hidden : Bool
     , view : TimelineView
+    , filter : TimelineFilter
     }
 
 
@@ -47,6 +50,7 @@ defaultModel : Model
 defaultModel =
     { hidden = False
     , view = StreamView
+    , filter = App.Types.TimelineFilter.defaultTimelineFilter
     }
 
 
@@ -58,6 +62,11 @@ toggle model =
 switchView : TimelineView -> Model -> Model
 switchView view model =
     { model | view = view }
+
+
+setFilter : TimelineFilter -> Model -> Model
+setFilter filter model =
+    { model | filter = filter }
 
 
 type alias UpdateModel model =
@@ -98,7 +107,7 @@ update context msg ({ flowView, timeline } as model) =
                     (\model ->
                         App.Server.Post.fetchPostsByContext
                             (App.Types.Timeline.nextPageIndex timeline)
-                            timeline.filter
+                            flowView.filter
                             context
                     )
 
@@ -264,7 +273,7 @@ timelineDiv context model =
             [ ( "timeline", True )
             , ( "stream", model.flowView.view == StreamView )
             , ( "tile", model.flowView.view == TileView )
-            , ( "exclude-pinned-graph", model.timeline.filter.excludePinnedGraph )
+            , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
         ]
         [ moreButton model.timeline

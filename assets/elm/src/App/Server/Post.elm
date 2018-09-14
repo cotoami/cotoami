@@ -14,9 +14,9 @@ import App.Messages
             , SearchResultsFetched
             )
         )
-import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
-import App.Types.Timeline exposing (Filter)
+import App.Types.Post exposing (Post, PaginatedPosts)
+import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)
 import App.Server.Amishi
 import App.Server.Cotonoma
@@ -45,7 +45,7 @@ decodePaginatedPosts =
         |> required "total_pages" int
 
 
-fetchHomePosts : Int -> Filter -> Cmd Msg
+fetchHomePosts : Int -> TimelineFilter -> Cmd Msg
 fetchHomePosts pageIndex filter =
     let
         url =
@@ -66,7 +66,7 @@ fetchHomePosts pageIndex filter =
             Http.get url decodePaginatedPosts
 
 
-fetchCotonomaPosts : Int -> Filter -> CotonomaKey -> Cmd Msg
+fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
 fetchCotonomaPosts pageIndex filter key =
     let
         url =
@@ -85,7 +85,7 @@ fetchCotonomaPosts pageIndex filter key =
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
-fetchPostsByContext : Int -> Filter -> Context a -> Cmd Msg
+fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
 fetchPostsByContext pageIndex filter context =
     context.cotonoma
         |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
