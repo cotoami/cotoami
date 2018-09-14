@@ -6,6 +6,12 @@ import App.I18n.Keys exposing (TextKey(..))
 text : TextKey -> String
 text key =
     case key of
+        Coto ->
+            "Coto"
+
+        Cotonoma ->
+            "Cotonoma"
+
         SigninModal_WelcomeTitle ->
             "Welcome to Cotoami!"
 
@@ -62,3 +68,9 @@ text key =
 
         Flow_TileView ->
             "Tile View"
+
+        EditorModal_Summary ->
+            "Summary (optional)"
+
+        EditorModal_Content ->
+            "Write your Coto in Markdown"

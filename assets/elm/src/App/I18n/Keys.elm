@@ -2,7 +2,9 @@ module App.I18n.Keys exposing (TextKey(..))
 
 
 type TextKey
-    = SigninModal_WelcomeTitle
+    = Coto
+    | Cotonoma
+    | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled
     | SigninModal_OnlyForSignin
     | SigninModal_SendLink
@@ -21,3 +23,5 @@ type TextKey
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView
+    | EditorModal_Summary
+    | EditorModal_Content

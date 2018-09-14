@@ -6,6 +6,12 @@ import App.I18n.Keys exposing (TextKey(..))
 text : TextKey -> String
 text key =
     case key of
+        Coto ->
+            "コト"
+
+        Cotonoma ->
+            "コトノマ"
+
         SigninModal_WelcomeTitle ->
             "Cotoamiへようこそ"
 
@@ -65,3 +71,9 @@ text key =
 
         Flow_TileView ->
             "タイル"
+
+        EditorModal_Summary ->
+            "要約（省略可）"
+
+        EditorModal_Content ->
+            "内容（Markdown記法が利用可能）"

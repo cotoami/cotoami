@@ -22,7 +22,6 @@ import Exts.Maybe exposing (isJust)
 import Utils.Modal as Modal
 import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
-import Utils.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
@@ -423,11 +422,11 @@ cotoEditorConfig context model =
                 text "Edit Coto"
 
             _ ->
-                newEditorTitle model
+                newEditorTitle context model
     , content =
         div [ class "coto-editor-modal-body" ]
             [ sourceCotoDiv context model
-            , cotoEditor model
+            , cotoEditor context model
             ]
     , buttons =
         [ button
@@ -452,8 +451,8 @@ cotoEditorConfig context model =
     }
 
 
-cotoEditor : Model -> Html AppMsg.Msg
-cotoEditor model =
+cotoEditor : Context context -> Model -> Html AppMsg.Msg
+cotoEditor context model =
     div [ class "coto-editor" ]
         [ div [ class "summary-input" ]
             [ adviceOnCotonomaNameDiv model
@@ -463,7 +462,7 @@ cotoEditor model =
                 input
                     [ type_ "text"
                     , class "u-full-width"
-                    , placeholder "Summary (optional)"
+                    , placeholder (context.i18nText I18nKeys.EditorModal_Summary)
                     , maxlength App.Types.Coto.summaryMaxlength
                     , value model.summary
                     , onInput (AppMsg.EditorModalMsg << SummaryInput)
@@ -477,7 +476,7 @@ cotoEditor model =
             div [ class "content-input" ]
                 [ textarea
                     [ id "editor-modal-content-input"
-                    , placeholder "Write your Coto in Markdown"
+                    , placeholder (context.i18nText I18nKeys.EditorModal_Content)
                     , defaultValue model.content
                     , onInput (AppMsg.EditorModalMsg << EditorInput)
                     , on "keydown" <|
@@ -506,7 +505,7 @@ cotonomaEditorConfig context model =
                 text "Change Cotonoma Name"
 
             _ ->
-                newEditorTitle model
+                newEditorTitle context model
     , content =
         div []
             [ sourceCotoDiv context model
@@ -575,29 +574,32 @@ cotonomaEditor model =
 --
 
 
-newEditorTitle : Model -> Html AppMsg.Msg
-newEditorTitle model =
+newEditorTitle : Context context -> Model -> Html AppMsg.Msg
+newEditorTitle context model =
     (case model.mode of
         NewCoto ->
             if isJust model.source then
                 [ text "New Connected Coto" ]
             else
-                [ text "New Coto or "
-                , a
-                    [ class "switch-to"
-                    , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
+                [ button
+                    [ class "coto", disabled True ]
+                    [ text (context.i18nText I18nKeys.Coto) ]
+                , button
+                    [ class "cotonoma"
+                    , onClick (AppMsg.EditorModalMsg SetNewCotonomaMode)
                     ]
-                    [ text "Cotonoma" ]
+                    [ text (context.i18nText I18nKeys.Cotonoma) ]
                 ]
 
         NewCotonoma ->
-            [ text "New "
-            , a
-                [ class "switch-to"
-                , onLinkButtonClick (AppMsg.EditorModalMsg SetNewCotoMode)
+            [ button
+                [ class "coto"
+                , onClick (AppMsg.EditorModalMsg SetNewCotoMode)
                 ]
-                [ text "Coto" ]
-            , text " or Cotonoma"
+                [ text (context.i18nText I18nKeys.Coto) ]
+            , button
+                [ class "cotonoma", disabled True ]
+                [ text (context.i18nText I18nKeys.Cotonoma) ]
             ]
 
         _ ->
