@@ -5,9 +5,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Json.Decode as Decode
-import Util.StringUtil exposing (validateEmail)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.Modal as Modal
+import Utils.StringUtil exposing (validateEmail)
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.Modal as Modal
 import App.Types.Amishi exposing (Amishi)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Messages as AppMsg exposing (Msg(CloseModal))

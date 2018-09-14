@@ -3,8 +3,8 @@ module App.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
-import Util.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.EventUtil exposing (onLinkButtonClick)
 import App.Types.Session exposing (Session)
 import App.Types.SearchResults
 import App.Messages exposing (..)
@@ -107,7 +107,7 @@ openFlowButton model =
                 [ materialIcon "chat" Nothing ]
             ]
     else
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
 
 
 flowColumn : Model -> Html Msg
@@ -136,7 +136,7 @@ flowColumn model =
                             ]
                             model
             )
-        |> Maybe.withDefault Util.HtmlUtil.none
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 flowDiv : Session -> List ( String, Bool ) -> Model -> Html Msg

@@ -19,15 +19,15 @@ import Html.Events exposing (on, onClick, onInput, onCheck)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
-import Util.Modal as Modal
-import Util.StringUtil exposing (isBlank, isNotBlank)
-import Util.EventUtil exposing (onKeyDown, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.Keyboard.Key
-import Util.Keyboard.Event exposing (KeyboardEvent)
+import Utils.Modal as Modal
+import Utils.StringUtil exposing (isBlank, isNotBlank)
+import Utils.EventUtil exposing (onKeyDown, onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.Keyboard.Key
+import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.Markdown
-import Util.Keyboard.Event
+import Utils.Keyboard.Event
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
@@ -325,7 +325,7 @@ handleShortcut :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 handleShortcut context keyboardEvent model =
     if
-        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
+        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
             && isNotBlank model.editorModal.content
     then
         case model.editorModal.mode of
@@ -458,7 +458,7 @@ cotoEditor model =
         [ div [ class "summary-input" ]
             [ adviceOnCotonomaNameDiv model
             , if model.editingToCotonomatize then
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
               else
                 input
                     [ type_ "text"
@@ -483,7 +483,7 @@ cotoEditor model =
                     , on "keydown" <|
                         Decode.map
                             (AppMsg.EditorModalMsg << EditorKeyDown)
-                            Util.Keyboard.Event.decodeKeyboardEvent
+                            Utils.Keyboard.Event.decodeKeyboardEvent
                     ]
                     []
                 ]
@@ -535,7 +535,7 @@ cotonomaEditor model =
                     ]
 
             _ ->
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
         , div [ class "name-input" ]
             [ input
                 [ type_ "text"
@@ -621,13 +621,13 @@ sourceCotoDiv context model =
                         [ materialIcon "arrow_downward" Nothing ]
                     ]
             )
-        |> Maybe.withDefault Util.HtmlUtil.none
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 buttonsForNewCoto : Context a -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if List.isEmpty context.selection || isJust model.source then
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
       else
         button
             [ class "button connect"
@@ -684,7 +684,7 @@ buttonsForEdit coto model =
          else
             [ text "Save"
             , if isJust coto.asCotonoma then
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
               else
                 span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
@@ -708,7 +708,7 @@ errorDiv model =
                 ]
 
         _ ->
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none
 
 
 adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
@@ -738,4 +738,4 @@ adviceOnCotonomaNameDiv model =
                     [ text (toString contentLength) ]
                 ]
     else
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none

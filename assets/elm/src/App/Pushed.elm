@@ -3,8 +3,8 @@ module App.Pushed exposing (..)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
-import Util.HttpUtil exposing (ClientId(ClientId))
-import Util.UpdateUtil exposing (..)
+import Utils.HttpUtil exposing (ClientId(ClientId))
+import Utils.UpdateUtil exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Post exposing (Post)
 import App.Types.Graph

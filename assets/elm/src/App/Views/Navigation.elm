@@ -3,8 +3,8 @@ module App.Views.Navigation exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isNothing)
-import Util.EventUtil exposing (onLinkButtonClick)
-import Util.HtmlUtil exposing (materialIcon)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (materialIcon)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (Model)
@@ -18,12 +18,12 @@ view model =
     [ div [ id "navigation-content" ]
         [ model.session
             |> Maybe.map (\_ -> homeNav model)
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
             [ model.cotonoma
                 |> Maybe.map (cotonomaNav model)
-                |> Maybe.withDefault Util.HtmlUtil.none
+                |> Maybe.withDefault Utils.HtmlUtil.none
             , recentCotonomasDiv model model.graph model.recentCotonomas
             ]
         ]
@@ -72,7 +72,7 @@ cotonomaNav model cotonoma =
 recentCotonomasDiv : Context a -> Graph -> List Cotonoma -> Html Msg
 recentCotonomasDiv context graph cotonomas =
     if List.isEmpty cotonomas then
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
     else
         div [ class "recent-cotonomas" ]
             [ div [ class "navigation-title" ] [ text "Recent" ]

@@ -2,8 +2,8 @@ module App.Modals.CotoModal exposing (Model, initModel, open, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Util.Modal as Modal
-import Util.DateUtil
+import Utils.Modal as Modal
+import Utils.DateUtil
 import App.Markdown
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
 import App.Types.Session exposing (Session)
@@ -118,7 +118,7 @@ postedAtSpan coto =
     span [ class "posted-at" ]
         [ span [ class "preposition" ] [ text "at" ]
         , span [ class "datetime" ]
-            [ text (Util.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
+            [ text (Utils.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
         ]
 
 

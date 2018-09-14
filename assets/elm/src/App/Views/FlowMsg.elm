@@ -1,7 +1,7 @@
 module App.Views.FlowMsg exposing (Msg(..), TimelineView(..))
 
 import Http
-import Util.Keyboard.Event exposing (KeyboardEvent)
+import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post)
 

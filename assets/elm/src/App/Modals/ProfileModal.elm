@@ -3,8 +3,8 @@ module App.Modals.ProfileModal exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.Modal as Modal
-import Util.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.Modal as Modal
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
 import App.Messages exposing (Msg(CloseModal, OpenInviteModal, OpenImportModal))
 

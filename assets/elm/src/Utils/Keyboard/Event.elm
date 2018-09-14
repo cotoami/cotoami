@@ -1,4 +1,4 @@
-module Util.Keyboard.Event
+module Utils.Keyboard.Event
     exposing
         ( KeyboardEvent
         , decodeKeyboardEvent
@@ -12,7 +12,7 @@ module Util.Keyboard.Event
 -}
 
 import Json.Decode exposing (Decoder, map, map7, int, field, oneOf, andThen, maybe, succeed, fail, bool, string)
-import Util.Keyboard.Key exposing (Key, fromCode)
+import Utils.Keyboard.Key exposing (Key, fromCode)
 import String
 
 

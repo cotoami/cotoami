@@ -8,7 +8,7 @@ module App.Model
 
 import Dict
 import Set exposing (Set)
-import Util.HttpUtil exposing (ClientId(ClientId))
+import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)

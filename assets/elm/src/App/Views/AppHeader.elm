@@ -4,8 +4,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
 import Html.Keyed
-import Util.EventUtil exposing (onLinkButtonClick)
-import Util.HtmlUtil exposing (materialIcon)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (materialIcon)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
 import App.Submodels.LocalCotos
@@ -39,7 +39,7 @@ view model =
                             span [ class "shared", title "Shared" ]
                                 [ materialIcon "people" Nothing ]
                           else
-                            Util.HtmlUtil.none
+                            Utils.HtmlUtil.none
                         , navigationToggle model
                         ]
                     )

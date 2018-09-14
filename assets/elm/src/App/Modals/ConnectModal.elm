@@ -16,9 +16,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
-import Util.Modal as Modal
-import Util.HtmlUtil exposing (materialIcon)
-import Util.UpdateUtil exposing (..)
+import Utils.Modal as Modal
+import Utils.HtmlUtil exposing (materialIcon)
+import Utils.UpdateUtil exposing (..)
 import App.Types.Coto exposing (Coto, CotoId, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline

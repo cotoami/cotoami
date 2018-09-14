@@ -23,7 +23,7 @@ import Exts.Maybe exposing (isJust)
 import App.Markdown
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
-import Util.StringUtil exposing (isBlank)
+import Utils.StringUtil exposing (isBlank)
 
 
 type alias ElementId =

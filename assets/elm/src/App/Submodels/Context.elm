@@ -26,7 +26,7 @@ import Set exposing (Set)
 import Random.Pcg
 import Uuid
 import Exts.Maybe exposing (isNothing)
-import Util.HttpUtil exposing (ClientId(ClientId))
+import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
 

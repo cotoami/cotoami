@@ -5,7 +5,7 @@ import Http exposing (Request)
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (maybe, string, bool, float)
 import Json.Decode.Pipeline exposing (required, optional)
-import Util.HttpUtil exposing (ClientId, httpDelete, httpPut)
+import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, CotoUpdated, Cotonomatized))
 import App.Types.Coto exposing (CotoId, Coto, CotoContent, Cotonoma)
 import App.Server.Amishi

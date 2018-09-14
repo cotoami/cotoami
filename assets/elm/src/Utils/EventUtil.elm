@@ -1,4 +1,4 @@
-module Util.EventUtil
+module Utils.EventUtil
     exposing
         ( onClickWithoutPropagation
         , onLinkButtonClick

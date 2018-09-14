@@ -6,9 +6,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
 import Exts.Maybe exposing (isJust)
-import Util.UpdateUtil exposing (..)
-import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.UpdateUtil exposing (..)
+import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotoSelection)
 import App.Types.Graph exposing (Graph, Connection, hasChildren)
@@ -374,7 +374,7 @@ traverseButtonDiv graph { traversal, index } coto =
                 ]
                 [ materialIcon "arrow_downward" Nothing ]
           else
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none
         ]
 
 

@@ -16,13 +16,13 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Decode
 import List.Extra exposing (groupWhile)
-import Util.UpdateUtil exposing (..)
-import Util.StringUtil exposing (isBlank, isNotBlank)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
-import Util.DateUtil exposing (sameDay, formatDay)
-import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
-import Util.Keyboard.Key
-import Util.Keyboard.Event exposing (KeyboardEvent)
+import Utils.UpdateUtil exposing (..)
+import Utils.StringUtil exposing (isBlank, isNotBlank)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.DateUtil exposing (sameDay, formatDay)
+import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
+import Utils.Keyboard.Key
+import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -183,7 +183,7 @@ handleEditorShortcut :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 handleEditorShortcut context keyboardEvent content model =
     if
-        (keyboardEvent.keyCode == Util.Keyboard.Key.Enter)
+        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
             && isNotBlank content.content
     then
         if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
@@ -353,7 +353,7 @@ moreButton timeline =
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
     else
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
 
 
 postsDiv : Context context -> Graph -> List Post -> Html AppMsg.Msg
@@ -392,7 +392,7 @@ postEditor context session model =
                 ]
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
                   else
                     span [ class "connect-buttons" ]
                         [ button
@@ -433,7 +433,7 @@ postEditor context session model =
                     , on "keydown" <|
                         Decode.map
                             (AppMsg.FlowMsg << EditorKeyDown)
-                            Util.Keyboard.Event.decodeKeyboardEvent
+                            Utils.Keyboard.Event.decodeKeyboardEvent
                     , onClickWithoutPropagation NoOp
                     ]
                     []

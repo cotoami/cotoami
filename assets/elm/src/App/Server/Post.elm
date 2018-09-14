@@ -5,7 +5,7 @@ import Http exposing (Request)
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
-import Util.HttpUtil exposing (ClientId, httpPost)
+import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Messages
     exposing
         ( Msg

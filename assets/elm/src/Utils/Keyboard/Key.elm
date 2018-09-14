@@ -1,4 +1,4 @@
-module Util.Keyboard.Key exposing (..)
+module Utils.Keyboard.Key exposing (..)
 
 {-| Original version: <https://github.com/SwiftsNamesake/proper-keyboard>
 -}

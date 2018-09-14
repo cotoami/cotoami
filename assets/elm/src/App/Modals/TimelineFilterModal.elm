@@ -3,9 +3,9 @@ module App.Modals.TimelineFilterModal exposing (update, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
-import Util.Modal as Modal
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.HtmlUtil exposing (materialIcon)
+import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.HtmlUtil exposing (materialIcon)
 import App.LocalConfig
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
@@ -64,7 +64,7 @@ modalConfig context filter =
             , if App.Submodels.Context.atHome context then
                 excludePostsInCotonomaOption context filter
               else
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
             ]
     , buttons = []
     }

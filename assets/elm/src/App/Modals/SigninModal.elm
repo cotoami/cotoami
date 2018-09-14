@@ -12,9 +12,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
-import Util.StringUtil exposing (validateEmail)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.Modal as Modal
+import Utils.StringUtil exposing (validateEmail)
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.Modal as Modal
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 

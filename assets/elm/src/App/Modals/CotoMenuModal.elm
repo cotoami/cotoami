@@ -11,10 +11,10 @@ module App.Modals.CotoMenuModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isJust, isNothing)
-import Util.Modal as Modal
-import Util.HtmlUtil exposing (faIcon, materialIcon)
-import Util.EventUtil exposing (onLinkButtonClick)
-import Util.UpdateUtil exposing (..)
+import Utils.Modal as Modal
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.UpdateUtil exposing (..)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
@@ -223,7 +223,7 @@ menuItemEdit session model =
                 ]
             ]
     else
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
 
 
 menuItemAddCoto : Model -> Html AppMsg.Msg
@@ -255,7 +255,7 @@ menuItemCotonomatize session model =
                 ]
             ]
     else
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
 
 
 menuItemDelete : Session -> Model -> Html AppMsg.Msg
@@ -287,4 +287,4 @@ menuItemDelete session model =
                         ]
                     ]
         else
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none

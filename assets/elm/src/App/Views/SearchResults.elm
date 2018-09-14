@@ -4,9 +4,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onFocus, onBlur, onInput)
 import Html.Keyed
-import Util.EventUtil exposing (onLinkButtonClick)
-import Util.HtmlUtil exposing (materialIcon)
-import Util.DateUtil
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (materialIcon)
+import Utils.DateUtil
 import App.Types.Post exposing (Post)
 import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
@@ -81,7 +81,7 @@ postDiv context graph post =
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
                     |> Maybe.withDefault (div [] [])
                 , if post.isCotonoma then
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
                   else
                     App.Views.Post.authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown post
@@ -103,10 +103,10 @@ footerDiv context post =
                             |> Maybe.withDefault ""
 
                     day =
-                        Util.DateUtil.formatDay lang postedAt
+                        Utils.DateUtil.formatDay lang postedAt
 
                     time =
-                        Util.DateUtil.format "en_us" "%H:%M:%S" postedAt
+                        Utils.DateUtil.format "en_us" "%H:%M:%S" postedAt
                 in
                     div
                         [ class "post-footer" ]

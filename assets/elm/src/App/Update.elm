@@ -7,10 +7,10 @@ import Maybe
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
-import Util.Keyboard.Key
+import Utils.Keyboard.Key
 import Navigation
-import Util.StringUtil exposing (isNotBlank)
-import Util.UpdateUtil exposing (..)
+import Utils.StringUtil exposing (isNotBlank)
+import Utils.UpdateUtil exposing (..)
 import App.LocalConfig
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
@@ -61,10 +61,10 @@ update msg model =
                 |> withoutCmd
 
         KeyDown keyCode ->
-            if keyCode == Util.Keyboard.Key.escapeKeyCode then
+            if keyCode == Utils.Keyboard.Key.escapeKeyCode then
                 ( App.Submodels.Modals.closeActiveModal model, Cmd.none )
             else if
-                (keyCode == Util.Keyboard.Key.nKeyCode)
+                (keyCode == Utils.Keyboard.Key.nKeyCode)
                     && (List.isEmpty model.modals)
                     && (not model.flowView.editorOpen)
                     && (not model.searchInputFocus)

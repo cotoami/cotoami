@@ -23,8 +23,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed
-import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
@@ -192,7 +192,7 @@ headerDiv context graph maybeInbound config elementId coto =
             |> Maybe.map
                 (\postedIn ->
                     if App.Submodels.Context.orignatedHere context coto then
-                        Util.HtmlUtil.none
+                        Utils.HtmlUtil.none
                     else
                         a
                             [ class "posted-in"
@@ -201,11 +201,11 @@ headerDiv context graph maybeInbound config elementId coto =
                             ]
                             [ text postedIn.name ]
                 )
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id graph then
             faIcon "thumb-tack" (Just "pinned")
           else
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none
         ]
 
 
@@ -248,7 +248,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                     App.Types.Graph.pinned coto.id graph
                         || ((Just coto.id) == (context.cotonoma |> Maybe.map (\c -> c.cotoId)))
                 then
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
                 else
                     a
                         [ class "tool-button pin-coto"
@@ -268,7 +268,7 @@ toolButtonsSpan context graph maybeInbound config elementId coto =
                         ]
                         [ materialIcon "edit" Nothing ]
                 else
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
             )
             config.editCoto
             context.session
@@ -490,7 +490,7 @@ parentsDiv graph exclude childId =
                 |> List.filter (\parent -> (Just parent.id) /= exclude)
     in
         if List.isEmpty parents then
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none
         else
             div [ class "parents" ]
                 (List.map
@@ -528,9 +528,9 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                             ]
                         ]
                 else
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
             )
-        |> Maybe.withDefault Util.HtmlUtil.none
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 subCotosDiv : Context a -> Graph -> ElementId -> Coto -> Html Msg
@@ -552,7 +552,7 @@ subCotosDiv context graph parentElementId coto =
                             connections
                         ]
                 )
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 connectionsDiv : Context a -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
@@ -583,7 +583,7 @@ connectionsDiv context graph parentElementId parentCoto connections =
                             )
                         )
                     |> Maybe.withDefault
-                        ( connection.key, Util.HtmlUtil.none )
+                        ( connection.key, Utils.HtmlUtil.none )
             )
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
@@ -687,11 +687,11 @@ cotonomaLabel maybeOwner cotonoma =
         [ class "cotonoma-label" ]
         [ maybeOwner
             |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
         , if cotonoma.shared then
             span [ class "shared", title "Shared" ]
                 [ materialIcon "people" Nothing ]
           else
-            Util.HtmlUtil.none
+            Utils.HtmlUtil.none
         ]
