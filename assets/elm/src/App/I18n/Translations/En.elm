@@ -84,8 +84,21 @@ text key =
         EditorModal_Content ->
             "Write your Coto in Markdown"
 
+        EditorModal_CotonomaName ->
+            "Cotonoma name"
+
         EditorModal_Preview ->
             "Preview"
 
         EditorModal_Edit ->
             "Edit"
+
+        EditorModal_CotonomaHelp ->
+            "A Cotonoma is a special Coto that has a dedicated chat timeline"
+                ++ " where you can discuss with others about a topic described by its name."
+
+        EditorModal_ShareCotonoma ->
+            "Share it with other users."
+
+        EditorModal_ShareCotonomaNote ->
+            "Only those who know the Cotonoma URL can access it"

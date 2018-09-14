@@ -28,5 +28,9 @@ type TextKey
     | Flow_TileView
     | EditorModal_Summary
     | EditorModal_Content
+    | EditorModal_CotonomaName
     | EditorModal_Preview
     | EditorModal_Edit
+    | EditorModal_CotonomaHelp
+    | EditorModal_ShareCotonoma
+    | EditorModal_ShareCotonomaNote

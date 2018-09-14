@@ -504,14 +504,16 @@ cotonomaEditorConfig context model =
     , title =
         case model.mode of
             Edit coto ->
-                text "Change Cotonoma Name"
+                button
+                    [ class "edit-cotonoma", disabled True ]
+                    [ text (context.i18nText I18nKeys.Cotonoma) ]
 
             _ ->
                 newEditorTitle context model
     , content =
         div []
             [ sourceCotoDiv context model
-            , cotonomaEditor model
+            , cotonomaEditor context model
             ]
     , buttons =
         case model.mode of
@@ -523,17 +525,13 @@ cotonomaEditorConfig context model =
     }
 
 
-cotonomaEditor : Model -> Html AppMsg.Msg
-cotonomaEditor model =
+cotonomaEditor : Context context -> Model -> Html AppMsg.Msg
+cotonomaEditor context model =
     div [ class "cotonoma-editor" ]
         [ case model.mode of
             NewCotonoma ->
                 div [ class "cotonoma-help" ]
-                    [ text
-                        ("A Cotonoma is a special Coto that has a dedicated chat timeline"
-                            ++ " where you can discuss with others about a topic described by its name."
-                        )
-                    ]
+                    [ text (context.i18nText I18nKeys.EditorModal_CotonomaHelp) ]
 
             _ ->
                 Utils.HtmlUtil.none
@@ -541,7 +539,7 @@ cotonomaEditor model =
             [ input
                 [ type_ "text"
                 , class "u-full-width"
-                , placeholder "Cotonoma name"
+                , placeholder (context.i18nText I18nKeys.EditorModal_CotonomaName)
                 , maxlength App.Types.Coto.cotonomaNameMaxlength
                 , value model.content
                 , onInput (AppMsg.EditorModalMsg << EditorInput)
@@ -559,9 +557,9 @@ cotonomaEditor model =
                 [ label []
                     [ span []
                         [ span [ class "label" ]
-                            [ text "Share it with other users." ]
+                            [ text (context.i18nText I18nKeys.EditorModal_ShareCotonoma) ]
                         , span [ class "note" ]
-                            [ text " (Only those who know the Cotonoma URL can access it)" ]
+                            [ text (" (" ++ (context.i18nText I18nKeys.EditorModal_ShareCotonomaNote) ++ ")") ]
                         ]
                     ]
                 ]

@@ -87,8 +87,20 @@ text key =
         EditorModal_Content ->
             "内容（Markdown記法が利用可能）"
 
+        EditorModal_CotonomaName ->
+            "コトノマの名前"
+
         EditorModal_Preview ->
             "プレビュー"
 
         EditorModal_Edit ->
             "編集"
+
+        EditorModal_CotonomaHelp ->
+            "新しいテーマについて議論したり情報を集めるときに、専用のコトノマを作っておくと情報を整理できます。"
+
+        EditorModal_ShareCotonoma ->
+            "他のユーザーと共有する"
+
+        EditorModal_ShareCotonomaNote ->
+            "コトノマのURLを知っている人だけがアクセスできます"
