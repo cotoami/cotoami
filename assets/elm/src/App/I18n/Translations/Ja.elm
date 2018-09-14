@@ -12,6 +12,18 @@ text key =
         Cotonoma ->
             "コトノマ"
 
+        Post ->
+            "投稿"
+
+        Posting ->
+            "投稿中"
+
+        Save ->
+            "保存"
+
+        Saving ->
+            "保存中"
+
         SigninModal_WelcomeTitle ->
             "Cotoamiへようこそ"
 
@@ -51,9 +63,6 @@ text key =
         Flow_EditorPlaceholder ->
             "新しいコトを書く"
 
-        Flow_Post ->
-            "投稿"
-
         Flow_ShortcutToOpenEditor ->
             "Nキーでエディタを開く"
 
@@ -83,9 +92,3 @@ text key =
 
         EditorModal_Edit ->
             "編集"
-
-        EditorModal_Post ->
-            "投稿"
-
-        EditorModal_Posting ->
-            "投稿中"

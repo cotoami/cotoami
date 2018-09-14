@@ -445,7 +445,7 @@ cotoEditorConfig context model =
         ]
             ++ (case model.mode of
                     Edit coto ->
-                        buttonsForEdit coto model
+                        buttonsForEdit context coto model
 
                     _ ->
                         buttonsForNewCoto context model
@@ -516,7 +516,7 @@ cotonomaEditorConfig context model =
     , buttons =
         case model.mode of
             Edit coto ->
-                buttonsForEdit coto model
+                buttonsForEdit context coto model
 
             _ ->
                 buttonsForNewCotonoma context model
@@ -631,7 +631,7 @@ sourceCotoDiv context model =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-buttonsForNewCoto : Context a -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCoto : Context context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if List.isEmpty context.selection || isJust model.source then
         Utils.HtmlUtil.none
@@ -655,16 +655,16 @@ buttonsForNewCoto context model =
         , onClick (AppMsg.EditorModalMsg EditorModalMsg.Post)
         ]
         (if model.requestProcessing then
-            [ text (context.i18nText I18nKeys.EditorModal_Posting ++ "...") ]
+            [ text (context.i18nText I18nKeys.Posting ++ "...") ]
          else
-            [ text (context.i18nText I18nKeys.EditorModal_Post)
+            [ text (context.i18nText I18nKeys.Post)
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
         )
     ]
 
 
-buttonsForNewCotonoma : Context a -> Model -> List (Html AppMsg.Msg)
+buttonsForNewCotonoma : Context context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCotonoma context model =
     [ button
         [ class "button button-primary"
@@ -672,24 +672,24 @@ buttonsForNewCotonoma context model =
         , onClick (AppMsg.EditorModalMsg PostCotonoma)
         ]
         (if model.requestProcessing then
-            [ text (context.i18nText I18nKeys.EditorModal_Posting ++ "...") ]
+            [ text (context.i18nText I18nKeys.Posting ++ "...") ]
          else
-            [ text (context.i18nText I18nKeys.EditorModal_Post) ]
+            [ text (context.i18nText I18nKeys.Post) ]
         )
     ]
 
 
-buttonsForEdit : Coto -> Model -> List (Html AppMsg.Msg)
-buttonsForEdit coto model =
+buttonsForEdit : Context context -> Coto -> Model -> List (Html AppMsg.Msg)
+buttonsForEdit context coto model =
     [ button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)
         , onClick (AppMsg.EditorModalMsg Save)
         ]
         (if model.requestProcessing then
-            [ text "Saving..." ]
+            [ text (context.i18nText I18nKeys.Saving ++ "...") ]
          else
-            [ text "Save"
+            [ text (context.i18nText I18nKeys.Save)
             , if isJust coto.asCotonoma then
                 Utils.HtmlUtil.none
               else

@@ -12,6 +12,18 @@ text key =
         Cotonoma ->
             "Cotonoma"
 
+        Post ->
+            "Post"
+
+        Posting ->
+            "Posting"
+
+        Save ->
+            "Save"
+
+        Saving ->
+            "Saving"
+
         SigninModal_WelcomeTitle ->
             "Welcome to Cotoami!"
 
@@ -48,9 +60,6 @@ text key =
         Flow_EditorPlaceholder ->
             "Write your Coto in Markdown"
 
-        Flow_Post ->
-            "Post"
-
         Flow_ShortcutToOpenEditor ->
             "Press N key"
 
@@ -80,9 +89,3 @@ text key =
 
         EditorModal_Edit ->
             "Edit"
-
-        EditorModal_Post ->
-            "Post"
-
-        EditorModal_Posting ->
-            "Posting"

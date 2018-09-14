@@ -4,6 +4,10 @@ module App.I18n.Keys exposing (TextKey(..))
 type TextKey
     = Coto
     | Cotonoma
+    | Post
+    | Posting
+    | Save
+    | Saving
     | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled
     | SigninModal_OnlyForSignin
@@ -16,7 +20,6 @@ type TextKey
     | Navigation_Current
     | Navigation_Recent
     | Flow_EditorPlaceholder
-    | Flow_Post
     | Flow_ShortcutToOpenEditor
     | Flow_HideFlow
     | Flow_OpenFlow
@@ -27,5 +30,3 @@ type TextKey
     | EditorModal_Content
     | EditorModal_Preview
     | EditorModal_Edit
-    | EditorModal_Post
-    | EditorModal_Posting

@@ -415,7 +415,7 @@ postEditor context session model =
                     , disabled (isBlank model.editorContent)
                     , onMouseDown (AppMsg.FlowMsg FlowMsg.Post)
                     ]
-                    [ text (context.i18nText I18nKeys.Flow_Post)
+                    [ text (context.i18nText I18nKeys.Post)
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
                     ]
                 ]
