@@ -32,3 +32,12 @@ text key =
 
         SigninModal_SentMessage ->
             "環境によっては、実際にメールが届くまで若干の時間がかかることがあります。"
+
+        Navigation_MyHome ->
+            "ホーム"
+
+        Navigation_Current ->
+            "現在地"
+
+        Navigation_Recent ->
+            "最近のコトノマ"

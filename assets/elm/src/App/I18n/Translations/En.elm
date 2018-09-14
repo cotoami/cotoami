@@ -29,3 +29,12 @@ text key =
 
         SigninModal_SentMessage ->
             "We just sent you an email with a link to access (or create) your Cotoami account."
+
+        Navigation_MyHome ->
+            "My Home"
+
+        Navigation_Current ->
+            "Current"
+
+        Navigation_Recent ->
+            "Recent"

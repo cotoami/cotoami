@@ -10,3 +10,6 @@ type TextKey
     | SigninModal_EmailNotFound
     | SigninModal_SentTitle
     | SigninModal_SentMessage
+    | Navigation_MyHome
+    | Navigation_Current
+    | Navigation_Recent

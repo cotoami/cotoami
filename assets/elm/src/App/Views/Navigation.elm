@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isNothing)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (Model)
@@ -45,7 +46,7 @@ homeNav model =
                 (span [ class "home" ])
           )
             [ materialIcon "home" Nothing
-            , text "My Home"
+            , text (model.i18nText I18nKeys.Navigation_MyHome)
             ]
         ]
 
@@ -53,7 +54,8 @@ homeNav model =
 cotonomaNav : Model -> Cotonoma -> Html Msg
 cotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
-        [ div [ class "navigation-title" ] [ text "Current" ]
+        [ div [ class "navigation-title" ]
+            [ text (model.i18nText I18nKeys.Navigation_Current) ]
         , App.Views.Cotonomas.cotonomaDiv
             model
             model.graph
@@ -75,6 +77,7 @@ recentCotonomasDiv context graph cotonomas =
         Utils.HtmlUtil.none
     else
         div [ class "recent-cotonomas" ]
-            [ div [ class "navigation-title" ] [ text "Recent" ]
+            [ div [ class "navigation-title" ]
+                [ text (context.i18nText I18nKeys.Navigation_Recent) ]
             , App.Views.Cotonomas.view context graph "recent-cotonomas" cotonomas
             ]
