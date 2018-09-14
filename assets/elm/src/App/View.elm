@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick)
+import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Types.SearchResults
 import App.Messages exposing (..)
@@ -101,7 +102,7 @@ openFlowButton model =
         div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
-                , title "Open flow view"
+                , title (model.i18nText I18nKeys.Flow_OpenFlow)
                 , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
                 ]
                 [ materialIcon "chat" Nothing ]

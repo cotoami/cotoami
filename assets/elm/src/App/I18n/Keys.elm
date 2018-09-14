@@ -17,6 +17,7 @@ type TextKey
     | Flow_Post
     | Flow_ShortcutToOpenEditor
     | Flow_HideFlow
+    | Flow_OpenFlow
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView

@@ -51,6 +51,9 @@ text key =
         Flow_HideFlow ->
             "Hide flow view"
 
+        Flow_OpenFlow ->
+            "Open flow view"
+
         Flow_Filter ->
             "Filter"
 

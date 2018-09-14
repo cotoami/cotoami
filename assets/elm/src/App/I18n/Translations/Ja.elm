@@ -54,6 +54,9 @@ text key =
         Flow_HideFlow ->
             "タイムラインを隠す"
 
+        Flow_OpenFlow ->
+            "タイムラインを開く"
+
         Flow_Filter ->
             "フィルタ"
 

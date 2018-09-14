@@ -20,14 +20,14 @@ import Http exposing (Error(..))
 import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
 import Utils.EventUtil exposing (onKeyDown, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
+import App.I18n.Keys as I18nKeys
 import App.Markdown
-import Utils.Keyboard.Event
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
