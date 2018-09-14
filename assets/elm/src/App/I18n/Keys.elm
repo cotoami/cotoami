@@ -25,3 +25,7 @@ type TextKey
     | Flow_TileView
     | EditorModal_Summary
     | EditorModal_Content
+    | EditorModal_Preview
+    | EditorModal_Edit
+    | EditorModal_Post
+    | EditorModal_Posting

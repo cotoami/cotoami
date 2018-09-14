@@ -74,3 +74,15 @@ text key =
 
         EditorModal_Content ->
             "Write your Coto in Markdown"
+
+        EditorModal_Preview ->
+            "Preview"
+
+        EditorModal_Edit ->
+            "Edit"
+
+        EditorModal_Post ->
+            "Post"
+
+        EditorModal_Posting ->
+            "Posting"

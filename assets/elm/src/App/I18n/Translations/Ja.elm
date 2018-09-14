@@ -77,3 +77,15 @@ text key =
 
         EditorModal_Content ->
             "内容（Markdown記法が利用可能）"
+
+        EditorModal_Preview ->
+            "プレビュー"
+
+        EditorModal_Edit ->
+            "編集"
+
+        EditorModal_Post ->
+            "投稿"
+
+        EditorModal_Posting ->
+            "投稿中"

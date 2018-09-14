@@ -419,7 +419,9 @@ cotoEditorConfig context model =
     , title =
         case model.mode of
             Edit coto ->
-                text "Edit Coto"
+                button
+                    [ class "edit-coto", disabled True ]
+                    [ text (context.i18nText I18nKeys.Coto) ]
 
             _ ->
                 newEditorTitle context model
@@ -435,9 +437,9 @@ cotoEditorConfig context model =
             , onClick (AppMsg.EditorModalMsg TogglePreview)
             ]
             [ (if model.preview then
-                text "Edit"
+                text (context.i18nText I18nKeys.EditorModal_Edit)
                else
-                text "Preview"
+                text (context.i18nText I18nKeys.EditorModal_Preview)
               )
             ]
         ]
@@ -579,7 +581,10 @@ newEditorTitle context model =
     (case model.mode of
         NewCoto ->
             if isJust model.source then
-                [ text "New Connected Coto" ]
+                [ button
+                    [ class "sub-coto", disabled True ]
+                    [ text (context.i18nText I18nKeys.Coto) ]
+                ]
             else
                 [ button
                     [ class "coto", disabled True ]
@@ -650,9 +655,9 @@ buttonsForNewCoto context model =
         , onClick (AppMsg.EditorModalMsg EditorModalMsg.Post)
         ]
         (if model.requestProcessing then
-            [ text "Posting..." ]
+            [ text (context.i18nText I18nKeys.EditorModal_Posting ++ "...") ]
          else
-            [ text "Post"
+            [ text (context.i18nText I18nKeys.EditorModal_Post)
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
         )
@@ -667,9 +672,9 @@ buttonsForNewCotonoma context model =
         , onClick (AppMsg.EditorModalMsg PostCotonoma)
         ]
         (if model.requestProcessing then
-            [ text "Posting..." ]
+            [ text (context.i18nText I18nKeys.EditorModal_Posting ++ "...") ]
          else
-            [ text "Post" ]
+            [ text (context.i18nText I18nKeys.EditorModal_Post) ]
         )
     ]
 
