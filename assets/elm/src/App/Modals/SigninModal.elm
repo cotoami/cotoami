@@ -97,10 +97,10 @@ modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
 modalConfig context model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
-        , title = text "Check your inbox!"
+        , title = text (context.i18nText I18nKeys.SigninModal_SentTitle)
         , content =
             div [ id "signin-modal-content" ]
-                [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
+                [ p [] [ text (context.i18nText I18nKeys.SigninModal_SentMessage) ] ]
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
@@ -116,11 +116,11 @@ modalConfigWithSignupEnabled context model =
     , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-            , signinForm model
+            [ p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
+            , signinForm context model
             ]
     , buttons =
-        [ signinButton "Sign in/up" model ]
+        [ sendLinkButton context model ]
     }
 
 
@@ -130,11 +130,11 @@ modalConfigOnlyForSignin context model =
     , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Just enter your email address and we'll send you a sign-in link." ]
-            , signinForm model
+            [ p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
+            , signinForm context model
             ]
     , buttons =
-        [ signinButton "Sign in" model ]
+        [ sendLinkButton context model ]
     }
 
 
@@ -146,8 +146,8 @@ welcomeTitle context =
         ]
 
 
-signinForm : Model -> Html AppMsg.Msg
-signinForm model =
+signinForm : Context context -> Model -> Html AppMsg.Msg
+signinForm context model =
     Html.form [ name "signin" ]
         [ div []
             [ input
@@ -162,21 +162,23 @@ signinForm model =
             ]
         , if model.requestStatus == Rejected then
             div [ class "error" ]
-                [ span [ class "message" ] [ text "The email is not allowed to sign in." ] ]
+                [ span [ class "message" ]
+                    [ text (context.i18nText I18nKeys.SigninModal_EmailNotFound) ]
+                ]
           else
             div [] []
         ]
 
 
-signinButton : String -> Model -> Html AppMsg.Msg
-signinButton label model =
+sendLinkButton : Context context -> Model -> Html AppMsg.Msg
+sendLinkButton context model =
     button
         [ class "button button-primary"
         , disabled (not (validateEmail model.email) || model.requestProcessing)
         , onClick (AppMsg.SigninModalMsg RequestClick)
         ]
         [ if model.requestProcessing then
-            text "Sending..."
+            text ((context.i18nText I18nKeys.SigninModal_Sending) ++ "...")
           else
-            text label
+            text (context.i18nText I18nKeys.SigninModal_SendLink)
         ]
