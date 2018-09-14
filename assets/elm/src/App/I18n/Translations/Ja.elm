@@ -24,6 +24,9 @@ text key =
         Saving ->
             "保存中"
 
+        UnexpectedErrorOccurred ->
+            "システムエラーが発生しました。"
+
         SigninModal_WelcomeTitle ->
             "Cotoamiへようこそ"
 
@@ -97,10 +100,19 @@ text key =
             "編集"
 
         EditorModal_CotonomaHelp ->
-            "新しいテーマについて議論したり情報を集めるときに、専用のコトノマを作っておくと情報を整理できます。"
+            "コトノマは、専用のタイムラインとピン留めのスペースを持つ、Cotoamiにおいて情報整理の単位となる入れ物です。"
+                ++ "新しいテーマについて議論したり情報を集めるときは専用のコトノマを作りましょう。"
 
         EditorModal_ShareCotonoma ->
             "他のユーザーと共有する"
 
         EditorModal_ShareCotonomaNote ->
             "コトノマのURLを知っている人だけがアクセスできます"
+
+        EditorModal_DuplicateCotonomaName ->
+            "同じ名前のコトノマを既に作っています。"
+
+        EditorModal_TooLongForCotonomaName maxlength ->
+            "コトノマの名前にするためには、以下の内容を "
+                ++ (toString maxlength)
+                ++ " 文字以下に編集する必要があります。現在の文字数: "

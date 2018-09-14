@@ -8,6 +8,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled
     | SigninModal_OnlyForSignin
@@ -34,3 +35,5 @@ type TextKey
     | EditorModal_CotonomaHelp
     | EditorModal_ShareCotonoma
     | EditorModal_ShareCotonomaNote
+    | EditorModal_DuplicateCotonomaName
+    | EditorModal_TooLongForCotonomaName Int

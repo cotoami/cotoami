@@ -457,7 +457,7 @@ cotoEditor : Context context -> Model -> Html AppMsg.Msg
 cotoEditor context model =
     div [ class "coto-editor" ]
         [ div [ class "summary-input" ]
-            [ adviceOnCotonomaNameDiv model
+            [ adviceOnCotonomaNameDiv context model
             , if model.editingToCotonomatize then
                 Utils.HtmlUtil.none
               else
@@ -488,7 +488,7 @@ cotoEditor context model =
                     ]
                     []
                 ]
-        , errorDiv model
+        , errorDiv context model
         ]
 
 
@@ -564,7 +564,7 @@ cotonomaEditor context model =
                     ]
                 ]
             ]
-        , errorDiv model
+        , errorDiv context model
         ]
 
 
@@ -697,27 +697,27 @@ buttonsForEdit context coto model =
     ]
 
 
-errorDiv : Model -> Html AppMsg.Msg
-errorDiv model =
+errorDiv : Context context -> Model -> Html AppMsg.Msg
+errorDiv context model =
     case model.requestStatus of
         Conflict ->
             div [ class "error" ]
                 [ span [ class "message" ]
-                    [ text "You already have a cotonoma with this name." ]
+                    [ text (context.i18nText I18nKeys.EditorModal_DuplicateCotonomaName) ]
                 ]
 
         Rejected ->
             div [ class "error" ]
                 [ span [ class "message" ]
-                    [ text "An unexpected error has occurred." ]
+                    [ text (context.i18nText I18nKeys.UnexpectedErrorOccurred) ]
                 ]
 
         _ ->
             Utils.HtmlUtil.none
 
 
-adviceOnCotonomaNameDiv : Model -> Html AppMsg.Msg
-adviceOnCotonomaNameDiv model =
+adviceOnCotonomaNameDiv : Context context -> Model -> Html AppMsg.Msg
+adviceOnCotonomaNameDiv context model =
     if model.editingToCotonomatize then
         let
             contentLength =
@@ -728,9 +728,8 @@ adviceOnCotonomaNameDiv model =
         in
             div [ class "advice-on-cotonoma-name" ]
                 [ text
-                    ("A cotonoma name have to be under "
-                        ++ (toString maxlength)
-                        ++ " characters, currently: "
+                    (context.i18nText
+                        (I18nKeys.EditorModal_TooLongForCotonomaName maxlength)
                     )
                 , span
                     [ class

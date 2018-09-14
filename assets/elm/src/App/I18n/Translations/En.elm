@@ -24,6 +24,9 @@ text key =
         Saving ->
             "Saving"
 
+        UnexpectedErrorOccurred ->
+            "An unexpected error has occurred."
+
         SigninModal_WelcomeTitle ->
             "Welcome to Cotoami!"
 
@@ -102,3 +105,11 @@ text key =
 
         EditorModal_ShareCotonomaNote ->
             "Only those who know the Cotonoma URL can access it"
+
+        EditorModal_DuplicateCotonomaName ->
+            "You already have a cotonoma with this name."
+
+        EditorModal_TooLongForCotonomaName maxlength ->
+            "A cotonoma name have to be under "
+                ++ (toString maxlength)
+                ++ " characters, currently: "
