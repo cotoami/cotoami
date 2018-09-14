@@ -58,7 +58,6 @@ type alias Model =
     , timeline : Timeline
     , searchResults : SearchResults
     , cotoSelectionColumnOpen : Bool
-    , cotoSelectionTitle : String
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
@@ -100,7 +99,6 @@ initModel seed route =
     , timeline = App.Types.Timeline.defaultTimeline
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , cotoSelectionColumnOpen = False
-    , cotoSelectionTitle = ""
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
