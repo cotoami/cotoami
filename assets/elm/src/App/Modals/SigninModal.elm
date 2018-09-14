@@ -107,17 +107,16 @@ modalConfig context model =
     else if model.signupEnabled then
         modalConfigWithSignupEnabled context model
     else
-        modalConfigOnlyForSignin model
+        modalConfigOnlyForSignin context model
 
 
 modalConfigWithSignupEnabled : Context context -> Model -> Modal.Config AppMsg.Msg
 modalConfigWithSignupEnabled context model =
     { closeMessage = CloseModal
-    , title = text (context.i18nText I18nKeys.SigninModal_SignupTitle)
+    , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Welcome to Cotoami!" ]
-            , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
+            [ p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
             , signinForm model
             ]
     , buttons =
@@ -125,19 +124,26 @@ modalConfigWithSignupEnabled context model =
     }
 
 
-modalConfigOnlyForSignin : Model -> Modal.Config AppMsg.Msg
-modalConfigOnlyForSignin model =
+modalConfigOnlyForSignin : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfigOnlyForSignin context model =
     { closeMessage = CloseModal
-    , title = text "Sign in with your email"
+    , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Welcome to Cotoami!" ]
-            , p [] [ text "Just enter your email address and we'll send you a sign-in link." ]
+            [ p [] [ text "Just enter your email address and we'll send you a sign-in link." ]
             , signinForm model
             ]
     , buttons =
         [ signinButton "Sign in" model ]
     }
+
+
+welcomeTitle : Context context -> Html AppMsg.Msg
+welcomeTitle context =
+    span []
+        [ img [ class "logo", src "/images/logo/logomark.svg" ] []
+        , text (context.i18nText I18nKeys.SigninModal_WelcomeTitle)
+        ]
 
 
 signinForm : Model -> Html AppMsg.Msg

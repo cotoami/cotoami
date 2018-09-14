@@ -6,5 +6,5 @@ import App.I18n.Keys exposing (TextKey(..))
 text : TextKey -> String
 text key =
     case key of
-        SigninModal_SignupTitle ->
-            "Sign in/up with your email"
+        SigninModal_WelcomeTitle ->
+            "Welcome to Cotoami!"
