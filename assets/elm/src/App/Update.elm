@@ -37,6 +37,7 @@ import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
 import App.Views.Stock
 import App.Views.Traversals
+import App.Views.CotoSelection
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
@@ -314,7 +315,7 @@ update msg model =
         SelectCoto cotoId ->
             model
                 |> App.Submodels.Context.updateSelection cotoId
-                |> App.Model.closeSelectionColumnIfEmpty
+                |> App.Views.CotoSelection.closeColumnIfEmpty
                 |> withoutCmd
 
         OpenTraversal cotoId ->
@@ -565,43 +566,6 @@ update msg model =
             model |> withoutCmd
 
         --
-        -- CotoSelection
-        --
-        DeselectingCoto cotoId ->
-            model
-                |> App.Submodels.Context.setBeingDeselected cotoId
-                |> withCmd
-                    (\model ->
-                        Process.sleep (1 * Time.second)
-                            |> Task.andThen (\_ -> Task.succeed ())
-                            |> Task.perform (\_ -> DeselectCoto)
-                    )
-
-        DeselectCoto ->
-            model
-                |> App.Submodels.Context.finishBeingDeselected
-                |> App.Model.closeSelectionColumnIfEmpty
-                |> withoutCmd
-
-        ClearSelection ->
-            { model
-                | cotoSelectionColumnOpen = False
-                , activeView =
-                    case model.activeView of
-                        SelectionView ->
-                            FlowView
-
-                        anotherView ->
-                            anotherView
-            }
-                |> App.Submodels.Context.clearSelection
-                |> withoutCmd
-
-        CotoSelectionColumnToggle ->
-            { model | cotoSelectionColumnOpen = (not model.cotoSelectionColumnOpen) }
-                |> withoutCmd
-
-        --
         -- Pushed
         --
         DeletePushed payload ->
@@ -672,6 +636,9 @@ update msg model =
 
         TraversalsMsg subMsg ->
             App.Views.Traversals.update model model.graph subMsg model
+
+        CotoSelectionMsg subMsg ->
+            App.Views.CotoSelection.update model subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal

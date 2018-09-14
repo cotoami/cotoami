@@ -12,6 +12,7 @@ import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
 import App.Views.StockMsg
 import App.Views.TraversalsMsg
+import App.Views.CotoSelectionMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.CotoMenuModalMsg
@@ -97,13 +98,6 @@ type Msg
     | MoveToLast (Maybe CotoId) Int
     | ConnectionsReordered (Result Http.Error String)
       --
-      -- CotoSelection
-      --
-    | DeselectingCoto CotoId
-    | DeselectCoto
-    | ClearSelection
-    | CotoSelectionColumnToggle
-      --
       -- Pushed
       --
     | UpdatePushed Value
@@ -120,6 +114,7 @@ type Msg
     | FlowMsg App.Views.FlowMsg.Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
+    | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg

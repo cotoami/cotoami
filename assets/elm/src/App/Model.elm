@@ -4,7 +4,6 @@ module App.Model
         , initModel
         , deleteCoto
         , openTraversal
-        , closeSelectionColumnIfEmpty
         )
 
 import Dict
@@ -25,6 +24,7 @@ import App.Submodels.Traversals
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
 import App.Views.Stock
+import App.Views.CotoSelection
 import App.Modals.SigninModal
 import App.Modals.EditorModal
 import App.Modals.InviteModal
@@ -57,12 +57,12 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , timeline : Timeline
     , searchResults : SearchResults
-    , cotoSelectionColumnOpen : Bool
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
     , flowView : App.Views.Flow.Model
     , stockView : App.Views.Stock.Model
+    , selectionView : App.Views.CotoSelection.Model
     , modals : List Modal
     , signinModal : App.Modals.SigninModal.Model
     , editorModal : App.Modals.EditorModal.Model
@@ -98,12 +98,12 @@ initModel seed route =
     , subCotonomas = []
     , timeline = App.Types.Timeline.defaultTimeline
     , searchResults = App.Types.SearchResults.defaultSearchResults
-    , cotoSelectionColumnOpen = False
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
     , flowView = App.Views.Flow.defaultModel
     , stockView = App.Views.Stock.defaultModel
+    , selectionView = App.Views.CotoSelection.defaultModel
     , modals = []
     , signinModal = App.Modals.SigninModal.initModel False
     , editorModal = App.Modals.EditorModal.defaultModel
@@ -128,11 +128,3 @@ openTraversal cotoId model =
     model
         |> App.Submodels.LocalCotos.incorporateLocalCotoInGraph cotoId
         |> App.Submodels.Traversals.openTraversal cotoId
-
-
-closeSelectionColumnIfEmpty : Model -> Model
-closeSelectionColumnIfEmpty model =
-    if List.isEmpty model.selection then
-        { model | cotoSelectionColumnOpen = False }
-    else
-        model
