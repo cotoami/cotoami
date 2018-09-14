@@ -206,7 +206,7 @@ modals model =
                     App.Modals.ConfirmModal.view model.confirmation.message
 
                 SigninModal ->
-                    App.Modals.SigninModal.view model.signinModal
+                    App.Modals.SigninModal.view model model.signinModal
 
                 EditorModal ->
                     App.Modals.EditorModal.view model model.editorModal

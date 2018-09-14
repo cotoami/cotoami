@@ -10,6 +10,8 @@ import Dict
 import Set exposing (Set)
 import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.Route exposing (Route)
+import App.I18n.Keys exposing (TextKey)
+import App.I18n.Translate
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Session exposing (Session)
@@ -37,6 +39,8 @@ import App.Modals.ImportModal
 type alias Model =
     { route : Route
     , clientId : ClientId
+    , lang : String
+    , i18nText : TextKey -> String
     , session : Maybe Session
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
@@ -74,10 +78,12 @@ type alias Model =
     }
 
 
-initModel : Int -> Route -> Model
-initModel seed route =
+initModel : Int -> String -> Route -> Model
+initModel seed lang route =
     { route = route
     , clientId = App.Submodels.Context.generateClientId seed
+    , lang = lang
+    , i18nText = App.I18n.Translate.text lang
     , session = Nothing
     , activeView = FlowView
     , cotonoma = Nothing

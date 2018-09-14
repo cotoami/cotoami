@@ -15,6 +15,8 @@ import Json.Decode as Decode
 import Utils.StringUtil exposing (validateEmail)
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Modal as Modal
+import App.I18n.Keys as I18nKeys
+import App.Submodels.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
@@ -84,15 +86,15 @@ requestSignin email =
             (Http.get url Decode.string)
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
+view : Context context -> Model -> Html AppMsg.Msg
+view context model =
+    modalConfig context model
         |> Just
         |> Modal.view "signin-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
+modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfig context model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
         , title = text "Check your inbox!"
@@ -103,15 +105,15 @@ modalConfig model =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
     else if model.signupEnabled then
-        modalConfigWithSignupEnabled model
+        modalConfigWithSignupEnabled context model
     else
         modalConfigOnlyForSignin model
 
 
-modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg
-modalConfigWithSignupEnabled model =
+modalConfigWithSignupEnabled : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfigWithSignupEnabled context model =
     { closeMessage = CloseModal
-    , title = text "Sign in/up with your email"
+    , title = text (context.i18nText I18nKeys.SigninModal_SignupTitle)
     , content =
         div []
             [ p [] [ text "Welcome to Cotoami!" ]
