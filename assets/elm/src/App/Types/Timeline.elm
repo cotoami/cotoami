@@ -4,7 +4,6 @@ module App.Types.Timeline
         , defaultTimeline
         , setScrollPosInitialized
         , isEmpty
-        , openOrCloseEditor
         , addPost
         , setPaginatedPosts
         , nextPageIndex
@@ -13,7 +12,6 @@ module App.Types.Timeline
         , deletePendingPost
         , setLoading
         , setLoadingMore
-        , setEditorContent
         , updatePost
         , cotonomatize
         , setCotoSaved
@@ -30,31 +28,25 @@ import App.Submodels.Context exposing (Context)
 
 
 type alias Timeline =
-    { editorOpen : Bool
-    , editorContent : String
-    , editorCounter : Int
-    , postIdCounter : Int
-    , posts : List Post
+    { posts : List Post
     , loading : Bool
     , initializingScrollPos : Bool
     , pageIndex : Int
     , more : Bool
     , loadingMore : Bool
+    , postIdCounter : Int
     }
 
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { editorOpen = False
-    , editorContent = ""
-    , editorCounter = 0
-    , postIdCounter = 0
-    , posts = []
+    { posts = []
     , loading = False
     , initializingScrollPos = False
     , pageIndex = 0
     , more = False
     , loadingMore = False
+    , postIdCounter = 0
     }
 
 
@@ -66,11 +58,6 @@ setScrollPosInitialized timeline =
 isEmpty : Timeline -> Bool
 isEmpty timeline =
     List.isEmpty timeline.posts
-
-
-openOrCloseEditor : Bool -> Timeline -> Timeline
-openOrCloseEditor open timeline =
-    { timeline | editorOpen = open }
 
 
 addPost : Post -> Timeline -> Timeline
@@ -130,11 +117,6 @@ setLoading timeline =
 setLoadingMore : Timeline -> Timeline
 setLoadingMore timeline =
     { timeline | loadingMore = True }
-
-
-setEditorContent : String -> Timeline -> Timeline
-setEditorContent content timeline =
-    { timeline | editorContent = content }
 
 
 updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
@@ -222,8 +204,6 @@ post context isCotonoma content timeline =
         ( { timeline
             | posts = newPost :: timeline.posts
             , postIdCounter = postId
-            , editorContent = ""
-            , editorCounter = timeline.editorCounter + 1
           }
         , newPost
         )

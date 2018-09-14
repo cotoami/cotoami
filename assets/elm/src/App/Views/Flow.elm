@@ -3,6 +3,7 @@ module App.Views.Flow
         ( Model
         , defaultModel
         , setFilter
+        , openOrCloseEditor
         , update
         , initScrollPos
         , post
@@ -43,6 +44,9 @@ type alias Model =
     { hidden : Bool
     , view : TimelineView
     , filter : TimelineFilter
+    , editorOpen : Bool
+    , editorContent : String
+    , editorCounter : Int
     }
 
 
@@ -51,6 +55,9 @@ defaultModel =
     { hidden = False
     , view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
+    , editorOpen = False
+    , editorContent = ""
+    , editorCounter = 0
     }
 
 
@@ -67,6 +74,24 @@ switchView view model =
 setFilter : TimelineFilter -> Model -> Model
 setFilter filter model =
     { model | filter = filter }
+
+
+openOrCloseEditor : Bool -> Model -> Model
+openOrCloseEditor open model =
+    { model | editorOpen = open }
+
+
+setEditorContent : String -> Model -> Model
+setEditorContent content model =
+    { model | editorContent = content }
+
+
+clearEditorContent : Model -> Model
+clearEditorContent model =
+    { model
+        | editorContent = ""
+        , editorCounter = model.editorCounter + 1
+    }
 
 
 type alias UpdateModel model =
@@ -112,22 +137,21 @@ update context msg ({ flowView, timeline } as model) =
                     )
 
         EditorFocus ->
-            { model | timeline = App.Types.Timeline.openOrCloseEditor True timeline }
+            { model | flowView = openOrCloseEditor True flowView }
                 |> withCmdIf
-                    (\model -> timeline.editorOpen)
+                    (\model -> flowView.editorOpen)
                     (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
         EditorInput content ->
-            { model | timeline = App.Types.Timeline.setEditorContent content timeline }
+            { model | flowView = setEditorContent content flowView }
                 |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
-            handleEditorShortcut context keyboardEvent (CotoContent timeline.editorContent Nothing) model
+            handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Post ->
-            post context (CotoContent timeline.editorContent Nothing) timeline
-                |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
+            postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
         Posted postId (Ok response) ->
@@ -163,8 +187,7 @@ handleEditorShortcut context keyboardEvent content model =
             && isNotBlank content.content
     then
         if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            post context content model.timeline
-                |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
+            postFromQuickEditor context content model
         else if
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
@@ -176,13 +199,19 @@ handleEditorShortcut context keyboardEvent content model =
         ( model, Cmd.none )
 
 
-post : Context context -> CotoContent -> Timeline -> ( Timeline, Cmd AppMsg.Msg )
-post context content timeline =
+postFromQuickEditor : Context context -> CotoContent -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor context content model =
+    { model | flowView = clearEditorContent model.flowView }
+        |> post context content
+
+
+post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd AppMsg.Msg )
+post context content model =
     let
         ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content timeline
+            App.Types.Timeline.post context False content model.timeline
     in
-        ( newTimeline
+        ( { model | timeline = newTimeline }
         , Cmd.batch
             [ App.Commands.scrollTimelineToBottom NoOp
             , App.Server.Post.post
@@ -206,7 +235,7 @@ view context session model =
     div
         [ id "flow"
         , classList
-            [ ( "editing", model.timeline.editorOpen )
+            [ ( "editing", model.flowView.editorOpen )
             ]
         ]
         [ if not (App.Submodels.LocalCotos.isTimelineReady model) then
@@ -215,8 +244,8 @@ view context session model =
             div [] []
         , toolbarDiv context model.flowView
         , timelineDiv context model
-        , postEditor context session model.timeline
-        , newCotoButton model.timeline
+        , postEditor context session model.flowView
+        , newCotoButton model.flowView
         ]
 
 
@@ -353,7 +382,7 @@ getKey post =
             )
 
 
-postEditor : Context context -> Session -> Timeline -> Html AppMsg.Msg
+postEditor : Context context -> Session -> Model -> Html AppMsg.Msg
 postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
@@ -413,12 +442,12 @@ postEditor context session model =
         ]
 
 
-newCotoButton : Timeline -> Html AppMsg.Msg
-newCotoButton timeline =
+newCotoButton : Model -> Html AppMsg.Msg
+newCotoButton model =
     a
         [ class "tool-button new-coto-button"
         , title "New Coto"
-        , hidden (timeline.editorOpen)
+        , hidden (model.editorOpen)
         , onClick OpenNewEditorModal
         ]
         [ materialIcon "create" Nothing

@@ -139,13 +139,15 @@ postAndConnectToSelection :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 postAndConnectToSelection context direction content model =
     let
-        ( timeline, newPost ) =
+        ( newTimeline, newPost ) =
             App.Types.Timeline.post context False content model.timeline
 
         tag =
-            (AppMsg.ConnectModalMsg << (PostedAndConnectToSelection timeline.postIdCounter direction))
+            (AppMsg.ConnectModalMsg
+                << (PostedAndConnectToSelection newTimeline.postIdCounter direction)
+            )
     in
-        { model | timeline = timeline }
+        { model | timeline = newTimeline }
             |> withCmds
                 (\model ->
                     [ App.Commands.scrollTimelineToBottom AppMsg.NoOp

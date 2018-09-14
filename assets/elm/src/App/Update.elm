@@ -65,7 +65,7 @@ update msg model =
             else if
                 (keyCode == Util.Keyboard.Key.nKeyCode)
                     && (List.isEmpty model.modals)
-                    && (not model.timeline.editorOpen)
+                    && (not model.flowView.editorOpen)
                     && (not model.searchInputFocus)
             then
                 App.Modals.EditorModal.openForNew model Nothing model
@@ -73,7 +73,7 @@ update msg model =
                 model |> withoutCmd
 
         AppClick ->
-            { model | timeline = App.Types.Timeline.openOrCloseEditor False model.timeline }
+            { model | flowView = App.Views.Flow.openOrCloseEditor False model.flowView }
                 |> withoutCmd
 
         OnLocationChange location ->

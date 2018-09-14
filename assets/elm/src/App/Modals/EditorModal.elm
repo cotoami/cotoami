@@ -248,7 +248,7 @@ update context msg ({ editorModal, timeline } as model) =
 
 
 post : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-post context ({ editorModal, timeline } as model) =
+post context ({ editorModal } as model) =
     let
         content =
             CotoContent editorModal.content (getSummary editorModal)
@@ -256,9 +256,7 @@ post context ({ editorModal, timeline } as model) =
         editorModal.source
             |> Maybe.map (\source -> postSubcoto context source content model)
             |> Maybe.withDefault
-                (App.Views.Flow.post context content timeline
-                    |> Tuple.mapFirst (\timeline -> { model | timeline = timeline })
-                )
+                (App.Views.Flow.post context content model)
 
 
 postSubcoto :
