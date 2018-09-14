@@ -13,3 +13,10 @@ type TextKey
     | Navigation_MyHome
     | Navigation_Current
     | Navigation_Recent
+    | Flow_EditorPlaceholder
+    | Flow_Post
+    | Flow_ShortcutToOpenEditor
+    | Flow_HideFlow
+    | Flow_Filter
+    | Flow_StreamView
+    | Flow_TileView

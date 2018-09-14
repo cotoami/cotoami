@@ -23,6 +23,7 @@ import Utils.DateUtil exposing (sameDay, formatDay)
 import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -245,7 +246,7 @@ view context session model =
         , toolbarDiv context model.flowView
         , timelineDiv context model
         , postEditor context session model.flowView
-        , newCotoButton model.flowView
+        , newCotoButton context model.flowView
         ]
 
 
@@ -254,7 +255,7 @@ toolbarDiv context model =
     div [ class "flow-toolbar" ]
         [ a
             [ class "tool-button flow-toggle"
-            , title "Hide flow view"
+            , title (context.i18nText I18nKeys.Flow_HideFlow)
             , onLinkButtonClick (AppMsg.FlowMsg ToggleFlow)
             ]
             [ materialIcon "arrow_left" Nothing ]
@@ -264,7 +265,7 @@ toolbarDiv context model =
                     [ ( "tool-button", True )
                     , ( "open-filter", True )
                     ]
-                , title "Filter"
+                , title (context.i18nText I18nKeys.Flow_Filter)
                 , onClick OpenTimelineFilterModal
                 ]
                 [ materialIcon "filter_list" Nothing ]
@@ -275,7 +276,7 @@ toolbarDiv context model =
                         , ( "stream-view", True )
                         , ( "disabled", model.view == StreamView )
                         ]
-                    , title "Stream View"
+                    , title (context.i18nText I18nKeys.Flow_StreamView)
                     , onClick (AppMsg.FlowMsg (SwitchView StreamView))
                     ]
                     [ materialIcon "view_stream" Nothing ]
@@ -285,7 +286,7 @@ toolbarDiv context model =
                         , ( "tile-view", True )
                         , ( "disabled", model.view == TileView )
                         ]
-                    , title "Tile View"
+                    , title (context.i18nText I18nKeys.Flow_TileView)
                     , onClick (AppMsg.FlowMsg (SwitchView TileView))
                     ]
                     [ materialIcon "view_module" Nothing ]
@@ -414,7 +415,7 @@ postEditor context session model =
                     , disabled (isBlank model.editorContent)
                     , onMouseDown (AppMsg.FlowMsg FlowMsg.Post)
                     ]
-                    [ text "Post"
+                    [ text (context.i18nText I18nKeys.Flow_Post)
                     , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
                     ]
                 ]
@@ -426,7 +427,7 @@ postEditor context session model =
               , textarea
                     [ class "coto"
                     , id "quick-coto-input"
-                    , placeholder "Write your Coto in Markdown"
+                    , placeholder (context.i18nText I18nKeys.Flow_EditorPlaceholder)
                     , defaultValue model.editorContent
                     , onFocus (AppMsg.FlowMsg EditorFocus)
                     , onInput (AppMsg.FlowMsg << EditorInput)
@@ -442,8 +443,8 @@ postEditor context session model =
         ]
 
 
-newCotoButton : Model -> Html AppMsg.Msg
-newCotoButton model =
+newCotoButton : Context context -> Model -> Html AppMsg.Msg
+newCotoButton context model =
     a
         [ class "tool-button new-coto-button"
         , title "New Coto"
@@ -451,5 +452,6 @@ newCotoButton model =
         , onClick OpenNewEditorModal
         ]
         [ materialIcon "create" Nothing
-        , span [ class "shortcut" ] [ text "(Press N key)" ]
+        , span [ class "shortcut" ]
+            [ text ("(" ++ (context.i18nText I18nKeys.Flow_ShortcutToOpenEditor) ++ ")") ]
         ]

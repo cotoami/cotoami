@@ -41,3 +41,24 @@ text key =
 
         Navigation_Recent ->
             "最近のコトノマ"
+
+        Flow_EditorPlaceholder ->
+            "新しいコトを書く"
+
+        Flow_Post ->
+            "投稿"
+
+        Flow_ShortcutToOpenEditor ->
+            "Nキーでエディタを開く"
+
+        Flow_HideFlow ->
+            "タイムラインを隠す"
+
+        Flow_Filter ->
+            "フィルタ"
+
+        Flow_StreamView ->
+            "一列"
+
+        Flow_TileView ->
+            "タイル"

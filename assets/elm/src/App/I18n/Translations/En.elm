@@ -38,3 +38,24 @@ text key =
 
         Navigation_Recent ->
             "Recent"
+
+        Flow_EditorPlaceholder ->
+            "Write your Coto in Markdown"
+
+        Flow_Post ->
+            "Post"
+
+        Flow_ShortcutToOpenEditor ->
+            "Press N key"
+
+        Flow_HideFlow ->
+            "Hide flow view"
+
+        Flow_Filter ->
+            "Filter"
+
+        Flow_StreamView ->
+            "Stream View"
+
+        Flow_TileView ->
+            "Tile View"
