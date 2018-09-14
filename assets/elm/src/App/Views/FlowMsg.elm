@@ -8,7 +8,8 @@ import App.Types.Timeline exposing (TimelineView)
 
 
 type Msg
-    = TimelineScrollPosInitialized
+    = ToggleFlow
+    | TimelineScrollPosInitialized
     | ImageLoaded
     | SwitchView TimelineView
     | LoadMorePosts

@@ -96,10 +96,6 @@ update msg model =
             }
                 |> withoutCmd
 
-        ToggleTimeline ->
-            { model | timeline = App.Types.Timeline.toggle model.timeline }
-                |> withCmd (\_ -> App.Views.Stock.resizeGraphWithDelay)
-
         HomeClick ->
             changeLocationToHome model
 

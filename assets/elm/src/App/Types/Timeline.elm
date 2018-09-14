@@ -7,7 +7,6 @@ module App.Types.Timeline
         , encodeFilter
         , Timeline
         , defaultTimeline
-        , toggle
         , switchView
         , setFilter
         , setScrollPosInitialized
@@ -73,8 +72,7 @@ encodeFilter filter =
 
 
 type alias Timeline =
-    { hidden : Bool
-    , view : TimelineView
+    { view : TimelineView
     , filter : Filter
     , editorOpen : Bool
     , editorContent : String
@@ -91,8 +89,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { hidden = False
-    , view = StreamView
+    { view = StreamView
     , filter = defaultFilter
     , editorOpen = False
     , editorContent = ""
@@ -105,11 +102,6 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     }
-
-
-toggle : Timeline -> Timeline
-toggle timeline =
-    { timeline | hidden = not timeline.hidden }
 
 
 switchView : TimelineView -> Timeline -> Timeline

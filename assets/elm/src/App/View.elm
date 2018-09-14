@@ -16,6 +16,7 @@ import App.Views.Navigation
 import App.Views.ViewSwitch
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
+import App.Views.FlowMsg
 import App.Views.Stock
 import App.Views.Traversals
 import App.Views.CotoSelection
@@ -85,7 +86,7 @@ graphExplorationDiv model =
             [ ( "active-in-narrow-viewport"
               , List.member model.activeView [ StockView, TraversalsView ]
               )
-            , ( "flow-hidden", model.timeline.hidden )
+            , ( "flow-hidden", model.flowView.hidden )
             ]
         ]
         (openFlowButton model
@@ -96,12 +97,12 @@ graphExplorationDiv model =
 
 openFlowButton : Model -> Html Msg
 openFlowButton model =
-    if model.timeline.hidden then
+    if model.flowView.hidden then
         div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
                 , title "Open flow view"
-                , onLinkButtonClick ToggleTimeline
+                , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
                 ]
                 [ materialIcon "chat" Nothing ]
             ]
@@ -114,7 +115,7 @@ flowColumn model =
     model.session
         |> Maybe.map
             (\session ->
-                if model.timeline.hidden then
+                if model.flowView.hidden then
                     flowDiv
                         session
                         [ ( "main-column", True )

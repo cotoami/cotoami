@@ -28,7 +28,6 @@ type Msg
     | AppClick
     | OnLocationChange Location
     | NavigationToggle
-    | ToggleTimeline
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value

@@ -1,6 +1,8 @@
 module App.Views.Flow
     exposing
-        ( update
+        ( Model
+        , defaultModel
+        , update
         , initScrollPos
         , post
         , view
@@ -12,11 +14,11 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Decode
 import List.Extra exposing (groupWhile)
+import Util.UpdateUtil exposing (..)
 import Util.StringUtil exposing (isBlank, isNotBlank)
 import Util.HtmlUtil exposing (faIcon, materialIcon)
 import Util.DateUtil exposing (sameDay, formatDay)
 import Util.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
-import Util.UpdateUtil exposing (..)
 import Util.Keyboard.Key
 import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Coto exposing (CotoContent)
@@ -35,13 +37,40 @@ import App.Commands
 import App.Server.Post
 
 
+type alias Model =
+    { hidden : Bool
+    }
+
+
+defaultModel : Model
+defaultModel =
+    { hidden = False
+    }
+
+
+toggle : Model -> Model
+toggle model =
+    { model | hidden = not model.hidden }
+
+
 type alias UpdateModel model =
-    LocalCotos (Modals (WithConnectModal model))
+    LocalCotos
+        (Modals
+            (WithConnectModal
+                { model
+                    | flowView : Model
+                }
+            )
+        )
 
 
 update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ timeline } as model) =
+update context msg ({ flowView, timeline } as model) =
     case msg of
+        ToggleFlow ->
+            { model | flowView = toggle flowView }
+                |> withoutCmd
+
         TimelineScrollPosInitialized ->
             { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
                 |> withoutCmd
@@ -174,7 +203,7 @@ toolbarDiv context timeline =
         [ a
             [ class "tool-button flow-toggle"
             , title "Hide flow view"
-            , onLinkButtonClick ToggleTimeline
+            , onLinkButtonClick (AppMsg.FlowMsg ToggleFlow)
             ]
             [ materialIcon "arrow_left" Nothing ]
         , div [ class "tools" ]

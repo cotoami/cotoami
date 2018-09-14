@@ -26,6 +26,7 @@ import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
 import App.Submodels.Traversals
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import App.Views.Flow
 import App.Views.Stock
 import App.Modals.SigninModal
 import App.Modals.EditorModal
@@ -64,6 +65,7 @@ type alias Model =
     , graph : Graph
     , loadingGraph : Bool
     , traversals : Traversals
+    , flowView : App.Views.Flow.Model
     , stockView : App.Views.Stock.Model
     , modals : List Modal
     , signinModal : App.Modals.SigninModal.Model
@@ -105,6 +107,7 @@ initModel seed route =
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False
     , traversals = App.Types.Traversal.defaultTraversals
+    , flowView = App.Views.Flow.defaultModel
     , stockView = App.Views.Stock.defaultModel
     , modals = []
     , signinModal = App.Modals.SigninModal.initModel False
