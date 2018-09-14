@@ -11,6 +11,7 @@ import Util.Keyboard.Key
 import Navigation
 import Util.StringUtil exposing (isNotBlank)
 import Util.UpdateUtil exposing (..)
+import App.LocalConfig
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Graph exposing (Direction(..))
@@ -55,7 +56,7 @@ update msg model =
             model |> withoutCmd
 
         LocalStorageItemFetched item ->
-            App.Model.configure item model
+            App.LocalConfig.configure item model
                 |> withoutCmd
 
         KeyDown keyCode ->

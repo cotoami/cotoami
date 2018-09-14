@@ -6,13 +6,13 @@ import Html.Events exposing (onCheck)
 import Util.Modal as Modal
 import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Util.HtmlUtil exposing (materialIcon)
+import App.LocalConfig
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)
 import App.Views.Flow
 import App.Server.Post
-import App.Ports.LocalStorage
 
 
 type alias UpdateModel model =
@@ -43,10 +43,7 @@ saveUpdate : Context a -> TimelineFilter -> Cmd AppMsg.Msg
 saveUpdate context filter =
     Cmd.batch
         [ App.Server.Post.fetchPostsByContext 0 filter context
-        , App.Ports.LocalStorage.setItem
-            ( "timeline.filter"
-            , App.Types.TimelineFilter.encodeTimelineFilter filter
-            )
+        , App.LocalConfig.saveTimelineFilter filter
         ]
 
 
