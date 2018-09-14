@@ -1,10 +1,14 @@
-module App.Views.FlowMsg exposing (Msg(..))
+module App.Views.FlowMsg exposing (Msg(..), TimelineView(..))
 
 import Http
 import Util.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post)
-import App.Types.Timeline exposing (TimelineView)
+
+
+type TimelineView
+    = StreamView
+    | TileView
 
 
 type Msg

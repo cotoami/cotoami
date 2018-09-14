@@ -1,13 +1,11 @@
 module App.Types.Timeline
     exposing
-        ( TimelineView(..)
-        , Filter
+        ( Filter
         , defaultFilter
         , decodeFilter
         , encodeFilter
         , Timeline
         , defaultTimeline
-        , switchView
         , setFilter
         , setScrollPosInitialized
         , isEmpty
@@ -36,11 +34,6 @@ import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session
 import App.Submodels.Context exposing (Context)
-
-
-type TimelineView
-    = StreamView
-    | TileView
 
 
 type alias Filter =
@@ -72,8 +65,7 @@ encodeFilter filter =
 
 
 type alias Timeline =
-    { view : TimelineView
-    , filter : Filter
+    { filter : Filter
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
@@ -89,8 +81,7 @@ type alias Timeline =
 
 defaultTimeline : Timeline
 defaultTimeline =
-    { view = StreamView
-    , filter = defaultFilter
+    { filter = defaultFilter
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
@@ -102,11 +93,6 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     }
-
-
-switchView : TimelineView -> Timeline -> Timeline
-switchView view timeline =
-    { timeline | view = view }
 
 
 setFilter : Filter -> Timeline -> Timeline

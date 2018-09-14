@@ -25,12 +25,12 @@ import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction(..), Graph, member)
-import App.Types.Timeline exposing (Timeline, TimelineView(..))
+import App.Types.Timeline exposing (Timeline)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Messages as AppMsg exposing (..)
-import App.Views.FlowMsg as FlowMsg exposing (Msg(..))
+import App.Views.FlowMsg as FlowMsg exposing (Msg(..), TimelineView(..))
 import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
@@ -39,18 +39,25 @@ import App.Server.Post
 
 type alias Model =
     { hidden : Bool
+    , view : TimelineView
     }
 
 
 defaultModel : Model
 defaultModel =
     { hidden = False
+    , view = StreamView
     }
 
 
 toggle : Model -> Model
 toggle model =
     { model | hidden = not model.hidden }
+
+
+switchView : TimelineView -> Model -> Model
+switchView view model =
+    { model | view = view }
 
 
 type alias UpdateModel model =
@@ -82,7 +89,7 @@ update context msg ({ flowView, timeline } as model) =
                     (\_ -> App.Commands.scrollTimelineToBottom NoOp)
 
         SwitchView view ->
-            { model | timeline = App.Types.Timeline.switchView view timeline }
+            { model | flowView = switchView view flowView }
                 |> withoutCmd
 
         LoadMorePosts ->
@@ -178,7 +185,14 @@ post context content timeline =
         )
 
 
-view : Context context -> Session -> LocalCotos model -> Html AppMsg.Msg
+type alias ViewModel model =
+    LocalCotos
+        { model
+            | flowView : Model
+        }
+
+
+view : Context context -> Session -> ViewModel model -> Html AppMsg.Msg
 view context session model =
     div
         [ id "flow"
@@ -190,15 +204,15 @@ view context session model =
             div [ class "loading-overlay" ] []
           else
             div [] []
-        , toolbarDiv context model.timeline
-        , timelineDiv context model.graph model.timeline
+        , toolbarDiv context model.flowView
+        , timelineDiv context model
         , postEditor context session model.timeline
         , newCotoButton model.timeline
         ]
 
 
-toolbarDiv : Context context -> Timeline -> Html AppMsg.Msg
-toolbarDiv context timeline =
+toolbarDiv : Context context -> Model -> Html AppMsg.Msg
+toolbarDiv context model =
     div [ class "flow-toolbar" ]
         [ a
             [ class "tool-button flow-toggle"
@@ -221,7 +235,7 @@ toolbarDiv context timeline =
                     [ classList
                         [ ( "tool-button", True )
                         , ( "stream-view", True )
-                        , ( "disabled", timeline.view == StreamView )
+                        , ( "disabled", model.view == StreamView )
                         ]
                     , title "Stream View"
                     , onClick (AppMsg.FlowMsg (SwitchView StreamView))
@@ -231,7 +245,7 @@ toolbarDiv context timeline =
                     [ classList
                         [ ( "tool-button", True )
                         , ( "tile-view", True )
-                        , ( "disabled", timeline.view == TileView )
+                        , ( "disabled", model.view == TileView )
                         ]
                     , title "Tile View"
                     , onClick (AppMsg.FlowMsg (SwitchView TileView))
@@ -242,19 +256,19 @@ toolbarDiv context timeline =
         ]
 
 
-timelineDiv : Context context -> Graph -> Timeline -> Html AppMsg.Msg
-timelineDiv context graph model =
+timelineDiv : Context context -> ViewModel model -> Html AppMsg.Msg
+timelineDiv context model =
     div
         [ id "timeline"
         , classList
             [ ( "timeline", True )
-            , ( "stream", model.view == StreamView )
-            , ( "tile", model.view == TileView )
-            , ( "exclude-pinned-graph", model.filter.excludePinnedGraph )
+            , ( "stream", model.flowView.view == StreamView )
+            , ( "tile", model.flowView.view == TileView )
+            , ( "exclude-pinned-graph", model.timeline.filter.excludePinnedGraph )
             ]
         ]
-        [ moreButton model
-        , model.posts
+        [ moreButton model.timeline
+        , model.timeline.posts
             |> List.reverse
             |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
             |> List.map
@@ -277,7 +291,7 @@ timelineDiv context graph model =
                             [ div
                                 [ class "date-header" ]
                                 [ span [ class "date" ] [ text postDateString ] ]
-                            , postsDiv context graph postsOnDay
+                            , postsDiv context model.graph postsOnDay
                             ]
                         )
                 )
