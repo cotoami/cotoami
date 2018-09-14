@@ -71,7 +71,7 @@ cotonomaNav model cotonoma =
         ]
 
 
-recentCotonomasDiv : Context a -> Graph -> List Cotonoma -> Html Msg
+recentCotonomasDiv : Context context -> Graph -> List Cotonoma -> Html Msg
 recentCotonomasDiv context graph cotonomas =
     if List.isEmpty cotonomas then
         Utils.HtmlUtil.none

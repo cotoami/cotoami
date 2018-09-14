@@ -37,3 +37,10 @@ type TextKey
     | EditorModal_ShareCotonomaNote
     | EditorModal_DuplicateCotonomaName
     | EditorModal_TooLongForCotonomaName Int
+    | ProfileModal_Title
+    | ProfileModal_Name
+    | ProfileModal_EmailAddress
+    | ProfileModal_Signout
+    | ProfileModal_Invite
+    | ProfileModal_Export
+    | ProfileModal_Import

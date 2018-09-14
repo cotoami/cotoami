@@ -213,7 +213,7 @@ modals model =
                     App.Modals.EditorModal.view model model.editorModal
 
                 ProfileModal ->
-                    App.Modals.ProfileModal.view model.session
+                    App.Modals.ProfileModal.view model
 
                 InviteModal ->
                     App.Modals.InviteModal.view model.inviteModal

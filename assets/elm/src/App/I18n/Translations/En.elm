@@ -113,3 +113,24 @@ text key =
             "A cotonoma name have to be under "
                 ++ (toString maxlength)
                 ++ " characters, currently: "
+
+        ProfileModal_Title ->
+            "Amishi Profile"
+
+        ProfileModal_Name ->
+            "Name"
+
+        ProfileModal_EmailAddress ->
+            "Email Address"
+
+        ProfileModal_Signout ->
+            "Sign out"
+
+        ProfileModal_Invite ->
+            "Invite"
+
+        ProfileModal_Export ->
+            "Export"
+
+        ProfileModal_Import ->
+            "Import"

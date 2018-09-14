@@ -116,3 +116,24 @@ text key =
             "コトノマの名前にするためには、以下の内容を "
                 ++ (toString maxlength)
                 ++ " 文字以下に編集する必要があります。現在の文字数: "
+
+        ProfileModal_Title ->
+            "編人情報"
+
+        ProfileModal_Name ->
+            "名前"
+
+        ProfileModal_EmailAddress ->
+            "メールアドレス"
+
+        ProfileModal_Signout ->
+            "サインアウト"
+
+        ProfileModal_Invite ->
+            "招待"
+
+        ProfileModal_Export ->
+            "エクスポート"
+
+        ProfileModal_Import ->
+            "インポート"
