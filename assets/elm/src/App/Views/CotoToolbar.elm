@@ -59,12 +59,7 @@ view context session graph maybeInbound elementId coto =
             , editButton context session coto
             , addSubCotoButton context coto
             , selectButton context coto
-            , a
-                [ class "tool-button open-coto-menu"
-                , title "More"
-                , onLinkButtonClick (OpenCotoMenuModal coto)
-                ]
-                [ materialIcon "more_horiz" Nothing ]
+            , openCotoMenuButton context coto
             ]
         ]
 
@@ -223,3 +218,13 @@ selectButton context coto =
             )
             Nothing
         ]
+
+
+openCotoMenuButton : Context context -> Coto -> Html AppMsg.Msg
+openCotoMenuButton context coto =
+    a
+        [ class "tool-button open-coto-menu"
+        , title "More"
+        , onLinkButtonClick (OpenCotoMenuModal coto)
+        ]
+        [ materialIcon "more_horiz" Nothing ]
