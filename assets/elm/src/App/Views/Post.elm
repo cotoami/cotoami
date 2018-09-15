@@ -90,13 +90,7 @@ isAuthor context post =
 headerDiv : Context a -> Graph -> ElementId -> Post -> Html Msg
 headerDiv context graph elementId post =
     toCoto post
-        |> Maybe.map
-            (App.Views.Coto.headerDivWithDefaultConfig
-                context
-                graph
-                Nothing
-                elementId
-            )
+        |> Maybe.map (App.Views.Coto.headerDiv context graph Nothing elementId)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 

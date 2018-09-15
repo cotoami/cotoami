@@ -4,12 +4,14 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Utils.HtmlUtil
 import Utils.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
-import App.Views.Coto exposing (defaultActionConfig)
+import App.Views.Coto
+import App.Views.CotoToolbar
 
 
 view : Context a -> Graph -> String -> List Cotonoma -> Html Msg
@@ -58,17 +60,16 @@ cotonomaDiv context graph listTitle cotonoma =
                     App.Views.Coto.cotonomaLink context CotonomaClick cotonoma.owner cotonoma
                 ]
             , div [ class "touch-space-to-open-tools" ] []
-            , App.Types.Coto.toCoto cotonoma
-                |> (\coto ->
-                        App.Views.Coto.toolButtonsSpan
+            , context.session
+                |> Maybe.map
+                    (\session ->
+                        App.Views.CotoToolbar.view
                             context
+                            session
                             graph
                             Nothing
-                            { defaultActionConfig
-                                | editCoto = Nothing
-                                , addCoto = Nothing
-                            }
                             elementId
-                            coto
-                   )
+                            (App.Types.Coto.toCoto cotonoma)
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             ]

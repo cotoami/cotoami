@@ -212,22 +212,7 @@ cotoDiv context graph beingDeselected coto =
                         )
                         Nothing
                     ]
-                , App.Views.Coto.headerDiv
-                    context
-                    graph
-                    Nothing
-                    { openCotoMenu = Nothing
-                    , selectCoto = Nothing
-                    , pinCoto = Nothing
-                    , editCoto = Nothing
-                    , addCoto = Nothing
-                    , openTraversal = Nothing
-                    , confirmConnect = Nothing
-                    , toggleReorderMode = Nothing
-                    , deleteConnection = Nothing
-                    }
-                    elementId
-                    coto
+                , App.Views.Coto.headerDiv context graph Nothing elementId coto
                 , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
                 , App.Views.Coto.subCotosButtonDiv graph Nothing (Just coto.id)
                 ]

@@ -3,12 +3,7 @@ module App.Views.Coto
         ( cotoClassList
         , bodyDiv
         , bodyDivByCoto
-        , InboundConnection
-        , ActionConfig
-        , defaultActionConfig
-        , headerDivWithDefaultConfig
         , headerDiv
-        , toolButtonsSpan
         , parentsDiv
         , subCotosButtonDiv
         , subCotosDiv
@@ -17,7 +12,6 @@ module App.Views.Coto
         , cotonomaLabel
         )
 
-import Set
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -26,12 +20,12 @@ import Html.Keyed
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
-import App.Types.Session exposing (Session)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Graph exposing (Direction(..), Graph, Connection)
+import App.Types.Graph exposing (Direction(..), Graph, Connection, InboundConnection)
 import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
+import App.Views.CotoToolbar
 
 
 cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
@@ -136,48 +130,8 @@ contentDivInReorder model =
 --
 
 
-type alias InboundConnection =
-    { parent : Maybe Coto
-    , connection : Connection
-    , siblings : Int
-    , index : Int
-    }
-
-
-type alias ActionConfig =
-    { openCotoMenu : Maybe (Coto -> Msg)
-    , selectCoto : Maybe (CotoId -> Msg)
-    , pinCoto : Maybe (CotoId -> Msg)
-    , editCoto : Maybe (Coto -> Msg)
-    , addCoto : Maybe (Coto -> Msg)
-    , openTraversal : Maybe (CotoId -> Msg)
-    , confirmConnect : Maybe (CotoId -> Direction -> Msg)
-    , toggleReorderMode : Maybe (ElementId -> Msg)
-    , deleteConnection : Maybe (( CotoId, CotoId ) -> Msg)
-    }
-
-
-defaultActionConfig : ActionConfig
-defaultActionConfig =
-    { openCotoMenu = Just OpenCotoMenuModal
-    , selectCoto = Just SelectCoto
-    , pinCoto = Just PinCoto
-    , editCoto = Just OpenEditorModal
-    , addCoto = Just OpenNewEditorModalWithSourceCoto
-    , openTraversal = Just OpenTraversal
-    , confirmConnect = Just ConfirmConnect
-    , toggleReorderMode = Nothing
-    , deleteConnection = Just ConfirmDeleteConnection
-    }
-
-
-headerDivWithDefaultConfig : Context a -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
-headerDivWithDefaultConfig context graph maybeInbound elementId coto =
-    headerDiv context graph maybeInbound defaultActionConfig elementId coto
-
-
-headerDiv : Context a -> Graph -> Maybe InboundConnection -> ActionConfig -> ElementId -> Coto -> Html Msg
-headerDiv context graph maybeInbound config elementId coto =
+headerDiv : Context a -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
+headerDiv context graph maybeInbound elementId coto =
     div
         [ class "coto-header" ]
         [ if App.Submodels.Context.inReorderMode elementId context then
@@ -185,9 +139,21 @@ headerDiv context graph maybeInbound config elementId coto =
                 |> Maybe.map
                     (\inbound -> reorderToolButtonsSpan context inbound elementId)
                 |> Maybe.withDefault
-                    (toolButtonsSpan context graph maybeInbound config elementId coto)
+                    Utils.HtmlUtil.none
           else
-            toolButtonsSpan context graph maybeInbound config elementId coto
+            context.session
+                |> Maybe.map
+                    (\session ->
+                        App.Views.CotoToolbar.view
+                            context
+                            session
+                            graph
+                            maybeInbound
+                            elementId
+                            coto
+                    )
+                |> Maybe.withDefault
+                    Utils.HtmlUtil.none
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
@@ -207,208 +173,6 @@ headerDiv context graph maybeInbound config elementId coto =
           else
             Utils.HtmlUtil.none
         ]
-
-
-toolButtonsSpan :
-    Context a
-    -> Graph
-    -> Maybe InboundConnection
-    -> ActionConfig
-    -> ElementId
-    -> Coto
-    -> Html Msg
-toolButtonsSpan context graph maybeInbound config elementId coto =
-    [ if
-        List.isEmpty context.selection
-            || App.Submodels.Context.isSelected (Just coto.id) context
-      then
-        Nothing
-      else
-        Maybe.map
-            (\confirmConnect ->
-                span [ class "connecting-buttons" ]
-                    [ a
-                        [ class "tool-button connect"
-                        , title "Connect"
-                        , onLinkButtonClick (confirmConnect coto.id Inbound)
-                        ]
-                        [ faIcon "link" Nothing ]
-                    , span [ class "border" ] []
-                    ]
-            )
-            config.confirmConnect
-    , maybeInbound
-        |> Maybe.andThen
-            (\inbound ->
-                subCotoButtonsSpan context graph inbound config elementId coto
-            )
-    , [ Maybe.map
-            (\pinCoto ->
-                if
-                    App.Types.Graph.pinned coto.id graph
-                        || ((Just coto.id) == (context.cotonoma |> Maybe.map (\c -> c.cotoId)))
-                then
-                    Utils.HtmlUtil.none
-                else
-                    a
-                        [ class "tool-button pin-coto"
-                        , title "Pin"
-                        , onLinkButtonClick (pinCoto coto.id)
-                        ]
-                        [ faIcon "thumb-tack" Nothing ]
-            )
-            config.pinCoto
-      , Maybe.map2
-            (\editCoto session ->
-                if App.Types.Coto.checkWritePermission session coto then
-                    a
-                        [ class "tool-button edit-coto"
-                        , title "Edit"
-                        , onLinkButtonClick (editCoto coto)
-                        ]
-                        [ materialIcon "edit" Nothing ]
-                else
-                    Utils.HtmlUtil.none
-            )
-            config.editCoto
-            context.session
-      , Maybe.map
-            (\addCoto ->
-                a
-                    [ class "tool-button add-coto"
-                    , title "Create a connected Coto"
-                    , onLinkButtonClick (addCoto coto)
-                    ]
-                    [ materialIcon "add" Nothing ]
-            )
-            config.addCoto
-      , Maybe.map
-            (\selectCoto ->
-                a
-                    [ class "tool-button select-coto"
-                    , title "Select"
-                    , onLinkButtonClick (selectCoto coto.id)
-                    ]
-                    [ materialIcon
-                        (if
-                            App.Submodels.Context.isSelected (Just coto.id) context
-                                && not (Set.member coto.id context.deselecting)
-                         then
-                            "check_box"
-                         else
-                            "check_box_outline_blank"
-                        )
-                        Nothing
-                    ]
-            )
-            config.selectCoto
-      , Maybe.map
-            (\openCotoMenu ->
-                a
-                    [ class "tool-button open-coto-menu"
-                    , title "More"
-                    , onLinkButtonClick (openCotoMenu coto)
-                    ]
-                    [ materialIcon "more_horiz" Nothing ]
-            )
-            config.openCotoMenu
-      ]
-        |> List.filterMap identity
-        |> span [ class "default-buttons" ]
-        |> Just
-    ]
-        |> List.filterMap identity
-        |> span [ class "coto-tool-buttons" ]
-
-
-subCotoButtonsSpan :
-    Context a
-    -> Graph
-    -> InboundConnection
-    -> ActionConfig
-    -> ElementId
-    -> Coto
-    -> Maybe (Html Msg)
-subCotoButtonsSpan context graph inbound config elementId coto =
-    [ (Maybe.map3
-        (\deleteConnection session parent ->
-            if isDisconnectable session parent inbound.connection coto then
-                Just <|
-                    a
-                        [ class "tool-button delete-connection"
-                        , title "Disconnect"
-                        , onLinkButtonClick (deleteConnection ( parent.id, coto.id ))
-                        ]
-                        [ faIcon "unlink" Nothing ]
-            else
-                Nothing
-        )
-        config.deleteConnection
-        context.session
-        inbound.parent
-      )
-        |> Maybe.withDefault Nothing
-    , (Maybe.map2
-        (\toggleReorderMode session ->
-            if isReorderble context session inbound coto then
-                Just <|
-                    a
-                        [ class "tool-button toggle-reorder-mode"
-                        , title "Reorder"
-                        , onLinkButtonClick (toggleReorderMode elementId)
-                        ]
-                        [ faIcon "sort" Nothing ]
-            else
-                Nothing
-        )
-        config.toggleReorderMode
-        context.session
-      )
-        |> Maybe.withDefault Nothing
-    ]
-        |> List.filterMap identity
-        |> (\buttons ->
-                if List.isEmpty buttons then
-                    Nothing
-                else
-                    Just <| buttons ++ [ span [ class "border" ] [] ]
-           )
-        |> Maybe.map (span [ class "sub-coto-buttons" ])
-
-
-isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
-isDisconnectable session parent connection child =
-    session.owner
-        || (session.id == connection.amishiId)
-        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
-
-
-isReorderble : Context a -> Session -> InboundConnection -> Coto -> Bool
-isReorderble context session inbound child =
-    if inbound.siblings < 2 then
-        False
-    else if session.owner then
-        True
-    else
-        inbound.parent
-            |> Maybe.map
-                (\parent ->
-                    Just session.id
-                        == (parent.amishi
-                                |> Maybe.map (\amishi -> amishi.id)
-                           )
-                )
-            |> Maybe.withDefault
-                (context.cotonoma
-                    |> Maybe.map
-                        (\cotonoma ->
-                            Just session.id
-                                == (cotonoma.owner
-                                        |> Maybe.map (\owner -> owner.id)
-                                   )
-                        )
-                    |> Maybe.withDefault True
-                )
 
 
 reorderToolButtonsSpan : Context a -> InboundConnection -> ElementId -> Html Msg
@@ -609,9 +373,6 @@ subCotoDiv context graph parentElementId inbound coto =
                     context
                     graph
                     (Just inbound)
-                    { defaultActionConfig
-                        | toggleReorderMode = Just ToggleReorderMode
-                    }
                     elementId
                     coto
                 , parentsDiv graph maybeParentId coto.id
