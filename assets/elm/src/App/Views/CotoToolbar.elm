@@ -89,15 +89,7 @@ subCotoTools :
     -> Html AppMsg.Msg
 subCotoTools context session graph inbound elementId coto =
     [ deleteConnectionButton context session inbound coto
-    , if isReorderble context session inbound coto then
-        a
-            [ class "tool-button toggle-reorder-mode"
-            , title "Reorder"
-            , onLinkButtonClick (ToggleReorderMode elementId)
-            ]
-            [ faIcon "sort" Nothing ]
-      else
-        Utils.HtmlUtil.none
+    , reorderButton context session inbound elementId coto
     ]
         |> (\buttons ->
                 if List.isEmpty buttons then
@@ -251,3 +243,22 @@ deleteConnectionButton context session inbound coto =
                     Utils.HtmlUtil.none
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+reorderButton :
+    Context context
+    -> Session
+    -> InboundConnection
+    -> ElementId
+    -> Coto
+    -> Html AppMsg.Msg
+reorderButton context session inbound elementId coto =
+    if isReorderble context session inbound coto then
+        a
+            [ class "tool-button toggle-reorder-mode"
+            , title "Reorder"
+            , onLinkButtonClick (ToggleReorderMode elementId)
+            ]
+            [ faIcon "sort" Nothing ]
+    else
+        Utils.HtmlUtil.none
