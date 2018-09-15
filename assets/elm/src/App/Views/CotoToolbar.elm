@@ -1,6 +1,7 @@
 module App.Views.CotoToolbar
     exposing
-        ( view
+        ( update
+        , view
         )
 
 import Set
@@ -11,8 +12,32 @@ import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, ElementId, CotoId)
 import App.Types.Graph exposing (Graph, Connection, InboundConnection, Direction(..))
-import App.Messages exposing (..)
+import App.Messages as AppMsg exposing (..)
+import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modals)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Modals.ConnectModal exposing (WithConnectModal)
+
+
+type alias UpdateModel model =
+    LocalCotos (Modals (WithConnectModal model))
+
+
+update : Context context -> CotoToolbarMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        ConfirmConnect cotoId direction ->
+            model
+                |> App.Submodels.LocalCotos.getCoto cotoId
+                |> Maybe.map
+                    (\coto ->
+                        App.Modals.ConnectModal.open
+                            direction
+                            (App.Modals.ConnectModal.Coto coto)
+                            model
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
 
 view :
@@ -22,7 +47,7 @@ view :
     -> Maybe InboundConnection
     -> ElementId
     -> Coto
-    -> Html Msg
+    -> Html AppMsg.Msg
 view context session graph maybeInbound elementId coto =
     span [ class "coto-tool-buttons" ]
         [ if
@@ -33,7 +58,8 @@ view context session graph maybeInbound elementId coto =
                 [ a
                     [ class "tool-button connect"
                     , title "Connect"
-                    , onLinkButtonClick (ConfirmConnect coto.id Inbound)
+                    , onLinkButtonClick
+                        (AppMsg.CotoToolbarMsg (ConfirmConnect coto.id Inbound))
                     ]
                     [ faIcon "link" Nothing ]
                 , span [ class "border" ] []
@@ -104,7 +130,7 @@ subCotoTools :
     -> InboundConnection
     -> ElementId
     -> Coto
-    -> Html Msg
+    -> Html AppMsg.Msg
 subCotoTools context session graph inbound elementId coto =
     [ inbound.parent
         |> Maybe.map

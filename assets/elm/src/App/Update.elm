@@ -38,6 +38,7 @@ import App.Views.Flow
 import App.Views.Stock
 import App.Views.Traversals
 import App.Views.CotoSelection
+import App.Views.CotoToolbar
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
@@ -491,18 +492,6 @@ update msg model =
         CotoUnpinned (Err _) ->
             model |> withoutCmd
 
-        ConfirmConnect cotoId direction ->
-            model
-                |> App.Submodels.LocalCotos.getCoto cotoId
-                |> Maybe.map
-                    (\coto ->
-                        App.Modals.ConnectModal.open
-                            direction
-                            (App.Modals.ConnectModal.Coto coto)
-                            model
-                    )
-                |> Maybe.withDefault ( model, Cmd.none )
-
         Connected (Ok _) ->
             model |> withCmd (App.Views.Stock.renderGraph model)
 
@@ -639,6 +628,9 @@ update msg model =
 
         CotoSelectionMsg subMsg ->
             App.Views.CotoSelection.update model subMsg model
+
+        CotoToolbarMsg subMsg ->
+            App.Views.CotoToolbar.update model subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
