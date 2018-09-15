@@ -186,8 +186,14 @@ text key =
         CotoMenuModal_ExploreConnections ->
             "つながりを辿る"
 
-        CotoMenuModal_PinTo ->
-            "ピン留め:"
+        CotoMenuModal_PinToMyHome ->
+            "ホームにピン留め"
 
-        CotoMenuModal_UnpinFrom ->
-            "ピンを外す:"
+        CotoMenuModal_UnpinFromMyHome ->
+            "ホームのピンを外す"
+
+        CotoMenuModal_PinToCotonoma ->
+            "現在のコトノマにピン留め"
+
+        CotoMenuModal_UnpinFromCotonoma ->
+            "現在のコトノマのピンを外す"

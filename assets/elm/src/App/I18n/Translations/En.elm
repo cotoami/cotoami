@@ -183,8 +183,14 @@ text key =
         CotoMenuModal_ExploreConnections ->
             "Explore the connections"
 
-        CotoMenuModal_PinTo ->
-            "Pin to:"
+        CotoMenuModal_PinToMyHome ->
+            "Pin to My Home"
 
-        CotoMenuModal_UnpinFrom ->
-            "Unpin from:"
+        CotoMenuModal_UnpinFromMyHome ->
+            "Unpin from My Home"
+
+        CotoMenuModal_PinToCotonoma ->
+            "Pin to the current Cotonoma"
+
+        CotoMenuModal_UnpinFromCotonoma ->
+            "Unpin from the current Cotonoma"

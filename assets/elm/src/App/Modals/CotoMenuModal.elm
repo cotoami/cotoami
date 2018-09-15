@@ -161,7 +161,8 @@ menuItemPinUnpin context graph model =
                 [ class "unpin" ]
                 [ faIcon "thumb-tack" Nothing
                 , faIcon "remove" Nothing
-                , pinOrUnpinMenuTitle context context.cotonoma False
+                , span [ class "menu-title" ]
+                    [ text (pinOrUnpinMenuTitle context False) ]
                 ]
             ]
     else
@@ -172,7 +173,8 @@ menuItemPinUnpin context graph model =
             [ a
                 [ class "pin" ]
                 [ faIcon "thumb-tack" Nothing
-                , pinOrUnpinMenuTitle context context.cotonoma True
+                , span [ class "menu-title" ]
+                    [ text (pinOrUnpinMenuTitle context True) ]
                 ]
             ]
 
@@ -186,36 +188,26 @@ menuItemPinCotoToMyHome context graph model =
         [ a
             [ class "pin-to-my-home" ]
             [ faIcon "thumb-tack" Nothing
-            , pinOrUnpinMenuTitle context Nothing True
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_PinToMyHome) ]
             ]
         ]
 
 
-pinOrUnpinMenuTitle : Context context -> Maybe Cotonoma -> Bool -> Html AppMsg.Msg
-pinOrUnpinMenuTitle context maybeCotonoma pinOrUnpin =
-    let
-        prefix =
-            if pinOrUnpin then
-                context.i18nText I18nKeys.CotoMenuModal_PinTo
-            else
-                context.i18nText I18nKeys.CotoMenuModal_UnpinFrom
-    in
-        span [ class "menu-title" ]
-            (maybeCotonoma
-                |> Maybe.map
-                    (\cotonoma ->
-                        [ text prefix
-                        , span [ class "cotonoma" ] [ text cotonoma.name ]
-                        ]
-                    )
-                |> Maybe.withDefault
-                    [ text
-                        (prefix
-                            ++ " "
-                            ++ (context.i18nText I18nKeys.MyHome)
-                        )
-                    ]
-            )
+pinOrUnpinMenuTitle : Context context -> Bool -> String
+pinOrUnpinMenuTitle context pinOrUnpin =
+    if isJust context.cotonoma then
+        (if pinOrUnpin then
+            context.i18nText I18nKeys.CotoMenuModal_PinToCotonoma
+         else
+            context.i18nText I18nKeys.CotoMenuModal_UnpinFromCotonoma
+        )
+    else
+        (if pinOrUnpin then
+            context.i18nText I18nKeys.CotoMenuModal_PinToMyHome
+         else
+            context.i18nText I18nKeys.CotoMenuModal_UnpinFromMyHome
+        )
 
 
 menuItemEdit : Session -> Model -> Html AppMsg.Msg

@@ -60,5 +60,7 @@ type TextKey
     | CotoToolbar_Reorder
     | CotoMenuModal_Info
     | CotoMenuModal_ExploreConnections
-    | CotoMenuModal_PinTo
-    | CotoMenuModal_UnpinFrom
+    | CotoMenuModal_PinToMyHome
+    | CotoMenuModal_UnpinFromMyHome
+    | CotoMenuModal_PinToCotonoma
+    | CotoMenuModal_UnpinFromCotonoma
