@@ -21,12 +21,13 @@ import Exts.Maybe exposing (isJust)
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
-import App.Types.Graph exposing (Graph, Connection)
+import App.Types.Graph exposing (Graph, Connection, InboundConnection)
 import App.Messages as AppMsg exposing (..)
 import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
 import App.Submodels.Context exposing (Context)
-import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
+import App.Views.Coto
 import App.Ports.Graph
 
 
@@ -109,6 +110,7 @@ view context model =
                         , ( "document-view", True )
                         , ( "disabled", model.stockView.view == DocumentView )
                         ]
+                    , title (context.i18nText I18nKeys.Stock_DocumentView)
                     , onClick (AppMsg.StockMsg (SwitchView DocumentView))
                     ]
                     [ materialIcon "view_stream" Nothing ]
@@ -118,6 +120,7 @@ view context model =
                         , ( "graph-view", True )
                         , ( "disabled", model.stockView.view == GraphView )
                         ]
+                    , title (context.i18nText I18nKeys.Stock_GraphView)
                     , onClick (AppMsg.StockMsg (SwitchView GraphView))
                     ]
                     [ materialIcon "share" Nothing ]
@@ -198,15 +201,7 @@ cotoDiv context graph inbound coto =
             [ div
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context inbound.connection coto.id
-                , App.Views.Coto.headerDiv
-                    context
-                    graph
-                    (Just inbound)
-                    { defaultActionConfig
-                        | toggleReorderMode = Just ToggleReorderMode
-                    }
-                    elementId
-                    coto
+                , App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
                 , App.Views.Coto.parentsDiv graph cotonomaCotoId coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto

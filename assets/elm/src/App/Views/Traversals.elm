@@ -11,14 +11,14 @@ import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotoSelection)
-import App.Types.Graph exposing (Graph, Connection, hasChildren)
+import App.Types.Graph exposing (Graph, Connection, InboundConnection)
 import App.Types.Traversal exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Traversals
 import App.Messages as AppMsg exposing (..)
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
-import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
+import App.Views.Coto
 
 
 type alias UpdateModel a =
@@ -133,9 +133,7 @@ traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description", title "Coto Graph Exploration" ]
-                [ faIcon "sitemap" Nothing
-                ]
+            [ span [ class "description" ] [ faIcon "sitemap" Nothing ]
             , a
                 [ class "tool-button close-traversal"
                 , href "/"
@@ -210,7 +208,7 @@ stepCotoDiv context graph connections step coto =
             , onMouseLeave (CotoMouseLeave elementId coto.id)
             ]
             [ div [ class "coto-inner" ]
-                [ App.Views.Coto.headerDivWithDefaultConfig context graph Nothing elementId coto
+                [ App.Views.Coto.headerDiv context graph Nothing elementId coto
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , div [ class "main-sub-border" ] []
                 , connectionsDiv
@@ -301,15 +299,7 @@ subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ App.Views.Coto.headerDiv
-                    context
-                    graph
-                    (Just inbound)
-                    { defaultActionConfig
-                        | toggleReorderMode = Just ToggleReorderMode
-                    }
-                    elementId
-                    coto
+                [ App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
                 , App.Views.Coto.parentsDiv graph maybeParentId coto.id
                 , div [ class "sub-coto-body" ]
                     [ App.Views.Coto.bodyDivByCoto context elementId coto
@@ -366,7 +356,7 @@ traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
         [ if isJust coto.asCotonoma then
             openTraversalButton coto.id
-          else if hasChildren coto.id graph then
+          else if App.Types.Graph.hasChildren coto.id graph then
             a
                 [ class "tool-button traverse"
                 , onLinkButtonClick

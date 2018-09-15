@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick)
+import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Types.SearchResults
 import App.Messages exposing (..)
@@ -57,7 +58,7 @@ view model =
                 , App.Views.ViewSwitch.view model
                 ]
             ]
-        , App.Views.CotoSelection.statusBar model
+        , App.Views.CotoSelection.statusBar model model
         , div [] (modals model)
         ]
 
@@ -101,7 +102,7 @@ openFlowButton model =
         div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
-                , title "Open flow view"
+                , title (model.i18nText I18nKeys.Flow_OpenFlow)
                 , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
                 ]
                 [ materialIcon "chat" Nothing ]
@@ -203,28 +204,29 @@ modals model =
         (\modal ->
             case modal of
                 ConfirmModal ->
-                    App.Modals.ConfirmModal.view model.confirmation.message
+                    App.Modals.ConfirmModal.view model model.confirmation.message
 
                 SigninModal ->
-                    App.Modals.SigninModal.view model.signinModal
+                    App.Modals.SigninModal.view model model.signinModal
 
                 EditorModal ->
                     App.Modals.EditorModal.view model model.editorModal
 
                 ProfileModal ->
-                    App.Modals.ProfileModal.view model.session
+                    App.Modals.ProfileModal.view model
 
                 InviteModal ->
-                    App.Modals.InviteModal.view model.inviteModal
+                    App.Modals.InviteModal.view model model.inviteModal
 
                 CotoMenuModal ->
                     App.Modals.CotoMenuModal.view model model.graph model.cotoMenuModal
 
                 CotoModal ->
-                    App.Modals.CotoModal.view model.session model.cotoModal
+                    App.Modals.CotoModal.view model model.cotoModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view
+                        model
                         (App.Submodels.LocalCotos.getSelectedCotos model model)
                         model.connectModal
 

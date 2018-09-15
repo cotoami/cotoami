@@ -5,27 +5,29 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.Modal as Modal
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Messages exposing (Msg(CloseModal, OpenInviteModal, OpenImportModal))
+import App.Submodels.Context exposing (Context)
 
 
-view : Maybe Session -> Html Msg
-view maybeSession =
+view : Context context -> Html Msg
+view context =
     Modal.view
         "profile-modal"
-        (case maybeSession of
+        (case context.session of
             Nothing ->
                 Nothing
 
             Just session ->
-                Just (modalConfig session)
+                Just (modalConfig context session)
         )
 
 
-modalConfig : Session -> Modal.Config Msg
-modalConfig session =
+modalConfig : Context context -> Session -> Modal.Config Msg
+modalConfig context session =
     { closeMessage = CloseModal
-    , title = text "Amishi Profile"
+    , title = text (context.i18nText I18nKeys.ProfileModal_Title)
     , content =
         div [ class "profile container" ]
             [ div [ class "row" ]
@@ -47,7 +49,7 @@ modalConfig session =
                     ]
                 , div
                     [ class "profile-content nine columns" ]
-                    [ label [] [ text "Name" ]
+                    [ label [] [ text (context.i18nText I18nKeys.ProfileModal_Name) ]
                     , input
                         [ type_ "text"
                         , class "u-full-width"
@@ -55,7 +57,7 @@ modalConfig session =
                         , disabled True
                         ]
                         []
-                    , label [] [ text "Email Address" ]
+                    , label [] [ text (context.i18nText I18nKeys.ProfileModal_EmailAddress) ]
                     , input
                         [ type_ "text"
                         , class "u-full-width"
@@ -66,29 +68,23 @@ modalConfig session =
                     ]
                 ]
             , div [ class "tools" ]
-                [ toolButton "Invite"
+                [ toolButton (context.i18nText I18nKeys.ProfileModal_Invite)
                     "person_add"
-                    [ title "Invite an amishi"
-                    , onClick OpenInviteModal
-                    ]
-                , toolButton "Export"
+                    [ onClick OpenInviteModal ]
+                , toolButton (context.i18nText I18nKeys.ProfileModal_Export)
                     "cloud_download"
-                    [ title "Export my data"
-                    , href "/export"
-                    ]
+                    [ href "/export" ]
                 , if session.owner then
-                    toolButton "Import"
+                    toolButton (context.i18nText I18nKeys.ProfileModal_Import)
                         "cloud_upload"
-                        [ title "Import cotos and connections"
-                        , onClick OpenImportModal
-                        ]
+                        [ onClick OpenImportModal ]
                   else
                     span [] []
                 ]
             ]
     , buttons =
         [ a [ class "button", href "/signout" ]
-            [ text "Sign out" ]
+            [ text (context.i18nText I18nKeys.ProfileModal_Signout) ]
         ]
     }
 

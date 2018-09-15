@@ -3,6 +3,7 @@ module App.Types.Graph
         ( Direction(..)
         , Connection
         , initConnection
+        , InboundConnection
         , Graph
         , defaultGraph
         , initGraph
@@ -62,6 +63,14 @@ initConnection amishiId maybeStart end =
 
 type alias ConnectionDict =
     Dict CotoId (List Connection)
+
+
+type alias InboundConnection =
+    { parent : Maybe Coto
+    , connection : Connection
+    , siblings : Int
+    , index : Int
+    }
 
 
 type alias Graph =

@@ -13,6 +13,7 @@ import App.Views.FlowMsg
 import App.Views.StockMsg
 import App.Views.TraversalsMsg
 import App.Views.CotoSelectionMsg
+import App.Views.CotoToolbarMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.CotoMenuModalMsg
@@ -58,7 +59,6 @@ type Msg
     | OpenNewEditorModalWithSourceCoto Coto
     | OpenInviteModal
     | OpenProfileModal
-    | OpenCotoMenuModal Coto
     | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
@@ -87,9 +87,7 @@ type Msg
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
-    | ConfirmConnect CotoId Direction
     | Connected (Result Http.Error (List String))
-    | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
     | ToggleReorderMode ElementId
@@ -115,6 +113,7 @@ type Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
+    | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg

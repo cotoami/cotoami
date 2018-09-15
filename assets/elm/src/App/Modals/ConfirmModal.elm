@@ -4,20 +4,22 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.Modal as Modal
+import App.I18n.Keys as I18nKeys
 import App.Messages exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
 
 
-view : String -> Html Msg
-view confirmMessage =
+view : Context context -> String -> Html Msg
+view context confirmMessage =
     Modal.view
         "confirm-modal"
-        (Just (modalConfig confirmMessage))
+        (Just (modalConfig context confirmMessage))
 
 
-modalConfig : String -> Modal.Config Msg
-modalConfig confirmMessage =
+modalConfig : Context context -> String -> Modal.Config Msg
+modalConfig context confirmMessage =
     { closeMessage = CloseModal
-    , title = text "Confirm"
+    , title = text (context.i18nText I18nKeys.Confirm)
     , content = div [] [ text confirmMessage ]
     , buttons =
         [ button [ class "button", onClick CloseModal ] [ text "Cancel" ]

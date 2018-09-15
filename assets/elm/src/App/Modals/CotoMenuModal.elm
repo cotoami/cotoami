@@ -15,6 +15,7 @@ import Utils.Modal as Modal
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.UpdateUtil exposing (..)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
@@ -44,18 +45,18 @@ isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
 
 
-type alias WithCotoMenuModal a =
-    { a | cotoMenuModal : Maybe Model }
+type alias WithCotoMenuModal model =
+    { model | cotoMenuModal : Maybe Model }
 
 
-open : Coto -> Modals (WithCotoMenuModal a) -> ( Modals (WithCotoMenuModal a), Cmd AppMsg.Msg )
+open : Coto -> Modals (WithCotoMenuModal model) -> ( Modals (WithCotoMenuModal model), Cmd AppMsg.Msg )
 open coto model =
     { model | cotoMenuModal = Just (initModel coto) }
         |> App.Submodels.Modals.openModal CotoMenuModal
         |> withCmd (\_ -> App.Commands.sendMsg (AppMsg.CotoMenuModalMsg Init))
 
 
-update : Context a -> CotoMenuModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : Context context -> CotoMenuModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         Init ->
@@ -78,7 +79,7 @@ update context msg model =
             model |> withoutCmd
 
 
-view : Context a -> Graph -> Maybe Model -> Html AppMsg.Msg
+view : Context context -> Graph -> Maybe Model -> Html AppMsg.Msg
 view context graph maybeModel =
     (Maybe.map2
         (\session model -> modalConfig context session graph model)
@@ -88,13 +89,13 @@ view context graph maybeModel =
         |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Context a -> Session -> Graph -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Graph -> Model -> Modal.Config AppMsg.Msg
 modalConfig context session graph model =
     { closeMessage = AppMsg.CloseModal
     , title = text ""
     , content =
-        [ [ menuItemInfo model
-          , menuItemExplore model
+        [ [ menuItemInfo context model
+          , menuItemExplore context model
           ]
         , if App.Submodels.Context.atHome context then
             [ menuItemPinUnpin context graph model ]
@@ -102,10 +103,10 @@ modalConfig context session graph model =
             [ menuItemPinCotoToMyHome context graph model
             , menuItemPinUnpin context graph model
             ]
-        , [ menuItemEdit session model
-          , menuItemAddCoto model
-          , menuItemCotonomatize session model
-          , menuItemDelete session model
+        , [ menuItemEdit context session model
+          , menuItemAddCoto context model
+          , menuItemCotonomatize context session model
+          , menuItemDelete context session model
           ]
         ]
             |> List.concat
@@ -119,8 +120,8 @@ checkWritePermission session model =
     App.Types.Coto.checkWritePermission session model.coto
 
 
-menuItemInfo : Model -> Html AppMsg.Msg
-menuItemInfo model =
+menuItemInfo : Context context -> Model -> Html AppMsg.Msg
+menuItemInfo context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenCotoModal model.coto)
@@ -128,13 +129,14 @@ menuItemInfo model =
         [ a
             [ class "info" ]
             [ materialIcon "info" Nothing
-            , span [ class "menu-title" ] [ text "Info" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Info) ]
             ]
         ]
 
 
-menuItemExplore : Model -> Html AppMsg.Msg
-menuItemExplore model =
+menuItemExplore : Context context -> Model -> Html AppMsg.Msg
+menuItemExplore context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenTraversal model.coto.id)
@@ -142,12 +144,13 @@ menuItemExplore model =
         [ a
             [ class "explore" ]
             [ faIcon "sitemap" Nothing
-            , span [ class "menu-title" ] [ text "Explore the connections" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_ExploreConnections) ]
             ]
         ]
 
 
-menuItemPinUnpin : Context a -> Graph -> Model -> Html AppMsg.Msg
+menuItemPinUnpin : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinUnpin context graph model =
     if App.Types.Graph.pinned model.coto.id graph then
         div
@@ -158,7 +161,8 @@ menuItemPinUnpin context graph model =
                 [ class "unpin" ]
                 [ faIcon "thumb-tack" Nothing
                 , faIcon "remove" Nothing
-                , pinOrUnpinMenuTitle context.cotonoma False
+                , span [ class "menu-title" ]
+                    [ text (pinOrUnpinMenuTitle context False) ]
                 ]
             ]
     else
@@ -169,12 +173,13 @@ menuItemPinUnpin context graph model =
             [ a
                 [ class "pin" ]
                 [ faIcon "thumb-tack" Nothing
-                , pinOrUnpinMenuTitle context.cotonoma True
+                , span [ class "menu-title" ]
+                    [ text (pinOrUnpinMenuTitle context True) ]
                 ]
             ]
 
 
-menuItemPinCotoToMyHome : Context a -> Graph -> Model -> Html AppMsg.Msg
+menuItemPinCotoToMyHome : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinCotoToMyHome context graph model =
     div
         [ class "menu-item"
@@ -183,34 +188,30 @@ menuItemPinCotoToMyHome context graph model =
         [ a
             [ class "pin-to-my-home" ]
             [ faIcon "thumb-tack" Nothing
-            , pinOrUnpinMenuTitle Nothing True
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_PinToMyHome) ]
             ]
         ]
 
 
-pinOrUnpinMenuTitle : Maybe Cotonoma -> Bool -> Html AppMsg.Msg
-pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
-    let
-        prefix =
-            if pinOrUnpin then
-                "Pin to "
-            else
-                "Unpin from "
-    in
-        span [ class "menu-title" ]
-            (maybeCotonoma
-                |> Maybe.map
-                    (\cotonoma ->
-                        [ text prefix
-                        , span [ class "cotonoma" ] [ text cotonoma.name ]
-                        ]
-                    )
-                |> Maybe.withDefault [ text (prefix ++ "My Home") ]
-            )
+pinOrUnpinMenuTitle : Context context -> Bool -> String
+pinOrUnpinMenuTitle context pinOrUnpin =
+    if isJust context.cotonoma then
+        (if pinOrUnpin then
+            context.i18nText I18nKeys.CotoMenuModal_PinToCotonoma
+         else
+            context.i18nText I18nKeys.CotoMenuModal_UnpinFromCotonoma
+        )
+    else
+        (if pinOrUnpin then
+            context.i18nText I18nKeys.CotoMenuModal_PinToMyHome
+         else
+            context.i18nText I18nKeys.CotoMenuModal_UnpinFromMyHome
+        )
 
 
-menuItemEdit : Session -> Model -> Html AppMsg.Msg
-menuItemEdit session model =
+menuItemEdit : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemEdit context session model =
     if checkWritePermission session model then
         div
             [ class "menu-item"
@@ -219,15 +220,16 @@ menuItemEdit session model =
             [ a
                 [ class "edit" ]
                 [ materialIcon "edit" Nothing
-                , span [ class "menu-title" ] [ text "Edit" ]
+                , span [ class "menu-title" ]
+                    [ text (context.i18nText I18nKeys.CotoMenuModal_Edit) ]
                 ]
             ]
     else
         Utils.HtmlUtil.none
 
 
-menuItemAddCoto : Model -> Html AppMsg.Msg
-menuItemAddCoto model =
+menuItemAddCoto : Context context -> Model -> Html AppMsg.Msg
+menuItemAddCoto context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenNewEditorModalWithSourceCoto model.coto)
@@ -235,13 +237,14 @@ menuItemAddCoto model =
         [ a
             [ class "add-coto" ]
             [ materialIcon "add" Nothing
-            , span [ class "menu-title" ] [ text "Create a connected Coto" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_AddSubCoto) ]
             ]
         ]
 
 
-menuItemCotonomatize : Session -> Model -> Html AppMsg.Msg
-menuItemCotonomatize session model =
+menuItemCotonomatize : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemCotonomatize context session model =
     if (isNothing model.coto.asCotonoma) && (checkWritePermission session model) then
         div
             [ class "menu-item"
@@ -251,15 +254,15 @@ menuItemCotonomatize session model =
                 [ class "cotonomatize" ]
                 [ faIcon "users" Nothing
                 , span [ class "menu-title" ]
-                    [ text "Promote to a Cotonoma" ]
+                    [ text (context.i18nText I18nKeys.CotoMenuModal_Cotonomatize) ]
                 ]
             ]
     else
         Utils.HtmlUtil.none
 
 
-menuItemDelete : Session -> Model -> Html AppMsg.Msg
-menuItemDelete session model =
+menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemDelete context session model =
     let
         nonEmptyCotonoma =
             model.cotonomaStats
@@ -272,7 +275,8 @@ menuItemDelete session model =
                     [ span
                         [ class "delete" ]
                         [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
+                        , span [ class "menu-title" ]
+                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
                         ]
                     ]
             else
@@ -283,7 +287,8 @@ menuItemDelete session model =
                     [ a
                         [ class "delete" ]
                         [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
+                        , span [ class "menu-title" ]
+                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
                         ]
                     ]
         else

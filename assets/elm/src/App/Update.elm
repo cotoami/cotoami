@@ -12,6 +12,7 @@ import Navigation
 import Utils.StringUtil exposing (isNotBlank)
 import Utils.UpdateUtil exposing (..)
 import App.LocalConfig
+import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Graph exposing (Direction(..))
@@ -38,6 +39,7 @@ import App.Views.Flow
 import App.Views.Stock
 import App.Views.Traversals
 import App.Views.CotoSelection
+import App.Views.CotoToolbar
 import App.Modals.SigninModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
@@ -272,9 +274,6 @@ update msg model =
         OpenProfileModal ->
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
-        OpenCotoMenuModal coto ->
-            App.Modals.CotoMenuModal.open coto model
-
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
                 |> App.Submodels.Modals.openModal EditorModal
@@ -343,7 +342,7 @@ update msg model =
         ConfirmDeleteCoto coto ->
             (App.Submodels.Modals.confirm
                 (Confirmation
-                    "Are you sure you want to delete this coto?"
+                    (model.i18nText I18nKeys.ConfirmDeleteCoto)
                     (DeleteCotoInServerSide coto)
                 )
                 model
@@ -394,11 +393,7 @@ update msg model =
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
                 (App.Submodels.Modals.confirm
                     (Confirmation
-                        ("You are about to promote this coto to a Cotonoma "
-                            ++ "to discuss with others about: '"
-                            ++ coto.content
-                            ++ "'"
-                        )
+                        (model.i18nText (I18nKeys.ConfirmCotonomatize coto.content))
                         (Cotonomatize coto.id)
                     )
                     model
@@ -468,7 +463,7 @@ update msg model =
         ConfirmUnpinCoto cotoId ->
             (App.Submodels.Modals.confirm
                 (Confirmation
-                    "Are you sure you want to unpin this coto?"
+                    (model.i18nText I18nKeys.ConfirmUnpinCoto)
                     (UnpinCoto cotoId)
                 )
                 model
@@ -491,33 +486,11 @@ update msg model =
         CotoUnpinned (Err _) ->
             model |> withoutCmd
 
-        ConfirmConnect cotoId direction ->
-            model
-                |> App.Submodels.LocalCotos.getCoto cotoId
-                |> Maybe.map
-                    (\coto ->
-                        App.Modals.ConnectModal.open
-                            direction
-                            (App.Modals.ConnectModal.Coto coto)
-                            model
-                    )
-                |> Maybe.withDefault ( model, Cmd.none )
-
         Connected (Ok _) ->
             model |> withCmd (App.Views.Stock.renderGraph model)
 
         Connected (Err _) ->
             model |> withoutCmd
-
-        ConfirmDeleteConnection conn ->
-            (App.Submodels.Modals.confirm
-                (Confirmation
-                    "Are you sure you want to delete this connection?"
-                    (DeleteConnection conn)
-                )
-                model
-            )
-                |> withoutCmd
 
         DeleteConnection ( startId, endId ) ->
             { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
@@ -639,6 +612,9 @@ update msg model =
 
         CotoSelectionMsg subMsg ->
             App.Views.CotoSelection.update model subMsg model
+
+        CotoToolbarMsg subMsg ->
+            App.Views.CotoToolbar.update model subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal

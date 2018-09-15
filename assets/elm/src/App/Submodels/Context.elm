@@ -27,6 +27,7 @@ import Random.Pcg
 import Uuid
 import Exts.Maybe exposing (isNothing)
 import Utils.HttpUtil exposing (ClientId(ClientId))
+import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
 
@@ -34,6 +35,7 @@ import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection
 type alias Context a =
     { a
         | clientId : ClientId
+        , i18nText : TextKey -> String
         , session : Maybe Session
         , cotonoma : Maybe Cotonoma
         , cotonomaLoading : Bool
