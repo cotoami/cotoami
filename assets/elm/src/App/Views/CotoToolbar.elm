@@ -88,16 +88,20 @@ subCotoTools :
     -> Coto
     -> Html AppMsg.Msg
 subCotoTools context session graph inbound elementId coto =
-    [ deleteConnectionButton context session inbound coto
-    , reorderButton context session inbound elementId coto
-    ]
-        |> (\buttons ->
-                if List.isEmpty buttons then
-                    []
-                else
-                    buttons ++ [ span [ class "border" ] [] ]
-           )
-        |> span [ class "sub-coto-buttons" ]
+    let
+        buttons =
+            [ deleteConnectionButton context session inbound coto
+            , reorderButton context session inbound elementId coto
+            ]
+                |> List.filterMap identity
+
+        buttonsWithBorder =
+            if List.isEmpty buttons then
+                []
+            else
+                buttons ++ [ span [ class "border" ] [] ]
+    in
+        span [ class "sub-coto-buttons" ] buttonsWithBorder
 
 
 isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
@@ -224,13 +228,18 @@ openCotoMenuButton context coto =
         [ materialIcon "more_horiz" Nothing ]
 
 
-deleteConnectionButton : Context context -> Session -> InboundConnection -> Coto -> Html AppMsg.Msg
+deleteConnectionButton :
+    Context context
+    -> Session
+    -> InboundConnection
+    -> Coto
+    -> Maybe (Html AppMsg.Msg)
 deleteConnectionButton context session inbound coto =
     inbound.parent
-        |> Maybe.map
+        |> Maybe.andThen
             (\parent ->
                 if isDisconnectable session parent inbound.connection coto then
-                    a
+                    (a
                         [ class "tool-button delete-connection"
                         , title "Disconnect"
                         , onLinkButtonClick
@@ -239,10 +248,11 @@ deleteConnectionButton context session inbound coto =
                             )
                         ]
                         [ faIcon "unlink" Nothing ]
+                    )
+                        |> Just
                 else
-                    Utils.HtmlUtil.none
+                    Nothing
             )
-        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 reorderButton :
@@ -251,14 +261,16 @@ reorderButton :
     -> InboundConnection
     -> ElementId
     -> Coto
-    -> Html AppMsg.Msg
+    -> Maybe (Html AppMsg.Msg)
 reorderButton context session inbound elementId coto =
     if isReorderble context session inbound coto then
-        a
+        (a
             [ class "tool-button toggle-reorder-mode"
             , title "Reorder"
             , onLinkButtonClick (ToggleReorderMode elementId)
             ]
             [ faIcon "sort" Nothing ]
+        )
+            |> Just
     else
-        Utils.HtmlUtil.none
+        Nothing
