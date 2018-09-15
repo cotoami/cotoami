@@ -155,3 +155,27 @@ text key =
 
         InviteModal_Sending ->
             "送信中"
+
+        CotoToolbar_Connect ->
+            "選択中のコトと接続"
+
+        CotoToolbar_Pin ->
+            "現在のコトノマにピン留め"
+
+        CotoToolbar_Edit ->
+            "編集"
+
+        CotoToolbar_AddSubCoto ->
+            "子コトを追加"
+
+        CotoToolbar_Select ->
+            "選択"
+
+        CotoToolbar_More ->
+            "メニュー一覧を開く"
+
+        CotoToolbar_Disconnect ->
+            "接続を解除"
+
+        CotoToolbar_Reorder ->
+            "並び替え"

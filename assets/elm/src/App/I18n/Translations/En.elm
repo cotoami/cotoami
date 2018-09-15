@@ -152,3 +152,27 @@ text key =
 
         InviteModal_Sending ->
             "Sending"
+
+        CotoToolbar_Connect ->
+            "Connect from the selected cotos"
+
+        CotoToolbar_Pin ->
+            "Pin to the current cotonoma"
+
+        CotoToolbar_Edit ->
+            "Edit"
+
+        CotoToolbar_AddSubCoto ->
+            "Add a sub-coto"
+
+        CotoToolbar_Select ->
+            "Select"
+
+        CotoToolbar_More ->
+            "More"
+
+        CotoToolbar_Disconnect ->
+            "Disconnect"
+
+        CotoToolbar_Reorder ->
+            "Reorder"

@@ -50,3 +50,11 @@ type TextKey
     | InviteModal_InviteeAlreadyExists
     | InviteModal_SendInvite
     | InviteModal_Sending
+    | CotoToolbar_Connect
+    | CotoToolbar_Pin
+    | CotoToolbar_Edit
+    | CotoToolbar_AddSubCoto
+    | CotoToolbar_Select
+    | CotoToolbar_More
+    | CotoToolbar_Disconnect
+    | CotoToolbar_Reorder

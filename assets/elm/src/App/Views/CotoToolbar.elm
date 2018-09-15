@@ -10,6 +10,7 @@ import Html.Attributes exposing (..)
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, ElementId, CotoId)
 import App.Types.Graph exposing (Graph, Connection, InboundConnection, Direction(..))
@@ -148,7 +149,7 @@ connectButton context coto =
         span [ class "connecting-buttons" ]
             [ a
                 [ class "tool-button connect"
-                , title "Connect"
+                , title (context.i18nText I18nKeys.CotoToolbar_Connect)
                 , onLinkButtonClick
                     (AppMsg.CotoToolbarMsg (ConfirmConnect coto.id Inbound))
                 ]
@@ -167,7 +168,7 @@ pinButton context graph coto =
     then
         a
             [ class "tool-button pin-coto"
-            , title "Pin"
+            , title (context.i18nText I18nKeys.CotoToolbar_Pin)
             , onLinkButtonClick (PinCoto coto.id)
             ]
             [ faIcon "thumb-tack" Nothing ]
@@ -180,7 +181,7 @@ editButton context session coto =
     if App.Types.Coto.checkWritePermission session coto then
         a
             [ class "tool-button edit-coto"
-            , title "Edit"
+            , title (context.i18nText I18nKeys.CotoToolbar_Edit)
             , onLinkButtonClick (OpenEditorModal coto)
             ]
             [ materialIcon "edit" Nothing ]
@@ -192,7 +193,7 @@ addSubCotoButton : Context context -> Coto -> Html AppMsg.Msg
 addSubCotoButton context coto =
     a
         [ class "tool-button add-coto"
-        , title "Create a connected Coto"
+        , title (context.i18nText I18nKeys.CotoToolbar_AddSubCoto)
         , onLinkButtonClick (OpenNewEditorModalWithSourceCoto coto)
         ]
         [ materialIcon "add" Nothing ]
@@ -202,7 +203,7 @@ selectButton : Context context -> Coto -> Html AppMsg.Msg
 selectButton context coto =
     a
         [ class "tool-button select-coto"
-        , title "Select"
+        , title (context.i18nText I18nKeys.CotoToolbar_Select)
         , onLinkButtonClick (SelectCoto coto.id)
         ]
         [ materialIcon
@@ -222,7 +223,7 @@ openCotoMenuButton : Context context -> Coto -> Html AppMsg.Msg
 openCotoMenuButton context coto =
     a
         [ class "tool-button open-coto-menu"
-        , title "More"
+        , title (context.i18nText I18nKeys.CotoToolbar_More)
         , onLinkButtonClick (AppMsg.CotoToolbarMsg (OpenCotoMenuModal coto))
         ]
         [ materialIcon "more_horiz" Nothing ]
@@ -241,7 +242,7 @@ deleteConnectionButton context session inbound coto =
                 if isDisconnectable session parent inbound.connection coto then
                     (a
                         [ class "tool-button delete-connection"
-                        , title "Disconnect"
+                        , title (context.i18nText I18nKeys.CotoToolbar_Disconnect)
                         , onLinkButtonClick
                             (AppMsg.CotoToolbarMsg
                                 (ConfirmDeleteConnection ( parent.id, coto.id ))
@@ -266,7 +267,7 @@ reorderButton context session inbound elementId coto =
     if isReorderble context session inbound coto then
         (a
             [ class "tool-button toggle-reorder-mode"
-            , title "Reorder"
+            , title (context.i18nText I18nKeys.CotoToolbar_Reorder)
             , onLinkButtonClick (ToggleReorderMode elementId)
             ]
             [ faIcon "sort" Nothing ]
