@@ -133,9 +133,7 @@ traversalDiv context graph traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description", title "Coto Graph Exploration" ]
-                [ faIcon "sitemap" Nothing
-                ]
+            [ span [ class "description" ] [ faIcon "sitemap" Nothing ]
             , a
                 [ class "tool-button close-traversal"
                 , href "/"
