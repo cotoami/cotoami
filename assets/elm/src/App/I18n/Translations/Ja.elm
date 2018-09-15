@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Confirm ->
+            "確認"
+
         ConfirmDeleteCoto ->
             "このコトを削除してもよろしいですか？"
 

@@ -9,6 +9,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | Confirm
     | ConfirmDeleteCoto
     | ConfirmUnpinCoto
     | ConfirmCotonomatize String

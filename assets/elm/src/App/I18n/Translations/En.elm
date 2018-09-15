@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Saving"
 
+        Confirm ->
+            "Confirm"
+
         ConfirmDeleteCoto ->
             "Are you sure you want to delete this coto?"
 

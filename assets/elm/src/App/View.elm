@@ -204,7 +204,7 @@ modals model =
         (\modal ->
             case modal of
                 ConfirmModal ->
-                    App.Modals.ConfirmModal.view model.confirmation.message
+                    App.Modals.ConfirmModal.view model model.confirmation.message
 
                 SigninModal ->
                     App.Modals.SigninModal.view model model.signinModal
