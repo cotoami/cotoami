@@ -36,6 +36,9 @@ text key =
         ConfirmUnpinCoto ->
             "このピンを外してもよろしいですか？"
 
+        ConfirmDisconnect ->
+            "この接続を削除してもよろしいですか？"
+
         ConfirmCotonomatize name ->
             "このコトを《" ++ name ++ "》という名前のコトノマに昇格させてもよろしいですか？"
 

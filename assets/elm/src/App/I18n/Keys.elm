@@ -12,6 +12,7 @@ type TextKey
     | Confirm
     | ConfirmDeleteCoto
     | ConfirmUnpinCoto
+    | ConfirmDisconnect
     | ConfirmCotonomatize String
     | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle

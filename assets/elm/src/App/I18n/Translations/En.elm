@@ -36,6 +36,9 @@ text key =
         ConfirmUnpinCoto ->
             "Are you sure you want to unpin this coto?"
 
+        ConfirmDisconnect ->
+            "Are you sure you want to delete this connection?"
+
         ConfirmCotonomatize name ->
             "You are about to promote this coto to a cotonoma named '" ++ name ++ "'"
 

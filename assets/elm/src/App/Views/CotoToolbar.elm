@@ -45,10 +45,10 @@ update context msg model =
         OpenCotoMenuModal coto ->
             App.Modals.CotoMenuModal.open coto model
 
-        ConfirmDeleteConnection conn ->
+        ConfirmDisconnect conn ->
             (App.Submodels.Modals.confirm
                 (Confirmation
-                    "Are you sure you want to delete this connection?"
+                    (context.i18nText I18nKeys.ConfirmDisconnect)
                     (DeleteConnection conn)
                 )
                 model
@@ -91,7 +91,7 @@ subCotoTools :
 subCotoTools context session graph inbound elementId coto =
     let
         buttons =
-            [ deleteConnectionButton context session inbound coto
+            [ disconnectButton context session inbound coto
             , reorderButton context session inbound elementId coto
             ]
                 |> List.filterMap identity
@@ -229,23 +229,23 @@ openCotoMenuButton context coto =
         [ materialIcon "more_horiz" Nothing ]
 
 
-deleteConnectionButton :
+disconnectButton :
     Context context
     -> Session
     -> InboundConnection
     -> Coto
     -> Maybe (Html AppMsg.Msg)
-deleteConnectionButton context session inbound coto =
+disconnectButton context session inbound coto =
     inbound.parent
         |> Maybe.andThen
             (\parent ->
                 if isDisconnectable session parent inbound.connection coto then
                     (a
-                        [ class "tool-button delete-connection"
+                        [ class "tool-button disconnect"
                         , title (context.i18nText I18nKeys.CotoToolbar_Disconnect)
                         , onLinkButtonClick
                             (AppMsg.CotoToolbarMsg
-                                (ConfirmDeleteConnection ( parent.id, coto.id ))
+                                (ConfirmDisconnect ( parent.id, coto.id ))
                             )
                         ]
                         [ faIcon "unlink" Nothing ]
