@@ -118,6 +118,11 @@
       a.tool-button {
         margin-left: 10px;
 
+        &.edit-coto,
+        &.add-coto {
+          display: none;
+        }
+
         i.material-icons {
           font-size: 22px;
         }
