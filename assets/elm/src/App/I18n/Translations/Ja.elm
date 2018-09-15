@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        ConfirmCotonomatize name ->
+            "このコトを《" ++ name ++ "》という名前のコトノマに昇格させてもよろしいですか？"
+
         UnexpectedErrorOccurred ->
             "システムエラーが発生しました。"
 

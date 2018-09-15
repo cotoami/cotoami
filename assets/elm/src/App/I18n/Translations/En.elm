@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Saving"
 
+        ConfirmCotonomatize name ->
+            "You are about to promote this Coto to a Cotonoma named '" ++ name ++ "'"
+
         UnexpectedErrorOccurred ->
             "An unexpected error has occurred."
 

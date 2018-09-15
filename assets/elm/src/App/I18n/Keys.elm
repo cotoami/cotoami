@@ -9,6 +9,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | ConfirmCotonomatize String
     | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled

@@ -12,6 +12,7 @@ import Navigation
 import Utils.StringUtil exposing (isNotBlank)
 import Utils.UpdateUtil exposing (..)
 import App.LocalConfig
+import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
 import App.Types.Graph exposing (Direction(..))
@@ -392,11 +393,7 @@ update msg model =
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
                 (App.Submodels.Modals.confirm
                     (Confirmation
-                        ("You are about to promote this coto to a Cotonoma "
-                            ++ "to discuss with others about: '"
-                            ++ coto.content
-                            ++ "'"
-                        )
+                        (model.i18nText (I18nKeys.ConfirmCotonomatize coto.content))
                         (Cotonomatize coto.id)
                     )
                     model
