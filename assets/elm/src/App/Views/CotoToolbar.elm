@@ -18,10 +18,11 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Modals.ConnectModal exposing (WithConnectModal)
+import App.Modals.CotoMenuModal exposing (WithCotoMenuModal)
 
 
 type alias UpdateModel model =
-    LocalCotos (Modals (WithConnectModal model))
+    LocalCotos (Modals (WithConnectModal (WithCotoMenuModal model)))
 
 
 update : Context context -> CotoToolbarMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
@@ -38,6 +39,9 @@ update context msg model =
                             model
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
+
+        OpenCotoMenuModal coto ->
+            App.Modals.CotoMenuModal.open coto model
 
 
 view :
@@ -225,6 +229,6 @@ openCotoMenuButton context coto =
     a
         [ class "tool-button open-coto-menu"
         , title "More"
-        , onLinkButtonClick (OpenCotoMenuModal coto)
+        , onLinkButtonClick (AppMsg.CotoToolbarMsg (OpenCotoMenuModal coto))
         ]
         [ materialIcon "more_horiz" Nothing ]

@@ -59,7 +59,6 @@ type Msg
     | OpenNewEditorModalWithSourceCoto Coto
     | OpenInviteModal
     | OpenProfileModal
-    | OpenCotoMenuModal Coto
     | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal

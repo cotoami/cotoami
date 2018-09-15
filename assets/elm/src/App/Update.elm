@@ -273,9 +273,6 @@ update msg model =
         OpenProfileModal ->
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
-        OpenCotoMenuModal coto ->
-            App.Modals.CotoMenuModal.open coto model
-
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
                 |> App.Submodels.Modals.openModal EditorModal
