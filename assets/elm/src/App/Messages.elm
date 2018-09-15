@@ -88,7 +88,6 @@ type Msg
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
     | Connected (Result Http.Error (List String))
-    | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
     | ToggleReorderMode ElementId

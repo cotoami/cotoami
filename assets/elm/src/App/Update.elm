@@ -495,16 +495,6 @@ update msg model =
         Connected (Err _) ->
             model |> withoutCmd
 
-        ConfirmDeleteConnection conn ->
-            (App.Submodels.Modals.confirm
-                (Confirmation
-                    "Are you sure you want to delete this connection?"
-                    (DeleteConnection conn)
-                )
-                model
-            )
-                |> withoutCmd
-
         DeleteConnection ( startId, endId ) ->
             { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
                 |> withCmd

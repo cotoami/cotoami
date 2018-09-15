@@ -7,6 +7,7 @@ module App.Views.CotoToolbar
 import Set
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Types.Session exposing (Session)
@@ -15,7 +16,7 @@ import App.Types.Graph exposing (Graph, Connection, InboundConnection, Direction
 import App.Messages as AppMsg exposing (..)
 import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modals)
+import App.Submodels.Modals exposing (Modals, Confirmation)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Modals.CotoMenuModal exposing (WithCotoMenuModal)
@@ -42,6 +43,16 @@ update context msg model =
 
         OpenCotoMenuModal coto ->
             App.Modals.CotoMenuModal.open coto model
+
+        ConfirmDeleteConnection conn ->
+            (App.Submodels.Modals.confirm
+                (Confirmation
+                    "Are you sure you want to delete this connection?"
+                    (DeleteConnection conn)
+                )
+                model
+            )
+                |> withoutCmd
 
 
 view :
@@ -230,7 +241,10 @@ deleteConnectionButton context session inbound coto =
                     a
                         [ class "tool-button delete-connection"
                         , title "Disconnect"
-                        , onLinkButtonClick (ConfirmDeleteConnection ( parent.id, coto.id ))
+                        , onLinkButtonClick
+                            (AppMsg.CotoToolbarMsg
+                                (ConfirmDeleteConnection ( parent.id, coto.id ))
+                            )
                         ]
                         [ faIcon "unlink" Nothing ]
                 else

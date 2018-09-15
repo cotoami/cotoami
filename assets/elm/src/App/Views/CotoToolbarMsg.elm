@@ -7,3 +7,4 @@ import App.Types.Graph exposing (Direction)
 type Msg
     = ConfirmConnect CotoId Direction
     | OpenCotoMenuModal Coto
+    | ConfirmDeleteConnection ( CotoId, CotoId )
