@@ -222,7 +222,7 @@ modals model =
                     App.Modals.CotoMenuModal.view model model.graph model.cotoMenuModal
 
                 CotoModal ->
-                    App.Modals.CotoModal.view model.session model.cotoModal
+                    App.Modals.CotoModal.view model model.cotoModal
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view
