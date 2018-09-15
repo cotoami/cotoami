@@ -342,7 +342,7 @@ update msg model =
         ConfirmDeleteCoto coto ->
             (App.Submodels.Modals.confirm
                 (Confirmation
-                    "Are you sure you want to delete this coto?"
+                    (model.i18nText I18nKeys.ConfirmDeleteCoto)
                     (DeleteCotoInServerSide coto)
                 )
                 model
@@ -463,7 +463,7 @@ update msg model =
         ConfirmUnpinCoto cotoId ->
             (App.Submodels.Modals.confirm
                 (Confirmation
-                    "Are you sure you want to unpin this coto?"
+                    (model.i18nText I18nKeys.ConfirmUnpinCoto)
                     (UnpinCoto cotoId)
                 )
                 model

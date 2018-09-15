@@ -27,6 +27,12 @@ text key =
         Saving ->
             "保存中"
 
+        ConfirmDeleteCoto ->
+            "このコトを削除してもよろしいですか？"
+
+        ConfirmUnpinCoto ->
+            "このピンを外してもよろしいですか？"
+
         ConfirmCotonomatize name ->
             "このコトを《" ++ name ++ "》という名前のコトノマに昇格させてもよろしいですか？"
 

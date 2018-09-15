@@ -9,6 +9,8 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | ConfirmDeleteCoto
+    | ConfirmUnpinCoto
     | ConfirmCotonomatize String
     | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle

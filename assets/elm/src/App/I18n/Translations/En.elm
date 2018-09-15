@@ -27,6 +27,12 @@ text key =
         Saving ->
             "Saving"
 
+        ConfirmDeleteCoto ->
+            "Are you sure you want to delete this coto?"
+
+        ConfirmUnpinCoto ->
+            "Are you sure you want to unpin this coto?"
+
         ConfirmCotonomatize name ->
             "You are about to promote this Coto to a Cotonoma named '" ++ name ++ "'"
 
