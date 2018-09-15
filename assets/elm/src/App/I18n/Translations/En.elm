@@ -194,3 +194,15 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "Unpin from the current Cotonoma"
+
+        CotoMenuModal_Edit ->
+            "Edit"
+
+        CotoMenuModal_AddSubCoto ->
+            "Add a sub-coto"
+
+        CotoMenuModal_Cotonomatize ->
+            "Promote to a Cotonoma"
+
+        CotoMenuModal_Delete ->
+            "Delete"

@@ -64,3 +64,7 @@ type TextKey
     | CotoMenuModal_UnpinFromMyHome
     | CotoMenuModal_PinToCotonoma
     | CotoMenuModal_UnpinFromCotonoma
+    | CotoMenuModal_Edit
+    | CotoMenuModal_AddSubCoto
+    | CotoMenuModal_Cotonomatize
+    | CotoMenuModal_Delete

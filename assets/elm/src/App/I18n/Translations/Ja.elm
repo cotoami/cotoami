@@ -193,7 +193,19 @@ text key =
             "ホームのピンを外す"
 
         CotoMenuModal_PinToCotonoma ->
-            "現在のコトノマにピン留め"
+            "コトノマにピン留め"
 
         CotoMenuModal_UnpinFromCotonoma ->
-            "現在のコトノマのピンを外す"
+            "コトノマのピンを外す"
+
+        CotoMenuModal_Edit ->
+            "編集"
+
+        CotoMenuModal_AddSubCoto ->
+            "子コトを追加"
+
+        CotoMenuModal_Cotonomatize ->
+            "コトノマに昇格"
+
+        CotoMenuModal_Delete ->
+            "削除"

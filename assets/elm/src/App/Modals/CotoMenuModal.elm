@@ -103,10 +103,10 @@ modalConfig context session graph model =
             [ menuItemPinCotoToMyHome context graph model
             , menuItemPinUnpin context graph model
             ]
-        , [ menuItemEdit session model
-          , menuItemAddCoto model
-          , menuItemCotonomatize session model
-          , menuItemDelete session model
+        , [ menuItemEdit context session model
+          , menuItemAddCoto context model
+          , menuItemCotonomatize context session model
+          , menuItemDelete context session model
           ]
         ]
             |> List.concat
@@ -210,8 +210,8 @@ pinOrUnpinMenuTitle context pinOrUnpin =
         )
 
 
-menuItemEdit : Session -> Model -> Html AppMsg.Msg
-menuItemEdit session model =
+menuItemEdit : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemEdit context session model =
     if checkWritePermission session model then
         div
             [ class "menu-item"
@@ -220,15 +220,16 @@ menuItemEdit session model =
             [ a
                 [ class "edit" ]
                 [ materialIcon "edit" Nothing
-                , span [ class "menu-title" ] [ text "Edit" ]
+                , span [ class "menu-title" ]
+                    [ text (context.i18nText I18nKeys.CotoMenuModal_Edit) ]
                 ]
             ]
     else
         Utils.HtmlUtil.none
 
 
-menuItemAddCoto : Model -> Html AppMsg.Msg
-menuItemAddCoto model =
+menuItemAddCoto : Context context -> Model -> Html AppMsg.Msg
+menuItemAddCoto context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenNewEditorModalWithSourceCoto model.coto)
@@ -236,13 +237,14 @@ menuItemAddCoto model =
         [ a
             [ class "add-coto" ]
             [ materialIcon "add" Nothing
-            , span [ class "menu-title" ] [ text "Create a connected Coto" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_AddSubCoto) ]
             ]
         ]
 
 
-menuItemCotonomatize : Session -> Model -> Html AppMsg.Msg
-menuItemCotonomatize session model =
+menuItemCotonomatize : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemCotonomatize context session model =
     if (isNothing model.coto.asCotonoma) && (checkWritePermission session model) then
         div
             [ class "menu-item"
@@ -252,15 +254,15 @@ menuItemCotonomatize session model =
                 [ class "cotonomatize" ]
                 [ faIcon "users" Nothing
                 , span [ class "menu-title" ]
-                    [ text "Promote to a Cotonoma" ]
+                    [ text (context.i18nText I18nKeys.CotoMenuModal_Cotonomatize) ]
                 ]
             ]
     else
         Utils.HtmlUtil.none
 
 
-menuItemDelete : Session -> Model -> Html AppMsg.Msg
-menuItemDelete session model =
+menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg
+menuItemDelete context session model =
     let
         nonEmptyCotonoma =
             model.cotonomaStats
@@ -273,7 +275,8 @@ menuItemDelete session model =
                     [ span
                         [ class "delete" ]
                         [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
+                        , span [ class "menu-title" ]
+                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
                         ]
                     ]
             else
@@ -284,7 +287,8 @@ menuItemDelete session model =
                     [ a
                         [ class "delete" ]
                         [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ] [ text "Delete" ]
+                        , span [ class "menu-title" ]
+                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
                         ]
                     ]
         else
