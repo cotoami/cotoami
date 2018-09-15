@@ -56,15 +56,7 @@ view context session graph maybeInbound elementId coto =
             |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "default-buttons" ]
             [ pinButton context graph coto
-            , if App.Types.Coto.checkWritePermission session coto then
-                a
-                    [ class "tool-button edit-coto"
-                    , title "Edit"
-                    , onLinkButtonClick (OpenEditorModal coto)
-                    ]
-                    [ materialIcon "edit" Nothing ]
-              else
-                Utils.HtmlUtil.none
+            , editButton context session coto
             , a
                 [ class "tool-button add-coto"
                 , title "Create a connected Coto"
@@ -206,5 +198,18 @@ pinButton context graph coto =
             , onLinkButtonClick (PinCoto coto.id)
             ]
             [ faIcon "thumb-tack" Nothing ]
+    else
+        Utils.HtmlUtil.none
+
+
+editButton : Context context -> Session -> Coto -> Html AppMsg.Msg
+editButton context session coto =
+    if App.Types.Coto.checkWritePermission session coto then
+        a
+            [ class "tool-button edit-coto"
+            , title "Edit"
+            , onLinkButtonClick (OpenEditorModal coto)
+            ]
+            [ materialIcon "edit" Nothing ]
     else
         Utils.HtmlUtil.none
