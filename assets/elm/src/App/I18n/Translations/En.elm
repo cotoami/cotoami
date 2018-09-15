@@ -218,3 +218,12 @@ text key =
 
         CotoMenuModal_Delete ->
             "Delete"
+
+        TimelineFilterModal_Title ->
+            "Timeline Filter"
+
+        TimelineFilterModal_ExcludePinnedGraph ->
+            "Hide cotos incorporated in the pinned documents"
+
+        TimelineFilterModal_ExcludePostsInCotonoma ->
+            "Hide cotos posted in a Cotonoma other than My Home"

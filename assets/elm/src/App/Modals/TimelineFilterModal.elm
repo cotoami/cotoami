@@ -7,6 +7,7 @@ import Utils.Modal as Modal
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.HtmlUtil exposing (materialIcon)
 import App.LocalConfig
+import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
 import App.Types.TimelineFilter exposing (TimelineFilter)
@@ -57,7 +58,7 @@ view context filter =
 modalConfig : Context a -> TimelineFilter -> Modal.Config AppMsg.Msg
 modalConfig context filter =
     { closeMessage = CloseModal
-    , title = text "Timeline Filter"
+    , title = text (context.i18nText I18nKeys.TimelineFilterModal_Title)
     , content =
         div []
             [ excludePinnedGraphOption context filter
@@ -83,7 +84,11 @@ excludePinnedGraphOption context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos incorporated in the pinned documents" ]
+                    [ text
+                        (context.i18nText
+                            I18nKeys.TimelineFilterModal_ExcludePinnedGraph
+                        )
+                    ]
                 ]
             ]
         ]
@@ -102,11 +107,10 @@ excludePostsInCotonomaOption context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos posted in a cotonoma other than "
-                    , span [ class "my-home" ]
-                        [ materialIcon "home" Nothing
-                        , text "My Home"
-                        ]
+                    [ text
+                        (context.i18nText
+                            I18nKeys.TimelineFilterModal_ExcludePostsInCotonoma
+                        )
                     ]
                 ]
             ]

@@ -72,3 +72,6 @@ type TextKey
     | CotoMenuModal_AddSubCoto
     | CotoMenuModal_Cotonomatize
     | CotoMenuModal_Delete
+    | TimelineFilterModal_Title
+    | TimelineFilterModal_ExcludePinnedGraph
+    | TimelineFilterModal_ExcludePostsInCotonoma

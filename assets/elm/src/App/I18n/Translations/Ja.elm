@@ -221,3 +221,12 @@ text key =
 
         CotoMenuModal_Delete ->
             "削除"
+
+        TimelineFilterModal_Title ->
+            "タイムラインフィルタ"
+
+        TimelineFilterModal_ExcludePinnedGraph ->
+            "ピン留めから辿れるコトを除外する"
+
+        TimelineFilterModal_ExcludePostsInCotonoma ->
+            "ホーム以外で投稿されたコトを除外する"
