@@ -96,6 +96,12 @@ text key =
         Flow_TileView ->
             "Tile View"
 
+        Stock_DocumentView ->
+            "Document View"
+
+        Stock_GraphView ->
+            "Graph View"
+
         EditorModal_Summary ->
             "Summary (optional)"
 

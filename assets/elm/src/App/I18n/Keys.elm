@@ -32,6 +32,8 @@ type TextKey
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView
+    | Stock_DocumentView
+    | Stock_GraphView
     | EditorModal_Summary
     | EditorModal_Content
     | EditorModal_CotonomaName

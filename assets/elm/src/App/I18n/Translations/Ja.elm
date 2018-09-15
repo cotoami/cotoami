@@ -99,6 +99,12 @@ text key =
         Flow_TileView ->
             "タイル"
 
+        Stock_DocumentView ->
+            "ドキュメント"
+
+        Stock_GraphView ->
+            "グラフ"
+
         EditorModal_Summary ->
             "要約（省略可）"
 
