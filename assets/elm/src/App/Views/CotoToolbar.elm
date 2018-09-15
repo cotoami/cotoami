@@ -58,22 +58,7 @@ view context session graph maybeInbound elementId coto =
             [ pinButton context graph coto
             , editButton context session coto
             , addSubCotoButton context coto
-            , a
-                [ class "tool-button select-coto"
-                , title "Select"
-                , onLinkButtonClick (SelectCoto coto.id)
-                ]
-                [ materialIcon
-                    (if
-                        App.Submodels.Context.isSelected (Just coto.id) context
-                            && not (Set.member coto.id context.deselecting)
-                     then
-                        "check_box"
-                     else
-                        "check_box_outline_blank"
-                    )
-                    Nothing
-                ]
+            , selectButton context coto
             , a
                 [ class "tool-button open-coto-menu"
                 , title "More"
@@ -218,3 +203,23 @@ addSubCotoButton context coto =
         , onLinkButtonClick (OpenNewEditorModalWithSourceCoto coto)
         ]
         [ materialIcon "add" Nothing ]
+
+
+selectButton : Context context -> Coto -> Html AppMsg.Msg
+selectButton context coto =
+    a
+        [ class "tool-button select-coto"
+        , title "Select"
+        , onLinkButtonClick (SelectCoto coto.id)
+        ]
+        [ materialIcon
+            (if
+                App.Submodels.Context.isSelected (Just coto.id) context
+                    && not (Set.member coto.id context.deselecting)
+             then
+                "check_box"
+             else
+                "check_box_outline_blank"
+            )
+            Nothing
+        ]
