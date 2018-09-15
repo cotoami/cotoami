@@ -137,3 +137,21 @@ text key =
 
         ProfileModal_Import ->
             "インポート"
+
+        InviteModal_Title ->
+            "Cotoamiに招待する"
+
+        InviteModal_Message ->
+            "サインアップ用のリンクが含まれた招待メールを送ります。"
+
+        InviteModal_SentMessage ->
+            "招待メールを送信しました: "
+
+        InviteModal_InviteeAlreadyExists ->
+            "指定のメールアドレスは既に登録されています: "
+
+        InviteModal_SendInvite ->
+            "招待メールを送信"
+
+        InviteModal_Sending ->
+            "送信中"

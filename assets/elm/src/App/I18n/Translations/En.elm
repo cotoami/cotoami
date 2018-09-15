@@ -134,3 +134,21 @@ text key =
 
         ProfileModal_Import ->
             "Import"
+
+        InviteModal_Title ->
+            "Invite an amishi"
+
+        InviteModal_Message ->
+            "Enter an email address to send an invitation."
+
+        InviteModal_SentMessage ->
+            "Your invitation has been sent to: "
+
+        InviteModal_InviteeAlreadyExists ->
+            "The amishi already exists: "
+
+        InviteModal_SendInvite ->
+            "Send an invite"
+
+        InviteModal_Sending ->
+            "Sending"

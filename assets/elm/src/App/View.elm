@@ -216,7 +216,7 @@ modals model =
                     App.Modals.ProfileModal.view model
 
                 InviteModal ->
-                    App.Modals.InviteModal.view model.inviteModal
+                    App.Modals.InviteModal.view model model.inviteModal
 
                 CotoMenuModal ->
                     App.Modals.CotoMenuModal.view model model.graph model.cotoMenuModal

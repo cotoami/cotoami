@@ -44,3 +44,9 @@ type TextKey
     | ProfileModal_Invite
     | ProfileModal_Export
     | ProfileModal_Import
+    | InviteModal_Title
+    | InviteModal_Message
+    | InviteModal_SentMessage
+    | InviteModal_InviteeAlreadyExists
+    | InviteModal_SendInvite
+    | InviteModal_Sending

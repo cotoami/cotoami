@@ -8,9 +8,11 @@ import Json.Decode as Decode
 import Utils.StringUtil exposing (validateEmail)
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Modal as Modal
+import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Amishi)
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Submodels.Context exposing (Context)
 import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
 
@@ -86,23 +88,23 @@ sendInvite email =
         (Http.get ("/api/invite/" ++ email) Decode.string)
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
+view : Context context -> Model -> Html AppMsg.Msg
+view context model =
+    modalConfig context model
         |> Just
         |> Modal.view "invite-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
+modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfig context model =
     case model.requestStatus of
         Approved acceptedEmail ->
             { closeMessage = CloseModal
-            , title = text "Invite an amishi"
+            , title = text (context.i18nText I18nKeys.InviteModal_Title)
             , content =
                 div []
                     [ p []
-                        [ text ("Your invitation has been sent to: ")
+                        [ text (context.i18nText I18nKeys.InviteModal_SentMessage)
                         , span [ class "accepted-email" ] [ text acceptedEmail ]
                         ]
                     ]
@@ -112,10 +114,10 @@ modalConfig model =
 
         _ ->
             { closeMessage = CloseModal
-            , title = text "Invite an amishi"
+            , title = text (context.i18nText I18nKeys.InviteModal_Title)
             , content =
                 div []
-                    [ p [] [ text "Enter an email address to send an invitation." ]
+                    [ p [] [ text (context.i18nText I18nKeys.InviteModal_Message) ]
                     , div []
                         [ input
                             [ type_ "email"
@@ -130,7 +132,8 @@ modalConfig model =
                     , case model.requestStatus of
                         Conflict invitee ->
                             div [ class "error" ]
-                                [ span [ class "message" ] [ text "The amishi already exists: " ]
+                                [ span [ class "message" ]
+                                    [ text (context.i18nText I18nKeys.InviteModal_InviteeAlreadyExists) ]
                                 , span [ class "invitee" ]
                                     [ img [ class "avatar", src invitee.avatarUrl ] []
                                     , span [ class "name" ] [ text invitee.displayName ]
@@ -147,9 +150,9 @@ modalConfig model =
                     , onClick (AppMsg.InviteModalMsg SendInviteClick)
                     ]
                     [ if model.requestProcessing then
-                        text "Sending..."
+                        text ((context.i18nText I18nKeys.InviteModal_Sending) ++ "...")
                       else
-                        text "Send an invite"
+                        text (context.i18nText I18nKeys.InviteModal_SendInvite)
                     ]
                 ]
             }
