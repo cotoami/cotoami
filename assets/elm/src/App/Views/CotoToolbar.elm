@@ -41,7 +41,7 @@ update context msg model =
 
 
 view :
-    Context a
+    Context context
     -> Session
     -> Graph
     -> Maybe InboundConnection
@@ -50,38 +50,12 @@ view :
     -> Html AppMsg.Msg
 view context session graph maybeInbound elementId coto =
     span [ class "coto-tool-buttons" ]
-        [ if
-            not (List.isEmpty context.selection)
-                && not (App.Submodels.Context.isSelected (Just coto.id) context)
-          then
-            span [ class "connecting-buttons" ]
-                [ a
-                    [ class "tool-button connect"
-                    , title "Connect"
-                    , onLinkButtonClick
-                        (AppMsg.CotoToolbarMsg (ConfirmConnect coto.id Inbound))
-                    ]
-                    [ faIcon "link" Nothing ]
-                , span [ class "border" ] []
-                ]
-          else
-            Utils.HtmlUtil.none
+        [ connectButton context coto
         , maybeInbound
             |> Maybe.map (\inbound -> subCotoTools context session graph inbound elementId coto)
             |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "default-buttons" ]
-            [ if
-                not (App.Types.Graph.pinned coto.id graph)
-                    && ((Just coto.id) /= (Maybe.map (.cotoId) context.cotonoma))
-              then
-                a
-                    [ class "tool-button pin-coto"
-                    , title "Pin"
-                    , onLinkButtonClick (PinCoto coto.id)
-                    ]
-                    [ faIcon "thumb-tack" Nothing ]
-              else
-                Utils.HtmlUtil.none
+            [ pinButton context graph coto
             , if App.Types.Coto.checkWritePermission session coto then
                 a
                     [ class "tool-button edit-coto"
@@ -124,7 +98,7 @@ view context session graph maybeInbound elementId coto =
 
 
 subCotoTools :
-    Context a
+    Context context
     -> Session
     -> Graph
     -> InboundConnection
@@ -172,7 +146,7 @@ isDisconnectable session parent connection child =
         || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
 
 
-isReorderble : Context a -> Session -> InboundConnection -> Coto -> Bool
+isReorderble : Context context -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
     if inbound.siblings < 2 then
         False
@@ -198,3 +172,39 @@ isReorderble context session inbound child =
                         )
                     |> Maybe.withDefault True
                 )
+
+
+connectButton : Context context -> Coto -> Html AppMsg.Msg
+connectButton context coto =
+    if
+        not (List.isEmpty context.selection)
+            && not (App.Submodels.Context.isSelected (Just coto.id) context)
+    then
+        span [ class "connecting-buttons" ]
+            [ a
+                [ class "tool-button connect"
+                , title "Connect"
+                , onLinkButtonClick
+                    (AppMsg.CotoToolbarMsg (ConfirmConnect coto.id Inbound))
+                ]
+                [ faIcon "link" Nothing ]
+            , span [ class "border" ] []
+            ]
+    else
+        Utils.HtmlUtil.none
+
+
+pinButton : Context context -> Graph -> Coto -> Html AppMsg.Msg
+pinButton context graph coto =
+    if
+        not (App.Types.Graph.pinned coto.id graph)
+            && ((Just coto.id) /= (Maybe.map (.cotoId) context.cotonoma))
+    then
+        a
+            [ class "tool-button pin-coto"
+            , title "Pin"
+            , onLinkButtonClick (PinCoto coto.id)
+            ]
+            [ faIcon "thumb-tack" Nothing ]
+    else
+        Utils.HtmlUtil.none
