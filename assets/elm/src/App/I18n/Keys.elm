@@ -75,3 +75,7 @@ type TextKey
     | TimelineFilterModal_Title
     | TimelineFilterModal_ExcludePinnedGraph
     | TimelineFilterModal_ExcludePostsInCotonoma
+    | ConnectModal_Title
+    | ConnectModal_Connect
+    | ConnectModal_PostAndConnect
+    | ConnectModal_Reverse

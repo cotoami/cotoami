@@ -230,3 +230,15 @@ text key =
 
         TimelineFilterModal_ExcludePostsInCotonoma ->
             "ホーム以外で投稿されたコトを除外する"
+
+        ConnectModal_Title ->
+            "つながりを作る"
+
+        ConnectModal_Connect ->
+            "接続"
+
+        ConnectModal_PostAndConnect ->
+            "投稿して接続"
+
+        ConnectModal_Reverse ->
+            "逆方向"

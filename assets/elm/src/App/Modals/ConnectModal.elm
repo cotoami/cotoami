@@ -19,6 +19,7 @@ import Html.Keyed
 import Utils.Modal as Modal
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.UpdateUtil exposing (..)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
@@ -191,20 +192,20 @@ connectPostToSelection context direction post model =
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-view : List Coto -> Model -> Html AppMsg.Msg
-view cotos model =
-    Modal.view "connect-modal" <| Just (modalConfig cotos model)
+view : Context context -> List Coto -> Model -> Html AppMsg.Msg
+view context cotos model =
+    Modal.view "connect-modal" <| Just (modalConfig context cotos model)
 
 
-modalConfig : List Coto -> Model -> Modal.Config AppMsg.Msg
-modalConfig selectedCotos model =
+modalConfig : Context context -> List Coto -> Model -> Modal.Config AppMsg.Msg
+modalConfig context selectedCotos model =
     let
         primaryButtonId =
             "connect-modal-primary-button"
     in
         { closeMessage = CloseModal
-        , title = text "Connect Preview"
-        , content = modalContent selectedCotos model
+        , title = text (context.i18nText I18nKeys.ConnectModal_Title)
+        , content = modalContent context selectedCotos model
         , buttons =
             case model.target of
                 None ->
@@ -220,7 +221,7 @@ modalConfig selectedCotos model =
                                 (Connect coto selectedCotos model.direction)
                             )
                         ]
-                        [ text "Connect" ]
+                        [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
                     ]
 
                 NewPost content ->
@@ -233,13 +234,13 @@ modalConfig selectedCotos model =
                                 (PostAndConnectToSelection content model.direction)
                             )
                         ]
-                        [ text "Post and connect" ]
+                        [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
                     ]
         }
 
 
-modalContent : List Coto -> Model -> Html AppMsg.Msg
-modalContent selectedCotos model =
+modalContent : Context context -> List Coto -> Model -> Html AppMsg.Msg
+modalContent context selectedCotos model =
     let
         selectedCotosHtml =
             Html.Keyed.node
@@ -283,7 +284,7 @@ modalContent selectedCotos model =
                     [ class "button reverse-direction"
                     , onClick (AppMsg.ConnectModalMsg ReverseDirection)
                     ]
-                    [ text "Reverse" ]
+                    [ text (context.i18nText I18nKeys.ConnectModal_Reverse) ]
                 ]
             , div
                 [ class "start" ]

@@ -226,6 +226,7 @@ modals model =
 
                 ConnectModal ->
                     App.Modals.ConnectModal.view
+                        model
                         (App.Submodels.LocalCotos.getSelectedCotos model model)
                         model.connectModal
 

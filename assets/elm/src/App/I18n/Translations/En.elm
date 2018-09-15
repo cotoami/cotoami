@@ -227,3 +227,15 @@ text key =
 
         TimelineFilterModal_ExcludePostsInCotonoma ->
             "Hide cotos posted in a Cotonoma other than My Home"
+
+        ConnectModal_Title ->
+            "Connect Preview"
+
+        ConnectModal_Connect ->
+            "Connect"
+
+        ConnectModal_PostAndConnect ->
+            "Post and connect"
+
+        ConnectModal_Reverse ->
+            "Reverse"
