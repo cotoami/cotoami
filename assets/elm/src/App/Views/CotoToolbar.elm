@@ -57,12 +57,7 @@ view context session graph maybeInbound elementId coto =
         , span [ class "default-buttons" ]
             [ pinButton context graph coto
             , editButton context session coto
-            , a
-                [ class "tool-button add-coto"
-                , title "Create a connected Coto"
-                , onLinkButtonClick (OpenNewEditorModalWithSourceCoto coto)
-                ]
-                [ materialIcon "add" Nothing ]
+            , addSubCotoButton context coto
             , a
                 [ class "tool-button select-coto"
                 , title "Select"
@@ -213,3 +208,13 @@ editButton context session coto =
             [ materialIcon "edit" Nothing ]
     else
         Utils.HtmlUtil.none
+
+
+addSubCotoButton : Context context -> Coto -> Html AppMsg.Msg
+addSubCotoButton context coto =
+    a
+        [ class "tool-button add-coto"
+        , title "Create a connected Coto"
+        , onLinkButtonClick (OpenNewEditorModalWithSourceCoto coto)
+        ]
+        [ materialIcon "add" Nothing ]
