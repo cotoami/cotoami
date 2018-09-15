@@ -58,3 +58,4 @@ type TextKey
     | CotoToolbar_More
     | CotoToolbar_Disconnect
     | CotoToolbar_Reorder
+    | CotoMenuModal_Info

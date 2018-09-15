@@ -176,3 +176,6 @@ text key =
 
         CotoToolbar_Reorder ->
             "Reorder"
+
+        CotoMenuModal_Info ->
+            "Info"

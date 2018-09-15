@@ -179,3 +179,6 @@ text key =
 
         CotoToolbar_Reorder ->
             "並び替え"
+
+        CotoMenuModal_Info ->
+            "情報"

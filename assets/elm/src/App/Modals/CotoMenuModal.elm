@@ -15,6 +15,7 @@ import Utils.Modal as Modal
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.UpdateUtil exposing (..)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
@@ -44,18 +45,18 @@ isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
 
 
-type alias WithCotoMenuModal a =
-    { a | cotoMenuModal : Maybe Model }
+type alias WithCotoMenuModal model =
+    { model | cotoMenuModal : Maybe Model }
 
 
-open : Coto -> Modals (WithCotoMenuModal a) -> ( Modals (WithCotoMenuModal a), Cmd AppMsg.Msg )
+open : Coto -> Modals (WithCotoMenuModal model) -> ( Modals (WithCotoMenuModal model), Cmd AppMsg.Msg )
 open coto model =
     { model | cotoMenuModal = Just (initModel coto) }
         |> App.Submodels.Modals.openModal CotoMenuModal
         |> withCmd (\_ -> App.Commands.sendMsg (AppMsg.CotoMenuModalMsg Init))
 
 
-update : Context a -> CotoMenuModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : Context context -> CotoMenuModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         Init ->
@@ -78,7 +79,7 @@ update context msg model =
             model |> withoutCmd
 
 
-view : Context a -> Graph -> Maybe Model -> Html AppMsg.Msg
+view : Context context -> Graph -> Maybe Model -> Html AppMsg.Msg
 view context graph maybeModel =
     (Maybe.map2
         (\session model -> modalConfig context session graph model)
@@ -88,12 +89,12 @@ view context graph maybeModel =
         |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Context a -> Session -> Graph -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Graph -> Model -> Modal.Config AppMsg.Msg
 modalConfig context session graph model =
     { closeMessage = AppMsg.CloseModal
     , title = text ""
     , content =
-        [ [ menuItemInfo model
+        [ [ menuItemInfo context model
           , menuItemExplore model
           ]
         , if App.Submodels.Context.atHome context then
@@ -119,8 +120,8 @@ checkWritePermission session model =
     App.Types.Coto.checkWritePermission session model.coto
 
 
-menuItemInfo : Model -> Html AppMsg.Msg
-menuItemInfo model =
+menuItemInfo : Context context -> Model -> Html AppMsg.Msg
+menuItemInfo context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenCotoModal model.coto)
@@ -128,7 +129,8 @@ menuItemInfo model =
         [ a
             [ class "info" ]
             [ materialIcon "info" Nothing
-            , span [ class "menu-title" ] [ text "Info" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Info) ]
             ]
         ]
 
@@ -147,7 +149,7 @@ menuItemExplore model =
         ]
 
 
-menuItemPinUnpin : Context a -> Graph -> Model -> Html AppMsg.Msg
+menuItemPinUnpin : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinUnpin context graph model =
     if App.Types.Graph.pinned model.coto.id graph then
         div
@@ -174,7 +176,7 @@ menuItemPinUnpin context graph model =
             ]
 
 
-menuItemPinCotoToMyHome : Context a -> Graph -> Model -> Html AppMsg.Msg
+menuItemPinCotoToMyHome : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinCotoToMyHome context graph model =
     div
         [ class "menu-item"
