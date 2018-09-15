@@ -77,20 +77,7 @@ subCotoTools :
     -> Coto
     -> Html AppMsg.Msg
 subCotoTools context session graph inbound elementId coto =
-    [ inbound.parent
-        |> Maybe.map
-            (\parent ->
-                if isDisconnectable session parent inbound.connection coto then
-                    a
-                        [ class "tool-button delete-connection"
-                        , title "Disconnect"
-                        , onLinkButtonClick (ConfirmDeleteConnection ( parent.id, coto.id ))
-                        ]
-                        [ faIcon "unlink" Nothing ]
-                else
-                    Utils.HtmlUtil.none
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+    [ deleteConnectionButton context session inbound coto
     , if isReorderble context session inbound coto then
         a
             [ class "tool-button toggle-reorder-mode"
@@ -232,3 +219,21 @@ openCotoMenuButton context coto =
         , onLinkButtonClick (AppMsg.CotoToolbarMsg (OpenCotoMenuModal coto))
         ]
         [ materialIcon "more_horiz" Nothing ]
+
+
+deleteConnectionButton : Context context -> Session -> InboundConnection -> Coto -> Html AppMsg.Msg
+deleteConnectionButton context session inbound coto =
+    inbound.parent
+        |> Maybe.map
+            (\parent ->
+                if isDisconnectable session parent inbound.connection coto then
+                    a
+                        [ class "tool-button delete-connection"
+                        , title "Disconnect"
+                        , onLinkButtonClick (ConfirmDeleteConnection ( parent.id, coto.id ))
+                        ]
+                        [ faIcon "unlink" Nothing ]
+                else
+                    Utils.HtmlUtil.none
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
