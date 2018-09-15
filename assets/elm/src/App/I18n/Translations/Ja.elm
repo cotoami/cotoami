@@ -182,3 +182,15 @@ text key =
 
         CotoMenuModal_Info ->
             "情報"
+
+        CotoMenuModal_ExploreConnections ->
+            "つながりを辿る"
+
+        CotoMenuModal_PinTo ->
+            "ピン留め:"
+
+        CotoMenuModal_UnpinFrom ->
+            "ピンを外す:"
+
+        CotoMenuModal_MyHome ->
+            "ホーム"

@@ -59,3 +59,7 @@ type TextKey
     | CotoToolbar_Disconnect
     | CotoToolbar_Reorder
     | CotoMenuModal_Info
+    | CotoMenuModal_ExploreConnections
+    | CotoMenuModal_PinTo
+    | CotoMenuModal_UnpinFrom
+    | CotoMenuModal_MyHome

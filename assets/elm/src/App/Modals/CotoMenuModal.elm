@@ -95,7 +95,7 @@ modalConfig context session graph model =
     , title = text ""
     , content =
         [ [ menuItemInfo context model
-          , menuItemExplore model
+          , menuItemExplore context model
           ]
         , if App.Submodels.Context.atHome context then
             [ menuItemPinUnpin context graph model ]
@@ -135,8 +135,8 @@ menuItemInfo context model =
         ]
 
 
-menuItemExplore : Model -> Html AppMsg.Msg
-menuItemExplore model =
+menuItemExplore : Context context -> Model -> Html AppMsg.Msg
+menuItemExplore context model =
     div
         [ class "menu-item"
         , onLinkButtonClick (AppMsg.OpenTraversal model.coto.id)
@@ -144,7 +144,8 @@ menuItemExplore model =
         [ a
             [ class "explore" ]
             [ faIcon "sitemap" Nothing
-            , span [ class "menu-title" ] [ text "Explore the connections" ]
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_ExploreConnections) ]
             ]
         ]
 
@@ -160,7 +161,7 @@ menuItemPinUnpin context graph model =
                 [ class "unpin" ]
                 [ faIcon "thumb-tack" Nothing
                 , faIcon "remove" Nothing
-                , pinOrUnpinMenuTitle context.cotonoma False
+                , pinOrUnpinMenuTitle context context.cotonoma False
                 ]
             ]
     else
@@ -171,7 +172,7 @@ menuItemPinUnpin context graph model =
             [ a
                 [ class "pin" ]
                 [ faIcon "thumb-tack" Nothing
-                , pinOrUnpinMenuTitle context.cotonoma True
+                , pinOrUnpinMenuTitle context context.cotonoma True
                 ]
             ]
 
@@ -185,19 +186,19 @@ menuItemPinCotoToMyHome context graph model =
         [ a
             [ class "pin-to-my-home" ]
             [ faIcon "thumb-tack" Nothing
-            , pinOrUnpinMenuTitle Nothing True
+            , pinOrUnpinMenuTitle context Nothing True
             ]
         ]
 
 
-pinOrUnpinMenuTitle : Maybe Cotonoma -> Bool -> Html AppMsg.Msg
-pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
+pinOrUnpinMenuTitle : Context context -> Maybe Cotonoma -> Bool -> Html AppMsg.Msg
+pinOrUnpinMenuTitle context maybeCotonoma pinOrUnpin =
     let
         prefix =
             if pinOrUnpin then
-                "Pin to "
+                context.i18nText I18nKeys.CotoMenuModal_PinTo
             else
-                "Unpin from "
+                context.i18nText I18nKeys.CotoMenuModal_UnpinFrom
     in
         span [ class "menu-title" ]
             (maybeCotonoma
@@ -207,7 +208,13 @@ pinOrUnpinMenuTitle maybeCotonoma pinOrUnpin =
                         , span [ class "cotonoma" ] [ text cotonoma.name ]
                         ]
                     )
-                |> Maybe.withDefault [ text (prefix ++ "My Home") ]
+                |> Maybe.withDefault
+                    [ text
+                        (prefix
+                            ++ " "
+                            ++ (context.i18nText I18nKeys.CotoMenuModal_MyHome)
+                        )
+                    ]
             )
 
 

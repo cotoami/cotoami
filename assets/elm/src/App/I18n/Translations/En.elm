@@ -179,3 +179,15 @@ text key =
 
         CotoMenuModal_Info ->
             "Info"
+
+        CotoMenuModal_ExploreConnections ->
+            "Explore the connections"
+
+        CotoMenuModal_PinTo ->
+            "Pin to:"
+
+        CotoMenuModal_UnpinFrom ->
+            "Unpin from:"
+
+        CotoMenuModal_MyHome ->
+            "My Home"
