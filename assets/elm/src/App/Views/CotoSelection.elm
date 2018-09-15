@@ -20,6 +20,7 @@ import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotoSelection)
 import App.Types.Graph exposing (Graph)
 import App.Messages as AppMsg exposing (..)
@@ -108,32 +109,35 @@ type alias ViewModel model =
         }
 
 
-statusBar : ViewModel model -> Html AppMsg.Msg
-statusBar model =
-    div
-        [ id "coto-selection-bar"
-        , classList
-            [ ( "empty", List.isEmpty model.selection )
-            ]
-        ]
-        [ a [ class "close", onClick (AppMsg.CotoSelectionMsg ClearSelection) ]
-            [ faIcon "times" Nothing ]
-        , div [ class "selection-info" ]
-            [ faIcon "check-square-o" Nothing
-            , span
-                [ class "selection-count" ]
-                [ text (model.selection |> List.length |> toString) ]
-            , span
-                [ class "text" ]
-                [ text " cotos selected" ]
-            , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
-                [ if model.selectionView.columnOpen then
-                    faIcon "caret-up" Nothing
-                  else
-                    faIcon "caret-down" Nothing
+statusBar : Context context -> ViewModel model -> Html AppMsg.Msg
+statusBar context model =
+    let
+        count =
+            model.selection |> List.length
+
+        message =
+            context.i18nText (I18nKeys.CotoSelection_CotosSelected count)
+    in
+        div
+            [ id "coto-selection-bar"
+            , classList
+                [ ( "empty", List.isEmpty model.selection )
                 ]
             ]
-        ]
+            [ a [ class "close", onClick (AppMsg.CotoSelectionMsg ClearSelection) ]
+                [ faIcon "times" Nothing ]
+            , div [ class "selection-info" ]
+                [ faIcon "check-square-o" Nothing
+                , span [ class "selection-count" ] [ text (toString count) ]
+                , span [ class "text" ] [ text (" " ++ message) ]
+                , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
+                    [ if model.selectionView.columnOpen then
+                        faIcon "caret-up" Nothing
+                      else
+                        faIcon "caret-down" Nothing
+                    ]
+                ]
+            ]
 
 
 view : Context context -> ViewModel model -> Html AppMsg.Msg

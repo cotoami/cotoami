@@ -37,7 +37,7 @@ text key =
             "Are you sure you want to unpin this coto?"
 
         ConfirmCotonomatize name ->
-            "You are about to promote this Coto to a Cotonoma named '" ++ name ++ "'"
+            "You are about to promote this coto to a cotonoma named '" ++ name ++ "'"
 
         UnexpectedErrorOccurred ->
             "An unexpected error has occurred."
@@ -239,3 +239,9 @@ text key =
 
         ConnectModal_Reverse ->
             "Reverse"
+
+        CotoSelection_CotosSelected count ->
+            if count == 1 then
+                "coto selected"
+            else
+                "cotos selected"

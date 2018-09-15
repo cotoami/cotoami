@@ -242,3 +242,6 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
+
+        CotoSelection_CotosSelected count ->
+            "件のコトを選択中"

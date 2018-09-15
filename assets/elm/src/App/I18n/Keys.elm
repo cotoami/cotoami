@@ -79,3 +79,4 @@ type TextKey
     | ConnectModal_Connect
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
+    | CotoSelection_CotosSelected Int

@@ -58,7 +58,7 @@ view model =
                 , App.Views.ViewSwitch.view model
                 ]
             ]
-        , App.Views.CotoSelection.statusBar model
+        , App.Views.CotoSelection.statusBar model model
         , div [] (modals model)
         ]
 
