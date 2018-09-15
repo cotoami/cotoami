@@ -12,6 +12,9 @@ text key =
         Cotonoma ->
             "Cotonoma"
 
+        MyHome ->
+            "My Home"
+
         Post ->
             "Post"
 
@@ -50,9 +53,6 @@ text key =
 
         SigninModal_SentMessage ->
             "We just sent you an email with a link to access (or create) your Cotoami account."
-
-        Navigation_MyHome ->
-            "My Home"
 
         Navigation_Current ->
             "Current"
@@ -188,6 +188,3 @@ text key =
 
         CotoMenuModal_UnpinFrom ->
             "Unpin from:"
-
-        CotoMenuModal_MyHome ->
-            "My Home"

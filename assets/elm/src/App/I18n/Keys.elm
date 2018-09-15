@@ -4,6 +4,7 @@ module App.I18n.Keys exposing (TextKey(..))
 type TextKey
     = Coto
     | Cotonoma
+    | MyHome
     | Post
     | Posting
     | Save
@@ -17,7 +18,6 @@ type TextKey
     | SigninModal_EmailNotFound
     | SigninModal_SentTitle
     | SigninModal_SentMessage
-    | Navigation_MyHome
     | Navigation_Current
     | Navigation_Recent
     | Flow_EditorPlaceholder
@@ -62,4 +62,3 @@ type TextKey
     | CotoMenuModal_ExploreConnections
     | CotoMenuModal_PinTo
     | CotoMenuModal_UnpinFrom
-    | CotoMenuModal_MyHome

@@ -46,7 +46,7 @@ homeNav model =
                 (span [ class "home" ])
           )
             [ materialIcon "home" Nothing
-            , text (model.i18nText I18nKeys.Navigation_MyHome)
+            , text (model.i18nText I18nKeys.MyHome)
             ]
         ]
 

@@ -212,7 +212,7 @@ pinOrUnpinMenuTitle context maybeCotonoma pinOrUnpin =
                     [ text
                         (prefix
                             ++ " "
-                            ++ (context.i18nText I18nKeys.CotoMenuModal_MyHome)
+                            ++ (context.i18nText I18nKeys.MyHome)
                         )
                     ]
             )

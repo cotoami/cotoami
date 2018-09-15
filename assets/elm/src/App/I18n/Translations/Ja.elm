@@ -12,6 +12,9 @@ text key =
         Cotonoma ->
             "コトノマ"
 
+        MyHome ->
+            "ホーム"
+
         Post ->
             "投稿"
 
@@ -53,9 +56,6 @@ text key =
 
         SigninModal_SentMessage ->
             "環境によっては、実際にメールが届くまで若干の時間がかかることがあります。"
-
-        Navigation_MyHome ->
-            "ホーム"
 
         Navigation_Current ->
             "現在地"
@@ -191,6 +191,3 @@ text key =
 
         CotoMenuModal_UnpinFrom ->
             "ピンを外す:"
-
-        CotoMenuModal_MyHome ->
-            "ホーム"
