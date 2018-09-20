@@ -5,6 +5,27 @@
     width: 80vw;
   }
 
+  h4 {
+    margin-bottom: 1rem;
+
+    button {
+      font-size: 1.5rem;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-bottom: 0;
+    }
+
+    button.coto {
+      border-radius: 4px 0 0 4px;
+      border-right-style: none;
+    }
+
+    button.cotonoma {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
   input {
     margin-bottom: 1rem;
   }
@@ -19,6 +40,24 @@
     height: 50vh;
     display: flex;
     flex-direction: column;
+  }
+
+  div.posting-to {
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #999;
+
+    i {
+      font-size: 20px;
+      vertical-align: -5px;
+      margin-right: 3px;
+    }
+
+    span.cotonoma-label img.avatar {
+      width: 20px;
+      height: 20px;
+      margin-right: 3px;
+    }
   }
 
   div.source-coto {

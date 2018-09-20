@@ -4,15 +4,17 @@ import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Util.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
+import Utils.HtmlUtil
+import Utils.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
-import App.Types.Context exposing (Context, isSelected)
 import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(..))
-import App.Views.Coto exposing (defaultActionConfig)
+import App.Submodels.Context exposing (Context)
+import App.Views.Coto
+import App.Views.CotoToolbar
 
 
-view : Context -> Graph -> String -> List Cotonoma -> Html Msg
+view : Context a -> Graph -> String -> List Cotonoma -> Html Msg
 view context graph title cotonomas =
     Html.Keyed.node
         "div"
@@ -27,7 +29,7 @@ view context graph title cotonomas =
         )
 
 
-cotonomaDiv : Context -> Graph -> String -> Cotonoma -> Html Msg
+cotonomaDiv : Context a -> Graph -> String -> Cotonoma -> Html Msg
 cotonomaDiv context graph listTitle cotonoma =
     let
         elementId =
@@ -43,7 +45,7 @@ cotonomaDiv context graph listTitle cotonoma =
                 [ ( "coto-as-cotonoma", True )
                 , ( "element-focus", Just elementId == context.elementFocus )
                 , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
-                , ( "selected", isSelected (Just cotonoma.cotoId) context )
+                , ( "selected", App.Submodels.Context.isSelected (Just cotonoma.cotoId) context )
                 , ( "in", inCotonoma )
                 , ( "not-active", not (App.Types.Coto.revisedBefore cotonoma) )
                 ]
@@ -58,17 +60,16 @@ cotonomaDiv context graph listTitle cotonoma =
                     App.Views.Coto.cotonomaLink context CotonomaClick cotonoma.owner cotonoma
                 ]
             , div [ class "touch-space-to-open-tools" ] []
-            , App.Types.Coto.toCoto cotonoma
-                |> (\coto ->
-                        App.Views.Coto.toolButtonsSpan
+            , context.session
+                |> Maybe.map
+                    (\session ->
+                        App.Views.CotoToolbar.view
                             context
+                            session
                             graph
                             Nothing
-                            { defaultActionConfig
-                                | editCoto = Nothing
-                                , addCoto = Nothing
-                            }
                             elementId
-                            coto
-                   )
+                            (App.Types.Coto.toCoto cotonoma)
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             ]

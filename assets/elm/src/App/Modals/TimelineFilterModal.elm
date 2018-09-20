@@ -3,65 +3,76 @@ module App.Modals.TimelineFilterModal exposing (update, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
-import Util.Modal as Modal
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.HtmlUtil exposing (materialIcon)
+import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.HtmlUtil exposing (materialIcon)
+import App.LocalConfig
+import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
-import App.Types.Context exposing (Context)
-import App.Types.Timeline exposing (Filter)
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Submodels.Context exposing (Context)
+import App.Views.Flow
 import App.Server.Post
-import App.Ports.LocalStorage
 
 
-update : Context -> TimelineFilterModalMsg.Msg -> Filter -> ( Filter, Cmd AppMsg.Msg )
-update context msg filter =
+type alias UpdateModel model =
+    { model
+        | flowView : App.Views.Flow.Model
+    }
+
+
+update : Context a -> TimelineFilterModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ flowView } as model) =
     case msg of
         ExcludePinnedGraphOptionCheck check ->
-            { filter | excludePinnedGraph = check }
-                |> withCmd (cmdOnFilterUpdate_ context)
+            flowView.filter
+                |> (\filter -> { filter | excludePinnedGraph = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
 
         ExcludePostsInCotonomaOptionCheck check ->
-            { filter | excludePostsInCotonoma = check }
-                |> withCmd (cmdOnFilterUpdate_ context)
+            flowView.filter
+                |> (\filter -> { filter | excludePostsInCotonoma = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
 
 
-cmdOnFilterUpdate_ : Context -> Filter -> Cmd AppMsg.Msg
-cmdOnFilterUpdate_ context filter =
+saveUpdate : Context a -> TimelineFilter -> Cmd AppMsg.Msg
+saveUpdate context filter =
     Cmd.batch
         [ App.Server.Post.fetchPostsByContext 0 filter context
-        , App.Ports.LocalStorage.setItem
-            ( "timeline.filter"
-            , App.Types.Timeline.encodeFilter filter
-            )
+        , App.LocalConfig.saveTimelineFilter filter
         ]
 
 
-view : Context -> Filter -> Html AppMsg.Msg
+view : Context a -> TimelineFilter -> Html AppMsg.Msg
 view context filter =
     Modal.view
         "timeline-filter-modal"
-        (Just (modalConfig_ context filter))
+        (Just (modalConfig context filter))
 
 
-modalConfig_ : Context -> Filter -> Modal.Config AppMsg.Msg
-modalConfig_ context filter =
+modalConfig : Context a -> TimelineFilter -> Modal.Config AppMsg.Msg
+modalConfig context filter =
     { closeMessage = CloseModal
-    , title = text "Timeline Filter"
+    , title = text (context.i18nText I18nKeys.TimelineFilterModal_Title)
     , content =
         div []
-            [ excludePinnedGraphOption_ context filter
-            , if App.Types.Context.atHome context then
-                excludePostsInCotonomaOption_ context filter
+            [ excludePinnedGraphOption context filter
+            , if App.Submodels.Context.atHome context then
+                excludePostsInCotonomaOption context filter
               else
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
             ]
     , buttons = []
     }
 
 
-excludePinnedGraphOption_ : Context -> Filter -> Html AppMsg.Msg
-excludePinnedGraphOption_ context filter =
+excludePinnedGraphOption : Context a -> TimelineFilter -> Html AppMsg.Msg
+excludePinnedGraphOption context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"
@@ -73,14 +84,18 @@ excludePinnedGraphOption_ context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos incorporated in the pinned documents" ]
+                    [ text
+                        (context.i18nText
+                            I18nKeys.TimelineFilterModal_ExcludePinnedGraph
+                        )
+                    ]
                 ]
             ]
         ]
 
 
-excludePostsInCotonomaOption_ : Context -> Filter -> Html AppMsg.Msg
-excludePostsInCotonomaOption_ context filter =
+excludePostsInCotonomaOption : Context a -> TimelineFilter -> Html AppMsg.Msg
+excludePostsInCotonomaOption context filter =
     div [ class "filter-option pretty p-default p-curve p-smooth" ]
         [ input
             [ type_ "checkbox"
@@ -92,11 +107,10 @@ excludePostsInCotonomaOption_ context filter =
         , div [ class "state" ]
             [ label []
                 [ span []
-                    [ text "Hide cotos posted in a cotonoma other than "
-                    , span [ class "my-home" ]
-                        [ materialIcon "home" Nothing
-                        , text "My Home"
-                        ]
+                    [ text
+                        (context.i18nText
+                            I18nKeys.TimelineFilterModal_ExcludePostsInCotonoma
+                        )
                     ]
                 ]
             ]
