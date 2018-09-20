@@ -5,7 +5,7 @@ import Set exposing (Set)
 import Json.Encode exposing (Value)
 import Json.Decode as Decode
 import Phoenix.Channel as Channel exposing (Channel)
-import Util.HttpUtil exposing (ClientId(ClientId))
+import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.Types.Coto exposing (CotonomaKey, CotoId)
 import App.Types.Amishi exposing (Amishi, Presences)
 import App.Server.Amishi

@@ -2,8 +2,10 @@ module App.Types.Coto
     exposing
         ( ElementId
         , CotoId
+        , CotoSelection
         , CotonomaKey
         , Coto
+        , CotoContent
         , summaryMaxlength
         , updateContent
         , checkWritePermission
@@ -21,7 +23,7 @@ import Exts.Maybe exposing (isJust)
 import App.Markdown
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
-import Util.StringUtil exposing (isBlank)
+import Utils.StringUtil exposing (isBlank)
 
 
 type alias ElementId =
@@ -30,6 +32,10 @@ type alias ElementId =
 
 type alias CotoId =
     String
+
+
+type alias CotoSelection =
+    List CotoId
 
 
 type alias CotonomaKey =
@@ -44,6 +50,12 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    }
+
+
+type alias CotoContent =
+    { content : String
+    , summary : Maybe String
     }
 
 

@@ -18,7 +18,8 @@ import Cytoscape from "js/cytoscape"
 // Set up our Elm App
 const elmDiv = document.querySelector("#elm-container")
 const elmApp = Elm.Main.embed(elmDiv, {
-  seed: Math.floor(Math.random() * 0x0FFFFFFF)
+  seed: Math.floor(Math.random() * 0x0FFFFFFF),
+  lang: document.documentElement.lang
 })
 
 elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {

@@ -1,6 +1,6 @@
 module App.Types.SearchResults exposing (..)
 
-import Util.StringUtil
+import Utils.StringUtil
 import App.Types.Post exposing (Post)
 import App.Types.Coto exposing (Coto, CotoId)
 
@@ -24,7 +24,7 @@ defaultSearchResults =
 
 hasQuery : SearchResults -> Bool
 hasQuery searchResults =
-    Util.StringUtil.isNotBlank searchResults.query
+    Utils.StringUtil.isNotBlank searchResults.query
 
 
 setQuerying : String -> SearchResults -> SearchResults
@@ -38,7 +38,7 @@ setQuery query searchResults =
     { searchResults
         | query = query
         , posts =
-            if Util.StringUtil.isBlank query then
+            if Utils.StringUtil.isBlank query then
                 []
             else
                 searchResults.posts

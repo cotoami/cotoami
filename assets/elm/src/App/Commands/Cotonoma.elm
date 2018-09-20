@@ -1,13 +1,13 @@
 module App.Commands.Cotonoma exposing (refreshCotonomaList)
 
-import App.Model exposing (Model)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (Msg)
 import App.Server.Cotonoma
 
 
-refreshCotonomaList : Model -> Cmd Msg
-refreshCotonomaList model =
+refreshCotonomaList : Context a -> Cmd Msg
+refreshCotonomaList context =
     Cmd.batch
         [ App.Server.Cotonoma.fetchCotonomas
-        , App.Server.Cotonoma.fetchSubCotonomas model.context
+        , App.Server.Cotonoma.fetchSubCotonomas context
         ]

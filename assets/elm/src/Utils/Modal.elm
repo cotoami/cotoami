@@ -1,11 +1,11 @@
-module Util.Modal exposing (Config, view)
+module Utils.Modal exposing (Config, view)
 
 import Html
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Exts.Maybe exposing (maybe, isJust)
-import Util.HtmlUtil exposing (faIcon)
+import Utils.HtmlUtil exposing (faIcon)
 
 
 type alias Config msg =

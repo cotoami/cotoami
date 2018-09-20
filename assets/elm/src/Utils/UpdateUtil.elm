@@ -1,9 +1,22 @@
-module Util.UpdateUtil exposing (withCmd, withCmdIf, withoutCmd, addCmd)
+module Utils.UpdateUtil
+    exposing
+        ( withCmd
+        , withCmds
+        , withCmdIf
+        , withoutCmd
+        , addCmd
+        , addCmdIf
+        )
 
 
 withCmd : (model -> Cmd msg) -> model -> ( model, Cmd msg )
 withCmd createCmd model =
     ( model, createCmd model )
+
+
+withCmds : (model -> List (Cmd msg)) -> model -> ( model, Cmd msg )
+withCmds createCmds model =
+    ( model, Cmd.batch (createCmds model) )
 
 
 withCmdIf : (model -> Bool) -> (model -> Cmd msg) -> model -> ( model, Cmd msg )
@@ -22,3 +35,11 @@ withoutCmd model =
 addCmd : (model -> Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
 addCmd createCmd ( model, cmd ) =
     ( model, Cmd.batch [ cmd, createCmd model ] )
+
+
+addCmdIf : (model -> Bool) -> (model -> Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+addCmdIf condition createCmd ( model, cmd ) =
+    if condition model then
+        addCmd createCmd ( model, cmd )
+    else
+        ( model, cmd )

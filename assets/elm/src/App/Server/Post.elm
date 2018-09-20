@@ -5,20 +5,19 @@ import Http exposing (Request)
 import Json.Decode as Decode exposing (maybe, int, string, float, bool)
 import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import Json.Encode as Encode
-import Util.HttpUtil exposing (ClientId, httpPost)
+import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Messages
     exposing
         ( Msg
-            ( PostsFetched
-            , CotonomaFetched
+            ( HomePostsFetched
+            , CotonomaPostsFetched
             , SearchResultsFetched
-            , CotonomaPosted
             )
         )
-import App.Types.Context exposing (Context)
-import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
-import App.Types.Timeline exposing (Filter)
+import App.Types.Post exposing (Post, PaginatedPosts)
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Submodels.Context exposing (Context)
 import App.Server.Amishi
 import App.Server.Cotonoma
 
@@ -46,8 +45,8 @@ decodePaginatedPosts =
         |> required "total_pages" int
 
 
-fetchPosts : Int -> Filter -> Cmd Msg
-fetchPosts pageIndex filter =
+fetchHomePosts : Int -> TimelineFilter -> Cmd Msg
+fetchHomePosts pageIndex filter =
     let
         url =
             "/api/cotos"
@@ -63,11 +62,11 @@ fetchPosts pageIndex filter =
                         ""
                    )
     in
-        Http.send PostsFetched <|
+        Http.send HomePostsFetched <|
             Http.get url decodePaginatedPosts
 
 
-fetchCotonomaPosts : Int -> Filter -> CotonomaKey -> Cmd Msg
+fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
 fetchCotonomaPosts pageIndex filter key =
     let
         url =
@@ -79,18 +78,18 @@ fetchCotonomaPosts pageIndex filter key =
                         ""
                    )
     in
-        Http.send CotonomaFetched <|
+        Http.send CotonomaPostsFetched <|
             Http.get url <|
                 Decode.map2 (,)
                     (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
                     (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
-fetchPostsByContext : Int -> Filter -> Context -> Cmd Msg
+fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
 fetchPostsByContext pageIndex filter context =
     context.cotonoma
         |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
-        |> Maybe.withDefault (fetchPosts pageIndex filter)
+        |> Maybe.withDefault (fetchHomePosts pageIndex filter)
 
 
 search : String -> Cmd Msg
@@ -113,20 +112,26 @@ postRequest clientId maybeCotonoma post =
 
 
 post : ClientId -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
-post clientId maybeCotonoma msgAfterPosted post =
+post clientId maybeCotonoma tag post =
     postRequest clientId maybeCotonoma post
-        |> Http.send msgAfterPosted
+        |> Http.send tag
 
 
-postCotonoma : ClientId -> Maybe Cotonoma -> Int -> Bool -> String -> Cmd Msg
-postCotonoma clientId maybeCotonoma postId shared name =
+postCotonoma :
+    ClientId
+    -> Maybe Cotonoma
+    -> (Result Http.Error Post -> msg)
+    -> Bool
+    -> String
+    -> Cmd msg
+postCotonoma clientId maybeCotonoma tag shared name =
     let
         body =
             App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
                 |> Http.jsonBody
     in
         httpPost "/api/cotonomas" clientId body decodePost
-            |> Http.send (CotonomaPosted postId)
+            |> Http.send tag
 
 
 encodePost : Maybe Cotonoma -> Post -> Encode.Value
