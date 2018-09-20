@@ -427,7 +427,8 @@ cotoEditorConfig context model =
                 newEditorTitle context model
     , content =
         div [ class "coto-editor-modal-body" ]
-            [ sourceCotoDiv context model
+            [ targetCotonomaDiv context model
+            , sourceCotoDiv context model
             , cotoEditor context model
             ]
     , buttons =
@@ -512,7 +513,8 @@ cotonomaEditorConfig context model =
                 newEditorTitle context model
     , content =
         div []
-            [ sourceCotoDiv context model
+            [ targetCotonomaDiv context model
+            , sourceCotoDiv context model
             , cotonomaEditor context model
             ]
     , buttons =
@@ -609,6 +611,26 @@ newEditorTitle context model =
             []
     )
         |> (div [])
+
+
+targetCotonomaDiv : Context context -> Model -> Html AppMsg.Msg
+targetCotonomaDiv context model =
+    case model.mode of
+        Edit _ ->
+            Utils.HtmlUtil.none
+
+        _ ->
+            div [ class "posting-to" ]
+                (context.cotonoma
+                    |> Maybe.map
+                        (\cotonoma ->
+                            [ App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma ]
+                        )
+                    |> Maybe.withDefault
+                        [ materialIcon "home" Nothing
+                        , text (context.i18nText I18nKeys.MyHome)
+                        ]
+                )
 
 
 sourceCotoDiv : Context context -> Model -> Html AppMsg.Msg
