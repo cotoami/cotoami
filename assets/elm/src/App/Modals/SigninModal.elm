@@ -118,6 +118,7 @@ modalConfigWithSignupEnabled context model =
         div []
             [ p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
             , signinForm context model
+            , p [ class "notice" ] [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
             ]
     , buttons =
         [ sendLinkButton context model ]
