@@ -6,11 +6,11 @@ import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Json.Encode as Encode
 import Json.Decode as Decode
-import Util.Modal as Modal
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.StringUtil exposing (isBlank)
-import Util.HttpUtil exposing (ClientId, httpPost)
-import App.Types.Context exposing (Context)
+import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.StringUtil exposing (isBlank)
+import Utils.HttpUtil exposing (ClientId, httpPost)
+import App.Submodels.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg
     exposing
@@ -43,7 +43,7 @@ defaultModel =
     }
 
 
-update : Context -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         DataInput data ->

@@ -1,4 +1,4 @@
-module Util.HttpUtil
+module Utils.HttpUtil
     exposing
         ( ClientId(ClientId)
         , httpRequestWithBody

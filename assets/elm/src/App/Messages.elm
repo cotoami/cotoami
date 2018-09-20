@@ -4,16 +4,20 @@ import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import Util.Keyboard.Event exposing (KeyboardEvent)
-import App.ActiveViewOnMobile exposing (ActiveViewOnMobile)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey, CotonomaStats)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph, PinnedCotosView)
-import App.Types.Timeline exposing (TimelineView)
-import App.Types.Traversal exposing (Traversal)
+import App.Types.Graph exposing (Direction, Graph)
+import App.Views.ViewSwitchMsg
+import App.Views.FlowMsg
+import App.Views.StockMsg
+import App.Views.TraversalsMsg
+import App.Views.CotoSelectionMsg
+import App.Views.CotoToolbarMsg
 import App.Modals.SigninModalMsg
 import App.Modals.EditorModalMsg
+import App.Modals.CotoMenuModalMsg
+import App.Modals.ConnectModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.TimelineFilterModalMsg
@@ -26,27 +30,25 @@ type Msg
     | AppClick
     | OnLocationChange Location
     | NavigationToggle
-    | SwitchViewOnMobile ActiveViewOnMobile
-    | ToggleTimeline
     | HomeClick
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
+    | SessionFetched (Result Http.Error Session)
+    | HomePostsFetched (Result Http.Error PaginatedPosts)
+    | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
+    | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
+    | GraphFetched (Result Http.Error Graph)
+    | SubgraphFetched (Result Http.Error Graph)
+      --
+      -- Search
+      --
     | SearchInputFocusChanged Bool
     | ClearQuickSearchInput
     | QuickSearchInput String
     | SearchInput String
     | Search
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
-      --
-      -- Fetched
-      --
-    | SessionFetched (Result Http.Error Session)
-    | CotonomasFetched (Result Http.Error (List Cotonoma))
-    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
-    | CotonomaFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
-    | CotonomaStatsFetched (Result Http.Error CotonomaStats)
-    | GraphFetched (Result Http.Error Graph)
-    | SubgraphFetched (Result Http.Error Graph)
       --
       -- Modal
       --
@@ -57,7 +59,6 @@ type Msg
     | OpenNewEditorModalWithSourceCoto Coto
     | OpenInviteModal
     | OpenProfileModal
-    | OpenCotoMenuModal Coto
     | OpenEditorModal Coto
     | OpenCotoModal Coto
     | OpenImportModal
@@ -86,11 +87,7 @@ type Msg
     | ConfirmUnpinCoto CotoId
     | UnpinCoto CotoId
     | CotoUnpinned (Result Http.Error String)
-    | ConfirmConnect CotoId Direction
-    | ReverseDirection
-    | Connect Coto (List Coto) Direction
     | Connected (Result Http.Error (List String))
-    | ConfirmDeleteConnection ( CotoId, CotoId )
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
     | ToggleReorderMode ElementId
@@ -98,44 +95,6 @@ type Msg
     | MoveToFirst (Maybe CotoId) Int
     | MoveToLast (Maybe CotoId) Int
     | ConnectionsReordered (Result Http.Error String)
-      --
-      -- Timeline
-      --
-    | SwitchTimelineView TimelineView
-    | PostsFetched (Result Http.Error PaginatedPosts)
-    | LoadMorePosts
-    | ImageLoaded
-    | EditorFocus
-    | EditorInput String
-    | EditorKeyDown KeyboardEvent
-    | Post
-    | Posted Int (Result Http.Error Post)
-    | ConfirmPostAndConnect String (Maybe String)
-    | PostAndConnectToSelection String (Maybe String)
-    | PostedAndConnectToSelection Int (Result Http.Error Post)
-    | PostedAndConnectToCoto Int Coto (Result Http.Error Post)
-    | CotonomaPosted Int (Result Http.Error Post)
-    | TimelineScrollPosInitialized
-      --
-      -- PinnedCotos
-      --
-    | SwitchPinnedCotosView PinnedCotosView
-    | RenderGraph
-    | ResizeGraph
-      --
-      -- Traversals
-      --
-    | Traverse Traversal CotoId Int
-    | TraverseToParent Traversal CotoId
-    | CloseTraversal CotoId
-    | SwitchTraversal Int
-      --
-      -- CotoSelection
-      --
-    | DeselectingCoto CotoId
-    | DeselectCoto
-    | ClearSelection
-    | CotoSelectionColumnToggle
       --
       -- Pushed
       --
@@ -149,8 +108,16 @@ type Msg
       --
       -- Sub components
       --
+    | ViewSwitchMsg App.Views.ViewSwitchMsg.Msg
+    | FlowMsg App.Views.FlowMsg.Msg
+    | StockMsg App.Views.StockMsg.Msg
+    | TraversalsMsg App.Views.TraversalsMsg.Msg
+    | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
+    | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
+    | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
+    | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg

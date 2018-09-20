@@ -132,7 +132,7 @@ defmodule Cotoami.CotonomaService do
 
   def recent_cotonomas(%Amishi{id: amishi_id}) do
     Cotonoma
-    |> where([c], c.pinned == false and c.owner_id == ^amishi_id)
+    |> where([c], c.owner_id == ^amishi_id)
     |> limit(100)
     |> do_query_for_cotonomas()
   end

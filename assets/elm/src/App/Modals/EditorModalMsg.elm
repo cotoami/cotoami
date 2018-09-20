@@ -1,6 +1,9 @@
 module App.Modals.EditorModalMsg exposing (..)
 
-import Util.Keyboard.Event exposing (KeyboardEvent)
+import Http
+import Utils.Keyboard.Event exposing (KeyboardEvent)
+import App.Types.Coto exposing (Coto, CotoContent)
+import App.Types.Post exposing (Post)
 
 
 type Msg
@@ -10,7 +13,10 @@ type Msg
     | EditorKeyDown KeyboardEvent
     | ShareCotonomaCheck Bool
     | Post
+    | ConfirmPostAndConnect CotoContent
+    | PostedAndSubordinateToCoto Int Coto (Result Http.Error Post)
     | PostCotonoma
+    | CotonomaPosted Int (Result Http.Error Post)
     | Save
     | SetNewCotoMode
     | SetNewCotonomaMode

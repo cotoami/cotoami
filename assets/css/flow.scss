@@ -1,6 +1,6 @@
 @import "variables.scss";
 
-#timeline-and-input {
+#flow {
   position: relative;
   flex: 1;
   display: flex;
@@ -8,7 +8,7 @@
   width: 100%;
   overflow: hidden;
 
-  div.timeline-toolbar {
+  div.flow-toolbar {
     height: 40px;
   }
 
@@ -49,10 +49,10 @@
   }
 }
 
-div.timeline-toolbar {
+div.flow-toolbar {
   position: relative;
 
-  a.timeline-toggle {
+  a.flow-toggle {
     position: absolute;
     top: 4px;
     right: -3px;

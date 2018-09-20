@@ -7,19 +7,20 @@ import Html.Events exposing (..)
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Exts.Maybe exposing (isJust, isNothing)
-import Util.DateUtil
-import Util.HtmlUtil
-import Util.EventUtil exposing (onLoad)
-import App.Types.Context exposing (Context)
+import Utils.DateUtil
+import Utils.HtmlUtil
+import Utils.EventUtil exposing (onLoad)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Graph exposing (Direction(..), Graph)
+import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
+import App.Views.FlowMsg
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto
 
 
-view : Context -> Graph -> Post -> Html Msg
+view : Context a -> Graph -> Post -> Html Msg
 view context graph post =
     let
         elementId =
@@ -32,9 +33,9 @@ view context graph post =
                 [ headerDiv context graph elementId post
                 , post.cotoId
                     |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
-                    |> Maybe.withDefault Util.HtmlUtil.none
+                    |> Maybe.withDefault Utils.HtmlUtil.none
                 , if post.isCotonoma then
-                    Util.HtmlUtil.none
+                    Utils.HtmlUtil.none
                   else
                     authorDiv context post
                 , App.Views.Coto.bodyDiv context elementId markdown post
@@ -45,7 +46,7 @@ view context graph post =
             ]
 
 
-postDivAttrs : Context -> Graph -> String -> Post -> List (Attribute Msg)
+postDivAttrs : Context a -> Graph -> String -> Post -> List (Attribute Msg)
 postDivAttrs context graph elementId post =
     let
         classAttr =
@@ -76,7 +77,7 @@ postDivAttrs context graph elementId post =
         classAttr :: eventAttrs
 
 
-isAuthor : Context -> Post -> Bool
+isAuthor : Context a -> Post -> Bool
 isAuthor context post =
     (Maybe.map2
         (\session author -> author.id == session.id)
@@ -86,20 +87,14 @@ isAuthor context post =
         |> Maybe.withDefault False
 
 
-headerDiv : Context -> Graph -> ElementId -> Post -> Html Msg
+headerDiv : Context a -> Graph -> ElementId -> Post -> Html Msg
 headerDiv context graph elementId post =
     toCoto post
-        |> Maybe.map
-            (App.Views.Coto.headerDivWithDefaultConfig
-                context
-                graph
-                Nothing
-                elementId
-            )
+        |> Maybe.map (App.Views.Coto.headerDiv context graph Nothing elementId)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
-authorDiv : Context -> Post -> Html Msg
+authorDiv : Context a -> Post -> Html Msg
 authorDiv context post =
     (Maybe.map2
         (\session author ->
@@ -109,15 +104,15 @@ authorDiv context post =
                     , span [ class "name" ] [ text author.displayName ]
                     ]
             else
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
         )
         context.session
         post.amishi
     )
-        |> Maybe.withDefault Util.HtmlUtil.none
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-authorIcon : Context -> Post -> Html Msg
+authorIcon : Context a -> Post -> Html Msg
 authorIcon context post =
     (Maybe.map2
         (\session author ->
@@ -129,12 +124,12 @@ authorIcon context post =
                     ]
                     []
             else
-                Util.HtmlUtil.none
+                Utils.HtmlUtil.none
         )
         context.session
         post.amishi
     )
-        |> Maybe.withDefault Util.HtmlUtil.none
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 markdown : String -> Html Msg
@@ -154,9 +149,9 @@ footerDiv post =
             |> Maybe.map
                 (\postedAt ->
                     span [ class "posted-at" ]
-                        [ text (Util.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
+                        [ text (Utils.DateUtil.format "en_us" "%H:%M:%S" postedAt) ]
                 )
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
         ]
 
 
@@ -167,7 +162,7 @@ customHtmlInline inline =
             img
                 [ src source
                 , title (Maybe.withDefault "" maybeTitle)
-                , onLoad ImageLoaded
+                , onLoad (FlowMsg App.Views.FlowMsg.ImageLoaded)
                 ]
                 (List.map customHtmlInline inlines)
 

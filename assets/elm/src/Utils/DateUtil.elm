@@ -1,4 +1,4 @@
-module Util.DateUtil exposing (format, formatDay, sameDay)
+module Utils.DateUtil exposing (format, formatDay, sameDay)
 
 import Date exposing (Date, year, month, day)
 import Date.Extra.Format
