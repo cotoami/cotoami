@@ -1,4 +1,14 @@
-module App.Types.Post exposing (..)
+module App.Types.Post
+    exposing
+        ( Post
+        , defaultPost
+        , toCoto
+        , isPostedInCotonoma
+        , isPostedInCoto
+        , isSelfOrPostedIn
+        , PaginatedPosts
+        , getCotoFromPosts
+        )
 
 import Date exposing (Date)
 import Exts.Maybe exposing (isNothing)

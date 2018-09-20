@@ -1,4 +1,4 @@
-module Util.HtmlUtil exposing (none, faIcon, materialIcon)
+module Utils.HtmlUtil exposing (none, faIcon, materialIcon)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

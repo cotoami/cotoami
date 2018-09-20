@@ -3,12 +3,13 @@ module App.Subscriptions exposing (..)
 import Keyboard exposing (..)
 import Phoenix
 import Phoenix.Socket as Socket exposing (Socket)
+import App.Types.Session exposing (Session)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
+import App.Submodels.LocalCotos
 import App.Channels
 import App.Ports.LocalStorage
 import App.Ports.Graph
-import App.Types.Session exposing (Session)
 
 
 socket : String -> String -> Socket Msg
@@ -19,7 +20,7 @@ socket token websocketUrl =
 
 phoenixChannels : Model -> Sub Msg
 phoenixChannels model =
-    model.context.session
+    model.session
         |> Maybe.map (phoenixChannelsInSession model)
         |> Maybe.withDefault Sub.none
 
@@ -28,10 +29,10 @@ phoenixChannelsInSession : Model -> Session -> Sub Msg
 phoenixChannelsInSession model session =
     Phoenix.connect
         (socket session.token session.websocketUrl)
-        (App.Channels.cotoChannels (App.Model.getCotoIdsToWatch model)
+        (App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
             |> (::) App.Channels.globalChannel
             |> (\channels ->
-                    model.context.cotonoma
+                    model.cotonoma
                         |> Maybe.map
                             (\cotonoma ->
                                 App.Channels.cotonomaChannel cotonoma.key :: channels

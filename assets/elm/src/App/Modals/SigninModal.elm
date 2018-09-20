@@ -12,9 +12,11 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
-import Util.StringUtil exposing (validateEmail)
-import Util.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Util.Modal as Modal
+import Utils.StringUtil exposing (validateEmail)
+import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.Modal as Modal
+import App.I18n.Keys as I18nKeys
+import App.Submodels.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
@@ -84,63 +86,70 @@ requestSignin email =
             (Http.get url Decode.string)
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
+view : Context context -> Model -> Html AppMsg.Msg
+view context model =
+    modalConfig context model
         |> Just
         |> Modal.view "signin-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
+modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfig context model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
-        , title = text "Check your inbox!"
+        , title = text (context.i18nText I18nKeys.SigninModal_SentTitle)
         , content =
             div [ id "signin-modal-content" ]
-                [ p [] [ text "We just sent you an email with a link to access (or create) your Cotoami account." ] ]
+                [ p [] [ text (context.i18nText I18nKeys.SigninModal_SentMessage) ] ]
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
     else if model.signupEnabled then
-        modalConfigWithSignupEnabled model
+        modalConfigWithSignupEnabled context model
     else
-        modalConfigOnlyForSignin model
+        modalConfigOnlyForSignin context model
 
 
-modalConfigWithSignupEnabled : Model -> Modal.Config AppMsg.Msg
-modalConfigWithSignupEnabled model =
+modalConfigWithSignupEnabled : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfigWithSignupEnabled context model =
     { closeMessage = CloseModal
-    , title = text "Sign in/up with your email"
+    , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Welcome to Cotoami!" ]
-            , p [] [ text "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link." ]
-            , signinForm model
-            , p [ class "notice" ] [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
+            [ p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
+            , signinForm context model
+            , p [ class "notice" ]
+                [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
             ]
     , buttons =
-        [ signinButton "Sign in/up" model ]
+        [ sendLinkButton context model ]
     }
 
 
-modalConfigOnlyForSignin : Model -> Modal.Config AppMsg.Msg
-modalConfigOnlyForSignin model =
+modalConfigOnlyForSignin : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfigOnlyForSignin context model =
     { closeMessage = CloseModal
-    , title = text "Sign in with your email"
+    , title = welcomeTitle context
     , content =
         div []
-            [ p [] [ text "Welcome to Cotoami!" ]
-            , p [] [ text "Just enter your email address and we'll send you a sign-in link." ]
-            , signinForm model
+            [ p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
+            , signinForm context model
             ]
     , buttons =
-        [ signinButton "Sign in" model ]
+        [ sendLinkButton context model ]
     }
 
 
-signinForm : Model -> Html AppMsg.Msg
-signinForm model =
+welcomeTitle : Context context -> Html AppMsg.Msg
+welcomeTitle context =
+    span []
+        [ img [ class "logo", src "/images/logo/logomark.svg" ] []
+        , text (context.i18nText I18nKeys.SigninModal_WelcomeTitle)
+        ]
+
+
+signinForm : Context context -> Model -> Html AppMsg.Msg
+signinForm context model =
     Html.form [ name "signin" ]
         [ div []
             [ input
@@ -155,21 +164,23 @@ signinForm model =
             ]
         , if model.requestStatus == Rejected then
             div [ class "error" ]
-                [ span [ class "message" ] [ text "The email is not allowed to sign in." ] ]
+                [ span [ class "message" ]
+                    [ text (context.i18nText I18nKeys.SigninModal_EmailNotFound) ]
+                ]
           else
             div [] []
         ]
 
 
-signinButton : String -> Model -> Html AppMsg.Msg
-signinButton label model =
+sendLinkButton : Context context -> Model -> Html AppMsg.Msg
+sendLinkButton context model =
     button
         [ class "button button-primary"
         , disabled (not (validateEmail model.email) || model.requestProcessing)
         , onClick (AppMsg.SigninModalMsg RequestClick)
         ]
         [ if model.requestProcessing then
-            text "Sending..."
+            text ((context.i18nText I18nKeys.SigninModal_Sending) ++ "...")
           else
-            text label
+            text (context.i18nText I18nKeys.SigninModal_SendLink)
         ]

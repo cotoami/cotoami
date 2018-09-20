@@ -3,6 +3,7 @@ module App.Types.Graph
         ( Direction(..)
         , Connection
         , initConnection
+        , InboundConnection
         , Graph
         , defaultGraph
         , initGraph
@@ -27,7 +28,6 @@ module App.Types.Graph
         , moveToLast
         , cotonomatize
         , toTopicGraph
-        , PinnedCotosView(..)
         )
 
 import Dict exposing (Dict)
@@ -63,6 +63,14 @@ initConnection amishiId maybeStart end =
 
 type alias ConnectionDict =
     Dict CotoId (List Connection)
+
+
+type alias InboundConnection =
+    { parent : Maybe Coto
+    , connection : Connection
+    , siblings : Int
+    , index : Int
+    }
 
 
 type alias Graph =
@@ -494,8 +502,3 @@ toTopicGraph graph =
         { graph | cotos = topicCotos }
             |> deleteInvalidConnections_
             |> excludeUnreachables_
-
-
-type PinnedCotosView
-    = DocumentView
-    | GraphView

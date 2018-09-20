@@ -5,9 +5,9 @@ import Http exposing (Request)
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (maybe, string, bool, float)
 import Json.Decode.Pipeline exposing (required, optional)
-import Util.HttpUtil exposing (ClientId, httpDelete, httpPut)
+import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, CotoUpdated, Cotonomatized))
-import App.Types.Coto exposing (CotoId, Coto, Cotonoma)
+import App.Types.Coto exposing (CotoId, Coto, CotoContent, Cotonoma)
 import App.Server.Amishi
 import App.Server.Cotonoma
 
@@ -29,8 +29,8 @@ deleteCoto clientId cotoId =
     Http.send CotoDeleted (httpDelete ("/api/cotos/" ++ cotoId) clientId)
 
 
-updateContent : ClientId -> CotoId -> Bool -> String -> String -> Cmd Msg
-updateContent clientId cotoId shared summary content =
+updateContent : ClientId -> CotoId -> Bool -> CotoContent -> Cmd Msg
+updateContent clientId cotoId shared content =
     let
         url =
             "/api/cotos/" ++ cotoId
@@ -40,8 +40,12 @@ updateContent clientId cotoId shared summary content =
                 Encode.object
                     [ ( "coto"
                       , Encode.object
-                            [ ( "content", Encode.string content )
-                            , ( "summary", Encode.string summary )
+                            [ ( "content", Encode.string content.content )
+                            , ( "summary"
+                              , content.summary
+                                    |> Maybe.withDefault ""
+                                    |> Encode.string
+                              )
                             , ( "shared", Encode.bool shared )
                             ]
                       )

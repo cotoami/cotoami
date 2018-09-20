@@ -1,23 +1,106 @@
-module App.Views.PinnedCotos exposing (..)
+module App.Views.Stock
+    exposing
+        ( Model
+        , defaultModel
+        , update
+        , renderGraph
+        , renderGraphWithDelay
+        , resizeGraphWithDelay
+        , view
+        )
 
 import Dict
+import Task
+import Process
+import Time
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Exts.Maybe exposing (isJust)
-import Util.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Util.HtmlUtil exposing (faIcon, materialIcon)
-import App.Types.Context exposing (CotoSelection, Context)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Graph exposing (Graph, Connection, PinnedCotosView(..))
-import App.Messages exposing (..)
-import App.Views.Coto exposing (InboundConnection, defaultActionConfig)
+import Utils.UpdateUtil exposing (..)
+import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import App.I18n.Keys as I18nKeys
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
+import App.Types.Graph exposing (Graph, Connection, InboundConnection)
+import App.Messages as AppMsg exposing (..)
+import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
+import App.Submodels.Context exposing (Context)
+import App.Views.Coto
+import App.Ports.Graph
 
 
-view : Context -> Bool -> PinnedCotosView -> Graph -> Html Msg
-view context loadingGraph view graph =
-    div [ id "pinned-cotos" ]
+type alias Model =
+    { view : StockView
+    }
+
+
+defaultModel : Model
+defaultModel =
+    { view = DocumentView
+    }
+
+
+type alias UpdateModel model =
+    { model
+        | stockView : Model
+        , graph : Graph
+    }
+
+
+update : Context context -> StockMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ stockView } as model) =
+    case msg of
+        SwitchView view ->
+            { model | stockView = { stockView | view = view } }
+                |> withCmdIf
+                    (\_ -> view == GraphView)
+                    (\_ -> renderGraphWithDelay)
+
+        RenderGraph ->
+            model |> withCmd (\_ -> renderGraph context model)
+
+        ResizeGraph ->
+            model
+                |> withCmdIf
+                    (\model -> model.stockView.view == GraphView)
+                    (\_ -> App.Ports.Graph.resizeGraph ())
+
+
+renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
+renderGraph context model =
+    if model.stockView.view == GraphView then
+        App.Ports.Graph.renderCotoGraph context.cotonoma model.graph
+    else
+        Cmd.none
+
+
+renderGraphWithDelay : Cmd AppMsg.Msg
+renderGraphWithDelay =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> (AppMsg.StockMsg RenderGraph))
+
+
+resizeGraphWithDelay : Cmd AppMsg.Msg
+resizeGraphWithDelay =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> (AppMsg.StockMsg ResizeGraph))
+
+
+type alias ViewModel model =
+    { model
+        | stockView : Model
+        , graph : Graph
+        , loadingGraph : Bool
+    }
+
+
+view : Context context -> ViewModel model -> Html AppMsg.Msg
+view context model =
+    div [ id "stock" ]
         [ div
             [ class "column-header" ]
             [ div [ class "view-switch" ]
@@ -25,39 +108,41 @@ view context loadingGraph view graph =
                     [ classList
                         [ ( "tool-button", True )
                         , ( "document-view", True )
-                        , ( "disabled", view == DocumentView )
+                        , ( "disabled", model.stockView.view == DocumentView )
                         ]
-                    , onClick (SwitchPinnedCotosView DocumentView)
+                    , title (context.i18nText I18nKeys.Stock_DocumentView)
+                    , onClick (AppMsg.StockMsg (SwitchView DocumentView))
                     ]
                     [ materialIcon "view_stream" Nothing ]
                 , a
                     [ classList
                         [ ( "tool-button", True )
                         , ( "graph-view", True )
-                        , ( "disabled", view == GraphView )
+                        , ( "disabled", model.stockView.view == GraphView )
                         ]
-                    , onClick (SwitchPinnedCotosView GraphView)
+                    , title (context.i18nText I18nKeys.Stock_GraphView)
+                    , onClick (AppMsg.StockMsg (SwitchView GraphView))
                     ]
                     [ materialIcon "share" Nothing ]
                 ]
             ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]
-            [ case view of
+            [ case model.stockView.view of
                 DocumentView ->
-                    pinnedCotos context graph
+                    pinnedCotos context model.graph
 
                 GraphView ->
                     div
                         [ id "coto-graph-view"
-                        , classList [ ( "loading", loadingGraph ) ]
+                        , classList [ ( "loading", model.loadingGraph ) ]
                         ]
                         []
             ]
         ]
 
 
-pinnedCotos : Context -> Graph -> Html Msg
+pinnedCotos : Context a -> Graph -> Html AppMsg.Msg
 pinnedCotos context graph =
     graph.rootConnections
         |> List.reverse
@@ -76,7 +161,7 @@ pinnedCotos context graph =
         |> Html.Keyed.node "div" [ class "root-connections" ]
 
 
-connectionDiv : Context -> Graph -> InboundConnection -> ( String, Html Msg )
+connectionDiv : Context a -> Graph -> InboundConnection -> ( String, Html AppMsg.Msg )
 connectionDiv context graph inbound =
     graph.cotos
         |> Dict.get inbound.connection.end
@@ -92,7 +177,7 @@ connectionDiv context graph inbound =
             ( inbound.connection.key, div [] [] )
 
 
-cotoDiv : Context -> Graph -> InboundConnection -> Coto -> Html Msg
+cotoDiv : Context a -> Graph -> InboundConnection -> Coto -> Html AppMsg.Msg
 cotoDiv context graph inbound coto =
     let
         elementId =
@@ -116,15 +201,7 @@ cotoDiv context graph inbound coto =
             [ div
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context inbound.connection coto.id
-                , App.Views.Coto.headerDiv
-                    context
-                    graph
-                    (Just inbound)
-                    { defaultActionConfig
-                        | toggleReorderMode = Just ToggleReorderMode
-                    }
-                    elementId
-                    coto
+                , App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
                 , App.Views.Coto.parentsDiv graph cotonomaCotoId coto.id
                 , App.Views.Coto.bodyDivByCoto context elementId coto
                 , App.Views.Coto.subCotosDiv context graph elementId coto
@@ -132,7 +209,7 @@ cotoDiv context graph inbound coto =
             ]
 
 
-unpinButtonDiv : Context -> Connection -> CotoId -> Html Msg
+unpinButtonDiv : Context a -> Connection -> CotoId -> Html AppMsg.Msg
 unpinButtonDiv context connection cotoId =
     let
         maybeAmishiId =
@@ -145,7 +222,7 @@ unpinButtonDiv context connection cotoId =
                 |> Maybe.map (\owner -> owner.id)
 
         unpinnable =
-            App.Types.Context.isServerOwner context
+            App.Submodels.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || ((isJust maybeAmishiId) && maybeAmishiId == maybeCotonomaOwnerId)
     in

@@ -1,6 +1,9 @@
-module App.Modals
+module App.Submodels.Modals
     exposing
         ( Modal(..)
+        , Confirmation
+        , defaultConfirmation
+        , Modals
         , openModal
         , closeActiveModal
         , closeModal
@@ -9,7 +12,7 @@ module App.Modals
         , maybeConfirm
         )
 
-import App.Confirmation exposing (Confirmation)
+import App.Messages exposing (Msg(NoOp))
 
 
 type Modal
@@ -25,14 +28,27 @@ type Modal
     | TimelineFilterModal
 
 
-type alias Model a =
+type alias Confirmation =
+    { message : String
+    , msgOnConfirm : Msg
+    }
+
+
+defaultConfirmation : Confirmation
+defaultConfirmation =
+    { message = ""
+    , msgOnConfirm = App.Messages.NoOp
+    }
+
+
+type alias Modals a =
     { a
         | modals : List Modal
         , confirmation : Confirmation
     }
 
 
-openModal : Modal -> Model a -> Model a
+openModal : Modal -> Modals a -> Modals a
 openModal modal model =
     if List.member modal model.modals then
         model
@@ -40,28 +56,28 @@ openModal modal model =
         { model | modals = modal :: model.modals }
 
 
-closeActiveModal : Model a -> Model a
+closeActiveModal : Modals a -> Modals a
 closeActiveModal model =
     { model | modals = Maybe.withDefault [] (List.tail model.modals) }
 
 
-closeModal : Modal -> Model a -> Model a
+closeModal : Modal -> Modals a -> Modals a
 closeModal modal model =
     { model | modals = List.filter (\m -> m /= modal) model.modals }
 
 
-clearModals : Model a -> Model a
+clearModals : Modals a -> Modals a
 clearModals model =
     { model | modals = [] }
 
 
-confirm : Confirmation -> Model a -> Model a
+confirm : Confirmation -> Modals a -> Modals a
 confirm confirmation model =
     { model | confirmation = confirmation }
         |> openModal ConfirmModal
 
 
-maybeConfirm : Maybe Confirmation -> Model a -> Model a
+maybeConfirm : Maybe Confirmation -> Modals a -> Modals a
 maybeConfirm maybeConfirmation model =
     maybeConfirmation
         |> Maybe.map (\confirmation -> confirm confirmation model)

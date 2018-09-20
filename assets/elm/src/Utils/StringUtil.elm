@@ -1,4 +1,4 @@
-module Util.StringUtil exposing (isBlank, isNotBlank, validateEmail)
+module Utils.StringUtil exposing (isBlank, isNotBlank, validateEmail)
 
 import Regex exposing (Regex, caseInsensitive, regex, contains)
 

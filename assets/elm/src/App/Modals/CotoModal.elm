@@ -1,14 +1,17 @@
-module App.Modals.CotoModal exposing (Model, initModel, view)
+module App.Modals.CotoModal exposing (Model, initModel, open, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Util.Modal as Modal
-import Util.DateUtil
+import Utils.Modal as Modal
+import Utils.DateUtil
+import App.I18n.Keys as I18nKeys
 import App.Markdown
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
 import App.Types.Session exposing (Session)
 import App.Views.Coto exposing (cotonomaLabel)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modal(CotoModal), Modals)
 
 
 type alias Model =
@@ -22,27 +25,37 @@ initModel coto =
     }
 
 
-view : Maybe Session -> Maybe Model -> Html AppMsg.Msg
-view maybeSession maybeModel =
+type alias WithCotoModal a =
+    { a | cotoModal : Maybe Model }
+
+
+open : Coto -> Modals (WithCotoModal a) -> Modals (WithCotoModal a)
+open coto model =
+    { model | cotoModal = Just (initModel coto) }
+        |> App.Submodels.Modals.openModal CotoModal
+
+
+view : Context context -> Maybe Model -> Html AppMsg.Msg
+view context maybeModel =
     (Maybe.map2
-        (\session model -> modalConfig session model)
-        maybeSession
+        (\session model -> modalConfig context session model)
+        context.session
         maybeModel
     )
         |> Modal.view "coto-modal"
 
 
-modalConfig : Session -> Model -> Modal.Config AppMsg.Msg
-modalConfig session model =
+modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig context session model =
     model.coto.asCotonoma
-        |> Maybe.map (\cotonoma -> cotonomaModalConfig session model cotonoma)
-        |> Maybe.withDefault (cotoModalConfig session model)
+        |> Maybe.map (\cotonoma -> cotonomaModalConfig context session model cotonoma)
+        |> Maybe.withDefault (cotoModalConfig context session model)
 
 
-cotoModalConfig : Session -> Model -> Modal.Config AppMsg.Msg
-cotoModalConfig session model =
+cotoModalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+cotoModalConfig context session model =
     { closeMessage = CloseModal
-    , title = text "Coto"
+    , title = text (context.i18nText I18nKeys.Coto)
     , content =
         div []
             [ div [ class "coto-view" ]
@@ -60,10 +73,10 @@ cotoModalConfig session model =
     }
 
 
-cotonomaModalConfig : Session -> Model -> Cotonoma -> Modal.Config AppMsg.Msg
-cotonomaModalConfig session model cotonoma =
+cotonomaModalConfig : Context context -> Session -> Model -> Cotonoma -> Modal.Config AppMsg.Msg
+cotonomaModalConfig context session model cotonoma =
     { closeMessage = CloseModal
-    , title = text "Cotonoma"
+    , title = text (context.i18nText I18nKeys.Cotonoma)
     , content =
         div []
             [ div [ class "cotonoma-view" ]
@@ -107,7 +120,7 @@ postedAtSpan coto =
     span [ class "posted-at" ]
         [ span [ class "preposition" ] [ text "at" ]
         , span [ class "datetime" ]
-            [ text (Util.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
+            [ text (Utils.DateUtil.format "en_us" "%Y/%m/%d %H:%M" coto.postedAt) ]
         ]
 
 

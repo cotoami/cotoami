@@ -3,28 +3,29 @@ module App.Views.Navigation exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isNothing)
-import Util.EventUtil exposing (onLinkButtonClick)
-import Util.HtmlUtil exposing (materialIcon)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
-import App.Types.Context exposing (Context)
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(HomeClick))
+import App.Submodels.Context exposing (Context)
 import App.Views.Cotonomas
 
 
 view : Model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
-        [ model.context.session
+        [ model.session
             |> Maybe.map (\_ -> homeNav model)
-            |> Maybe.withDefault Util.HtmlUtil.none
+            |> Maybe.withDefault Utils.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
-            [ model.context.cotonoma
+            [ model.cotonoma
                 |> Maybe.map (cotonomaNav model)
-                |> Maybe.withDefault Util.HtmlUtil.none
-            , recentCotonomasDiv model.context model.graph model.recentCotonomas
+                |> Maybe.withDefault Utils.HtmlUtil.none
+            , recentCotonomasDiv model model.graph model.recentCotonomas
             ]
         ]
     ]
@@ -35,17 +36,17 @@ homeNav model =
     div
         [ classList
             [ ( "home-nav", True )
-            , ( "in", isNothing model.context.cotonoma )
+            , ( "in", isNothing model.cotonoma )
             ]
         ]
-        [ (model.context.cotonoma
+        [ (model.cotonoma
             |> Maybe.map
                 (\_ -> a [ class "home", onLinkButtonClick HomeClick ])
             |> Maybe.withDefault
                 (span [ class "home" ])
           )
             [ materialIcon "home" Nothing
-            , text "My Home"
+            , text (model.i18nText I18nKeys.MyHome)
             ]
         ]
 
@@ -53,15 +54,16 @@ homeNav model =
 cotonomaNav : Model -> Cotonoma -> Html Msg
 cotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
-        [ div [ class "navigation-title" ] [ text "Current" ]
+        [ div [ class "navigation-title" ]
+            [ text (model.i18nText I18nKeys.Navigation_Current) ]
         , App.Views.Cotonomas.cotonomaDiv
-            model.context
+            model
             model.graph
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
             [ App.Views.Cotonomas.view
-                model.context
+                model
                 model.graph
                 "sub-cotonomas"
                 model.subCotonomas
@@ -69,12 +71,13 @@ cotonomaNav model cotonoma =
         ]
 
 
-recentCotonomasDiv : Context -> Graph -> List Cotonoma -> Html Msg
+recentCotonomasDiv : Context context -> Graph -> List Cotonoma -> Html Msg
 recentCotonomasDiv context graph cotonomas =
     if List.isEmpty cotonomas then
-        Util.HtmlUtil.none
+        Utils.HtmlUtil.none
     else
         div [ class "recent-cotonomas" ]
-            [ div [ class "navigation-title" ] [ text "Recent" ]
+            [ div [ class "navigation-title" ]
+                [ text (context.i18nText I18nKeys.Navigation_Recent) ]
             , App.Views.Cotonomas.view context graph "recent-cotonomas" cotonomas
             ]
