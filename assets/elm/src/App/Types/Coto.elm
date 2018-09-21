@@ -71,7 +71,7 @@ updateContent content coto =
 
 checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
 checkWritePermission session coto =
-    (Maybe.map (\amishi -> amishi.id) coto.amishi) == (Just session.id)
+    (Maybe.map (.id) coto.amishi) == (Just session.id)
 
 
 toTopic : Coto -> Maybe String
