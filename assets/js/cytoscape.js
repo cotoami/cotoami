@@ -69,6 +69,9 @@ const _style = cytoscape.stylesheet()
     'background-color': 'white',
     'background-image': '/images/pinned.png'
   })
+  .selector('.pinned:selected').css({
+    'background-image': '/images/selected-pin.png'
+  })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
     'width': 20,
