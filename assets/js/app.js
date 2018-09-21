@@ -13,6 +13,7 @@
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
 import map from 'lodash/map'
+import compact from 'lodash/compact'
 import Cytoscape from "js/cytoscape"
 
 // Set up our Elm App
@@ -29,7 +30,11 @@ elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
     map(nodes.concat(edges), element => { 
       return {
         data: element,
-        classes: element.asCotonoma ? 'cotonoma' : ''
+        classes: 
+          compact([
+            element.asCotonoma ? 'cotonoma' : null,
+            element.pinned ? 'pinned' : null
+          ]).join(' ')
       } 
     }),
     (nodeId) => {
