@@ -90,8 +90,6 @@ defmodule Cotoami.Coto do
   end
 
   def in_cotonoma(query, cotonoma_id) do
-    from coto in query,
-      where: coto.posted_in_id == ^cotonoma_id,
-      order_by: [desc: coto.inserted_at]
+    from coto in query, where: coto.posted_in_id == ^cotonoma_id
   end
 end

@@ -56,6 +56,7 @@ defmodule Cotoami.CotoService do
         Cotonoma.ensure_accessible_by(cotonoma, amishi)
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
+        |> order_by(desc: :inserted_at)
         |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
         |> preload([:amishi, :posted_in, :cotonoma])
         |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
