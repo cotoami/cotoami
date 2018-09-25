@@ -86,9 +86,7 @@ defmodule Cotoami.Coto do
   end
 
   def for_amishi(query, amishi_id) do
-    from coto in query,
-      where: coto.amishi_id == ^amishi_id,
-      order_by: [desc: coto.inserted_at]
+    from coto in query, where: coto.amishi_id == ^amishi_id
   end
 
   def in_cotonoma(query, cotonoma_id) do
