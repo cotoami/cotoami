@@ -121,7 +121,7 @@ defmodule Cotoami.CotoService do
   def export_by_amishi(%Amishi{id: amishi_id}) do
     Coto
     |> Coto.for_amishi(amishi_id)
-    |> preload([:posted_in, :cotonoma])
+    |> preload([:cotonoma])
     |> Repo.all()
   end
 

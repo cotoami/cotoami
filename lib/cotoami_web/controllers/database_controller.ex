@@ -12,11 +12,11 @@ defmodule CotoamiWeb.DatabaseController do
   def export(conn, _params, amishi) do
     data = %{
       amishi:
-        Phoenix.View.render_one(amishi, AmishiView, "amishi.json"),
+        Phoenix.View.render_one(amishi, AmishiView, "export.json"),
       cotos:
         amishi
         |> CotoService.export_by_amishi()
-        |> Phoenix.View.render_many(CotoView, "coto.json"),
+        |> Phoenix.View.render_many(CotoView, "export.json"),
       connections:
         CotoGraphService.export_connections_by_amishi(Sips.conn, amishi)
     }
