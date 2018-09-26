@@ -90,6 +90,57 @@ defmodule CotoamiWeb.DatabaseControllerTest do
         end
       )
     end
+
+    test "import two cotos connected and pinned", %{conn: conn} do
+      test_import_and_export(
+        conn,
+        fn (amishi_id, amishi_json) ->
+          """
+            {
+              "cotos": [
+                {
+                  "updated_at": 1537943597410,
+                  "summary": null,
+                  "posted_in_id": null,
+                  "inserted_at": 1537943597410,
+                  "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
+                  "cotonoma": null,
+                  "content": "hello",
+                  "as_cotonoma": false
+                },
+                {
+                  "updated_at": 1537944841347,
+                  "summary": null,
+                  "posted_in_id": null,
+                  "inserted_at": 1537944841347,
+                  "id": "bd9f96df-9639-4986-8473-392a993f3bc3",
+                  "cotonoma": null,
+                  "content": "bye",
+                  "as_cotonoma": false
+                }
+              ],
+              "connections": [
+                {
+                  "start": "#{amishi_id}",
+                  "order": 1,
+                  "end": "e4910f38-5756-4ac4-a995-09d14cfa5874",
+                  "created_by": "#{amishi_id}",
+                  "created_at": 1537943695452
+                },
+                {
+                  "start": "e4910f38-5756-4ac4-a995-09d14cfa5874",
+                  "order": 1,
+                  "end": "bd9f96df-9639-4986-8473-392a993f3bc3",
+                  "created_by": "#{amishi_id}",
+                  "created_at": 1537944841465
+                }
+              ],
+              "amishi": #{amishi_json}
+            }
+          """
+        end
+      )
+    end
   end
 
   defp test_import_and_export(conn, create_test_data) do
