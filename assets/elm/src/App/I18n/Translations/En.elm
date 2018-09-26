@@ -31,10 +31,10 @@ text key =
             "Confirm"
 
         ConfirmDeleteCoto ->
-            "Are you sure you want to delete this coto?"
+            "Are you sure you want to delete this object?"
 
         ConfirmUnpinCoto ->
-            "Are you sure you want to unpin this coto?"
+            "Are you sure you want to unpin this object?"
 
         ConfirmDisconnect ->
             "Are you sure you want to delete this connection?"
@@ -49,7 +49,7 @@ text key =
             "Welcome to Cotoami!"
 
         SigninModal_SignupEnabled ->
-            "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link."
+            "We doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link."
 
         SigninModal_OnlyForSignin ->
             "Just enter your email address and we'll send you a sign-in link."
@@ -109,7 +109,7 @@ text key =
             "Write your object in Markdown"
 
         EditorModal_CotonomaName ->
-            "Cotonoma name"
+            "Object profile name"
 
         EditorModal_Preview ->
             "Preview"
