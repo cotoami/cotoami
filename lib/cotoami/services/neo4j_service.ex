@@ -9,6 +9,10 @@ defmodule Cotoami.Neo4jService do
 
   def rel_prop_order, do: @rel_prop_order
 
+  def clear_database(conn) do
+    Bolt.Sips.query!(conn, "MATCH (n) DETACH DELETE n")
+  end
+
   def get_node(conn, uuid) do
     query = ~s"""
       MATCH (n { uuid: $uuid })
