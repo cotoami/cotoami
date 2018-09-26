@@ -76,7 +76,7 @@ text key =
             "Recent"
 
         Flow_EditorPlaceholder ->
-            "Write your Coto in Markdown"
+            "Write your Object in Markdown"
 
         Flow_ShortcutToOpenEditor ->
             "Press N key"
@@ -223,7 +223,7 @@ text key =
             "Add a sub-coto"
 
         CotoMenuModal_Cotonomatize ->
-            "Promote to a Cotonoma"
+            "Promote to a Object profile"
 
         CotoMenuModal_Delete ->
             "Delete"
