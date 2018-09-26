@@ -1,10 +1,19 @@
-FROM cotoami/cotoami-elixir:1.6
+FROM cotoami/cotoami
 
+RUN locale-gen uk_UA.UTF-8 
+ENV LANG uk_UA.UTF-8  
+ENV LANGUAGE uk_UA:uk  
+ENV LC_ALL uk_UA.UTF-8
+     
 ENV APP_PORT 4000
 
 EXPOSE ${APP_PORT}
 
-ADD . /app
-WORKDIR /app
+RUN mix local.hex --force
 
-CMD ["/bin/bash", "-c", "PORT=${APP_PORT} MIX_ENV=prod mix phx.server"]
+WORKDIR /app
+ADD . /app
+
+RUN mix deps.get
+
+CMD ["/bin/bash", "-c", "PORT=${APP_PORT} mix phx.server"]
