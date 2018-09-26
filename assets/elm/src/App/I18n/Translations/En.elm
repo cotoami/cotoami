@@ -13,7 +13,7 @@ text key =
             "Object profile"
 
         MyHome ->
-            "Home"
+            "My Home"
 
         Post ->
             "Post"
