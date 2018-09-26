@@ -7,13 +7,13 @@ text : TextKey -> String
 text key =
     case key of
         Coto ->
-            "Coto"
+            "Object"
 
         Cotonoma ->
-            "Cotonoma"
+            "Object profile"
 
         MyHome ->
-            "My Home"
+            "Home"
 
         Post ->
             "Post"
@@ -106,7 +106,7 @@ text key =
             "Summary (optional)"
 
         EditorModal_Content ->
-            "Write your Coto in Markdown"
+            "Write your object in Markdown"
 
         EditorModal_CotonomaName ->
             "Cotonoma name"
@@ -118,17 +118,17 @@ text key =
             "Edit"
 
         EditorModal_CotonomaHelp ->
-            "A Cotonoma is a special Coto that has a dedicated chat timeline"
+            "Object profile is a special object that has a dedicated chat timeline"
                 ++ " where you can discuss with others about a topic described by its name."
 
         EditorModal_ShareCotonoma ->
             "Share it with other users."
 
         EditorModal_ShareCotonomaNote ->
-            "Only those who know the Cotonoma URL can access it"
+            "Only those who know the objectprofile URL can access it"
 
         EditorModal_DuplicateCotonomaName ->
-            "You already have a cotonoma with this name."
+            "You already have object profile with this name."
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "A cotonoma name have to be under "
@@ -178,7 +178,7 @@ text key =
             "Connect from the selected cotos"
 
         CotoToolbar_Pin ->
-            "Pin to the current cotonoma"
+            "Pin to the current object profile"
 
         CotoToolbar_Edit ->
             "Edit"
@@ -254,3 +254,4 @@ text key =
                 "coto selected"
             else
                 "cotos selected"
+
