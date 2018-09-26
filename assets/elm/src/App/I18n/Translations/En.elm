@@ -211,10 +211,10 @@ text key =
             "Unpin from My Home"
 
         CotoMenuModal_PinToCotonoma ->
-            "Pin to the current Cotonoma"
+            "Pin to the current Object profile"
 
         CotoMenuModal_UnpinFromCotonoma ->
-            "Unpin from the current Cotonoma"
+            "Unpin from the current Object profile"
 
         CotoMenuModal_Edit ->
             "Edit"
@@ -232,10 +232,10 @@ text key =
             "Timeline Filter"
 
         TimelineFilterModal_ExcludePinnedGraph ->
-            "Hide cotos incorporated in the pinned documents"
+            "Hide objects incorporated in the pinned documents"
 
         TimelineFilterModal_ExcludePostsInCotonoma ->
-            "Hide cotos posted in a Cotonoma other than My Home"
+            "Hide objects posted in a Cotonoma other than My Home"
 
         ConnectModal_Title ->
             "Connect Preview"
@@ -251,7 +251,7 @@ text key =
 
         CotoSelection_CotosSelected count ->
             if count == 1 then
-                "coto selected"
+                "object selected"
             else
-                "cotos selected"
+                "objects selected"
 
