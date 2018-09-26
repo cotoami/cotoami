@@ -226,6 +226,56 @@ defmodule CotoamiWeb.DatabaseControllerTest do
         }
       )
     end
+
+    test "one cotonoma and coto in it", %{conn: conn} do
+      test_import_and_export(
+        conn,
+        fn (_amishi_id, amishi_json) ->
+          """
+            {
+              "cotos": [
+                {
+                  "updated_at": 1537949021935,
+                  "summary": null,
+                  "posted_in_id": null,
+                  "inserted_at": 1537943597410,
+                  "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
+                  "cotonoma": {
+                    "updated_at": 1537949085724,
+                    "timeline_revision": 1,
+                    "shared": false,
+                    "pinned": false,
+                    "name": "hello",
+                    "key": "jalc645or4crpkv1",
+                    "inserted_at": 1537949021945,
+                    "id": "a2cad024-d353-4ba7-9945-5372e0bfb263",
+                    "graph_revision": 0
+                  },
+                  "content": "hello",
+                  "as_cotonoma": true
+                },
+                {
+                  "updated_at": 1537949085717,
+                  "summary": null,
+                  "posted_in_id": "a2cad024-d353-4ba7-9945-5372e0bfb263",
+                  "inserted_at": 1537949085717,
+                  "id": "936058c0-10d0-4dd1-958f-86f4d0bd76a6",
+                  "cotonoma": null,
+                  "content": "Hello, world!",
+                  "as_cotonoma": false
+                }
+              ],
+              "connections": [],
+              "amishi": #{amishi_json}
+            }
+          """
+        end,
+        %{
+          "cotos" => %{"inserts" => 2, "updates" => 0, "cotonomas" => 1, "rejected" => []},
+          "connections" => %{"ok" => 0, "rejected" => []}
+        }
+      )
+    end
   end
 
   defp test_import_and_export(conn, create_test_data, stats) do
