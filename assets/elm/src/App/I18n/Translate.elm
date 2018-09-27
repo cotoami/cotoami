@@ -5,6 +5,7 @@ import App.I18n.Translations.En
 import App.I18n.Translations.Ja
 import App.I18n.Translations.Uk
 
+
 text : String -> TextKey -> String
 text lang key =
     let
@@ -16,7 +17,7 @@ text lang key =
                 "uk" ->
                     App.I18n.Translations.Uk.text
 
-              "uk-UA" -> 
+                "uk-UA" ->
                     App.I18n.Translations.Uk.text
 
                 "ja" ->
