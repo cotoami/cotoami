@@ -106,6 +106,7 @@ importFileInput.addEventListener("change", () => {
   reader.onload = ((event) => {
     const content = event.target.result
     const result = {
+      fileName: file.name,
       content: content,
       valid: false,
       error: "",

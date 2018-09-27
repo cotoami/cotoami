@@ -10,7 +10,8 @@ port selectImportFile : () -> Cmd msg
 
 
 type alias ImportFile =
-    { content : String
+    { fileName : String
+    , content : String
     , valid : Bool
     , error : String
     , amishiAvatarUrl : String

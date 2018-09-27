@@ -144,8 +144,7 @@ modalConfig model =
             , content =
                 div []
                     [ p [] [ text "You are about to import the cotos/connections in the file you selected." ]
-                    , div [ class "import-file-info" ]
-                        []
+                    , importFileInfoDiv model.importFile
                     , case model.requestStatus of
                         Rejected message ->
                             div [ class "error" ]
@@ -167,6 +166,19 @@ modalConfig model =
                     ]
                 ]
             }
+
+
+importFileInfoDiv : ImportFile -> Html AppMsg.Msg
+importFileInfoDiv importFile =
+    div [ class "import-file-info" ]
+        [ div [ class "file-name" ] [ text importFile.fileName ]
+        , div [ class "content" ]
+            [ div [ class "amishi author" ]
+                [ img [ class "avatar", src importFile.amishiAvatarUrl ] []
+                , span [ class "name" ] [ text importFile.amishiDisplayName ]
+                ]
+            ]
+        ]
 
 
 importResultDiv : ImportResult -> Html AppMsg.Msg
