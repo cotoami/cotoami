@@ -7,10 +7,10 @@ text : TextKey -> String
 text key =
     case key of
         Coto ->
-            "Object"
+            "Coto"
 
         Cotonoma ->
-            "Object profile"
+            "Cotonoma"
 
         MyHome ->
             "My Home"
@@ -31,10 +31,10 @@ text key =
             "Confirm"
 
         ConfirmDeleteCoto ->
-            "Are you sure you want to delete this object?"
+            "Are you sure you want to delete this coto?"
 
         ConfirmUnpinCoto ->
-            "Are you sure you want to unpin this object?"
+            "Are you sure you want to unpin this coto?"
 
         ConfirmDisconnect ->
             "Are you sure you want to delete this connection?"
@@ -49,7 +49,7 @@ text key =
             "Welcome to Cotoami!"
 
         SigninModal_SignupEnabled ->
-            "We doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link."
+            "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link."
 
         SigninModal_OnlyForSignin ->
             "Just enter your email address and we'll send you a sign-in link."
@@ -76,7 +76,7 @@ text key =
             "Recent"
 
         Flow_EditorPlaceholder ->
-            "Write your Object in Markdown"
+            "Write your Coto in Markdown"
 
         Flow_ShortcutToOpenEditor ->
             "Press N key"
@@ -106,10 +106,10 @@ text key =
             "Summary (optional)"
 
         EditorModal_Content ->
-            "Write your object in Markdown"
+            "Write your Coto in Markdown"
 
         EditorModal_CotonomaName ->
-            "Object profile name"
+            "Cotonoma name"
 
         EditorModal_Preview ->
             "Preview"
@@ -118,17 +118,17 @@ text key =
             "Edit"
 
         EditorModal_CotonomaHelp ->
-            "Object profile is a special object that has a dedicated chat timeline"
+            "A Cotonoma is a special Coto that has a dedicated chat timeline"
                 ++ " where you can discuss with others about a topic described by its name."
 
         EditorModal_ShareCotonoma ->
             "Share it with other users."
 
         EditorModal_ShareCotonomaNote ->
-            "Only those who know the objectprofile URL can access it"
+            "Only those who know the Cotonoma URL can access it"
 
         EditorModal_DuplicateCotonomaName ->
-            "You already have object profile with this name."
+            "You already have a cotonoma with this name."
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "A cotonoma name have to be under "
@@ -178,7 +178,7 @@ text key =
             "Connect from the selected cotos"
 
         CotoToolbar_Pin ->
-            "Pin to the current object profile"
+            "Pin to the current cotonoma"
 
         CotoToolbar_Edit ->
             "Edit"
@@ -211,10 +211,10 @@ text key =
             "Unpin from My Home"
 
         CotoMenuModal_PinToCotonoma ->
-            "Pin to the current Object profile"
+            "Pin to the current Cotonoma"
 
         CotoMenuModal_UnpinFromCotonoma ->
-            "Unpin from the current Object profile"
+            "Unpin from the current Cotonoma"
 
         CotoMenuModal_Edit ->
             "Edit"
@@ -223,7 +223,7 @@ text key =
             "Add a sub-coto"
 
         CotoMenuModal_Cotonomatize ->
-            "Promote to a Object profile"
+            "Promote to a Cotonoma"
 
         CotoMenuModal_Delete ->
             "Delete"
@@ -232,10 +232,10 @@ text key =
             "Timeline Filter"
 
         TimelineFilterModal_ExcludePinnedGraph ->
-            "Hide objects incorporated in the pinned documents"
+            "Hide cotos incorporated in the pinned documents"
 
         TimelineFilterModal_ExcludePostsInCotonoma ->
-            "Hide objects posted in a Cotonoma other than My Home"
+            "Hide cotos posted in a Cotonoma other than My Home"
 
         ConnectModal_Title ->
             "Connect Preview"
@@ -251,7 +251,6 @@ text key =
 
         CotoSelection_CotosSelected count ->
             if count == 1 then
-                "object selected"
+                "coto selected"
             else
-                "objects selected"
-
+                "cotos selected"
