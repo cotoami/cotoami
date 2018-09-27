@@ -15,6 +15,7 @@ import App.Views.TraversalsMsg
 import App.Views.CotoSelectionMsg
 import App.Views.CotoToolbarMsg
 import App.Modals.SigninModalMsg
+import App.Modals.ProfileModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.CotoMenuModalMsg
 import App.Modals.ConnectModalMsg
@@ -57,7 +58,6 @@ type Msg
     | OpenSigninModal
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto
-    | OpenInviteModal
     | OpenProfileModal
     | OpenEditorModal Coto
     | OpenCotoModal Coto
@@ -115,6 +115,7 @@ type Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
+    | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg

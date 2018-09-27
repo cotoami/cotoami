@@ -41,6 +41,7 @@ import App.Views.Traversals
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
 import App.Modals.SigninModal
+import App.Modals.ProfileModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
@@ -265,11 +266,6 @@ update msg model =
 
         OpenNewEditorModalWithSourceCoto coto ->
             App.Modals.EditorModal.openForNew model (Just coto) model
-
-        OpenInviteModal ->
-            { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> App.Submodels.Modals.openModal InviteModal
-                |> withoutCmd
 
         OpenProfileModal ->
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
@@ -619,6 +615,9 @@ update msg model =
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
+
+        ProfileModalMsg subMsg ->
+            App.Modals.ProfileModal.update model subMsg model
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
