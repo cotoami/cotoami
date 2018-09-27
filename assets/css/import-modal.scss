@@ -84,18 +84,23 @@
       max-height: 15vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+    }
 
-      span.reject {
-        display: inline-block;
+    div.reject {
+      span.head {
         white-space: nowrap;
       }
 
-      span.reject-caption {
+      span.caption {
         font-weight: bold;
       }
 
-      span.reject-reason {
+      span.reason {
         margin-right: 5px;
+      }
+
+      pre {
+        margin-top: 3px;
       }
     }
   }

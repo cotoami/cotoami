@@ -98,7 +98,10 @@ defmodule CotoamiWeb.DatabaseController do
               {[coto_json | pendings], stats}
             else
               # reject for missing cotonoma
-              reject = %{id: coto_json["id"], reason: "cotonoma not found: #{posted_in_id}"}
+              reject = %{
+                json: encode_json(coto_json),
+                reason: "cotonoma is not found: #{posted_in_id}"
+              }
               {inserts, updates, cotonomas, rejected} = stats
               {pendings, {inserts, updates, cotonomas, [reject | rejected]}}
             end
@@ -129,7 +132,10 @@ defmodule CotoamiWeb.DatabaseController do
             cotonomas = import_cotonoma(coto_json, cotonomas, amishi)
             {inserts + 1, updates, cotonomas, rejected}
           {:error, changeset} ->
-            reject = %{id: coto_id, reason: inspect(changeset.errors)}
+            reject = %{
+              json: encode_json(coto_json),
+              reason: inspect(changeset.errors)
+            }
             {inserts, updates, cotonomas, [reject | rejected]}
         end
       coto ->
@@ -139,7 +145,10 @@ defmodule CotoamiWeb.DatabaseController do
             cotonomas = import_cotonoma(coto_json, cotonomas, amishi)
             {inserts, updates + 1, cotonomas, rejected}
           {:error, changeset} ->
-            reject = %{id: coto_id, reason: inspect(changeset.errors)}
+            reject = %{
+              json: encode_json(coto_json),
+              reason: inspect(changeset.errors)
+            }
             {inserts, updates, cotonomas, [reject | rejected]}
         end
     end
@@ -198,10 +207,17 @@ defmodule CotoamiWeb.DatabaseController do
             {ok + 1, rejected}
 
           true ->
-            reject = %{id: "#{start_id} => #{end_id}", reason: "coto not found"}
+            reject = %{
+              json: encode_json(connection_json),
+              reason: "start and/or end nodes are not found"
+            }
             {ok, [reject | rejected]}
         end
       end
     )
+  end
+
+  defp encode_json(json) do
+    Poison.encode!(json, pretty: true)
   end
 end

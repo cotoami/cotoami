@@ -31,7 +31,7 @@ type alias ImportConnectionsResult =
 
 
 type alias Reject =
-    { id : String
+    { json : String
     , reason : String
     }
 

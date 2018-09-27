@@ -94,7 +94,7 @@ importData clientId data =
 
         decodeReject =
             Decode.map2 Reject
-                (Decode.field "id" Decode.string)
+                (Decode.field "json" Decode.string)
                 (Decode.field "reason" Decode.string)
 
         decodeResult =
@@ -227,9 +227,11 @@ importResultDiv { cotos, connections } =
 
 rejectInfoSpan : String -> Reject -> Html AppMsg.Msg
 rejectInfoSpan caption reject =
-    span
+    div
         [ class "reject" ]
-        [ span [ class "reject-caption" ] [ text caption ]
-        , span [ class "reject-reason" ] [ text reject.reason ]
-        , text ("(ID: " ++ reject.id ++ ")")
+        [ span [ class "head" ]
+            [ span [ class "caption" ] [ text caption ]
+            , span [ class "reason" ] [ text reject.reason ]
+            ]
+        , pre [ class "json" ] [ code [] [ text reject.json ] ]
         ]
