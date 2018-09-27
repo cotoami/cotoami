@@ -11,7 +11,7 @@ config :cotoami,
 
 # Configures the endpoint
 config :cotoami, CotoamiWeb.Endpoint,
-  url: [host: "treba.tk"],
+  url: [host: "localhost"],
   secret_key_base: "ykbmEEU9u3Hoeh7tt8X6XMhLwRFPZw2PF3qZw1uO0+r6+3zbVD5s8b12rpiN7CzU",
   render_errors: [view: CotoamiWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Cotoami.PubSub,
@@ -25,7 +25,7 @@ config :logger, :console,
 # Amishi-related
 config :cotoami, Cotoami.AmishiService,
   owner_emails:
-    (System.get_env("COTOAMI_OWNER_EMAILS") || "tukroschu@gmail.com,kroschu@mail.ua,kroschu@email.ua")
+    (System.get_env("COTOAMI_OWNER_EMAILS") || "")
     |> String.split(",", trim: true),
   signup_enabled:
     (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
@@ -35,7 +35,7 @@ config :cotoami, Cotoami.AmishiService,
 case System.get_env("REDIS_URL") do
   nil ->
     config :cotoami, Cotoami.Redix,
-      host: System.get_env("COTOAMI_REDIS_HOST") || "treba.tk",
+      host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
       port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer
   url ->
     config :cotoami, Cotoami.Redix, url: url
@@ -46,10 +46,10 @@ case System.get_env("SENDGRID_USERNAME") do
   nil ->
     config :cotoami, Cotoami.Mailer,
       adapter: Bamboo.SMTPAdapter,
-      server: System.get_env("COTOAMI_SMTP_SERVER") || "treba.tk",
-      port: (System.get_env("COTOAMI_SMTP_PORT") || "25") |> String.to_integer,
-      username: System.get_env("COTOAMI_SMTP_USER")  || "tukroschu@gmail.com",
-      password: System.get_env("COTOAMI_SMTP_PASSWORD") || "agni.0.523",
+      server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
+      port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer,
+      username: System.get_env("COTOAMI_SMTP_USER"),
+      password: System.get_env("COTOAMI_SMTP_PASSWORD"),
       tls: :if_available, # can be `:always` or `:never`
       ssl: false, # can be `true`
       retries: 1
@@ -66,7 +66,7 @@ config :cotoami, CotoamiWeb.Email,
 case System.get_env("GRAPHENEDB_BOLT_URL") do
   nil ->
     config :bolt_sips, Bolt,
-      hostname: System.get_env("COTOAMI_NEO4J_HOST") || "treba.tk",
+      hostname: System.get_env("COTOAMI_NEO4J_HOST") || "localhost",
       port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
       pool_size: 5,
       max_overflow: 1
@@ -80,19 +80,7 @@ case System.get_env("GRAPHENEDB_BOLT_URL") do
       ssl: true
 end
 
-
-# Configure your database
-config :cotoami, Cotoami.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("COTOAMI_DEV_REPO_USER") || "postgres",
-  password: System.get_env("COTOAMI_DEV_REPO_PASSWORD") || "postgres",
-  database: System.get_env("COTOAMI_DEV_REPO_DATABASE") || "cotoami_dev",
-  hostname: System.get_env("COTOAMI_DEV_REPO_HOST")  || "treba.tk",
-  port: (System.get_env("COTOAMI_DEV_REPO_PORT") || "5432") |> String.to_integer,
-  pool_size: 10,
-  timeout: 300_000
-  
-  # Import environment specific config. This must remain at the bottom
+# Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
 
