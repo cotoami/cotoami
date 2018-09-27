@@ -188,6 +188,7 @@ defmodule Cotoami.CotoGraphService do
     query = ~s"""
       MATCH (parent)-[has:#{@rel_type_has_a} { created_by: $amishi_id }]->(child)
       RETURN DISTINCT parent, has, child
+      ORDER BY has.created_at
     """
     bolt_conn
     |> Bolt.Sips.query!(query, %{amishi_id: amishi_id})

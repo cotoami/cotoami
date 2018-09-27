@@ -8,10 +8,51 @@
     margin-bottom: 1rem;
   }
 
-  textarea.data {
-    width: 100%;
-    height: 35vh;
-    margin-bottom: .5rem;
+  div.import-file-info {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+
+    div.content {
+      padding: 10px;
+      padding-bottom: 0;
+    }
+
+    div.author {
+      margin-bottom: 4px;
+  
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+  
+      span.name {
+        color: #aaa;
+        font-weight: bold;
+      }
+
+      span.note {
+        margin-left: 6px;
+        font-size: 90%;
+      }
+    }
+
+    div.stats {
+      span.count {
+        font-size: 120%;
+        color: #aaa;
+      }
+
+      span.suffix {
+        margin-left: 4px;
+        margin-right: 20px;
+      }
+    }
   }
 
   div.import-result {

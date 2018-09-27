@@ -42,6 +42,7 @@ defmodule Cotoami.CotoService do
   def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
     Coto
     |> Coto.for_amishi(amishi_id)
+    |> order_by(desc: :inserted_at)
     |> query_to_exclude_pinned_graph(amishi_id, options)
     |> query_to_exclude_posts_in_cotonoma(amishi, options)
     |> preload([:posted_in, :cotonoma])
@@ -55,6 +56,7 @@ defmodule Cotoami.CotoService do
         Cotonoma.ensure_accessible_by(cotonoma, amishi)
         Coto
         |> Coto.in_cotonoma(cotonoma.id)
+        |> order_by(desc: :inserted_at)
         |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
         |> preload([:amishi, :posted_in, :cotonoma])
         |> query_with_pagination(@page_size, page_index, &(complement_amishi(&1, amishi)))
@@ -121,7 +123,8 @@ defmodule Cotoami.CotoService do
   def export_by_amishi(%Amishi{id: amishi_id}) do
     Coto
     |> Coto.for_amishi(amishi_id)
-    |> preload([:posted_in, :cotonoma])
+    |> order_by(asc: :inserted_at)
+    |> preload([:cotonoma])
     |> Repo.all()
   end
 

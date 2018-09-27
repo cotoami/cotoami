@@ -12,11 +12,11 @@ defmodule CotoamiWeb.DatabaseController do
   def export(conn, _params, amishi) do
     data = %{
       amishi:
-        Phoenix.View.render_one(amishi, AmishiView, "amishi.json"),
+        Phoenix.View.render_one(amishi, AmishiView, "export.json"),
       cotos:
         amishi
         |> CotoService.export_by_amishi()
-        |> Phoenix.View.render_many(CotoView, "coto.json"),
+        |> Phoenix.View.render_many(CotoView, "export.json"),
       connections:
         CotoGraphService.export_connections_by_amishi(Sips.conn, amishi)
     }
@@ -56,10 +56,14 @@ defmodule CotoamiWeb.DatabaseController do
   end
 
   defp import_by_amishi(cotos_json, connections_json, amishi_json, %Amishi{} = amishi) do
+    cotonoma_ids =
+      cotos_json 
+      |> Enum.map(&(get_in(&1, ["cotonoma", "id"])))
+      |> Enum.reject(&is_nil/1)
     {coto_inserts, coto_updates, cotonomas, coto_rejected} =
-      import_cotos(cotos_json, {0, 0, 0, []}, amishi)
+      import_cotos(cotos_json, cotonoma_ids, amishi, {0, 0, 0, []})
     {connection_ok, connection_rejected} =
-      import_connections(connections_json, amishi_json, {0, []}, amishi)
+      import_connections(connections_json, amishi_json, amishi, {0, []})
     %{
       cotos: %{
         inserts: coto_inserts,
@@ -76,44 +80,40 @@ defmodule CotoamiWeb.DatabaseController do
 
   defp import_cotos(
     cotos_json,
-    {_inserts, _updates, _cotonomas, _rejected} = results,
-    %Amishi{} = amishi
+    cotonoma_ids, 
+    %Amishi{} = amishi,
+    {_inserts, _updates, _cotonomas, _rejected} = stats
   ) do
-    {pendings, results} =
-      Enum.reduce(cotos_json, {[], results},
-        fn(coto_json, {pendings, results}) ->
-          # check if the posted_in cotonoma exists before importing a coto_json
-          posted_in_id = coto_json["posted_in"]["id"]
-          if cotonoma_missing?(posted_in_id) do
-            if cotos_json_contains_cotonoma?(cotos_json, posted_in_id) do
-              # [pending] put this coto_json in pending until the posted_in cotonoma is imported
-              {[coto_json | pendings], results}
+    {pendings, stats} =
+      Enum.reduce(cotos_json, {[], stats},
+        fn(coto_json, {pendings, stats}) ->
+          posted_in_id = coto_json["posted_in_id"]
+
+          if posted_in_id == nil or Repo.get(Cotonoma, posted_in_id) != nil do
+            # import a coto
+            {pendings, import_coto(coto_json, stats, amishi)}
+          else
+            if Enum.member?(cotonoma_ids, posted_in_id) do
+              # put in pending until the cotonoma is imported
+              {[coto_json | pendings], stats}
             else
-              # [reject] reject this coto_json because the posted_in cotonoma is 
-              # not found in both the db and import data
+              # reject for missing cotonoma
               reject = %{id: coto_json["id"], reason: "cotonoma not found: #{posted_in_id}"}
-              {inserts, updates, cotonomas, rejected} = results
+              {inserts, updates, cotonomas, rejected} = stats
               {pendings, {inserts, updates, cotonomas, [reject | rejected]}}
             end
-          else
-            # [import]
-            {pendings, import_coto(coto_json, results, amishi)}
           end
         end
       )
 
     if Enum.empty?(pendings) do
       # done!
-      results
+      stats
     else
       # retry pending data
-      import_cotos(pendings, results, amishi)
+      import_cotos(pendings, cotonoma_ids, amishi, stats)
     end
   end
-
-  defp cotonoma_missing?(id), do: id && Repo.get(Cotonoma, id) == nil
-  defp cotos_json_contains_cotonoma?(cotos_json, id),
-    do: Enum.any?(cotos_json, &(&1["cotonoma_id"] == id))
 
   defp import_coto(
     coto_json,
@@ -149,7 +149,7 @@ defmodule CotoamiWeb.DatabaseController do
     cotonomas
   end
   defp import_cotonoma(
-    %{"as_cotonoma" => true, "cotonoma_id" => cotonoma_id} = coto_json,
+    %{"as_cotonoma" => true, "cotonoma" => %{"id" => cotonoma_id}} = coto_json,
     cotonomas,
     %Amishi{} = amishi
   ) do
@@ -177,11 +177,11 @@ defmodule CotoamiWeb.DatabaseController do
   defp import_connections(
     connections_json,
     amishi_json,
-    {_ok, _rejected} = results,
-    %Amishi{} = amishi
+    %Amishi{} = amishi,
+    {_ok, _rejected} = stats
   ) do
     bolt_conn = Sips.conn
-    Enum.reduce(connections_json, results,
+    Enum.reduce(connections_json, stats,
       fn(connection_json, {ok, rejected}) ->
         {start_id, end_id} = {connection_json["start"], connection_json["end"]}
         source = CotoService.get(start_id)

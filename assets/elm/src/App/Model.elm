@@ -73,7 +73,7 @@ type alias Model =
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , connectModal : App.Modals.ConnectModal.Model
-    , importModal : App.Modals.ImportModal.Model
+    , importModal : Maybe App.Modals.ImportModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     }
 
@@ -116,7 +116,7 @@ initModel seed lang route =
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
     , connectModal = App.Modals.ConnectModal.defaultModel
-    , importModal = App.Modals.ImportModal.defaultModel
+    , importModal = Nothing
     , inviteModal = App.Modals.InviteModal.defaultModel
     }
 

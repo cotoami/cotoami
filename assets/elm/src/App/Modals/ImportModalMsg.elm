@@ -37,6 +37,5 @@ type alias Reject =
 
 
 type Msg
-    = DataInput String
-    | ImportClick
+    = ImportClick
     | ImportDone (Result Http.Error ImportResult)
