@@ -100,7 +100,7 @@ defmodule CotoamiWeb.DatabaseController do
               # reject for missing cotonoma
               reject = %{
                 json: encode_json(coto_json),
-                reason: "cotonoma is not found: #{posted_in_id}"
+                reason: "it was posted in another amishi's cotonoma"
               }
               {inserts, updates, cotonomas, rejected} = stats
               {pendings, {inserts, updates, cotonomas, [reject | rejected]}}

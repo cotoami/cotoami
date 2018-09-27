@@ -8,49 +8,54 @@
     margin-bottom: 1rem;
   }
 
+  span.number {
+    color: #666;
+    margin-left: 12px;
+    margin-right: 3px;
+    font-size: 120%;
+    font-weight: bold;
+  }
+
   div.import-file-info {
     border: 1px solid #ddd;
     padding: 10px;
     margin: 10px;
 
+    div.file-name i {
+      margin-right: 4px;
+      vertical-align: middle;
+      opacity: 0.3;
+    }
+
     div.content {
-      padding: 10px;
-      padding-bottom: 0;
+      padding: 5px;
+      padding-left: 15px;
+    }
+
+    div.stats {
+      margin-bottom: 6px;
     }
 
     div.author {
-      margin-bottom: 4px;
-  
       img.avatar {
         margin: 0;
         padding: 0;
         width: 20px;
         height: 20px;
-        margin-right: 6px;
+        margin-left: 10px;
+        margin-right: 4px;
         border-radius: 4px;
         vertical-align: middle;
       }
   
       span.name {
-        color: #aaa;
+        color: #666;
         font-weight: bold;
       }
 
       span.note {
         margin-left: 6px;
         font-size: 90%;
-      }
-    }
-
-    div.stats {
-      span.count {
-        font-size: 120%;
-        color: #aaa;
-      }
-
-      span.suffix {
-        margin-left: 4px;
-        margin-right: 20px;
       }
     }
   }
@@ -67,14 +72,6 @@
       color: #333;
       width: 90px;
       text-align: right;
-    }
-
-    span.number {
-      color: #666;
-      margin-left: 12px;
-      margin-right: 3px;
-      font-size: 120%;
-      font-weight: bold;
     }
 
     div.rejected {

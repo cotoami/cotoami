@@ -13,7 +13,8 @@ import Http exposing (Error(..))
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.UpdateUtil exposing (..)
+import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Submodels.Context exposing (Context)
 import App.Ports.ImportFile exposing (ImportFile)
@@ -171,21 +172,32 @@ modalConfig model =
 importFileInfoDiv : ImportFile -> Html AppMsg.Msg
 importFileInfoDiv importFile =
     div [ class "import-file-info" ]
-        [ div [ class "file-name" ] [ text importFile.fileName ]
+        [ div [ class "file-name" ]
+            [ materialIcon "insert_drive_file" Nothing
+            , text importFile.fileName
+            ]
         , div [ class "content" ]
-            [ div [ class "amishi author" ]
-                [ img [ class "avatar", src importFile.amishiAvatarUrl ] []
+            [ div [ class "stats" ]
+                [ text "contains:"
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotos) ]
+                    , text "cotos"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotonomas) ]
+                    , text "cotonomas"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.connections) ]
+                    , text "connections"
+                    ]
+                ]
+            , div [ class "amishi author" ]
+                [ text "by:"
+                , img [ class "avatar", src importFile.amishiAvatarUrl ] []
                 , span [ class "name" ] [ text importFile.amishiDisplayName ]
                 , span [ class "note" ]
                     [ text "(The ownership will be transferred to you.)" ]
-                ]
-            , div [ class "stats" ]
-                [ span [ class "count" ] [ text (toString importFile.cotos) ]
-                , span [ class "suffix" ] [ text "cotos" ]
-                , span [ class "count" ] [ text (toString importFile.cotonomas) ]
-                , span [ class "suffix" ] [ text "cotonomas" ]
-                , span [ class "count" ] [ text (toString importFile.connections) ]
-                , span [ class "suffix" ] [ text "connections" ]
                 ]
             ]
         ]
