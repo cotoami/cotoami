@@ -97,3 +97,9 @@ elmApp.ports.clearStorage.subscribe((prefix) => {
   }
 })
 
+const importFileInput = document.getElementById("import-file-input")
+
+elmApp.ports.selectImportFile.subscribe(() => {
+  importFileInput.click()
+})
+

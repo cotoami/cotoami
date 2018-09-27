@@ -13,6 +13,7 @@ import App.Modals.ProfileModalMsg as ProfileModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals, Modal(InviteModal))
 import App.Modals.InviteModal
+import App.Ports.ImportFile
 
 
 type alias UpdateModel model =
@@ -26,6 +27,9 @@ update context msg model =
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
                 |> App.Submodels.Modals.openModal InviteModal
                 |> withoutCmd
+
+        SelectImportFile ->
+            ( model, App.Ports.ImportFile.selectImportFile () )
 
 
 view : Context context -> Html AppMsg.Msg
@@ -94,7 +98,7 @@ modalConfig context session =
                 , if session.owner then
                     toolButton (context.i18nText I18nKeys.ProfileModal_Import)
                         "cloud_upload"
-                        [ onClick AppMsg.NoOp ]
+                        [ onClick (AppMsg.ProfileModalMsg SelectImportFile) ]
                   else
                     span [] []
                 ]
