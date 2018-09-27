@@ -10,6 +10,7 @@ import App.Submodels.LocalCotos
 import App.Channels
 import App.Ports.LocalStorage
 import App.Ports.Graph
+import App.Ports.ImportFile
 
 
 socket : String -> String -> Socket Msg
@@ -49,4 +50,5 @@ subscriptions model =
         , phoenixChannels model
         , App.Ports.LocalStorage.receiveItem LocalStorageItemFetched
         , App.Ports.Graph.nodeClicked OpenTraversal
+        , App.Ports.ImportFile.importFileContentRead OpenImportModal
         ]

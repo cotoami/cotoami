@@ -76,6 +76,13 @@ update msg model =
             else
                 model |> withoutCmd
 
+        CloseModal ->
+            App.Submodels.Modals.closeActiveModal model |> withoutCmd
+
+        Confirm ->
+            App.Submodels.Modals.closeActiveModal model
+                |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
+
         AppClick ->
             { model | flowView = App.Views.Flow.openOrCloseEditor False model.flowView }
                 |> withoutCmd
@@ -245,49 +252,6 @@ update msg model =
 
         SearchResultsFetched (Err _) ->
             model |> withoutCmd
-
-        --
-        -- Modal
-        --
-        CloseModal ->
-            App.Submodels.Modals.closeActiveModal model |> withoutCmd
-
-        Confirm ->
-            App.Submodels.Modals.closeActiveModal model
-                |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
-
-        OpenSigninModal ->
-            { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
-                |> App.Submodels.Modals.openModal SigninModal
-                |> withoutCmd
-
-        OpenNewEditorModal ->
-            App.Modals.EditorModal.openForNew model Nothing model
-
-        OpenNewEditorModalWithSourceCoto coto ->
-            App.Modals.EditorModal.openForNew model (Just coto) model
-
-        OpenProfileModal ->
-            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
-
-        OpenEditorModal coto ->
-            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> App.Submodels.Modals.openModal EditorModal
-                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
-
-        OpenCotoModal coto ->
-            App.Modals.CotoModal.open coto model
-                |> withoutCmd
-
-        OpenImportModal ->
-            { model | importModal = App.Modals.ImportModal.defaultModel }
-                |> App.Submodels.Modals.openModal ImportModal
-                |> withoutCmd
-
-        OpenTimelineFilterModal ->
-            model
-                |> App.Submodels.Modals.openModal TimelineFilterModal
-                |> withoutCmd
 
         --
         -- Coto
@@ -612,12 +576,31 @@ update msg model =
         CotoToolbarMsg subMsg ->
             App.Views.CotoToolbar.update model subMsg model
 
+        OpenSigninModal ->
+            { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
+                |> App.Submodels.Modals.openModal SigninModal
+                |> withoutCmd
+
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
 
+        OpenProfileModal ->
+            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
+
         ProfileModalMsg subMsg ->
             App.Modals.ProfileModal.update model subMsg model
+
+        OpenNewEditorModal ->
+            App.Modals.EditorModal.openForNew model Nothing model
+
+        OpenNewEditorModalWithSourceCoto coto ->
+            App.Modals.EditorModal.openForNew model (Just coto) model
+
+        OpenEditorModal coto ->
+            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
+                |> App.Submodels.Modals.openModal EditorModal
+                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
@@ -628,6 +611,10 @@ update msg model =
                 |> Maybe.map (Tuple.mapFirst (\modal -> { model | cotoMenuModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
 
+        OpenCotoModal coto ->
+            App.Modals.CotoModal.open coto model
+                |> withoutCmd
+
         ConnectModalMsg subMsg ->
             App.Modals.ConnectModal.update model subMsg model
 
@@ -635,9 +622,21 @@ update msg model =
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
 
+        OpenImportModal importFile ->
+            { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
+                |> App.Submodels.Modals.openModal ImportModal
+                |> withoutCmd
+
         ImportModalMsg subMsg ->
-            App.Modals.ImportModal.update model subMsg model.importModal
-                |> Tuple.mapFirst (\modal -> { model | importModal = modal })
+            model.importModal
+                |> Maybe.map (App.Modals.ImportModal.update model subMsg)
+                |> Maybe.map (Tuple.mapFirst (\modal -> { model | importModal = Just modal }))
+                |> Maybe.withDefault ( model, Cmd.none )
+
+        OpenTimelineFilterModal ->
+            model
+                |> App.Submodels.Modals.openModal TimelineFilterModal
+                |> withoutCmd
 
         TimelineFilterModalMsg subMsg ->
             App.Modals.TimelineFilterModal.update model subMsg model

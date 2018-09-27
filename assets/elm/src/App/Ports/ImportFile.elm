@@ -1,10 +1,9 @@
 port module App.Ports.ImportFile
     exposing
         ( selectImportFile
+        , ImportFile
         , importFileContentRead
         )
-
-import App.Types.Amishi exposing (Amishi)
 
 
 port selectImportFile : () -> Cmd msg
@@ -13,7 +12,9 @@ port selectImportFile : () -> Cmd msg
 type alias ImportFile =
     { content : String
     , valid : Bool
-    , amishi : Maybe Amishi
+    , error : String
+    , amishiAvatarUrl : String
+    , amishiDisplayName : String
     , cotos : Int
     , cotonomas : Int
     , connections : Int

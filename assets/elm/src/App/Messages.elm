@@ -22,12 +22,15 @@ import App.Modals.ConnectModalMsg
 import App.Modals.InviteModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.TimelineFilterModalMsg
+import App.Ports.ImportFile exposing (ImportFile)
 
 
 type Msg
     = NoOp
     | LocalStorageItemFetched ( String, Value )
     | KeyDown KeyCode
+    | CloseModal
+    | Confirm
     | AppClick
     | OnLocationChange Location
     | NavigationToggle
@@ -50,19 +53,6 @@ type Msg
     | SearchInput String
     | Search
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
-      --
-      -- Modal
-      --
-    | CloseModal
-    | Confirm
-    | OpenSigninModal
-    | OpenNewEditorModal
-    | OpenNewEditorModalWithSourceCoto Coto
-    | OpenProfileModal
-    | OpenEditorModal Coto
-    | OpenCotoModal Coto
-    | OpenImportModal
-    | OpenTimelineFilterModal
       --
       -- Coto
       --
@@ -114,11 +104,19 @@ type Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
+    | OpenSigninModal
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
+    | OpenProfileModal
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
+    | OpenNewEditorModal
+    | OpenNewEditorModalWithSourceCoto Coto
+    | OpenEditorModal Coto
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
+    | OpenCotoModal Coto
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
+    | OpenImportModal ImportFile
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
+    | OpenTimelineFilterModal
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg

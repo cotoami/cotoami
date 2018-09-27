@@ -1,4 +1,10 @@
-module App.Modals.ImportModal exposing (Model, defaultModel, update, view)
+module App.Modals.ImportModal
+    exposing
+        ( Model
+        , initModel
+        , update
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -8,9 +14,9 @@ import Json.Encode as Encode
 import Json.Decode as Decode
 import Utils.Modal as Modal
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Utils.StringUtil exposing (isBlank)
 import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Submodels.Context exposing (Context)
+import App.Ports.ImportFile exposing (ImportFile)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg
     exposing
@@ -23,7 +29,7 @@ import App.Modals.ImportModalMsg as ImportModalMsg
 
 
 type alias Model =
-    { data : String
+    { importFile : ImportFile
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
@@ -35,9 +41,9 @@ type RequestStatus
     | Rejected String
 
 
-defaultModel : Model
-defaultModel =
-    { data = ""
+initModel : ImportFile -> Model
+initModel importFile =
+    { importFile = importFile
     , requestProcessing = False
     , requestStatus = None
     }
@@ -46,17 +52,18 @@ defaultModel =
 update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
-        DataInput data ->
-            { model | data = data } |> withoutCmd
-
         ImportClick ->
             { model | requestProcessing = True }
-                |> withCmd (\model -> importData context.clientId model.data)
+                |> withCmd
+                    (\model ->
+                        importData
+                            context.clientId
+                            model.importFile.content
+                    )
 
         ImportDone (Ok results) ->
             { model
-                | data = ""
-                , requestProcessing = False
+                | requestProcessing = False
                 , requestStatus = Imported results
             }
                 |> withoutCmd
@@ -112,10 +119,10 @@ importData clientId data =
             (httpPost "/api/import" clientId requestBody decodeResult)
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
-        |> Just
+view : Maybe Model -> Html AppMsg.Msg
+view maybeModel =
+    maybeModel
+        |> Maybe.map modalConfig
         |> Modal.view "import-modal"
 
 
@@ -136,15 +143,9 @@ modalConfig model =
             , title = text "Import cotos and connections"
             , content =
                 div []
-                    [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
-                    , div []
-                        [ textarea
-                            [ class "data"
-                            , value model.data
-                            , onInput (AppMsg.ImportModalMsg << DataInput)
-                            ]
-                            []
-                        ]
+                    [ p [] [ text "You are about to import the cotos/connections in the file you selected." ]
+                    , div [ class "import-file-info" ]
+                        []
                     , case model.requestStatus of
                         Rejected message ->
                             div [ class "error" ]
@@ -156,7 +157,7 @@ modalConfig model =
             , buttons =
                 [ button
                     [ class "button button-primary"
-                    , disabled (isBlank model.data || model.requestProcessing)
+                    , disabled (not model.importFile.valid || model.requestProcessing)
                     , onClick (AppMsg.ImportModalMsg ImportClick)
                     ]
                     [ if model.requestProcessing then
