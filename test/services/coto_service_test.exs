@@ -2,11 +2,12 @@ defmodule Cotoami.CotoServiceTest do
   use Cotoami.ModelCase
   import ShorterMaps
   alias Cotoami.{
-    AmishiService, CotoService, CotonomaService, CotoGraphService, Coto
+    EmailUser, Coto,
+    AmishiService, CotoService, CotonomaService, CotoGraphService
   }
 
   setup do
-    amishi = AmishiService.insert_or_update_by_email!("amishi@example.com")
+    amishi = AmishiService.insert_or_update!(%EmailUser{email: "amishi@example.com"})
     %{conn: Bolt.Sips.conn, amishi: amishi}
   end
 

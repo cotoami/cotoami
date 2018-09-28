@@ -2,14 +2,14 @@ defmodule Cotoami.CotoGraphServiceTest do
   use Cotoami.ModelCase
   import ShorterMaps
   alias Cotoami.{
-    Coto, CotoGraph,
+    EmailUser, Coto, CotoGraph,
     CotoGraphService, Neo4jService, AmishiService, CotoService, CotonomaService
   }
   alias Bolt.Sips.Types.Node
   alias Bolt.Sips.Types.Relationship
 
   setup do
-    amishi = AmishiService.insert_or_update_by_email!("amishi@example.com")
+    amishi = AmishiService.insert_or_update!(%EmailUser{email: "amishi@example.com"})
     %{conn: Bolt.Sips.conn, amishi: amishi}
   end
 
@@ -126,10 +126,10 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "when a coto is pinned to a cotonoma" do
     setup ~M{conn, amishi} do
-      cotonoma_owner = AmishiService.insert_or_update_by_email!("cotonoma@example.com")
+      cotonoma_owner = AmishiService.insert_or_update!(%EmailUser{email: "cotonoma@example.com"})
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(cotonoma_owner, "test", false)
 
-      coto_amishi = AmishiService.insert_or_update_by_email!("coto@example.com")
+      coto_amishi = AmishiService.insert_or_update!(%EmailUser{email: "coto@example.com"})
       {coto, _} = CotoService.create!(coto_amishi, "hello", nil, cotonoma.id)
 
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
@@ -202,7 +202,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "it can't be unpinned by an unrelated amishi", ~M{conn, coto, cotonoma} do
-      unrelated_amishi = AmishiService.insert_or_update_by_email!("unrelated@example.com")
+      unrelated_amishi = AmishiService.insert_or_update!(%EmailUser{email: "unrelated@example.com"})
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.unpin(conn, coto, cotonoma, unrelated_amishi)
       end
@@ -219,11 +219,11 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "when two cotos are connected" do
     setup ~M{conn, amishi} do
-      source_amishi = AmishiService.insert_or_update_by_email!("source@example.com")
+      source_amishi = AmishiService.insert_or_update!(%EmailUser{email: "source@example.com"})
       {source, _} = CotoService.create!(source_amishi, "hello")
       source = %{source | amishi: source_amishi}
 
-      target_amishi = AmishiService.insert_or_update_by_email!("target@example.com")
+      target_amishi = AmishiService.insert_or_update!(%EmailUser{email: "target@example.com"})
       {target, _} = CotoService.create!(target_amishi, "bye")
 
       CotoGraphService.connect(conn, source, target, amishi)
@@ -266,7 +266,7 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "they can't be disconnected by an unrelated amishi", ~M{conn, source, target} do
-      unrelated_amishi = AmishiService.insert_or_update_by_email!("unrelated@example.com")
+      unrelated_amishi = AmishiService.insert_or_update!(%EmailUser{email: "unrelated@example.com"})
       assert_raise Cotoami.Exceptions.NoPermission, fn ->
         CotoGraphService.disconnect(conn, source, target, unrelated_amishi)
       end

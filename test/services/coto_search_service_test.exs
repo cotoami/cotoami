@@ -2,13 +2,13 @@ defmodule Cotoami.CotoSearchServiceTest do
   use Cotoami.ModelCase
   import ShorterMaps
   alias Cotoami.{
-    Repo, Coto,
+    Repo, EmailUser, Coto,
     AmishiService, CotoService, CotonomaService, CotoSearchService
   }
 
   setup do
-    amishi_a = AmishiService.insert_or_update_by_email!("amishi_a@example.com")
-    amishi_b = AmishiService.insert_or_update_by_email!("amishi_b@example.com")
+    amishi_a = AmishiService.insert_or_update!(%EmailUser{email: "amishi_a@example.com"})
+    amishi_b = AmishiService.insert_or_update!(%EmailUser{email: "amishi_b@example.com"})
     {%Coto{cotonoma: cotonoma_a}, _} = CotonomaService.create!(amishi_a, "cotonoma a", false)
     ~M{amishi_a, amishi_b, cotonoma_a}
   end
