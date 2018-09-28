@@ -4,7 +4,7 @@ import App.I18n.Keys exposing (TextKey)
 import App.I18n.Translations.En
 import App.I18n.Translations.Ja
 import App.I18n.Translations.Uk
-
+import App.I18n.Translations.Ru
 
 text : String -> TextKey -> String
 text lang key =
@@ -19,6 +19,12 @@ text lang key =
 
                 "uk-UA" ->
                     App.I18n.Translations.Uk.text
+
+                "ru" ->
+                    App.I18n.Translations.Ru.text
+
+                "ru-RU" ->
+                    App.I18n.Translations.Ru.text
 
                 "ja" ->
                     App.I18n.Translations.Ja.text
