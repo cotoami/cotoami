@@ -22,6 +22,14 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# OAuth2
+config :oauth2, debug: true
+
+config :cotoami, CotoamiWeb.OAuth2.Google,
+  client_id: System.get_env("OAUTH_GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("OAUTH_GOOGLE_CLIENT_SECRET"),
+  redirect_uri: System.get_env("OAUTH_GOOGLE_REDIRECT_URI")
+
 # Amishi-related
 config :cotoami, Cotoami.AmishiService,
   owner_emails:

@@ -37,6 +37,12 @@ defmodule CotoamiWeb.Router do
 
   end
 
+  scope "/auth", CotoamiWeb do
+    pipe_through :browser
+    get "/:provider", OAuth2Controller, :index
+    get "/:provider/callback", OAuth2Controller, :callback
+  end
+
   scope "/export", CotoamiWeb do
     pipe_through [:browser, :require_auth]
 

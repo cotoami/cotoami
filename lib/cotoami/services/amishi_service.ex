@@ -4,7 +4,7 @@ defmodule Cotoami.AmishiService do
   """
 
   require Logger
-  alias Cotoami.{Repo, Amishi, RedisService}
+  alias Cotoami.{Repo, Amishi, ExternalUser, RedisService}
 
   @gravatar_url_prefix "https://secure.gravatar.com/"
   @gravatar_user_agent "Cotoami"
@@ -30,6 +30,21 @@ defmodule Cotoami.AmishiService do
     |> Repo.get(id)
     |> append_owner_flag()
     |> append_gravatar_profile()
+  end
+
+  def get_by_external_user(%ExternalUser{auth_provider: provider, auth_id: id}) do
+    Repo.get_by(Amishi, auth_provider: provider, auth_id: id)
+  end
+
+  def insert_or_update_by_external_user!(%ExternalUser{} = user) do
+    case get_by_external_user(user) do
+      nil ->
+        Amishi.changeset_to_insert(user)
+        |> Repo.insert!()
+      amishi ->
+        Amishi.changeset_to_update(amishi, user)
+        |> Repo.update!()
+    end
   end
 
   def get_by_email(email) do
