@@ -6,6 +6,7 @@ import App.I18n.Translations.Ja
 import App.I18n.Translations.Uk
 import App.I18n.Translations.Ru
 
+
 text : String -> TextKey -> String
 text lang key =
     let
