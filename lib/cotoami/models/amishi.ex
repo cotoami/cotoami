@@ -5,8 +5,7 @@ defmodule Cotoami.Amishi do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias Cotoami.Amishi
-  alias Cotoami.ExternalUser
+  alias Cotoami.{Amishi, ExternalUser, EmailUser}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -28,12 +27,14 @@ defmodule Cotoami.Amishi do
     timestamps(type: :utc_datetime)
   end
 
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:email])
+  def changeset_to_insert(%EmailUser{} = user) do
+    %Amishi{}
+    |> cast(
+        Map.from_struct(user), 
+        [:email, :name, :avatar_url]
+      )
     |> validate_required([:email])
   end
-
   def changeset_to_insert(%ExternalUser{} = user) do
     %Amishi{}
     |> cast(
@@ -43,11 +44,10 @@ defmodule Cotoami.Amishi do
     |> validate_required([:auth_provider, :auth_id])
   end
 
+  def changeset_to_update(%Amishi{} = amishi, %EmailUser{} = user) do
+    amishi |> cast(Map.from_struct(user), [:name, :avatar_url])
+  end
   def changeset_to_update(%Amishi{} = amishi, %ExternalUser{} = user) do
-    amishi
-    |> cast(
-        Map.from_struct(user), 
-        [:name, :avatar_url]
-      )
+    amishi |> cast(Map.from_struct(user), [:name, :avatar_url])
   end
 end

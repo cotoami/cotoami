@@ -117,17 +117,8 @@ defmodule Cotoami.CotonomaService do
     case cotonoma.owner do
       %Ecto.Association.NotLoaded{} ->
         %{cotonoma | owner: AmishiService.get(cotonoma.owner_id)}
-      owner ->
-        %{cotonoma | owner: AmishiService.append_gravatar_profile(owner)}
+      _owner -> cotonoma
     end
-  end
-
-  defp complement_owners(cotonomas) when is_list(cotonomas) do
-    cotonomas
-    |> Enum.map(&(&1.owner))
-    |> AmishiService.append_gravatar_profiles()
-    |> Enum.zip(cotonomas)
-    |> Enum.map(fn({owner, cotonoma}) -> %{cotonoma | owner: owner} end)
   end
 
   def recent_cotonomas(%Amishi{id: amishi_id}) do
@@ -149,7 +140,6 @@ defmodule Cotoami.CotonomaService do
     |> preload([:coto, :owner])
     |> order_by(desc: :updated_at)
     |> Repo.all()
-    |> complement_owners()
   end
 
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do

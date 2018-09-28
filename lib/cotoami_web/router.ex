@@ -32,7 +32,7 @@ defmodule CotoamiWeb.Router do
     pipe_through :browser
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
-    get "/signin/:token", SigninController, :signin
+    get "/signin/:token", EmailAuthController, :signin
     get "/signout", SessionController, :signout
 
   end
@@ -54,7 +54,7 @@ defmodule CotoamiWeb.Router do
 
     get "/", PublicController, :index
     get "/session", SessionController, :index
-    get "/signin/request/:email", SigninController, :request
+    get "/signin/request/:email", EmailAuthController, :request
   end
 
   scope "/api", CotoamiWeb do

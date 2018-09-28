@@ -8,7 +8,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
 
   setup do
     amishi =
-      AmishiService.create!("amishi@example.com")
+      AmishiService.insert_or_update_by_email!("amishi@example.com")
       |> Map.put(:owner, false)
     conn =
       build_conn()
@@ -267,7 +267,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
 
     test "PUT /api/graph/:cotonoma_key/pin (a coto by another amishi)",
         %{conn: conn, amishi: amishi, coto: coto, cotonoma: cotonoma} do
-      amishi2 = AmishiService.create!("amishi2@example.com")
+      amishi2 = AmishiService.insert_or_update_by_email!("amishi2@example.com")
       {coto2, _posted_in} = CotoService.create!(amishi2, "bye", nil, cotonoma.id)
 
       put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id]})

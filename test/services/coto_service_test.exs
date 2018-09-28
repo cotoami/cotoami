@@ -6,7 +6,7 @@ defmodule Cotoami.CotoServiceTest do
   }
 
   setup do
-    amishi = AmishiService.create!("amishi@example.com")
+    amishi = AmishiService.insert_or_update_by_email!("amishi@example.com")
     %{conn: Bolt.Sips.conn, amishi: amishi}
   end
 

@@ -6,7 +6,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
   setup do
     Neo4jService.clear_database(Bolt.Sips.conn)
     owner =
-      AmishiService.create!("owner@cotoa.me")
+      AmishiService.insert_or_update_by_email!("owner@cotoa.me")
       |> Map.put(:owner, true)
     conn =
       build_conn()
