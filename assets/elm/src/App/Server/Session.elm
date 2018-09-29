@@ -33,7 +33,7 @@ decodeAuthSettings : Decode.Decoder AuthSettings
 decodeAuthSettings =
     Decode.map2 AuthSettings
         (Decode.field "signup_enabled" bool)
-        (Decode.field "oauth2_providers" (list string))
+        (Decode.field "oauth_providers" (list string))
 
 
 decodeAuthSettingsString : String -> AuthSettings

@@ -17,7 +17,7 @@ defmodule CotoamiWeb.SessionController do
         |> put_status(:not_found)
         |> json(%{
             signup_enabled: EmailAuthController.signup_enabled,
-            oauth2_providers: OAuth2Controller.providers
+            oauth_providers: OAuth2Controller.providers
           })
     end
   end

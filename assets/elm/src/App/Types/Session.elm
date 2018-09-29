@@ -33,12 +33,12 @@ toAmishi session =
 
 type alias AuthSettings =
     { signupEnabled : Bool
-    , oauth2Providers : List String
+    , oauthProviders : List String
     }
 
 
 defaultAuthSettings : AuthSettings
 defaultAuthSettings =
     { signupEnabled = False
-    , oauth2Providers = []
+    , oauthProviders = []
     }

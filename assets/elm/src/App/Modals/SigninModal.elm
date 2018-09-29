@@ -109,38 +109,17 @@ modalConfig context model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
-    else if model.authSettings.signupEnabled then
-        modalConfigWithSignupEnabled context model
     else
-        modalConfigOnlyForSignin context model
-
-
-modalConfigWithSignupEnabled : Context context -> Model -> Modal.Config AppMsg.Msg
-modalConfigWithSignupEnabled context model =
-    { closeMessage = CloseModal
-    , title = welcomeTitle context
-    , content =
-        div []
-            [ p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
-            , signinForm context model
-            ]
-    , buttons =
-        [ sendLinkButton context model ]
-    }
-
-
-modalConfigOnlyForSignin : Context context -> Model -> Modal.Config AppMsg.Msg
-modalConfigOnlyForSignin context model =
-    { closeMessage = CloseModal
-    , title = welcomeTitle context
-    , content =
-        div []
-            [ p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
-            , signinForm context model
-            ]
-    , buttons =
-        [ sendLinkButton context model ]
-    }
+        { closeMessage = CloseModal
+        , title = welcomeTitle context
+        , content =
+            div []
+                [ oauthSigninDiv context model
+                , emailSigninDiv context model
+                ]
+        , buttons =
+            [ sendLinkButton context model ]
+        }
 
 
 welcomeTitle : Context context -> Html AppMsg.Msg
@@ -148,6 +127,23 @@ welcomeTitle context =
     span []
         [ img [ class "logo", src "/images/logo/logomark.svg" ] []
         , text (context.i18nText I18nKeys.SigninModal_WelcomeTitle)
+        ]
+
+
+oauthSigninDiv : Context context -> Model -> Html AppMsg.Msg
+oauthSigninDiv context model =
+    div [ class "oauth-signin" ]
+        []
+
+
+emailSigninDiv : Context context -> Model -> Html AppMsg.Msg
+emailSigninDiv context model =
+    div [ class "email-signin" ]
+        [ if model.authSettings.signupEnabled then
+            p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
+          else
+            p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
+        , signinForm context model
         ]
 
 
