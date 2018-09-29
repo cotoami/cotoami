@@ -3,8 +3,20 @@ defmodule CotoamiWeb.EmailAuthController do
   require Logger
   alias Cotoami.{RedisService, AmishiService}
 
+  def signup_enabled do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:signup_enabled)
+  end
+
+  def is_allowed_to_signin?(email) do
+    signup_enabled() 
+      || email in AmishiService.owner_emails() 
+      || AmishiService.get_by_email(email)
+  end
+
   def request(conn, %{"email" => email}) do
-    if AmishiService.is_allowed_to_signin?(email) do
+    if is_allowed_to_signin?(email) do
       token = RedisService.generate_signin_token(email)
       host_url = CotoamiWeb.Router.Helpers.url(conn)
       email
