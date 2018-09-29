@@ -28,6 +28,7 @@ defmodule CotoamiWeb.OAuth2Controller do
     |> AuthPlug.start_session(amishi)
     |> put_session(:access_token, client.token.access_token)
     |> redirect(to: "/")
+    |> halt()
   end
 
   defp authorize_url!("google"), do: Google.authorize_url!(scope: "https://www.googleapis.com/auth/userinfo.email")

@@ -9,7 +9,8 @@ type alias AmishiId =
 
 type alias Amishi =
     { id : AmishiId
-    , email : String
+    , email : Maybe String
+    , authProvider : Maybe String
     , owner : Bool
     , avatarUrl : String
     , displayName : String

@@ -8,20 +8,17 @@ module App.Server.Session
 import Http
 import Json.Decode as Decode exposing (bool, string, list)
 import App.Messages exposing (Msg(..))
+import App.Server.Amishi
 import App.Types.Session exposing (Session, AuthSettings)
 
 
 decodeSession : Decode.Decoder Session
 decodeSession =
-    Decode.map8 Session
-        (Decode.field "token" Decode.string)
-        (Decode.field "websocket_url" Decode.string)
-        (Decode.field "id" Decode.string)
-        (Decode.field "email" Decode.string)
-        (Decode.field "owner" Decode.bool)
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "display_name" Decode.string)
-        (Decode.field "lang" Decode.string)
+    Decode.map4 Session
+        (Decode.field "amishi" App.Server.Amishi.decodeAmishi)
+        (Decode.field "token" string)
+        (Decode.field "websocket_url" string)
+        (Decode.field "lang" string)
 
 
 fetchSession : Cmd Msg

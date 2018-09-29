@@ -384,13 +384,13 @@ update msg model =
         PinCoto cotoId ->
             (Maybe.map2
                 (\session coto ->
-                    { model | graph = App.Types.Graph.pinCoto session.id coto model.graph }
+                    { model | graph = App.Types.Graph.pinCoto session.amishi.id coto model.graph }
                         |> withCmd
                             (\model ->
                                 Cmd.batch
                                     [ App.Server.Graph.pinCotos
                                         model.clientId
-                                        (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                                        (Maybe.map (.key) model.cotonoma)
                                         [ cotoId ]
                                     , App.Commands.scrollPinnedCotosToBottom NoOp
                                     ]
