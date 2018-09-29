@@ -1,4 +1,10 @@
-module App.Types.Session exposing (..)
+module App.Types.Session
+    exposing
+        ( Session
+        , toAmishi
+        , AuthSettings
+        , defaultAuthSettings
+        )
 
 import App.Types.Amishi exposing (Amishi, AmishiId)
 
@@ -23,3 +29,16 @@ toAmishi session =
         session.owner
         session.avatarUrl
         session.displayName
+
+
+type alias AuthSettings =
+    { signupEnabled : Bool
+    , oauth2Providers : List String
+    }
+
+
+defaultAuthSettings : AuthSettings
+defaultAuthSettings =
+    { signupEnabled = False
+    , oauth2Providers = []
+    }

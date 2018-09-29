@@ -5,8 +5,18 @@ defmodule CotoamiWeb.OAuth2Controller do
   alias CotoamiWeb.AuthPlug
   alias CotoamiWeb.OAuth2.Google
 
+  def providers do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:providers)
+  end
+
   def index(conn, %{"provider" => provider}) do
-    redirect conn, external: authorize_url!(provider)
+    if provider in providers() do
+      redirect conn, external: authorize_url!(provider)
+    else
+      send_resp(conn, :unauthorized, "")
+    end
   end
 
   def callback(conn, %{"provider" => provider, "code" => code}) do

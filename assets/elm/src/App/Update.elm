@@ -136,12 +136,9 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        App.Server.Session.decodeSessionNotFoundBodyString response.body
-                            |> (\body ->
-                                    App.Modals.SigninModal.setSignupEnabled
-                                        body.signupEnabled
-                                        model.signinModal
-                               )
+                        response.body
+                            |> App.Server.Session.decodeAuthSettingsString
+                            |> App.Modals.SigninModal.initModel
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> App.Submodels.Modals.openModal SigninModal
                             |> withoutCmd
@@ -577,7 +574,11 @@ update msg model =
             App.Views.CotoToolbar.update model subMsg model
 
         OpenSigninModal ->
-            { model | signinModal = App.Modals.SigninModal.initModel model.signinModal.signupEnabled }
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel
+                        model.signinModal.authSettings
+            }
                 |> App.Submodels.Modals.openModal SigninModal
                 |> withoutCmd
 

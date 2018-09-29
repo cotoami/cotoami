@@ -1,10 +1,10 @@
 module App.Modals.SigninModal
     exposing
         ( Model
+        , defaultModel
         , initModel
         , update
         , view
-        , setSignupEnabled
         )
 
 import Html exposing (..)
@@ -16,13 +16,14 @@ import Utils.StringUtil exposing (validateEmail)
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Modal as Modal
 import App.I18n.Keys as I18nKeys
+import App.Types.Session exposing (AuthSettings)
 import App.Submodels.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
 type alias Model =
-    { signupEnabled : Bool
+    { authSettings : AuthSettings
     , email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
@@ -35,18 +36,22 @@ type RequestStatus
     | Rejected
 
 
-initModel : Bool -> Model
-initModel signupEnabled =
-    { signupEnabled = signupEnabled
+defaultModel : Model
+defaultModel =
+    { authSettings = App.Types.Session.defaultAuthSettings
     , email = ""
     , requestProcessing = False
     , requestStatus = None
     }
 
 
-setSignupEnabled : Bool -> Model -> Model
-setSignupEnabled signupEnabled model =
-    { model | signupEnabled = signupEnabled }
+initModel : AuthSettings -> Model
+initModel authSettings =
+    { authSettings = authSettings
+    , email = ""
+    , requestProcessing = False
+    , requestStatus = None
+    }
 
 
 update : SigninModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -104,7 +109,7 @@ modalConfig context model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
-    else if model.signupEnabled then
+    else if model.authSettings.signupEnabled then
         modalConfigWithSignupEnabled context model
     else
         modalConfigOnlyForSignin context model

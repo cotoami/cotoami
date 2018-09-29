@@ -31,6 +31,11 @@ config :cotoami, CotoamiWeb.EmailAuthController,
 # OAuth2
 config :oauth2, debug: true
 
+config :cotoami, CotoamiWeb.OAuth2Controller,
+  providers:
+    (System.get_env("COTOAMI_OAUTH2_PROVIDERS") || "")
+    |> String.split(",", trim: true)
+
 config :cotoami, CotoamiWeb.OAuth2.Google,
   client_id: System.get_env("OAUTH_GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("OAUTH_GOOGLE_CLIENT_SECRET"),

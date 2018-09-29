@@ -1,7 +1,7 @@
 defmodule CotoamiWeb.SessionController do
   use CotoamiWeb, :controller
   require Logger
-  alias CotoamiWeb.EmailAuthController 
+  alias CotoamiWeb.{EmailAuthController, OAuth2Controller}
 
   def index(conn, _params) do
     case conn.assigns do
@@ -16,7 +16,8 @@ defmodule CotoamiWeb.SessionController do
         conn
         |> put_status(:not_found)
         |> json(%{
-            signup_enabled: EmailAuthController.signup_enabled
+            signup_enabled: EmailAuthController.signup_enabled,
+            oauth2_providers: OAuth2Controller.providers
           })
     end
   end

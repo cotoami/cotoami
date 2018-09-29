@@ -1,9 +1,14 @@
-module App.Server.Session exposing (..)
+module App.Server.Session
+    exposing
+        ( decodeSession
+        , fetchSession
+        , decodeAuthSettingsString
+        )
 
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (bool, string, list)
 import App.Messages exposing (Msg(..))
-import App.Types.Session exposing (Session)
+import App.Types.Session exposing (Session, AuthSettings)
 
 
 decodeSession : Decode.Decoder Session
@@ -24,32 +29,18 @@ fetchSession =
     Http.send SessionFetched (Http.get "/api/public/session" decodeSession)
 
 
-type alias SessionNotFoundBody =
-    { signupEnabled : Bool
-    }
+decodeAuthSettings : Decode.Decoder AuthSettings
+decodeAuthSettings =
+    Decode.map2 AuthSettings
+        (Decode.field "signup_enabled" bool)
+        (Decode.field "oauth2_providers" (list string))
 
 
-defaultSessionNotFoundBody : SessionNotFoundBody
-defaultSessionNotFoundBody =
-    { signupEnabled = False
-    }
+decodeAuthSettingsString : String -> AuthSettings
+decodeAuthSettingsString string =
+    case Decode.decodeString decodeAuthSettings string of
+        Ok authSettings ->
+            authSettings
 
-
-decodeSessionNotFoundBody : Decode.Decoder SessionNotFoundBody
-decodeSessionNotFoundBody =
-    Decode.map SessionNotFoundBody
-        (Decode.field "signup_enabled" Decode.bool)
-
-
-decodeSessionNotFoundBodyString : String -> SessionNotFoundBody
-decodeSessionNotFoundBodyString body =
-    let
-        decodeResult =
-            Decode.decodeString decodeSessionNotFoundBody body
-    in
-        case decodeResult of
-            Ok body ->
-                body
-
-            Err _ ->
-                defaultSessionNotFoundBody
+        Err _ ->
+            App.Types.Session.defaultAuthSettings
