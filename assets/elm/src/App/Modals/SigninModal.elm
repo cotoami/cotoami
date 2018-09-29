@@ -13,7 +13,8 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Utils.StringUtil exposing (validateEmail)
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.UpdateUtil exposing (..)
+import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal as Modal
 import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (AuthSettings)
@@ -132,8 +133,31 @@ welcomeTitle context =
 
 oauthSigninDiv : Context context -> Model -> Html AppMsg.Msg
 oauthSigninDiv context model =
-    div [ class "oauth-signin" ]
-        []
+    if List.isEmpty model.authSettings.oauthProviders then
+        Utils.HtmlUtil.none
+    else
+        div [ class "oauth-signin" ]
+            [ div [ class "oauth-buttons" ]
+                (model.authSettings.oauthProviders
+                    |> List.map oauthButton
+                )
+            , hr [] []
+            ]
+
+
+oauthButton : String -> Html AppMsg.Msg
+oauthButton provider =
+    case provider of
+        "google" ->
+            div [ class "oauth-button-container" ]
+                [ a [ class "button", href "/auth/google" ]
+                    [ faIcon "google" Nothing
+                    , text "Sign in with Google"
+                    ]
+                ]
+
+        _ ->
+            Utils.HtmlUtil.none
 
 
 emailSigninDiv : Context context -> Model -> Html AppMsg.Msg
