@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.Modal as Modal
 import Utils.UpdateUtil exposing (..)
+import Utils.StringUtil
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
@@ -129,7 +130,7 @@ oauthField context provider =
         , input
             [ type_ "text"
             , class "u-full-width"
-            , value provider
+            , value (Utils.StringUtil.capitalize provider)
             , disabled True
             ]
             []

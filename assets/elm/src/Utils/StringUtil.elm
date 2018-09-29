@@ -1,4 +1,10 @@
-module Utils.StringUtil exposing (isBlank, isNotBlank, validateEmail)
+module Utils.StringUtil
+    exposing
+        ( isBlank
+        , isNotBlank
+        , validateEmail
+        , capitalize
+        )
 
 import Regex exposing (Regex, caseInsensitive, regex, contains)
 
@@ -23,3 +29,8 @@ emailRegex =
     "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
         |> regex
         |> caseInsensitive
+
+
+capitalize : String -> String
+capitalize str =
+    String.toUpper (String.left 1 str) ++ String.dropLeft 1 str
