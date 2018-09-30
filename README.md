@@ -134,7 +134,7 @@ You can launch Cotoami as a Docker container with the following configuration:
 * News and updates - https://twitter.com/cotoami
 
 
-## Requirements
+### Requirements
 
 * Node.js 7.0.0 or greater
 * Elixir 1.6.x or greater
@@ -143,7 +143,7 @@ You can launch Cotoami as a Docker container with the following configuration:
     * http://www.phoenixframework.org/docs/installation
 
 
-## Run application on localhost
+### Run application on localhost
 
 If you have a Docker environment running (`docker info` outputs some info), just execute the following commands:
 
@@ -159,7 +159,7 @@ $ mix phx.server
 
 Now you can visit `localhost:4000` from your browser.
 
-### Dummy mail server
+#### Dummy mail server
 
 There should be a line like `You can check sign-up/in mails at <url>` in the output log.
 You can access the test mail server via the `<url>` to check sign-up/in mails.
