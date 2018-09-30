@@ -156,6 +156,14 @@ oauthButton provider =
                     ]
                 ]
 
+        "github" ->
+            div [ class "oauth-button-container" ]
+                [ a [ class "button", href "/auth/github" ]
+                    [ faIcon "github" Nothing
+                    , text "Sign in with GitHub"
+                    ]
+                ]
+
         _ ->
             Utils.HtmlUtil.none
 

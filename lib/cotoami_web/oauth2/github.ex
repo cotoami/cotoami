@@ -1,4 +1,4 @@
-defmodule CotoamiWeb.OAuth2.Google do
+defmodule CotoamiWeb.OAuth2.GitHub do
   use OAuth2.Strategy
   require Logger
   alias Cotoami.ExternalUser
@@ -6,9 +6,9 @@ defmodule CotoamiWeb.OAuth2.Google do
   defp common_config do
     [
       strategy: __MODULE__,
-      site: "https://accounts.google.com",
-      authorize_url: "/o/oauth2/auth",
-      token_url: "/o/oauth2/token"
+      site: "https://api.github.com",
+      authorize_url: "https://github.com/login/oauth/authorize",
+      token_url: "https://github.com/login/oauth/access_token"
     ]
   end
 
@@ -30,15 +30,13 @@ defmodule CotoamiWeb.OAuth2.Google do
   end
 
   def get_user!(client_with_token) do
-    %{body: user} = 
-      client_with_token
-      |> OAuth2.Client.get!("https://www.googleapis.com/plus/v1/people/me/openIdConnect")
+    %{body: user} = OAuth2.Client.get!(client_with_token, "/user")
     Logger.info "OAuth2 user: #{inspect user}"
     %ExternalUser{
-      auth_provider: "google",
-      auth_id: user["sub"],
+      auth_provider: "github",
+      auth_id: user["node_id"],
       name: user["name"], 
-      avatar_url: user["picture"]
+      avatar_url: user["avatar_url"]
     }
   end
 
@@ -50,7 +48,6 @@ defmodule CotoamiWeb.OAuth2.Google do
 
   def get_token(client, params, headers) do
     client
-    |> put_param(:client_secret, client.client_secret)
     |> put_header("Accept", "application/json")
     |> OAuth2.Strategy.AuthCode.get_token(params, headers)
   end

@@ -4,6 +4,7 @@ defmodule CotoamiWeb.OAuth2Controller do
   alias Cotoami.AmishiService
   alias CotoamiWeb.AuthPlug
   alias CotoamiWeb.OAuth2.Google
+  alias CotoamiWeb.OAuth2.GitHub
 
   def providers do
     :cotoami
@@ -22,7 +23,6 @@ defmodule CotoamiWeb.OAuth2Controller do
   def callback(conn, %{"provider" => provider, "code" => code}) do
     client = get_token!(provider, code)
     user = get_user!(provider, client)
-    Logger.info "OAuth2 user: #{inspect user}"
     amishi = AmishiService.insert_or_update!(user)
     conn
     |> AuthPlug.start_session(amishi)
@@ -32,10 +32,13 @@ defmodule CotoamiWeb.OAuth2Controller do
   end
 
   defp authorize_url!("google"), do: Google.authorize_url!(scope: "https://www.googleapis.com/auth/userinfo.email")
+  defp authorize_url!("github"), do: GitHub.authorize_url!
   defp authorize_url!(_), do: raise "No matching provider available"
 
   defp get_token!("google", code), do: Google.get_token!(code: code)
+  defp get_token!("github", code), do: GitHub.get_token!(code: code)
   defp get_token!(_, _), do: raise "No matching provider available"
 
   defp get_user!("google", client), do: Google.get_user!(client)
+  defp get_user!("github", client), do: GitHub.get_user!(client)
 end

@@ -41,6 +41,11 @@ config :cotoami, CotoamiWeb.OAuth2.Google,
   client_secret: System.get_env("OAUTH_GOOGLE_CLIENT_SECRET"),
   redirect_uri: System.get_env("OAUTH_GOOGLE_REDIRECT_URI")
 
+config :cotoami, CotoamiWeb.OAuth2.GitHub,
+  client_id: System.get_env("OAUTH_GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("OAUTH_GITHUB_CLIENT_SECRET"),
+  redirect_uri: System.get_env("OAUTH_GITHUB_REDIRECT_URI")
+
 # Amishi-related
 config :cotoami, Cotoami.AmishiService,
   owner_emails:
