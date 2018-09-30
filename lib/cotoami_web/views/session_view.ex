@@ -8,10 +8,11 @@ defmodule CotoamiWeb.SessionView do
     websocket_url: websocket_url,
     lang: lang
   }) do
-    amishi
-    |> render_one(AmishiView, "amishi.json")
-    |> Map.put(:token, token)
-    |> Map.put(:websocket_url, websocket_url)
-    |> Map.put(:lang, lang)
+    %{
+      amishi: render_relation(amishi, AmishiView, "amishi.json"),
+      token: token,
+      websocket_url: websocket_url,
+      lang: lang
+    }
   end
 end

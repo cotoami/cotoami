@@ -57,20 +57,27 @@ defmodule Cotoami.Cotonoma do
     %{"as_cotonoma" => true} = coto_json,
     %Amishi{id: amishi_id}
   ) do
-    data = %{
-      id: coto_json["cotonoma_id"],
-      key: coto_json["cotonoma_key"],
-      name: coto_json["content"],
-      pinned: coto_json["cotonoma_pinned"],
-      timeline_revision: coto_json["cotonoma_timeline_rev"],
-      graph_revision: coto_json["cotonoma_graph_rev"],
-      coto_id: coto_json["id"],
-      owner_id: amishi_id,
-      inserted_at: unixtime_to_datetime!(coto_json["cotonoma_inserted_at"] || coto_json["inserted_at"]),
-      updated_at: unixtime_to_datetime!(coto_json["cotonoma_updated_at"] || coto_json["updated_at"])
-    }
+    cotonoma_json = coto_json["cotonoma"]
+    data = Map.merge(cotonoma_json, %{
+      "coto_id" => coto_json["id"],
+      "owner_id" => amishi_id,
+      "inserted_at" => unixtime_to_datetime!(cotonoma_json["inserted_at"]),
+      "updated_at" => unixtime_to_datetime!(cotonoma_json["updated_at"])
+    })
     struct
-    |> cast(data, Map.keys(data))
+    |> cast(data, [
+      :id,
+      :key,
+      :name, 
+      :shared,
+      :pinned,
+      :timeline_revision,
+      :graph_revision,
+      :coto_id, 
+      :owner_id, 
+      :inserted_at,
+      :updated_at
+    ])
     |> validate_required([:id, :key, :name, :coto_id, :owner_id])
     |> validate_name()
   end

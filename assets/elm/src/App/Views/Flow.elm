@@ -388,8 +388,8 @@ postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
             [ span [ class "user session" ]
-                [ img [ class "avatar", src session.avatarUrl ] []
-                , span [ class "name" ] [ text session.displayName ]
+                [ img [ class "avatar", src session.amishi.avatarUrl ] []
+                , span [ class "name" ] [ text session.amishi.displayName ]
                 ]
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then

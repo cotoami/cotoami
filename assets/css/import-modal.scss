@@ -8,10 +8,56 @@
     margin-bottom: 1rem;
   }
 
-  textarea.data {
-    width: 100%;
-    height: 35vh;
-    margin-bottom: .5rem;
+  span.number {
+    color: #666;
+    margin-left: 12px;
+    margin-right: 3px;
+    font-size: 120%;
+    font-weight: bold;
+  }
+
+  div.import-file-info {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+
+    div.file-name i {
+      margin-right: 4px;
+      vertical-align: middle;
+      opacity: 0.3;
+    }
+
+    div.content {
+      padding: 5px;
+      padding-left: 15px;
+    }
+
+    div.stats {
+      margin-bottom: 6px;
+    }
+
+    div.author {
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+        margin-right: 4px;
+        border-radius: 4px;
+        vertical-align: middle;
+      }
+  
+      span.name {
+        color: #666;
+        font-weight: bold;
+      }
+
+      span.note {
+        margin-left: 6px;
+        font-size: 90%;
+      }
+    }
   }
 
   div.import-result {
@@ -28,14 +74,6 @@
       text-align: right;
     }
 
-    span.number {
-      color: #666;
-      margin-left: 12px;
-      margin-right: 3px;
-      font-size: 120%;
-      font-weight: bold;
-    }
-
     div.rejected {
       border: 1px solid #eee;
       margin-top: 10px;
@@ -43,18 +81,23 @@
       max-height: 15vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+    }
 
-      span.reject {
-        display: inline-block;
+    div.reject {
+      span.head {
         white-space: nowrap;
       }
 
-      span.reject-caption {
+      span.caption {
         font-weight: bold;
       }
 
-      span.reject-reason {
+      span.reason {
         margin-right: 5px;
+      }
+
+      pre {
+        margin-top: 3px;
       }
     }
   }

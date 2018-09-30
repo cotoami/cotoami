@@ -92,6 +92,10 @@
       }
     }
 
+    &.not-active div.cotonoma-link {
+      opacity: .3;
+    }
+
     span.not-accessible i {
       font-size: 16px;
       vertical-align: -4px;

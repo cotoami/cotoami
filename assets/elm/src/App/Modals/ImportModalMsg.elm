@@ -31,12 +31,11 @@ type alias ImportConnectionsResult =
 
 
 type alias Reject =
-    { id : String
+    { json : String
     , reason : String
     }
 
 
 type Msg
-    = DataInput String
-    | ImportClick
+    = ImportClick
     | ImportDone (Result Http.Error ImportResult)

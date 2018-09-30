@@ -44,6 +44,7 @@ defmodule CotoamiWeb do
       import CotoamiWeb.Router.Helpers
       import CotoamiWeb.ErrorHelpers
       import CotoamiWeb.Gettext
+      import CotoamiWeb.ViewHelpers
     end
   end
 

@@ -435,7 +435,7 @@ isCotonomaAccessible context maybeOwner cotonoma =
         True
     else
         (Maybe.map2
-            (\session owner -> session.id == owner.id)
+            (\session owner -> session.amishi.id == owner.id)
             context.session
             maybeOwner
         )

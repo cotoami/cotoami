@@ -52,7 +52,7 @@ text key =
             "Cotoami doesn't use passwords. Just enter your email address and we'll send you a sign-in (or sign-up) link."
 
         SigninModal_OnlyForSignin ->
-            "Just enter your email address and we'll send you a sign-in link."
+            "If you have an email address registered, just enter it and we'll send you a sign-in link."
 
         SigninModal_SendLink ->
             "Send a link"

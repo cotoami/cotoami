@@ -1,4 +1,10 @@
-module App.Modals.ImportModal exposing (Model, defaultModel, update, view)
+module App.Modals.ImportModal
+    exposing
+        ( Model
+        , initModel
+        , update
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,10 +13,11 @@ import Http exposing (Error(..))
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
-import Utils.StringUtil exposing (isBlank)
+import Utils.UpdateUtil exposing (..)
+import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Submodels.Context exposing (Context)
+import App.Ports.ImportFile exposing (ImportFile)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ImportModalMsg as ImportModalMsg
     exposing
@@ -23,7 +30,7 @@ import App.Modals.ImportModalMsg as ImportModalMsg
 
 
 type alias Model =
-    { data : String
+    { importFile : ImportFile
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
@@ -35,9 +42,9 @@ type RequestStatus
     | Rejected String
 
 
-defaultModel : Model
-defaultModel =
-    { data = ""
+initModel : ImportFile -> Model
+initModel importFile =
+    { importFile = importFile
     , requestProcessing = False
     , requestStatus = None
     }
@@ -46,17 +53,18 @@ defaultModel =
 update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
-        DataInput data ->
-            { model | data = data } |> withoutCmd
-
         ImportClick ->
             { model | requestProcessing = True }
-                |> withCmd (\model -> importData context.clientId model.data)
+                |> withCmd
+                    (\model ->
+                        importData
+                            context.clientId
+                            model.importFile.content
+                    )
 
         ImportDone (Ok results) ->
             { model
-                | data = ""
-                , requestProcessing = False
+                | requestProcessing = False
                 , requestStatus = Imported results
             }
                 |> withoutCmd
@@ -87,7 +95,7 @@ importData clientId data =
 
         decodeReject =
             Decode.map2 Reject
-                (Decode.field "id" Decode.string)
+                (Decode.field "json" Decode.string)
                 (Decode.field "reason" Decode.string)
 
         decodeResult =
@@ -112,10 +120,10 @@ importData clientId data =
             (httpPost "/api/import" clientId requestBody decodeResult)
 
 
-view : Model -> Html AppMsg.Msg
-view model =
-    modalConfig model
-        |> Just
+view : Maybe Model -> Html AppMsg.Msg
+view maybeModel =
+    maybeModel
+        |> Maybe.map modalConfig
         |> Modal.view "import-modal"
 
 
@@ -136,15 +144,8 @@ modalConfig model =
             , title = text "Import cotos and connections"
             , content =
                 div []
-                    [ p [] [ text "Paste the content (JSON) of an exported file and click the IMPORT button." ]
-                    , div []
-                        [ textarea
-                            [ class "data"
-                            , value model.data
-                            , onInput (AppMsg.ImportModalMsg << DataInput)
-                            ]
-                            []
-                        ]
+                    [ p [] [ text "You are about to import the cotos/connections in the file you selected." ]
+                    , importFileInfoDiv model.importFile
                     , case model.requestStatus of
                         Rejected message ->
                             div [ class "error" ]
@@ -156,7 +157,7 @@ modalConfig model =
             , buttons =
                 [ button
                     [ class "button button-primary"
-                    , disabled (isBlank model.data || model.requestProcessing)
+                    , disabled (not model.importFile.valid || model.requestProcessing)
                     , onClick (AppMsg.ImportModalMsg ImportClick)
                     ]
                     [ if model.requestProcessing then
@@ -166,6 +167,40 @@ modalConfig model =
                     ]
                 ]
             }
+
+
+importFileInfoDiv : ImportFile -> Html AppMsg.Msg
+importFileInfoDiv importFile =
+    div [ class "import-file-info" ]
+        [ div [ class "file-name" ]
+            [ materialIcon "insert_drive_file" Nothing
+            , text importFile.fileName
+            ]
+        , div [ class "content" ]
+            [ div [ class "stats" ]
+                [ text "contains:"
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotos) ]
+                    , text "cotos"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotonomas) ]
+                    , text "cotonomas"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.connections) ]
+                    , text "connections"
+                    ]
+                ]
+            , div [ class "amishi author" ]
+                [ text "by:"
+                , img [ class "avatar", src importFile.amishiAvatarUrl ] []
+                , span [ class "name" ] [ text importFile.amishiDisplayName ]
+                , span [ class "note" ]
+                    [ text "(The ownership will be transferred to you.)" ]
+                ]
+            ]
+        ]
 
 
 importResultDiv : ImportResult -> Html AppMsg.Msg
@@ -204,9 +239,11 @@ importResultDiv { cotos, connections } =
 
 rejectInfoSpan : String -> Reject -> Html AppMsg.Msg
 rejectInfoSpan caption reject =
-    span
+    div
         [ class "reject" ]
-        [ span [ class "reject-caption" ] [ text caption ]
-        , span [ class "reject-reason" ] [ text reject.reason ]
-        , text ("(ID: " ++ reject.id ++ ")")
+        [ span [ class "head" ]
+            [ span [ class "caption" ] [ text caption ]
+            , span [ class "reason" ] [ text reject.reason ]
+            ]
+        , pre [ class "json" ] [ code [] [ text reject.json ] ]
         ]
