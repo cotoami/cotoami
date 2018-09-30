@@ -5,7 +5,7 @@ defmodule CotoamiWeb.AuthPlug do
 
   import Plug.Conn
   require Logger
-  alias Cotoami.AmishiService
+  alias Cotoami.{Amishi, AmishiService}
 
   @client_id_header "x-cotoami-client-id"
   @assign_key_clientid :client_id
@@ -50,8 +50,8 @@ defmodule CotoamiWeb.AuthPlug do
     assign(conn, @assign_key_amishi, amishi)
   end
 
-  def start_session(conn, amishi) do
-    conn |> put_session(@session_key_amishi_id, amishi.id)
+  def start_session(conn, %Amishi{id: amishi_id}) do
+    put_session(conn, @session_key_amishi_id, amishi_id)
   end
 
   def require_auth(conn, _opts) do

@@ -23,7 +23,6 @@ import Maybe
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
-import App.Types.Session
 import App.Submodels.Context exposing (Context)
 
 
@@ -196,7 +195,7 @@ post context isCotonoma content timeline =
                 | postId = Just postId
                 , content = content.content
                 , summary = content.summary
-                , amishi = Maybe.map App.Types.Session.toAmishi context.session
+                , amishi = Maybe.map (.amishi) context.session
                 , isCotonoma = isCotonoma
                 , postedIn = context.cotonoma
             }

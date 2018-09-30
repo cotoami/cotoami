@@ -4,7 +4,7 @@ defmodule Cotoami.Mixfile do
   def project do
     [
       app: :cotoami,
-      version: "0.17.0",
+      version: "0.18.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -51,7 +51,8 @@ defmodule Cotoami.Mixfile do
       {:bolt_sips, "~> 0.3"},
       {:uuid, "~> 1.1"},
       {:shorter_maps, "~> 2.2"},
-      {:logster, "~> 0.6"}
+      {:logster, "~> 0.6"},
+      {:oauth2, "~> 0.9"}
     ]
   end
 

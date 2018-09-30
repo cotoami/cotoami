@@ -58,7 +58,7 @@ generateClientId seed =
 isServerOwner : Context a -> Bool
 isServerOwner context =
     context.session
-        |> Maybe.map (\session -> session.owner)
+        |> Maybe.map (\session -> session.amishi.owner)
         |> Maybe.withDefault False
 
 

@@ -42,12 +42,11 @@ defmodule Cotoami.Coto do
     |> store_long_content()
   end
 
-  def changeset_to_import(struct, json, %Amishi{id: amishi_id}) do
-    data = Map.merge(json, %{
-      "posted_in_id" => json["posted_in"]["id"],
+  def changeset_to_import(struct, coto_json, %Amishi{id: amishi_id}) do
+    data = Map.merge(coto_json, %{
       "amishi_id" => amishi_id,
-      "inserted_at" => unixtime_to_datetime!(json["inserted_at"]),
-      "updated_at" => unixtime_to_datetime!(json["updated_at"])
+      "inserted_at" => unixtime_to_datetime!(coto_json["inserted_at"]),
+      "updated_at" => unixtime_to_datetime!(coto_json["updated_at"])
     })
     struct
     |> cast(data, [
@@ -87,14 +86,10 @@ defmodule Cotoami.Coto do
   end
 
   def for_amishi(query, amishi_id) do
-    from coto in query,
-      where: coto.amishi_id == ^amishi_id,
-      order_by: [desc: coto.inserted_at]
+    from coto in query, where: coto.amishi_id == ^amishi_id
   end
 
   def in_cotonoma(query, cotonoma_id) do
-    from coto in query,
-      where: coto.posted_in_id == ^cotonoma_id,
-      order_by: [desc: coto.inserted_at]
+    from coto in query, where: coto.posted_in_id == ^cotonoma_id
   end
 end

@@ -16,34 +16,31 @@ defmodule CotoamiWeb.CotoView do
   end
 
   def render("created.json", %{coto: coto}) do
-    coto
-    |> render_one(__MODULE__, "coto.json")
+    render_one(coto, __MODULE__, "coto.json")
   end
 
   def render("coto.json", %{coto: coto}) do
-    amishi =
-      case coto.amishi do
-        %Ecto.Association.NotLoaded{} -> nil
-        amishi -> render_one(amishi, AmishiView, "amishi.json")
-      end
-    posted_in =
-      case coto.posted_in do
-        %Ecto.Association.NotLoaded{} -> nil
-        posted_in -> render_one(posted_in, CotonomaView, "cotonoma.json")
-      end
-    cotonoma =
-      case coto.cotonoma do
-        %Ecto.Association.NotLoaded{} -> nil
-        cotonoma -> render_one(cotonoma, CotonomaView, "cotonoma.json")
-      end
     %{
       id: coto.id,
       content: Coto.get_content(coto),
       summary: coto.summary,
-      amishi: amishi,
-      posted_in: posted_in,
+      amishi: render_relation(coto.amishi, AmishiView, "amishi.json"),
+      posted_in: render_relation(coto.posted_in, CotonomaView, "cotonoma.json"),
       as_cotonoma: coto.as_cotonoma,
-      cotonoma: cotonoma,
+      cotonoma: render_relation(coto.cotonoma, CotonomaView, "cotonoma.json"),
+      inserted_at: coto.inserted_at |> to_unixtime(),
+      updated_at: coto.updated_at |> to_unixtime(),
+    }
+  end
+
+  def render("export.json", %{coto: coto}) do
+    %{
+      id: coto.id,
+      content: Coto.get_content(coto),
+      summary: coto.summary,
+      posted_in_id: coto.posted_in_id,
+      as_cotonoma: coto.as_cotonoma,
+      cotonoma: render_relation(coto.cotonoma, CotonomaView, "export.json"),
       inserted_at: coto.inserted_at |> to_unixtime(),
       updated_at: coto.updated_at |> to_unixtime(),
     }

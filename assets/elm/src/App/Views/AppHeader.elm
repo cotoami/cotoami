@@ -54,7 +54,7 @@ view model =
                     (\session ->
                         [ quickSearchForm model.searchResults
                         , a [ title "Profile", onClick OpenProfileModal ]
-                            [ img [ class "avatar", src session.avatarUrl ] [] ]
+                            [ img [ class "avatar", src session.amishi.avatarUrl ] [] ]
                         ]
                     )
                 |> Maybe.withDefault

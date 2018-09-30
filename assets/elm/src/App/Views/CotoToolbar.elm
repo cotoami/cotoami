@@ -107,22 +107,22 @@ subCotoTools context session graph inbound elementId coto =
 
 isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
 isDisconnectable session parent connection child =
-    session.owner
-        || (session.id == connection.amishiId)
-        || ((Just session.id) == Maybe.map (\amishi -> amishi.id) parent.amishi)
+    session.amishi.owner
+        || (session.amishi.id == connection.amishiId)
+        || ((Just session.amishi.id) == Maybe.map (.id) parent.amishi)
 
 
 isReorderble : Context context -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
     if inbound.siblings < 2 then
         False
-    else if session.owner then
+    else if session.amishi.owner then
         True
     else
         inbound.parent
             |> Maybe.map
                 (\parent ->
-                    Just session.id
+                    Just session.amishi.id
                         == (parent.amishi
                                 |> Maybe.map (\amishi -> amishi.id)
                            )
@@ -131,7 +131,7 @@ isReorderble context session inbound child =
                 (context.cotonoma
                     |> Maybe.map
                         (\cotonoma ->
-                            Just session.id
+                            Just session.amishi.id
                                 == (cotonoma.owner
                                         |> Maybe.map (\owner -> owner.id)
                                    )

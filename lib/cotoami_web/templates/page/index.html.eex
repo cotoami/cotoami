@@ -1,1 +1,2 @@
 <div id="elm-container"></div>
+<input type="file" id="import-file-input" accept="application/json" style="display: none;">

@@ -46,21 +46,8 @@ import App.Views.Flow
 import App.Modals.ConnectModal exposing (WithConnectModal)
 
 
-type alias Model =
-    { mode : Mode
-    , source : Maybe Coto
-    , summary : String
-    , content : String
-    , shareCotonoma : Bool
-    , preview : Bool
-    , requestProcessing : Bool
-    , requestStatus : RequestStatus
-    , editingToCotonomatize : Bool
-    }
-
-
 type Mode
-    = NewCoto
+    = NewCoto (Maybe Coto)
     | NewCotonoma
     | Edit Coto
 
@@ -71,10 +58,21 @@ type RequestStatus
     | Rejected
 
 
+type alias Model =
+    { mode : Mode
+    , summary : String
+    , content : String
+    , shareCotonoma : Bool
+    , preview : Bool
+    , requestProcessing : Bool
+    , requestStatus : RequestStatus
+    , editingToCotonomatize : Bool
+    }
+
+
 defaultModel : Model
 defaultModel =
-    { mode = NewCoto
-    , source = Nothing
+    { mode = NewCoto Nothing
     , summary = ""
     , content = ""
     , shareCotonoma = False
@@ -88,8 +86,7 @@ defaultModel =
 modelForNew : Context context -> Maybe Coto -> Model
 modelForNew context source =
     { defaultModel
-        | mode = NewCoto
-        , source = source
+        | mode = NewCoto source
         , shareCotonoma =
             context.cotonoma
                 |> Maybe.map (\cotonoma -> cotonoma.shared)
@@ -238,7 +235,7 @@ update context msg ({ editorModal, timeline } as model) =
                     )
 
         SetNewCotoMode ->
-            { model | editorModal = { editorModal | mode = NewCoto } }
+            { model | editorModal = { editorModal | mode = NewCoto Nothing } }
                 |> withoutCmd
 
         SetNewCotonomaMode ->
@@ -252,10 +249,15 @@ post context ({ editorModal } as model) =
         content =
             CotoContent editorModal.content (getSummary editorModal)
     in
-        editorModal.source
-            |> Maybe.map (\source -> postSubcoto context source content model)
-            |> Maybe.withDefault
-                (App.Views.Flow.post context content model)
+        case editorModal.mode of
+            NewCoto (Just source) ->
+                postSubcoto context source content model
+
+            NewCoto Nothing ->
+                App.Views.Flow.post context content model
+
+            _ ->
+                ( model, Cmd.none )
 
 
 postSubcoto :
@@ -397,7 +399,7 @@ view context model =
             else
                 cotoEditorConfig context model
 
-        NewCoto ->
+        NewCoto _ ->
             cotoEditorConfig context model
 
         NewCotonoma ->
@@ -579,8 +581,8 @@ cotonomaEditor context model =
 newEditorTitle : Context context -> Model -> Html AppMsg.Msg
 newEditorTitle context model =
     (case model.mode of
-        NewCoto ->
-            if isJust model.source then
+        NewCoto source ->
+            if isJust source then
                 [ button
                     [ class "sub-coto", disabled True ]
                     [ text (context.i18nText I18nKeys.Coto) ]
@@ -635,27 +637,28 @@ targetCotonomaDiv context model =
 
 sourceCotoDiv : Context context -> Model -> Html AppMsg.Msg
 sourceCotoDiv context model =
-    model.source
-        |> Maybe.map
-            (\source ->
-                div [ class "source-coto" ]
-                    [ App.Views.Coto.bodyDiv
-                        context
-                        "source-coto"
-                        App.Markdown.markdown
-                        source
-                    , div [ class "arrow" ]
-                        [ materialIcon "arrow_downward" Nothing ]
-                    ]
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+    case model.mode of
+        NewCoto (Just source) ->
+            div [ class "source-coto" ]
+                [ App.Views.Coto.bodyDiv
+                    context
+                    "source-coto"
+                    App.Markdown.markdown
+                    source
+                , div [ class "arrow" ]
+                    [ materialIcon "arrow_downward" Nothing ]
+                ]
+
+        _ ->
+            Utils.HtmlUtil.none
 
 
 buttonsForNewCoto : Context context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
-    [ if List.isEmpty context.selection || isJust model.source then
-        Utils.HtmlUtil.none
-      else
+    [ if
+        App.Submodels.Context.anySelection context
+            && (model.mode == (NewCoto Nothing))
+      then
         button
             [ class "button connect"
             , disabled (isBlank model.content || model.requestProcessing)
@@ -669,6 +672,8 @@ buttonsForNewCoto context model =
             [ faIcon "link" Nothing
             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
             ]
+      else
+        Utils.HtmlUtil.none
     , button
         [ class "button button-primary"
         , disabled (isBlank model.content || model.requestProcessing)

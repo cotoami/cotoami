@@ -214,7 +214,7 @@ unpinButtonDiv context connection cotoId =
     let
         maybeAmishiId =
             context.session
-                |> Maybe.map (\session -> session.id)
+                |> Maybe.map (\session -> session.amishi.id)
 
         maybeCotonomaOwnerId =
             context.cotonoma

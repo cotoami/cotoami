@@ -80,7 +80,7 @@ postDivAttrs context graph elementId post =
 isAuthor : Context a -> Post -> Bool
 isAuthor context post =
     (Maybe.map2
-        (\session author -> author.id == session.id)
+        (\session author -> author.id == session.amishi.id)
         context.session
         post.amishi
     )
@@ -98,7 +98,7 @@ authorDiv : Context a -> Post -> Html Msg
 authorDiv context post =
     (Maybe.map2
         (\session author ->
-            if author.id /= session.id then
+            if author.id /= session.amishi.id then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
@@ -116,7 +116,7 @@ authorIcon : Context a -> Post -> Html Msg
 authorIcon context post =
     (Maybe.map2
         (\session author ->
-            if author.id /= session.id then
+            if author.id /= session.amishi.id then
                 img
                     [ class "author-icon-in-tile"
                     , src author.avatarUrl

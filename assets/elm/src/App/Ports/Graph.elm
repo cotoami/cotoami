@@ -29,6 +29,7 @@ port nodeClicked : (String -> msg) -> Sub msg
 type alias Node =
     { id : String
     , name : String
+    , pinned : Bool
     , asCotonoma : Bool
     , imageUrl : Maybe String
     }
@@ -40,36 +41,42 @@ type alias Edge =
     }
 
 
-cotoToNode : Coto -> Node
-cotoToNode coto =
+cotoToNode : Graph -> Coto -> Node
+cotoToNode graph coto =
     { id = coto.id
     , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
+    , pinned = App.Types.Graph.pinned coto.id graph
     , asCotonoma = isJust coto.asCotonoma
-    , imageUrl = coto.amishi |> Maybe.map (\amishi -> amishi.avatarUrl)
+    , imageUrl = Maybe.map (.avatarUrl) coto.amishi
     }
 
 
-renderCotoGraph : Maybe Cotonoma -> Graph -> Cmd msg
-renderCotoGraph maybeCotonoma graph =
-    doRenderCotoGraph
-        (maybeCotonoma
-            |> Maybe.map
-                (\cotonoma ->
-                    { id = cotonoma.cotoId
-                    , name = cotonoma.name
-                    , asCotonoma = True
-                    , imageUrl =
-                        cotonoma.owner
-                            |> Maybe.map (\owner -> owner.avatarUrl)
-                    }
-                )
-            |> Maybe.withDefault
-                { id = "home"
-                , name = ""
-                , asCotonoma = False
-                , imageUrl = Nothing
+currentCotonomaToNode : Graph -> Maybe Cotonoma -> Node
+currentCotonomaToNode graph currentCotonoma =
+    (currentCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                { id = cotonoma.cotoId
+                , name = cotonoma.name
+                , pinned = False
+                , asCotonoma = True
+                , imageUrl = Maybe.map (.avatarUrl) cotonoma.owner
                 }
-        )
+            )
+        |> Maybe.withDefault
+            { id = "home"
+            , name = ""
+            , pinned = False
+            , asCotonoma = False
+            , imageUrl = Nothing
+            }
+    )
+
+
+renderCotoGraph : Maybe Cotonoma -> Graph -> Cmd msg
+renderCotoGraph currentCotonoma graph =
+    doRenderCotoGraph
+        (currentCotonomaToNode graph currentCotonoma)
         (App.Types.Graph.toTopicGraph graph)
 
 
@@ -79,7 +86,7 @@ doRenderCotoGraph root graph =
         nodes =
             graph.cotos
                 |> Dict.values
-                |> List.map cotoToNode
+                |> List.map (cotoToNode graph)
 
         rootEdges =
             graph.rootConnections

@@ -1,10 +1,10 @@
 module App.Modals.SigninModal
     exposing
         ( Model
+        , defaultModel
         , initModel
         , update
         , view
-        , setSignupEnabled
         )
 
 import Html exposing (..)
@@ -13,16 +13,18 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Utils.StringUtil exposing (validateEmail)
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
+import Utils.UpdateUtil exposing (..)
+import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal as Modal
 import App.I18n.Keys as I18nKeys
+import App.Types.Session exposing (AuthSettings)
 import App.Submodels.Context exposing (Context)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
 
 
 type alias Model =
-    { signupEnabled : Bool
+    { authSettings : AuthSettings
     , email : String
     , requestProcessing : Bool
     , requestStatus : RequestStatus
@@ -35,18 +37,22 @@ type RequestStatus
     | Rejected
 
 
-initModel : Bool -> Model
-initModel signupEnabled =
-    { signupEnabled = signupEnabled
+defaultModel : Model
+defaultModel =
+    { authSettings = App.Types.Session.defaultAuthSettings
     , email = ""
     , requestProcessing = False
     , requestStatus = None
     }
 
 
-setSignupEnabled : Bool -> Model -> Model
-setSignupEnabled signupEnabled model =
-    { model | signupEnabled = signupEnabled }
+initModel : AuthSettings -> Model
+initModel authSettings =
+    { authSettings = authSettings
+    , email = ""
+    , requestProcessing = False
+    , requestStatus = None
+    }
 
 
 update : SigninModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -104,40 +110,19 @@ modalConfig context model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
-    else if model.signupEnabled then
-        modalConfigWithSignupEnabled context model
     else
-        modalConfigOnlyForSignin context model
-
-
-modalConfigWithSignupEnabled : Context context -> Model -> Modal.Config AppMsg.Msg
-modalConfigWithSignupEnabled context model =
-    { closeMessage = CloseModal
-    , title = welcomeTitle context
-    , content =
-        div []
-            [ p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
-            , signinForm context model
-            , p [ class "notice" ]
-                [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
-            ]
-    , buttons =
-        [ sendLinkButton context model ]
-    }
-
-
-modalConfigOnlyForSignin : Context context -> Model -> Modal.Config AppMsg.Msg
-modalConfigOnlyForSignin context model =
-    { closeMessage = CloseModal
-    , title = welcomeTitle context
-    , content =
-        div []
-            [ p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
-            , signinForm context model
-            ]
-    , buttons =
-        [ sendLinkButton context model ]
-    }
+        { closeMessage = CloseModal
+        , title = welcomeTitle context
+        , content =
+            div []
+                [ p [ class "notice" ]
+                    [ text "This is a demo server. The database will be cleared anytime it reaches the capacity limit." ]
+                , oauthSigninDiv context model
+                , emailSigninDiv context model
+                ]
+        , buttons =
+            [ sendLinkButton context model ]
+        }
 
 
 welcomeTitle : Context context -> Html AppMsg.Msg
@@ -145,6 +130,54 @@ welcomeTitle context =
     span []
         [ img [ class "logo", src "/images/logo/logomark.svg" ] []
         , text (context.i18nText I18nKeys.SigninModal_WelcomeTitle)
+        ]
+
+
+oauthSigninDiv : Context context -> Model -> Html AppMsg.Msg
+oauthSigninDiv context model =
+    if List.isEmpty model.authSettings.oauthProviders then
+        Utils.HtmlUtil.none
+    else
+        div [ class "oauth-signin" ]
+            [ div [ class "oauth-buttons" ]
+                (model.authSettings.oauthProviders
+                    |> List.map oauthButton
+                )
+            , hr [] []
+            ]
+
+
+oauthButton : String -> Html AppMsg.Msg
+oauthButton provider =
+    case provider of
+        "google" ->
+            div [ class "oauth-button-container" ]
+                [ a [ class "button", href "/auth/google" ]
+                    [ faIcon "google" Nothing
+                    , text "Sign in with Google"
+                    ]
+                ]
+
+        "github" ->
+            div [ class "oauth-button-container" ]
+                [ a [ class "button", href "/auth/github" ]
+                    [ faIcon "github" Nothing
+                    , text "Sign in with GitHub"
+                    ]
+                ]
+
+        _ ->
+            Utils.HtmlUtil.none
+
+
+emailSigninDiv : Context context -> Model -> Html AppMsg.Msg
+emailSigninDiv context model =
+    div [ class "email-signin" ]
+        [ if model.authSettings.signupEnabled then
+            p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
+          else
+            p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
+        , signinForm context model
         ]
 
 

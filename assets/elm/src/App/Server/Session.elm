@@ -1,22 +1,24 @@
-module App.Server.Session exposing (..)
+module App.Server.Session
+    exposing
+        ( decodeSession
+        , fetchSession
+        , decodeAuthSettingsString
+        )
 
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (bool, string, list)
 import App.Messages exposing (Msg(..))
-import App.Types.Session exposing (Session)
+import App.Server.Amishi
+import App.Types.Session exposing (Session, AuthSettings)
 
 
 decodeSession : Decode.Decoder Session
 decodeSession =
-    Decode.map8 Session
-        (Decode.field "token" Decode.string)
-        (Decode.field "websocket_url" Decode.string)
-        (Decode.field "id" Decode.string)
-        (Decode.field "email" Decode.string)
-        (Decode.field "owner" Decode.bool)
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "display_name" Decode.string)
-        (Decode.field "lang" Decode.string)
+    Decode.map4 Session
+        (Decode.field "amishi" App.Server.Amishi.decodeAmishi)
+        (Decode.field "token" string)
+        (Decode.field "websocket_url" string)
+        (Decode.field "lang" string)
 
 
 fetchSession : Cmd Msg
@@ -24,32 +26,18 @@ fetchSession =
     Http.send SessionFetched (Http.get "/api/public/session" decodeSession)
 
 
-type alias SessionNotFoundBody =
-    { signupEnabled : Bool
-    }
+decodeAuthSettings : Decode.Decoder AuthSettings
+decodeAuthSettings =
+    Decode.map2 AuthSettings
+        (Decode.field "signup_enabled" bool)
+        (Decode.field "oauth_providers" (list string))
 
 
-defaultSessionNotFoundBody : SessionNotFoundBody
-defaultSessionNotFoundBody =
-    { signupEnabled = False
-    }
+decodeAuthSettingsString : String -> AuthSettings
+decodeAuthSettingsString string =
+    case Decode.decodeString decodeAuthSettings string of
+        Ok authSettings ->
+            authSettings
 
-
-decodeSessionNotFoundBody : Decode.Decoder SessionNotFoundBody
-decodeSessionNotFoundBody =
-    Decode.map SessionNotFoundBody
-        (Decode.field "signup_enabled" Decode.bool)
-
-
-decodeSessionNotFoundBodyString : String -> SessionNotFoundBody
-decodeSessionNotFoundBodyString body =
-    let
-        decodeResult =
-            Decode.decodeString decodeSessionNotFoundBody body
-    in
-        case decodeResult of
-            Ok body ->
-                body
-
-            Err _ ->
-                defaultSessionNotFoundBody
+        Err _ ->
+            App.Types.Session.defaultAuthSettings

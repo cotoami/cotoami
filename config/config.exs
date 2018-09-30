@@ -22,14 +22,35 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# EmailAuth
+config :cotoami, CotoamiWeb.EmailAuthController,
+  signup_enabled:
+  (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
+  |> String.to_existing_atom()
+
+# OAuth2
+config :oauth2, debug: true
+
+config :cotoami, CotoamiWeb.OAuth2Controller,
+  providers:
+    (System.get_env("COTOAMI_OAUTH2_PROVIDERS") || "")
+    |> String.split(",", trim: true)
+
+config :cotoami, CotoamiWeb.OAuth2.Google,
+  client_id: System.get_env("OAUTH_GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("OAUTH_GOOGLE_CLIENT_SECRET"),
+  redirect_uri: System.get_env("OAUTH_GOOGLE_REDIRECT_URI")
+
+config :cotoami, CotoamiWeb.OAuth2.GitHub,
+  client_id: System.get_env("OAUTH_GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("OAUTH_GITHUB_CLIENT_SECRET"),
+  redirect_uri: System.get_env("OAUTH_GITHUB_REDIRECT_URI")
+
 # Amishi-related
 config :cotoami, Cotoami.AmishiService,
   owner_emails:
     (System.get_env("COTOAMI_OWNER_EMAILS") || "")
-    |> String.split(",", trim: true),
-  signup_enabled:
-    (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
-    |> String.to_existing_atom()
+    |> String.split(",", trim: true)
 
 # Redis
 case System.get_env("REDIS_URL") do

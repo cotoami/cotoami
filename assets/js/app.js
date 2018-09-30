@@ -13,6 +13,9 @@
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
 import map from 'lodash/map'
+import isArray from 'lodash/isArray'
+import sumBy from 'lodash/sumBy'
+import compact from 'lodash/compact'
 import Cytoscape from "js/cytoscape"
 
 // Set up our Elm App
@@ -29,7 +32,11 @@ elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
     map(nodes.concat(edges), element => { 
       return {
         data: element,
-        classes: element.asCotonoma ? 'cotonoma' : ''
+        classes: 
+          compact([
+            element.asCotonoma ? 'cotonoma' : null,
+            element.pinned ? 'pinned' : null
+          ]).join(' ')
       } 
     }),
     (nodeId) => {
@@ -90,5 +97,65 @@ elmApp.ports.clearStorage.subscribe((prefix) => {
   else {
     localStorage.clear()
   }
+})
+
+const importFileInput = document.getElementById("import-file-input")
+importFileInput.addEventListener("change", () => {
+  const file = importFileInput.files[0]
+  const reader = new FileReader()
+  reader.onload = ((event) => {
+    const content = event.target.result
+    const result = {
+      fileName: file.name,
+      content: content,
+      valid: false,
+      error: "",
+      amishiAvatarUrl: "",
+      amishiDisplayName: "",
+      cotos: 0,
+      cotonomas: 0,
+      connections: 0
+    }
+    try {
+      const object = JSON.parse(content)
+
+      // amishi
+      if (object.amishi) {
+        result.amishiAvatarUrl = object.amishi.avatar_url
+        result.amishiDisplayName = object.amishi.display_name
+      }
+      else {
+        throw 'Key "amishi" not found in JSON'
+      }
+
+      // cotos & cotonomas
+      if (isArray(object.cotos)) {
+        result.cotos = object.cotos.length
+        result.cotonomas = sumBy(object.cotos, coto => (coto.as_cotonoma ? 1 : 0))
+      }
+      else {
+        throw 'Key "cotos" not found in JSON'
+      }
+
+      // connections
+      if (isArray(object.connections)) {
+        result.connections = object.connections.length
+      }
+      else {
+        throw 'Key "connections" not found in JSON'
+      }
+      
+      result.valid = true
+    }
+    catch (e) {
+      result.error = e.toString()
+    }
+    elmApp.ports.importFileContentRead.send(result)
+  })
+  reader.readAsText(file)
+})
+
+elmApp.ports.selectImportFile.subscribe(() => {
+  importFileInput.click()
 })
 
