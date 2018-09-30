@@ -105,7 +105,7 @@ You can launch Cotoami as a Docker container with the following configuration:
     * If sign-up is disabled, only owners and invited users can sign-in except for OAuth2 sign-in.
 * OAuth2 sign-in
     * `COTOAMI_OAUTH2_PROVIDERS`
-        * Specify OAuth2 providers to be enabled
+        * Specify OAuth2 providers to be enabled (comma separated).
         * Supported providers: `google`, `github`
     * Google
         * `OAUTH_GOOGLE_CLIENT_ID`
