@@ -51,7 +51,8 @@ defmodule Cotoami.Mixfile do
       {:bolt_sips, "~> 0.3"},
       {:uuid, "~> 1.1"},
       {:shorter_maps, "~> 2.2"},
-      {:logster, "~> 0.6"}
+      {:logster, "~> 0.6"},
+      {:oauth2, "~> 0.9"}
     ]
   end
 

@@ -39,34 +39,4 @@ defmodule Cotoami.RedisService do
     Cotoami.Redix.command!(["DEL", signin_key(token)])
     email
   end
-
-  #
-  # Gravatar profile cache
-  #
-
-  @gravatar_key_expire_seconds 60 * 60
-
-  def gravatar_key(email), do: "gravatar:" <> email
-
-  def get_gravatar_profile(email) do
-    Cotoami.Redix.command!(["GET", gravatar_key(email)])
-  end
-
-  def get_gravatar_profiles([]), do: %{}
-  def get_gravatar_profiles(emails) when is_list(emails) do
-    gravatar_keys = Enum.map(emails, &gravatar_key(&1))
-    profiles = Cotoami.Redix.command!(["MGET" | gravatar_keys])
-    emails
-    |> Enum.zip(profiles)
-    |> Enum.into(%{})
-  end
-
-  def put_gravatar_profile(email, profile_json) do
-    Cotoami.Redix.command!([
-      "SETEX",
-      gravatar_key(email),
-      @gravatar_key_expire_seconds,
-      profile_json
-    ])
-  end
 end

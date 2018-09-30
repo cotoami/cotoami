@@ -114,8 +114,7 @@ defmodule Cotoami.CotoService do
       case coto.amishi do
         %Ecto.Association.NotLoaded{} ->
           %{coto | amishi: AmishiService.get(coto.amishi_id)}
-        amishi ->
-          %{coto | amishi: AmishiService.append_gravatar_profile(amishi)}
+        _amishi -> coto
       end
     end
   end

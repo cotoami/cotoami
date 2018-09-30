@@ -5,9 +5,10 @@ defmodule CotoamiWeb.AmishiView do
     %{
       id: amishi.id,
       email: amishi.email,
+      auth_provider: amishi.auth_provider,
+      avatar_url: amishi.avatar_url || "",
+      display_name: amishi.name || "",
       owner: Map.get(amishi, :owner, false),
-      avatar_url: Map.get(amishi, :avatar_url, ""),
-      display_name: Map.get(amishi, :display_name, ""),
       inserted_at: amishi.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: amishi.updated_at |> DateTime.to_unix(:millisecond)
     }
@@ -17,9 +18,9 @@ defmodule CotoamiWeb.AmishiView do
     %{
       id: amishi.id,
       email: amishi.email,
+      avatar_url: amishi.avatar_url || "",
+      display_name: amishi.name || "",
       owner: Map.get(amishi, :owner, false),
-      avatar_url: Map.get(amishi, :avatar_url, ""),
-      display_name: Map.get(amishi, :display_name, ""),
       inserted_at: amishi.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: amishi.updated_at |> DateTime.to_unix(:millisecond)
     }

@@ -166,7 +166,7 @@ connect maybeSession direction cotos target localCotos =
                 |> Maybe.map
                     (\session ->
                         App.Types.Graph.batchConnect
-                            session.id
+                            session.amishi.id
                             direction
                             cotos
                             target

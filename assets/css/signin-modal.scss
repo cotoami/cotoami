@@ -12,4 +12,27 @@
   input.email {
     margin-bottom: 1rem;
   }
+
+  hr.modal-buttons-seperator {
+    display: none;
+  }
+
+  div.oauth-signin {
+    padding-top: 10px;
+
+    div.oauth-button-container {
+      text-align: center;
+
+      i.fa {
+        margin-right: 6px;
+        font-size: 1.8rem;
+        vertical-align: -2px;
+      }
+    }
+
+    hr {
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+  }
 }

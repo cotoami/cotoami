@@ -1,12 +1,12 @@
 defmodule CotoamiWeb.DatabaseControllerTest do
   use CotoamiWeb.ConnCase
-  alias Cotoami.{AmishiService, Neo4jService}
+  alias Cotoami.{EmailUser, AmishiService, Neo4jService}
   alias CotoamiWeb.AmishiView
 
   setup do
     Neo4jService.clear_database(Bolt.Sips.conn)
     owner =
-      AmishiService.create!("owner@cotoa.me")
+      AmishiService.insert_or_update!(%EmailUser{email: "owner@cotoa.me"})
       |> Map.put(:owner, true)
     conn =
       build_conn()

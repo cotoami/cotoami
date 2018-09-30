@@ -8,10 +8,7 @@ defmodule Cotoami.CotoGraphService do
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
   alias Bolt.Sips.Types.Node
-  alias Cotoami.{
-    Repo, Coto, Amishi, Cotonoma, CotoGraph,
-    Neo4jService, AmishiService
-  }
+  alias Cotoami.{Repo, Coto, Amishi, Cotonoma, CotoGraph, Neo4jService}
   alias CotoamiWeb.{AmishiView, CotonomaView}
 
   @label_amishi "Amishi"
@@ -159,7 +156,6 @@ defmodule Cotoami.CotoGraphService do
     |> Enum.filter(&(&1))
     |> Enum.uniq()
     |> (fn(ids) -> Repo.all(from a in Amishi, where: a.id in ^ids) end).()
-    |> Enum.map(&(AmishiService.append_gravatar_profile(&1)))
     |> Enum.map(&({&1.id, View.render_one(&1, AmishiView, "amishi.json")}))
     |> Map.new()
   end
