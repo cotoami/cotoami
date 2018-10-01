@@ -217,7 +217,7 @@ cotoDiv context graph beingDeselected coto =
                         Nothing
                     ]
                 , App.Views.Coto.headerDiv context graph Nothing elementId coto
-                , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown coto
+                , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
                 , App.Views.Coto.subCotosButtonDiv graph Nothing (Just coto.id)
                 ]
             ]

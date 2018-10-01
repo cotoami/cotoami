@@ -7,7 +7,7 @@ import Navigation exposing (Location)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph)
+import App.Types.Graph exposing (Graph)
 import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
@@ -79,7 +79,7 @@ type Msg
     | Connected (Result Http.Error (List String))
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
-    | ToggleReorderMode ElementId
+    | SetReorderMode (Maybe ElementId)
       --
       -- Pushed
       --

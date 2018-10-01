@@ -10,8 +10,9 @@ import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotoSelection)
-import App.Types.Graph exposing (Graph, Connection, InboundConnection)
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotoSelection)
+import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
+import App.Types.Graph exposing (Graph)
 import App.Types.Traversal exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Traversals
@@ -209,7 +210,7 @@ stepCotoDiv context graph connections step coto =
             ]
             [ div [ class "coto-inner" ]
                 [ App.Views.Coto.headerDiv context graph Nothing elementId coto
-                , App.Views.Coto.bodyDivByCoto context elementId coto
+                , App.Views.Coto.bodyDivByCoto context Nothing elementId coto
                 , div [ class "main-sub-border" ] []
                 , connectionsDiv
                     context
@@ -242,8 +243,8 @@ stepDiv context graph step =
                 )
 
 
-connectionsDiv : Context a -> Graph -> TraversalStep -> String -> Coto -> List Connection -> Html AppMsg.Msg
-connectionsDiv context graph step elementIdPrefix parentCoto connections =
+connectionsDiv : Context a -> Graph -> TraversalStep -> ElementId -> Coto -> List Connection -> Html AppMsg.Msg
+connectionsDiv context graph step parentElementId parentCoto connections =
     connections
         |> List.reverse
         |> List.indexedMap
@@ -265,12 +266,16 @@ connectionsDiv context graph step elementIdPrefix parentCoto connections =
                                     context
                                     graph
                                     step
-                                    elementIdPrefix
+                                    parentElementId
                                     (InboundConnection
                                         (Just parentCoto)
+                                        (Just parentElementId)
                                         connection
                                         (List.length connections)
                                         connIndex
+                                        (context.reordering
+                                            == Just (SubCotos parentElementId)
+                                        )
                                     )
                                     coto
                                 ]
@@ -282,11 +287,11 @@ connectionsDiv context graph step elementIdPrefix parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context a -> Graph -> TraversalStep -> String -> InboundConnection -> Coto -> Html AppMsg.Msg
-subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
+subCotoDiv : Context a -> Graph -> TraversalStep -> ElementId -> InboundConnection -> Coto -> Html AppMsg.Msg
+subCotoDiv context graph traversalStep parentElementId inbound coto =
     let
         elementId =
-            elementIdPrefix ++ "-" ++ coto.id
+            parentElementId ++ "-" ++ coto.id
 
         maybeParentId =
             inbound.parent |> Maybe.map (\parent -> parent.id)
@@ -302,7 +307,7 @@ subCotoDiv context graph traversalStep elementIdPrefix inbound coto =
                 [ App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
                 , App.Views.Coto.parentsDiv graph maybeParentId coto.id
                 , div [ class "sub-coto-body" ]
-                    [ App.Views.Coto.bodyDivByCoto context elementId coto
+                    [ App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
                     , traverseButtonDiv graph traversalStep coto
                     ]
                 ]

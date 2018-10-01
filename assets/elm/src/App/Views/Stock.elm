@@ -23,7 +23,8 @@ import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
-import App.Types.Graph exposing (Graph, Connection, InboundConnection)
+import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
+import App.Types.Graph exposing (Graph)
 import App.Messages as AppMsg exposing (..)
 import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
 import App.Submodels.Context exposing (Context)
@@ -153,9 +154,11 @@ pinnedCotos context graph =
                     graph
                     (InboundConnection
                         Nothing
+                        Nothing
                         connection
                         (List.length graph.rootConnections)
                         index
+                        (context.reordering == (Just PinnedCotos))
                     )
             )
         |> Html.Keyed.node "div" [ class "root-connections" ]
@@ -174,7 +177,7 @@ connectionDiv context graph inbound =
                 )
             )
         |> Maybe.withDefault
-            ( inbound.connection.key, div [] [] )
+            ( inbound.connection.key, Utils.HtmlUtil.none )
 
 
 cotoDiv : Context a -> Graph -> InboundConnection -> Coto -> Html AppMsg.Msg
@@ -203,8 +206,11 @@ cotoDiv context graph inbound coto =
                 [ unpinButtonDiv context inbound.connection coto.id
                 , App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
                 , App.Views.Coto.parentsDiv graph cotonomaCotoId coto.id
-                , App.Views.Coto.bodyDivByCoto context elementId coto
-                , App.Views.Coto.subCotosDiv context graph elementId coto
+                , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
+                , if inbound.reordering then
+                    Utils.HtmlUtil.none
+                  else
+                    App.Views.Coto.subCotosDiv context graph elementId coto
                 ]
             ]
 

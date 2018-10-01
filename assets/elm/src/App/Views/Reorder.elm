@@ -1,7 +1,7 @@
 module App.Views.Reorder
     exposing
-        ( Reordering(..)
-        , update
+        ( update
+        , maybeReorderTools
         , reorderTools
         )
 
@@ -13,15 +13,11 @@ import Utils.HtmlUtil exposing (materialIcon)
 import App.Messages as AppMsg
 import App.Views.ReorderMsg as ReorderMsg exposing (Msg(..))
 import App.Types.Coto exposing (ElementId, CotoId)
+import App.Types.Connection exposing (InboundConnection)
+import App.Types.Graph
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Types.Graph exposing (InboundConnection)
 import App.Server.Graph
-
-
-type Reordering
-    = PinnedCotos
-    | SubCotos ElementId
 
 
 type alias UpdateModel model =
@@ -70,6 +66,20 @@ saveOrder context maybeParentId model =
                 maybeParentId
             )
         |> Maybe.withDefault Cmd.none
+
+
+maybeReorderTools : Context a -> Maybe InboundConnection -> ElementId -> Maybe (Html AppMsg.Msg)
+maybeReorderTools context maybeInbound elementId =
+    maybeInbound
+        |> Maybe.map
+            (\inbound ->
+                if inbound.reordering then
+                    Just (reorderTools context inbound elementId)
+                else
+                    Nothing
+            )
+        |> Maybe.withDefault
+            Nothing
 
 
 reorderTools : Context a -> InboundConnection -> ElementId -> Html AppMsg.Msg

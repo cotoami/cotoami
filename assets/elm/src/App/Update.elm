@@ -14,7 +14,8 @@ import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Graph exposing (Direction(..))
+import App.Types.Connection exposing (Direction(..), Reordering(..))
+import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -447,9 +448,12 @@ update msg model =
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
 
-        ToggleReorderMode elementId ->
-            model
-                |> App.Submodels.Context.toggleReorderMode elementId
+        SetReorderMode (Just parentElementId) ->
+            { model | reordering = Just (SubCotos parentElementId) }
+                |> withoutCmd
+
+        SetReorderMode Nothing ->
+            { model | reordering = Just PinnedCotos }
                 |> withoutCmd
 
         --

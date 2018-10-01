@@ -84,7 +84,7 @@ postDiv context graph post =
                     Utils.HtmlUtil.none
                   else
                     App.Views.Post.authorDiv context post
-                , App.Views.Coto.bodyDiv context elementId App.Markdown.markdown post
+                , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown post
                 , footerDiv context post
                 , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
                 ]
