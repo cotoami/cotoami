@@ -102,13 +102,6 @@ update msg model =
                         NotFoundRoute ->
                             model |> withoutCmd
 
-        NavigationToggle ->
-            { model
-                | navigationToggled = True
-                , navigationOpen = (not model.navigationOpen)
-            }
-                |> withoutCmd
-
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
 

@@ -6,3 +6,4 @@ type Msg
     | OpenProfileModal
     | ClearQuickSearchInput
     | QuickSearchInput String
+    | NavigationToggle

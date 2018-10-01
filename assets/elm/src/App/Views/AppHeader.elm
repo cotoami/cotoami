@@ -14,7 +14,6 @@ import App.Messages as AppMsg
     exposing
         ( Msg
             ( MoveToHome
-            , NavigationToggle
             , SearchInputFocusChanged
             , Search
             )
@@ -33,6 +32,8 @@ type alias UpdateModel model =
         { model
             | signinModal : App.Modals.SigninModal.Model
             , searchResults : SearchResults
+            , navigationToggled : Bool
+            , navigationOpen : Bool
         }
 
 
@@ -63,6 +64,13 @@ update context msg model =
                 |> withCmdIf
                     (\_ -> Utils.StringUtil.isNotBlank query)
                     (\_ -> App.Server.Post.search query)
+
+        NavigationToggle ->
+            { model
+                | navigationToggled = True
+                , navigationOpen = (not model.navigationOpen)
+            }
+                |> withoutCmd
 
 
 view : Model -> Html AppMsg.Msg
@@ -154,7 +162,7 @@ navigationToggle model =
             , ( "toggle-navigation", True )
             , ( "hidden", App.Submodels.LocalCotos.isNavigationEmpty model )
             ]
-        , onClick NavigationToggle
+        , onClick (AppMsg.AppHeaderMsg NavigationToggle)
         ]
         [ materialIcon
             (if model.navigationOpen then
