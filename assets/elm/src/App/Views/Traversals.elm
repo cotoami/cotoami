@@ -20,6 +20,7 @@ import App.Messages as AppMsg exposing (..)
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Coto
+import App.Views.Reorder
 
 
 type alias UpdateModel a =
@@ -212,6 +213,10 @@ stepCotoDiv context graph connections step coto =
                 [ App.Views.Coto.headerDiv context graph Nothing elementId coto
                 , App.Views.Coto.bodyDivByCoto context Nothing elementId coto
                 , div [ class "main-sub-border" ] []
+                , if context.reordering == (Just (SubCotos elementId)) then
+                    App.Views.Reorder.closeButtonDiv context
+                  else
+                    Utils.HtmlUtil.none
                 , connectionsDiv
                     context
                     graph
