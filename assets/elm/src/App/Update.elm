@@ -108,8 +108,8 @@ update msg model =
             }
                 |> withoutCmd
 
-        HomeClick ->
-            changeLocationToHome model
+        MoveToHome ->
+            ( model, Navigation.newUrl "/" )
 
         CotonomaPresenceState payload ->
             { model | presences = App.Channels.decodePresenceState payload }
@@ -641,11 +641,6 @@ update msg model =
 
         TimelineFilterModalMsg subMsg ->
             App.Modals.TimelineFilterModal.update model subMsg model
-
-
-changeLocationToHome : Model -> ( Model, Cmd Msg )
-changeLocationToHome model =
-    ( model, Navigation.newUrl "/" )
 
 
 loadHome : Model -> ( Model, Cmd Msg )

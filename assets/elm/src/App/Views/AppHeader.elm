@@ -12,7 +12,7 @@ import App.Submodels.LocalCotos
 import App.Messages
     exposing
         ( Msg
-            ( HomeClick
+            ( MoveToHome
             , OpenSigninModal
             , OpenProfileModal
             , NavigationToggle
@@ -31,7 +31,7 @@ view model =
             (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
-                        [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
+                        [ a [ class "to-home", onLinkButtonClick MoveToHome, href "/" ]
                             [ materialIcon "home" Nothing ]
                         , materialIcon "navigate_next" (Just "arrow")
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]

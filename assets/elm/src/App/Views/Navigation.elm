@@ -9,7 +9,7 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Model exposing (Model)
-import App.Messages exposing (Msg(HomeClick))
+import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
 import App.Views.Cotonomas
 
@@ -41,7 +41,7 @@ homeNav model =
         ]
         [ (model.cotonoma
             |> Maybe.map
-                (\_ -> a [ class "home", onLinkButtonClick HomeClick ])
+                (\_ -> a [ class "home", onLinkButtonClick MoveToHome ])
             |> Maybe.withDefault
                 (span [ class "home" ])
           )

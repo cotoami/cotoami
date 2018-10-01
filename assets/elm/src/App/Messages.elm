@@ -34,7 +34,7 @@ type Msg
     | AppClick
     | OnLocationChange Location
     | NavigationToggle
-    | HomeClick
+    | MoveToHome
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | SessionFetched (Result Http.Error Session)
