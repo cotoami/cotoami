@@ -254,3 +254,6 @@ text key =
                 "coto selected"
             else
                 "cotos selected"
+
+        Reorder_CloseReorderMode ->
+            "Done reordering"

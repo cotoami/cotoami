@@ -24,7 +24,8 @@ import Exts.Maybe
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Types.Graph exposing (Graph, Direction)
+import App.Types.Connection exposing (Direction)
+import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
 import App.Submodels.Context exposing (Context)
 

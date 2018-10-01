@@ -7,7 +7,7 @@ import Navigation exposing (Location)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph)
+import App.Types.Graph exposing (Graph)
 import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
@@ -15,6 +15,7 @@ import App.Views.StockMsg
 import App.Views.TraversalsMsg
 import App.Views.CotoSelectionMsg
 import App.Views.CotoToolbarMsg
+import App.Views.ReorderMsg
 import App.Modals.SigninModalMsg
 import App.Modals.ProfileModalMsg
 import App.Modals.EditorModalMsg
@@ -78,11 +79,8 @@ type Msg
     | Connected (Result Http.Error (List String))
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
-    | ToggleReorderMode ElementId
-    | SwapOrder (Maybe CotoId) Int Int
-    | MoveToFirst (Maybe CotoId) Int
-    | MoveToLast (Maybe CotoId) Int
-    | ConnectionsReordered (Result Http.Error String)
+    | SetReorderMode (Maybe ElementId)
+    | CloseReorderMode
       --
       -- Pushed
       --
@@ -103,6 +101,7 @@ type Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
+    | ReorderMsg App.Views.ReorderMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | OpenNewEditorModal

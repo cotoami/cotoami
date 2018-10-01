@@ -9,13 +9,13 @@ import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Utils.Keyboard.Key
 import Navigation
-import Utils.StringUtil exposing (isNotBlank)
 import Utils.UpdateUtil exposing (..)
 import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Graph exposing (Direction(..))
+import App.Types.Connection exposing (Direction(..), Reordering(..))
+import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -41,6 +41,7 @@ import App.Views.Stock
 import App.Views.Traversals
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
+import App.Views.Reorder
 import App.Modals.SigninModal
 import App.Modals.ProfileModal
 import App.Modals.CotoMenuModal
@@ -447,34 +448,16 @@ update msg model =
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
 
-        ToggleReorderMode elementId ->
-            model
-                |> App.Submodels.Context.toggleReorderMode elementId
+        SetReorderMode (Just parentElementId) ->
+            { model | reordering = Just (SubCotos parentElementId) }
                 |> withoutCmd
 
-        SwapOrder maybeParentId index1 index2 ->
-            model.graph
-                |> App.Types.Graph.swapOrder maybeParentId index1 index2
-                |> (\graph -> { model | graph = graph })
-                |> (\model -> ( model, makeReorderCmd maybeParentId model ))
+        SetReorderMode Nothing ->
+            { model | reordering = Just PinnedCotos }
+                |> withoutCmd
 
-        MoveToFirst maybeParentId index ->
-            model.graph
-                |> App.Types.Graph.moveToFirst maybeParentId index
-                |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd maybeParentId)
-
-        MoveToLast maybeParentId index ->
-            model.graph
-                |> App.Types.Graph.moveToLast maybeParentId index
-                |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd maybeParentId)
-
-        ConnectionsReordered (Ok _) ->
-            model |> withoutCmd
-
-        ConnectionsReordered (Err _) ->
-            model |> withoutCmd
+        CloseReorderMode ->
+            { model | reordering = Nothing } |> withoutCmd
 
         --
         -- Pushed
@@ -556,6 +539,9 @@ update msg model =
 
         CotoToolbarMsg subMsg ->
             App.Views.CotoToolbar.update model subMsg model
+
+        ReorderMsg subMsg ->
+            App.Views.Reorder.update model subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
@@ -667,18 +653,3 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
-
-
-makeReorderCmd : Maybe CotoId -> Model -> Cmd Msg
-makeReorderCmd maybeParentId model =
-    model.graph
-        |> App.Types.Graph.getOutboundConnections maybeParentId
-        |> Maybe.map (List.map (\connection -> connection.end))
-        |> Maybe.map List.reverse
-        |> Maybe.map
-            (App.Server.Graph.reorder
-                model.clientId
-                (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
-                maybeParentId
-            )
-        |> Maybe.withDefault Cmd.none

@@ -12,7 +12,7 @@ import Utils.HtmlUtil
 import Utils.EventUtil exposing (onLoad)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
-import App.Types.Graph exposing (Direction(..), Graph)
+import App.Types.Graph exposing (Graph)
 import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Views.FlowMsg
@@ -38,7 +38,7 @@ view context graph post =
                     Utils.HtmlUtil.none
                   else
                     authorDiv context post
-                , App.Views.Coto.bodyDiv context elementId markdown post
+                , App.Views.Coto.bodyDiv context Nothing elementId markdown post
                 , footerDiv post
                 , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
                 , authorIcon context post

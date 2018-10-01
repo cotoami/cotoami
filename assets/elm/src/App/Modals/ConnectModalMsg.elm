@@ -3,7 +3,7 @@ module App.Modals.ConnectModalMsg exposing (Msg(..))
 import Http
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
-import App.Types.Graph exposing (Direction)
+import App.Types.Connection exposing (Direction)
 
 
 type Msg

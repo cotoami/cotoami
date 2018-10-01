@@ -7,8 +7,6 @@ module App.Submodels.Context
         , focusCoto
         , clearCotoFocus
         , toggleContent
-        , toggleReorderMode
-        , inReorderMode
         , contentOpen
         , anySelection
         , isSelected
@@ -30,6 +28,7 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
+import App.Types.Connection exposing (Reordering)
 
 
 type alias Context a =
@@ -41,7 +40,7 @@ type alias Context a =
         , cotonomaLoading : Bool
         , elementFocus : Maybe ElementId
         , contentOpenElements : Set ElementId
-        , reorderModeElements : Set ElementId
+        , reordering : Maybe Reordering
         , cotoFocus : Maybe CotoId
         , selection : CotoSelection
         , deselecting : Set CotoId
@@ -91,25 +90,12 @@ toggleContent elementId context =
     }
 
 
-toggleReorderMode : ElementId -> Context a -> Context a
-toggleReorderMode elementId context =
-    { context
-        | reorderModeElements =
-            toggleSetMember elementId context.reorderModeElements
-    }
-
-
 toggleSetMember : comparable -> Set comparable -> Set comparable
 toggleSetMember value set =
     if Set.member value set then
         Set.remove value set
     else
         Set.insert value set
-
-
-inReorderMode : ElementId -> Context a -> Bool
-inReorderMode elementId context =
-    Set.member elementId context.reorderModeElements
 
 
 contentOpen : ElementId -> Context a -> Bool
