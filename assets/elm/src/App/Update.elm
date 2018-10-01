@@ -216,19 +216,6 @@ update msg model =
         SearchInputFocusChanged focus ->
             { model | searchInputFocus = focus } |> withoutCmd
 
-        ClearQuickSearchInput ->
-            { model
-                | searchResults =
-                    App.Types.SearchResults.clearQuery model.searchResults
-            }
-                |> withoutCmd
-
-        QuickSearchInput query ->
-            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
-                |> withCmdIf
-                    (\_ -> isNotBlank query)
-                    (\_ -> App.Server.Post.search query)
-
         SearchInput query ->
             { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
                 |> withoutCmd

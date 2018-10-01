@@ -49,8 +49,6 @@ type Msg
       -- Search
       --
     | SearchInputFocusChanged Bool
-    | ClearQuickSearchInput
-    | QuickSearchInput String
     | SearchInput String
     | Search
     | SearchResultsFetched (Result Http.Error PaginatedPosts)

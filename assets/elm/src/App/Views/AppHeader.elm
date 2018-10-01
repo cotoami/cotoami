@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
 import Html.Keyed
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
@@ -15,8 +16,6 @@ import App.Messages as AppMsg
             ( MoveToHome
             , NavigationToggle
             , SearchInputFocusChanged
-            , ClearQuickSearchInput
-            , QuickSearchInput
             , Search
             )
         )
@@ -26,10 +25,15 @@ import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modals, Modal(SigninModal, ProfileModal))
 import App.Messages
 import App.Modals.SigninModal
+import App.Server.Post
 
 
 type alias UpdateModel model =
-    Modals { model | signinModal : App.Modals.SigninModal.Model }
+    Modals
+        { model
+            | signinModal : App.Modals.SigninModal.Model
+            , searchResults : SearchResults
+        }
 
 
 update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
@@ -46,6 +50,19 @@ update context msg model =
 
         OpenProfileModal ->
             App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
+
+        ClearQuickSearchInput ->
+            { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+            }
+                |> withoutCmd
+
+        QuickSearchInput query ->
+            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
+                |> withCmdIf
+                    (\_ -> Utils.StringUtil.isNotBlank query)
+                    (\_ -> App.Server.Post.search query)
 
 
 view : Model -> Html AppMsg.Msg
@@ -112,7 +129,7 @@ quickSearchForm searchResults =
                     , defaultValue searchResults.query
                     , onFocus (SearchInputFocusChanged True)
                     , onBlur (SearchInputFocusChanged False)
-                    , onInput QuickSearchInput
+                    , onInput (AppMsg.AppHeaderMsg << QuickSearchInput)
                     ]
                     []
               )
@@ -121,7 +138,7 @@ quickSearchForm searchResults =
         , if App.Types.SearchResults.hasQuery searchResults then
             a
                 [ class "tool-button clear-query"
-                , onLinkButtonClick ClearQuickSearchInput
+                , onLinkButtonClick (AppMsg.AppHeaderMsg ClearQuickSearchInput)
                 ]
                 [ materialIcon "close" Nothing ]
           else
