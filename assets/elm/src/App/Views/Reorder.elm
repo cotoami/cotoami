@@ -35,19 +35,19 @@ update context msg model =
             model.graph
                 |> App.Types.Graph.swapOrder maybeParentId index1 index2
                 |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd context maybeParentId)
+                |> withCmd (saveOrder context maybeParentId)
 
         MoveToFirst maybeParentId index ->
             model.graph
                 |> App.Types.Graph.moveToFirst maybeParentId index
                 |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd context maybeParentId)
+                |> withCmd (saveOrder context maybeParentId)
 
         MoveToLast maybeParentId index ->
             model.graph
                 |> App.Types.Graph.moveToLast maybeParentId index
                 |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd context maybeParentId)
+                |> withCmd (saveOrder context maybeParentId)
 
         ConnectionsReordered (Ok _) ->
             model |> withoutCmd
@@ -56,17 +56,17 @@ update context msg model =
             model |> withoutCmd
 
 
-makeReorderCmd : Context context -> Maybe CotoId -> UpdateModel model -> Cmd AppMsg.Msg
-makeReorderCmd context maybeParentId model =
+saveOrder : Context context -> Maybe CotoId -> UpdateModel model -> Cmd AppMsg.Msg
+saveOrder context maybeParentId model =
     model.graph
         |> App.Types.Graph.getOutboundConnections maybeParentId
-        |> Maybe.map (List.map (\connection -> connection.end))
+        |> Maybe.map (List.map (.end))
         |> Maybe.map List.reverse
         |> Maybe.map
             (App.Server.Graph.reorder
                 (AppMsg.ReorderMsg << ConnectionsReordered)
                 context.clientId
-                (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                (Maybe.map (.key) model.cotonoma)
                 maybeParentId
             )
         |> Maybe.withDefault Cmd.none
