@@ -15,6 +15,7 @@ import App.Views.StockMsg
 import App.Views.TraversalsMsg
 import App.Views.CotoSelectionMsg
 import App.Views.CotoToolbarMsg
+import App.Views.ReorderMsg
 import App.Modals.SigninModalMsg
 import App.Modals.ProfileModalMsg
 import App.Modals.EditorModalMsg
@@ -79,10 +80,6 @@ type Msg
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
     | ToggleReorderMode ElementId
-    | SwapOrder (Maybe CotoId) Int Int
-    | MoveToFirst (Maybe CotoId) Int
-    | MoveToLast (Maybe CotoId) Int
-    | ConnectionsReordered (Result Http.Error String)
       --
       -- Pushed
       --
@@ -103,6 +100,7 @@ type Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
+    | ReorderMsg App.Views.ReorderMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | OpenNewEditorModal

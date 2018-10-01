@@ -156,8 +156,14 @@ disconnect clientId maybeCotonomaKey startId endId =
         Http.send ConnectionDeleted (httpDelete url clientId)
 
 
-reorder : ClientId -> Maybe CotonomaKey -> Maybe CotoId -> List CotoId -> Cmd Msg
-reorder clientId maybeCotonomaKey maybeStartId endIds =
+reorder :
+    (Result Http.Error String -> msg)
+    -> ClientId
+    -> Maybe CotonomaKey
+    -> Maybe CotoId
+    -> List CotoId
+    -> Cmd msg
+reorder tag clientId maybeCotonomaKey maybeStartId endIds =
     let
         url =
             maybeStartId
@@ -174,7 +180,7 @@ reorder clientId maybeCotonomaKey maybeStartId endIds =
                         |> Maybe.withDefault "/api/graph/reorder"
                     )
     in
-        Http.send ConnectionsReordered <|
+        Http.send tag <|
             httpPut
                 url
                 clientId

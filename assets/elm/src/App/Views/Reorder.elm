@@ -1,17 +1,22 @@
 module App.Views.Reorder
     exposing
         ( Reordering(..)
+        , update
         , reorderTools
         )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
-import App.Messages exposing (..)
-import App.Types.Coto exposing (ElementId)
+import App.Messages as AppMsg
+import App.Views.ReorderMsg as ReorderMsg exposing (Msg(..))
+import App.Types.Coto exposing (ElementId, CotoId)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Graph exposing (InboundConnection)
+import App.Server.Graph
 
 
 type Reordering
@@ -19,7 +24,55 @@ type Reordering
     | SubCotos ElementId
 
 
-reorderTools : Context a -> InboundConnection -> ElementId -> Html Msg
+type alias UpdateModel model =
+    LocalCotos model
+
+
+update : Context context -> ReorderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        SwapOrder maybeParentId index1 index2 ->
+            model.graph
+                |> App.Types.Graph.swapOrder maybeParentId index1 index2
+                |> (\graph -> { model | graph = graph })
+                |> withCmd (makeReorderCmd context maybeParentId)
+
+        MoveToFirst maybeParentId index ->
+            model.graph
+                |> App.Types.Graph.moveToFirst maybeParentId index
+                |> (\graph -> { model | graph = graph })
+                |> withCmd (makeReorderCmd context maybeParentId)
+
+        MoveToLast maybeParentId index ->
+            model.graph
+                |> App.Types.Graph.moveToLast maybeParentId index
+                |> (\graph -> { model | graph = graph })
+                |> withCmd (makeReorderCmd context maybeParentId)
+
+        ConnectionsReordered (Ok _) ->
+            model |> withoutCmd
+
+        ConnectionsReordered (Err _) ->
+            model |> withoutCmd
+
+
+makeReorderCmd : Context context -> Maybe CotoId -> UpdateModel model -> Cmd AppMsg.Msg
+makeReorderCmd context maybeParentId model =
+    model.graph
+        |> App.Types.Graph.getOutboundConnections maybeParentId
+        |> Maybe.map (List.map (\connection -> connection.end))
+        |> Maybe.map List.reverse
+        |> Maybe.map
+            (App.Server.Graph.reorder
+                (AppMsg.ReorderMsg << ConnectionsReordered)
+                context.clientId
+                (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                maybeParentId
+            )
+        |> Maybe.withDefault Cmd.none
+
+
+reorderTools : Context a -> InboundConnection -> ElementId -> Html AppMsg.Msg
 reorderTools context inbound elementId =
     let
         maybeParentId =
@@ -42,7 +95,10 @@ reorderTools context inbound elementId =
                     , ( "disabled", isFirst )
                     ]
                 , title "Move to the top"
-                , onLinkButtonClick (MoveToFirst maybeParentId index)
+                , onLinkButtonClick
+                    (AppMsg.ReorderMsg
+                        (MoveToFirst maybeParentId index)
+                    )
                 ]
                 [ materialIcon "skip_previous" Nothing ]
             , a
@@ -52,7 +108,10 @@ reorderTools context inbound elementId =
                     , ( "disabled", isFirst )
                     ]
                 , title "Move up"
-                , onLinkButtonClick (SwapOrder maybeParentId index (index - 1))
+                , onLinkButtonClick
+                    (AppMsg.ReorderMsg
+                        (SwapOrder maybeParentId index (index - 1))
+                    )
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a
@@ -62,7 +121,10 @@ reorderTools context inbound elementId =
                     , ( "disabled", isLast )
                     ]
                 , title "Move down"
-                , onLinkButtonClick (SwapOrder maybeParentId index (index + 1))
+                , onLinkButtonClick
+                    (AppMsg.ReorderMsg
+                        (SwapOrder maybeParentId index (index + 1))
+                    )
                 ]
                 [ materialIcon "play_arrow" Nothing ]
             , a
@@ -72,13 +134,10 @@ reorderTools context inbound elementId =
                     , ( "disabled", isLast )
                     ]
                 , title "Move to the bottom"
-                , onLinkButtonClick (MoveToLast maybeParentId index)
+                , onLinkButtonClick
+                    (AppMsg.ReorderMsg
+                        (MoveToLast maybeParentId index)
+                    )
                 ]
                 [ materialIcon "skip_next" Nothing ]
-            , a
-                [ class "tool-button close"
-                , title "Close reorder tools"
-                , onLinkButtonClick (ToggleReorderMode elementId)
-                ]
-                [ materialIcon "close" Nothing ]
             ]
