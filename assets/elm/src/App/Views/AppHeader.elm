@@ -11,13 +11,6 @@ import Utils.HtmlUtil exposing (materialIcon)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
 import App.Messages as AppMsg
-    exposing
-        ( Msg
-            ( MoveToHome
-            , SearchInputFocusChanged
-            , Search
-            )
-        )
 import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
@@ -80,7 +73,7 @@ view model =
             (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
-                        [ a [ class "to-home", onLinkButtonClick MoveToHome, href "/" ]
+                        [ a [ class "to-home", onLinkButtonClick AppMsg.MoveToHome, href "/" ]
                             [ materialIcon "home" Nothing ]
                         , materialIcon "navigate_next" (Just "arrow")
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
@@ -125,7 +118,7 @@ quickSearchForm : SearchResults -> Html AppMsg.Msg
 quickSearchForm searchResults =
     Html.form
         [ class "quick-search"
-        , onSubmit Search
+        , onSubmit AppMsg.Search
         ]
         [ Html.Keyed.node
             "span"
@@ -135,8 +128,8 @@ quickSearchForm searchResults =
                     [ type_ "text"
                     , class "search-input"
                     , defaultValue searchResults.query
-                    , onFocus (SearchInputFocusChanged True)
-                    , onBlur (SearchInputFocusChanged False)
+                    , onFocus (AppMsg.SearchInputFocusChanged True)
+                    , onBlur (AppMsg.SearchInputFocusChanged False)
                     , onInput (AppMsg.AppHeaderMsg << QuickSearchInput)
                     ]
                     []
