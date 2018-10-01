@@ -25,14 +25,18 @@ div.coto-inner {
     border-bottom: 1px solid #eee;
   }
 
-  div.close-reordering-button {
+  div.close-reordering-div {
     z-index: 10;
     position: -webkit-sticky;
     position: sticky;
     top: -12px;
     left: 0;
-    padding-top: 10px;
-    background-color: rgba(255, 255, 255, .9);
+
+    div.close-reordering-button {
+      display: inline-block;
+      padding-top: 10px;
+      background-color: rgba(255, 255, 255, .9);
+    }
   }
 }
 

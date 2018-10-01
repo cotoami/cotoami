@@ -158,15 +158,17 @@ reorderTools context inbound elementId =
 
 closeButtonDiv : Context context -> Html AppMsg.Msg
 closeButtonDiv context =
-    div
-        [ class "close-reordering-button"
-        , onClick (AppMsg.CloseReorderMode)
-        ]
-        [ a
-            [ class "tool-button"
-            , onLinkButtonClick (AppMsg.CloseReorderMode)
+    div [ class "close-reordering-div" ]
+        [ div
+            [ class "close-reordering-button"
+            , onClick (AppMsg.CloseReorderMode)
             ]
-            [ materialIcon "done" Nothing
-            , text (context.i18nText I18nKeys.Reorder_CloseReorderMode)
+            [ a
+                [ class "tool-button"
+                , onLinkButtonClick (AppMsg.CloseReorderMode)
+                ]
+                [ materialIcon "done" Nothing
+                , text (context.i18nText I18nKeys.Reorder_CloseReorderMode)
+                ]
             ]
         ]
