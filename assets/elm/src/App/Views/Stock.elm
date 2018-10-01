@@ -29,6 +29,7 @@ import App.Messages as AppMsg exposing (..)
 import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
 import App.Submodels.Context exposing (Context)
 import App.Views.Coto
+import App.Views.Reorder
 import App.Ports.Graph
 
 
@@ -126,6 +127,10 @@ view context model =
                     ]
                     [ materialIcon "share" Nothing ]
                 ]
+            , if context.reordering == (Just PinnedCotos) then
+                App.Views.Reorder.closeButtonDiv context
+              else
+                Utils.HtmlUtil.none
             ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]

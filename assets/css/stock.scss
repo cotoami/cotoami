@@ -5,6 +5,7 @@
   position: relative;
 
   div.column-header {
+    position: relative;
     text-align: center;
     margin-bottom: 5px;
     padding-top: 7px;
@@ -21,6 +22,20 @@
       a.graph-view i {
         font-size: 20px;
         vertical-align: 2px;
+      }
+    }
+
+    div.close-reordering-button {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      padding: 5px;
+      text-align: center;
+      font-weight: bold;
+
+      i {
+        vertical-align: -7px;
+        margin-right: 2px;
       }
     }
   }

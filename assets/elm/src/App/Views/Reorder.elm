@@ -3,10 +3,12 @@ module App.Views.Reorder
         ( update
         , maybeReorderTools
         , reorderTools
+        , closeButtonDiv
         )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
@@ -151,3 +153,16 @@ reorderTools context inbound elementId =
                 ]
                 [ materialIcon "skip_next" Nothing ]
             ]
+
+
+closeButtonDiv : Context context -> Html AppMsg.Msg
+closeButtonDiv context =
+    div [ class "close-reordering-button" ]
+        [ a
+            [ class "tool-button"
+            , onClick (AppMsg.CloseReorderMode)
+            ]
+            [ materialIcon "done" Nothing
+            , text "Done reordering"
+            ]
+        ]
