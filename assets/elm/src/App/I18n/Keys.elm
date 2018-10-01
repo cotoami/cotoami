@@ -83,3 +83,4 @@ type TextKey
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
     | CotoSelection_CotosSelected Int
+    | Reorder_CloseReorderMode

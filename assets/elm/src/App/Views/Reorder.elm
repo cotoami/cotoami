@@ -12,6 +12,7 @@ import Html.Events exposing (onClick)
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
+import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg
 import App.Views.ReorderMsg as ReorderMsg exposing (Msg(..))
 import App.Types.Coto exposing (ElementId, CotoId)
@@ -166,6 +167,6 @@ closeButtonDiv context =
             , onLinkButtonClick (AppMsg.CloseReorderMode)
             ]
             [ materialIcon "done" Nothing
-            , text "Done reordering"
+            , text (context.i18nText I18nKeys.Reorder_CloseReorderMode)
             ]
         ]

@@ -254,3 +254,6 @@ text key =
                 "об'єкт вибрано"
             else
                 "об'єкти вибрані"
+
+        Reorder_CloseReorderMode ->
+            "Змінити порядок"

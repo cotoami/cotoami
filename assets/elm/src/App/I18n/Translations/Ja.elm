@@ -254,3 +254,6 @@ text key =
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
+
+        Reorder_CloseReorderMode ->
+            "並び替え完了"
