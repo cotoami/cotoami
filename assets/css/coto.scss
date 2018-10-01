@@ -182,30 +182,26 @@ span.reorder-tool-buttons {
   background-color: rgba(255, 255, 255, .9);
 
   i.material-icons {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
   a.move-to-top i {
-    font-size: 36px;
+    font-size: 30px;
     transform: rotate( 90deg );
   }
   a.move-up i {
-    font-size: 30px;
+    font-size: 24px;
     transform: rotate( -90deg );
   }
   a.move-down i {
-    font-size: 30px;
+    font-size: 24px;
     transform: rotate( 90deg );
   }
   a.move-to-bottom i {
-    font-size: 36px;
+    font-size: 30px;
     transform: rotate( 90deg );
     vertical-align: bottom;
-  }
-  a.close i {
-    font-size: 30px;
-    opacity: 0.8;
   }
 }
 div.pinned-coto > div.coto-inner > div.coto-header > span.reorder-tool-buttons {
