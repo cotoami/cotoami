@@ -456,6 +456,9 @@ update msg model =
             { model | reordering = Just PinnedCotos }
                 |> withoutCmd
 
+        CloseReorderMode ->
+            { model | reordering = Nothing } |> withoutCmd
+
         --
         -- Pushed
         --

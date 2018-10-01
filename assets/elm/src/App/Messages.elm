@@ -80,6 +80,7 @@ type Msg
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
     | SetReorderMode (Maybe ElementId)
+    | CloseReorderMode
       --
       -- Pushed
       --
