@@ -8,6 +8,7 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Direction, Graph)
+import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
 import App.Views.StockMsg
@@ -98,15 +99,14 @@ type Msg
       --
       -- Sub components
       --
+    | AppHeaderMsg App.Views.AppHeaderMsg.Msg
     | ViewSwitchMsg App.Views.ViewSwitchMsg.Msg
     | FlowMsg App.Views.FlowMsg.Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
-    | OpenSigninModal
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
-    | OpenProfileModal
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto

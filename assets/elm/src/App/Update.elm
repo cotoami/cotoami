@@ -33,6 +33,7 @@ import App.Server.Graph
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
+import App.Views.AppHeader
 import App.Views.ViewSwitch
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
@@ -555,6 +556,9 @@ update msg model =
         --
         -- Sub components
         --
+        AppHeaderMsg subMsg ->
+            App.Views.AppHeader.update model subMsg model
+
         ViewSwitchMsg subMsg ->
             App.Views.ViewSwitch.update model subMsg model
 
@@ -573,21 +577,9 @@ update msg model =
         CotoToolbarMsg subMsg ->
             App.Views.CotoToolbar.update model subMsg model
 
-        OpenSigninModal ->
-            { model
-                | signinModal =
-                    App.Modals.SigninModal.initModel
-                        model.signinModal.authSettings
-            }
-                |> App.Submodels.Modals.openModal SigninModal
-                |> withoutCmd
-
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
-
-        OpenProfileModal ->
-            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
         ProfileModalMsg subMsg ->
             App.Modals.ProfileModal.update model subMsg model

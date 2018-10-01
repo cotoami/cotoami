@@ -4,17 +4,15 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
 import Html.Keyed
+import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
-import App.Submodels.LocalCotos
-import App.Messages
+import App.Messages as AppMsg
     exposing
         ( Msg
             ( MoveToHome
-            , OpenSigninModal
-            , OpenProfileModal
             , NavigationToggle
             , SearchInputFocusChanged
             , ClearQuickSearchInput
@@ -22,9 +20,35 @@ import App.Messages
             , Search
             )
         )
+import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos
+import App.Submodels.Modals exposing (Modals, Modal(SigninModal, ProfileModal))
+import App.Messages
+import App.Modals.SigninModal
 
 
-view : Model -> Html Msg
+type alias UpdateModel model =
+    Modals { model | signinModal : App.Modals.SigninModal.Model }
+
+
+update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        OpenSigninModal ->
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel
+                        model.signinModal.authSettings
+            }
+                |> App.Submodels.Modals.openModal SigninModal
+                |> withoutCmd
+
+        OpenProfileModal ->
+            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
+
+
+view : Model -> Html AppMsg.Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
@@ -53,7 +77,10 @@ view model =
                 |> Maybe.map
                     (\session ->
                         [ quickSearchForm model.searchResults
-                        , a [ title "Profile", onClick OpenProfileModal ]
+                        , a
+                            [ title "Profile"
+                            , onClick (AppMsg.AppHeaderMsg OpenProfileModal)
+                            ]
                             [ img [ class "avatar", src session.amishi.avatarUrl ] [] ]
                         ]
                     )
@@ -61,7 +88,7 @@ view model =
                     [ a
                         [ class "tool-button"
                         , title "Sign in"
-                        , onClick OpenSigninModal
+                        , onClick (AppMsg.AppHeaderMsg OpenSigninModal)
                         ]
                         [ materialIcon "perm_identity" Nothing ]
                     ]
@@ -69,7 +96,7 @@ view model =
         ]
 
 
-quickSearchForm : SearchResults -> Html Msg
+quickSearchForm : SearchResults -> Html AppMsg.Msg
 quickSearchForm searchResults =
     Html.form
         [ class "quick-search"
@@ -102,7 +129,7 @@ quickSearchForm searchResults =
         ]
 
 
-navigationToggle : Model -> Html Msg
+navigationToggle : Model -> Html AppMsg.Msg
 navigationToggle model =
     a
         [ classList
