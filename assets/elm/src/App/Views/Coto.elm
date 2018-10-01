@@ -232,6 +232,10 @@ subCotosDiv context graph parentElementId coto =
             (\connections ->
                 div []
                     [ div [ class "main-sub-border" ] []
+                    , if context.reordering == (Just (SubCotos parentElementId)) then
+                        App.Views.Reorder.closeButtonDiv context
+                      else
+                        Utils.HtmlUtil.none
                     , connectionsDiv
                         context
                         graph

@@ -24,6 +24,18 @@ div.coto-inner {
     padding-top: 3px;
     border-bottom: 1px solid #eee;
   }
+
+  div.close-reordering-button {
+    z-index: 10;
+    display: inline-block;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 5px;
+    left: 10px;
+    right: 10px;
+    padding-top: 10px;
+    background-color: rgba(255, 255, 255, .9);
+  }
 }
 
 div.coto-header {
@@ -84,10 +96,6 @@ div.coto-body {
       display: block;
       margin-top: 10px;
     }
-  }
-
-  div.content-in-reorder {
-    opacity: 0.5;
   }
 }
 
@@ -172,40 +180,6 @@ span.coto-tool-buttons {
       display: none;
     }
   }
-}
-
-span.reorder-tool-buttons {
-  position: absolute;
-  top: -8px;
-  right: 0;
-  z-index: 10;
-  background-color: rgba(255, 255, 255, .9);
-
-  i.material-icons {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  a.move-to-top i {
-    font-size: 30px;
-    transform: rotate( 90deg );
-  }
-  a.move-up i {
-    font-size: 24px;
-    transform: rotate( -90deg );
-  }
-  a.move-down i {
-    font-size: 24px;
-    transform: rotate( 90deg );
-  }
-  a.move-to-bottom i {
-    font-size: 30px;
-    transform: rotate( 90deg );
-    vertical-align: bottom;
-  }
-}
-div.pinned-coto > div.coto-inner > div.coto-header > span.reorder-tool-buttons {
-  top: 0;
 }
 
 div.sub-cotos {
