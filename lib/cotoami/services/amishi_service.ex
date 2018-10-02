@@ -62,6 +62,15 @@ defmodule Cotoami.AmishiService do
     Map.put(amishi, :owner, amishi.email in owner_emails())
   end
 
+  def can_invite_someone?(%Amishi{invite_limit: invite_limit} = amishi) do
+    case invite_limit do
+      nil -> 
+        true
+      limit ->
+        amishi |> invitees() |> Enum.count() < limit
+    end
+  end
+
   def invitees(%Amishi{id: inviter_id}) do
     from(
       a in Amishi, 
