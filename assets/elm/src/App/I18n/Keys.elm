@@ -57,6 +57,7 @@ type TextKey
     | InviteModal_InviteeAlreadyExists
     | InviteModal_SendInvite
     | InviteModal_Sending
+    | InviteModal_InvitesRemaining Int
     | CotoToolbar_Connect
     | CotoToolbar_Pin
     | CotoToolbar_Edit

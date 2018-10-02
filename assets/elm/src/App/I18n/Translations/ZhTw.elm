@@ -177,6 +177,12 @@ text key =
         InviteModal_Sending ->
             "正在發送"
 
+        InviteModal_InvitesRemaining invites ->
+            if invites == 1 then
+                (toString invites) ++ " invite remaining"
+            else
+                (toString invites) ++ " invites remaining"
+
         CotoToolbar_Connect ->
             "連接選擇中的投稿"
 

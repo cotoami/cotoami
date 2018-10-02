@@ -177,6 +177,9 @@ text key =
         InviteModal_Sending ->
             "送信中"
 
+        InviteModal_InvitesRemaining invites ->
+            "あと " ++ (toString invites) ++ " 人、招待できます"
+
         CotoToolbar_Connect ->
             "選択中のコトと接続"
 

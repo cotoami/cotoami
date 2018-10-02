@@ -193,15 +193,7 @@ modalConfig context session model =
 
                         _ ->
                             Utils.HtmlUtil.none
-                    , (Maybe.map2
-                        (\limit invitees ->
-                            div [ class "invites-remaining" ]
-                                [ text (toString (limit - List.length invitees)) ]
-                        )
-                        session.amishi.inviteLimit
-                        model.invitees
-                      )
-                        |> Maybe.withDefault Utils.HtmlUtil.none
+                    , invitesRemainingDiv context session model
                     ]
             , buttons =
                 [ button
@@ -220,3 +212,25 @@ modalConfig context session model =
                     ]
                 ]
             }
+
+
+invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
+invitesRemainingDiv context session model =
+    (Maybe.map2
+        (\limit invitees ->
+            let
+                remaining =
+                    limit - List.length invitees
+
+                key =
+                    if remaining >= 0 then
+                        I18nKeys.InviteModal_InvitesRemaining remaining
+                    else
+                        I18nKeys.InviteModal_InvitesRemaining 0
+            in
+                div [ class "invites-remaining" ] [ text (context.i18nText key) ]
+        )
+        session.amishi.inviteLimit
+        model.invitees
+    )
+        |> Maybe.withDefault Utils.HtmlUtil.none
