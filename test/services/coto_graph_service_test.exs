@@ -87,6 +87,10 @@ defmodule Cotoami.CotoGraphServiceTest do
         connections: %{}
       } = CotoGraphService.get_graph_in_amishi(conn, amishi)
     end
+
+    test "pinned_cotonoma_keys should be empty", ~M{conn, amishi} do
+      assert CotoGraphService.pinned_cotonoma_keys(conn, amishi) == []
+    end
   end
 
   describe "when a cotonoma is pinned to an amishi" do
@@ -121,6 +125,10 @@ defmodule Cotoami.CotoGraphServiceTest do
           end: ^coto_node_id
         }
       ] = Neo4jService.get_ordered_relationships(conn, amishi_id, "HAS_A")
+    end
+
+    test "pinned_cotonoma_keys should contain its key", ~M{conn, amishi, coto} do
+      assert CotoGraphService.pinned_cotonoma_keys(conn, amishi) == [coto.cotonoma.key]
     end
   end
 
