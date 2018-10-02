@@ -197,8 +197,12 @@ defmodule Cotoami.CotonomaService do
       nil ->
         nil
       id_or_email ->
-        AmishiService.get(id_or_email) || 
-          AmishiService.get_by_email(id_or_email)
+        case UUID.info(id_or_email) do
+          {:ok, _info} ->
+            AmishiService.get(id_or_email)
+          {:error, _reason} ->
+            AmishiService.get_by_email(id_or_email)
+        end
     end
   end
 end

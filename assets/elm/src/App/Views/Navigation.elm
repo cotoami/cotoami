@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isNothing)
 import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (materialIcon)
+import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -34,6 +34,7 @@ view model =
             [ model.cotonoma
                 |> Maybe.map (cotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
+            , globalCotonomasDiv model
             , recentCotonomasDiv model
             ]
         ]
@@ -78,6 +79,22 @@ cotonomaNav model cotonoma =
                 model.subCotonomas
             ]
         ]
+
+
+globalCotonomasDiv : ViewModel model -> Html Msg
+globalCotonomasDiv model =
+    if List.isEmpty model.globalCotonomas then
+        Utils.HtmlUtil.none
+    else
+        div [ class "global-cotonomas" ]
+            [ div [ class "navigation-title" ]
+                [ faIcon "thumb-tack" Nothing ]
+            , App.Views.Cotonomas.view
+                model
+                model.graph
+                "global-cotonomas"
+                model.globalCotonomas
+            ]
 
 
 recentCotonomasDiv : ViewModel model -> Html Msg
