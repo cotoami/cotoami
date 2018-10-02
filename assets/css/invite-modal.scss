@@ -36,4 +36,17 @@
     text-align: right;
     color: #888;
   }
+
+  div.invitees {
+    margin-top: 1.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 20vh;
+
+    span.email {
+      margin-left: 6px;
+      color: #aaa;
+    }
+  }
 }

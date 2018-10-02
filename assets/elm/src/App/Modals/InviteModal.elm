@@ -185,15 +185,13 @@ modalConfig context session model =
                             div [ class "error" ]
                                 [ span [ class "message" ]
                                     [ text (context.i18nText I18nKeys.InviteModal_InviteeAlreadyExists) ]
-                                , span [ class "invitee" ]
-                                    [ img [ class "avatar", src invitee.avatarUrl ] []
-                                    , span [ class "name" ] [ text invitee.displayName ]
-                                    ]
+                                , inviteeSpan invitee
                                 ]
 
                         _ ->
                             Utils.HtmlUtil.none
                     , invitesRemainingDiv context session model
+                    , inviteesDiv model
                     ]
             , buttons =
                 [ button
@@ -212,6 +210,14 @@ modalConfig context session model =
                     ]
                 ]
             }
+
+
+inviteeSpan : Amishi -> Html AppMsg.Msg
+inviteeSpan invitee =
+    span [ class "invitee" ]
+        [ img [ class "avatar", src invitee.avatarUrl ] []
+        , span [ class "name" ] [ text invitee.displayName ]
+        ]
 
 
 invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
@@ -233,4 +239,27 @@ invitesRemainingDiv context session model =
         session.amishi.inviteLimit
         model.invitees
     )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+inviteeItem : Amishi -> Html AppMsg.Msg
+inviteeItem invitee =
+    li [ class "invitee" ]
+        [ inviteeSpan invitee
+        , invitee.email
+            |> Maybe.map (\email -> span [ class "email" ] [ text email ])
+            |> Maybe.withDefault Utils.HtmlUtil.none
+        ]
+
+
+inviteesDiv : Model -> Html AppMsg.Msg
+inviteesDiv model =
+    model.invitees
+        |> Maybe.map
+            (\invitees ->
+                div [ class "invitees" ]
+                    [ ol [ class "invitees" ]
+                        (List.map inviteeItem invitees)
+                    ]
+            )
         |> Maybe.withDefault Utils.HtmlUtil.none
