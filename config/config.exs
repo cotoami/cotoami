@@ -52,6 +52,9 @@ config :cotoami, Cotoami.AmishiService,
     (System.get_env("COTOAMI_OWNER_EMAILS") || "")
     |> String.split(",", trim: true)
 
+config :cotoami, Cotoami.CotonomaService,
+  global_cotonomas_holder: System.get_env("COTOAMI_GLOBAL_COTONOMAS_HOLDER")
+
 # Redis
 case System.get_env("REDIS_URL") do
   nil ->

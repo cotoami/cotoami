@@ -4,13 +4,19 @@ defmodule Cotoami.CotonomaService do
   """
 
   require Logger
-  import Ecto.Query, only: [preload: 2, where: 3, limit: 2, order_by: 2]
   import Ecto.Changeset, only: [change: 2]
+  import Ecto.Query, warn: false
   alias Cotoami.{
     Repo, Coto, Cotonoma, Amishi,
     AmishiService, CotoGraphService
   }
   alias Cotoami.Exceptions.NotFound
+
+  def global_cotonomas_holder do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:global_cotonomas_holder)
+  end
 
   def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
     posted_in = get!(cotonoma_id)
@@ -112,6 +118,13 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
+  def keys_map(keys) do
+    from(c in Cotonoma, where: c.key in ^keys, select: {c.key, c})
+    |> preload([:coto, :owner])
+    |> Repo.all()
+    |> Map.new()
+  end
+
   def complement_owner(nil), do: nil
   def complement_owner(%Cotonoma{} = cotonoma) do
     case cotonoma.owner do
@@ -166,5 +179,26 @@ defmodule Cotoami.CotonomaService do
       connections:
         CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn, cotonoma)
     }
+  end
+
+  def global_cotonomas do
+    case global_cotonomas_holder_amishi() do
+      nil ->
+        []
+      amishi ->
+        keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn, amishi)
+        cotonomas = keys_map(keys)
+        for key <- keys, cotonomas[key], do: cotonomas[key]
+    end
+  end
+
+  defp global_cotonomas_holder_amishi do
+    case global_cotonomas_holder() do
+      nil ->
+        nil
+      id_or_email ->
+        AmishiService.get(id_or_email) || 
+          AmishiService.get_by_email(id_or_email)
+    end
   end
 end

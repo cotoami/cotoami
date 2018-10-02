@@ -28,8 +28,14 @@ decodeCotonoma =
 
 fetchCotonomas : Cmd Msg
 fetchCotonomas =
-    (Http.get "/api/cotonomas" (Decode.list decodeCotonoma))
-        |> Http.send CotonomasFetched
+    let
+        decodeResponse =
+            Decode.map2 (,)
+                (Decode.field "global" (Decode.list decodeCotonoma))
+                (Decode.field "recent" (Decode.list decodeCotonoma))
+    in
+        Http.get "/api/cotonomas" decodeResponse
+            |> Http.send CotonomasFetched
 
 
 fetchSubCotonomas : Context a -> Cmd Msg

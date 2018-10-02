@@ -12,8 +12,9 @@ defmodule CotoamiWeb.CotonomaController do
   end
 
   def index(conn, _params, amishi) do
-    render(conn, "cotonomas.json", %{
-      cotonomas: CotonomaService.recent_cotonomas(amishi)
+    render(conn, "index.json", %{
+      global: CotonomaService.global_cotonomas(),
+      recent: CotonomaService.recent_cotonomas(amishi)
     })
   end
 

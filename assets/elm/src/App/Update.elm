@@ -167,9 +167,10 @@ update msg model =
         CotonomaPostsFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomasFetched (Ok recentCotonomas) ->
+        CotonomasFetched (Ok ( global, recent )) ->
             { model
-                | recentCotonomas = recentCotonomas
+                | globalCotonomas = global
+                , recentCotonomas = recent
                 , cotonomasLoading = False
             }
                 |> withoutCmd

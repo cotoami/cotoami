@@ -41,7 +41,7 @@ type Msg
     | SessionFetched (Result Http.Error Session)
     | HomePostsFetched (Result Http.Error PaginatedPosts)
     | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
-    | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
