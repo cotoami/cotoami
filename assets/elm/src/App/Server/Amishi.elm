@@ -1,7 +1,12 @@
-module App.Server.Amishi exposing (decodeAmishi, fetchAmishi)
+module App.Server.Amishi
+    exposing
+        ( decodeAmishi
+        , fetchAmishi
+        , fetchInvitees
+        )
 
 import Http
-import Json.Decode as Decode exposing (maybe, string, bool, int)
+import Json.Decode as Decode exposing (maybe, string, bool, int, list)
 import App.Types.Amishi exposing (Amishi)
 
 
@@ -18,7 +23,11 @@ decodeAmishi =
 
 
 fetchAmishi : (Result Http.Error Amishi -> msg) -> String -> Cmd msg
-fetchAmishi msg email =
-    Http.send msg <|
-        Http.get ("/api/amishis/email/" ++ email) <|
-            decodeAmishi
+fetchAmishi tag email =
+    Http.send tag <|
+        Http.get ("/api/amishis/email/" ++ email) decodeAmishi
+
+
+fetchInvitees : (Result Http.Error (List Amishi) -> msg) -> Cmd msg
+fetchInvitees tag =
+    Http.send tag <| Http.get ("/api/invitees") (list decodeAmishi)
