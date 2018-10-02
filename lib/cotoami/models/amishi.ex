@@ -21,6 +21,7 @@ defmodule Cotoami.Amishi do
     field :avatar_url, :string
 
     field :disabled, :boolean
+    field :invite_limit, :integer
 
     belongs_to :inviter, Amishi
 

@@ -1,23 +1,33 @@
-module App.Server.Amishi exposing (decodeAmishi, fetchAmishi)
+module App.Server.Amishi
+    exposing
+        ( decodeAmishi
+        , fetchAmishi
+        , fetchInvitees
+        )
 
 import Http
-import Json.Decode as Decode exposing (maybe, string, bool)
+import Json.Decode as Decode exposing (maybe, string, bool, int, list)
 import App.Types.Amishi exposing (Amishi)
 
 
 decodeAmishi : Decode.Decoder Amishi
 decodeAmishi =
-    Decode.map6 Amishi
+    Decode.map7 Amishi
         (Decode.field "id" string)
         (Decode.field "email" (maybe string))
         (Decode.field "auth_provider" (maybe string))
         (Decode.field "owner" bool)
         (Decode.field "avatar_url" string)
         (Decode.field "display_name" string)
+        (Decode.field "invite_limit" (maybe int))
 
 
 fetchAmishi : (Result Http.Error Amishi -> msg) -> String -> Cmd msg
-fetchAmishi msg email =
-    Http.send msg <|
-        Http.get ("/api/amishis/email/" ++ email) <|
-            decodeAmishi
+fetchAmishi tag email =
+    Http.send tag <|
+        Http.get ("/api/amishis/email/" ++ email) decodeAmishi
+
+
+fetchInvitees : (Result Http.Error (List Amishi) -> msg) -> Cmd msg
+fetchInvitees tag =
+    Http.send tag <| Http.get ("/api/invitees") (list decodeAmishi)
