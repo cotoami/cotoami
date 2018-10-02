@@ -18,6 +18,7 @@ import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
 type alias Model =
     { email : String
+    , invitees : Maybe (List Amishi)
     , requestProcessing : Bool
     , requestStatus : RequestStatus
     }
@@ -33,9 +34,30 @@ type RequestStatus
 defaultModel : Model
 defaultModel =
     { email = ""
+    , invitees = Nothing
     , requestProcessing = False
     , requestStatus = None
     }
+
+
+canInvite : Context context -> Model -> Bool
+canInvite context model =
+    context.session
+        |> Maybe.map
+            (\session ->
+                session.amishi.inviteLimit
+                    |> Maybe.map
+                        (\limit ->
+                            model.invitees
+                                |> Maybe.map
+                                    (\invitees ->
+                                        List.length invitees < limit
+                                    )
+                                |> Maybe.withDefault False
+                        )
+                    |> Maybe.withDefault True
+            )
+        |> Maybe.withDefault False
 
 
 update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -124,6 +146,7 @@ modalConfig context model =
                             , class "email u-full-width"
                             , name "email"
                             , placeholder "amishi@example.com"
+                            , disabled (not (canInvite context model))
                             , value model.email
                             , onInput (AppMsg.InviteModalMsg << EmailInput)
                             ]
@@ -146,7 +169,11 @@ modalConfig context model =
             , buttons =
                 [ button
                     [ class "button button-primary"
-                    , disabled (not (validateEmail model.email) || model.requestProcessing)
+                    , disabled
+                        (not (canInvite context model)
+                            || not (validateEmail model.email)
+                            || model.requestProcessing
+                        )
                     , onClick (AppMsg.InviteModalMsg SendInviteClick)
                     ]
                     [ if model.requestProcessing then
