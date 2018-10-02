@@ -33,6 +33,7 @@ defmodule CotoamiWeb.Router do
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token", EmailAuthController, :signin
+    get "/join/:token", EmailAuthController, :accept_invite
     get "/signout", SessionController, :signout
 
   end

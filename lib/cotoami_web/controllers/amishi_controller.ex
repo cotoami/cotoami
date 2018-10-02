@@ -20,7 +20,7 @@ defmodule CotoamiWeb.AmishiController do
   def invite(conn, %{"email" => email}, amishi) do
     case AmishiService.get_by_email(email) do
       nil ->
-        token = RedisService.generate_invite_token(email)
+        token = RedisService.generate_invite_token(email, amishi)
         host_url = CotoamiWeb.Router.Helpers.url(conn)
         email
         |> CotoamiWeb.Email.invitation(token, host_url, amishi)

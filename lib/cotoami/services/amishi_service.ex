@@ -4,6 +4,7 @@ defmodule Cotoami.AmishiService do
   """
 
   require Logger
+  import Ecto.Changeset
   alias Cotoami.{Repo, Amishi, ExternalUser, EmailUser, GravatarService}
 
   def owner_emails do
@@ -28,6 +29,13 @@ defmodule Cotoami.AmishiService do
     email
     |> GravatarService.get_user()
     |> insert_or_update!()
+  end
+
+  def accept_invite!(invitee_email, %Amishi{id: inviter_id}) do
+    invitee_email
+    |> insert_or_update_by_email!()
+    |> change(inviter_id: inviter_id)
+    |> Repo.update!()
   end
 
   def insert_or_update!(base_user) do

@@ -4,6 +4,7 @@ defmodule CotoamiWeb.Email do
   """
 
   use Bamboo.Phoenix, view: CotoamiWeb.EmailView
+  alias Cotoami.Amishi
 
   def signin_link(email_address, token, host_url) do
     new_email()
@@ -17,7 +18,7 @@ defmodule CotoamiWeb.Email do
   end
 
   def invitation(email_address, token, host_url,
-      %{email: inviter_email, display_name: inviter_name}) do
+      %Amishi{email: inviter_email, name: inviter_name}) do
     new_email()
     |> to(email_address)
     |> from({"Cotoami", from()})
