@@ -257,9 +257,12 @@ inviteesDiv model =
     model.invitees
         |> Maybe.map
             (\invitees ->
-                div [ class "invitees" ]
-                    [ ol [ class "invitees" ]
-                        (List.map inviteeItem invitees)
-                    ]
+                if List.isEmpty invitees then
+                    Utils.HtmlUtil.none
+                else
+                    div [ class "invitees" ]
+                        [ ol [ class "invitees" ]
+                            (List.map inviteeItem invitees)
+                        ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
