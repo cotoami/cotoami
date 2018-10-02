@@ -11,6 +11,15 @@ langToLocaleId lang =
         "ja" ->
             "ja_jp"
 
+        "ja-jp" ->
+            "ja_jp"
+
+        "ru" ->
+            "ru_ru"
+
+        "ru-RU" ->
+            "ru_ru"
+
         _ ->
             lang
 
