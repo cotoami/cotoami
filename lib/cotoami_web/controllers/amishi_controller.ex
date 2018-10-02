@@ -32,4 +32,9 @@ defmodule CotoamiWeb.AmishiController do
         |> json(Phoenix.View.render_one(invitee, AmishiView, "amishi.json"))
     end
   end
+
+  def invitees(conn, _params, amishi) do
+    amishis = AmishiService.invitees(amishi)
+    render(conn, "amishis.json", %{amishis: amishis})
+  end
 end
