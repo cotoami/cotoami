@@ -1,17 +1,27 @@
-module App.Modals.InviteModal exposing (Model, defaultModel, update, view)
+module App.Modals.InviteModal
+    exposing
+        ( Model
+        , defaultModel
+        , sendInit
+        , update
+        , view
+        )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Json.Decode as Decode
+import Utils.HtmlUtil
 import Utils.StringUtil exposing (validateEmail)
 import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Modal as Modal
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Amishi)
-import App.Server.Amishi exposing (decodeAmishi)
+import App.Types.Session exposing (Session)
+import App.Server.Amishi
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Commands
 import App.Submodels.Context exposing (Context)
 import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
 
@@ -60,9 +70,27 @@ canInvite context model =
         |> Maybe.withDefault False
 
 
+sendInit : Cmd AppMsg.Msg
+sendInit =
+    AppMsg.InviteModalMsg Init
+        |> App.Commands.sendMsg
+
+
 update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
+        Init ->
+            ( model
+            , App.Server.Amishi.fetchInvitees
+                (AppMsg.InviteModalMsg << InviteesFetched)
+            )
+
+        InviteesFetched (Ok invitees) ->
+            { model | invitees = Just invitees } |> withoutCmd
+
+        InviteesFetched (Err error) ->
+            model |> withoutCmd
+
         EmailInput content ->
             { model | email = content } |> withoutCmd
 
@@ -86,7 +114,7 @@ update msg model =
                 _ ->
                     Nothing
             )
-                |> Maybe.map (Decode.decodeString decodeAmishi)
+                |> Maybe.map (Decode.decodeString App.Server.Amishi.decodeAmishi)
                 |> Maybe.andThen Result.toMaybe
                 |> Maybe.map
                     (\invitee ->
@@ -112,13 +140,13 @@ sendInvite email =
 
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
-    modalConfig context model
-        |> Just
+    context.session
+        |> Maybe.map (\session -> modalConfig context session model)
         |> Modal.view "invite-modal"
 
 
-modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
-modalConfig context model =
+modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig context session model =
     case model.requestStatus of
         Approved acceptedEmail ->
             { closeMessage = CloseModal
@@ -164,7 +192,16 @@ modalConfig context model =
                                 ]
 
                         _ ->
-                            div [] []
+                            Utils.HtmlUtil.none
+                    , (Maybe.map2
+                        (\limit invitees ->
+                            div [ class "invites-remaining" ]
+                                [ text (toString (limit - List.length invitees)) ]
+                        )
+                        session.amishi.inviteLimit
+                        model.invitees
+                      )
+                        |> Maybe.withDefault Utils.HtmlUtil.none
                     ]
             , buttons =
                 [ button

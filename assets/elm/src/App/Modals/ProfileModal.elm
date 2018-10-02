@@ -27,7 +27,7 @@ update context msg model =
         OpenInviteModal ->
             { model | inviteModal = App.Modals.InviteModal.defaultModel }
                 |> App.Submodels.Modals.openModal InviteModal
-                |> withoutCmd
+                |> withCmd (\_ -> App.Modals.InviteModal.sendInit)
 
         SelectImportFile ->
             ( model, App.Ports.ImportFile.selectImportFile () )
