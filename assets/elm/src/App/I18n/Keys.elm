@@ -57,6 +57,7 @@ type TextKey
     | InviteModal_InviteeAlreadyExists
     | InviteModal_SendInvite
     | InviteModal_Sending
+    | InviteModal_InvitesRemaining Int
     | CotoToolbar_Connect
     | CotoToolbar_Pin
     | CotoToolbar_Edit
@@ -83,3 +84,4 @@ type TextKey
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
     | CotoSelection_CotosSelected Int
+    | Reorder_CloseReorderMode

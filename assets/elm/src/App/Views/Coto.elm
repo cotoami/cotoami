@@ -22,10 +22,12 @@ import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Graph exposing (Direction(..), Graph, Connection, InboundConnection)
+import App.Types.Connection exposing (Direction(..), Connection, InboundConnection, Reordering(..))
+import App.Types.Graph exposing (Graph)
 import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Views.CotoToolbar
+import App.Views.Reorder
 
 
 cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
@@ -63,23 +65,24 @@ type alias Markdown =
     String -> Html Msg
 
 
-bodyDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg
-bodyDiv context elementId markdown model =
+bodyDiv : Context a -> Maybe InboundConnection -> ElementId -> Markdown -> BodyModel r -> Html Msg
+bodyDiv context maybeInbound elementId markdown model =
     div [ class "coto-body" ]
         [ model.asCotonoma
             |> Maybe.map (cotonomaLink context CotonomaClick model.amishi)
             |> Maybe.withDefault
-                (if App.Submodels.Context.inReorderMode elementId context then
-                    contentDivInReorder model
+                (if App.Types.Connection.inReordering maybeInbound then
+                    div [ class "content-in-reorder" ]
+                        [ text (abbreviate model) ]
                  else
                     contentDiv context elementId markdown model
                 )
         ]
 
 
-bodyDivByCoto : Context a -> ElementId -> Coto -> Html Msg
-bodyDivByCoto context elementId coto =
-    bodyDiv context elementId App.Markdown.markdown coto
+bodyDivByCoto : Context a -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
+bodyDivByCoto context maybeInbound elementId coto =
+    bodyDiv context maybeInbound elementId App.Markdown.markdown coto
 
 
 contentDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg
@@ -117,13 +120,6 @@ contentDiv context elementId markdown model =
         |> Maybe.withDefault (markdown model.content)
 
 
-contentDivInReorder : BodyModel r -> Html Msg
-contentDivInReorder model =
-    div [ class "content-in-reorder" ]
-        [ text (abbreviate model)
-        ]
-
-
 
 --
 -- Header
@@ -134,26 +130,22 @@ headerDiv : Context a -> Graph -> Maybe InboundConnection -> ElementId -> Coto -
 headerDiv context graph maybeInbound elementId coto =
     div
         [ class "coto-header" ]
-        [ if App.Submodels.Context.inReorderMode elementId context then
-            maybeInbound
-                |> Maybe.map
-                    (\inbound -> reorderToolButtonsSpan context inbound elementId)
-                |> Maybe.withDefault
-                    Utils.HtmlUtil.none
-          else
-            context.session
-                |> Maybe.map
-                    (\session ->
-                        App.Views.CotoToolbar.view
-                            context
-                            session
-                            graph
-                            maybeInbound
-                            elementId
-                            coto
-                    )
-                |> Maybe.withDefault
-                    Utils.HtmlUtil.none
+        [ App.Views.Reorder.maybeReorderTools context maybeInbound elementId
+            |> Maybe.withDefault
+                (context.session
+                    |> Maybe.map
+                        (\session ->
+                            App.Views.CotoToolbar.view
+                                context
+                                session
+                                graph
+                                maybeInbound
+                                elementId
+                                coto
+                        )
+                    |> Maybe.withDefault
+                        Utils.HtmlUtil.none
+                )
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
@@ -173,71 +165,6 @@ headerDiv context graph maybeInbound elementId coto =
           else
             Utils.HtmlUtil.none
         ]
-
-
-reorderToolButtonsSpan : Context a -> InboundConnection -> ElementId -> Html Msg
-reorderToolButtonsSpan context inbound elementId =
-    let
-        maybeParentId =
-            Maybe.map (.id) inbound.parent
-
-        index =
-            inbound.index
-
-        isFirst =
-            inbound.index == 0
-
-        isLast =
-            inbound.index == (inbound.siblings - 1)
-    in
-        span [ class "reorder-tool-buttons" ]
-            [ a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "move-to-top", True )
-                    , ( "disabled", isFirst )
-                    ]
-                , title "Move to the top"
-                , onLinkButtonClick (MoveToFirst maybeParentId index)
-                ]
-                [ materialIcon "skip_previous" Nothing ]
-            , a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "move-up", True )
-                    , ( "disabled", isFirst )
-                    ]
-                , title "Move up"
-                , onLinkButtonClick (SwapOrder maybeParentId index (index - 1))
-                ]
-                [ materialIcon "play_arrow" Nothing ]
-            , a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "move-down", True )
-                    , ( "disabled", isLast )
-                    ]
-                , title "Move down"
-                , onLinkButtonClick (SwapOrder maybeParentId index (index + 1))
-                ]
-                [ materialIcon "play_arrow" Nothing ]
-            , a
-                [ classList
-                    [ ( "tool-button", True )
-                    , ( "move-to-bottom", True )
-                    , ( "disabled", isLast )
-                    ]
-                , title "Move to the bottom"
-                , onLinkButtonClick (MoveToLast maybeParentId index)
-                ]
-                [ materialIcon "skip_next" Nothing ]
-            , a
-                [ class "tool-button close"
-                , title "Close reorder tools"
-                , onLinkButtonClick (ToggleReorderMode elementId)
-                ]
-                [ materialIcon "close" Nothing ]
-            ]
 
 
 
@@ -299,24 +226,25 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
 
 subCotosDiv : Context a -> Graph -> ElementId -> Coto -> Html Msg
 subCotosDiv context graph parentElementId coto =
-    if App.Submodels.Context.inReorderMode parentElementId context then
-        div [] []
-    else
-        graph.connections
-            |> Dict.get coto.id
-            |> Maybe.map
-                (\connections ->
-                    div []
-                        [ div [ class "main-sub-border" ] []
-                        , connectionsDiv
-                            context
-                            graph
-                            parentElementId
-                            coto
-                            connections
-                        ]
-                )
-            |> Maybe.withDefault Utils.HtmlUtil.none
+    graph.connections
+        |> Dict.get coto.id
+        |> Maybe.map
+            (\connections ->
+                div []
+                    [ div [ class "main-sub-border" ] []
+                    , if context.reordering == (Just (SubCotos parentElementId)) then
+                        App.Views.Reorder.closeButtonDiv context
+                      else
+                        Utils.HtmlUtil.none
+                    , connectionsDiv
+                        context
+                        graph
+                        parentElementId
+                        coto
+                        connections
+                    ]
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 connectionsDiv : Context a -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
@@ -338,9 +266,13 @@ connectionsDiv context graph parentElementId parentCoto connections =
                                     parentElementId
                                     (InboundConnection
                                         (Just parentCoto)
+                                        (Just parentElementId)
                                         connection
                                         (List.length connections)
                                         index
+                                        (context.reordering
+                                            == Just (SubCotos parentElementId)
+                                        )
                                     )
                                     coto
                                 ]
@@ -377,7 +309,7 @@ subCotoDiv context graph parentElementId inbound coto =
                     coto
                 , parentsDiv graph maybeParentId coto.id
                 , div [ class "sub-coto-body" ]
-                    [ bodyDivByCoto context elementId coto
+                    [ bodyDivByCoto context (Just inbound) elementId coto
                     , subCotosButtonDiv graph (Just "more_vert") (Just coto.id)
                     ]
                 ]

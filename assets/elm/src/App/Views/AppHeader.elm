@@ -4,34 +4,76 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
 import Html.Keyed
+import Utils.StringUtil
+import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
+import App.Messages as AppMsg
+import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
+import App.Submodels.Modals exposing (Modals, Modal(SigninModal, ProfileModal))
 import App.Messages
-    exposing
-        ( Msg
-            ( HomeClick
-            , OpenSigninModal
-            , OpenProfileModal
-            , NavigationToggle
-            , SearchInputFocusChanged
-            , ClearQuickSearchInput
-            , QuickSearchInput
-            , Search
-            )
-        )
+import App.Modals.SigninModal
+import App.Server.Post
 
 
-view : Model -> Html Msg
+type alias UpdateModel model =
+    Modals
+        { model
+            | signinModal : App.Modals.SigninModal.Model
+            , searchResults : SearchResults
+            , navigationToggled : Bool
+            , navigationOpen : Bool
+        }
+
+
+update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        OpenSigninModal ->
+            { model
+                | signinModal =
+                    App.Modals.SigninModal.initModel
+                        model.signinModal.authSettings
+            }
+                |> App.Submodels.Modals.openModal SigninModal
+                |> withoutCmd
+
+        OpenProfileModal ->
+            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
+
+        ClearQuickSearchInput ->
+            { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+            }
+                |> withoutCmd
+
+        QuickSearchInput query ->
+            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
+                |> withCmdIf
+                    (\_ -> Utils.StringUtil.isNotBlank query)
+                    (\_ -> App.Server.Post.search query)
+
+        NavigationToggle ->
+            { model
+                | navigationToggled = True
+                , navigationOpen = (not model.navigationOpen)
+            }
+                |> withoutCmd
+
+
+view : Model -> Html AppMsg.Msg
 view model =
     div [ id "app-header" ]
         [ div [ class "location" ]
             (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
-                        [ a [ class "to-home", onLinkButtonClick HomeClick, href "/" ]
+                        [ a [ class "to-home", onLinkButtonClick AppMsg.MoveToHome, href "/" ]
                             [ materialIcon "home" Nothing ]
                         , materialIcon "navigate_next" (Just "arrow")
                         , span [ class "cotonoma-name" ] [ text cotonoma.name ]
@@ -53,7 +95,10 @@ view model =
                 |> Maybe.map
                     (\session ->
                         [ quickSearchForm model.searchResults
-                        , a [ title "Profile", onClick OpenProfileModal ]
+                        , a
+                            [ title "Profile"
+                            , onClick (AppMsg.AppHeaderMsg OpenProfileModal)
+                            ]
                             [ img [ class "avatar", src session.amishi.avatarUrl ] [] ]
                         ]
                     )
@@ -61,7 +106,7 @@ view model =
                     [ a
                         [ class "tool-button"
                         , title "Sign in"
-                        , onClick OpenSigninModal
+                        , onClick (AppMsg.AppHeaderMsg OpenSigninModal)
                         ]
                         [ materialIcon "perm_identity" Nothing ]
                     ]
@@ -69,11 +114,11 @@ view model =
         ]
 
 
-quickSearchForm : SearchResults -> Html Msg
+quickSearchForm : SearchResults -> Html AppMsg.Msg
 quickSearchForm searchResults =
     Html.form
         [ class "quick-search"
-        , onSubmit Search
+        , onSubmit AppMsg.Search
         ]
         [ Html.Keyed.node
             "span"
@@ -83,9 +128,9 @@ quickSearchForm searchResults =
                     [ type_ "text"
                     , class "search-input"
                     , defaultValue searchResults.query
-                    , onFocus (SearchInputFocusChanged True)
-                    , onBlur (SearchInputFocusChanged False)
-                    , onInput QuickSearchInput
+                    , onFocus (AppMsg.SearchInputFocusChanged True)
+                    , onBlur (AppMsg.SearchInputFocusChanged False)
+                    , onInput (AppMsg.AppHeaderMsg << QuickSearchInput)
                     ]
                     []
               )
@@ -94,7 +139,7 @@ quickSearchForm searchResults =
         , if App.Types.SearchResults.hasQuery searchResults then
             a
                 [ class "tool-button clear-query"
-                , onLinkButtonClick ClearQuickSearchInput
+                , onLinkButtonClick (AppMsg.AppHeaderMsg ClearQuickSearchInput)
                 ]
                 [ materialIcon "close" Nothing ]
           else
@@ -102,7 +147,7 @@ quickSearchForm searchResults =
         ]
 
 
-navigationToggle : Model -> Html Msg
+navigationToggle : Model -> Html AppMsg.Msg
 navigationToggle model =
     a
         [ classList
@@ -110,7 +155,7 @@ navigationToggle model =
             , ( "toggle-navigation", True )
             , ( "hidden", App.Submodels.LocalCotos.isNavigationEmpty model )
             ]
-        , onClick NavigationToggle
+        , onClick (AppMsg.AppHeaderMsg NavigationToggle)
         ]
         [ materialIcon
             (if model.navigationOpen then

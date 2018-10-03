@@ -166,6 +166,14 @@ oauthButton provider =
                     ]
                 ]
 
+        "patreon" ->
+            div [ class "oauth-button-container" ]
+                [ a [ class "button", href "/auth/patreon" ]
+                    [ img [ class "patreon-icon", src "/images/Patreon-Icon_Primary.png" ] []
+                    , text "Sign in with Patreon"
+                    ]
+                ]
+
         _ ->
             Utils.HtmlUtil.none
 

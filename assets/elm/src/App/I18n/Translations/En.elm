@@ -174,6 +174,12 @@ text key =
         InviteModal_Sending ->
             "Sending"
 
+        InviteModal_InvitesRemaining invites ->
+            if invites == 1 then
+                (toString invites) ++ " invite remaining"
+            else
+                (toString invites) ++ " invites remaining"
+
         CotoToolbar_Connect ->
             "Connect from the selected cotos"
 
@@ -254,3 +260,6 @@ text key =
                 "coto selected"
             else
                 "cotos selected"
+
+        Reorder_CloseReorderMode ->
+            "Done reordering"

@@ -45,8 +45,14 @@
     }
   }
 
+  div.global-cotonomas,
   div.recent-cotonomas {
     margin-bottom: 20px;
+  }
+
+  div.global-cotonomas div.navigation-title i {
+    vertical-align: bottom;
+    font-size: 18px;
   }
 
   div.coto-as-cotonoma {

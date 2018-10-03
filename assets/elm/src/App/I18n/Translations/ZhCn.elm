@@ -177,6 +177,12 @@ text key =
         InviteModal_Sending ->
             "正在发送"
 
+        InviteModal_InvitesRemaining invites ->
+            if invites == 1 then
+                (toString invites) ++ " invite remaining"
+            else
+                (toString invites) ++ " invites remaining"
+
         CotoToolbar_Connect ->
             "连接选择中的投稿"
 
@@ -254,3 +260,6 @@ text key =
 
         CotoSelection_CotosSelected count ->
             "件在选择中"
+
+        Reorder_CloseReorderMode ->
+            "完成排列"

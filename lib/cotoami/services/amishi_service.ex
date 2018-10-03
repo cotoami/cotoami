@@ -4,6 +4,8 @@ defmodule Cotoami.AmishiService do
   """
 
   require Logger
+  import Ecto.Changeset
+  import Ecto.Query, warn: false
   alias Cotoami.{Repo, Amishi, ExternalUser, EmailUser, GravatarService}
 
   def owner_emails do
@@ -30,6 +32,13 @@ defmodule Cotoami.AmishiService do
     |> insert_or_update!()
   end
 
+  def accept_invite!(invitee_email, %Amishi{id: inviter_id}) do
+    invitee_email
+    |> insert_or_update_by_email!()
+    |> change(inviter_id: inviter_id)
+    |> Repo.update!()
+  end
+
   def insert_or_update!(base_user) do
     case get_by_base_user(base_user) do
       nil ->
@@ -51,5 +60,23 @@ defmodule Cotoami.AmishiService do
   def append_owner_flag(nil), do: nil
   def append_owner_flag(%Amishi{} = amishi) do
     Map.put(amishi, :owner, amishi.email in owner_emails())
+  end
+
+  def can_invite_someone?(%Amishi{invite_limit: invite_limit} = amishi) do
+    case invite_limit do
+      nil -> 
+        true
+      limit ->
+        amishi |> invitees() |> Enum.count() < limit
+    end
+  end
+
+  def invitees(%Amishi{id: inviter_id}) do
+    from(
+      a in Amishi, 
+      where: a.inviter_id == ^inviter_id,
+      order_by: [desc: a.inserted_at]
+    )
+    |> Repo.all()
   end
 end

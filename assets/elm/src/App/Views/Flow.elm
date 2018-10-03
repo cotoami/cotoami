@@ -27,7 +27,7 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction(..), Graph, member)
+import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)

@@ -13,7 +13,8 @@ import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, ElementId, CotoId)
-import App.Types.Graph exposing (Graph, Connection, InboundConnection, Direction(..))
+import App.Types.Graph exposing (Graph)
+import App.Types.Connection exposing (Connection, InboundConnection, Direction(..))
 import App.Messages as AppMsg exposing (..)
 import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
@@ -268,7 +269,7 @@ reorderButton context session inbound elementId coto =
         (a
             [ class "tool-button toggle-reorder-mode"
             , title (context.i18nText I18nKeys.CotoToolbar_Reorder)
-            , onLinkButtonClick (ToggleReorderMode elementId)
+            , onLinkButtonClick (SetReorderMode inbound.parentElementId)
             ]
             [ faIcon "sort" Nothing ]
         )
