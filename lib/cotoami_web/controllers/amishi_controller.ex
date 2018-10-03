@@ -1,7 +1,7 @@
 defmodule CotoamiWeb.AmishiController do
   use CotoamiWeb, :controller
   require Logger
-  alias Cotoami.{AmishiService, RedisService}
+  alias Cotoami.{Amishi, AmishiService, RedisService}
   alias CotoamiWeb.AmishiView
 
   def action(conn, _) do
@@ -40,5 +40,15 @@ defmodule CotoamiWeb.AmishiController do
   def invitees(conn, _params, amishi) do
     amishis = AmishiService.invitees(amishi)
     render(conn, "amishis.json", %{amishis: amishis})
+  end
+
+  def refresh_email_user_data(conn, _params, %{owner: true}) do
+    email_users =
+      Amishi
+      |> Repo.all()
+      |> Enum.map(&(&1.email))
+      |> Enum.reject(&is_nil/1)
+      |> Enum.map(&AmishiService.insert_or_update_by_email!/1)
+    text conn, "#{length email_users} records updated."
   end
 end

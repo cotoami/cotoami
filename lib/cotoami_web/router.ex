@@ -65,6 +65,7 @@ defmodule CotoamiWeb.Router do
 
     get "/invite/:email", AmishiController, :invite
     get "/invitees", AmishiController, :invitees
+    get "/amishis/email/refresh", AmishiController, :refresh_email_user_data
     get "/amishis/email/:email", AmishiController, :show_by_email
 
     get "/search/:query", CotoController, :search
