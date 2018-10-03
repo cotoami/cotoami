@@ -47,12 +47,12 @@ defmodule CotoamiWeb.OAuth2.Patreon do
       end
     Logger.info "pledges: #{Poison.encode!(pledges, pretty: true)}"
 
-    %ExternalUser{
+    {:ok, %ExternalUser{
       auth_provider: "patreon",
       auth_id: user["id"],
       name: user["attributes"]["full_name"], 
       avatar_url: user["attributes"]["image_url"]
-    }
+    }}
   end
 
   # Strategy Callbacks

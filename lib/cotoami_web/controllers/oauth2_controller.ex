@@ -23,13 +23,17 @@ defmodule CotoamiWeb.OAuth2Controller do
 
   def callback(conn, %{"provider" => provider, "code" => code}) do
     client = get_token!(provider, code)
-    user = get_user!(provider, client)
-    amishi = AmishiService.insert_or_update!(user)
-    conn
-    |> AuthPlug.start_session(amishi)
-    |> put_session(:access_token, client.token.access_token)
-    |> redirect(to: "/")
-    |> halt()
+    case get_user!(provider, client) do
+      {:ok, user} ->
+        amishi = AmishiService.insert_or_update!(user)
+        conn
+        |> AuthPlug.start_session(amishi)
+        |> put_session(:access_token, client.token.access_token)
+        |> redirect(to: "/")
+        |> halt()
+      {:error, reason} ->
+        send_resp(conn, :unauthorized, reason)
+    end
   end
 
   defp authorize_url!("google"), do: Google.authorize_url!

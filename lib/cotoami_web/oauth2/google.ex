@@ -35,12 +35,12 @@ defmodule CotoamiWeb.OAuth2.Google do
       client_with_token
       |> OAuth2.Client.get!("https://www.googleapis.com/plus/v1/people/me/openIdConnect")
     Logger.info "OAuth2 user: #{inspect user}"
-    %ExternalUser{
+    {:ok, %ExternalUser{
       auth_provider: "google",
       auth_id: user["sub"],
       name: user["name"], 
       avatar_url: user["picture"]
-    }
+    }}
   end
 
   # Strategy Callbacks
