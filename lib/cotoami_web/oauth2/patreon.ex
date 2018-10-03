@@ -30,15 +30,21 @@ defmodule CotoamiWeb.OAuth2.Patreon do
   @user_request_options "?fields%5Bpledge%5D=amount_cents,declined_since,is_paused"
 
   def get_user!(client_with_token) do
-    %{body: %{"data" => user, "included" => included}} = 
+    %{body: body} = 
       client_with_token
       |> OAuth2.Client.get!("/api/oauth2/api/current_user#{@user_request_options}")
+
+    user = body["data"]
     Logger.info "OAuth2 user: #{inspect user}"
 
     pledges = 
-      included 
-      |> Enum.filter(&(&1["type"] == "pledge"))
-      |> Enum.map(&(&1["attributes"]))
+      case body["included"] do
+        nil -> []
+        included -> 
+          included 
+          |> Enum.filter(&(&1["type"] == "pledge"))
+          |> Enum.map(&(&1["attributes"]))
+      end
     Logger.info "pledges: #{Poison.encode!(pledges, pretty: true)}"
 
     %ExternalUser{
