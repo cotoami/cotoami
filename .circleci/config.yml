@@ -140,12 +140,12 @@ workflows:
           filters:
             branches:
               only: develop
-      - deploy-develop:
-          requires:
-            - release-develop
-          filters:
-            branches:
-              only: develop
+      # - deploy-develop:
+      #     requires:
+      #       - release-develop
+      #     filters:
+      #       branches:
+      #         only: develop
       - deploy-demo:
           requires:
             - build
