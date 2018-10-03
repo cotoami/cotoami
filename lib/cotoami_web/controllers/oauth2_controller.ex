@@ -31,7 +31,7 @@ defmodule CotoamiWeb.OAuth2Controller do
     |> halt()
   end
 
-  defp authorize_url!("google"), do: Google.authorize_url!(scope: "https://www.googleapis.com/auth/userinfo.email")
+  defp authorize_url!("google"), do: Google.authorize_url!(scope: "https://www.googleapis.com/auth/userinfo.profile")
   defp authorize_url!("github"), do: GitHub.authorize_url!
   defp authorize_url!(_), do: raise "No matching provider available"
 
