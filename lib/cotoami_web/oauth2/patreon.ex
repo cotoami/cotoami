@@ -18,8 +18,8 @@ defmodule CotoamiWeb.OAuth2.Patreon do
     |> OAuth2.Client.new()
   end
 
-  def authorize_url!(params \\ []) do
-    OAuth2.Client.authorize_url!(client(), params)
+  def authorize_url!() do
+    OAuth2.Client.authorize_url!(client(), [])
   end
 
   def get_token!(params \\ [], _headers \\ []) do
@@ -27,11 +27,20 @@ defmodule CotoamiWeb.OAuth2.Patreon do
       client(), Keyword.merge(params, client_secret: client().client_secret))
   end
 
+  @user_request_options "?fields%5Bpledge%5D=amount_cents,declined_since,is_paused"
+
   def get_user!(client_with_token) do
-    %{body: %{"data" => user}} = 
+    %{body: %{"data" => user, "included" => included}} = 
       client_with_token
-      |> OAuth2.Client.get!("/api/oauth2/api/current_user")
+      |> OAuth2.Client.get!("/api/oauth2/api/current_user#{@user_request_options}")
     Logger.info "OAuth2 user: #{inspect user}"
+
+    pledges = 
+      included 
+      |> Enum.filter(&(&1["type"] == "pledge"))
+      |> Enum.map(&(&1["attributes"]))
+    Logger.info "pledges: #{Poison.encode!(pledges, pretty: true)}"
+
     %ExternalUser{
       auth_provider: "patreon",
       auth_id: user["id"],
