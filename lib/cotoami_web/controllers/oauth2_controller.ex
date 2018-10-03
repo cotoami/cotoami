@@ -5,6 +5,7 @@ defmodule CotoamiWeb.OAuth2Controller do
   alias CotoamiWeb.AuthPlug
   alias CotoamiWeb.OAuth2.Google
   alias CotoamiWeb.OAuth2.GitHub
+  alias CotoamiWeb.OAuth2.Patreon
 
   def providers do
     :cotoami
@@ -33,12 +34,15 @@ defmodule CotoamiWeb.OAuth2Controller do
 
   defp authorize_url!("google"), do: Google.authorize_url!(scope: "https://www.googleapis.com/auth/userinfo.profile")
   defp authorize_url!("github"), do: GitHub.authorize_url!
+  defp authorize_url!("patreon"), do: Patreon.authorize_url!
   defp authorize_url!(_), do: raise "No matching provider available"
 
   defp get_token!("google", code), do: Google.get_token!(code: code)
   defp get_token!("github", code), do: GitHub.get_token!(code: code)
+  defp get_token!("patreon", code), do: Patreon.get_token!(code: code)
   defp get_token!(_, _), do: raise "No matching provider available"
 
   defp get_user!("google", client), do: Google.get_user!(client)
   defp get_user!("github", client), do: GitHub.get_user!(client)
+  defp get_user!("patreon", client), do: Patreon.get_user!(client)
 end

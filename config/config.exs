@@ -29,7 +29,12 @@ config :cotoami, CotoamiWeb.EmailAuthController,
   |> String.to_existing_atom()
 
 # OAuth2
-config :oauth2, debug: true
+config :oauth2, 
+  serializers: %{
+    "application/json" => Poison,
+    "application/vnd.api+json" => Poison
+  },
+  debug: true
 
 config :cotoami, CotoamiWeb.OAuth2Controller,
   providers:
@@ -45,6 +50,11 @@ config :cotoami, CotoamiWeb.OAuth2.GitHub,
   client_id: System.get_env("OAUTH_GITHUB_CLIENT_ID"),
   client_secret: System.get_env("OAUTH_GITHUB_CLIENT_SECRET"),
   redirect_uri: System.get_env("OAUTH_GITHUB_REDIRECT_URI")
+
+config :cotoami, CotoamiWeb.OAuth2.Patreon,
+  client_id: System.get_env("OAUTH_PATREON_CLIENT_ID"),
+  client_secret: System.get_env("OAUTH_PATREON_CLIENT_SECRET"),
+  redirect_uri: System.get_env("OAUTH_PATREON_REDIRECT_URI")
 
 # Amishi-related
 config :cotoami, Cotoami.AmishiService,
