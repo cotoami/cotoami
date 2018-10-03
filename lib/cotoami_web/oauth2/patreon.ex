@@ -45,14 +45,18 @@ defmodule CotoamiWeb.OAuth2.Patreon do
           |> Enum.filter(&(&1["type"] == "pledge"))
           |> Enum.map(&(&1["attributes"]))
       end
-    Logger.info "pledges: #{Poison.encode!(pledges, pretty: true)}"
 
-    {:ok, %ExternalUser{
+    check_pledges(%ExternalUser{
       auth_provider: "patreon",
       auth_id: user["id"],
       name: user["attributes"]["full_name"], 
       avatar_url: user["attributes"]["image_url"]
-    }}
+    }, pledges)
+  end
+
+  defp check_pledges(%ExternalUser{} = user, pledges) do
+    Logger.info "pledges: #{Poison.encode!(pledges, pretty: true)}"
+    {:ok, user}
   end
 
   # Strategy Callbacks
