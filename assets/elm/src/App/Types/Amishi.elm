@@ -14,6 +14,7 @@ type alias Amishi =
     , owner : Bool
     , avatarUrl : String
     , displayName : String
+    , inviteLimit : Maybe Int
     }
 
 

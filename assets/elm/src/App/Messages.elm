@@ -7,13 +7,15 @@ import Navigation exposing (Location)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction, Graph)
+import App.Types.Graph exposing (Graph)
+import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
 import App.Views.StockMsg
 import App.Views.TraversalsMsg
 import App.Views.CotoSelectionMsg
 import App.Views.CotoToolbarMsg
+import App.Views.ReorderMsg
 import App.Modals.SigninModalMsg
 import App.Modals.ProfileModalMsg
 import App.Modals.EditorModalMsg
@@ -33,14 +35,13 @@ type Msg
     | Confirm
     | AppClick
     | OnLocationChange Location
-    | NavigationToggle
-    | HomeClick
+    | MoveToHome
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
     | SessionFetched (Result Http.Error Session)
     | HomePostsFetched (Result Http.Error PaginatedPosts)
     | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedPosts ))
-    | CotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
@@ -48,8 +49,6 @@ type Msg
       -- Search
       --
     | SearchInputFocusChanged Bool
-    | ClearQuickSearchInput
-    | QuickSearchInput String
     | SearchInput String
     | Search
     | SearchResultsFetched (Result Http.Error PaginatedPosts)
@@ -80,11 +79,8 @@ type Msg
     | Connected (Result Http.Error (List String))
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
-    | ToggleReorderMode ElementId
-    | SwapOrder (Maybe CotoId) Int Int
-    | MoveToFirst (Maybe CotoId) Int
-    | MoveToLast (Maybe CotoId) Int
-    | ConnectionsReordered (Result Http.Error String)
+    | SetReorderMode (Maybe ElementId)
+    | CloseReorderMode
       --
       -- Pushed
       --
@@ -98,15 +94,15 @@ type Msg
       --
       -- Sub components
       --
+    | AppHeaderMsg App.Views.AppHeaderMsg.Msg
     | ViewSwitchMsg App.Views.ViewSwitchMsg.Msg
     | FlowMsg App.Views.FlowMsg.Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg
     | CotoSelectionMsg App.Views.CotoSelectionMsg.Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
-    | OpenSigninModal
+    | ReorderMsg App.Views.ReorderMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
-    | OpenProfileModal
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto

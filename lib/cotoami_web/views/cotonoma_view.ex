@@ -2,6 +2,16 @@ defmodule CotoamiWeb.CotonomaView do
   use CotoamiWeb, :view
   alias CotoamiWeb.{CotoView, AmishiView}
 
+  def render("index.json", %{
+    global: global_cotonomas, 
+    recent: recent_cotonomas
+  }) do
+    %{
+      global: render_many(global_cotonomas, __MODULE__, "cotonoma.json"),
+      recent: render_many(recent_cotonomas, __MODULE__, "cotonoma.json")
+    }
+  end
+
   def render("cotonomas.json", %{cotonomas: cotonomas}) do
     render_many(cotonomas, __MODULE__, "cotonoma.json")
   end

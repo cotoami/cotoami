@@ -1,10 +1,6 @@
 module App.Types.Graph
     exposing
-        ( Direction(..)
-        , Connection
-        , initConnection
-        , InboundConnection
-        , Graph
+        ( Graph
         , defaultGraph
         , initGraph
         , mergeSubgraph
@@ -36,41 +32,12 @@ import Maybe exposing (withDefault)
 import List.Extra
 import Exts.Maybe exposing (isJust)
 import App.Types.Amishi exposing (AmishiId)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-
-
-type Direction
-    = Outbound
-    | Inbound
-
-
-type alias Connection =
-    { key : String
-    , amishiId : AmishiId
-    , start : Maybe CotoId
-    , end : CotoId
-    }
-
-
-initConnection : AmishiId -> Maybe CotoId -> CotoId -> Connection
-initConnection amishiId maybeStart end =
-    let
-        key =
-            (withDefault "root" maybeStart) ++ " -> " ++ end
-    in
-        Connection key amishiId maybeStart end
+import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey)
+import App.Types.Connection exposing (Connection, Direction(..))
 
 
 type alias ConnectionDict =
     Dict CotoId (List Connection)
-
-
-type alias InboundConnection =
-    { parent : Maybe Coto
-    , connection : Connection
-    , siblings : Int
-    , index : Int
-    }
 
 
 type alias Graph =
@@ -195,7 +162,12 @@ pinCoto amishiId coto graph =
         { graph
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
-                (initConnection amishiId Nothing coto.id) :: graph.rootConnections
+                (App.Types.Connection.initConnection
+                    amishiId
+                    Nothing
+                    coto.id
+                )
+                    :: graph.rootConnections
         }
             |> updateReachableCotoIds_
 
@@ -219,7 +191,7 @@ connect_ amishiId start end graph =
                 |> Dict.insert end.id end
 
         newConnection =
-            initConnection amishiId (Just start.id) end.id
+            App.Types.Connection.initConnection amishiId (Just start.id) end.id
 
         connections =
             if connected start.id end.id graph then

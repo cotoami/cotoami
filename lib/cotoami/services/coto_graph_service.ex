@@ -222,6 +222,17 @@ defmodule Cotoami.CotoGraphService do
       cotonoma.coto.id, coto.id, @rel_type_has_a, common_rel_props(amishi.id, cotonoma.id))
   end
 
+  def pinned_cotonoma_keys(bolt_conn, %Amishi{id: amishi_id}) do
+    query = ~s"""
+      MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(cotonoma:#{@label_cotonoma})
+      RETURN cotonoma.cotonoma_key AS key
+      ORDER BY has.#{Neo4jService.rel_prop_order()}
+    """
+    bolt_conn
+    |> Bolt.Sips.query!(query, %{uuid: amishi_id})
+    |> Enum.map(&(&1["key"]))
+  end
+
   def unpin(bolt_conn, %Coto{id: coto_id}, %Amishi{id: amishi_id}) do
     bolt_conn
     |> Neo4jService.delete_relationship(amishi_id, coto_id, @rel_type_has_a)

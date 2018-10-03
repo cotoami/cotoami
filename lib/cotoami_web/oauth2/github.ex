@@ -20,8 +20,8 @@ defmodule CotoamiWeb.OAuth2.GitHub do
     |> OAuth2.Client.new()
   end
 
-  def authorize_url!(params \\ []) do
-    OAuth2.Client.authorize_url!(client(), params)
+  def authorize_url!() do
+    OAuth2.Client.authorize_url!(client(), [])
   end
 
   def get_token!(params \\ [], _headers \\ []) do
@@ -32,12 +32,12 @@ defmodule CotoamiWeb.OAuth2.GitHub do
   def get_user!(client_with_token) do
     %{body: user} = OAuth2.Client.get!(client_with_token, "/user")
     Logger.info "OAuth2 user: #{inspect user}"
-    %ExternalUser{
+    {:ok, %ExternalUser{
       auth_provider: "github",
       auth_id: user["node_id"],
       name: user["name"], 
       avatar_url: user["avatar_url"]
-    }
+    }}
   end
 
   # Strategy Callbacks

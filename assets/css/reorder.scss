@@ -1,0 +1,51 @@
+@import "variables.scss";
+
+span.reorder-tool-buttons {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, .9);
+
+  i.material-icons {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  a.move-to-top i {
+    font-size: 30px;
+    transform: rotate( 90deg );
+  }
+  a.move-up i {
+    font-size: 24px;
+    transform: rotate( -90deg );
+  }
+  a.move-down i {
+    font-size: 24px;
+    transform: rotate( 90deg );
+  }
+  a.move-to-bottom i {
+    font-size: 30px;
+    transform: rotate( 90deg );
+    vertical-align: bottom;
+  }
+}
+div.pinned-coto > div.coto-inner > div.coto-header > span.reorder-tool-buttons {
+  top: 0;
+}
+
+div.content-in-reorder {
+  opacity: 0.5;
+}
+
+div.close-reordering-button {
+  padding: 5px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+
+  i {
+    vertical-align: -7px;
+    margin-right: 2px;
+  }
+}

@@ -15,7 +15,8 @@ import App.I18n.Translate
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Direction(..), Graph)
+import App.Types.Connection exposing (Direction(..), Reordering)
+import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
@@ -47,7 +48,7 @@ type alias Model =
     , cotonomaLoading : Bool
     , elementFocus : Maybe ElementId
     , contentOpenElements : Set ElementId
-    , reorderModeElements : Set ElementId
+    , reordering : Maybe Reordering
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
@@ -56,6 +57,7 @@ type alias Model =
     , presences : Presences
     , confirmation : Confirmation
     , searchInputFocus : Bool
+    , globalCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
@@ -90,7 +92,7 @@ initModel seed lang route =
     , cotonomaLoading = False
     , elementFocus = Nothing
     , contentOpenElements = Set.empty
-    , reorderModeElements = Set.empty
+    , reordering = Nothing
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
@@ -99,6 +101,7 @@ initModel seed lang route =
     , presences = Dict.empty
     , confirmation = App.Submodels.Modals.defaultConfirmation
     , searchInputFocus = False
+    , globalCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []

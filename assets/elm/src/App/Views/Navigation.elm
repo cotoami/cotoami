@@ -4,17 +4,26 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Exts.Maybe exposing (isNothing)
 import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (materialIcon)
+import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
-import App.Model exposing (Model)
-import App.Messages exposing (Msg(HomeClick))
+import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
 import App.Views.Cotonomas
 
 
-view : Model -> List (Html Msg)
+type alias ViewModel model =
+    Context
+        { model
+            | globalCotonomas : List Cotonoma
+            , recentCotonomas : List Cotonoma
+            , subCotonomas : List Cotonoma
+            , graph : Graph
+        }
+
+
+view : ViewModel model -> List (Html Msg)
 view model =
     [ div [ id "navigation-content" ]
         [ model.session
@@ -25,13 +34,14 @@ view model =
             [ model.cotonoma
                 |> Maybe.map (cotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
-            , recentCotonomasDiv model model.graph model.recentCotonomas
+            , globalCotonomasDiv model
+            , recentCotonomasDiv model
             ]
         ]
     ]
 
 
-homeNav : Model -> Html Msg
+homeNav : ViewModel model -> Html Msg
 homeNav model =
     div
         [ classList
@@ -41,7 +51,7 @@ homeNav model =
         ]
         [ (model.cotonoma
             |> Maybe.map
-                (\_ -> a [ class "home", onLinkButtonClick HomeClick ])
+                (\_ -> a [ class "home", onLinkButtonClick MoveToHome ])
             |> Maybe.withDefault
                 (span [ class "home" ])
           )
@@ -51,7 +61,7 @@ homeNav model =
         ]
 
 
-cotonomaNav : Model -> Cotonoma -> Html Msg
+cotonomaNav : ViewModel model -> Cotonoma -> Html Msg
 cotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ]
@@ -71,13 +81,33 @@ cotonomaNav model cotonoma =
         ]
 
 
-recentCotonomasDiv : Context context -> Graph -> List Cotonoma -> Html Msg
-recentCotonomasDiv context graph cotonomas =
-    if List.isEmpty cotonomas then
+globalCotonomasDiv : ViewModel model -> Html Msg
+globalCotonomasDiv model =
+    if List.isEmpty model.globalCotonomas then
+        Utils.HtmlUtil.none
+    else
+        div [ class "global-cotonomas" ]
+            [ div [ class "navigation-title" ]
+                [ faIcon "thumb-tack" Nothing ]
+            , App.Views.Cotonomas.view
+                model
+                model.graph
+                "global-cotonomas"
+                model.globalCotonomas
+            ]
+
+
+recentCotonomasDiv : ViewModel model -> Html Msg
+recentCotonomasDiv model =
+    if List.isEmpty model.recentCotonomas then
         Utils.HtmlUtil.none
     else
         div [ class "recent-cotonomas" ]
             [ div [ class "navigation-title" ]
-                [ text (context.i18nText I18nKeys.Navigation_Recent) ]
-            , App.Views.Cotonomas.view context graph "recent-cotonomas" cotonomas
+                [ text (model.i18nText I18nKeys.Navigation_Recent) ]
+            , App.Views.Cotonomas.view
+                model
+                model.graph
+                "recent-cotonomas"
+                model.recentCotonomas
             ]

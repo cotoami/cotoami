@@ -30,7 +30,7 @@ import App.Markdown
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Types.Graph
+import App.Types.Connection
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -297,7 +297,7 @@ subordinatePostToCoto { clientId, session } coto post model =
             (\target ->
                 let
                     direction =
-                        App.Types.Graph.Inbound
+                        App.Types.Connection.Inbound
 
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
@@ -642,6 +642,7 @@ sourceCotoDiv context model =
             div [ class "source-coto" ]
                 [ App.Views.Coto.bodyDiv
                     context
+                    Nothing
                     "source-coto"
                     App.Markdown.markdown
                     source

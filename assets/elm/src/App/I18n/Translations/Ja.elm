@@ -177,6 +177,9 @@ text key =
         InviteModal_Sending ->
             "送信中"
 
+        InviteModal_InvitesRemaining invites ->
+            "あと " ++ (toString invites) ++ " 人、招待できます"
+
         CotoToolbar_Connect ->
             "選択中のコトと接続"
 
@@ -254,3 +257,6 @@ text key =
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
+
+        Reorder_CloseReorderMode ->
+            "並び替え完了"

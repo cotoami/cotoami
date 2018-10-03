@@ -174,6 +174,12 @@ text key =
         InviteModal_Sending ->
             "Посылаюф"
 
+        InviteModal_InvitesRemaining invites ->
+            if invites == 1 then
+                (toString invites) ++ " invite remaining"
+            else
+                (toString invites) ++ " invites remaining"
+
         CotoToolbar_Connect ->
             "Присоединить к выбранным объектам"
 
@@ -254,3 +260,6 @@ text key =
                 "объект выбран"
             else
                 "объекты выбраны"
+
+        Reorder_CloseReorderMode ->
+            "Изменить порядок"

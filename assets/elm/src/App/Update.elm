@@ -9,13 +9,13 @@ import Json.Decode as Decode
 import Exts.Maybe exposing (isJust)
 import Utils.Keyboard.Key
 import Navigation
-import Utils.StringUtil exposing (isNotBlank)
 import Utils.UpdateUtil exposing (..)
 import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Graph exposing (Direction(..))
+import App.Types.Connection exposing (Direction(..), Reordering(..))
+import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.SearchResults
@@ -33,6 +33,7 @@ import App.Server.Graph
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
+import App.Views.AppHeader
 import App.Views.ViewSwitch
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import App.Views.Flow
@@ -40,6 +41,7 @@ import App.Views.Stock
 import App.Views.Traversals
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
+import App.Views.Reorder
 import App.Modals.SigninModal
 import App.Modals.ProfileModal
 import App.Modals.CotoMenuModal
@@ -101,15 +103,8 @@ update msg model =
                         NotFoundRoute ->
                             model |> withoutCmd
 
-        NavigationToggle ->
-            { model
-                | navigationToggled = True
-                , navigationOpen = (not model.navigationOpen)
-            }
-                |> withoutCmd
-
-        HomeClick ->
-            changeLocationToHome model
+        MoveToHome ->
+            ( model, Navigation.newUrl "/" )
 
         CotonomaPresenceState payload ->
             { model | presences = App.Channels.decodePresenceState payload }
@@ -172,9 +167,10 @@ update msg model =
         CotonomaPostsFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomasFetched (Ok recentCotonomas) ->
+        CotonomasFetched (Ok ( global, recent )) ->
             { model
-                | recentCotonomas = recentCotonomas
+                | globalCotonomas = global
+                , recentCotonomas = recent
                 , cotonomasLoading = False
             }
                 |> withoutCmd
@@ -214,19 +210,6 @@ update msg model =
         --
         SearchInputFocusChanged focus ->
             { model | searchInputFocus = focus } |> withoutCmd
-
-        ClearQuickSearchInput ->
-            { model
-                | searchResults =
-                    App.Types.SearchResults.clearQuery model.searchResults
-            }
-                |> withoutCmd
-
-        QuickSearchInput query ->
-            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
-                |> withCmdIf
-                    (\_ -> isNotBlank query)
-                    (\_ -> App.Server.Post.search query)
 
         SearchInput query ->
             { model | searchResults = App.Types.SearchResults.setQuery query model.searchResults }
@@ -466,34 +449,16 @@ update msg model =
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
 
-        ToggleReorderMode elementId ->
-            model
-                |> App.Submodels.Context.toggleReorderMode elementId
+        SetReorderMode (Just parentElementId) ->
+            { model | reordering = Just (SubCotos parentElementId) }
                 |> withoutCmd
 
-        SwapOrder maybeParentId index1 index2 ->
-            model.graph
-                |> App.Types.Graph.swapOrder maybeParentId index1 index2
-                |> (\graph -> { model | graph = graph })
-                |> (\model -> ( model, makeReorderCmd maybeParentId model ))
+        SetReorderMode Nothing ->
+            { model | reordering = Just PinnedCotos }
+                |> withoutCmd
 
-        MoveToFirst maybeParentId index ->
-            model.graph
-                |> App.Types.Graph.moveToFirst maybeParentId index
-                |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd maybeParentId)
-
-        MoveToLast maybeParentId index ->
-            model.graph
-                |> App.Types.Graph.moveToLast maybeParentId index
-                |> (\graph -> { model | graph = graph })
-                |> withCmd (makeReorderCmd maybeParentId)
-
-        ConnectionsReordered (Ok _) ->
-            model |> withoutCmd
-
-        ConnectionsReordered (Err _) ->
-            model |> withoutCmd
+        CloseReorderMode ->
+            { model | reordering = Nothing } |> withoutCmd
 
         --
         -- Pushed
@@ -555,6 +520,9 @@ update msg model =
         --
         -- Sub components
         --
+        AppHeaderMsg subMsg ->
+            App.Views.AppHeader.update model subMsg model
+
         ViewSwitchMsg subMsg ->
             App.Views.ViewSwitch.update model subMsg model
 
@@ -573,21 +541,12 @@ update msg model =
         CotoToolbarMsg subMsg ->
             App.Views.CotoToolbar.update model subMsg model
 
-        OpenSigninModal ->
-            { model
-                | signinModal =
-                    App.Modals.SigninModal.initModel
-                        model.signinModal.authSettings
-            }
-                |> App.Submodels.Modals.openModal SigninModal
-                |> withoutCmd
+        ReorderMsg subMsg ->
+            App.Views.Reorder.update model subMsg model
 
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
-
-        OpenProfileModal ->
-            App.Submodels.Modals.openModal ProfileModal model |> withoutCmd
 
         ProfileModalMsg subMsg ->
             App.Modals.ProfileModal.update model subMsg model
@@ -643,11 +602,6 @@ update msg model =
             App.Modals.TimelineFilterModal.update model subMsg model
 
 
-changeLocationToHome : Model -> ( Model, Cmd Msg )
-changeLocationToHome model =
-    ( model, Navigation.newUrl "/" )
-
-
 loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model
@@ -700,18 +654,3 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
-
-
-makeReorderCmd : Maybe CotoId -> Model -> Cmd Msg
-makeReorderCmd maybeParentId model =
-    model.graph
-        |> App.Types.Graph.getOutboundConnections maybeParentId
-        |> Maybe.map (List.map (\connection -> connection.end))
-        |> Maybe.map List.reverse
-        |> Maybe.map
-            (App.Server.Graph.reorder
-                model.clientId
-                (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
-                maybeParentId
-            )
-        |> Maybe.withDefault Cmd.none

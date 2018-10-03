@@ -24,7 +24,8 @@ import Exts.Maybe
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Types.Graph exposing (Graph, Direction)
+import App.Types.Connection exposing (Direction)
+import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
 import App.Submodels.Context exposing (Context)
 
@@ -36,6 +37,7 @@ type alias LocalCotos a =
         , timeline : Timeline
         , graph : Graph
         , loadingGraph : Bool
+        , globalCotonomas : List Cotonoma
         , recentCotonomas : List Cotonoma
         , subCotonomas : List Cotonoma
         , cotonomasLoading : Bool
@@ -49,6 +51,7 @@ getCoto cotoId localCotos =
         [ Dict.get cotoId localCotos.graph.cotos
         , App.Types.Timeline.getCoto cotoId localCotos.timeline
         , App.Types.SearchResults.getCoto cotoId localCotos.searchResults
+        , getCotoFromCotonomaList cotoId localCotos.globalCotonomas
         , getCotoFromCotonomaList cotoId localCotos.recentCotonomas
         , getCotoFromCotonomaList cotoId localCotos.subCotonomas
         , localCotos.cotonoma
@@ -154,6 +157,7 @@ isStockEmpty localCotos =
 isNavigationEmpty : LocalCotos a -> Bool
 isNavigationEmpty localCotos =
     (Exts.Maybe.isNothing localCotos.cotonoma)
+        && (List.isEmpty localCotos.globalCotonomas)
         && (List.isEmpty localCotos.recentCotonomas)
         && (List.isEmpty localCotos.subCotonomas)
 

@@ -33,6 +33,7 @@ defmodule CotoamiWeb.Router do
 
     Enum.each(@clientside_paths, &get(&1, PageController, :index))
     get "/signin/:token", EmailAuthController, :signin
+    get "/join/:token", EmailAuthController, :accept_invite
     get "/signout", SessionController, :signout
 
   end
@@ -63,6 +64,8 @@ defmodule CotoamiWeb.Router do
     post "/import", DatabaseController, :import
 
     get "/invite/:email", AmishiController, :invite
+    get "/invitees", AmishiController, :invitees
+    get "/amishis/email/refresh", AmishiController, :refresh_email_user_data
     get "/amishis/email/:email", AmishiController, :show_by_email
 
     get "/search/:query", CotoController, :search

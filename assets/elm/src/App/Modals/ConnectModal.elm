@@ -23,7 +23,7 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Types.Graph exposing (Direction(..))
+import App.Types.Connection exposing (Direction(..))
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)

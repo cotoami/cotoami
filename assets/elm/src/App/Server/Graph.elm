@@ -6,14 +6,15 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils.HttpUtil exposing (ClientId, httpPut, httpDelete)
 import App.Messages exposing (Msg(..))
-import App.Types.Graph exposing (Direction, Connection, Graph)
+import App.Types.Connection exposing (Direction, Connection)
+import App.Types.Graph exposing (Graph)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Server.Coto
 
 
 decodeConnection : Decode.Decoder Connection
 decodeConnection =
-    Decode.map3 App.Types.Graph.initConnection
+    Decode.map3 App.Types.Connection.initConnection
         (Decode.field "created_by" Decode.string)
         (Decode.maybe (Decode.field "start" Decode.string))
         (Decode.field "end" Decode.string)
@@ -119,7 +120,7 @@ connectTask clientId maybeCotonomaKey direction objects subject =
     let
         requests =
             case direction of
-                App.Types.Graph.Outbound ->
+                App.Types.Connection.Outbound ->
                     [ httpPut
                         (connectUrl maybeCotonomaKey subject)
                         clientId
@@ -127,7 +128,7 @@ connectTask clientId maybeCotonomaKey direction objects subject =
                         (Decode.succeed "done")
                     ]
 
-                App.Types.Graph.Inbound ->
+                App.Types.Connection.Inbound ->
                     List.map
                         (\startId ->
                             httpPut
@@ -156,8 +157,14 @@ disconnect clientId maybeCotonomaKey startId endId =
         Http.send ConnectionDeleted (httpDelete url clientId)
 
 
-reorder : ClientId -> Maybe CotonomaKey -> Maybe CotoId -> List CotoId -> Cmd Msg
-reorder clientId maybeCotonomaKey maybeStartId endIds =
+reorder :
+    (Result Http.Error String -> msg)
+    -> ClientId
+    -> Maybe CotonomaKey
+    -> Maybe CotoId
+    -> List CotoId
+    -> Cmd msg
+reorder tag clientId maybeCotonomaKey maybeStartId endIds =
     let
         url =
             maybeStartId
@@ -174,7 +181,7 @@ reorder clientId maybeCotonomaKey maybeStartId endIds =
                         |> Maybe.withDefault "/api/graph/reorder"
                     )
     in
-        Http.send ConnectionsReordered <|
+        Http.send tag <|
             httpPut
                 url
                 clientId
