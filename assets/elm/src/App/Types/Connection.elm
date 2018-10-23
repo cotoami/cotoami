@@ -35,8 +35,8 @@ initConnection amishiId maybeStart end =
 
 
 type Reordering
-    = PinnedCotos
-    | SubCotos ElementId
+    = PinnedCoto ElementId
+    | SubCoto ElementId ElementId
 
 
 type alias InboundConnection =

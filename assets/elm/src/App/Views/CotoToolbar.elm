@@ -14,7 +14,7 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (Coto, ElementId, CotoId)
 import App.Types.Graph exposing (Graph)
-import App.Types.Connection exposing (Connection, InboundConnection, Direction(..))
+import App.Types.Connection exposing (Connection, InboundConnection, Direction(..), Reordering(..))
 import App.Messages as AppMsg exposing (..)
 import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
@@ -269,7 +269,16 @@ reorderButton context session inbound elementId coto =
         (a
             [ class "tool-button toggle-reorder-mode"
             , title (context.i18nText I18nKeys.CotoToolbar_Reorder)
-            , onLinkButtonClick (SetReorderMode inbound.parentElementId)
+            , onLinkButtonClick
+                (SetReorderMode
+                    (inbound.parentElementId
+                        |> Maybe.map
+                            (\parentElementId ->
+                                SubCoto parentElementId elementId
+                            )
+                        |> Maybe.withDefault (PinnedCoto elementId)
+                    )
+                )
             ]
             [ faIcon "sort" Nothing ]
         )

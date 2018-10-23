@@ -449,13 +449,8 @@ update msg model =
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
 
-        SetReorderMode (Just parentElementId) ->
-            { model | reordering = Just (SubCotos parentElementId) }
-                |> withoutCmd
-
-        SetReorderMode Nothing ->
-            { model | reordering = Just PinnedCotos }
-                |> withoutCmd
+        SetReorderMode reordering ->
+            { model | reordering = Just reordering } |> withoutCmd
 
         CloseReorderMode ->
             { model | reordering = Nothing } |> withoutCmd

@@ -213,7 +213,7 @@ stepCotoDiv context graph connections step coto =
                 [ App.Views.Coto.headerDiv context graph Nothing elementId coto
                 , App.Views.Coto.bodyDivByCoto context Nothing elementId coto
                 , div [ class "main-sub-border" ] []
-                , if context.reordering == (Just (SubCotos elementId)) then
+                , if App.Submodels.Context.reorderingSubCotos context elementId then
                     App.Views.Reorder.closeButtonDiv context
                   else
                     Utils.HtmlUtil.none
@@ -278,8 +278,9 @@ connectionsDiv context graph step parentElementId parentCoto connections =
                                         connection
                                         (List.length connections)
                                         connIndex
-                                        (context.reordering
-                                            == Just (SubCotos parentElementId)
+                                        (App.Submodels.Context.reorderingSubCotos
+                                            context
+                                            parentElementId
                                         )
                                     )
                                     coto

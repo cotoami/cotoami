@@ -18,6 +18,8 @@ module App.Submodels.Context
         , setCotonomaLoading
         , setCotonoma
         , orignatedHere
+        , reorderingPinnedCotos
+        , reorderingSubCotos
         )
 
 import Set exposing (Set)
@@ -28,7 +30,7 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
-import App.Types.Connection exposing (Reordering)
+import App.Types.Connection exposing (Reordering(..))
 
 
 type alias Context a =
@@ -174,3 +176,33 @@ orignatedHere context coto =
     )
         |> Maybe.withDefault
             ((isNothing coto.postedIn) && (atHome context))
+
+
+reorderingPinnedCotos : Context a -> Bool
+reorderingPinnedCotos context =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    PinnedCoto _ ->
+                        True
+
+                    _ ->
+                        False
+            )
+        |> Maybe.withDefault False
+
+
+reorderingSubCotos : Context a -> ElementId -> Bool
+reorderingSubCotos context parentElementId =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    SubCoto parentElementIdInReordering _ ->
+                        parentElementId == parentElementIdInReordering
+
+                    _ ->
+                        False
+            )
+        |> Maybe.withDefault False
