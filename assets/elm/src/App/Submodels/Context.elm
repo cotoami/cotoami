@@ -20,6 +20,7 @@ module App.Submodels.Context
         , orignatedHere
         , reorderingPinnedCotos
         , reorderingSubCotos
+        , isFocusedElementInReordering
         )
 
 import Set exposing (Set)
@@ -204,5 +205,20 @@ reorderingSubCotos context parentElementId =
 
                     _ ->
                         False
+            )
+        |> Maybe.withDefault False
+
+
+isFocusedElementInReordering : Context a -> ElementId -> Bool
+isFocusedElementInReordering context elementId =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    PinnedCoto focusedElementId ->
+                        elementId == focusedElementId
+
+                    SubCoto _ focusedElementId ->
+                        elementId == focusedElementId
             )
         |> Maybe.withDefault False

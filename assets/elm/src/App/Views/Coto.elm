@@ -41,6 +41,9 @@ cotoClassList context elementId maybeCotoId additionalClasses =
                 |> Maybe.withDefault False
            )
          , ( "selected", App.Submodels.Context.isSelected maybeCotoId context )
+         , ( "focused-in-reordering"
+           , App.Submodels.Context.isFocusedElementInReordering context elementId
+           )
          ]
             ++ additionalClasses
         )
