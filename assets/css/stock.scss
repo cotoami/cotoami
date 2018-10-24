@@ -143,8 +143,17 @@
     display: none !important;
   }
 
+  #app-layout {
+    padding: 0;
+  }
+
   #main-stock,
+  #stock,
   #pinned-cotos-body {
+    position: absolute;
     top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 }
