@@ -138,7 +138,13 @@
   #main-nav,
   #main-flow,
   #view-switch-container,
-  #open-flow {
+  #open-flow,
+  #stock div.column-header {
     display: none !important;
+  }
+
+  #main-stock,
+  #pinned-cotos-body {
+    top: 0;
   }
 }
