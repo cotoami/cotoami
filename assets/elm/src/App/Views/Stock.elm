@@ -136,20 +136,16 @@ view context model =
             [ id "pinned-cotos-body", class "column-body" ]
             [ case model.stockView.view of
                 DocumentView ->
-                    pinnedCotos context model.graph
+                    documentViewDiv context model.graph
 
                 GraphView ->
-                    div
-                        [ id "coto-graph-view"
-                        , classList [ ( "loading", model.loadingGraph ) ]
-                        ]
-                        []
+                    graphViewDiv context model
             ]
         ]
 
 
-pinnedCotos : Context a -> Graph -> Html AppMsg.Msg
-pinnedCotos context graph =
+documentViewDiv : Context a -> Graph -> Html AppMsg.Msg
+documentViewDiv context graph =
     graph.rootConnections
         |> List.reverse
         |> List.indexedMap
@@ -249,3 +245,12 @@ unpinButtonDiv context connection cotoId =
                     [ class "not-unpinnable" ]
                     [ faIcon "thumb-tack" Nothing ]
             ]
+
+
+graphViewDiv : Context context -> ViewModel model -> Html AppMsg.Msg
+graphViewDiv context model =
+    div
+        [ id "coto-graph-view"
+        , classList [ ( "loading", model.loadingGraph ) ]
+        ]
+        []
