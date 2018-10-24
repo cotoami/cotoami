@@ -6,6 +6,7 @@ import Phoenix.Socket as Socket exposing (Socket)
 import App.Types.Session exposing (Session)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
+import App.Views.StockMsg
 import App.Submodels.LocalCotos
 import App.Channels
 import App.Ports.LocalStorage
@@ -49,6 +50,6 @@ subscriptions model =
         [ Keyboard.downs KeyDown
         , phoenixChannels model
         , App.Ports.LocalStorage.receiveItem LocalStorageItemFetched
-        , App.Ports.Graph.nodeClicked OpenTraversal
+        , App.Ports.Graph.nodeClicked (StockMsg << App.Views.StockMsg.GraphNodeClicked)
         , App.Ports.ImportFile.importFileContentRead OpenImportModal
         ]

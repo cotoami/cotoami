@@ -22,6 +22,7 @@ import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
+import App.Commands
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Graph exposing (Graph)
@@ -79,6 +80,12 @@ update context msg ({ stockView } as model) =
                     }
             }
                 |> withoutCmd
+
+        GraphNodeClicked cotoId ->
+            if stockView.graphCanvasFullyOpened then
+                model |> withoutCmd
+            else
+                ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
 
 
 renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
