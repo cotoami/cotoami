@@ -44,6 +44,7 @@ view model =
                     ++ "-view-on-mobile"
               , True
               )
+            , ( "full-viewport-graph-mode", model.stockView.graphCanvasFullyOpened )
             ]
         , onClick AppClick
         ]

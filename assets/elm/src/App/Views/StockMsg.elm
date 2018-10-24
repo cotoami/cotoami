@@ -10,3 +10,4 @@ type Msg
     = SwitchView StockView
     | RenderGraph
     | ResizeGraph
+    | ToggleGraphCanvasSize

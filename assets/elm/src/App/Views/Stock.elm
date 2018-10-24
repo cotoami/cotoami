@@ -35,12 +35,14 @@ import App.Ports.Graph
 
 type alias Model =
     { view : StockView
+    , graphCanvasFullyOpened : Bool
     }
 
 
 defaultModel : Model
 defaultModel =
     { view = DocumentView
+    , graphCanvasFullyOpened = False
     }
 
 
@@ -68,6 +70,15 @@ update context msg ({ stockView } as model) =
                 |> withCmdIf
                     (\model -> model.stockView.view == GraphView)
                     (\_ -> App.Ports.Graph.resizeGraph ())
+
+        ToggleGraphCanvasSize ->
+            { model
+                | stockView =
+                    { stockView
+                        | graphCanvasFullyOpened = not (stockView.graphCanvasFullyOpened)
+                    }
+            }
+                |> withoutCmd
 
 
 renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
@@ -250,7 +261,25 @@ unpinButtonDiv context connection cotoId =
 graphViewDiv : Context context -> ViewModel model -> Html AppMsg.Msg
 graphViewDiv context model =
     div
-        [ id "coto-graph-view"
-        , classList [ ( "loading", model.loadingGraph ) ]
+        [ id "coto-graph"
+        , classList
+            [ ( "full-open", model.stockView.graphCanvasFullyOpened )
+            , ( "loading", model.loadingGraph )
+            ]
         ]
-        []
+        [ div [ class "tools" ]
+            [ button
+                [ class "toggle-canvas-size"
+                , onClick (AppMsg.StockMsg ToggleGraphCanvasSize)
+                ]
+                [ materialIcon
+                    (if model.stockView.graphCanvasFullyOpened then
+                        "fullscreen_exit"
+                     else
+                        "fullscreen"
+                    )
+                    Nothing
+                ]
+            ]
+        , div [ id "coto-graph-canvas" ] []
+        ]
