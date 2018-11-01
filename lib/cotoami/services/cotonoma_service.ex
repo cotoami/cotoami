@@ -6,10 +6,12 @@ defmodule Cotoami.CotonomaService do
   require Logger
   import Ecto.Changeset, only: [change: 2]
   import Ecto.Query, warn: false
-  alias Cotoami.{
-    Repo, Coto, Cotonoma, Amishi,
-    AmishiService, CotoGraphService
-  }
+  alias Cotoami.Repo
+  alias Cotoami.Coto
+  alias Cotoami.Cotonoma
+  alias Cotoami.Amishi
+  alias Cotoami.AmishiService
+  alias Cotoami.CotoGraphService
   alias Cotoami.Exceptions.NotFound
 
   def global_cotonomas_holder do
