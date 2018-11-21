@@ -1,7 +1,6 @@
 defmodule CotoamiWeb.CotonomaController do
   use CotoamiWeb, :controller
   require Logger
-  import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
   alias Cotoami.{Cotonoma, CotoService, CotonomaService}
   alias CotoamiWeb.CotoView
 
