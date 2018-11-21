@@ -6,13 +6,17 @@ defmodule Cotoami.CotonomaService do
   require Logger
   import Ecto.Changeset, only: [change: 2]
   import Ecto.Query, warn: false
-  alias Cotoami.Repo
-  alias Cotoami.Coto
-  alias Cotoami.Cotonoma
-  alias Cotoami.Amishi
-  alias Cotoami.AmishiService
-  alias Cotoami.CotoGraphService
-  alias Cotoami.Exceptions.NotFound
+
+  alias Cotoami.{
+    Repo,
+    Coto,
+    Cotonoma,
+    Amishi,
+    AmishiService,
+    CotonomaService,
+    CotoGraphService,
+    Exceptions.NotFound
+  }
 
   def global_cotonomas_holder do
     :cotoami
@@ -21,28 +25,34 @@ defmodule Cotoami.CotonomaService do
   end
 
   def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
-    posted_in = get!(cotonoma_id)
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        # create a coto
+        coto =
+          %Coto{}
+          |> Coto.changeset_to_insert(%{
+            content: name,
+            as_cotonoma: true,
+            posted_in_id: cotonoma_id,
+            amishi_id: amishi.id
+          })
+          |> Repo.insert!()
 
-    cotonoma_coto =
-      %Coto{}
-      |> Coto.changeset_to_insert(%{
-        content: name,
-        as_cotonoma: true,
-        posted_in_id: cotonoma_id,
-        amishi_id: amishi.id
-      })
-      |> Repo.insert!()
+        # create a cotonoma
+        cotonoma = create_cotonoma!(coto, name, amishi.id, shared)
+        coto = %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
 
-    cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id, shared)
+        # set last_post_timestamp and timeline_revision to the posted_in cotonoma
+        case get!(cotonoma_id) do
+          nil ->
+            %{coto | posted_in: nil}
 
-    cotonoma_coto = %{
-      cotonoma_coto
-      | amishi: amishi,
-        posted_in: posted_in,
-        cotonoma: %{cotonoma | owner: amishi, coto: cotonoma_coto}
-    }
+          posted_in ->
+            %{coto | posted_in: CotonomaService.on_post(posted_in, coto)}
+        end
+      end)
 
-    {cotonoma_coto, posted_in}
+    %{coto | amishi: amishi}
   end
 
   defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do

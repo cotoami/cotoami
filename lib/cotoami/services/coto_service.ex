@@ -157,13 +157,13 @@ defmodule Cotoami.CotoService do
           })
           |> Repo.insert!()
 
-        # set last_post_timestamp and timeline_revision to the cotonoma
+        # set last_post_timestamp and timeline_revision to the posted_in cotonoma
         case CotonomaService.get!(cotonoma_id) do
           nil ->
             %{coto | posted_in: nil}
 
-          cotonoma ->
-            %{coto | posted_in: CotonomaService.on_post(cotonoma, coto)}
+          posted_in ->
+            %{coto | posted_in: CotonomaService.on_post(posted_in, coto)}
         end
       end)
 

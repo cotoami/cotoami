@@ -35,22 +35,13 @@ defmodule CotoamiWeb.CotonomaController do
         },
         amishi
       ) do
-    {:ok, {cotonoma_coto, posted_in}} =
-      Repo.transaction(fn ->
-        case CotonomaService.create!(amishi, name, shared, cotonoma_id) do
-          {cotonoma_coto, nil} ->
-            {cotonoma_coto, nil}
+    coto = CotonomaService.create!(amishi, name, shared, cotonoma_id)
 
-          {cotonoma_coto, posted_in} ->
-            {cotonoma_coto, increment_timeline_revision(posted_in)}
-        end
-      end)
-
-    if posted_in do
-      broadcast_post(cotonoma_coto, posted_in.key, amishi, conn.assigns.client_id)
+    if coto.posted_in do
+      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
     end
 
-    render(conn, CotoView, "created.json", coto: cotonoma_coto)
+    render(conn, CotoView, "created.json", coto: coto)
   rescue
     e in Ecto.ConstraintError ->
       send_resp_by_constraint_error(conn, e)
