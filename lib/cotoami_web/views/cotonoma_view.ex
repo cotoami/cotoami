@@ -3,9 +3,9 @@ defmodule CotoamiWeb.CotonomaView do
   alias CotoamiWeb.{CotoView, AmishiView}
 
   def render("index.json", %{
-    global: global_cotonomas, 
-    recent: recent_cotonomas
-  }) do
+        global: global_cotonomas,
+        recent: recent_cotonomas
+      }) do
     %{
       global: render_many(global_cotonomas, __MODULE__, "cotonoma.json"),
       recent: render_many(recent_cotonomas, __MODULE__, "cotonoma.json")
@@ -31,8 +31,8 @@ defmodule CotoamiWeb.CotonomaView do
           coto -> coto.id
         end,
       owner: render_relation(cotonoma.owner, AmishiView, "amishi.json"),
-      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
+      inserted_at: cotonoma.inserted_at |> to_unixtime(),
+      updated_at: cotonoma.updated_at |> to_unixtime()
     }
   end
 
@@ -45,24 +45,27 @@ defmodule CotoamiWeb.CotonomaView do
       pinned: cotonoma.pinned,
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,
-      inserted_at: cotonoma.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
+      inserted_at: cotonoma.inserted_at |> to_unixtime(),
+      updated_at: cotonoma.updated_at |> to_unixtime()
     }
   end
 
   def render("cotos.json", %{
-    cotonoma: cotonoma,
-    rows: rows,
-    page_index: page_index, 
-    total_pages: total_pages
-  }) do
+        cotonoma: cotonoma,
+        rows: rows,
+        page_index: page_index,
+        total_pages: total_pages
+      }) do
     %{
       cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
-      paginated_cotos: render(CotoView, "cotos.json", 
-        rows: rows,
-        page_index: page_index, 
-        total_pages: total_pages
-      )
+      paginated_cotos:
+        render(
+          CotoView,
+          "cotos.json",
+          rows: rows,
+          page_index: page_index,
+          total_pages: total_pages
+        )
     }
   end
 end

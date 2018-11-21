@@ -1,6 +1,6 @@
-defmodule Cotoami.Watching do
+defmodule Cotoami.Watch do
   @moduledoc """
-  A watching is an entry of watchlist.
+  A watch is an entry of watchlist.
   """
 
   use Ecto.Schema
@@ -8,9 +8,9 @@ defmodule Cotoami.Watching do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "watchlist" do
-    belongs_to :amishi, Cotoami.Amishi
-    belongs_to :cotonoma, Cotoami.Cotonoma
-    field :last_post_timestamp, :utc_datetime
+    belongs_to(:amishi, Cotoami.Amishi)
+    belongs_to(:cotonoma, Cotoami.Cotonoma)
+    field(:last_post_timestamp, :utc_datetime)
 
     timestamps(type: :utc_datetime)
   end
