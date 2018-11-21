@@ -17,14 +17,32 @@ defmodule Cotoami.CotoServiceTest do
   end
 
   describe "when there is a coto pinned to an amishi" do
-    setup ~M{conn, amishi} do
+    setup ~M{amishi} do
       coto = CotoService.create!(amishi, "hello")
-      CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
 
-    test "the coto can be gotten", ~M{coto} do
+    test "the coto can be gotten by id", ~M{coto} do
       assert %Coto{content: "hello"} = CotoService.get(coto.id)
+    end
+  end
+
+  describe "when there is a cotonoma" do
+    setup ~M{amishi} do
+      %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
+      ~M{cotonoma}
+    end
+
+    test "posting a coto to it", ~M{amishi, cotonoma} do
+      assert cotonoma.timeline_revision == 0
+
+      coto = CotoService.create!(amishi, "hello", nil, cotonoma.id)
+      assert coto.content == "hello"
+      assert coto.posted_in.id == cotonoma.id
+
+      cotonoma = CotonomaService.get(cotonoma.id)
+      assert cotonoma.timeline_revision == 1
+      assert cotonoma.last_post_timestamp == coto.inserted_at
     end
   end
 
