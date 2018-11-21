@@ -127,19 +127,30 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
-  def create!(%Amishi{id: amishi_id}, content, summary \\ nil, cotonoma_id \\ nil) do
-    posted_in = CotonomaService.get!(cotonoma_id)
-    coto =
-      %Coto{}
-      |> Coto.changeset_to_insert(%{
-          content: content,
-          summary: summary,
-          as_cotonoma: false,
-          posted_in_id: cotonoma_id,
-          amishi_id: amishi_id
-        })
-      |> Repo.insert!
-    {coto, posted_in}
+  def create!(%Amishi{id: amishi_id} = amishi, content, summary \\ nil, cotonoma_id \\ nil) do
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        # create a coto
+        coto =
+          %Coto{}
+          |> Coto.changeset_to_insert(%{
+              content: content,
+              summary: summary,
+              as_cotonoma: false,
+              posted_in_id: cotonoma_id,
+              amishi_id: amishi_id
+            })
+          |> Repo.insert!
+
+        # set last_post_timestamp and timeline_revision to the cotonoma
+        case CotonomaService.get!(cotonoma_id) do
+          nil ->
+            %{coto | posted_in: nil}
+          cotonoma ->
+            %{coto | posted_in: CotonomaService.on_post(cotonoma, coto)}
+        end
+      end)
+    %{coto | amishi: amishi}
   end
 
   def update!(id, %{"content" => _, "shared" => shared} = params, %Amishi{id: amishi_id} = amishi) do

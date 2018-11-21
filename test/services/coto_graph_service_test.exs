@@ -15,7 +15,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "when a coto is pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {coto, _posted_in} = CotoService.create!(amishi, "hello")
+      coto = CotoService.create!(amishi, "hello")
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -138,7 +138,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(cotonoma_owner, "test", false)
 
       coto_amishi = AmishiService.insert_or_update!(%EmailUser{email: "coto@example.com"})
-      {coto, _} = CotoService.create!(coto_amishi, "hello", nil, cotonoma.id)
+      coto = CotoService.create!(coto_amishi, "hello", nil, cotonoma.id)
 
       CotoGraphService.pin(conn, coto, cotonoma, amishi)
 
@@ -228,11 +228,11 @@ defmodule Cotoami.CotoGraphServiceTest do
   describe "when two cotos are connected" do
     setup ~M{conn, amishi} do
       source_amishi = AmishiService.insert_or_update!(%EmailUser{email: "source@example.com"})
-      {source, _} = CotoService.create!(source_amishi, "hello")
+      source = CotoService.create!(source_amishi, "hello")
       source = %{source | amishi: source_amishi}
 
       target_amishi = AmishiService.insert_or_update!(%EmailUser{email: "target@example.com"})
-      {target, _} = CotoService.create!(target_amishi, "bye")
+      target = CotoService.create!(target_amishi, "bye")
 
       CotoGraphService.connect(conn, source, target, amishi)
       ~M{source, source_amishi, target, target_amishi}
@@ -285,9 +285,9 @@ defmodule Cotoami.CotoGraphServiceTest do
     # a -> b
     #   -> c
     setup ~M{conn, amishi} do
-      {coto_a, _posted_in} = CotoService.create!(amishi, "a")
-      {coto_b, _posted_in} = CotoService.create!(amishi, "b")
-      {coto_c, _posted_in} = CotoService.create!(amishi, "c")
+      coto_a = CotoService.create!(amishi, "a")
+      coto_b = CotoService.create!(amishi, "b")
+      coto_c = CotoService.create!(amishi, "c")
       %Relationship{id: rel_ab_id} =
         CotoGraphService.connect(conn, coto_a, coto_b, amishi)
       %Relationship{id: rel_ac_id} =
@@ -319,9 +319,9 @@ defmodule Cotoami.CotoGraphServiceTest do
     # a -> b
     # c -> a -> b
     setup ~M{conn, amishi} do
-      {coto_a, _posted_in} = CotoService.create!(amishi, "a")
-      {coto_b, _posted_in} = CotoService.create!(amishi, "b")
-      {coto_c, _posted_in} = CotoService.create!(amishi, "c")
+      coto_a = CotoService.create!(amishi, "a")
+      coto_b = CotoService.create!(amishi, "b")
+      coto_c = CotoService.create!(amishi, "c")
       CotoGraphService.connect(conn, coto_a, coto_b, amishi)
       CotoGraphService.connect(conn, coto_c, coto_a, amishi)
       ~M{coto_a, coto_b, coto_c}

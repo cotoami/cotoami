@@ -157,6 +157,14 @@ defmodule Cotoami.CotonomaService do
     |> Repo.all()
   end
 
+  def on_post(%Cotonoma{} = cotonoma, %Coto{inserted_at: coto_inserted_at}) do
+    cotonoma
+    |> change(last_post_timestamp: coto_inserted_at)
+    |> change(timeline_revision: cotonoma.timeline_revision + 1)
+    |> Repo.update!()
+    |> Cotonoma.copy_belongings(cotonoma)
+  end
+
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)

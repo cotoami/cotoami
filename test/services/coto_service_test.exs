@@ -13,7 +13,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there is a coto pinned to an amishi" do
     setup ~M{conn, amishi} do
-      {coto, _} = CotoService.create!(amishi, "hello")
+      coto = CotoService.create!(amishi, "hello")
       CotoGraphService.pin(conn, coto, amishi)
       ~M{coto}
     end
@@ -27,12 +27,12 @@ defmodule Cotoami.CotoServiceTest do
     setup ~M{conn, amishi} do
       {%Coto{cotonoma: cotonoma}, _} = CotonomaService.create!(amishi, "test", false)
 
-      {coto1, _} = CotoService.create!(amishi, "coto1")
-      {coto2, _} = CotoService.create!(amishi, "coto2")
+      coto1 = CotoService.create!(amishi, "coto1")
+      coto2 = CotoService.create!(amishi, "coto2")
       CotoGraphService.pin(conn, coto2, amishi)
-      {coto3, _} = CotoService.create!(amishi, "coto3")
+      coto3 = CotoService.create!(amishi, "coto3")
       CotoGraphService.connect(conn, coto2, coto3, amishi)
-      {coto4, _} = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
+      coto4 = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end
