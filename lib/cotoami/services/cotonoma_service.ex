@@ -26,22 +26,20 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto =
       %Coto{}
       |> Coto.changeset_to_insert(%{
-          content: name,
-          as_cotonoma: true,
-          posted_in_id: cotonoma_id,
-          amishi_id: amishi.id
-        })
+        content: name,
+        as_cotonoma: true,
+        posted_in_id: cotonoma_id,
+        amishi_id: amishi.id
+      })
       |> Repo.insert!()
 
     cotonoma = create_cotonoma!(cotonoma_coto, name, amishi.id, shared)
 
-    cotonoma_coto = %{cotonoma_coto |
-      amishi: amishi,
-      posted_in: posted_in,
-      cotonoma: %{cotonoma |
-        owner: amishi,
-        coto: cotonoma_coto
-      }
+    cotonoma_coto = %{
+      cotonoma_coto
+      | amishi: amishi,
+        posted_in: posted_in,
+        cotonoma: %{cotonoma | owner: amishi, coto: cotonoma_coto}
     }
 
     {cotonoma_coto, posted_in}
@@ -50,11 +48,11 @@ defmodule Cotoami.CotonomaService do
   defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do
     %Cotonoma{}
     |> Cotonoma.changeset_to_insert(%{
-        name: name,
-        coto_id: coto.id,
-        owner_id: amishi_id,
-        shared: shared
-      })
+      name: name,
+      coto_id: coto.id,
+      owner_id: amishi_id,
+      shared: shared
+    })
     |> Repo.insert!()
   end
 
@@ -75,17 +73,14 @@ defmodule Cotoami.CotonomaService do
 
     cotonoma = create_cotonoma!(cotonoma_coto, cotonoma_name, amishi.id, shared)
 
-    cotonoma_coto =
-      %{cotonoma_coto |
-        amishi: amishi,
+    cotonoma_coto = %{
+      cotonoma_coto
+      | amishi: amishi,
         posted_in: complement_owner(coto.posted_in),
-        cotonoma: %{cotonoma |
-          owner: amishi,
-          coto: cotonoma_coto
-        }
-      }
+        cotonoma: %{cotonoma | owner: amishi, coto: cotonoma_coto}
+    }
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn, cotonoma_coto)
+    CotoGraphService.sync_coto_props(Bolt.Sips.conn(), cotonoma_coto)
 
     cotonoma_coto
   end
@@ -98,6 +93,7 @@ defmodule Cotoami.CotonomaService do
   end
 
   def get!(nil), do: nil
+
   def get!(id) do
     case get(id) do
       nil -> raise NotFound, "cotonoma: id<#{id}>"
@@ -113,6 +109,7 @@ defmodule Cotoami.CotonomaService do
   end
 
   def get_by_key!(nil), do: nil
+
   def get_by_key!(key) do
     case get_by_key(key) do
       nil -> raise NotFound, "cotonoma: key<#{key}>"
@@ -128,11 +125,14 @@ defmodule Cotoami.CotonomaService do
   end
 
   def complement_owner(nil), do: nil
+
   def complement_owner(%Cotonoma{} = cotonoma) do
     case cotonoma.owner do
       %Ecto.Association.NotLoaded{} ->
         %{cotonoma | owner: AmishiService.get(cotonoma.owner_id)}
-      _owner -> cotonoma
+
+      _owner ->
+        cotonoma
     end
   end
 
@@ -186,8 +186,7 @@ defmodule Cotoami.CotonomaService do
         Coto
         |> Coto.in_cotonoma(cotonoma_id)
         |> Repo.aggregate(:count, :id),
-      connections:
-        CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn, cotonoma)
+      connections: CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn(), cotonoma)
     }
   end
 
@@ -195,8 +194,9 @@ defmodule Cotoami.CotonomaService do
     case global_cotonomas_holder_amishi() do
       nil ->
         []
+
       amishi ->
-        keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn, amishi)
+        keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn(), amishi)
         cotonomas = keys_map(keys)
         for key <- keys, cotonomas[key], do: cotonomas[key]
     end
@@ -206,10 +206,12 @@ defmodule Cotoami.CotonomaService do
     case global_cotonomas_holder() do
       nil ->
         nil
+
       id_or_email ->
         case UUID.info(id_or_email) do
           {:ok, _info} ->
             AmishiService.get(id_or_email)
+
           {:error, _reason} ->
             AmishiService.get_by_email(id_or_email)
         end
