@@ -4,6 +4,10 @@ defmodule CotoamiWeb.WatchController do
   alias Cotoami.WatchService
   alias Cotoami.CotonomaService
 
+  def action(conn, _) do
+    apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
+  end
+
   def index(conn, _params, amishi) do
     watchlist = WatchService.get_watchlist(amishi)
     render(conn, "index.json", %{watchlist: watchlist})

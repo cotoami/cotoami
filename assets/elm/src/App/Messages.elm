@@ -9,6 +9,7 @@ import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
 import App.Types.Connection exposing (Reordering)
+import App.Types.Watch exposing (Watch)
 import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
@@ -84,6 +85,7 @@ type Msg
     | CloseReorderMode
     | Watch CotonomaKey
     | Unwatch CotonomaKey
+    | WatchlistUpdated (Result Http.Error (List Watch))
       --
       -- Pushed
       --

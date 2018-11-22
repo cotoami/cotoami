@@ -14,7 +14,6 @@ import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Connection exposing (Direction(..), Reordering(..))
 import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
@@ -30,6 +29,7 @@ import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Coto
 import App.Server.Graph
+import App.Server.Watch
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
@@ -456,9 +456,18 @@ update msg model =
             { model | reordering = Nothing } |> withoutCmd
 
         Watch cotonomaKey ->
-            model |> withoutCmd
+            ( model
+            , App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey
+            )
 
         Unwatch cotonomaKey ->
+            model |> withoutCmd
+
+        WatchlistUpdated (Ok watchlist) ->
+            { model | watchlist = watchlist, watchlistLoading = False }
+                |> withoutCmd
+
+        WatchlistUpdated (Err _) ->
             model |> withoutCmd
 
         --
