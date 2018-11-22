@@ -43,4 +43,11 @@ defmodule Cotoami.WatchService do
     |> preload([:cotonoma])
     |> Repo.all()
   end
+
+  def delete!(%Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
+    case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
+      nil -> nil
+      watch -> Repo.delete!(watch)
+    end
+  end
 end

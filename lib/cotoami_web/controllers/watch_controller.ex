@@ -9,8 +9,7 @@ defmodule CotoamiWeb.WatchController do
   end
 
   def index(conn, _params, amishi) do
-    watchlist = WatchService.get_watchlist(amishi)
-    render(conn, "index.json", %{watchlist: watchlist})
+    render(conn, "index.json", %{watchlist: WatchService.get_watchlist(amishi)})
   end
 
   def create(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
@@ -18,10 +17,14 @@ defmodule CotoamiWeb.WatchController do
 
     if cotonoma.shared do
       WatchService.get_or_create!(amishi, cotonoma)
-      watchlist = WatchService.get_watchlist(amishi)
-      render(conn, "watchlist.json", %{watchlist: watchlist})
+      render(conn, "watchlist.json", %{watchlist: WatchService.get_watchlist(amishi)})
     else
       send_resp(conn, :forbidden, "The cotonoma is not shared.")
     end
+  end
+
+  def delete(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
+    WatchService.delete!(amishi, CotonomaService.get_by_key!(cotonoma_key))
+    render(conn, "watchlist.json", %{watchlist: WatchService.get_watchlist(amishi)})
   end
 end
