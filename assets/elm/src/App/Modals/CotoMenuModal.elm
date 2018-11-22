@@ -85,6 +85,7 @@ type alias ViewModel model =
         | cotoMenuModal : Maybe Model
         , graph : Graph
         , watchlist : List Watch
+        , watchlistLoading : Bool
     }
 
 
@@ -335,26 +336,32 @@ menuItemDelete context session model =
                 |> Maybe.withDefault (isJust model.coto.asCotonoma)
     in
         if checkWritePermission session model then
-            if nonEmptyCotonoma then
-                div [ class "menu-item disabled" ]
-                    [ span
-                        [ class "delete" ]
-                        [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ]
-                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
-                        ]
-                    ]
-            else
-                div
-                    [ class "menu-item"
-                    , onLinkButtonClick (AppMsg.ConfirmDeleteCoto model.coto)
-                    ]
-                    [ a
-                        [ class "delete" ]
-                        [ materialIcon "delete" Nothing
-                        , span [ class "menu-title" ]
-                            [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
-                        ]
-                    ]
+            menuItem context
+                nonEmptyCotonoma
+                "delete"
+                [ materialIcon "delete" Nothing
+                , span [ class "menu-title" ]
+                    [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
+                ]
+                (AppMsg.ConfirmDeleteCoto model.coto)
         else
             Utils.HtmlUtil.none
+
+
+menuItem :
+    Context context
+    -> Bool
+    -> String
+    -> List (Html AppMsg.Msg)
+    -> AppMsg.Msg
+    -> Html AppMsg.Msg
+menuItem context disabled cssClass label msg =
+    if disabled then
+        div [ class "menu-item disabled" ]
+            [ span [ class cssClass ] label ]
+    else
+        div
+            [ class "menu-item"
+            , onLinkButtonClick msg
+            ]
+            [ a [ class cssClass ] label ]
