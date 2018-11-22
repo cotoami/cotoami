@@ -16,7 +16,7 @@ defmodule Cotoami.CotoServiceTest do
     %{conn: Bolt.Sips.conn(), amishi: amishi}
   end
 
-  describe "when there is a coto pinned to an amishi" do
+  describe "when there is a coto" do
     setup ~M{amishi} do
       coto = CotoService.create!(amishi, "hello")
       ~M{coto}
