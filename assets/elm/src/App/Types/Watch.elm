@@ -4,6 +4,7 @@ import App.Types.Coto exposing (Cotonoma)
 
 
 type alias Watch =
-    { cotonoma : Cotonoma
+    { id : String
+    , cotonoma : Cotonoma
     , lastPostTimestamp : Maybe Int
     }

@@ -13,8 +13,9 @@ defmodule CotoamiWeb.WatchController do
     cotonoma = CotonomaService.get!(cotonoma_id)
 
     if cotonoma.shared do
-      watch = WatchService.get_or_create!(amishi, cotonoma)
-      render(conn, "watch.json", %{watch: watch})
+      WatchService.get_or_create!(amishi, cotonoma)
+      watchlist = WatchService.get_watchlist(amishi)
+      render(conn, "watchlist.json", %{watchlist: watchlist})
     else
       send_resp(conn, :forbidden, "The cotonoma is not shared.")
     end
