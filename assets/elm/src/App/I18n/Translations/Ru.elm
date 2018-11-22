@@ -234,6 +234,12 @@ text key =
         CotoMenuModal_Delete ->
             "Удалить"
 
+        CotoMenuModal_Watch ->
+            "Watch this Cotonoma"
+
+        CotoMenuModal_Unwatch ->
+            "Unwatch"
+
         TimelineFilterModal_Title ->
             "Фильтр по времени добавления"
 

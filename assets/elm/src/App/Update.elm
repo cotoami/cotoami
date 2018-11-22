@@ -455,6 +455,12 @@ update msg model =
         CloseReorderMode ->
             { model | reordering = Nothing } |> withoutCmd
 
+        Watch cotonomaKey ->
+            model |> withoutCmd
+
+        Unwatch cotonomaKey ->
+            model |> withoutCmd
+
         --
         -- Pushed
         --

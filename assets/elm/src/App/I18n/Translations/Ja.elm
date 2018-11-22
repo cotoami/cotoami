@@ -222,6 +222,12 @@ text key =
         CotoMenuModal_UnpinFromCotonoma ->
             "コトノマのピンを外す"
 
+        CotoMenuModal_Watch ->
+            "ウォッチリストに追加"
+
+        CotoMenuModal_Unwatch ->
+            "ウォッチリストから削除"
+
         CotoMenuModal_Edit ->
             "編集"
 

@@ -113,6 +113,7 @@ modalConfig context session graph watchlist model =
     , content =
         [ [ menuItemInfo context model
           , menuItemExplore context model
+          , menuItemWatchOrUnwatch context watchlist model
           ]
         , if App.Submodels.Context.atHome context then
             [ menuItemPinUnpin context graph model ]
@@ -276,6 +277,53 @@ menuItemCotonomatize context session model =
             ]
     else
         Utils.HtmlUtil.none
+
+
+menuItemWatchOrUnwatch : Context context -> List Watch -> Model -> Html AppMsg.Msg
+menuItemWatchOrUnwatch context watchlist model =
+    model.coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                if cotonoma.shared == True then
+                    (if App.Types.Watch.isWatched watchlist cotonoma then
+                        menuItemUnwatch context cotonoma
+                     else
+                        menuItemWatch context cotonoma
+                    )
+                else
+                    Utils.HtmlUtil.none
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+menuItemWatch : Context context -> Cotonoma -> Html AppMsg.Msg
+menuItemWatch context cotonoma =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (AppMsg.Watch cotonoma.key)
+        ]
+        [ a
+            [ class "watch" ]
+            [ materialIcon "visibility" Nothing
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Watch) ]
+            ]
+        ]
+
+
+menuItemUnwatch : Context context -> Cotonoma -> Html AppMsg.Msg
+menuItemUnwatch context cotonoma =
+    div
+        [ class "menu-item"
+        , onLinkButtonClick (AppMsg.Unwatch cotonoma.key)
+        ]
+        [ a
+            [ class "unwatch" ]
+            [ materialIcon "visibility_off" Nothing
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Unwatch) ]
+            ]
+        ]
 
 
 menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg

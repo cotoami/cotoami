@@ -237,6 +237,12 @@ text key =
         CotoMenuModal_Delete ->
             "删除"
 
+        CotoMenuModal_Watch ->
+            "Watch this Cotonoma"
+
+        CotoMenuModal_Unwatch ->
+            "Unwatch"
+
         TimelineFilterModal_Title ->
             "時間線篩檢程式"
 

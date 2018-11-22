@@ -82,6 +82,8 @@ type Msg
     | ConnectionDeleted (Result Http.Error String)
     | SetReorderMode Reordering
     | CloseReorderMode
+    | Watch CotonomaKey
+    | Unwatch CotonomaKey
       --
       -- Pushed
       --
