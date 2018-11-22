@@ -20,6 +20,7 @@ import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.SearchResults exposing (SearchResults)
+import App.Types.Watch exposing (Watch)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..), Confirmation)
@@ -61,6 +62,7 @@ type alias Model =
     , recentCotonomas : List Cotonoma
     , cotonomasLoading : Bool
     , subCotonomas : List Cotonoma
+    , watchlist : List Watch
     , timeline : Timeline
     , searchResults : SearchResults
     , graph : Graph
@@ -105,6 +107,7 @@ initModel seed lang route =
     , recentCotonomas = []
     , cotonomasLoading = False
     , subCotonomas = []
+    , watchlist = []
     , timeline = App.Types.Timeline.defaultTimeline
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , graph = App.Types.Graph.defaultGraph

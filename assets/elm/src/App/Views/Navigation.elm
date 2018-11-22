@@ -7,6 +7,7 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
+import App.Types.Watch exposing (Watch)
 import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
@@ -19,6 +20,7 @@ type alias ViewModel model =
             | globalCotonomas : List Cotonoma
             , recentCotonomas : List Cotonoma
             , subCotonomas : List Cotonoma
+            , watchlist : List Watch
             , graph : Graph
         }
 
