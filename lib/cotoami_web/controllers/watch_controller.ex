@@ -2,8 +2,21 @@ defmodule CotoamiWeb.WatchController do
   use CotoamiWeb, :controller
   require Logger
   alias Cotoami.WatchService
+  alias Cotoami.CotonomaService
 
   def index(conn, _params, amishi) do
-    render(conn, "index.json", WatchService.get_watchlist(amishi))
+    watchlist = WatchService.get_watchlist(amishi)
+    render(conn, "index.json", %{watchlist: watchlist})
+  end
+
+  def create(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
+    cotonoma = CotonomaService.get!(cotonoma_id)
+
+    if cotonoma.shared do
+      watch = WatchService.get_or_create!(amishi, cotonoma)
+      render(conn, "watch.json", %{watch: watch})
+    else
+      send_resp(conn, :forbidden, "The cotonoma is not shared.")
+    end
   end
 end
