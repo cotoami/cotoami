@@ -93,7 +93,12 @@ view : Context context -> ViewModel model -> Html AppMsg.Msg
 view context model =
     (Maybe.map2
         (\session cotoMenuModal ->
-            modalConfig context session model.graph model.watchlist cotoMenuModal
+            modalConfig
+                context
+                session
+                model.graph
+                ( model.watchlist, model.watchlistLoading )
+                cotoMenuModal
         )
         context.session
         model.cotoMenuModal
@@ -105,7 +110,7 @@ modalConfig :
     Context context
     -> Session
     -> Graph
-    -> List Watch
+    -> ( List Watch, Bool )
     -> Model
     -> Modal.Config AppMsg.Msg
 modalConfig context session graph watchlist model =
@@ -280,16 +285,16 @@ menuItemCotonomatize context session model =
         Utils.HtmlUtil.none
 
 
-menuItemWatchOrUnwatch : Context context -> List Watch -> Model -> Html AppMsg.Msg
-menuItemWatchOrUnwatch context watchlist model =
+menuItemWatchOrUnwatch : Context context -> ( List Watch, Bool ) -> Model -> Html AppMsg.Msg
+menuItemWatchOrUnwatch context ( watchlist, watchlistLoading ) model =
     model.coto.asCotonoma
         |> Maybe.map
             (\cotonoma ->
                 if cotonoma.shared == True then
                     (if App.Types.Watch.isWatched watchlist cotonoma then
-                        menuItemUnwatch context cotonoma
+                        menuItemUnwatch context watchlistLoading cotonoma
                      else
-                        menuItemWatch context cotonoma
+                        menuItemWatch context watchlistLoading cotonoma
                     )
                 else
                     Utils.HtmlUtil.none
@@ -297,34 +302,30 @@ menuItemWatchOrUnwatch context watchlist model =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-menuItemWatch : Context context -> Cotonoma -> Html AppMsg.Msg
-menuItemWatch context cotonoma =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.Watch cotonoma.key)
+menuItemWatch : Context context -> Bool -> Cotonoma -> Html AppMsg.Msg
+menuItemWatch context watchlistLoading cotonoma =
+    menuItem
+        context
+        watchlistLoading
+        "watch"
+        [ materialIcon "visibility" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_Watch) ]
         ]
-        [ a
-            [ class "watch" ]
-            [ materialIcon "visibility" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_Watch) ]
-            ]
-        ]
+        (AppMsg.Watch cotonoma.key)
 
 
-menuItemUnwatch : Context context -> Cotonoma -> Html AppMsg.Msg
-menuItemUnwatch context cotonoma =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.Unwatch cotonoma.key)
+menuItemUnwatch : Context context -> Bool -> Cotonoma -> Html AppMsg.Msg
+menuItemUnwatch context watchlistLoading cotonoma =
+    menuItem
+        context
+        watchlistLoading
+        "unwatch"
+        [ materialIcon "visibility_off" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_Unwatch) ]
         ]
-        [ a
-            [ class "unwatch" ]
-            [ materialIcon "visibility_off" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_Unwatch) ]
-            ]
-        ]
+        (AppMsg.Unwatch cotonoma.key)
 
 
 menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg
@@ -336,7 +337,8 @@ menuItemDelete context session model =
                 |> Maybe.withDefault (isJust model.coto.asCotonoma)
     in
         if checkWritePermission session model then
-            menuItem context
+            menuItem
+                context
                 nonEmptyCotonoma
                 "delete"
                 [ materialIcon "delete" Nothing

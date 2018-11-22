@@ -456,9 +456,8 @@ update msg model =
             { model | reordering = Nothing } |> withoutCmd
 
         Watch cotonomaKey ->
-            ( model
-            , App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey
-            )
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey)
 
         Unwatch cotonomaKey ->
             model |> withoutCmd
@@ -623,6 +622,7 @@ loadHome model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
@@ -633,6 +633,7 @@ loadHome model =
                     , App.Server.Cotonoma.fetchCotonomas
                     , App.Server.Graph.fetchGraph Nothing
                     , App.Ports.Graph.destroyGraph ()
+                    , App.Server.Watch.fetchWatchlist WatchlistUpdated
                     ]
             )
 
@@ -652,6 +653,7 @@ loadCotonoma key model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
@@ -662,5 +664,6 @@ loadCotonoma key model =
                     , App.Server.Post.fetchCotonomaPosts 0 model.flowView.filter key
                     , App.Server.Graph.fetchGraph (Just key)
                     , App.Ports.Graph.destroyGraph ()
+                    , App.Server.Watch.fetchWatchlist WatchlistUpdated
                     ]
             )
