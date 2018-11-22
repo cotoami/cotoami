@@ -1,9 +1,9 @@
-module App.Server.Watch exposing (decodeWatch, fetchWatchlist, watch)
+module App.Server.Watch exposing (decodeWatch, fetchWatchlist, watch, unwatch)
 
 import Http
 import Json.Decode as Decode exposing (maybe, int, string, list)
 import Json.Decode.Pipeline exposing (required, optional)
-import Utils.HttpUtil exposing (ClientId, httpPut)
+import Utils.HttpUtil exposing (ClientId)
 import App.Types.Watch exposing (Watch)
 import App.Types.Coto exposing (CotonomaKey)
 import App.Server.Cotonoma
@@ -28,5 +28,16 @@ watch tag clientId cotonomaKey =
         url =
             "/api/watchlist/" ++ cotonomaKey
     in
-        httpPut url clientId Http.emptyBody (list decodeWatch)
+        Utils.HttpUtil.httpPut url clientId Http.emptyBody (list decodeWatch)
+            |> Http.send tag
+
+
+unwatch : (Result Http.Error (List Watch) -> msg) -> ClientId -> CotonomaKey -> Cmd msg
+unwatch tag clientId cotonomaKey =
+    let
+        url =
+            "/api/watchlist/" ++ cotonomaKey
+    in
+        Http.expectJson (list decodeWatch)
+            |> Utils.HttpUtil.httpDeleteWithExpect url clientId
             |> Http.send tag

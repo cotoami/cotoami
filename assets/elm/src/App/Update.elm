@@ -460,7 +460,8 @@ update msg model =
                 |> withCmd (\model -> App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey)
 
         Unwatch cotonomaKey ->
-            model |> withoutCmd
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.unwatch WatchlistUpdated model.clientId cotonomaKey)
 
         WatchlistUpdated (Ok watchlist) ->
             { model | watchlist = watchlist, watchlistLoading = False }
