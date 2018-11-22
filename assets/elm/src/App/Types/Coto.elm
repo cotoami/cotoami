@@ -121,6 +121,7 @@ type alias Cotonoma =
     , updatedAt : Date
     , timelineRevision : Int
     , graphRevision : Int
+    , lastPostTimestamp : Maybe Int
     }
 
 

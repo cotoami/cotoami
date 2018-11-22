@@ -32,7 +32,8 @@ defmodule CotoamiWeb.CotonomaView do
         end,
       owner: render_relation(cotonoma.owner, AmishiView, "amishi.json"),
       inserted_at: cotonoma.inserted_at |> to_unixtime(),
-      updated_at: cotonoma.updated_at |> to_unixtime()
+      updated_at: cotonoma.updated_at |> to_unixtime(),
+      last_post_timestamp: cotonoma.last_post_timestamp |> to_unixtime()
     }
   end
 
@@ -46,7 +47,8 @@ defmodule CotoamiWeb.CotonomaView do
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,
       inserted_at: cotonoma.inserted_at |> to_unixtime(),
-      updated_at: cotonoma.updated_at |> to_unixtime()
+      updated_at: cotonoma.updated_at |> to_unixtime(),
+      last_post_timestamp: cotonoma.last_post_timestamp |> to_unixtime()
     }
   end
 
