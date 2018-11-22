@@ -9,8 +9,8 @@ defmodule CotoamiWeb.WatchController do
     render(conn, "index.json", %{watchlist: watchlist})
   end
 
-  def create(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
-    cotonoma = CotonomaService.get!(cotonoma_id)
+  def create(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
+    cotonoma = CotonomaService.get_by_key!(cotonoma_key)
 
     if cotonoma.shared do
       WatchService.get_or_create!(amishi, cotonoma)
