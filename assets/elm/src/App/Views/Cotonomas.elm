@@ -1,10 +1,10 @@
-module App.Views.Cotonomas exposing (..)
+module App.Views.Cotonomas exposing (view, cotonomaDiv)
 
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Utils.HtmlUtil
+import Utils.HtmlUtil exposing (materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Graph exposing (Graph)
@@ -58,6 +58,7 @@ cotonomaDiv context graph listTitle cotonoma =
                     App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma
                   else
                     App.Views.Coto.cotonomaLink context CotonomaClick cotonoma.owner cotonoma
+                , materialIcon "fiber_manual_record" (Just "unread")
                 ]
             , div [ class "touch-space-to-open-tools" ] []
             , context.session
