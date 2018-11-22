@@ -19,6 +19,7 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
+import App.Types.Watch exposing (Watch)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(CotoMenuModal), Modals)
 import App.Messages as AppMsg
@@ -79,18 +80,34 @@ update context msg model =
             model |> withoutCmd
 
 
-view : Context context -> Graph -> Maybe Model -> Html AppMsg.Msg
-view context graph maybeModel =
+type alias ViewModel model =
+    { model
+        | cotoMenuModal : Maybe Model
+        , graph : Graph
+        , watchlist : List Watch
+    }
+
+
+view : Context context -> ViewModel model -> Html AppMsg.Msg
+view context model =
     (Maybe.map2
-        (\session model -> modalConfig context session graph model)
+        (\session cotoMenuModal ->
+            modalConfig context session model.graph model.watchlist cotoMenuModal
+        )
         context.session
-        maybeModel
+        model.cotoMenuModal
     )
         |> Modal.view "coto-menu-modal"
 
 
-modalConfig : Context context -> Session -> Graph -> Model -> Modal.Config AppMsg.Msg
-modalConfig context session graph model =
+modalConfig :
+    Context context
+    -> Session
+    -> Graph
+    -> List Watch
+    -> Model
+    -> Modal.Config AppMsg.Msg
+modalConfig context session graph watchlist model =
     { closeMessage = AppMsg.CloseModal
     , title = text ""
     , content =

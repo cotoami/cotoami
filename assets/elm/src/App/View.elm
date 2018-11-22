@@ -220,7 +220,7 @@ modals model =
                     App.Modals.InviteModal.view model model.inviteModal
 
                 CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model model.graph model.cotoMenuModal
+                    App.Modals.CotoMenuModal.view model model
 
                 CotoModal ->
                     App.Modals.CotoModal.view model model.cotoModal
