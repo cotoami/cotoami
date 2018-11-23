@@ -71,12 +71,14 @@ cotonomaNav model cotonoma =
         , App.Views.Cotonomas.cotonomaDiv
             model
             model.graph
+            model.watchlist
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
             [ App.Views.Cotonomas.view
                 model
                 model.graph
+                model.watchlist
                 "sub-cotonomas"
                 model.subCotonomas
             ]
@@ -94,6 +96,7 @@ globalCotonomasDiv model =
             , App.Views.Cotonomas.view
                 model
                 model.graph
+                model.watchlist
                 "global-cotonomas"
                 model.globalCotonomas
             ]
@@ -110,6 +113,7 @@ recentCotonomasDiv model =
             , App.Views.Cotonomas.view
                 model
                 model.graph
+                model.watchlist
                 "recent-cotonomas"
                 model.recentCotonomas
             ]
