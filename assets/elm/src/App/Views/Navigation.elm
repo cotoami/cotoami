@@ -72,14 +72,13 @@ currentCotonomaNav model cotonoma =
         , App.Views.Cotonomas.cotonomaDiv
             model
             model.graph
-            model.watchlist
+            Nothing
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
             [ App.Views.Cotonomas.view
                 model
                 model.graph
-                model.watchlist
                 "sub-cotonomas"
                 model.subCotonomas
             ]
@@ -97,7 +96,6 @@ globalCotonomasDiv model =
             , App.Views.Cotonomas.view
                 model
                 model.graph
-                model.watchlist
                 "global-cotonomas"
                 model.globalCotonomas
             ]
@@ -113,12 +111,7 @@ watchlistDiv model =
                 [ materialIcon "visibility" Nothing
                 , text (model.i18nText I18nKeys.Navigation_Watchlist)
                 ]
-            , App.Views.Cotonomas.view
-                model
-                model.graph
-                model.watchlist
-                "watchlist"
-                (List.map (\watch -> watch.cotonoma) model.watchlist)
+            , App.Views.Cotonomas.watchlist model model.graph model.watchlist
             ]
 
 
@@ -133,7 +126,6 @@ recentCotonomasDiv model =
             , App.Views.Cotonomas.view
                 model
                 model.graph
-                model.watchlist
                 "recent-cotonomas"
                 model.recentCotonomas
             ]

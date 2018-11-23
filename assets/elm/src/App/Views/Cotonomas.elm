@@ -1,4 +1,4 @@
-module App.Views.Cotonomas exposing (view, cotonomaDiv)
+module App.Views.Cotonomas exposing (view, watchlist, cotonomaDiv)
 
 import Html exposing (..)
 import Html.Keyed
@@ -15,23 +15,38 @@ import App.Views.Coto
 import App.Views.CotoToolbar
 
 
-view : Context a -> Graph -> List Watch -> String -> List Cotonoma -> Html Msg
-view context graph watchlist title cotonomas =
+view : Context a -> Graph -> String -> List Cotonoma -> Html Msg
+view context graph title cotonomas =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
         (List.map
             (\cotonoma ->
                 ( toString cotonoma.id
-                , cotonomaDiv context graph watchlist title cotonoma
+                , cotonomaDiv context graph Nothing title cotonoma
                 )
             )
             cotonomas
         )
 
 
-cotonomaDiv : Context a -> Graph -> List Watch -> String -> Cotonoma -> Html Msg
-cotonomaDiv context graph watchlist listTitle cotonoma =
+watchlist : Context a -> Graph -> List Watch -> Html Msg
+watchlist context graph watchlist =
+    Html.Keyed.node
+        "div"
+        [ class "cotonomas" ]
+        (List.map
+            (\cotonoma ->
+                ( toString cotonoma.id
+                , cotonomaDiv context graph (Just watchlist) "watchlist" cotonoma
+                )
+            )
+            (List.map (\watch -> watch.cotonoma) watchlist)
+        )
+
+
+cotonomaDiv : Context a -> Graph -> Maybe (List Watch) -> String -> Cotonoma -> Html Msg
+cotonomaDiv context graph maybeWatchlist listTitle cotonoma =
     let
         elementId =
             listTitle ++ cotonoma.cotoId
@@ -59,10 +74,7 @@ cotonomaDiv context graph watchlist listTitle cotonoma =
                     App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma
                   else
                     App.Views.Coto.cotonomaLink context CotonomaClick cotonoma.owner cotonoma
-                , if App.Types.Watch.anyUnreadCotosInCotonoma watchlist cotonoma then
-                    materialIcon "fiber_manual_record" (Just "unread")
-                  else
-                    Utils.HtmlUtil.none
+                , unreadMark maybeWatchlist cotonoma
                 ]
             , div [ class "touch-space-to-open-tools" ] []
             , context.session
@@ -78,3 +90,16 @@ cotonomaDiv context graph watchlist listTitle cotonoma =
                     )
                 |> Maybe.withDefault Utils.HtmlUtil.none
             ]
+
+
+unreadMark : Maybe (List Watch) -> Cotonoma -> Html Msg
+unreadMark maybeWatchlist cotonoma =
+    maybeWatchlist
+        |> Maybe.map
+            (\watchlist ->
+                if App.Types.Watch.anyUnreadCotosInCotonoma watchlist cotonoma then
+                    materialIcon "fiber_manual_record" (Just "unread")
+                else
+                    Utils.HtmlUtil.none
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
