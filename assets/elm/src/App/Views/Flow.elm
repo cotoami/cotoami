@@ -115,11 +115,15 @@ update context msg ({ flowView, timeline } as model) =
                 |> withoutCmd
 
         TimelineScrollPosInitialized scrollTop ->
-            Debug.log "debug" ("TimelineScrollPosInitialized: " ++ (toString scrollTop))
-                |> (\_ ->
-                        { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                            |> withoutCmd
+            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
+                |> (\model ->
+                        if scrollTop == 0 then
+                            -- Clear unread because there's no scrollbar
+                            App.Submodels.LocalCotos.clearUnreadInCurrentCotonoma model
+                        else
+                            model
                    )
+                |> withoutCmd
 
         ImageLoaded ->
             model

@@ -14,6 +14,7 @@ module App.Submodels.LocalCotos
         , connect
         , areTimelineAndGraphLoaded
         , isTimelineReady
+        , clearUnreadInCurrentCotonoma
         )
 
 import Set exposing (Set)
@@ -194,3 +195,24 @@ isTimelineReady : LocalCotos a -> Bool
 isTimelineReady localCotos =
     (areTimelineAndGraphLoaded localCotos)
         && (not localCotos.timeline.initializingScrollPos)
+
+
+clearUnreadInCurrentCotonoma : LocalCotos a -> LocalCotos a
+clearUnreadInCurrentCotonoma localCotos =
+    (Maybe.map2
+        (\cotonoma latestPost ->
+            localCotos.watchlist
+                |> List.Extra.updateIf
+                    (\watch -> watch.cotonoma.id == cotonoma.id)
+                    (\watch ->
+                        { watch
+                            | lastPostTimestamp =
+                                Maybe.map Date.toTime latestPost.postedAt
+                        }
+                    )
+                |> (\watchlist -> { localCotos | watchlist = watchlist })
+        )
+        localCotos.cotonoma
+        (App.Types.Timeline.latestPost localCotos.timeline)
+    )
+        |> Maybe.withDefault localCotos
