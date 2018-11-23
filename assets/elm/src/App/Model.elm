@@ -47,6 +47,7 @@ type alias Model =
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
+    , watchStateOnCotonomaLoad : Maybe Watch
     , elementFocus : Maybe ElementId
     , contentOpenElements : Set ElementId
     , reordering : Maybe Reordering
@@ -93,6 +94,7 @@ initModel seed lang route =
     , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False
+    , watchStateOnCotonomaLoad = Nothing
     , elementFocus = Nothing
     , contentOpenElements = Set.empty
     , reordering = Nothing

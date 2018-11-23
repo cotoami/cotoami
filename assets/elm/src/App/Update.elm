@@ -14,6 +14,7 @@ import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
+import App.Types.Watch
 import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
@@ -161,8 +162,13 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    App.Views.Flow.initScrollPos
-                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
+                    (\model ->
+                        Cmd.batch
+                            [ App.Views.Flow.initScrollPos model
+                            , App.Server.Cotonoma.fetchSubCotonomas model
+                            , App.Server.Watch.fetchWatchlist (WatchlistOnCotonomaLoad cotonoma)
+                            ]
+                    )
 
         CotonomaPostsFetched (Err _) ->
             model |> withoutCmd
@@ -470,6 +476,18 @@ update msg model =
         WatchlistUpdated (Err _) ->
             model |> withoutCmd
 
+        WatchlistOnCotonomaLoad cotonoma (Ok watchlist) ->
+            { model
+                | watchlist = watchlist
+                , watchlistLoading = False
+                , watchStateOnCotonomaLoad =
+                    App.Types.Watch.findWatchByCotonomaId cotonoma.id watchlist
+            }
+                |> withoutCmd
+
+        WatchlistOnCotonomaLoad cotonoma (Err _) ->
+            model |> withoutCmd
+
         --
         -- Pushed
         --
@@ -665,6 +683,5 @@ loadCotonoma key model =
                     , App.Server.Post.fetchCotonomaPosts 0 model.flowView.filter key
                     , App.Server.Graph.fetchGraph (Just key)
                     , App.Ports.Graph.destroyGraph ()
-                    , App.Server.Watch.fetchWatchlist WatchlistUpdated
                     ]
             )
