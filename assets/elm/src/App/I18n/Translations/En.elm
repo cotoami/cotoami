@@ -75,6 +75,9 @@ text key =
         Navigation_Recent ->
             "Recent"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "Write your Coto in Markdown"
 

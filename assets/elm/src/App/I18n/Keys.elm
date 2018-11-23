@@ -25,6 +25,7 @@ type TextKey
     | SigninModal_SentMessage
     | Navigation_Current
     | Navigation_Recent
+    | Navigation_Watchlist
     | Flow_EditorPlaceholder
     | Flow_ShortcutToOpenEditor
     | Flow_HideFlow

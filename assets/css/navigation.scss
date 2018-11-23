@@ -46,6 +46,7 @@
   }
 
   div.global-cotonomas,
+  div.watchlist,
   div.recent-cotonomas {
     margin-bottom: 20px;
   }
@@ -53,6 +54,12 @@
   div.global-cotonomas div.navigation-title i {
     vertical-align: bottom;
     font-size: 18px;
+  }
+
+  div.watchlist div.navigation-title i {
+    font-size: 20px;
+    vertical-align: -5px;
+    margin-right: 2px;
   }
 
   div.coto-as-cotonoma {

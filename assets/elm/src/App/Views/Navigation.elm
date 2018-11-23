@@ -34,9 +34,10 @@ view model =
         , div
             [ class "cotonomas-nav" ]
             [ model.cotonoma
-                |> Maybe.map (cotonomaNav model)
+                |> Maybe.map (currentCotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , globalCotonomasDiv model
+            , watchlistDiv model
             , recentCotonomasDiv model
             ]
         ]
@@ -63,8 +64,8 @@ homeNav model =
         ]
 
 
-cotonomaNav : ViewModel model -> Cotonoma -> Html Msg
-cotonomaNav model cotonoma =
+currentCotonomaNav : ViewModel model -> Cotonoma -> Html Msg
+currentCotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
@@ -99,6 +100,25 @@ globalCotonomasDiv model =
                 model.watchlist
                 "global-cotonomas"
                 model.globalCotonomas
+            ]
+
+
+watchlistDiv : ViewModel model -> Html Msg
+watchlistDiv model =
+    if List.isEmpty model.watchlist then
+        Utils.HtmlUtil.none
+    else
+        div [ class "watchlist" ]
+            [ div [ class "navigation-title" ]
+                [ materialIcon "visibility" Nothing
+                , text (model.i18nText I18nKeys.Navigation_Watchlist)
+                ]
+            , App.Views.Cotonomas.view
+                model
+                model.graph
+                model.watchlist
+                "watchlist"
+                (List.map (\watch -> watch.cotonoma) model.watchlist)
             ]
 
 

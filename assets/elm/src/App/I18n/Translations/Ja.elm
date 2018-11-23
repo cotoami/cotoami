@@ -78,6 +78,9 @@ text key =
         Navigation_Recent ->
             "最近のコトノマ"
 
+        Navigation_Watchlist ->
+            "ウォッチリスト"
+
         Flow_EditorPlaceholder ->
             "新しいコトを書く"
 

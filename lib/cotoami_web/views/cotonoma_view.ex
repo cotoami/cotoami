@@ -25,11 +25,7 @@ defmodule CotoamiWeb.CotonomaView do
       pinned: cotonoma.pinned,
       timeline_revision: cotonoma.timeline_revision,
       graph_revision: cotonoma.graph_revision,
-      coto_id:
-        case cotonoma.coto do
-          %Ecto.Association.NotLoaded{} -> ""
-          coto -> coto.id
-        end,
+      coto_id: cotonoma.coto_id,
       owner: render_relation(cotonoma.owner, AmishiView, "amishi.json"),
       inserted_at: cotonoma.inserted_at |> to_unixtime(),
       updated_at: cotonoma.updated_at |> to_unixtime(),

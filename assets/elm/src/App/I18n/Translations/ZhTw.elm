@@ -78,6 +78,9 @@ text key =
         Navigation_Recent ->
             "最近的投稿室"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "寫新的投稿"
 

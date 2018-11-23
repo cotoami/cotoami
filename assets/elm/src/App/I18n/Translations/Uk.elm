@@ -75,6 +75,9 @@ text key =
         Navigation_Recent ->
             "Нові"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "Опишіть об'єкт за допомогою Markdown"
 

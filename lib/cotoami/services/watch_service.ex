@@ -40,7 +40,7 @@ defmodule Cotoami.WatchService do
       where: w.amishi_id == ^amishi_id,
       order_by: [desc: w.updated_at]
     )
-    |> preload([:cotonoma])
+    |> preload(cotonoma: :owner)
     |> Repo.all()
   end
 
