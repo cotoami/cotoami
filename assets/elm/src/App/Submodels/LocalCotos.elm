@@ -14,6 +14,7 @@ module App.Submodels.LocalCotos
         , connect
         , areTimelineAndGraphLoaded
         , isTimelineReady
+        , findWatchForCurrentCotonoma
         , clearUnreadInCurrentCotonoma
         )
 
@@ -195,6 +196,17 @@ isTimelineReady : LocalCotos a -> Bool
 isTimelineReady localCotos =
     (areTimelineAndGraphLoaded localCotos)
         && (not localCotos.timeline.initializingScrollPos)
+
+
+findWatchForCurrentCotonoma : LocalCotos a -> Maybe Watch
+findWatchForCurrentCotonoma localCotos =
+    localCotos.cotonoma
+        |> Maybe.andThen
+            (\cotonoma ->
+                App.Types.Watch.findWatchByCotonomaId
+                    cotonoma.id
+                    localCotos.watchlist
+            )
 
 
 clearUnreadInCurrentCotonoma : LocalCotos a -> LocalCotos a
