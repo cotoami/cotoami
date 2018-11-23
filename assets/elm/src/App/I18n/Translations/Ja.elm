@@ -102,6 +102,9 @@ text key =
         Flow_TileView ->
             "タイル"
 
+        Flow_NewPosts ->
+            "新しい投稿"
+
         Stock_DocumentView ->
             "ドキュメント"
 

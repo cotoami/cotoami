@@ -102,6 +102,9 @@ text key =
         Flow_TileView ->
             "平铺"
 
+        Flow_NewPosts ->
+            "new posts"
+
         Stock_DocumentView ->
             "文档"
 

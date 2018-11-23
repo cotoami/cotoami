@@ -10,6 +10,7 @@ module App.Views.Flow
         , view
         )
 
+import Date
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
@@ -365,11 +366,44 @@ postsDiv context graph posts =
         (List.map
             (\post ->
                 ( getKey post
-                , App.Views.Post.view context graph post
+                , div []
+                    [ App.Views.Post.view context graph post
+                    , unreadStartLine context post
+                    ]
                 )
             )
             posts
         )
+
+
+unreadStartLine : Context context -> Post -> Html AppMsg.Msg
+unreadStartLine context post =
+    let
+        postTimestamp =
+            Maybe.map (Date.toTime) post.postedAt
+
+        lastPostTimestamp =
+            Maybe.andThen (.lastPostTimestamp) context.cotonoma
+    in
+        (Maybe.map3
+            (\postTimestamp lastPostTimestamp watch ->
+                if
+                    (postTimestamp /= lastPostTimestamp)
+                        && (watch.lastPostTimestamp == Just postTimestamp)
+                then
+                    div [ class "unread-start-line" ]
+                        [ hr [] []
+                        , div [ class "line-label" ]
+                            [ text (context.i18nText I18nKeys.Flow_NewPosts) ]
+                        ]
+                else
+                    Utils.HtmlUtil.none
+            )
+            postTimestamp
+            lastPostTimestamp
+            context.watchStateOnCotonomaLoad
+        )
+            |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 getKey : Post -> String

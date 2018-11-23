@@ -99,6 +99,9 @@ text key =
         Flow_TileView ->
             "Tile View"
 
+        Flow_NewPosts ->
+            "new posts"
+
         Stock_DocumentView ->
             "Document View"
 

@@ -99,6 +99,9 @@ text key =
         Flow_TileView ->
             "Просмотр списка заголовков"
 
+        Flow_NewPosts ->
+            "new posts"
+
         Stock_DocumentView ->
             "Просмотреть как документ"
 

@@ -33,6 +33,7 @@ type TextKey
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView
+    | Flow_NewPosts
     | Stock_DocumentView
     | Stock_GraphView
     | EditorModal_Summary
