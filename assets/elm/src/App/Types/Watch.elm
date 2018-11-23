@@ -3,6 +3,7 @@ module App.Types.Watch
         ( Watch
         , anyUnreadCotos
         , isWatched
+        , findWatchByCotonomaId
         , anyUnreadCotosInCotonoma
         )
 
@@ -35,9 +36,14 @@ isWatched watchlist cotonoma =
     List.any (\watch -> watch.cotonoma.id == cotonoma.id) watchlist
 
 
+findWatchByCotonomaId : String -> List Watch -> Maybe Watch
+findWatchByCotonomaId cotonomaId watchlist =
+    List.Extra.find (\watch -> watch.cotonoma.id == cotonomaId) watchlist
+
+
 anyUnreadCotosInCotonoma : List Watch -> Cotonoma -> Bool
 anyUnreadCotosInCotonoma watchlist cotonoma =
     watchlist
-        |> List.Extra.find (\watch -> watch.cotonoma.id == cotonoma.id)
+        |> findWatchByCotonomaId cotonoma.id
         |> Maybe.map anyUnreadCotos
         |> Maybe.withDefault False
