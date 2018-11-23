@@ -21,7 +21,7 @@ import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.DateUtil exposing (sameDay, formatDay)
-import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
+import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick, onScroll)
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.I18n.Keys as I18nKeys
@@ -168,6 +168,10 @@ update context msg ({ flowView, timeline } as model) =
         ConfirmPostAndConnect content ->
             App.Modals.ConnectModal.openWithPost content model
 
+        Scroll scrollPos ->
+            Debug.log "scrollPos" scrollPos
+                |> (\_ -> model |> withoutCmd)
+
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
@@ -306,6 +310,7 @@ timelineDiv context model =
             , ( "tile", model.flowView.view == TileView )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
+        , onScroll (AppMsg.FlowMsg << Scroll)
         ]
         [ moreButton model.timeline
         , model.timeline.posts

@@ -2,6 +2,7 @@ module App.Views.FlowMsg exposing (Msg(..), TimelineView(..))
 
 import Http
 import Utils.Keyboard.Event exposing (KeyboardEvent)
+import Utils.EventUtil exposing (ScrollPos)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post)
 
@@ -23,3 +24,4 @@ type Msg
     | Post
     | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect CotoContent
+    | Scroll ScrollPos
