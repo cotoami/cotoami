@@ -91,30 +91,6 @@
       vertical-align: middle;
     }
 
-    div.cotonoma-link {
-      flex: 1;
-      padding-right: 4px;
-      position: relative;
-
-      img.avatar {
-        width: 20px;
-        height: 20px;
-      }
-
-      span.shared i {
-        font-size: 16px;
-      }
-
-      i.unread {
-        position: absolute;
-        top: -5px;
-        left: 10px;
-        font-size: 16px;
-        color: #f33;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-      }
-    }
-
     &.not-active div.cotonoma-link {
       opacity: .3;
     }
@@ -182,5 +158,34 @@
     &.element-focus span.coto-tool-buttons {
       display: inline-block !important;
     }
+  }
+
+  div.cotonoma-link {
+    flex: 1;
+    padding-right: 4px;
+    position: relative;
+
+    img.avatar {
+      width: 20px;
+      height: 20px;
+    }
+
+    span.shared i {
+      font-size: 16px;
+    }
+
+    i.unread {
+      position: absolute;
+      top: -5px;
+      left: 10px;
+      font-size: 16px;
+      color: #f33;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+      display: none;
+    }
+  }
+
+  div.watchlist i.unread {
+    display: inline;
   }
 }
