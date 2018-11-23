@@ -1,7 +1,7 @@
 module App.Server.Watch exposing (decodeWatch, fetchWatchlist, watch, unwatch)
 
 import Http
-import Json.Decode as Decode exposing (maybe, int, string, list)
+import Json.Decode as Decode exposing (maybe, float, string, list)
 import Json.Decode.Pipeline exposing (required, optional)
 import Utils.HttpUtil exposing (ClientId)
 import App.Types.Watch exposing (Watch)
@@ -14,7 +14,7 @@ decodeWatch =
     Json.Decode.Pipeline.decode Watch
         |> required "id" string
         |> required "cotonoma" App.Server.Cotonoma.decodeCotonoma
-        |> optional "last_post_timestamp" (maybe int) Nothing
+        |> optional "last_post_timestamp" (maybe float) Nothing
 
 
 fetchWatchlist : (Result Http.Error (List Watch) -> msg) -> Cmd msg

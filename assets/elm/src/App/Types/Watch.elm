@@ -7,6 +7,7 @@ module App.Types.Watch
         , anyUnreadCotosInCotonoma
         )
 
+import Time exposing (Time)
 import List.Extra
 import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Cotonoma)
@@ -15,7 +16,7 @@ import App.Types.Coto exposing (Cotonoma)
 type alias Watch =
     { id : String
     , cotonoma : Cotonoma
-    , lastPostTimestamp : Maybe Int
+    , lastPostTimestamp : Maybe Time
     }
 
 

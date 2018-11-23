@@ -19,6 +19,7 @@ module App.Types.Coto
         )
 
 import Date exposing (Date)
+import Time exposing (Time)
 import Exts.Maybe exposing (isJust)
 import App.Markdown
 import App.Types.Amishi exposing (Amishi)
@@ -121,7 +122,7 @@ type alias Cotonoma =
     , updatedAt : Date
     , timelineRevision : Int
     , graphRevision : Int
-    , lastPostTimestamp : Maybe Int
+    , lastPostTimestamp : Maybe Time
     }
 
 
