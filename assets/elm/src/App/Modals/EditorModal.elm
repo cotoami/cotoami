@@ -273,7 +273,7 @@ postSubcoto context coto content model =
                 |> App.Types.Timeline.post context False content
     in
         { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
               , App.Server.Post.post
                     context.clientId
                     context.cotonoma
@@ -378,7 +378,7 @@ postCotonoma context model =
                 model.timeline
     in
         { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
               , App.Server.Post.postCotonoma
                     context.clientId
                     context.cotonoma

@@ -114,15 +114,18 @@ update context msg ({ flowView, timeline } as model) =
             { model | flowView = toggle flowView }
                 |> withoutCmd
 
-        TimelineScrollPosInitialized ->
-            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                |> withoutCmd
+        TimelineScrollPosInitialized scrollTop ->
+            Debug.log "debug" ("TimelineScrollPosInitialized: " ++ (toString scrollTop))
+                |> (\_ ->
+                        { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
+                            |> withoutCmd
+                   )
 
         ImageLoaded ->
             model
                 |> withCmdIf
                     (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
         SwitchView view ->
             { model | flowView = switchView view flowView }
@@ -176,7 +179,8 @@ update context msg ({ flowView, timeline } as model) =
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
     if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom (AppMsg.FlowMsg TimelineScrollPosInitialized)
+        App.Commands.scrollTimelineToBottom
+            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
     else
         Cmd.none
 
@@ -219,7 +223,7 @@ post context content model =
     in
         ( { model | timeline = newTimeline }
         , Cmd.batch
-            [ App.Commands.scrollTimelineToBottom NoOp
+            [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
             , App.Server.Post.post
                 context.clientId
                 context.cotonoma

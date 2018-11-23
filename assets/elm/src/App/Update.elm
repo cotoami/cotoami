@@ -381,7 +381,7 @@ update msg model =
                                         model.clientId
                                         (Maybe.map (.key) model.cotonoma)
                                         [ cotoId ]
-                                    , App.Commands.scrollPinnedCotosToBottom NoOp
+                                    , App.Commands.scrollPinnedCotosToBottom (\_ -> NoOp)
                                     ]
                             )
                 )
