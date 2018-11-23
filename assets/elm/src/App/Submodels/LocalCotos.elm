@@ -27,6 +27,7 @@ import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Connection exposing (Direction)
 import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
+import App.Types.Watch exposing (Watch)
 import App.Submodels.Context exposing (Context)
 
 
@@ -41,6 +42,8 @@ type alias LocalCotos a =
         , recentCotonomas : List Cotonoma
         , subCotonomas : List Cotonoma
         , cotonomasLoading : Bool
+        , watchlist : List Watch
+        , watchlistLoading : Bool
         , searchResults : SearchResults
     }
 
@@ -54,6 +57,7 @@ getCoto cotoId localCotos =
         , getCotoFromCotonomaList cotoId localCotos.globalCotonomas
         , getCotoFromCotonomaList cotoId localCotos.recentCotonomas
         , getCotoFromCotonomaList cotoId localCotos.subCotonomas
+        , getCotoFromCotonomaList cotoId (List.map (.cotonoma) localCotos.watchlist)
         , localCotos.cotonoma
             |> Maybe.map
                 (\cotonoma ->
