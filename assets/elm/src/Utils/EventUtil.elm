@@ -70,11 +70,6 @@ decodeScrollPos =
         (Decode.map2 Basics.max offsetHeight clientHeight)
 
 
-scrollHeight : Decode.Decoder Int
-scrollHeight =
-    Decode.at [ "target", "scrollHeight" ] Decode.int
-
-
 offsetHeight : Decode.Decoder Int
 offsetHeight =
     Decode.at [ "target", "offsetHeight" ] Decode.int
