@@ -267,28 +267,29 @@ updateWatchTimestamp :
     -> LocalCotos model
     -> ( LocalCotos model, Cmd AppMsg.Msg )
 updateWatchTimestamp context post watch model =
-    model.watchlist
-        |> List.Extra.updateIf
-            (\w -> w.cotonoma.id == watch.cotonoma.id)
-            (\w -> { w | lastPostTimestamp = Maybe.map Date.toTime post.postedAt })
-        |> (\watchlist -> { model | watchlist = watchlist })
-        |> withCmd
-            (\_ ->
-                post.postedAt
-                    |> Maybe.map Date.toTime
-                    |> Maybe.map
-                        (\postTimestamp ->
-                            if watch.lastPostTimestamp /= (Just postTimestamp) then
-                                App.Server.Watch.setLastPostTimestamp
+    let
+        postTimestamp =
+            Maybe.map Date.toTime post.postedAt
+    in
+        if watch.lastPostTimestamp /= postTimestamp then
+            model.watchlist
+                |> List.Extra.updateIf
+                    (\w -> w.cotonoma.id == watch.cotonoma.id)
+                    (\w -> { w | lastPostTimestamp = postTimestamp })
+                |> (\watchlist -> { model | watchlist = watchlist })
+                |> withCmd
+                    (\_ ->
+                        postTimestamp
+                            |> Maybe.map
+                                (App.Server.Watch.setLastPostTimestamp
                                     (\_ -> AppMsg.NoOp)
                                     context.clientId
                                     watch.cotonoma.key
-                                    postTimestamp
-                            else
-                                Cmd.none
-                        )
-                    |> Maybe.withDefault Cmd.none
-            )
+                                )
+                            |> Maybe.withDefault Cmd.none
+                    )
+        else
+            ( model, Cmd.none )
 
 
 type alias ViewModel model =
