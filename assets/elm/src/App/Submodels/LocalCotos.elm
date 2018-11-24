@@ -16,7 +16,6 @@ module App.Submodels.LocalCotos
         , connect
         , areTimelineAndGraphLoaded
         , isTimelineReady
-        , findWatchForCurrentCotonoma
         )
 
 import Set exposing (Set)
@@ -45,7 +44,6 @@ type alias LocalCotos a =
         , subCotonomas : List Cotonoma
         , cotonomasLoading : Bool
         , watchlist : List Watch
-        , watchlistLoading : Bool
         , searchResults : SearchResults
     }
 
@@ -236,14 +234,3 @@ isTimelineReady : LocalCotos a -> Bool
 isTimelineReady localCotos =
     (areTimelineAndGraphLoaded localCotos)
         && (not localCotos.timeline.initializingScrollPos)
-
-
-findWatchForCurrentCotonoma : LocalCotos a -> Maybe Watch
-findWatchForCurrentCotonoma localCotos =
-    localCotos.cotonoma
-        |> Maybe.andThen
-            (\cotonoma ->
-                App.Types.Watch.findWatchByCotonomaId
-                    cotonoma.id
-                    localCotos.watchlist
-            )

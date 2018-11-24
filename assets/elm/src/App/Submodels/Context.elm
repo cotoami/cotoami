@@ -21,6 +21,8 @@ module App.Submodels.Context
         , reorderingPinnedCotos
         , reorderingSubCotos
         , isFocusedElementInReordering
+        , isWatched
+        , findWatchForCurrentCotonoma
         )
 
 import Set exposing (Set)
@@ -31,6 +33,7 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
+import App.Types.Graph exposing (Graph)
 import App.Types.Watch exposing (Watch)
 import App.Types.Connection exposing (Reordering(..))
 
@@ -49,6 +52,9 @@ type alias Context a =
         , cotoFocus : Maybe CotoId
         , selection : CotoSelection
         , deselecting : Set CotoId
+        , graph : Graph
+        , watchlist : List Watch
+        , watchlistLoading : Bool
     }
 
 
@@ -228,3 +234,19 @@ isFocusedElementInReordering context elementId =
                         elementId == focusedElementId
             )
         |> Maybe.withDefault False
+
+
+isWatched : Cotonoma -> Context a -> Bool
+isWatched cotonoma context =
+    List.any (\watch -> watch.cotonoma.id == cotonoma.id) context.watchlist
+
+
+findWatchForCurrentCotonoma : Context a -> Maybe Watch
+findWatchForCurrentCotonoma context =
+    context.cotonoma
+        |> Maybe.andThen
+            (\cotonoma ->
+                App.Types.Watch.findWatchByCotonomaId
+                    cotonoma.id
+                    context.watchlist
+            )
