@@ -21,7 +21,6 @@ module App.Submodels.LocalCotos
 
 import Set exposing (Set)
 import Dict
-import Date
 import List.Extra
 import Exts.Maybe
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
@@ -142,6 +141,18 @@ updateCotonoma cotonoma localCotos =
     }
 
 
+updateRecentCotonomas : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
+updateRecentCotonomas maybeCotonoma localCotos =
+    maybeCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                localCotos.recentCotonomas
+                    |> updateCotonomaInList cotonoma
+                    |> (\cotonomas -> { localCotos | recentCotonomas = cotonomas })
+            )
+        |> Maybe.withDefault localCotos
+
+
 updateCotonomaInList : Cotonoma -> List Cotonoma -> List Cotonoma
 updateCotonomaInList cotonoma cotonomas =
     if List.any (\c -> c.id == cotonoma.id) cotonomas then
@@ -182,21 +193,6 @@ incorporateLocalCotoInGraph cotoId localCotos =
                     Just coto ->
                         App.Types.Graph.addCoto coto localCotos.graph
     }
-
-
-updateRecentCotonomas : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
-updateRecentCotonomas maybeCotonoma localCotos =
-    maybeCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                localCotos.recentCotonomas
-                    |> (::) cotonoma
-                    |> List.Extra.uniqueBy (\c -> c.id)
-                    |> List.sortBy (\c -> Date.toTime c.updatedAt)
-                    |> List.reverse
-                    |> (\cotonomas -> { localCotos | recentCotonomas = cotonomas })
-            )
-        |> Maybe.withDefault localCotos
 
 
 isStockEmpty : LocalCotos a -> Bool
