@@ -6,6 +6,7 @@ module App.Submodels.LocalCotos
         , getCotoIdsToWatch
         , getCotonomaKeysToWatch
         , updateCoto
+        , updateCotonoma
         , deleteCoto
         , cotonomatize
         , incorporateLocalCotoInGraph
@@ -120,6 +121,35 @@ updateCoto coto localCotos =
         | timeline = App.Types.Timeline.updatePost coto localCotos.timeline
         , graph = App.Types.Graph.updateCoto coto localCotos.graph
     }
+
+
+updateCotonoma : Cotonoma -> LocalCotos a -> LocalCotos a
+updateCotonoma cotonoma localCotos =
+    { localCotos
+        | cotonoma =
+            if (Maybe.map (.id) localCotos.cotonoma) == (Just cotonoma.id) then
+                Just cotonoma
+            else
+                localCotos.cotonoma
+        , globalCotonomas = updateCotonomaInList cotonoma localCotos.globalCotonomas
+        , recentCotonomas = updateCotonomaInList cotonoma localCotos.recentCotonomas
+        , subCotonomas = updateCotonomaInList cotonoma localCotos.subCotonomas
+        , watchlist =
+            localCotos.watchlist
+                |> List.Extra.updateIf
+                    (\watch -> watch.cotonoma.id == cotonoma.id)
+                    (\watch -> { watch | cotonoma = cotonoma })
+    }
+
+
+updateCotonomaInList : Cotonoma -> List Cotonoma -> List Cotonoma
+updateCotonomaInList cotonoma cotonomas =
+    if List.any (\c -> c.id == cotonoma.id) cotonomas then
+        cotonomas
+            |> List.filter (\c -> c.id /= cotonoma.id)
+            |> (::) cotonoma
+    else
+        cotonomas
 
 
 deleteCoto : Coto -> LocalCotos a -> LocalCotos a

@@ -61,7 +61,9 @@ handleDelete payload model =
 
 handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomaUpdate payload model =
-    model |> withoutCmd
+    model
+        |> App.Submodels.LocalCotos.updateCotonoma payload.body
+        |> withoutCmd
 
 
 handleCotoUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
