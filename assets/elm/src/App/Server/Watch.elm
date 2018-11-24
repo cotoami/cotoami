@@ -1,4 +1,11 @@
-module App.Server.Watch exposing (decodeWatch, fetchWatchlist, watch, unwatch)
+module App.Server.Watch
+    exposing
+        ( decodeWatch
+        , fetchWatchlist
+        , watch
+        , unwatch
+        , setLastPostTimestamp
+        )
 
 import Time exposing (Time)
 import Http

@@ -25,12 +25,13 @@ import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkBut
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (CotoContent)
+import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Types.Watch
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -40,6 +41,7 @@ import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
+import App.Server.Watch
 
 
 type alias Model =
@@ -119,11 +121,10 @@ update context msg ({ flowView, timeline } as model) =
                 |> (\model ->
                         if scrollTop == 0 then
                             -- Clear unread because there's no scrollbar
-                            App.Submodels.LocalCotos.clearUnreadInCurrentCotonoma model
+                            clearUnreadInCurrentCotonoma context model
                         else
-                            model
+                            ( model, Cmd.none )
                    )
-                |> withoutCmd
 
         ImageLoaded ->
             model
@@ -213,7 +214,11 @@ handleEditorShortcut context keyboardEvent content model =
         ( model, Cmd.none )
 
 
-postFromQuickEditor : Context context -> CotoContent -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor :
+    Context context
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
         |> post context content
@@ -235,6 +240,51 @@ post context content model =
                 newPost
             ]
         )
+
+
+clearUnreadInCurrentCotonoma :
+    Context context
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
+clearUnreadInCurrentCotonoma context model =
+    (Maybe.map2
+        (\cotonoma latestPost ->
+            updateWatchTimestamp context latestPost cotonoma model
+        )
+        model.cotonoma
+        (App.Types.Timeline.latestPost model.timeline)
+    )
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+updateWatchTimestamp :
+    Context context
+    -> Post
+    -> Cotonoma
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
+updateWatchTimestamp context post cotonoma model =
+    if App.Types.Watch.isWatched model.watchlist cotonoma then
+        model.watchlist
+            |> List.Extra.updateIf
+                (\watch -> watch.cotonoma.id == cotonoma.id)
+                (\watch -> { watch | lastPostTimestamp = Maybe.map Date.toTime post.postedAt })
+            |> (\watchlist -> { model | watchlist = watchlist })
+            |> withCmd
+                (\_ ->
+                    post.postedAt
+                        |> Maybe.map
+                            (\postedAt ->
+                                App.Server.Watch.setLastPostTimestamp
+                                    (\_ -> AppMsg.NoOp)
+                                    context.clientId
+                                    cotonoma.key
+                                    (Date.toTime postedAt)
+                            )
+                        |> Maybe.withDefault Cmd.none
+                )
+    else
+        ( model, Cmd.none )
 
 
 type alias ViewModel model =
