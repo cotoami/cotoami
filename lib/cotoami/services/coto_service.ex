@@ -185,6 +185,7 @@ defmodule Cotoami.CotoService do
         coto.cotonoma
         |> Cotonoma.changeset_to_update(%{name: coto.content, shared: shared})
         |> Repo.update!()
+        |> (&%{&1 | owner: amishi}).()
       else
         nil
       end

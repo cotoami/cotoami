@@ -63,6 +63,11 @@ defmodule CotoamiWeb.CotoController do
       end)
 
     broadcast_coto_update(coto, amishi, conn.assigns.client_id)
+
+    if coto.as_cotonoma do
+      broadcast_cotonoma_update(coto.cotonoma, amishi, conn.assigns.client_id)
+    end
+
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
