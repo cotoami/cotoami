@@ -40,8 +40,19 @@
       opacity: 0.26;
     }
 
-    a.toggle-navigation {
+    span.toggle-navigation {
+      position: relative;
+      display: inline-block;
       margin-left: 5px;
+
+      i.unread {
+        position: absolute;
+        top: -2px;
+        left: 20px;
+        font-size: 16px;
+        color: #f33;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+      }
 
       @media (min-width: 750px) {
         display: none;
