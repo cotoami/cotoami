@@ -12,8 +12,8 @@ defmodule CotoamiWeb.WatchController do
     render(conn, "index.json", %{watchlist: WatchService.get_watchlist(amishi)})
   end
 
-  def create(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
-    cotonoma = CotonomaService.get_by_key!(cotonoma_key)
+  def create(conn, %{"cotonoma_key" => key}, amishi) do
+    cotonoma = CotonomaService.get_by_key!(key)
 
     if cotonoma.shared do
       WatchService.get_or_create!(amishi, cotonoma)
@@ -23,8 +23,18 @@ defmodule CotoamiWeb.WatchController do
     end
   end
 
-  def delete(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
-    WatchService.delete!(amishi, CotonomaService.get_by_key!(cotonoma_key))
+  def update(conn, %{"cotonoma_key" => key, "last_post_timestamp" => timestamp}, amishi) do
+    cotonoma = CotonomaService.get_by_key!(key)
+    watch = WatchService.set_last_post_timestamp(amishi, cotonoma, timestamp)
+
+    case watch do
+      nil -> send_resp(conn, :not_found, "The watch is not found.")
+      watch -> render(conn, "watch.json", %{watch: watch})
+    end
+  end
+
+  def delete(conn, %{"cotonoma_key" => key}, amishi) do
+    WatchService.delete!(amishi, CotonomaService.get_by_key!(key))
     render(conn, "watchlist.json", %{watchlist: WatchService.get_watchlist(amishi)})
   end
 end

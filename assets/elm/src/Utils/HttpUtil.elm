@@ -6,6 +6,7 @@ module Utils.HttpUtil
         , httpDeleteWithExpect
         , httpPost
         , httpPut
+        , httpPatch
         )
 
 import Http exposing (Expect)
@@ -62,3 +63,8 @@ httpPost =
 httpPut : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPut =
     httpRequestWithBody "PUT"
+
+
+httpPatch : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPatch =
+    httpRequestWithBody "PATCH"

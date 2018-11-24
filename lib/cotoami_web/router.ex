@@ -78,6 +78,7 @@ defmodule CotoamiWeb.Router do
 
     get("/watchlist", WatchController, :index)
     put("/watchlist/:cotonoma_key", WatchController, :create)
+    patch("/watchlist/:cotonoma_key", WatchController, :update)
     delete("/watchlist/:cotonoma_key", WatchController, :delete)
 
     get("/graph", CotoGraphController, :index)

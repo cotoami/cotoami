@@ -44,6 +44,18 @@ defmodule Cotoami.WatchService do
     |> Repo.all()
   end
 
+  def set_last_post_timestamp(%Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}, timestamp) do
+    case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
+      nil ->
+        nil
+
+      watch ->
+        watch
+        |> change(last_post_timestamp: timestamp)
+        |> Repo.update!()
+    end
+  end
+
   def delete!(%Amishi{id: amishi_id}, %Cotonoma{id: cotonoma_id}) do
     case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
       nil -> nil
