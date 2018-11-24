@@ -502,10 +502,17 @@ update msg model =
                 payload
                 model
 
-        UpdatePushed payload ->
+        CotonomaUpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomaUpdate
+                payload
+                model
+
+        CotoUpdatePushed payload ->
             (App.Pushed.handle
                 App.Server.Coto.decodeCoto
-                App.Pushed.handleUpdate
+                App.Pushed.handleCotoUpdate
                 payload
                 model
             )

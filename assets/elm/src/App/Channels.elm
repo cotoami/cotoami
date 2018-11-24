@@ -48,7 +48,7 @@ cotoChannels cotoIds =
                     |> Channel.on "delete"
                         (\payload -> DeletePushed payload)
                     |> Channel.on "update"
-                        (\payload -> UpdatePushed payload)
+                        (\payload -> CotoUpdatePushed payload)
                     |> Channel.on "cotonomatize"
                         (\payload -> CotonomatizePushed payload)
                     |> Channel.on "connect"

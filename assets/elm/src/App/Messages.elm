@@ -90,7 +90,8 @@ type Msg
       --
       -- Pushed
       --
-    | UpdatePushed Value
+    | CotonomaUpdatePushed Value
+    | CotoUpdatePushed Value
     | DeletePushed Value
     | CotonomatizePushed Value
     | ConnectPushed Value
