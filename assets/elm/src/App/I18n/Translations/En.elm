@@ -75,6 +75,9 @@ text key =
         Navigation_Recent ->
             "Recent"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "Write your Coto in Markdown"
 
@@ -95,6 +98,9 @@ text key =
 
         Flow_TileView ->
             "Tile View"
+
+        Flow_NewPosts ->
+            "new posts"
 
         Stock_DocumentView ->
             "Document View"
@@ -233,6 +239,12 @@ text key =
 
         CotoMenuModal_Delete ->
             "Delete"
+
+        CotoMenuModal_Watch ->
+            "Watch this Cotonoma"
+
+        CotoMenuModal_Unwatch ->
+            "Unwatch"
 
         TimelineFilterModal_Title ->
             "Timeline Filter"

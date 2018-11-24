@@ -31,6 +31,7 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
+import App.Types.Watch exposing (Watch)
 import App.Types.Connection exposing (Reordering(..))
 
 
@@ -41,6 +42,7 @@ type alias Context a =
         , session : Maybe Session
         , cotonoma : Maybe Cotonoma
         , cotonomaLoading : Bool
+        , watchStateOnCotonomaLoad : Maybe Watch
         , elementFocus : Maybe ElementId
         , contentOpenElements : Set ElementId
         , reordering : Maybe Reordering
@@ -160,7 +162,11 @@ finishBeingDeselected context =
 
 setCotonomaLoading : Context a -> Context a
 setCotonomaLoading context =
-    { context | cotonoma = Nothing, cotonomaLoading = True }
+    { context
+        | cotonoma = Nothing
+        , cotonomaLoading = True
+        , watchStateOnCotonomaLoad = Nothing
+    }
 
 
 setCotonoma : Maybe Cotonoma -> Context a -> Context a

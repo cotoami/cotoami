@@ -14,7 +14,7 @@ import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Connection exposing (Direction(..), Reordering(..))
+import App.Types.Watch
 import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
@@ -30,6 +30,7 @@ import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Coto
 import App.Server.Graph
+import App.Server.Watch
 import App.Commands
 import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
@@ -161,8 +162,13 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    App.Views.Flow.initScrollPos
-                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
+                    (\model ->
+                        Cmd.batch
+                            [ App.Views.Flow.initScrollPos model
+                            , App.Server.Cotonoma.fetchSubCotonomas model
+                            , App.Server.Watch.fetchWatchlist (WatchlistOnCotonomaLoad cotonoma)
+                            ]
+                    )
 
         CotonomaPostsFetched (Err _) ->
             model |> withoutCmd
@@ -375,7 +381,7 @@ update msg model =
                                         model.clientId
                                         (Maybe.map (.key) model.cotonoma)
                                         [ cotoId ]
-                                    , App.Commands.scrollPinnedCotosToBottom NoOp
+                                    , App.Commands.scrollPinnedCotosToBottom (\_ -> NoOp)
                                     ]
                             )
                 )
@@ -455,6 +461,33 @@ update msg model =
         CloseReorderMode ->
             { model | reordering = Nothing } |> withoutCmd
 
+        Watch cotonomaKey ->
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey)
+
+        Unwatch cotonomaKey ->
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.unwatch WatchlistUpdated model.clientId cotonomaKey)
+
+        WatchlistUpdated (Ok watchlist) ->
+            { model | watchlist = watchlist, watchlistLoading = False }
+                |> withoutCmd
+
+        WatchlistUpdated (Err _) ->
+            model |> withoutCmd
+
+        WatchlistOnCotonomaLoad cotonoma (Ok watchlist) ->
+            { model
+                | watchlist = watchlist
+                , watchlistLoading = False
+                , watchStateOnCotonomaLoad =
+                    App.Types.Watch.findWatchByCotonomaId cotonoma.id watchlist
+            }
+                |> withoutCmd
+
+        WatchlistOnCotonomaLoad cotonoma (Err _) ->
+            model |> withoutCmd
+
         --
         -- Pushed
         --
@@ -469,10 +502,17 @@ update msg model =
                 payload
                 model
 
-        UpdatePushed payload ->
+        CotonomaUpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomaUpdate
+                payload
+                model
+
+        CotoUpdatePushed payload ->
             (App.Pushed.handle
                 App.Server.Coto.decodeCoto
-                App.Pushed.handleUpdate
+                App.Pushed.handleCotoUpdate
                 payload
                 model
             )
@@ -608,6 +648,7 @@ loadHome model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
@@ -618,6 +659,7 @@ loadHome model =
                     , App.Server.Cotonoma.fetchCotonomas
                     , App.Server.Graph.fetchGraph Nothing
                     , App.Ports.Graph.destroyGraph ()
+                    , App.Server.Watch.fetchWatchlist WatchlistUpdated
                     ]
             )
 
@@ -637,6 +679,7 @@ loadCotonoma key model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection

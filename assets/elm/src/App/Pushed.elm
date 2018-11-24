@@ -48,7 +48,7 @@ handlePost payload model =
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
             App.Commands.Cotonoma.refreshCotonomaList
-        |> addCmd (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+        |> addCmd (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
 
 handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
@@ -59,8 +59,15 @@ handleDelete payload model =
         |> withCmd App.Commands.Cotonoma.refreshCotonomaList
 
 
-handleUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
-handleUpdate payload model =
+handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
+handleCotonomaUpdate payload model =
+    model
+        |> App.Submodels.LocalCotos.updateCotonoma payload.body
+        |> withoutCmd
+
+
+handleCotoUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
+handleCotoUpdate payload model =
     model
         |> App.Submodels.LocalCotos.updateCoto payload.body
         |> withCmdIf

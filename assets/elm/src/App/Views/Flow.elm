@@ -10,6 +10,7 @@ module App.Views.Flow
         , view
         )
 
+import Date
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
@@ -20,16 +21,24 @@ import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.DateUtil exposing (sameDay, formatDay)
-import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
+import Utils.EventUtil
+    exposing
+        ( onKeyDown
+        , onClickWithoutPropagation
+        , onLinkButtonClick
+        , ScrollPos
+        , onScroll
+        )
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (CotoContent)
+import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Types.Watch exposing (Watch)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -39,6 +48,7 @@ import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
+import App.Server.Watch
 
 
 type alias Model =
@@ -113,15 +123,21 @@ update context msg ({ flowView, timeline } as model) =
             { model | flowView = toggle flowView }
                 |> withoutCmd
 
-        TimelineScrollPosInitialized ->
+        TimelineScrollPosInitialized scrollTop ->
             { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                |> withoutCmd
+                |> (\model ->
+                        if scrollTop == 0 then
+                            -- Clear unread because there's no scrollbar
+                            clearUnreadInCurrentCotonoma context model
+                        else
+                            ( model, Cmd.none )
+                   )
 
         ImageLoaded ->
             model
                 |> withCmdIf
                     (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
         SwitchView view ->
             { model | flowView = switchView view flowView }
@@ -167,11 +183,18 @@ update context msg ({ flowView, timeline } as model) =
         ConfirmPostAndConnect content ->
             App.Modals.ConnectModal.openWithPost content model
 
+        Scroll scrollPos ->
+            if isScrolledToBottom scrollPos then
+                clearUnreadInCurrentCotonoma context model
+            else
+                model |> withoutCmd
+
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
     if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom (AppMsg.FlowMsg TimelineScrollPosInitialized)
+        App.Commands.scrollTimelineToBottom
+            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
     else
         Cmd.none
 
@@ -200,7 +223,11 @@ handleEditorShortcut context keyboardEvent content model =
         ( model, Cmd.none )
 
 
-postFromQuickEditor : Context context -> CotoContent -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor :
+    Context context
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
         |> post context content
@@ -214,7 +241,7 @@ post context content model =
     in
         ( { model | timeline = newTimeline }
         , Cmd.batch
-            [ App.Commands.scrollTimelineToBottom NoOp
+            [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
             , App.Server.Post.post
                 context.clientId
                 context.cotonoma
@@ -222,6 +249,72 @@ post context content model =
                 newPost
             ]
         )
+
+
+clearUnreadInCurrentCotonoma :
+    Context context
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
+clearUnreadInCurrentCotonoma context model =
+    (Maybe.map2
+        (\cotonoma latestPost ->
+            model.watchlist
+                |> App.Types.Watch.findWatchByCotonomaId cotonoma.id
+                |> Maybe.map (\watch -> updateWatchTimestamp context latestPost watch model)
+                |> Maybe.withDefault ( model, Cmd.none )
+        )
+        model.cotonoma
+        (App.Types.Timeline.latestPost model.timeline)
+    )
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+updateWatchTimestamp :
+    Context context
+    -> Post
+    -> Watch
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
+updateWatchTimestamp context post watch model =
+    let
+        postTimestamp =
+            Maybe.map Date.toTime post.postedAt
+
+        isNewPost =
+            (Maybe.map2
+                (\watch post -> watch < post)
+                watch.lastPostTimestamp
+                postTimestamp
+            )
+                |> Maybe.withDefault
+                    (watch.lastPostTimestamp /= postTimestamp)
+    in
+        if isNewPost then
+            model.watchlist
+                |> List.Extra.updateIf
+                    (\w -> w.cotonoma.id == watch.cotonoma.id)
+                    (\w -> { w | lastPostTimestamp = postTimestamp })
+                |> (\watchlist -> { model | watchlist = watchlist })
+                |> withCmd
+                    (\_ ->
+                        postTimestamp
+                            |> Maybe.map
+                                (App.Server.Watch.setLastPostTimestamp
+                                    (\_ -> AppMsg.NoOp)
+                                    context.clientId
+                                    watch.cotonoma.key
+                                )
+                            |> Maybe.withDefault Cmd.none
+                    )
+        else
+            ( model, Cmd.none )
+
+
+isScrolledToBottom : ScrollPos -> Bool
+isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
+    (contentHeight - containerHeight - scrollTop)
+        --|> Debug.log "scrollPosFromBottom: "
+        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
 
 type alias ViewModel model =
@@ -305,6 +398,7 @@ timelineDiv context model =
             , ( "tile", model.flowView.view == TileView )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
+        , onScroll (AppMsg.FlowMsg << Scroll)
         ]
         [ moreButton model.timeline
         , model.timeline.posts
@@ -365,11 +459,44 @@ postsDiv context graph posts =
         (List.map
             (\post ->
                 ( getKey post
-                , App.Views.Post.view context graph post
+                , div []
+                    [ App.Views.Post.view context graph post
+                    , unreadStartLine context post
+                    ]
                 )
             )
             posts
         )
+
+
+unreadStartLine : Context context -> Post -> Html AppMsg.Msg
+unreadStartLine context post =
+    let
+        postTimestamp =
+            Maybe.map (Date.toTime) post.postedAt
+
+        lastPostTimestamp =
+            Maybe.andThen (.lastPostTimestamp) context.cotonoma
+    in
+        (Maybe.map3
+            (\postTimestamp lastPostTimestamp watch ->
+                if
+                    (postTimestamp /= lastPostTimestamp)
+                        && (watch.lastPostTimestamp == Just postTimestamp)
+                then
+                    div [ class "unread-start-line" ]
+                        [ hr [] []
+                        , div [ class "line-label" ]
+                            [ text (context.i18nText I18nKeys.Flow_NewPosts) ]
+                        ]
+                else
+                    Utils.HtmlUtil.none
+            )
+            postTimestamp
+            lastPostTimestamp
+            context.watchStateOnCotonomaLoad
+        )
+            |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 getKey : Post -> String

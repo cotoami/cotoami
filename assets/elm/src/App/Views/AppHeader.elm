@@ -8,6 +8,7 @@ import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
+import App.Types.Watch
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
 import App.Messages as AppMsg
@@ -143,25 +144,32 @@ quickSearchForm searchResults =
                 ]
                 [ materialIcon "close" Nothing ]
           else
-            span [] []
+            Utils.HtmlUtil.none
         ]
 
 
 navigationToggle : Model -> Html AppMsg.Msg
 navigationToggle model =
-    a
+    span
         [ classList
-            [ ( "tool-button", True )
-            , ( "toggle-navigation", True )
+            [ ( "toggle-navigation", True )
             , ( "hidden", App.Submodels.LocalCotos.isNavigationEmpty model )
             ]
-        , onClick (AppMsg.AppHeaderMsg NavigationToggle)
         ]
-        [ materialIcon
-            (if model.navigationOpen then
-                "arrow_drop_up"
-             else
-                "arrow_drop_down"
-            )
-            Nothing
+        [ a
+            [ class "tool-button"
+            , onClick (AppMsg.AppHeaderMsg NavigationToggle)
+            ]
+            [ materialIcon
+                (if model.navigationOpen then
+                    "arrow_drop_up"
+                 else
+                    "arrow_drop_down"
+                )
+                Nothing
+            ]
+        , if List.any App.Types.Watch.anyUnreadCotos model.watchlist then
+            materialIcon "fiber_manual_record" (Just "unread")
+          else
+            Utils.HtmlUtil.none
         ]

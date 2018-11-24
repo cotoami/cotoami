@@ -151,7 +151,7 @@ postAndConnectToSelection context direction content model =
         { model | timeline = newTimeline }
             |> withCmds
                 (\model ->
-                    [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+                    [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
                     , App.Server.Post.post context.clientId context.cotonoma tag newPost
                     ]
                 )

@@ -3,11 +3,13 @@ module Utils.HttpUtil
         ( ClientId(ClientId)
         , httpRequestWithBody
         , httpDelete
+        , httpDeleteWithExpect
         , httpPost
         , httpPut
+        , httpPatch
         )
 
-import Http
+import Http exposing (Expect)
 import Json.Decode as Decode
 
 
@@ -37,12 +39,17 @@ httpRequestWithBody method url clientId body decoder =
 
 httpDelete : String -> ClientId -> Http.Request String
 httpDelete url clientId =
+    httpDeleteWithExpect url clientId Http.expectString
+
+
+httpDeleteWithExpect : String -> ClientId -> Expect a -> Http.Request a
+httpDeleteWithExpect url clientId expect =
     Http.request
         { method = "DELETE"
         , headers = commonRequestHeaders clientId
         , url = url
         , body = Http.emptyBody
-        , expect = Http.expectString
+        , expect = expect
         , timeout = Nothing
         , withCredentials = False
         }
@@ -56,3 +63,8 @@ httpPost =
 httpPut : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
 httpPut =
     httpRequestWithBody "PUT"
+
+
+httpPatch : String -> ClientId -> Http.Body -> Decode.Decoder a -> Http.Request a
+httpPatch =
+    httpRequestWithBody "PATCH"

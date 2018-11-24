@@ -24,6 +24,7 @@ decodeCotonoma =
         |> required "updated_at" (Decode.map Date.fromTime float)
         |> required "timeline_revision" int
         |> required "graph_revision" int
+        |> optional "last_post_timestamp" (maybe float) Nothing
 
 
 fetchCotonomas : Cmd Msg

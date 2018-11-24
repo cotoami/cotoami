@@ -7,6 +7,7 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
+import App.Types.Watch exposing (Watch)
 import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
@@ -19,6 +20,7 @@ type alias ViewModel model =
             | globalCotonomas : List Cotonoma
             , recentCotonomas : List Cotonoma
             , subCotonomas : List Cotonoma
+            , watchlist : List Watch
             , graph : Graph
         }
 
@@ -32,9 +34,10 @@ view model =
         , div
             [ class "cotonomas-nav" ]
             [ model.cotonoma
-                |> Maybe.map (cotonomaNav model)
+                |> Maybe.map (currentCotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , globalCotonomasDiv model
+            , watchlistDiv model
             , recentCotonomasDiv model
             ]
         ]
@@ -61,14 +64,15 @@ homeNav model =
         ]
 
 
-cotonomaNav : ViewModel model -> Cotonoma -> Html Msg
-cotonomaNav model cotonoma =
+currentCotonomaNav : ViewModel model -> Cotonoma -> Html Msg
+currentCotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
         , App.Views.Cotonomas.cotonomaDiv
             model
             model.graph
+            Nothing
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
@@ -94,6 +98,20 @@ globalCotonomasDiv model =
                 model.graph
                 "global-cotonomas"
                 model.globalCotonomas
+            ]
+
+
+watchlistDiv : ViewModel model -> Html Msg
+watchlistDiv model =
+    if List.isEmpty model.watchlist then
+        Utils.HtmlUtil.none
+    else
+        div [ class "watchlist" ]
+            [ div [ class "navigation-title" ]
+                [ materialIcon "visibility" Nothing
+                , text (model.i18nText I18nKeys.Navigation_Watchlist)
+                ]
+            , App.Views.Cotonomas.watchlist model model.graph model.watchlist
             ]
 
 
