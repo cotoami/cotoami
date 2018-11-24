@@ -279,8 +279,17 @@ updateWatchTimestamp context post watch model =
     let
         postTimestamp =
             Maybe.map Date.toTime post.postedAt
+
+        isNewPost =
+            (Maybe.map2
+                (\watch post -> watch < post)
+                watch.lastPostTimestamp
+                postTimestamp
+            )
+                |> Maybe.withDefault
+                    (watch.lastPostTimestamp /= postTimestamp)
     in
-        if watch.lastPostTimestamp /= postTimestamp then
+        if isNewPost then
             model.watchlist
                 |> List.Extra.updateIf
                     (\w -> w.cotonoma.id == watch.cotonoma.id)
