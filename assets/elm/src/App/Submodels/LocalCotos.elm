@@ -4,6 +4,7 @@ module App.Submodels.LocalCotos
         , getCoto
         , getSelectedCotos
         , getCotoIdsToWatch
+        , getCotonomaKeysToWatch
         , updateCoto
         , deleteCoto
         , cotonomatize
@@ -22,7 +23,7 @@ import Dict
 import Date
 import List.Extra
 import Exts.Maybe
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Connection exposing (Direction)
@@ -96,6 +97,20 @@ getCotoIdsToWatch localCotos =
                 |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
                 |> Maybe.withDefault []
             )
+        |> Set.fromList
+
+
+getCotonomaKeysToWatch : LocalCotos a -> Set CotonomaKey
+getCotonomaKeysToWatch localCotos =
+    (localCotos.cotonoma
+        |> Maybe.map List.singleton
+        |> Maybe.withDefault []
+    )
+        |> List.append localCotos.globalCotonomas
+        |> List.append localCotos.recentCotonomas
+        |> List.append localCotos.subCotonomas
+        |> List.append (List.map (.cotonoma) localCotos.watchlist)
+        |> List.map (.key)
         |> Set.fromList
 
 

@@ -17,13 +17,15 @@ globalChannel =
     Channel.init ("global")
 
 
-cotonomaChannel : Set CotonomaKey -> List (Channel Msg)
-cotonomaChannel keys =
+cotonomaChannels : Set CotonomaKey -> List (Channel Msg)
+cotonomaChannels keys =
     keys
         |> Set.toList
         |> List.map
             (\key ->
                 Channel.init ("cotonomas:" ++ key)
+                    |> Channel.on "update"
+                        (\payload -> CotonomaUpdatePushed payload)
             )
 
 

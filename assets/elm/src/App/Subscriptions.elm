@@ -29,19 +29,18 @@ phoenixChannels model =
 
 phoenixChannelsInSession : Model -> Session -> Sub Msg
 phoenixChannelsInSession model session =
-    Phoenix.connect
-        (socket session.token session.websocketUrl)
-        (App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
-            |> (::) App.Channels.globalChannel
-            |> (\channels ->
-                    model.cotonoma
-                        |> Maybe.map
-                            (\cotonoma ->
-                                App.Channels.timelineChannel cotonoma.key :: channels
-                            )
-                        |> Maybe.withDefault channels
-               )
-        )
+    let
+        channels =
+            [ [ App.Channels.globalChannel ]
+            , App.Channels.cotonomaChannels (App.Submodels.LocalCotos.getCotonomaKeysToWatch model)
+            , App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
+            , model.cotonoma
+                |> Maybe.map (\cotonoma -> [ App.Channels.timelineChannel cotonoma.key ])
+                |> Maybe.withDefault []
+            ]
+                |> List.concat
+    in
+        Phoenix.connect (socket session.token session.websocketUrl) channels
 
 
 subscriptions : Model -> Sub Msg
