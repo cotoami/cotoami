@@ -6,10 +6,11 @@ defmodule CotoamiWeb.ControllerHelpers do
   import Plug.Conn, only: [send_resp: 3]
   alias Cotoami.{Amishi, Coto, Cotonoma}
 
-  def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil)  do
+  def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil) do
     case e.constraint do
       "cotonomas_name_owner_id_index" ->
         send_resp(conn, :conflict, content || "")
+
       constraint ->
         send_resp(conn, :bad_request, content || constraint)
     end
@@ -24,17 +25,20 @@ defmodule CotoamiWeb.ControllerHelpers do
 
   defp broadcast(body, topic, event, %Amishi{} = amishi, client_id) do
     CotoamiWeb.Endpoint.broadcast(
-      topic, event, payload_base(amishi, client_id) |> Map.put(:body, body))
+      topic,
+      event,
+      payload_base(amishi, client_id) |> Map.put(:body, body)
+    )
   end
 
   #
-  # Channel: 'cotonomas:*'
+  # Channel: 'timelines:*'
   #
 
   def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
-    |> broadcast("cotonomas:#{cotonoma_key}", "post", amishi, client_id)
+    |> broadcast("timelines:#{cotonoma_key}", "post", amishi, client_id)
   end
 
   #
@@ -60,7 +64,7 @@ defmodule CotoamiWeb.ControllerHelpers do
 
   def broadcast_connect(%Coto{} = start_coto, %Coto{} = end_coto, %Amishi{} = amishi, client_id) do
     %{
-      start: Phoenix.View.render_one(start_coto, CotoamiWeb.CotoView, "coto.json"), 
+      start: Phoenix.View.render_one(start_coto, CotoamiWeb.CotoView, "coto.json"),
       end: Phoenix.View.render_one(end_coto, CotoamiWeb.CotoView, "coto.json")
     }
     |> broadcast("cotos:#{start_coto.id}", "connect", amishi, client_id)

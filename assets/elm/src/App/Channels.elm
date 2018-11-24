@@ -17,9 +17,19 @@ globalChannel =
     Channel.init ("global")
 
 
-cotonomaChannel : CotonomaKey -> Channel Msg
-cotonomaChannel key =
-    Channel.init ("cotonomas:" ++ key)
+cotonomaChannel : Set CotonomaKey -> List (Channel Msg)
+cotonomaChannel keys =
+    keys
+        |> Set.toList
+        |> List.map
+            (\key ->
+                Channel.init ("cotonomas:" ++ key)
+            )
+
+
+timelineChannel : CotonomaKey -> Channel Msg
+timelineChannel key =
+    Channel.init ("timelines:" ++ key)
         |> Channel.on "presence_state"
             (\payload -> CotonomaPresenceState payload)
         |> Channel.on "presence_diff"

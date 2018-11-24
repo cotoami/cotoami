@@ -37,7 +37,7 @@ phoenixChannelsInSession model session =
                     model.cotonoma
                         |> Maybe.map
                             (\cotonoma ->
-                                App.Channels.cotonomaChannel cotonoma.key :: channels
+                                App.Channels.timelineChannel cotonoma.key :: channels
                             )
                         |> Maybe.withDefault channels
                )
