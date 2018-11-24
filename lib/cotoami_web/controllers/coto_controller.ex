@@ -44,6 +44,7 @@ defmodule CotoamiWeb.CotoController do
 
     if coto.posted_in do
       broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
     end
 
     render(conn, "created.json", coto: coto)
@@ -61,7 +62,7 @@ defmodule CotoamiWeb.CotoController do
         end
       end)
 
-    broadcast_update(coto, amishi, conn.assigns.client_id)
+    broadcast_coto_update(coto, amishi, conn.assigns.client_id)
     render(conn, "coto.json", coto: coto)
   rescue
     e in Ecto.ConstraintError -> send_resp_by_constraint_error(conn, e)
