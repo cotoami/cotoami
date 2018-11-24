@@ -26,7 +26,7 @@ defmodule CotoamiWeb.WatchController do
   def update(conn, %{"cotonoma_key" => key, "last_post_timestamp" => timestamp}, amishi) do
     cotonoma = CotonomaService.get_by_key!(key)
     timestamp = DateTime.from_unix!(timestamp, :millisecond)
-    watch = WatchService.set_last_post_timestamp(amishi, cotonoma, timestamp)
+    watch = WatchService.update_last_post_timestamp(amishi, cotonoma, timestamp)
 
     case watch do
       nil -> send_resp(conn, :not_found, "The watch is not found.")

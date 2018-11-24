@@ -14,6 +14,8 @@ defmodule Cotoami.WatchService do
     Watch
   }
 
+  alias Cotoami.Exceptions.InvalidOperation
+
   def get_or_create!(%Amishi{id: amishi_id}, %Cotonoma{
         id: cotonoma_id,
         last_post_timestamp: last_post_timestamp,
@@ -44,7 +46,7 @@ defmodule Cotoami.WatchService do
     |> Repo.all()
   end
 
-  def set_last_post_timestamp(
+  def update_last_post_timestamp(
         %Amishi{id: amishi_id},
         %Cotonoma{id: cotonoma_id},
         %DateTime{} = timestamp
@@ -54,9 +56,16 @@ defmodule Cotoami.WatchService do
         nil
 
       watch ->
-        watch
-        |> change(last_post_timestamp: timestamp)
-        |> Repo.update!()
+        case DateTime.compare(timestamp, watch.last_post_timestamp) do
+          # the new timestamp should be later than watch.last_post_timestamp
+          :gt ->
+            watch
+            |> change(last_post_timestamp: timestamp)
+            |> Repo.update!()
+
+          _ ->
+            raise InvalidOperation
+        end
     end
   end
 
