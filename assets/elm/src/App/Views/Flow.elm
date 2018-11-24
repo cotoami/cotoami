@@ -21,7 +21,14 @@ import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.DateUtil exposing (sameDay, formatDay)
-import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick, onScroll)
+import Utils.EventUtil
+    exposing
+        ( onKeyDown
+        , onClickWithoutPropagation
+        , onLinkButtonClick
+        , ScrollPos
+        , onScroll
+        )
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.I18n.Keys as I18nKeys
@@ -177,8 +184,10 @@ update context msg ({ flowView, timeline } as model) =
             App.Modals.ConnectModal.openWithPost content model
 
         Scroll scrollPos ->
-            Debug.log "scrollPos" scrollPos
-                |> (\_ -> model |> withoutCmd)
+            if isScrolledToBottom scrollPos then
+                clearUnreadInCurrentCotonoma context model
+            else
+                model |> withoutCmd
 
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
@@ -290,6 +299,13 @@ updateWatchTimestamp context post watch model =
                     )
         else
             ( model, Cmd.none )
+
+
+isScrolledToBottom : ScrollPos -> Bool
+isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
+    (contentHeight - containerHeight - scrollTop)
+        |> Debug.log "scrollPosFromBottom: "
+        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
 
 type alias ViewModel model =
