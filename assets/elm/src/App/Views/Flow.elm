@@ -31,7 +31,7 @@ import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Types.Watch
+import App.Types.Watch exposing (Watch)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -249,7 +249,10 @@ clearUnreadInCurrentCotonoma :
 clearUnreadInCurrentCotonoma context model =
     (Maybe.map2
         (\cotonoma latestPost ->
-            updateWatchTimestamp context latestPost cotonoma model
+            model.watchlist
+                |> App.Types.Watch.findWatchByCotonomaId cotonoma.id
+                |> Maybe.map (\watch -> updateWatchTimestamp context latestPost watch model)
+                |> Maybe.withDefault ( model, Cmd.none )
         )
         model.cotonoma
         (App.Types.Timeline.latestPost model.timeline)
@@ -260,31 +263,32 @@ clearUnreadInCurrentCotonoma context model =
 updateWatchTimestamp :
     Context context
     -> Post
-    -> Cotonoma
+    -> Watch
     -> LocalCotos model
     -> ( LocalCotos model, Cmd AppMsg.Msg )
-updateWatchTimestamp context post cotonoma model =
-    if App.Types.Watch.isWatched model.watchlist cotonoma then
-        model.watchlist
-            |> List.Extra.updateIf
-                (\watch -> watch.cotonoma.id == cotonoma.id)
-                (\watch -> { watch | lastPostTimestamp = Maybe.map Date.toTime post.postedAt })
-            |> (\watchlist -> { model | watchlist = watchlist })
-            |> withCmd
-                (\_ ->
-                    post.postedAt
-                        |> Maybe.map
-                            (\postedAt ->
+updateWatchTimestamp context post watch model =
+    model.watchlist
+        |> List.Extra.updateIf
+            (\w -> w.cotonoma.id == watch.cotonoma.id)
+            (\w -> { w | lastPostTimestamp = Maybe.map Date.toTime post.postedAt })
+        |> (\watchlist -> { model | watchlist = watchlist })
+        |> withCmd
+            (\_ ->
+                post.postedAt
+                    |> Maybe.map Date.toTime
+                    |> Maybe.map
+                        (\postTimestamp ->
+                            if watch.lastPostTimestamp /= (Just postTimestamp) then
                                 App.Server.Watch.setLastPostTimestamp
                                     (\_ -> AppMsg.NoOp)
                                     context.clientId
-                                    cotonoma.key
-                                    (Date.toTime postedAt)
-                            )
-                        |> Maybe.withDefault Cmd.none
-                )
-    else
-        ( model, Cmd.none )
+                                    watch.cotonoma.key
+                                    postTimestamp
+                            else
+                                Cmd.none
+                        )
+                    |> Maybe.withDefault Cmd.none
+            )
 
 
 type alias ViewModel model =
