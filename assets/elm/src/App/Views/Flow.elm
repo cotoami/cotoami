@@ -304,7 +304,7 @@ updateWatchTimestamp context post watch model =
 isScrolledToBottom : ScrollPos -> Bool
 isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
     (contentHeight - containerHeight - scrollTop)
-        |> Debug.log "scrollPosFromBottom: "
+        --|> Debug.log "scrollPosFromBottom: "
         |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
 
