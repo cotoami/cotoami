@@ -125,6 +125,7 @@ update context msg ({ connectModal } as model) =
 
         PostedAndConnectToSelection postId direction (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> connectPostToSelection context direction response
 
