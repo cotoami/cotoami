@@ -7,6 +7,7 @@ module App.Submodels.LocalCotos
         , getCotonomaKeysToWatch
         , updateCoto
         , updateCotonoma
+        , updateCotonomaMaybe
         , deleteCoto
         , cotonomatize
         , incorporateLocalCotoInGraph
@@ -137,6 +138,13 @@ updateCotonoma cotonoma localCotos =
                     (\watch -> watch.cotonoma.id == cotonoma.id)
                     (\watch -> { watch | cotonoma = cotonoma })
     }
+
+
+updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
+updateCotonomaMaybe maybeCotonoma localCotos =
+    maybeCotonoma
+        |> Maybe.map (\cotonoma -> updateCotonoma cotonoma localCotos)
+        |> Maybe.withDefault localCotos
 
 
 updateRecentCotonomas : Maybe Cotonoma -> LocalCotos a -> LocalCotos a

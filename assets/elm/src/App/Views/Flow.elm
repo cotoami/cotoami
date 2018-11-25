@@ -173,7 +173,7 @@ update context msg ({ flowView, timeline } as model) =
 
         Posted postId (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
-                |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> withoutCmd
 
