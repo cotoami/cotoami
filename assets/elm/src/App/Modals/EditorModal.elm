@@ -188,11 +188,11 @@ update context msg ({ editorModal, timeline } as model) =
         ConfirmPostAndConnect content ->
             App.Modals.ConnectModal.openWithPost content model
 
-        PostedAndSubordinateToCoto postId coto (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
-                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
+        PostedAndSubordinateToCoto postId coto (Ok post) ->
+            model
+                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> subordinatePostToCoto context coto response
+                |> subordinatePostToCoto context coto post
 
         PostedAndSubordinateToCoto postId coto (Err _) ->
             model |> withoutCmd
@@ -201,12 +201,9 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> postCotonoma context
 
-        CotonomaPosted postId (Ok response) ->
-            { model
-                | cotonomasLoading = True
-                , timeline = App.Types.Timeline.setCotoSaved postId response timeline
-            }
-                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
+        CotonomaPosted postId (Ok post) ->
+            { model | cotonomasLoading = True }
+                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
                 |> withCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 

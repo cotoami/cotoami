@@ -171,9 +171,9 @@ update context msg ({ flowView, timeline } as model) =
             postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
-        Posted postId (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
-                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
+        Posted postId (Ok post) ->
+            model
+                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
                 |> withoutCmd
 

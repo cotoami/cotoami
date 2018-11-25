@@ -16,6 +16,7 @@ module App.Submodels.LocalCotos
         , connect
         , areTimelineAndGraphLoaded
         , isTimelineReady
+        , onPosted
         )
 
 import Set exposing (Set)
@@ -24,6 +25,7 @@ import List.Extra
 import Exts.Maybe
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Timeline exposing (Timeline)
+import App.Types.Post exposing (Post)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Connection exposing (Direction)
 import App.Types.Graph exposing (Graph)
@@ -229,3 +231,15 @@ isTimelineReady : LocalCotos a -> Bool
 isTimelineReady localCotos =
     (areTimelineAndGraphLoaded localCotos)
         && (not localCotos.timeline.initializingScrollPos)
+
+
+onPosted : Int -> Post -> LocalCotos a -> LocalCotos a
+onPosted postId post localCotos =
+    { localCotos
+        | timeline =
+            App.Types.Timeline.setCotoSaved
+                postId
+                post
+                localCotos.timeline
+    }
+        |> updateCotonomaMaybe post.postedIn
