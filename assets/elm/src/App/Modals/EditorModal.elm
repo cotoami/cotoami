@@ -190,6 +190,7 @@ update context msg ({ editorModal, timeline } as model) =
 
         PostedAndSubordinateToCoto postId coto (Ok response) ->
             { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> subordinatePostToCoto context coto response
 
@@ -205,6 +206,7 @@ update context msg ({ editorModal, timeline } as model) =
                 | cotonomasLoading = True
                 , timeline = App.Types.Timeline.setCotoSaved postId response timeline
             }
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe response.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> withCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 
