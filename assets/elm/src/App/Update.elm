@@ -322,7 +322,7 @@ update msg model =
         CotoUpdated (Ok coto) ->
             model
                 |> App.Submodels.LocalCotos.updateCoto coto
-                |> App.Submodels.LocalCotos.updateRecentCotonomas coto.postedIn
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)

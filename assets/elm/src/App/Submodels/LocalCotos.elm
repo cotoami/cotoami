@@ -11,7 +11,6 @@ module App.Submodels.LocalCotos
         , deleteCoto
         , cotonomatize
         , incorporateLocalCotoInGraph
-        , updateRecentCotonomas
         , isStockEmpty
         , isNavigationEmpty
         , connect
@@ -144,18 +143,6 @@ updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
 updateCotonomaMaybe maybeCotonoma localCotos =
     maybeCotonoma
         |> Maybe.map (\cotonoma -> updateCotonoma cotonoma localCotos)
-        |> Maybe.withDefault localCotos
-
-
-updateRecentCotonomas : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
-updateRecentCotonomas maybeCotonoma localCotos =
-    maybeCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                localCotos.recentCotonomas
-                    |> updateCotonomaInList cotonoma
-                    |> (\cotonomas -> { localCotos | recentCotonomas = cotonomas })
-            )
         |> Maybe.withDefault localCotos
 
 
