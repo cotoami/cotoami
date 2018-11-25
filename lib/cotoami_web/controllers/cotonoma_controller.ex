@@ -38,6 +38,7 @@ defmodule CotoamiWeb.CotonomaController do
 
     if coto.posted_in do
       broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
     end
 
     render(conn, CotoView, "created.json", coto: coto)
