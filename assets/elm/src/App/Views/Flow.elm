@@ -58,6 +58,7 @@ type alias Model =
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
+    , watchUpdating : Bool
     }
 
 
@@ -69,6 +70,7 @@ defaultModel =
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
+    , watchUpdating = False
     }
 
 
@@ -103,6 +105,11 @@ clearEditorContent model =
         | editorContent = ""
         , editorCounter = model.editorCounter + 1
     }
+
+
+setWatchUpdating : Bool -> Model -> Model
+setWatchUpdating watchUpdating model =
+    { model | watchUpdating = watchUpdating }
 
 
 type alias UpdateModel model =
@@ -190,7 +197,8 @@ update context msg ({ flowView, timeline } as model) =
                 model |> withoutCmd
 
         WatchTimestampUpdated _ ->
-            model |> withCmd (\_ -> App.Ports.App.updateUnreadStateInTitle context)
+            { model | flowView = setWatchUpdating False flowView }
+                |> withCmd (\_ -> App.Ports.App.updateUnreadStateInTitle context)
 
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
@@ -256,8 +264,8 @@ post context content model =
 
 clearUnreadInCurrentCotonoma :
     Context context
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd AppMsg.Msg )
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 clearUnreadInCurrentCotonoma context model =
     (Maybe.map2
         (\cotonoma latestPost ->
@@ -276,8 +284,8 @@ updateWatchTimestamp :
     Context context
     -> Post
     -> Watch
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd AppMsg.Msg )
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 updateWatchTimestamp context post watch model =
     let
         postTimestamp =
@@ -292,23 +300,29 @@ updateWatchTimestamp context post watch model =
                 |> Maybe.withDefault
                     (watch.lastPostTimestamp /= postTimestamp)
     in
-        if isNewPost then
-            model.watchlist
-                |> List.Extra.updateIf
-                    (\w -> w.cotonoma.id == watch.cotonoma.id)
-                    (\w -> { w | lastPostTimestamp = postTimestamp })
-                |> (\watchlist -> { model | watchlist = watchlist })
-                |> withCmd
-                    (\_ ->
-                        postTimestamp
-                            |> Maybe.map
-                                (App.Server.Watch.updateLastPostTimestamp
-                                    (AppMsg.FlowMsg << WatchTimestampUpdated)
-                                    context.clientId
-                                    watch.cotonoma.key
-                                )
-                            |> Maybe.withDefault Cmd.none
-                    )
+        if (not model.flowView.watchUpdating) && isNewPost then
+            let
+                watchlist =
+                    model.watchlist
+                        |> List.Extra.updateIf
+                            (\w -> w.cotonoma.id == watch.cotonoma.id)
+                            (\w -> { w | lastPostTimestamp = postTimestamp })
+
+                flowView =
+                    setWatchUpdating True model.flowView
+            in
+                { model | watchlist = watchlist, flowView = flowView }
+                    |> withCmd
+                        (\_ ->
+                            postTimestamp
+                                |> Maybe.map
+                                    (App.Server.Watch.updateLastPostTimestamp
+                                        (AppMsg.FlowMsg << WatchTimestampUpdated)
+                                        context.clientId
+                                        watch.cotonoma.key
+                                    )
+                                |> Maybe.withDefault Cmd.none
+                        )
         else
             ( model, Cmd.none )
 
