@@ -48,7 +48,7 @@ defmodule Cotoami.WatchService do
 
   def update_last_post_timestamp!(
         %Amishi{id: amishi_id},
-        %Cotonoma{id: cotonoma_id},
+        %Cotonoma{id: cotonoma_id} = cotonoma,
         %DateTime{} = timestamp
       ) do
     case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
@@ -62,6 +62,7 @@ defmodule Cotoami.WatchService do
             watch
             |> change(last_post_timestamp: timestamp)
             |> Repo.update!()
+            |> (&%{&1 | cotonoma: cotonoma}).()
 
           _ ->
             raise InvalidOperation

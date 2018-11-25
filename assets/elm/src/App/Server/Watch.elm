@@ -4,7 +4,7 @@ module App.Server.Watch
         , fetchWatchlist
         , watch
         , unwatch
-        , setLastPostTimestamp
+        , updateLastPostTimestamp
         )
 
 import Time exposing (Time)
@@ -52,13 +52,13 @@ unwatch tag clientId cotonomaKey =
             |> Http.send tag
 
 
-setLastPostTimestamp :
+updateLastPostTimestamp :
     (Result Http.Error Watch -> msg)
     -> ClientId
     -> CotonomaKey
     -> Time
     -> Cmd msg
-setLastPostTimestamp tag clientId cotonomaKey timestamp =
+updateLastPostTimestamp tag clientId cotonomaKey timestamp =
     let
         url =
             "/api/watchlist/" ++ cotonomaKey

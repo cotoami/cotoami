@@ -471,7 +471,7 @@ update msg model =
 
         WatchlistUpdated (Ok watchlist) ->
             { model | watchlist = watchlist, watchlistLoading = False }
-                |> withCmd updateUnreadStateInTitle
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
 
         WatchlistUpdated (Err _) ->
             model |> withoutCmd
@@ -483,7 +483,7 @@ update msg model =
                 , watchStateOnCotonomaLoad =
                     App.Types.Watch.findWatchByCotonomaId cotonoma.id watchlist
             }
-                |> withCmd updateUnreadStateInTitle
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
 
         WatchlistOnCotonomaLoad cotonoma (Err _) ->
             model |> withoutCmd
@@ -692,9 +692,3 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
-
-
-updateUnreadStateInTitle : Context context -> Cmd msg
-updateUnreadStateInTitle context =
-    App.Ports.App.setUnreadStateInTitle
-        (App.Submodels.Context.anyUnreadCotos context)

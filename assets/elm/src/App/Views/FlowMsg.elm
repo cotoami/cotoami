@@ -5,6 +5,7 @@ import Utils.Keyboard.Event exposing (KeyboardEvent)
 import Utils.EventUtil exposing (ScrollPos)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post)
+import App.Types.Watch exposing (Watch)
 
 
 type TimelineView
@@ -25,3 +26,4 @@ type Msg
     | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect CotoContent
     | Scroll ScrollPos
+    | WatchTimestampUpdated (Result Http.Error Watch)

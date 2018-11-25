@@ -48,6 +48,7 @@ import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
 import App.Server.Watch
+import App.Ports.App
 
 
 type alias Model =
@@ -188,6 +189,9 @@ update context msg ({ flowView, timeline } as model) =
             else
                 model |> withoutCmd
 
+        WatchTimestampUpdated _ ->
+            model |> withCmd (\_ -> App.Ports.App.updateUnreadStateInTitle context)
+
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
@@ -298,8 +302,8 @@ updateWatchTimestamp context post watch model =
                     (\_ ->
                         postTimestamp
                             |> Maybe.map
-                                (App.Server.Watch.setLastPostTimestamp
-                                    (\_ -> AppMsg.NoOp)
+                                (App.Server.Watch.updateLastPostTimestamp
+                                    (AppMsg.FlowMsg << WatchTimestampUpdated)
                                     context.clientId
                                     watch.cotonoma.key
                                 )

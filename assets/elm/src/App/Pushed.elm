@@ -16,6 +16,7 @@ import App.Commands
 import App.Channels exposing (Payload)
 import App.Server.Coto
 import App.Server.Cotonoma
+import App.Ports.App
 
 
 type alias Handler body =
@@ -63,7 +64,7 @@ handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomaUpdate payload model =
     model
         |> App.Submodels.LocalCotos.updateCotonoma payload.body
-        |> withoutCmd
+        |> withCmd App.Ports.App.updateUnreadStateInTitle
 
 
 handleCotoUpdate : Payload Coto -> Model -> ( Model, Cmd Msg )
