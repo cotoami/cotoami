@@ -35,8 +35,8 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
-import App.Commands.Cotonoma
 import App.Server.Coto
+import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Graph
 import App.Messages as AppMsg exposing (Msg(CloseModal))
@@ -206,7 +206,7 @@ update context msg ({ editorModal, timeline } as model) =
                 , timeline = App.Types.Timeline.setCotoSaved postId response timeline
             }
                 |> App.Submodels.Modals.clearModals
-                |> withCmd (\_ -> App.Commands.Cotonoma.refreshCotonomaList context)
+                |> withCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 
         CotonomaPosted postId (Err error) ->
             { model

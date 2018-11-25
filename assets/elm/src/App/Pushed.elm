@@ -13,9 +13,9 @@ import App.Messages exposing (Msg(..))
 import App.Model exposing (Model)
 import App.Submodels.LocalCotos
 import App.Commands
-import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Server.Coto
+import App.Server.Cotonoma
 
 
 type alias Handler body =
@@ -47,7 +47,7 @@ handlePost payload model =
     { model | timeline = App.Types.Timeline.addPost payload.body model.timeline }
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
-            App.Commands.Cotonoma.refreshCotonomaList
+            App.Server.Cotonoma.refreshCotonomaList
         |> addCmd (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
 
@@ -56,7 +56,7 @@ handleDelete payload model =
     App.Submodels.LocalCotos.getCoto payload.body model
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
-        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+        |> withCmd App.Server.Cotonoma.refreshCotonomaList
 
 
 handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
@@ -72,13 +72,13 @@ handleCotoUpdate payload model =
         |> App.Submodels.LocalCotos.updateCoto payload.body
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
-            App.Commands.Cotonoma.refreshCotonomaList
+            App.Server.Cotonoma.refreshCotonomaList
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
     App.Submodels.LocalCotos.cotonomatize payload.body payload.body.cotoId model
-        |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+        |> withCmd App.Server.Cotonoma.refreshCotonomaList
 
 
 type alias ConnectPayloadBody =

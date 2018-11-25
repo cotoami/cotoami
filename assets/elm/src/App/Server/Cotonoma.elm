@@ -81,3 +81,11 @@ decodeStats =
         (Decode.field "key" Decode.string)
         (Decode.field "cotos" Decode.int)
         (Decode.field "connections" Decode.int)
+
+
+refreshCotonomaList : Context a -> Cmd Msg
+refreshCotonomaList context =
+    Cmd.batch
+        [ fetchCotonomas
+        , fetchSubCotonomas context
+        ]

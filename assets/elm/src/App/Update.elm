@@ -32,7 +32,6 @@ import App.Server.Coto
 import App.Server.Graph
 import App.Server.Watch
 import App.Commands
-import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Views.AppHeader
 import App.Views.ViewSwitch
@@ -53,6 +52,7 @@ import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Pushed
+import App.Ports.App
 import App.Ports.Graph
 
 
@@ -314,7 +314,7 @@ update msg model =
                 |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoDeleted (Ok _) ->
-            model |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+            model |> withCmd App.Server.Cotonoma.refreshCotonomaList
 
         CotoDeleted (Err error) ->
             model |> withoutCmd
@@ -326,7 +326,7 @@ update msg model =
                 |> App.Submodels.Modals.clearModals
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
-                    App.Commands.Cotonoma.refreshCotonomaList
+                    App.Server.Cotonoma.refreshCotonomaList
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         CotoUpdated (Err error) ->
@@ -358,7 +358,7 @@ update msg model =
                 |> Maybe.map (\cotonoma -> App.Submodels.LocalCotos.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Submodels.Modals.clearModals
-                |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+                |> withCmd App.Server.Cotonoma.refreshCotonomaList
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         Cotonomatized (Err error) ->
@@ -471,7 +471,7 @@ update msg model =
 
         WatchlistUpdated (Ok watchlist) ->
             { model | watchlist = watchlist, watchlistLoading = False }
-                |> withoutCmd
+                |> withCmd updateUnreadStateInTitle
 
         WatchlistUpdated (Err _) ->
             model |> withoutCmd
@@ -483,7 +483,7 @@ update msg model =
                 , watchStateOnCotonomaLoad =
                     App.Types.Watch.findWatchByCotonomaId cotonoma.id watchlist
             }
-                |> withoutCmd
+                |> withCmd updateUnreadStateInTitle
 
         WatchlistOnCotonomaLoad cotonoma (Err _) ->
             model |> withoutCmd
@@ -692,3 +692,9 @@ loadCotonoma key model =
                     , App.Ports.Graph.destroyGraph ()
                     ]
             )
+
+
+updateUnreadStateInTitle : Context context -> Cmd msg
+updateUnreadStateInTitle context =
+    App.Ports.App.setUnreadStateInTitle
+        (App.Submodels.Context.anyUnreadCotos context)

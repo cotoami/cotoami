@@ -8,7 +8,6 @@ import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
-import App.Types.Watch
 import App.Types.SearchResults exposing (SearchResults)
 import App.Model exposing (Model)
 import App.Messages as AppMsg
@@ -168,7 +167,7 @@ navigationToggle model =
                 )
                 Nothing
             ]
-        , if List.any App.Types.Watch.anyUnreadCotos model.watchlist then
+        , if App.Submodels.Context.anyUnreadCotos model then
             materialIcon "fiber_manual_record" (Just "unread")
           else
             Utils.HtmlUtil.none

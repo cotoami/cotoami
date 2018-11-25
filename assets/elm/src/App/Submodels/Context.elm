@@ -23,6 +23,7 @@ module App.Submodels.Context
         , isTriggerElementInReordering
         , isWatched
         , findWatchForCurrentCotonoma
+        , anyUnreadCotos
         )
 
 import Set exposing (Set)
@@ -251,3 +252,8 @@ findWatchForCurrentCotonoma context =
                     cotonoma.id
                     context.watchlist
             )
+
+
+anyUnreadCotos : Context a -> Bool
+anyUnreadCotos context =
+    List.any App.Types.Watch.anyUnreadCotos context.watchlist
