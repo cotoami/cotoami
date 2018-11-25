@@ -12,7 +12,6 @@ import Utils.HtmlUtil
 import Utils.EventUtil exposing (onLoad)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Post exposing (Post, toCoto)
-import App.Types.Graph exposing (Graph)
 import App.Submodels.Context exposing (Context)
 import App.Messages exposing (..)
 import App.Views.FlowMsg
@@ -20,19 +19,22 @@ import App.Markdown exposing (extractTextFromMarkdown)
 import App.Views.Coto
 
 
-view : Context a -> Graph -> Post -> Html Msg
-view context graph post =
+view : Context a -> Post -> Html Msg
+view context post =
     let
         elementId =
             "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (postDivAttrs context graph elementId post)
+            (postDivAttrs context elementId post)
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv context graph elementId post
+                [ headerDiv context elementId post
                 , post.cotoId
-                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.map
+                        (\cotoId ->
+                            App.Views.Coto.parentsDiv context.graph Nothing cotoId
+                        )
                     |> Maybe.withDefault Utils.HtmlUtil.none
                 , if post.isCotonoma then
                     Utils.HtmlUtil.none
@@ -40,14 +42,14 @@ view context graph post =
                     authorDiv context post
                 , App.Views.Coto.bodyDiv context Nothing elementId markdown post
                 , footerDiv post
-                , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
+                , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
                 , authorIcon context post
                 ]
             ]
 
 
-postDivAttrs : Context a -> Graph -> String -> Post -> List (Attribute Msg)
-postDivAttrs context graph elementId post =
+postDivAttrs : Context a -> String -> Post -> List (Attribute Msg)
+postDivAttrs context elementId post =
     let
         classAttr =
             App.Views.Coto.cotoClassList context
@@ -58,7 +60,10 @@ postDivAttrs context graph elementId post =
                 , ( "by-another-amishi", not (isAuthor context post) )
                 , ( "in-pinned-graph"
                   , post.cotoId
-                        |> Maybe.map (\cotoId -> Set.member cotoId graph.reachableCotoIds)
+                        |> Maybe.map
+                            (\cotoId ->
+                                Set.member cotoId context.graph.reachableCotoIds
+                            )
                         |> Maybe.withDefault False
                   )
                 ]
@@ -87,10 +92,10 @@ isAuthor context post =
         |> Maybe.withDefault False
 
 
-headerDiv : Context a -> Graph -> ElementId -> Post -> Html Msg
-headerDiv context graph elementId post =
+headerDiv : Context a -> ElementId -> Post -> Html Msg
+headerDiv context elementId post =
     toCoto post
-        |> Maybe.map (App.Views.Coto.headerDiv context graph Nothing elementId)
+        |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 

@@ -162,7 +162,7 @@ stockColumn model =
             , ( "fadeIn", model.activeView == StockView )
             ]
         ]
-        [ App.Views.Stock.view model model
+        [ App.Views.Stock.view model model.stockView
         ]
 
 
@@ -195,7 +195,7 @@ searchResultsColumn model =
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
-        [ App.Views.SearchResults.view model model.graph model.searchResults
+        [ App.Views.SearchResults.view model model.searchResults
         ]
 
 
@@ -220,7 +220,7 @@ modals model =
                     App.Modals.InviteModal.view model model.inviteModal
 
                 CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model model
+                    App.Modals.CotoMenuModal.view model model.cotoMenuModal
 
                 CotoModal ->
                     App.Modals.CotoModal.view model model.cotoModal

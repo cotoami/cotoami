@@ -79,10 +79,13 @@ update context msg model =
             model |> withoutCmd
 
 
-view : Context context -> Session -> Maybe Model -> Html AppMsg.Msg
-view context session maybeModel =
-    maybeModel
-        |> Maybe.map (modalConfig context session)
+view : Context context -> Maybe Model -> Html AppMsg.Msg
+view context maybeModel =
+    (Maybe.map2
+        (\session model -> modalConfig context session model)
+        context.session
+        maybeModel
+    )
         |> Modal.view "coto-menu-modal"
 
 

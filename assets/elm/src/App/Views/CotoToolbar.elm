@@ -60,19 +60,18 @@ update context msg model =
 view :
     Context context
     -> Session
-    -> Graph
     -> Maybe InboundConnection
     -> ElementId
     -> Coto
     -> Html AppMsg.Msg
-view context session graph maybeInbound elementId coto =
+view context session maybeInbound elementId coto =
     span [ class "coto-tool-buttons" ]
         [ connectButton context coto
         , maybeInbound
-            |> Maybe.map (\inbound -> subCotoTools context session graph inbound elementId coto)
+            |> Maybe.map (\inbound -> subCotoTools context session inbound elementId coto)
             |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "default-buttons" ]
-            [ pinButton context graph coto
+            [ pinButton context coto
             , editButton context session coto
             , addSubCotoButton context coto
             , selectButton context coto
@@ -84,12 +83,11 @@ view context session graph maybeInbound elementId coto =
 subCotoTools :
     Context context
     -> Session
-    -> Graph
     -> InboundConnection
     -> ElementId
     -> Coto
     -> Html AppMsg.Msg
-subCotoTools context session graph inbound elementId coto =
+subCotoTools context session inbound elementId coto =
     let
         buttons =
             [ disconnectButton context session inbound coto
@@ -161,10 +159,10 @@ connectButton context coto =
         Utils.HtmlUtil.none
 
 
-pinButton : Context context -> Graph -> Coto -> Html AppMsg.Msg
-pinButton context graph coto =
+pinButton : Context context -> Coto -> Html AppMsg.Msg
+pinButton context coto =
     if
-        not (App.Types.Graph.pinned coto.id graph)
+        not (App.Types.Graph.pinned coto.id context.graph)
             && ((Just coto.id) /= (Maybe.map (.cotoId) context.cotonoma))
     then
         a

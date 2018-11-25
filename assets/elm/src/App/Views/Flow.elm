@@ -35,7 +35,6 @@ import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Types.Watch exposing (Watch)
@@ -424,7 +423,7 @@ timelineDiv context model =
                             [ div
                                 [ class "date-header" ]
                                 [ span [ class "date" ] [ text postDateString ] ]
-                            , postsDiv context model.graph postsOnDay
+                            , postsDiv context postsOnDay
                             ]
                         )
                 )
@@ -451,8 +450,8 @@ moreButton timeline =
         Utils.HtmlUtil.none
 
 
-postsDiv : Context context -> Graph -> List Post -> Html AppMsg.Msg
-postsDiv context graph posts =
+postsDiv : Context context -> List Post -> Html AppMsg.Msg
+postsDiv context posts =
     Html.Keyed.node
         "div"
         [ class "posts" ]
@@ -460,7 +459,7 @@ postsDiv context graph posts =
             (\post ->
                 ( getKey post
                 , div []
-                    [ App.Views.Post.view context graph post
+                    [ App.Views.Post.view context post
                     , unreadStartLine context post
                     ]
                 )

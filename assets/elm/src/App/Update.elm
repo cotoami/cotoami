@@ -568,7 +568,7 @@ update msg model =
             App.Views.Stock.update model subMsg model
 
         TraversalsMsg subMsg ->
-            App.Views.Traversals.update model model.graph subMsg model
+            App.Views.Traversals.update model subMsg model
 
         CotoSelectionMsg subMsg ->
             App.Views.CotoSelection.update model subMsg model

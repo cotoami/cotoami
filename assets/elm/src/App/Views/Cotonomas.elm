@@ -7,7 +7,6 @@ import Html.Events exposing (..)
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.EventUtil exposing (onLinkButtonClick, onClickWithoutPropagation)
 import App.Types.Coto exposing (Cotonoma)
-import App.Types.Graph exposing (Graph)
 import App.Types.Watch exposing (Watch)
 import App.Messages exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
@@ -15,38 +14,38 @@ import App.Views.Coto
 import App.Views.CotoToolbar
 
 
-view : Context a -> Graph -> String -> List Cotonoma -> Html Msg
-view context graph title cotonomas =
+view : Context a -> String -> List Cotonoma -> Html Msg
+view context title cotonomas =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
         (List.map
             (\cotonoma ->
                 ( toString cotonoma.id
-                , cotonomaDiv context graph Nothing title cotonoma
+                , cotonomaDiv context Nothing title cotonoma
                 )
             )
             cotonomas
         )
 
 
-watchlist : Context a -> Graph -> List Watch -> Html Msg
-watchlist context graph watchlist =
+watchlist : Context a -> List Watch -> Html Msg
+watchlist context watchlist =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
         (List.map
             (\cotonoma ->
                 ( toString cotonoma.id
-                , cotonomaDiv context graph (Just watchlist) "watchlist" cotonoma
+                , cotonomaDiv context (Just watchlist) "watchlist" cotonoma
                 )
             )
             (List.map (\watch -> watch.cotonoma) watchlist)
         )
 
 
-cotonomaDiv : Context a -> Graph -> Maybe (List Watch) -> String -> Cotonoma -> Html Msg
-cotonomaDiv context graph maybeWatchlist listTitle cotonoma =
+cotonomaDiv : Context a -> Maybe (List Watch) -> String -> Cotonoma -> Html Msg
+cotonomaDiv context maybeWatchlist listTitle cotonoma =
     let
         elementId =
             listTitle ++ cotonoma.cotoId
@@ -83,7 +82,6 @@ cotonomaDiv context graph maybeWatchlist listTitle cotonoma =
                         App.Views.CotoToolbar.view
                             context
                             session
-                            graph
                             Nothing
                             elementId
                             (App.Types.Coto.toCoto cotonoma)

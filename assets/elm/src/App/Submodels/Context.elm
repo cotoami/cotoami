@@ -53,6 +53,7 @@ type alias Context a =
         , selection : CotoSelection
         , deselecting : Set CotoId
         , graph : Graph
+        , loadingGraph : Bool
         , watchlist : List Watch
         , watchlistLoading : Bool
     }

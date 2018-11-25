@@ -129,8 +129,8 @@ contentDiv context elementId markdown model =
 --
 
 
-headerDiv : Context a -> Graph -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
-headerDiv context graph maybeInbound elementId coto =
+headerDiv : Context a -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
+headerDiv context maybeInbound elementId coto =
     div
         [ class "coto-header" ]
         [ App.Views.Reorder.maybeReorderTools context maybeInbound elementId
@@ -141,7 +141,6 @@ headerDiv context graph maybeInbound elementId coto =
                             App.Views.CotoToolbar.view
                                 context
                                 session
-                                graph
                                 maybeInbound
                                 elementId
                                 coto
@@ -163,7 +162,7 @@ headerDiv context graph maybeInbound elementId coto =
                             [ text postedIn.name ]
                 )
             |> Maybe.withDefault Utils.HtmlUtil.none
-        , if App.Types.Graph.pinned coto.id graph then
+        , if App.Types.Graph.pinned coto.id context.graph then
             faIcon "thumb-tack" (Just "pinned")
           else
             Utils.HtmlUtil.none
@@ -227,9 +226,9 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-subCotosDiv : Context a -> Graph -> ElementId -> Coto -> Html Msg
-subCotosDiv context graph parentElementId coto =
-    graph.connections
+subCotosDiv : Context a -> ElementId -> Coto -> Html Msg
+subCotosDiv context parentElementId coto =
+    context.graph.connections
         |> Dict.get coto.id
         |> Maybe.map
             (\connections ->
@@ -241,7 +240,6 @@ subCotosDiv context graph parentElementId coto =
                         Utils.HtmlUtil.none
                     , connectionsDiv
                         context
-                        graph
                         parentElementId
                         coto
                         connections
@@ -250,13 +248,13 @@ subCotosDiv context graph parentElementId coto =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-connectionsDiv : Context a -> Graph -> ElementId -> Coto -> List Connection -> Html Msg
-connectionsDiv context graph parentElementId parentCoto connections =
+connectionsDiv : Context a -> ElementId -> Coto -> List Connection -> Html Msg
+connectionsDiv context parentElementId parentCoto connections =
     connections
         |> List.reverse
         |> List.indexedMap
             (\index connection ->
-                graph.cotos
+                context.graph.cotos
                     |> Dict.get connection.end
                     |> Maybe.map
                         (\coto ->
@@ -265,7 +263,6 @@ connectionsDiv context graph parentElementId parentCoto connections =
                                 [ class "outbound-conn" ]
                                 [ subCotoDiv
                                     context
-                                    graph
                                     parentElementId
                                     (InboundConnection
                                         (Just parentCoto)
@@ -288,8 +285,8 @@ connectionsDiv context graph parentElementId parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context a -> Graph -> ElementId -> InboundConnection -> Coto -> Html Msg
-subCotoDiv context graph parentElementId inbound coto =
+subCotoDiv : Context a -> ElementId -> InboundConnection -> Coto -> Html Msg
+subCotoDiv context parentElementId inbound coto =
     let
         elementId =
             parentElementId ++ "-" ++ coto.id
@@ -305,16 +302,11 @@ subCotoDiv context graph parentElementId inbound coto =
             ]
             [ div
                 [ class "coto-inner" ]
-                [ headerDiv
-                    context
-                    graph
-                    (Just inbound)
-                    elementId
-                    coto
-                , parentsDiv graph maybeParentId coto.id
+                [ headerDiv context (Just inbound) elementId coto
+                , parentsDiv context.graph maybeParentId coto.id
                 , div [ class "sub-coto-body" ]
                     [ bodyDivByCoto context (Just inbound) elementId coto
-                    , subCotosButtonDiv graph (Just "more_vert") (Just coto.id)
+                    , subCotosButtonDiv context.graph (Just "more_vert") (Just coto.id)
                     ]
                 ]
             ]
