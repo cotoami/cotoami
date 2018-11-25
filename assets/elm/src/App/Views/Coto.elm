@@ -42,7 +42,7 @@ cotoClassList context elementId maybeCotoId additionalClasses =
            )
          , ( "selected", App.Submodels.Context.isSelected maybeCotoId context )
          , ( "focused-in-reordering"
-           , App.Submodels.Context.isFocusedElementInReordering context elementId
+           , App.Submodels.Context.isTriggerElementInReordering elementId context
            )
          ]
             ++ additionalClasses
@@ -151,7 +151,7 @@ headerDiv context maybeInbound elementId coto =
         , coto.postedIn
             |> Maybe.map
                 (\postedIn ->
-                    if App.Submodels.Context.orignatedHere context coto then
+                    if App.Submodels.Context.orignatedHere coto context then
                         Utils.HtmlUtil.none
                     else
                         a
@@ -234,7 +234,7 @@ subCotosDiv context parentElementId coto =
             (\connections ->
                 div []
                     [ div [ class "main-sub-border" ] []
-                    , if App.Submodels.Context.reorderingSubCotos context parentElementId then
+                    , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
                         App.Views.Reorder.closeButtonDiv context
                       else
                         Utils.HtmlUtil.none
@@ -270,9 +270,9 @@ connectionsDiv context parentElementId parentCoto connections =
                                         connection
                                         (List.length connections)
                                         index
-                                        (App.Submodels.Context.reorderingSubCotos
-                                            context
+                                        (App.Submodels.Context.hasSubCotosInReordering
                                             parentElementId
+                                            context
                                         )
                                     )
                                     coto

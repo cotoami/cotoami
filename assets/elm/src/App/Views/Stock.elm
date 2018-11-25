@@ -137,7 +137,7 @@ view context model =
                     ]
                     [ materialIcon "share" Nothing ]
                 ]
-            , if App.Submodels.Context.reorderingPinnedCotos context then
+            , if App.Submodels.Context.hasPinnedCotosInReordering context then
                 App.Views.Reorder.closeButtonDiv context
               else
                 Utils.HtmlUtil.none
@@ -168,7 +168,7 @@ documentViewDiv context =
                         connection
                         (List.length context.graph.rootConnections)
                         index
-                        (App.Submodels.Context.reorderingPinnedCotos context)
+                        (App.Submodels.Context.hasPinnedCotosInReordering context)
                     )
             )
         |> Html.Keyed.node "div" [ class "root-connections" ]

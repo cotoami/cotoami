@@ -18,9 +18,9 @@ module App.Submodels.Context
         , setCotonomaLoading
         , setCotonoma
         , orignatedHere
-        , reorderingPinnedCotos
-        , reorderingSubCotos
-        , isFocusedElementInReordering
+        , hasPinnedCotosInReordering
+        , hasSubCotosInReordering
+        , isTriggerElementInReordering
         , isWatched
         , findWatchForCurrentCotonoma
         )
@@ -181,8 +181,8 @@ setCotonoma maybeCotonoma context =
     { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
 
 
-orignatedHere : Context a -> Coto -> Bool
-orignatedHere context coto =
+orignatedHere : Coto -> Context a -> Bool
+orignatedHere coto context =
     (Maybe.map2
         (\here postedIn -> here.id == postedIn.id)
         context.cotonoma
@@ -192,8 +192,8 @@ orignatedHere context coto =
             ((isNothing coto.postedIn) && (atHome context))
 
 
-reorderingPinnedCotos : Context a -> Bool
-reorderingPinnedCotos context =
+hasPinnedCotosInReordering : Context a -> Bool
+hasPinnedCotosInReordering context =
     context.reordering
         |> Maybe.map
             (\reordering ->
@@ -207,14 +207,14 @@ reorderingPinnedCotos context =
         |> Maybe.withDefault False
 
 
-reorderingSubCotos : Context a -> ElementId -> Bool
-reorderingSubCotos context parentElementId =
+hasSubCotosInReordering : ElementId -> Context a -> Bool
+hasSubCotosInReordering elementId context =
     context.reordering
         |> Maybe.map
             (\reordering ->
                 case reordering of
-                    SubCoto parentElementIdInReordering _ ->
-                        parentElementId == parentElementIdInReordering
+                    SubCoto parentElementId _ ->
+                        elementId == parentElementId
 
                     _ ->
                         False
@@ -222,17 +222,17 @@ reorderingSubCotos context parentElementId =
         |> Maybe.withDefault False
 
 
-isFocusedElementInReordering : Context a -> ElementId -> Bool
-isFocusedElementInReordering context elementId =
+isTriggerElementInReordering : ElementId -> Context a -> Bool
+isTriggerElementInReordering elementId context =
     context.reordering
         |> Maybe.map
             (\reordering ->
                 case reordering of
-                    PinnedCoto focusedElementId ->
-                        elementId == focusedElementId
+                    PinnedCoto triggerElement ->
+                        elementId == triggerElement
 
-                    SubCoto _ focusedElementId ->
-                        elementId == focusedElementId
+                    SubCoto _ triggerElement ->
+                        elementId == triggerElement
             )
         |> Maybe.withDefault False
 
