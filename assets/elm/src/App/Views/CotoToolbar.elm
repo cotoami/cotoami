@@ -71,8 +71,10 @@ view context session maybeInbound elementId coto =
             |> Maybe.map (\inbound -> subCotoTools context session inbound elementId coto)
             |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "default-buttons" ]
-            [ watchOrUnwatchButton context coto
-            , pinButton context coto
+            [ if isSharedCotonoma coto then
+                watchOrUnwatchButton context coto
+              else
+                pinButton context coto
             , editButton context session coto
             , addSubCotoButton context coto
             , selectButton context coto
@@ -174,6 +176,13 @@ pinButton context coto =
             [ faIcon "thumb-tack" Nothing ]
     else
         Utils.HtmlUtil.none
+
+
+isSharedCotonoma : Coto -> Bool
+isSharedCotonoma coto =
+    coto.asCotonoma
+        |> Maybe.map (\cotonoma -> cotonoma.shared)
+        |> Maybe.withDefault False
 
 
 watchOrUnwatchButton : Context context -> Coto -> Html AppMsg.Msg
