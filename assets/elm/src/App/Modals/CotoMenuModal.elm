@@ -123,76 +123,61 @@ checkWritePermission session model =
 
 menuItemInfo : Context context -> Model -> Html AppMsg.Msg
 menuItemInfo context model =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.OpenCotoModal model.coto)
+    menuItem
+        False
+        "info"
+        [ materialIcon "info" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_Info) ]
         ]
-        [ a
-            [ class "info" ]
-            [ materialIcon "info" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_Info) ]
-            ]
-        ]
+        (AppMsg.OpenCotoModal model.coto)
 
 
 menuItemExplore : Context context -> Model -> Html AppMsg.Msg
 menuItemExplore context model =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.OpenTraversal model.coto.id)
+    menuItem
+        False
+        "explore"
+        [ faIcon "sitemap" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_ExploreConnections) ]
         ]
-        [ a
-            [ class "explore" ]
-            [ faIcon "sitemap" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_ExploreConnections) ]
-            ]
-        ]
+        (AppMsg.OpenTraversal model.coto.id)
 
 
 menuItemPinUnpin : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinUnpin context graph model =
     if App.Types.Graph.pinned model.coto.id graph then
-        div
-            [ class "menu-item"
-            , onLinkButtonClick (AppMsg.UnpinCoto model.coto.id)
+        menuItem
+            False
+            "unpin"
+            [ faIcon "thumb-tack" Nothing
+            , faIcon "remove" Nothing
+            , span [ class "menu-title" ]
+                [ text (pinOrUnpinMenuTitle context False) ]
             ]
-            [ a
-                [ class "unpin" ]
-                [ faIcon "thumb-tack" Nothing
-                , faIcon "remove" Nothing
-                , span [ class "menu-title" ]
-                    [ text (pinOrUnpinMenuTitle context False) ]
-                ]
-            ]
+            (AppMsg.UnpinCoto model.coto.id)
     else
-        div
-            [ class "menu-item"
-            , onLinkButtonClick (AppMsg.PinCoto model.coto.id)
+        menuItem
+            False
+            "pin"
+            [ faIcon "thumb-tack" Nothing
+            , span [ class "menu-title" ]
+                [ text (pinOrUnpinMenuTitle context True) ]
             ]
-            [ a
-                [ class "pin" ]
-                [ faIcon "thumb-tack" Nothing
-                , span [ class "menu-title" ]
-                    [ text (pinOrUnpinMenuTitle context True) ]
-                ]
-            ]
+            (AppMsg.PinCoto model.coto.id)
 
 
 menuItemPinCotoToMyHome : Context context -> Graph -> Model -> Html AppMsg.Msg
 menuItemPinCotoToMyHome context graph model =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.PinCotoToMyHome model.coto.id)
+    menuItem
+        False
+        "pin-to-my-home"
+        [ faIcon "thumb-tack" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_PinToMyHome) ]
         ]
-        [ a
-            [ class "pin-to-my-home" ]
-            [ faIcon "thumb-tack" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_PinToMyHome) ]
-            ]
-        ]
+        (AppMsg.PinCotoToMyHome model.coto.id)
 
 
 pinOrUnpinMenuTitle : Context context -> Bool -> String
@@ -214,50 +199,41 @@ pinOrUnpinMenuTitle context pinOrUnpin =
 menuItemEdit : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemEdit context session model =
     if checkWritePermission session model then
-        div
-            [ class "menu-item"
-            , onLinkButtonClick (AppMsg.OpenEditorModal model.coto)
+        menuItem
+            False
+            "edit"
+            [ materialIcon "edit" Nothing
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Edit) ]
             ]
-            [ a
-                [ class "edit" ]
-                [ materialIcon "edit" Nothing
-                , span [ class "menu-title" ]
-                    [ text (context.i18nText I18nKeys.CotoMenuModal_Edit) ]
-                ]
-            ]
+            (AppMsg.OpenEditorModal model.coto)
     else
         Utils.HtmlUtil.none
 
 
 menuItemAddCoto : Context context -> Model -> Html AppMsg.Msg
 menuItemAddCoto context model =
-    div
-        [ class "menu-item"
-        , onLinkButtonClick (AppMsg.OpenNewEditorModalWithSourceCoto model.coto)
+    menuItem
+        False
+        "add-coto"
+        [ materialIcon "add" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_AddSubCoto) ]
         ]
-        [ a
-            [ class "add-coto" ]
-            [ materialIcon "add" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_AddSubCoto) ]
-            ]
-        ]
+        (AppMsg.OpenNewEditorModalWithSourceCoto model.coto)
 
 
 menuItemCotonomatize : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemCotonomatize context session model =
     if (isNothing model.coto.asCotonoma) && (checkWritePermission session model) then
-        div
-            [ class "menu-item"
-            , onLinkButtonClick (AppMsg.ConfirmCotonomatize model.coto)
+        menuItem
+            False
+            "cotonomatize"
+            [ faIcon "users" Nothing
+            , span [ class "menu-title" ]
+                [ text (context.i18nText I18nKeys.CotoMenuModal_Cotonomatize) ]
             ]
-            [ a
-                [ class "cotonomatize" ]
-                [ faIcon "users" Nothing
-                , span [ class "menu-title" ]
-                    [ text (context.i18nText I18nKeys.CotoMenuModal_Cotonomatize) ]
-                ]
-            ]
+            (AppMsg.ConfirmCotonomatize model.coto)
     else
         Utils.HtmlUtil.none
 
