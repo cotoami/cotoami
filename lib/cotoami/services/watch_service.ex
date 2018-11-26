@@ -56,16 +56,16 @@ defmodule Cotoami.WatchService do
         raise NotFound
 
       watch ->
-        case DateTime.compare(timestamp, watch.last_post_timestamp) do
+        if watch.last_post_timestamp == nil or
+             DateTime.compare(timestamp, watch.last_post_timestamp) == :gt do
+          # watch.last_post_timestamp should be uninitialized or
           # the new timestamp should be later than watch.last_post_timestamp
-          :gt ->
-            watch
-            |> change(last_post_timestamp: timestamp)
-            |> Repo.update!()
-            |> (&%{&1 | cotonoma: cotonoma}).()
-
-          _ ->
-            raise InvalidOperation
+          watch
+          |> change(last_post_timestamp: timestamp)
+          |> Repo.update!()
+          |> (&%{&1 | cotonoma: cotonoma}).()
+        else
+          raise InvalidOperation
         end
     end
   end
