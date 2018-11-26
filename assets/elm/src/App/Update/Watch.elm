@@ -1,7 +1,7 @@
 module App.Update.Watch
     exposing
-        ( clearUnreadInCurrentCotonoma
-        , updateWatchByPost
+        ( clearUnread
+        , updateByPost
         )
 
 import Date
@@ -17,44 +17,38 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Server.Watch
 
 
-clearUnreadInCurrentCotonoma :
+clearUnread :
     Context context
     -> LocalCotos model
     -> ( LocalCotos model, Cmd Msg )
-clearUnreadInCurrentCotonoma context model =
-    (Maybe.map2
-        (\cotonoma latestPost ->
-            model.watchlist
-                |> App.Types.Watch.findWatchByCotonomaId cotonoma.id
-                |> Maybe.map (\watch -> updateWatchByPost context latestPost watch model)
-                |> Maybe.withDefault ( model, Cmd.none )
-        )
-        model.cotonoma
-        (App.Types.Timeline.latestPost model.timeline)
-    )
+clearUnread context model =
+    model.timeline
+        |> App.Types.Timeline.latestPost
+        |> Maybe.map (\latestPost -> updateByPost context latestPost model)
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-updateWatchByPost :
-    Context context
-    -> Post
-    -> Watch
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd Msg )
-updateWatchByPost context post watch model =
-    post.postedAt
-        |> Maybe.map Date.toTime
-        |> Maybe.map (\timestamp -> updateWatchTimestamp context timestamp watch model)
+updateByPost : Context context -> Post -> LocalCotos model -> ( LocalCotos model, Cmd Msg )
+updateByPost context post model =
+    context
+        |> App.Submodels.Context.findWatchForCurrentCotonoma
+        |> Maybe.map
+            (\watch ->
+                post.postedAt
+                    |> Maybe.map Date.toTime
+                    |> Maybe.map (\timestamp -> updateTimestamp context timestamp watch model)
+                    |> Maybe.withDefault ( model, Cmd.none )
+            )
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-updateWatchTimestamp :
+updateTimestamp :
     Context context
     -> Time
     -> Watch
     -> LocalCotos model
     -> ( LocalCotos model, Cmd Msg )
-updateWatchTimestamp context timestamp watch model =
+updateTimestamp context timestamp watch model =
     let
         isNewPost =
             watch.lastPostTimestamp

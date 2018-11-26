@@ -126,7 +126,7 @@ update context msg ({ flowView, timeline } as model) =
                 |> (\model ->
                         if scrollTop == 0 then
                             -- Clear unread because there's no scrollbar
-                            App.Update.Watch.clearUnreadInCurrentCotonoma context model
+                            App.Update.Watch.clearUnread context model
                         else
                             ( model, Cmd.none )
                    )
@@ -183,7 +183,7 @@ update context msg ({ flowView, timeline } as model) =
 
         Scroll scrollPos ->
             if isScrolledToBottom scrollPos then
-                App.Update.Watch.clearUnreadInCurrentCotonoma context model
+                App.Update.Watch.clearUnread context model
             else
                 model |> withoutCmd
 
