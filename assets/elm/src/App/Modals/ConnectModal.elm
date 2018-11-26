@@ -33,6 +33,7 @@ import App.Commands
 import App.Server.Post
 import App.Server.Graph
 import App.Markdown
+import App.Update.Post
 
 
 type ConnectingTarget
@@ -125,9 +126,9 @@ update context msg ({ connectModal } as model) =
 
         PostedAndConnectToSelection postId direction (Ok post) ->
             model
-                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> connectPostToSelection context direction post
+                |> App.Update.Post.onPosted context postId post
+                |> chain (connectPostToSelection context direction post)
 
         PostedAndConnectToSelection postId direction (Err _) ->
             model |> withoutCmd

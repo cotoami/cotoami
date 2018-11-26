@@ -44,6 +44,7 @@ import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Views.Coto
 import App.Views.Flow
 import App.Modals.ConnectModal exposing (WithConnectModal)
+import App.Update.Post
 
 
 type Mode
@@ -190,9 +191,9 @@ update context msg ({ editorModal, timeline } as model) =
 
         PostedAndSubordinateToCoto postId coto (Ok post) ->
             model
-                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> subordinatePostToCoto context coto post
+                |> App.Update.Post.onPosted context postId post
+                |> chain (subordinatePostToCoto context coto post)
 
         PostedAndSubordinateToCoto postId coto (Err _) ->
             model |> withoutCmd
@@ -203,9 +204,9 @@ update context msg ({ editorModal, timeline } as model) =
 
         CotonomaPosted postId (Ok post) ->
             { model | cotonomasLoading = True }
-                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> withCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
+                |> App.Update.Post.onPosted context postId post
+                |> addCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 
         CotonomaPosted postId (Err error) ->
             { model

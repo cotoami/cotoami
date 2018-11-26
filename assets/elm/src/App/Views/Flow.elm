@@ -46,6 +46,7 @@ import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
+import App.Update.Post
 import App.Update.Watch
 
 
@@ -171,9 +172,8 @@ update context msg ({ flowView, timeline } as model) =
 
         Posted postId (Ok post) ->
             model
-                |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> App.Update.Watch.updateByPost context post
+                |> App.Update.Post.onPosted context postId post
 
         Posted postId (Err _) ->
             model |> withoutCmd
