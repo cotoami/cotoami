@@ -4,10 +4,10 @@ defmodule CotoamiWeb.CotoView do
   alias CotoamiWeb.{CotonomaView, AmishiView}
 
   def render("cotos.json", %{
-    rows: rows, 
-    page_index: page_index, 
-    total_pages: total_pages
-  }) do
+        rows: rows,
+        page_index: page_index,
+        total_pages: total_pages
+      }) do
     %{
       cotos: render_many(rows, __MODULE__, "coto.json"),
       page_index: page_index,
@@ -29,7 +29,7 @@ defmodule CotoamiWeb.CotoView do
       as_cotonoma: coto.as_cotonoma,
       cotonoma: render_relation(coto.cotonoma, CotonomaView, "cotonoma.json"),
       inserted_at: coto.inserted_at |> to_unixtime(),
-      updated_at: coto.updated_at |> to_unixtime(),
+      updated_at: coto.updated_at |> to_unixtime()
     }
   end
 
@@ -42,11 +42,7 @@ defmodule CotoamiWeb.CotoView do
       as_cotonoma: coto.as_cotonoma,
       cotonoma: render_relation(coto.cotonoma, CotonomaView, "export.json"),
       inserted_at: coto.inserted_at |> to_unixtime(),
-      updated_at: coto.updated_at |> to_unixtime(),
+      updated_at: coto.updated_at |> to_unixtime()
     }
-  end
-
-  defp to_unixtime(datetime) do
-    if datetime, do: DateTime.to_unix(datetime, :millisecond), else: nil
   end
 end

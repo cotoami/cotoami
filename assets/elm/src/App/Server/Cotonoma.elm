@@ -24,6 +24,7 @@ decodeCotonoma =
         |> required "updated_at" (Decode.map Date.fromTime float)
         |> required "timeline_revision" int
         |> required "graph_revision" int
+        |> optional "last_post_timestamp" (maybe float) Nothing
 
 
 fetchCotonomas : Cmd Msg
@@ -80,3 +81,11 @@ decodeStats =
         (Decode.field "key" Decode.string)
         (Decode.field "cotos" Decode.int)
         (Decode.field "connections" Decode.int)
+
+
+refreshCotonomaList : Context a -> Cmd Msg
+refreshCotonomaList context =
+    Cmd.batch
+        [ fetchCotonomas
+        , fetchSubCotonomas context
+        ]

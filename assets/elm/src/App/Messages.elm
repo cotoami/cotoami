@@ -8,6 +8,8 @@ import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Types.Session exposing (Session)
 import App.Types.Graph exposing (Graph)
+import App.Types.Connection exposing (Reordering)
+import App.Types.Watch exposing (Watch)
 import App.Views.AppHeaderMsg
 import App.Views.ViewSwitchMsg
 import App.Views.FlowMsg
@@ -79,12 +81,18 @@ type Msg
     | Connected (Result Http.Error (List String))
     | DeleteConnection ( CotoId, CotoId )
     | ConnectionDeleted (Result Http.Error String)
-    | SetReorderMode (Maybe ElementId)
+    | SetReorderMode Reordering
     | CloseReorderMode
+    | Watch CotonomaKey
+    | Unwatch CotonomaKey
+    | WatchlistUpdated (Result Http.Error (List Watch))
+    | WatchlistOnCotonomaLoad Cotonoma (Result Http.Error (List Watch))
+    | WatchTimestampUpdated (Result Http.Error Watch)
       --
       -- Pushed
       --
-    | UpdatePushed Value
+    | CotonomaUpdatePushed Value
+    | CotoUpdatePushed Value
     | DeletePushed Value
     | CotonomatizePushed Value
     | ConnectPushed Value

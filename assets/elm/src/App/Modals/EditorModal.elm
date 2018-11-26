@@ -35,8 +35,8 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Commands
-import App.Commands.Cotonoma
 import App.Server.Coto
+import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Graph
 import App.Messages as AppMsg exposing (Msg(CloseModal))
@@ -44,6 +44,7 @@ import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Views.Coto
 import App.Views.Flow
 import App.Modals.ConnectModal exposing (WithConnectModal)
+import App.Update.Post
 
 
 type Mode
@@ -188,10 +189,11 @@ update context msg ({ editorModal, timeline } as model) =
         ConfirmPostAndConnect content ->
             App.Modals.ConnectModal.openWithPost content model
 
-        PostedAndSubordinateToCoto postId coto (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
+        PostedAndSubordinateToCoto postId coto (Ok post) ->
+            model
                 |> App.Submodels.Modals.clearModals
-                |> subordinatePostToCoto context coto response
+                |> App.Update.Post.onPosted context postId post
+                |> chain (subordinatePostToCoto context coto post)
 
         PostedAndSubordinateToCoto postId coto (Err _) ->
             model |> withoutCmd
@@ -200,13 +202,11 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> postCotonoma context
 
-        CotonomaPosted postId (Ok response) ->
-            { model
-                | cotonomasLoading = True
-                , timeline = App.Types.Timeline.setCotoSaved postId response timeline
-            }
+        CotonomaPosted postId (Ok post) ->
+            { model | cotonomasLoading = True }
                 |> App.Submodels.Modals.clearModals
-                |> withCmd (\_ -> App.Commands.Cotonoma.refreshCotonomaList context)
+                |> App.Update.Post.onPosted context postId post
+                |> addCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 
         CotonomaPosted postId (Err error) ->
             { model
@@ -273,7 +273,7 @@ postSubcoto context coto content model =
                 |> App.Types.Timeline.post context False content
     in
         { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
               , App.Server.Post.post
                     context.clientId
                     context.cotonoma
@@ -378,7 +378,7 @@ postCotonoma context model =
                 model.timeline
     in
         { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
               , App.Server.Post.postCotonoma
                     context.clientId
                     context.cotonoma

@@ -14,8 +14,8 @@ defmodule CotoamiWeb.AmishiView do
       display_name: amishi.name || "",
       owner: Map.get(amishi, :owner, false),
       invite_limit: amishi.invite_limit,
-      inserted_at: amishi.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: amishi.updated_at |> DateTime.to_unix(:millisecond)
+      inserted_at: amishi.inserted_at |> to_unixtime(),
+      updated_at: amishi.updated_at |> to_unixtime()
     }
   end
 
@@ -26,8 +26,8 @@ defmodule CotoamiWeb.AmishiView do
       avatar_url: amishi.avatar_url || "",
       display_name: amishi.name || "",
       owner: Map.get(amishi, :owner, false),
-      inserted_at: amishi.inserted_at |> DateTime.to_unix(:millisecond),
-      updated_at: amishi.updated_at |> DateTime.to_unix(:millisecond)
+      inserted_at: amishi.inserted_at |> to_unixtime(),
+      updated_at: amishi.updated_at |> to_unixtime()
     }
   end
 end

@@ -46,6 +46,7 @@
   }
 
   div.global-cotonomas,
+  div.watchlist,
   div.recent-cotonomas {
     margin-bottom: 20px;
   }
@@ -53,6 +54,12 @@
   div.global-cotonomas div.navigation-title i {
     vertical-align: bottom;
     font-size: 18px;
+  }
+
+  div.watchlist div.navigation-title i {
+    font-size: 20px;
+    vertical-align: -5px;
+    margin-right: 2px;
   }
 
   div.coto-as-cotonoma {
@@ -82,20 +89,6 @@
 
     i {
       vertical-align: middle;
-    }
-
-    div.cotonoma-link {
-      flex: 1;
-      padding-right: 4px;
-
-      img.avatar {
-        width: 20px;
-        height: 20px;
-      }
-
-      span.shared i {
-        font-size: 16px;
-      }
     }
 
     &.not-active div.cotonoma-link {
@@ -164,6 +157,30 @@
 
     &.element-focus span.coto-tool-buttons {
       display: inline-block !important;
+    }
+  }
+
+  div.cotonoma-link {
+    flex: 1;
+    padding-right: 4px;
+    position: relative;
+
+    img.avatar {
+      width: 20px;
+      height: 20px;
+    }
+
+    span.shared i {
+      font-size: 16px;
+    }
+
+    i.unread {
+      position: absolute;
+      top: -5px;
+      left: 10px;
+      font-size: 16px;
+      color: #f33;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     }
   }
 }

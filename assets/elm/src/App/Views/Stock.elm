@@ -22,6 +22,7 @@ import Utils.UpdateUtil exposing (..)
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
+import App.Commands
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Graph exposing (Graph)
@@ -35,12 +36,14 @@ import App.Ports.Graph
 
 type alias Model =
     { view : StockView
+    , graphCanvasFullyOpened : Bool
     }
 
 
 defaultModel : Model
 defaultModel =
     { view = DocumentView
+    , graphCanvasFullyOpened = False
     }
 
 
@@ -69,6 +72,21 @@ update context msg ({ stockView } as model) =
                     (\model -> model.stockView.view == GraphView)
                     (\_ -> App.Ports.Graph.resizeGraph ())
 
+        ToggleGraphCanvasSize ->
+            { model
+                | stockView =
+                    { stockView
+                        | graphCanvasFullyOpened = not (stockView.graphCanvasFullyOpened)
+                    }
+            }
+                |> withoutCmd
+
+        GraphNodeClicked cotoId ->
+            if stockView.graphCanvasFullyOpened then
+                model |> withoutCmd
+            else
+                ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
+
 
 renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
 renderGraph context model =
@@ -92,15 +110,7 @@ resizeGraphWithDelay =
         |> Task.perform (\_ -> (AppMsg.StockMsg ResizeGraph))
 
 
-type alias ViewModel model =
-    { model
-        | stockView : Model
-        , graph : Graph
-        , loadingGraph : Bool
-    }
-
-
-view : Context context -> ViewModel model -> Html AppMsg.Msg
+view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     div [ id "stock" ]
         [ div
@@ -110,7 +120,7 @@ view context model =
                     [ classList
                         [ ( "tool-button", True )
                         , ( "document-view", True )
-                        , ( "disabled", model.stockView.view == DocumentView )
+                        , ( "disabled", model.view == DocumentView )
                         ]
                     , title (context.i18nText I18nKeys.Stock_DocumentView)
                     , onClick (AppMsg.StockMsg (SwitchView DocumentView))
@@ -120,73 +130,68 @@ view context model =
                     [ classList
                         [ ( "tool-button", True )
                         , ( "graph-view", True )
-                        , ( "disabled", model.stockView.view == GraphView )
+                        , ( "disabled", model.view == GraphView )
                         ]
                     , title (context.i18nText I18nKeys.Stock_GraphView)
                     , onClick (AppMsg.StockMsg (SwitchView GraphView))
                     ]
                     [ materialIcon "share" Nothing ]
                 ]
-            , if context.reordering == (Just PinnedCotos) then
+            , if App.Submodels.Context.hasPinnedCotosInReordering context then
                 App.Views.Reorder.closeButtonDiv context
               else
                 Utils.HtmlUtil.none
             ]
         , div
             [ id "pinned-cotos-body", class "column-body" ]
-            [ case model.stockView.view of
+            [ case model.view of
                 DocumentView ->
-                    pinnedCotos context model.graph
+                    documentViewDiv context
 
                 GraphView ->
-                    div
-                        [ id "coto-graph-view"
-                        , classList [ ( "loading", model.loadingGraph ) ]
-                        ]
-                        []
+                    graphViewDiv context model
             ]
         ]
 
 
-pinnedCotos : Context a -> Graph -> Html AppMsg.Msg
-pinnedCotos context graph =
-    graph.rootConnections
+documentViewDiv : Context a -> Html AppMsg.Msg
+documentViewDiv context =
+    context.graph.rootConnections
         |> List.reverse
         |> List.indexedMap
             (\index connection ->
                 connectionDiv
                     context
-                    graph
                     (InboundConnection
                         Nothing
                         Nothing
                         connection
-                        (List.length graph.rootConnections)
+                        (List.length context.graph.rootConnections)
                         index
-                        (context.reordering == (Just PinnedCotos))
+                        (App.Submodels.Context.hasPinnedCotosInReordering context)
                     )
             )
         |> Html.Keyed.node "div" [ class "root-connections" ]
 
 
-connectionDiv : Context a -> Graph -> InboundConnection -> ( String, Html AppMsg.Msg )
-connectionDiv context graph inbound =
-    graph.cotos
+connectionDiv : Context a -> InboundConnection -> ( String, Html AppMsg.Msg )
+connectionDiv context inbound =
+    context.graph.cotos
         |> Dict.get inbound.connection.end
         |> Maybe.map
             (\coto ->
                 ( inbound.connection.key
                 , div
                     [ class "outbound-conn" ]
-                    [ cotoDiv context graph inbound coto ]
+                    [ cotoDiv context inbound coto ]
                 )
             )
         |> Maybe.withDefault
             ( inbound.connection.key, Utils.HtmlUtil.none )
 
 
-cotoDiv : Context a -> Graph -> InboundConnection -> Coto -> Html AppMsg.Msg
-cotoDiv context graph inbound coto =
+cotoDiv : Context a -> InboundConnection -> Coto -> Html AppMsg.Msg
+cotoDiv context inbound coto =
     let
         elementId =
             "pinned-" ++ coto.id
@@ -209,13 +214,13 @@ cotoDiv context graph inbound coto =
             [ div
                 [ class "coto-inner" ]
                 [ unpinButtonDiv context inbound.connection coto.id
-                , App.Views.Coto.headerDiv context graph (Just inbound) elementId coto
-                , App.Views.Coto.parentsDiv graph cotonomaCotoId coto.id
+                , App.Views.Coto.headerDiv context (Just inbound) elementId coto
+                , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
                 , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
                 , if inbound.reordering then
                     Utils.HtmlUtil.none
                   else
-                    App.Views.Coto.subCotosDiv context graph elementId coto
+                    App.Views.Coto.subCotosDiv context elementId coto
                 ]
             ]
 
@@ -249,3 +254,30 @@ unpinButtonDiv context connection cotoId =
                     [ class "not-unpinnable" ]
                     [ faIcon "thumb-tack" Nothing ]
             ]
+
+
+graphViewDiv : Context context -> Model -> Html AppMsg.Msg
+graphViewDiv context model =
+    div
+        [ id "coto-graph"
+        , classList
+            [ ( "full-open", model.graphCanvasFullyOpened )
+            , ( "loading", context.loadingGraph )
+            ]
+        ]
+        [ div [ class "tools" ]
+            [ button
+                [ class "toggle-canvas-size"
+                , onClick (AppMsg.StockMsg ToggleGraphCanvasSize)
+                ]
+                [ materialIcon
+                    (if model.graphCanvasFullyOpened then
+                        "fullscreen_exit"
+                     else
+                        "fullscreen"
+                    )
+                    Nothing
+                ]
+            ]
+        , div [ id "coto-graph-canvas" ] []
+        ]

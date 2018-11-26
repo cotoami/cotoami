@@ -1,4 +1,7 @@
 defmodule CotoamiWeb.ViewHelpers do
+  def to_unixtime(datetime) do
+    if datetime, do: DateTime.to_unix(datetime, :millisecond), else: nil
+  end
 
   def render_relation(relation, view, template) do
     case relation do

@@ -8,7 +8,6 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.DateUtil
 import App.Types.Post exposing (Post)
-import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
@@ -17,8 +16,8 @@ import App.Views.Post
 import App.Markdown
 
 
-view : Context a -> Graph -> SearchResults -> Html Msg
-view context graph model =
+view : Context a -> SearchResults -> Html Msg
+view context model =
     div [ id "search-results" ]
         [ div
             [ class "column-header" ]
@@ -58,7 +57,7 @@ view context graph model =
                 |> List.map
                     (\post ->
                         ( Maybe.withDefault "" post.cotoId
-                        , postDiv context graph post
+                        , postDiv context post
                         )
                     )
                 |> Html.Keyed.node "div" [ class "posts" ]
@@ -66,19 +65,19 @@ view context graph model =
         ]
 
 
-postDiv : Context a -> Graph -> Post -> Html Msg
-postDiv context graph post =
+postDiv : Context a -> Post -> Html Msg
+postDiv context post =
     let
         elementId =
             "search-result-" ++ (Maybe.withDefault "none" post.cotoId)
     in
         div
-            (App.Views.Post.postDivAttrs context graph elementId post)
+            (App.Views.Post.postDivAttrs context elementId post)
             [ div
                 [ class "coto-inner" ]
-                [ App.Views.Post.headerDiv context graph elementId post
+                [ App.Views.Post.headerDiv context elementId post
                 , post.cotoId
-                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv graph Nothing cotoId)
+                    |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv context.graph Nothing cotoId)
                     |> Maybe.withDefault (div [] [])
                 , if post.isCotonoma then
                     Utils.HtmlUtil.none
@@ -86,7 +85,7 @@ postDiv context graph post =
                     App.Views.Post.authorDiv context post
                 , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown post
                 , footerDiv context post
-                , App.Views.Coto.subCotosButtonDiv graph Nothing post.cotoId
+                , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
                 ]
             ]
 

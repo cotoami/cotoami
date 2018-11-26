@@ -78,6 +78,9 @@ text key =
         Navigation_Recent ->
             "最近的投稿室"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "寫新的投稿"
 
@@ -98,6 +101,9 @@ text key =
 
         Flow_TileView ->
             "平铺"
+
+        Flow_NewPosts ->
+            "new posts"
 
         Stock_DocumentView ->
             "檔案"
@@ -236,6 +242,12 @@ text key =
 
         CotoMenuModal_Delete ->
             "删除"
+
+        CotoMenuModal_Watch ->
+            "Watch this Cotonoma"
+
+        CotoMenuModal_Unwatch ->
+            "Unwatch"
 
         TimelineFilterModal_Title ->
             "時間線篩檢程式"

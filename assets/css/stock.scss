@@ -57,10 +57,46 @@
     }
   }
 
-  #coto-graph-view {
-    background-color: #fff;
-    width: 100%;
-    height: 100%;
+  #coto-graph {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+
+    div.tools {
+      display: inline-block;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 15;
+
+      button {
+        padding: 0 4px;
+        height: 34px;
+        line-height: 34px;
+        background-color: rgba(255, 255, 255, 0.6);
+        
+        i {
+          vertical-align: -8px;
+        }
+      }
+    }
+
+    #coto-graph-canvas {
+      background-color: #fff;
+      width: 100%;
+      height: 100%;
+    }
+
+    &.full-open {
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #fff;
+    }
   }
 
   div.pinned-coto {
@@ -94,5 +130,30 @@
         color: #ccc;
       }
     }
+  }
+}
+
+.full-viewport-graph-mode {
+  #app-header,
+  #main-nav,
+  #main-flow,
+  #view-switch-container,
+  #open-flow,
+  #stock div.column-header {
+    display: none !important;
+  }
+
+  #app-layout {
+    padding: 0;
+  }
+
+  #main-stock,
+  #stock,
+  #pinned-cotos-body {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 }

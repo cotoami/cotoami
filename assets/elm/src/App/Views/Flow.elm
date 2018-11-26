@@ -10,6 +10,7 @@ module App.Views.Flow
         , view
         )
 
+import Date
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
@@ -20,14 +21,20 @@ import Utils.UpdateUtil exposing (..)
 import Utils.StringUtil exposing (isBlank, isNotBlank)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.DateUtil exposing (sameDay, formatDay)
-import Utils.EventUtil exposing (onKeyDown, onClickWithoutPropagation, onLinkButtonClick)
+import Utils.EventUtil
+    exposing
+        ( onKeyDown
+        , onClickWithoutPropagation
+        , onLinkButtonClick
+        , ScrollPos
+        , onScroll
+        )
 import Utils.Keyboard.Key
 import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (CotoContent)
+import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Submodels.Context exposing (Context)
@@ -39,6 +46,8 @@ import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
+import App.Update.Post
+import App.Update.Watch
 
 
 type alias Model =
@@ -113,15 +122,21 @@ update context msg ({ flowView, timeline } as model) =
             { model | flowView = toggle flowView }
                 |> withoutCmd
 
-        TimelineScrollPosInitialized ->
+        TimelineScrollPosInitialized scrollTop ->
             { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                |> withoutCmd
+                |> (\model ->
+                        if scrollTop == 0 then
+                            -- Clear unread because there's no scrollbar
+                            App.Update.Watch.clearUnread context model
+                        else
+                            ( model, Cmd.none )
+                   )
 
         ImageLoaded ->
             model
                 |> withCmdIf
                     (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom NoOp)
+                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
         SwitchView view ->
             { model | flowView = switchView view flowView }
@@ -155,11 +170,10 @@ update context msg ({ flowView, timeline } as model) =
             postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
                 |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
 
-        Posted postId (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response timeline }
-                |> App.Submodels.LocalCotos.updateRecentCotonomas response.postedIn
+        Posted postId (Ok post) ->
+            model
                 |> App.Submodels.Modals.clearModals
-                |> withoutCmd
+                |> App.Update.Post.onPosted context postId post
 
         Posted postId (Err _) ->
             model |> withoutCmd
@@ -167,11 +181,18 @@ update context msg ({ flowView, timeline } as model) =
         ConfirmPostAndConnect content ->
             App.Modals.ConnectModal.openWithPost content model
 
+        Scroll scrollPos ->
+            if isScrolledToBottom scrollPos then
+                App.Update.Watch.clearUnread context model
+            else
+                model |> withoutCmd
+
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
     if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom (AppMsg.FlowMsg TimelineScrollPosInitialized)
+        App.Commands.scrollTimelineToBottom
+            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
     else
         Cmd.none
 
@@ -200,7 +221,11 @@ handleEditorShortcut context keyboardEvent content model =
         ( model, Cmd.none )
 
 
-postFromQuickEditor : Context context -> CotoContent -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor :
+    Context context
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
         |> post context content
@@ -214,7 +239,7 @@ post context content model =
     in
         ( { model | timeline = newTimeline }
         , Cmd.batch
-            [ App.Commands.scrollTimelineToBottom NoOp
+            [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
             , App.Server.Post.post
                 context.clientId
                 context.cotonoma
@@ -222,6 +247,13 @@ post context content model =
                 newPost
             ]
         )
+
+
+isScrolledToBottom : ScrollPos -> Bool
+isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
+    (contentHeight - containerHeight - scrollTop)
+        --|> Debug.log "scrollPosFromBottom: "
+        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
 
 type alias ViewModel model =
@@ -305,6 +337,7 @@ timelineDiv context model =
             , ( "tile", model.flowView.view == TileView )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
+        , onScroll (AppMsg.FlowMsg << Scroll)
         ]
         [ moreButton model.timeline
         , model.timeline.posts
@@ -330,7 +363,7 @@ timelineDiv context model =
                             [ div
                                 [ class "date-header" ]
                                 [ span [ class "date" ] [ text postDateString ] ]
-                            , postsDiv context model.graph postsOnDay
+                            , postsDiv context postsOnDay
                             ]
                         )
                 )
@@ -357,19 +390,52 @@ moreButton timeline =
         Utils.HtmlUtil.none
 
 
-postsDiv : Context context -> Graph -> List Post -> Html AppMsg.Msg
-postsDiv context graph posts =
+postsDiv : Context context -> List Post -> Html AppMsg.Msg
+postsDiv context posts =
     Html.Keyed.node
         "div"
         [ class "posts" ]
         (List.map
             (\post ->
                 ( getKey post
-                , App.Views.Post.view context graph post
+                , div []
+                    [ App.Views.Post.view context post
+                    , unreadStartLine context post
+                    ]
                 )
             )
             posts
         )
+
+
+unreadStartLine : Context context -> Post -> Html AppMsg.Msg
+unreadStartLine context post =
+    let
+        postTimestamp =
+            Maybe.map (Date.toTime) post.postedAt
+
+        lastPostTimestamp =
+            Maybe.andThen (.lastPostTimestamp) context.cotonoma
+    in
+        (Maybe.map3
+            (\postTimestamp lastPostTimestamp watch ->
+                if
+                    (postTimestamp /= lastPostTimestamp)
+                        && (watch.lastPostTimestamp == Just postTimestamp)
+                then
+                    div [ class "unread-start-line" ]
+                        [ hr [] []
+                        , div [ class "line-label" ]
+                            [ text (context.i18nText I18nKeys.Flow_NewPosts) ]
+                        ]
+                else
+                    Utils.HtmlUtil.none
+            )
+            postTimestamp
+            lastPostTimestamp
+            context.watchStateOnCotonomaLoad
+        )
+            |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 getKey : Post -> String
