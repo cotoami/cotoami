@@ -173,7 +173,7 @@ update context msg ({ flowView, timeline } as model) =
             model
                 |> App.Submodels.LocalCotos.onPosted postId post
                 |> App.Submodels.Modals.clearModals
-                |> withoutCmd
+                |> App.Update.Watch.updateByPost context post
 
         Posted postId (Err _) ->
             model |> withoutCmd
