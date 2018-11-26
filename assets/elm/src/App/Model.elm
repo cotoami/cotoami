@@ -65,6 +65,7 @@ type alias Model =
     , subCotonomas : List Cotonoma
     , watchlist : List Watch
     , watchlistLoading : Bool
+    , watchUpdating : Bool
     , timeline : Timeline
     , searchResults : SearchResults
     , graph : Graph
@@ -112,6 +113,7 @@ initModel seed lang route =
     , subCotonomas = []
     , watchlist = []
     , watchlistLoading = False
+    , watchUpdating = False
     , timeline = App.Types.Timeline.defaultTimeline
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , graph = App.Types.Graph.defaultGraph

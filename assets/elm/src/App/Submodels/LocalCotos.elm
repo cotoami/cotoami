@@ -46,6 +46,8 @@ type alias LocalCotos a =
         , subCotonomas : List Cotonoma
         , cotonomasLoading : Bool
         , watchlist : List Watch
+        , watchlistLoading : Bool
+        , watchUpdating : Bool
         , searchResults : SearchResults
     }
 

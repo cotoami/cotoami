@@ -49,7 +49,6 @@ import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
 import App.Server.Watch
-import App.Ports.App
 
 
 type alias Model =
@@ -59,7 +58,6 @@ type alias Model =
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
-    , watchUpdating : Bool
     }
 
 
@@ -71,7 +69,6 @@ defaultModel =
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
-    , watchUpdating = False
     }
 
 
@@ -106,11 +103,6 @@ clearEditorContent model =
         | editorContent = ""
         , editorCounter = model.editorCounter + 1
     }
-
-
-setWatchUpdating : Bool -> Model -> Model
-setWatchUpdating watchUpdating model =
-    { model | watchUpdating = watchUpdating }
 
 
 type alias UpdateModel model =
@@ -197,10 +189,6 @@ update context msg ({ flowView, timeline } as model) =
             else
                 model |> withoutCmd
 
-        WatchTimestampUpdated _ ->
-            { model | flowView = setWatchUpdating False flowView }
-                |> withCmd (\_ -> App.Ports.App.updateUnreadStateInTitle context)
-
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
 initScrollPos localCotos =
@@ -265,8 +253,8 @@ post context content model =
 
 clearUnreadInCurrentCotonoma :
     Context context
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
 clearUnreadInCurrentCotonoma context model =
     (Maybe.map2
         (\cotonoma latestPost ->
@@ -285,8 +273,8 @@ updateWatchByPost :
     Context context
     -> Post
     -> Watch
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
 updateWatchByPost context post watch model =
     post.postedAt
         |> Maybe.map Date.toTime
@@ -298,8 +286,8 @@ updateWatchTimestamp :
     Context context
     -> Time
     -> Watch
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd AppMsg.Msg )
 updateWatchTimestamp context timestamp watch model =
     let
         isNewPost =
@@ -307,22 +295,19 @@ updateWatchTimestamp context timestamp watch model =
                 |> Maybe.map (\watchTimestamp -> watchTimestamp < timestamp)
                 |> Maybe.withDefault True
     in
-        if (not model.flowView.watchUpdating) && isNewPost then
+        if (not model.watchUpdating) && isNewPost then
             let
                 watchlist =
                     model.watchlist
                         |> List.Extra.updateIf
                             (\w -> w.cotonoma.id == watch.cotonoma.id)
                             (\w -> { w | lastPostTimestamp = Just timestamp })
-
-                flowView =
-                    setWatchUpdating True model.flowView
             in
-                { model | watchlist = watchlist, flowView = flowView }
+                { model | watchlist = watchlist, watchUpdating = True }
                     |> withCmd
                         (\_ ->
                             App.Server.Watch.updateLastPostTimestamp
-                                (AppMsg.FlowMsg << WatchTimestampUpdated)
+                                (AppMsg.WatchTimestampUpdated)
                                 context.clientId
                                 watch.cotonoma.key
                                 timestamp

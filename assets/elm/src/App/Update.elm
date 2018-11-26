@@ -488,6 +488,10 @@ update msg model =
         WatchlistOnCotonomaLoad cotonoma (Err _) ->
             model |> withoutCmd
 
+        WatchTimestampUpdated _ ->
+            { model | watchUpdating = False }
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
+
         --
         -- Pushed
         --

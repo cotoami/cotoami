@@ -87,6 +87,7 @@ type Msg
     | Unwatch CotonomaKey
     | WatchlistUpdated (Result Http.Error (List Watch))
     | WatchlistOnCotonomaLoad Cotonoma (Result Http.Error (List Watch))
+    | WatchTimestampUpdated (Result Http.Error Watch)
       --
       -- Pushed
       --
