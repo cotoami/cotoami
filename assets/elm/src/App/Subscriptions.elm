@@ -6,6 +6,7 @@ import Phoenix.Socket as Socket exposing (Socket)
 import App.Types.Session exposing (Session)
 import App.Model exposing (Model)
 import App.Messages exposing (..)
+import App.Views.StockMsg
 import App.Submodels.LocalCotos
 import App.Channels
 import App.Ports.LocalStorage
@@ -28,19 +29,18 @@ phoenixChannels model =
 
 phoenixChannelsInSession : Model -> Session -> Sub Msg
 phoenixChannelsInSession model session =
-    Phoenix.connect
-        (socket session.token session.websocketUrl)
-        (App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
-            |> (::) App.Channels.globalChannel
-            |> (\channels ->
-                    model.cotonoma
-                        |> Maybe.map
-                            (\cotonoma ->
-                                App.Channels.cotonomaChannel cotonoma.key :: channels
-                            )
-                        |> Maybe.withDefault channels
-               )
-        )
+    let
+        channels =
+            [ [ App.Channels.globalChannel ]
+            , App.Channels.cotonomaChannels (App.Submodels.LocalCotos.getCotonomaKeysToWatch model)
+            , App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
+            , model.cotonoma
+                |> Maybe.map (\cotonoma -> [ App.Channels.timelineChannel cotonoma.key ])
+                |> Maybe.withDefault []
+            ]
+                |> List.concat
+    in
+        Phoenix.connect (socket session.token session.websocketUrl) channels
 
 
 subscriptions : Model -> Sub Msg
@@ -49,6 +49,6 @@ subscriptions model =
         [ Keyboard.downs KeyDown
         , phoenixChannels model
         , App.Ports.LocalStorage.receiveItem LocalStorageItemFetched
-        , App.Ports.Graph.nodeClicked OpenTraversal
+        , App.Ports.Graph.nodeClicked (StockMsg << App.Views.StockMsg.GraphNodeClicked)
         , App.Ports.ImportFile.importFileContentRead OpenImportModal
         ]

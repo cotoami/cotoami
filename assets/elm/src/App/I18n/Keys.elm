@@ -25,6 +25,7 @@ type TextKey
     | SigninModal_SentMessage
     | Navigation_Current
     | Navigation_Recent
+    | Navigation_Watchlist
     | Flow_EditorPlaceholder
     | Flow_ShortcutToOpenEditor
     | Flow_HideFlow
@@ -32,6 +33,7 @@ type TextKey
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView
+    | Flow_NewPosts
     | Stock_DocumentView
     | Stock_GraphView
     | EditorModal_Summary
@@ -76,6 +78,8 @@ type TextKey
     | CotoMenuModal_AddSubCoto
     | CotoMenuModal_Cotonomatize
     | CotoMenuModal_Delete
+    | CotoMenuModal_Watch
+    | CotoMenuModal_Unwatch
     | TimelineFilterModal_Title
     | TimelineFilterModal_ExcludePinnedGraph
     | TimelineFilterModal_ExcludePostsInCotonoma

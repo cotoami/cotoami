@@ -113,19 +113,6 @@ jobs:
             docker tag cotoami/cotoami:$CIRCLE_TAG cotoami/cotoami:latest
             docker push cotoami/cotoami:latest
 
-  deploy:
-    docker:
-      - image: python:3.6
-    steps:
-      - checkout
-      - run:
-          name: Install kubectl
-          command: ./.circleci/install-kubectl.sh
-      - deploy:
-          command: |
-            ~/.kube/kubectl config use-context $KUBE_CONTEXT
-            ~/.kube/kubectl --namespace='prod-cotoami' set image deployment/cotoami cotoami=cotoami/cotoami:$CIRCLE_TAG
-
 workflows:
   version: 2
   build-and-deploy:
@@ -160,11 +147,4 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      # - deploy:
-      #     requires:
-      #       - release
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
+

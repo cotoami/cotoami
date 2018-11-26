@@ -25,19 +25,26 @@ const elmApp = Elm.Main.embed(elmDiv, {
   lang: document.documentElement.lang
 })
 
-elmApp.ports.renderGraph.subscribe(({rootNodeId, nodes, edges}) => {
+elmApp.ports.setUnreadStateInTitle.subscribe((unread) => {
+  const link = document.querySelector("link[rel*='icon']")
+  link.href = unread ?
+    "/images/favicon/favicon-unread-32x32.png" :
+    "/images/favicon/favicon-32x32.png"
+})
+
+elmApp.ports.renderGraph.subscribe(({ rootNodeId, nodes, edges }) => {
   Cytoscape.render(
-    document.getElementById('coto-graph-view'),
+    document.getElementById('coto-graph-canvas'),
     rootNodeId,
-    map(nodes.concat(edges), element => { 
+    map(nodes.concat(edges), element => {
       return {
         data: element,
-        classes: 
+        classes:
           compact([
             element.asCotonoma ? 'cotonoma' : null,
             element.pinned ? 'pinned' : null
           ]).join(' ')
-      } 
+      }
     }),
     (nodeId) => {
       if (nodeId != 'home') {
@@ -58,7 +65,7 @@ elmApp.ports.destroyGraph.subscribe(() => {
 elmApp.ports.setItem.subscribe(([key, value]) => {
   if (value === null) {
     localStorage.removeItem(key)
-  } 
+  }
   else {
     localStorage.setItem(key, JSON.stringify(value))
   }
@@ -68,8 +75,8 @@ elmApp.ports.getItem.subscribe((key) => {
   var value = null
   try {
     value = JSON.parse(localStorage.getItem(key))
-  } 
-  catch (e) {}
+  }
+  catch (e) { }
   elmApp.ports.receiveItem.send([key, value])
 })
 
@@ -79,8 +86,8 @@ elmApp.ports.getAllItems.subscribe(() => {
     var value = null
     try {
       value = JSON.parse(localStorage.getItem(key))
-    } 
-    catch (e) {}
+    }
+    catch (e) { }
     elmApp.ports.receiveItem.send([key, value])
   }
 })
@@ -93,7 +100,7 @@ elmApp.ports.clearStorage.subscribe((prefix) => {
         localStorage.removeItem(key)
       }
     }
-  } 
+  }
   else {
     localStorage.clear()
   }
@@ -144,7 +151,7 @@ importFileInput.addEventListener("change", () => {
       else {
         throw 'Key "connections" not found in JSON'
       }
-      
+
       result.valid = true
     }
     catch (e) {

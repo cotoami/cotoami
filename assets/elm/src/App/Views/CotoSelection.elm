@@ -22,7 +22,6 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotoSelection)
-import App.Types.Graph exposing (Graph)
 import App.Messages as AppMsg exposing (..)
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
@@ -178,7 +177,6 @@ selectedCotosDiv context model =
                             ( toString cotoId
                             , cotoDiv
                                 context
-                                model.graph
                                 (context.deselecting |> Set.member cotoId)
                                 coto
                             )
@@ -187,8 +185,8 @@ selectedCotosDiv context model =
         )
 
 
-cotoDiv : Context a -> Graph -> Bool -> Coto -> Html AppMsg.Msg
-cotoDiv context graph beingDeselected coto =
+cotoDiv : Context a -> Bool -> Coto -> Html AppMsg.Msg
+cotoDiv context beingDeselected coto =
     let
         elementId =
             "selection-" ++ coto.id
@@ -216,8 +214,8 @@ cotoDiv context graph beingDeselected coto =
                         )
                         Nothing
                     ]
-                , App.Views.Coto.headerDiv context graph Nothing elementId coto
+                , App.Views.Coto.headerDiv context Nothing elementId coto
                 , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
-                , App.Views.Coto.subCotosButtonDiv graph Nothing (Just coto.id)
+                , App.Views.Coto.subCotosButtonDiv context.graph Nothing (Just coto.id)
                 ]
             ]

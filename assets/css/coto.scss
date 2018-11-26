@@ -252,6 +252,10 @@ div.coto.selectable {
   &.selected > div.coto-inner {
     border: 2px solid #ffa500 !important;
   }
+
+  &.focused-in-reordering > div.coto-inner {
+    background-color: #ffffee;
+  }
 }
 
 a.cotonoma-link {

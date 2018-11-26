@@ -14,7 +14,7 @@ import App.LocalConfig
 import App.I18n.Keys as I18nKeys
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Connection exposing (Direction(..), Reordering(..))
+import App.Types.Watch
 import App.Types.Graph
 import App.Types.Timeline
 import App.Types.Traversal
@@ -30,8 +30,8 @@ import App.Server.Cotonoma
 import App.Server.Post
 import App.Server.Coto
 import App.Server.Graph
+import App.Server.Watch
 import App.Commands
-import App.Commands.Cotonoma
 import App.Channels exposing (Payload)
 import App.Views.AppHeader
 import App.Views.ViewSwitch
@@ -52,6 +52,7 @@ import App.Modals.ImportModal
 import App.Modals.TimelineFilterModal
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Pushed
+import App.Ports.App
 import App.Ports.Graph
 
 
@@ -161,8 +162,13 @@ update msg model =
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
-                    App.Views.Flow.initScrollPos
-                |> addCmd (\model -> App.Server.Cotonoma.fetchSubCotonomas model)
+                    (\model ->
+                        Cmd.batch
+                            [ App.Views.Flow.initScrollPos model
+                            , App.Server.Cotonoma.fetchSubCotonomas model
+                            , App.Server.Watch.fetchWatchlist (WatchlistOnCotonomaLoad cotonoma)
+                            ]
+                    )
 
         CotonomaPostsFetched (Err _) ->
             model |> withoutCmd
@@ -308,7 +314,7 @@ update msg model =
                 |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoDeleted (Ok _) ->
-            model |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+            model |> withCmd App.Server.Cotonoma.refreshCotonomaList
 
         CotoDeleted (Err error) ->
             model |> withoutCmd
@@ -316,11 +322,11 @@ update msg model =
         CotoUpdated (Ok coto) ->
             model
                 |> App.Submodels.LocalCotos.updateCoto coto
-                |> App.Submodels.LocalCotos.updateRecentCotonomas coto.postedIn
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.postedIn
                 |> App.Submodels.Modals.clearModals
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
-                    App.Commands.Cotonoma.refreshCotonomaList
+                    App.Server.Cotonoma.refreshCotonomaList
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         CotoUpdated (Err error) ->
@@ -352,7 +358,7 @@ update msg model =
                 |> Maybe.map (\cotonoma -> App.Submodels.LocalCotos.cotonomatize cotonoma coto.id model)
                 |> Maybe.withDefault model
                 |> App.Submodels.Modals.clearModals
-                |> withCmd App.Commands.Cotonoma.refreshCotonomaList
+                |> withCmd App.Server.Cotonoma.refreshCotonomaList
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         Cotonomatized (Err error) ->
@@ -375,7 +381,7 @@ update msg model =
                                         model.clientId
                                         (Maybe.map (.key) model.cotonoma)
                                         [ cotoId ]
-                                    , App.Commands.scrollPinnedCotosToBottom NoOp
+                                    , App.Commands.scrollPinnedCotosToBottom (\_ -> NoOp)
                                     ]
                             )
                 )
@@ -449,16 +455,42 @@ update msg model =
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
 
-        SetReorderMode (Just parentElementId) ->
-            { model | reordering = Just (SubCotos parentElementId) }
-                |> withoutCmd
-
-        SetReorderMode Nothing ->
-            { model | reordering = Just PinnedCotos }
-                |> withoutCmd
+        SetReorderMode reordering ->
+            { model | reordering = Just reordering } |> withoutCmd
 
         CloseReorderMode ->
             { model | reordering = Nothing } |> withoutCmd
+
+        Watch cotonomaKey ->
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.watch WatchlistUpdated model.clientId cotonomaKey)
+
+        Unwatch cotonomaKey ->
+            { model | watchlistLoading = True }
+                |> withCmd (\model -> App.Server.Watch.unwatch WatchlistUpdated model.clientId cotonomaKey)
+
+        WatchlistUpdated (Ok watchlist) ->
+            { model | watchlist = watchlist, watchlistLoading = False }
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
+
+        WatchlistUpdated (Err _) ->
+            model |> withoutCmd
+
+        WatchlistOnCotonomaLoad cotonoma (Ok watchlist) ->
+            { model
+                | watchlist = watchlist
+                , watchlistLoading = False
+                , watchStateOnCotonomaLoad =
+                    App.Types.Watch.findWatchByCotonomaId cotonoma.id watchlist
+            }
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
+
+        WatchlistOnCotonomaLoad cotonoma (Err _) ->
+            model |> withoutCmd
+
+        WatchTimestampUpdated _ ->
+            { model | watchUpdating = False }
+                |> withCmd App.Ports.App.updateUnreadStateInTitle
 
         --
         -- Pushed
@@ -474,10 +506,17 @@ update msg model =
                 payload
                 model
 
-        UpdatePushed payload ->
+        CotonomaUpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomaUpdate
+                payload
+                model
+
+        CotoUpdatePushed payload ->
             (App.Pushed.handle
                 App.Server.Coto.decodeCoto
-                App.Pushed.handleUpdate
+                App.Pushed.handleCotoUpdate
                 payload
                 model
             )
@@ -533,7 +572,7 @@ update msg model =
             App.Views.Stock.update model subMsg model
 
         TraversalsMsg subMsg ->
-            App.Views.Traversals.update model model.graph subMsg model
+            App.Views.Traversals.update model subMsg model
 
         CotoSelectionMsg subMsg ->
             App.Views.CotoSelection.update model subMsg model
@@ -613,6 +652,7 @@ loadHome model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
@@ -623,6 +663,7 @@ loadHome model =
                     , App.Server.Cotonoma.fetchCotonomas
                     , App.Server.Graph.fetchGraph Nothing
                     , App.Ports.Graph.destroyGraph ()
+                    , App.Server.Watch.fetchWatchlist WatchlistUpdated
                     ]
             )
 
@@ -642,6 +683,7 @@ loadCotonoma key model =
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
         , navigationOpen = False
+        , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection

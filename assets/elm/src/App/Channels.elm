@@ -17,9 +17,21 @@ globalChannel =
     Channel.init ("global")
 
 
-cotonomaChannel : CotonomaKey -> Channel Msg
-cotonomaChannel key =
-    Channel.init ("cotonomas:" ++ key)
+cotonomaChannels : Set CotonomaKey -> List (Channel Msg)
+cotonomaChannels keys =
+    keys
+        |> Set.toList
+        |> List.map
+            (\key ->
+                Channel.init ("cotonomas:" ++ key)
+                    |> Channel.on "update"
+                        (\payload -> CotonomaUpdatePushed payload)
+            )
+
+
+timelineChannel : CotonomaKey -> Channel Msg
+timelineChannel key =
+    Channel.init ("timelines:" ++ key)
         |> Channel.on "presence_state"
             (\payload -> CotonomaPresenceState payload)
         |> Channel.on "presence_diff"
@@ -38,7 +50,7 @@ cotoChannels cotoIds =
                     |> Channel.on "delete"
                         (\payload -> DeletePushed payload)
                     |> Channel.on "update"
-                        (\payload -> UpdatePushed payload)
+                        (\payload -> CotoUpdatePushed payload)
                     |> Channel.on "cotonomatize"
                         (\payload -> CotonomatizePushed payload)
                     |> Channel.on "connect"

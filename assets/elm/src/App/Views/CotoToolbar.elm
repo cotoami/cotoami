@@ -12,9 +12,9 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (Coto, ElementId, CotoId)
+import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
-import App.Types.Connection exposing (Connection, InboundConnection, Direction(..))
+import App.Types.Connection exposing (Connection, InboundConnection, Direction(..), Reordering(..))
 import App.Messages as AppMsg exposing (..)
 import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
@@ -60,19 +60,21 @@ update context msg model =
 view :
     Context context
     -> Session
-    -> Graph
     -> Maybe InboundConnection
     -> ElementId
     -> Coto
     -> Html AppMsg.Msg
-view context session graph maybeInbound elementId coto =
+view context session maybeInbound elementId coto =
     span [ class "coto-tool-buttons" ]
         [ connectButton context coto
         , maybeInbound
-            |> Maybe.map (\inbound -> subCotoTools context session graph inbound elementId coto)
+            |> Maybe.map (\inbound -> subCotoTools context session inbound elementId coto)
             |> Maybe.withDefault Utils.HtmlUtil.none
         , span [ class "default-buttons" ]
-            [ pinButton context graph coto
+            [ if isSharedCotonoma coto then
+                watchOrUnwatchButton context coto
+              else
+                pinButton context coto
             , editButton context session coto
             , addSubCotoButton context coto
             , selectButton context coto
@@ -84,12 +86,11 @@ view context session graph maybeInbound elementId coto =
 subCotoTools :
     Context context
     -> Session
-    -> Graph
     -> InboundConnection
     -> ElementId
     -> Coto
     -> Html AppMsg.Msg
-subCotoTools context session graph inbound elementId coto =
+subCotoTools context session inbound elementId coto =
     let
         buttons =
             [ disconnectButton context session inbound coto
@@ -161,10 +162,10 @@ connectButton context coto =
         Utils.HtmlUtil.none
 
 
-pinButton : Context context -> Graph -> Coto -> Html AppMsg.Msg
-pinButton context graph coto =
+pinButton : Context context -> Coto -> Html AppMsg.Msg
+pinButton context coto =
     if
-        not (App.Types.Graph.pinned coto.id graph)
+        not (App.Types.Graph.pinned coto.id context.graph)
             && ((Just coto.id) /= (Maybe.map (.cotoId) context.cotonoma))
     then
         a
@@ -175,6 +176,68 @@ pinButton context graph coto =
             [ faIcon "thumb-tack" Nothing ]
     else
         Utils.HtmlUtil.none
+
+
+isSharedCotonoma : Coto -> Bool
+isSharedCotonoma coto =
+    coto.asCotonoma
+        |> Maybe.map (\cotonoma -> cotonoma.shared)
+        |> Maybe.withDefault False
+
+
+watchOrUnwatchButton : Context context -> Coto -> Html AppMsg.Msg
+watchOrUnwatchButton context coto =
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                if cotonoma.shared == True then
+                    (if App.Submodels.Context.isWatched cotonoma context then
+                        unwatchButton context cotonoma
+                     else
+                        watchButton context cotonoma
+                    )
+                else
+                    Utils.HtmlUtil.none
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+watchButton : Context context -> Cotonoma -> Html AppMsg.Msg
+watchButton context cotonoma =
+    a
+        [ classList
+            [ ( "tool-button", True )
+            , ( "watch", True )
+            , ( "disabled", context.watchlistLoading )
+            ]
+        , title (context.i18nText I18nKeys.CotoMenuModal_Watch)
+        , onLinkButtonClick
+            (if context.watchlistLoading then
+                AppMsg.NoOp
+             else
+                AppMsg.Watch cotonoma.key
+            )
+        ]
+        [ materialIcon "visibility" Nothing ]
+
+
+unwatchButton : Context context -> Cotonoma -> Html AppMsg.Msg
+unwatchButton context cotonoma =
+    a
+        [ classList
+            [ ( "tool-button", True )
+            , ( "unwatch", True )
+            , ( "disabled", context.watchlistLoading )
+            ]
+        , title (context.i18nText I18nKeys.CotoMenuModal_Unwatch)
+        , onLinkButtonClick
+            (if context.watchlistLoading then
+                AppMsg.NoOp
+             else
+                AppMsg.Unwatch cotonoma.key
+            )
+        ]
+        [ materialIcon "visibility_off" Nothing ]
 
 
 editButton : Context context -> Session -> Coto -> Html AppMsg.Msg
@@ -269,7 +332,16 @@ reorderButton context session inbound elementId coto =
         (a
             [ class "tool-button toggle-reorder-mode"
             , title (context.i18nText I18nKeys.CotoToolbar_Reorder)
-            , onLinkButtonClick (SetReorderMode inbound.parentElementId)
+            , onLinkButtonClick
+                (SetReorderMode
+                    (inbound.parentElementId
+                        |> Maybe.map
+                            (\parentElementId ->
+                                SubCoto parentElementId elementId
+                            )
+                        |> Maybe.withDefault (PinnedCoto elementId)
+                    )
+                )
             ]
             [ faIcon "sort" Nothing ]
         )

@@ -4,6 +4,8 @@ module Utils.EventUtil
         , onLinkButtonClick
         , onKeyDown
         , onLoad
+        , ScrollPos
+        , onScroll
         )
 
 import Html exposing (Attribute)
@@ -42,3 +44,37 @@ onKeyDown tagger =
 onLoad : msg -> Attribute msg
 onLoad message =
     on "load" (Decode.succeed message)
+
+
+type alias ScrollPos =
+    { scrollTop : Int
+    , contentHeight : Int
+    , containerHeight : Int
+    }
+
+
+onScroll : (ScrollPos -> msg) -> Attribute msg
+onScroll tag =
+    onWithOptions "scroll"
+        { preventDefault = False
+        , stopPropagation = True
+        }
+        (Decode.map tag decodeScrollPos)
+
+
+decodeScrollPos : Decode.Decoder ScrollPos
+decodeScrollPos =
+    Decode.map3 ScrollPos
+        (Decode.at [ "target", "scrollTop" ] Decode.int)
+        (Decode.at [ "target", "scrollHeight" ] Decode.int)
+        (Decode.map2 Basics.max offsetHeight clientHeight)
+
+
+offsetHeight : Decode.Decoder Int
+offsetHeight =
+    Decode.at [ "target", "offsetHeight" ] Decode.int
+
+
+clientHeight : Decode.Decoder Int
+clientHeight =
+    Decode.at [ "target", "clientHeight" ] Decode.int

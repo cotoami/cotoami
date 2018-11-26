@@ -7,6 +7,7 @@ module App.Types.Timeline
         , addPost
         , setPaginatedPosts
         , nextPageIndex
+        , latestPost
         , getCoto
         , deleteCoto
         , deletePendingPost
@@ -82,6 +83,11 @@ setPaginatedPosts paginatedPosts timeline =
 nextPageIndex : Timeline -> Int
 nextPageIndex timeline =
     timeline.pageIndex + 1
+
+
+latestPost : Timeline -> Maybe Post
+latestPost timeline =
+    List.head timeline.posts
 
 
 getCoto : CotoId -> Timeline -> Maybe Coto

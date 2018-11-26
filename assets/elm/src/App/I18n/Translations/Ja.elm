@@ -78,6 +78,9 @@ text key =
         Navigation_Recent ->
             "最近のコトノマ"
 
+        Navigation_Watchlist ->
+            "ウォッチリスト"
+
         Flow_EditorPlaceholder ->
             "新しいコトを書く"
 
@@ -98,6 +101,9 @@ text key =
 
         Flow_TileView ->
             "タイル"
+
+        Flow_NewPosts ->
+            "新しい投稿"
 
         Stock_DocumentView ->
             "ドキュメント"
@@ -221,6 +227,12 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "コトノマのピンを外す"
+
+        CotoMenuModal_Watch ->
+            "ウォッチリストに追加"
+
+        CotoMenuModal_Unwatch ->
+            "ウォッチリストから削除"
 
         CotoMenuModal_Edit ->
             "編集"

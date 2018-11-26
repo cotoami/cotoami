@@ -4,16 +4,19 @@ defmodule CotoamiWeb.DatabaseControllerTest do
   alias CotoamiWeb.AmishiView
 
   setup do
-    Neo4jService.clear_database(Bolt.Sips.conn)
+    Neo4jService.clear_database(Bolt.Sips.conn())
+
     owner =
       AmishiService.insert_or_update!(%EmailUser{email: "owner@cotoa.me"})
       |> Map.put(:owner, true)
+
     conn =
       build_conn()
       |> put_req_header("host", "localhost")
       |> put_req_header("x-requested-with", "XMLHttpRequest")
       |> put_req_header("x-cotoami-client-id", "this-is-a-client-id")
       |> assign(:amishi, owner)
+
     %{conn: conn}
   end
 
@@ -35,7 +38,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
     test "one coto", %{conn: conn} do
       test_import_and_export(
         conn,
-        fn (_amishi_id, amishi_json) ->
+        fn _amishi_id, amishi_json ->
           """
             {
               "cotos": [
@@ -65,7 +68,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
     test "one coto pinned", %{conn: conn} do
       test_import_and_export(
         conn,
-        fn (amishi_id, amishi_json) ->
+        fn amishi_id, amishi_json ->
           """
             {
               "cotos": [
@@ -103,7 +106,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
     test "two cotos connected and pinned", %{conn: conn} do
       test_import_and_export(
         conn,
-        fn (amishi_id, amishi_json) ->
+        fn amishi_id, amishi_json ->
           """
             {
               "cotos": [
@@ -158,7 +161,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
     test "connection's order", %{conn: conn} do
       test_import_and_export(
         conn,
-        fn (amishi_id, amishi_json) ->
+        fn amishi_id, amishi_json ->
           """
             {
               "cotos": [
@@ -230,7 +233,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
     test "one cotonoma and coto in it", %{conn: conn} do
       test_import_and_export(
         conn,
-        fn (_amishi_id, amishi_json) ->
+        fn _amishi_id, amishi_json ->
           """
             {
               "cotos": [
@@ -249,7 +252,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                     "key": "jalc645or4crpkv1",
                     "inserted_at": 1537949021945,
                     "id": "a2cad024-d353-4ba7-9945-5372e0bfb263",
-                    "graph_revision": 0
+                    "graph_revision": 0,
+                    "last_post_timestamp": null
                   },
                   "content": "hello",
                   "as_cotonoma": true
@@ -288,7 +292,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
       |> Phoenix.View.render_one(AmishiView, "export.json")
       |> Poison.encode!()
 
-    expected_export_data = 
+    expected_export_data =
       create_test_data.(conn.assigns.amishi.id, amishi_json_in_export)
       |> format_json()
 
@@ -298,7 +302,7 @@ defmodule CotoamiWeb.DatabaseControllerTest do
 
   defp format_json(json) do
     json
-    |> Poison.decode!() 
+    |> Poison.decode!()
     |> Poison.encode!(pretty: true)
   end
 end

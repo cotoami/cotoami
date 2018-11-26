@@ -6,6 +6,7 @@ module Utils.UpdateUtil
         , withoutCmd
         , addCmd
         , addCmdIf
+        , chain
         )
 
 
@@ -43,3 +44,8 @@ addCmdIf condition createCmd ( model, cmd ) =
         addCmd createCmd ( model, cmd )
     else
         ( model, cmd )
+
+
+chain : (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+chain update ( model, cmd1 ) =
+    update model |> (\( model, cmd2 ) -> ( model, Cmd.batch [ cmd1, cmd2 ] ))

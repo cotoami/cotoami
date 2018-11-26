@@ -152,6 +152,34 @@ div.timeline {
   &.exclude-pinned-graph div.coto.in-pinned-graph {
     display: none;
   }
+
+  div.unread-start-line {
+    position: relative;
+    padding-top: 20px;
+
+    hr {
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #f33;
+    }
+
+    div.line-label {
+      display: inline-block;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 80px;
+      border: 1px solid #f33;
+      border-radius: 6px;
+      color: #f33;
+      background-color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
 }
 
 div.quick-coto-editor {

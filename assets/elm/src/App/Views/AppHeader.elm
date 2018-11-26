@@ -143,25 +143,32 @@ quickSearchForm searchResults =
                 ]
                 [ materialIcon "close" Nothing ]
           else
-            span [] []
+            Utils.HtmlUtil.none
         ]
 
 
 navigationToggle : Model -> Html AppMsg.Msg
 navigationToggle model =
-    a
+    span
         [ classList
-            [ ( "tool-button", True )
-            , ( "toggle-navigation", True )
+            [ ( "toggle-navigation", True )
             , ( "hidden", App.Submodels.LocalCotos.isNavigationEmpty model )
             ]
-        , onClick (AppMsg.AppHeaderMsg NavigationToggle)
         ]
-        [ materialIcon
-            (if model.navigationOpen then
-                "arrow_drop_up"
-             else
-                "arrow_drop_down"
-            )
-            Nothing
+        [ a
+            [ class "tool-button"
+            , onClick (AppMsg.AppHeaderMsg NavigationToggle)
+            ]
+            [ materialIcon
+                (if model.navigationOpen then
+                    "arrow_drop_up"
+                 else
+                    "arrow_drop_down"
+                )
+                Nothing
+            ]
+        , if App.Submodels.Context.anyUnreadCotos model then
+            materialIcon "fiber_manual_record" (Just "unread")
+          else
+            Utils.HtmlUtil.none
         ]

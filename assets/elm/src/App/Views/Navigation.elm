@@ -7,7 +7,6 @@ import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
 import App.Types.Coto exposing (Cotonoma)
-import App.Types.Graph exposing (Graph)
 import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
 import App.Views.Cotonomas
@@ -19,7 +18,6 @@ type alias ViewModel model =
             | globalCotonomas : List Cotonoma
             , recentCotonomas : List Cotonoma
             , subCotonomas : List Cotonoma
-            , graph : Graph
         }
 
 
@@ -32,9 +30,10 @@ view model =
         , div
             [ class "cotonomas-nav" ]
             [ model.cotonoma
-                |> Maybe.map (cotonomaNav model)
+                |> Maybe.map (currentCotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , globalCotonomasDiv model
+            , watchlistDiv model
             , recentCotonomasDiv model
             ]
         ]
@@ -61,22 +60,18 @@ homeNav model =
         ]
 
 
-cotonomaNav : ViewModel model -> Cotonoma -> Html Msg
-cotonomaNav model cotonoma =
+currentCotonomaNav : ViewModel model -> Cotonoma -> Html Msg
+currentCotonomaNav model cotonoma =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
         , App.Views.Cotonomas.cotonomaDiv
             model
-            model.graph
+            Nothing
             "current-cotonoma"
             cotonoma
         , div [ class "sub-cotonomas" ]
-            [ App.Views.Cotonomas.view
-                model
-                model.graph
-                "sub-cotonomas"
-                model.subCotonomas
+            [ App.Views.Cotonomas.view model "sub-cotonomas" model.subCotonomas
             ]
         ]
 
@@ -89,11 +84,21 @@ globalCotonomasDiv model =
         div [ class "global-cotonomas" ]
             [ div [ class "navigation-title" ]
                 [ faIcon "thumb-tack" Nothing ]
-            , App.Views.Cotonomas.view
-                model
-                model.graph
-                "global-cotonomas"
-                model.globalCotonomas
+            , App.Views.Cotonomas.view model "global-cotonomas" model.globalCotonomas
+            ]
+
+
+watchlistDiv : ViewModel model -> Html Msg
+watchlistDiv model =
+    if List.isEmpty model.watchlist then
+        Utils.HtmlUtil.none
+    else
+        div [ class "watchlist" ]
+            [ div [ class "navigation-title" ]
+                [ materialIcon "visibility" Nothing
+                , text (model.i18nText I18nKeys.Navigation_Watchlist)
+                ]
+            , App.Views.Cotonomas.watchlist model model.watchlist
             ]
 
 
@@ -105,9 +110,5 @@ recentCotonomasDiv model =
         div [ class "recent-cotonomas" ]
             [ div [ class "navigation-title" ]
                 [ text (model.i18nText I18nKeys.Navigation_Recent) ]
-            , App.Views.Cotonomas.view
-                model
-                model.graph
-                "recent-cotonomas"
-                model.recentCotonomas
+            , App.Views.Cotonomas.view model "recent-cotonomas" model.recentCotonomas
             ]

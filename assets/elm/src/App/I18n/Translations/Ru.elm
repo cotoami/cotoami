@@ -75,6 +75,9 @@ text key =
         Navigation_Recent ->
             "Новые"
 
+        Navigation_Watchlist ->
+            "Watchlist"
+
         Flow_EditorPlaceholder ->
             "Опишите объект с помощью Markdown"
 
@@ -95,6 +98,9 @@ text key =
 
         Flow_TileView ->
             "Просмотр списка заголовков"
+
+        Flow_NewPosts ->
+            "new posts"
 
         Stock_DocumentView ->
             "Просмотреть как документ"
@@ -233,6 +239,12 @@ text key =
 
         CotoMenuModal_Delete ->
             "Удалить"
+
+        CotoMenuModal_Watch ->
+            "Watch this Cotonoma"
+
+        CotoMenuModal_Unwatch ->
+            "Unwatch"
 
         TimelineFilterModal_Title ->
             "Фильтр по времени добавления"

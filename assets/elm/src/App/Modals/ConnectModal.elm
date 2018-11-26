@@ -33,6 +33,7 @@ import App.Commands
 import App.Server.Post
 import App.Server.Graph
 import App.Markdown
+import App.Update.Post
 
 
 type ConnectingTarget
@@ -123,10 +124,11 @@ update context msg ({ connectModal } as model) =
                 |> App.Submodels.Modals.closeModal ConnectModal
                 |> postAndConnectToSelection context direction content
 
-        PostedAndConnectToSelection postId direction (Ok response) ->
-            { model | timeline = App.Types.Timeline.setCotoSaved postId response model.timeline }
+        PostedAndConnectToSelection postId direction (Ok post) ->
+            model
                 |> App.Submodels.Modals.clearModals
-                |> connectPostToSelection context direction response
+                |> App.Update.Post.onPosted context postId post
+                |> chain (connectPostToSelection context direction post)
 
         PostedAndConnectToSelection postId direction (Err _) ->
             model |> withoutCmd
@@ -151,7 +153,7 @@ postAndConnectToSelection context direction content model =
         { model | timeline = newTimeline }
             |> withCmds
                 (\model ->
-                    [ App.Commands.scrollTimelineToBottom AppMsg.NoOp
+                    [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
                     , App.Server.Post.post context.clientId context.cotonoma tag newPost
                     ]
                 )

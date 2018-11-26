@@ -18,6 +18,12 @@ module App.Submodels.Context
         , setCotonomaLoading
         , setCotonoma
         , orignatedHere
+        , hasPinnedCotosInReordering
+        , hasSubCotosInReordering
+        , isTriggerElementInReordering
+        , isWatched
+        , findWatchForCurrentCotonoma
+        , anyUnreadCotos
         )
 
 import Set exposing (Set)
@@ -28,7 +34,9 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Session exposing (Session)
 import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
-import App.Types.Connection exposing (Reordering)
+import App.Types.Graph exposing (Graph)
+import App.Types.Watch exposing (Watch)
+import App.Types.Connection exposing (Reordering(..))
 
 
 type alias Context a =
@@ -38,12 +46,17 @@ type alias Context a =
         , session : Maybe Session
         , cotonoma : Maybe Cotonoma
         , cotonomaLoading : Bool
+        , watchStateOnCotonomaLoad : Maybe Watch
         , elementFocus : Maybe ElementId
         , contentOpenElements : Set ElementId
         , reordering : Maybe Reordering
         , cotoFocus : Maybe CotoId
         , selection : CotoSelection
         , deselecting : Set CotoId
+        , graph : Graph
+        , loadingGraph : Bool
+        , watchlist : List Watch
+        , watchlistLoading : Bool
     }
 
 
@@ -157,7 +170,11 @@ finishBeingDeselected context =
 
 setCotonomaLoading : Context a -> Context a
 setCotonomaLoading context =
-    { context | cotonoma = Nothing, cotonomaLoading = True }
+    { context
+        | cotonoma = Nothing
+        , cotonomaLoading = True
+        , watchStateOnCotonomaLoad = Nothing
+    }
 
 
 setCotonoma : Maybe Cotonoma -> Context a -> Context a
@@ -165,8 +182,8 @@ setCotonoma maybeCotonoma context =
     { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
 
 
-orignatedHere : Context a -> Coto -> Bool
-orignatedHere context coto =
+orignatedHere : Coto -> Context a -> Bool
+orignatedHere coto context =
     (Maybe.map2
         (\here postedIn -> here.id == postedIn.id)
         context.cotonoma
@@ -174,3 +191,69 @@ orignatedHere context coto =
     )
         |> Maybe.withDefault
             ((isNothing coto.postedIn) && (atHome context))
+
+
+hasPinnedCotosInReordering : Context a -> Bool
+hasPinnedCotosInReordering context =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    PinnedCoto _ ->
+                        True
+
+                    _ ->
+                        False
+            )
+        |> Maybe.withDefault False
+
+
+hasSubCotosInReordering : ElementId -> Context a -> Bool
+hasSubCotosInReordering elementId context =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    SubCoto parentElementId _ ->
+                        elementId == parentElementId
+
+                    _ ->
+                        False
+            )
+        |> Maybe.withDefault False
+
+
+isTriggerElementInReordering : ElementId -> Context a -> Bool
+isTriggerElementInReordering elementId context =
+    context.reordering
+        |> Maybe.map
+            (\reordering ->
+                case reordering of
+                    PinnedCoto triggerElement ->
+                        elementId == triggerElement
+
+                    SubCoto _ triggerElement ->
+                        elementId == triggerElement
+            )
+        |> Maybe.withDefault False
+
+
+isWatched : Cotonoma -> Context a -> Bool
+isWatched cotonoma context =
+    List.any (\watch -> watch.cotonoma.id == cotonoma.id) context.watchlist
+
+
+findWatchForCurrentCotonoma : Context a -> Maybe Watch
+findWatchForCurrentCotonoma context =
+    context.cotonoma
+        |> Maybe.andThen
+            (\cotonoma ->
+                App.Types.Watch.findWatchByCotonomaId
+                    cotonoma.id
+                    context.watchlist
+            )
+
+
+anyUnreadCotos : Context a -> Bool
+anyUnreadCotos context =
+    List.any App.Types.Watch.anyUnreadCotos context.watchlist

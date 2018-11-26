@@ -21,6 +21,7 @@ defmodule Cotoami.Cotonoma do
     field :pinned, :boolean
     field :timeline_revision, :integer
     field :graph_revision, :integer
+    field :last_post_timestamp, :utc_datetime
 
     belongs_to :coto, Cotoami.Coto
     belongs_to :owner, Cotoami.Amishi
