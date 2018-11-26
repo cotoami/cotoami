@@ -11,7 +11,6 @@ module App.Views.Flow
         )
 
 import Date
-import Time exposing (Time)
 import Html exposing (..)
 import Html.Keyed
 import Html.Attributes exposing (..)
@@ -38,7 +37,6 @@ import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Types.Watch exposing (Watch)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modals)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -48,7 +46,7 @@ import App.Views.Post
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Commands
 import App.Server.Post
-import App.Server.Watch
+import App.Update.Watch
 
 
 type alias Model =
@@ -128,7 +126,7 @@ update context msg ({ flowView, timeline } as model) =
                 |> (\model ->
                         if scrollTop == 0 then
                             -- Clear unread because there's no scrollbar
-                            clearUnreadInCurrentCotonoma context model
+                            App.Update.Watch.clearUnreadInCurrentCotonoma context model
                         else
                             ( model, Cmd.none )
                    )
@@ -185,7 +183,7 @@ update context msg ({ flowView, timeline } as model) =
 
         Scroll scrollPos ->
             if isScrolledToBottom scrollPos then
-                clearUnreadInCurrentCotonoma context model
+                App.Update.Watch.clearUnreadInCurrentCotonoma context model
             else
                 model |> withoutCmd
 
@@ -249,71 +247,6 @@ post context content model =
                 newPost
             ]
         )
-
-
-clearUnreadInCurrentCotonoma :
-    Context context
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd AppMsg.Msg )
-clearUnreadInCurrentCotonoma context model =
-    (Maybe.map2
-        (\cotonoma latestPost ->
-            model.watchlist
-                |> App.Types.Watch.findWatchByCotonomaId cotonoma.id
-                |> Maybe.map (\watch -> updateWatchByPost context latestPost watch model)
-                |> Maybe.withDefault ( model, Cmd.none )
-        )
-        model.cotonoma
-        (App.Types.Timeline.latestPost model.timeline)
-    )
-        |> Maybe.withDefault ( model, Cmd.none )
-
-
-updateWatchByPost :
-    Context context
-    -> Post
-    -> Watch
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd AppMsg.Msg )
-updateWatchByPost context post watch model =
-    post.postedAt
-        |> Maybe.map Date.toTime
-        |> Maybe.map (\timestamp -> updateWatchTimestamp context timestamp watch model)
-        |> Maybe.withDefault ( model, Cmd.none )
-
-
-updateWatchTimestamp :
-    Context context
-    -> Time
-    -> Watch
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd AppMsg.Msg )
-updateWatchTimestamp context timestamp watch model =
-    let
-        isNewPost =
-            watch.lastPostTimestamp
-                |> Maybe.map (\watchTimestamp -> watchTimestamp < timestamp)
-                |> Maybe.withDefault True
-    in
-        if (not model.watchUpdating) && isNewPost then
-            let
-                watchlist =
-                    model.watchlist
-                        |> List.Extra.updateIf
-                            (\w -> w.cotonoma.id == watch.cotonoma.id)
-                            (\w -> { w | lastPostTimestamp = Just timestamp })
-            in
-                { model | watchlist = watchlist, watchUpdating = True }
-                    |> withCmd
-                        (\_ ->
-                            App.Server.Watch.updateLastPostTimestamp
-                                (AppMsg.WatchTimestampUpdated)
-                                context.clientId
-                                watch.cotonoma.key
-                                timestamp
-                        )
-        else
-            ( model, Cmd.none )
 
 
 isScrolledToBottom : ScrollPos -> Bool
