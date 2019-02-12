@@ -1,17 +1,17 @@
 module App.Modals.CotoModal exposing (Model, initModel, open, view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Utils.Modal as Modal
-import Utils.DateUtil
 import App.I18n.Keys as I18nKeys
 import App.Markdown
-import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
-import App.Types.Session exposing (Session)
-import App.Views.Coto exposing (cotonomaLabel)
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(CotoModal), Modals)
+import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
+import App.Types.Session exposing (Session)
+import App.Views.Coto exposing (cotonomaLabel)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Utils.DateUtil
+import Utils.Modal as Modal
 
 
 type alias Model =
@@ -37,11 +37,10 @@ open coto model =
 
 view : Context context -> Maybe Model -> Html AppMsg.Msg
 view context maybeModel =
-    (Maybe.map2
+    Maybe.map2
         (\session model -> modalConfig context session model)
         context.session
         maybeModel
-    )
         |> Modal.view "coto-modal"
 
 

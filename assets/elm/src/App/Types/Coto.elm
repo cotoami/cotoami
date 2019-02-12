@@ -1,29 +1,28 @@
-module App.Types.Coto
-    exposing
-        ( ElementId
-        , CotoId
-        , CotoSelection
-        , CotonomaKey
-        , Coto
-        , CotoContent
-        , summaryMaxlength
-        , updateContent
-        , checkWritePermission
-        , toTopic
-        , Cotonoma
-        , toCoto
-        , cotonomaNameMaxlength
-        , validateCotonomaName
-        , revisedBefore
-        , CotonomaStats
-        )
+module App.Types.Coto exposing
+    ( Coto
+    , CotoContent
+    , CotoId
+    , CotoSelection
+    , Cotonoma
+    , CotonomaKey
+    , CotonomaStats
+    , ElementId
+    , checkWritePermission
+    , cotonomaNameMaxlength
+    , revisedBefore
+    , summaryMaxlength
+    , toCoto
+    , toTopic
+    , updateContent
+    , validateCotonomaName
+    )
 
-import Date exposing (Date)
-import Time exposing (Time)
-import Exts.Maybe exposing (isJust)
 import App.Markdown
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
+import Date exposing (Date)
+import Exts.Maybe exposing (isJust)
+import Time exposing (Time)
 import Utils.StringUtil exposing (isBlank)
 
 
@@ -72,18 +71,20 @@ updateContent content coto =
 
 checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
 checkWritePermission session coto =
-    (Maybe.map (.id) coto.amishi) == (Just session.amishi.id)
+    Maybe.map .id coto.amishi == Just session.amishi.id
 
 
 toTopic : Coto -> Maybe String
 toTopic coto =
     if isJust coto.asCotonoma then
         Just coto.content
+
     else
         case coto.summary of
             Just summary ->
                 if String.length summary <= cotonomaNameMaxlength then
                     Just summary
+
                 else
                     Nothing
 
@@ -100,15 +101,16 @@ toTopic coto =
                             |> List.head
                             |> Maybe.withDefault ""
                 in
-                    if
-                        (not (String.contains "\n" trimmedContent))
-                            && (List.length textInEachBlock == 1)
-                            && (firstLine /= "")
-                            && (String.length firstLine <= cotonomaNameMaxlength)
-                    then
-                        Just firstLine
-                    else
-                        Nothing
+                if
+                    not (String.contains "\n" trimmedContent)
+                        && (List.length textInEachBlock == 1)
+                        && (firstLine /= "")
+                        && (String.length firstLine <= cotonomaNameMaxlength)
+                then
+                    Just firstLine
+
+                else
+                    Nothing
 
 
 type alias Cotonoma =
@@ -145,7 +147,7 @@ cotonomaNameMaxlength =
 
 validateCotonomaName : String -> Bool
 validateCotonomaName string =
-    not (isBlank string) && (String.length string) <= cotonomaNameMaxlength
+    not (isBlank string) && String.length string <= cotonomaNameMaxlength
 
 
 revisedBefore : Cotonoma -> Bool

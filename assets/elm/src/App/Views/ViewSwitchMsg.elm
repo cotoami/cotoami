@@ -1,9 +1,8 @@
-module App.Views.ViewSwitchMsg
-    exposing
-        ( ActiveView(..)
-        , getActiveViewAsString
-        , Msg(..)
-        )
+module App.Views.ViewSwitchMsg exposing
+    ( ActiveView(..)
+    , Msg(..)
+    , getActiveViewAsString
+    )
 
 
 type ActiveView

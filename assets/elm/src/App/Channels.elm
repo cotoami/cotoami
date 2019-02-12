@@ -1,20 +1,20 @@
-module App.Channels exposing (..)
+module App.Channels exposing (Payload, PresenceEntry, convertPresenceEntriesToConnCounts, cotoChannels, cotonomaChannels, decodePayload, decodePresenceDiff, decodePresenceEntries, decodePresenceState, globalChannel, timelineChannel)
 
-import Dict
-import Set exposing (Set)
-import Json.Encode exposing (Value)
-import Json.Decode as Decode
-import Phoenix.Channel as Channel exposing (Channel)
-import Utils.HttpUtil exposing (ClientId(ClientId))
-import App.Types.Coto exposing (CotonomaKey, CotoId)
-import App.Types.Amishi exposing (Amishi, Presences)
-import App.Server.Amishi
 import App.Messages exposing (..)
+import App.Server.Amishi
+import App.Types.Amishi exposing (Amishi, Presences)
+import App.Types.Coto exposing (CotoId, CotonomaKey)
+import Dict
+import Json.Decode as Decode
+import Json.Encode exposing (Value)
+import Phoenix.Channel as Channel exposing (Channel)
+import Set exposing (Set)
+import Utils.HttpUtil exposing (ClientId(ClientId))
 
 
 globalChannel : Channel Msg
 globalChannel =
-    Channel.init ("global")
+    Channel.init "global"
 
 
 cotonomaChannels : Set CotonomaKey -> List (Channel Msg)
@@ -102,14 +102,13 @@ decodePresenceEntries =
 
 convertPresenceEntriesToConnCounts : List PresenceEntry -> Presences
 convertPresenceEntriesToConnCounts entries =
-    (List.map
+    List.map
         (\entry ->
             ( Tuple.first entry
             , Tuple.second entry |> List.length
             )
         )
         entries
-    )
         |> Dict.fromList
 
 
@@ -130,16 +129,16 @@ decodePresenceState payload =
 
 decodePresenceDiff : Value -> ( Presences, Presences )
 decodePresenceDiff payload =
-    (Decode.map2 (,)
+    Decode.map2 (,)
         (Decode.field "joins" decodePresenceEntries)
         (Decode.field "leaves" decodePresenceEntries)
-    )
-        |> \decoder ->
-            case Decode.decodeValue decoder payload of
-                Ok decodedPayload ->
-                    ( decodedPayload |> Tuple.first |> convertPresenceEntriesToConnCounts
-                    , decodedPayload |> Tuple.second |> convertPresenceEntriesToConnCounts
-                    )
+        |> (\decoder ->
+                case Decode.decodeValue decoder payload of
+                    Ok decodedPayload ->
+                        ( decodedPayload |> Tuple.first |> convertPresenceEntriesToConnCounts
+                        , decodedPayload |> Tuple.second |> convertPresenceEntriesToConnCounts
+                        )
 
-                Err err ->
-                    ( Dict.empty, Dict.empty )
+                    Err err ->
+                        ( Dict.empty, Dict.empty )
+           )

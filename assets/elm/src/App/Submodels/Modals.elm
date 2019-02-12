@@ -1,16 +1,15 @@
-module App.Submodels.Modals
-    exposing
-        ( Modal(..)
-        , Confirmation
-        , defaultConfirmation
-        , Modals
-        , openModal
-        , closeActiveModal
-        , closeModal
-        , clearModals
-        , confirm
-        , maybeConfirm
-        )
+module App.Submodels.Modals exposing
+    ( Confirmation
+    , Modal(..)
+    , Modals
+    , clearModals
+    , closeActiveModal
+    , closeModal
+    , confirm
+    , defaultConfirmation
+    , maybeConfirm
+    , openModal
+    )
 
 import App.Messages exposing (Msg(NoOp))
 
@@ -52,6 +51,7 @@ openModal : Modal -> Modals a -> Modals a
 openModal modal model =
     if List.member modal model.modals then
         model
+
     else
         { model | modals = modal :: model.modals }
 

@@ -1,9 +1,8 @@
-module App.Submodels.Traversals
-    exposing
-        ( Traversals
-        , closeTraversal
-        , openTraversal
-        )
+module App.Submodels.Traversals exposing
+    ( Traversals
+    , closeTraversal
+    , openTraversal
+    )
 
 import App.Types.Coto exposing (CotoId)
 import App.Types.Traversal

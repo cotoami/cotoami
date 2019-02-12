@@ -141,7 +141,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "コトノマの名前にするためには、以下の内容を "
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " 文字以下に編集する必要があります。現在の文字数: "
 
         ProfileModal_Title ->
@@ -184,7 +184,7 @@ text key =
             "送信中"
 
         InviteModal_InvitesRemaining invites ->
-            "あと " ++ (toString invites) ++ " 人、招待できます"
+            "あと " ++ toString invites ++ " 人、招待できます"
 
         CotoToolbar_Connect ->
             "選択中のコトと接続"

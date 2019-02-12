@@ -1,9 +1,9 @@
-module App.Modals.EditorModalMsg exposing (..)
+module App.Modals.EditorModalMsg exposing (Msg(..))
 
-import Http
-import Utils.Keyboard.Event exposing (KeyboardEvent)
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
+import Http
+import Utils.Keyboard.Event exposing (KeyboardEvent)
 
 
 type Msg

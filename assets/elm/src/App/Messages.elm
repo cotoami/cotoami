@@ -1,32 +1,32 @@
 module App.Messages exposing (Msg(..))
 
+import App.Modals.ConnectModalMsg
+import App.Modals.CotoMenuModalMsg
+import App.Modals.EditorModalMsg
+import App.Modals.ImportModalMsg
+import App.Modals.InviteModalMsg
+import App.Modals.ProfileModalMsg
+import App.Modals.SigninModalMsg
+import App.Modals.TimelineFilterModalMsg
+import App.Ports.ImportFile exposing (ImportFile)
+import App.Types.Connection exposing (Reordering)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Graph exposing (Graph)
+import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Session exposing (Session)
+import App.Types.Watch exposing (Watch)
+import App.Views.AppHeaderMsg
+import App.Views.CotoSelectionMsg
+import App.Views.CotoToolbarMsg
+import App.Views.FlowMsg
+import App.Views.ReorderMsg
+import App.Views.StockMsg
+import App.Views.TraversalsMsg
+import App.Views.ViewSwitchMsg
 import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
 import Navigation exposing (Location)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post, PaginatedPosts)
-import App.Types.Session exposing (Session)
-import App.Types.Graph exposing (Graph)
-import App.Types.Connection exposing (Reordering)
-import App.Types.Watch exposing (Watch)
-import App.Views.AppHeaderMsg
-import App.Views.ViewSwitchMsg
-import App.Views.FlowMsg
-import App.Views.StockMsg
-import App.Views.TraversalsMsg
-import App.Views.CotoSelectionMsg
-import App.Views.CotoToolbarMsg
-import App.Views.ReorderMsg
-import App.Modals.SigninModalMsg
-import App.Modals.ProfileModalMsg
-import App.Modals.EditorModalMsg
-import App.Modals.CotoMenuModalMsg
-import App.Modals.ConnectModalMsg
-import App.Modals.InviteModalMsg
-import App.Modals.ImportModalMsg
-import App.Modals.TimelineFilterModalMsg
-import App.Ports.ImportFile exposing (ImportFile)
 
 
 type Msg

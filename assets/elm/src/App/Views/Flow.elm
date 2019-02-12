@@ -1,53 +1,52 @@
-module App.Views.Flow
-    exposing
-        ( Model
-        , defaultModel
-        , setFilter
-        , openOrCloseEditor
-        , update
-        , initScrollPos
-        , post
-        , view
-        )
+module App.Views.Flow exposing
+    ( Model
+    , defaultModel
+    , initScrollPos
+    , openOrCloseEditor
+    , post
+    , setFilter
+    , update
+    , view
+    )
 
-import Date
-import Html exposing (..)
-import Html.Keyed
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Json.Decode as Decode
-import List.Extra exposing (groupWhile)
-import Utils.UpdateUtil exposing (..)
-import Utils.StringUtil exposing (isBlank, isNotBlank)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.DateUtil exposing (sameDay, formatDay)
-import Utils.EventUtil
-    exposing
-        ( onKeyDown
-        , onClickWithoutPropagation
-        , onLinkButtonClick
-        , ScrollPos
-        , onScroll
-        )
-import Utils.Keyboard.Key
-import Utils.Keyboard.Event exposing (KeyboardEvent)
+import App.Commands
 import App.I18n.Keys as I18nKeys
+import App.Messages as AppMsg exposing (..)
+import App.Modals.ConnectModal exposing (WithConnectModal)
+import App.Server.Post
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.Modals exposing (Modals)
 import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modals)
-import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Messages as AppMsg exposing (..)
-import App.Views.FlowMsg as FlowMsg exposing (Msg(..), TimelineView(..))
-import App.Views.Post
-import App.Modals.ConnectModal exposing (WithConnectModal)
-import App.Commands
-import App.Server.Post
 import App.Update.Post
 import App.Update.Watch
+import App.Views.FlowMsg as FlowMsg exposing (Msg(..), TimelineView(..))
+import App.Views.Post
+import Date
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Html.Keyed
+import Json.Decode as Decode
+import List.Extra exposing (groupWhile)
+import Utils.DateUtil exposing (formatDay, sameDay)
+import Utils.EventUtil
+    exposing
+        ( ScrollPos
+        , onClickWithoutPropagation
+        , onKeyDown
+        , onLinkButtonClick
+        , onScroll
+        )
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.Keyboard.Event exposing (KeyboardEvent)
+import Utils.Keyboard.Key
+import Utils.StringUtil exposing (isBlank, isNotBlank)
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -128,6 +127,7 @@ update context msg ({ flowView, timeline } as model) =
                         if scrollTop == 0 then
                             -- Clear unread because there's no scrollbar
                             App.Update.Watch.clearUnread context model
+
                         else
                             ( model, Cmd.none )
                    )
@@ -184,6 +184,7 @@ update context msg ({ flowView, timeline } as model) =
         Scroll scrollPos ->
             if isScrolledToBottom scrollPos then
                 App.Update.Watch.clearUnread context model
+
             else
                 model |> withoutCmd
 
@@ -193,6 +194,7 @@ initScrollPos localCotos =
     if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
         App.Commands.scrollTimelineToBottom
             (AppMsg.FlowMsg << TimelineScrollPosInitialized)
+
     else
         Cmd.none
 
@@ -210,13 +212,16 @@ handleEditorShortcut context keyboardEvent content model =
     then
         if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
             postFromQuickEditor context content model
+
         else if
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
         then
             App.Modals.ConnectModal.openWithPost content model
+
         else
             ( model, Cmd.none )
+
     else
         ( model, Cmd.none )
 
@@ -237,16 +242,16 @@ post context content model =
         ( newTimeline, newPost ) =
             App.Types.Timeline.post context False content model.timeline
     in
-        ( { model | timeline = newTimeline }
-        , Cmd.batch
-            [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
-            , App.Server.Post.post
-                context.clientId
-                context.cotonoma
-                (AppMsg.FlowMsg << (Posted newTimeline.postIdCounter))
-                newPost
-            ]
-        )
+    ( { model | timeline = newTimeline }
+    , Cmd.batch
+        [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
+        , App.Server.Post.post
+            context.clientId
+            context.cotonoma
+            (AppMsg.FlowMsg << Posted newTimeline.postIdCounter)
+            newPost
+        ]
+    )
 
 
 isScrolledToBottom : ScrollPos -> Bool
@@ -273,6 +278,7 @@ view context session model =
         ]
         [ if not (App.Submodels.LocalCotos.isTimelineReady model) then
             div [ class "loading-overlay" ] []
+
           else
             div [] []
         , toolbarDiv context model.flowView
@@ -357,15 +363,15 @@ timelineDiv context model =
                                 |> Maybe.map (formatDay lang)
                                 |> Maybe.withDefault ""
                     in
-                        ( postDateString
-                        , div
-                            [ class "posts-on-day" ]
-                            [ div
-                                [ class "date-header" ]
-                                [ span [ class "date" ] [ text postDateString ] ]
-                            , postsDiv context postsOnDay
-                            ]
-                        )
+                    ( postDateString
+                    , div
+                        [ class "posts-on-day" ]
+                        [ div
+                            [ class "date-header" ]
+                            [ span [ class "date" ] [ text postDateString ] ]
+                        , postsDiv context postsOnDay
+                        ]
+                    )
                 )
             |> Html.Keyed.node "div" [ class "posts" ]
         ]
@@ -379,6 +385,7 @@ moreButton timeline =
                 button
                     [ class "button more-button loading", disabled True ]
                     [ img [ src "/images/loading-horizontal.gif" ] [] ]
+
               else
                 button
                     [ class "button more-button"
@@ -386,6 +393,7 @@ moreButton timeline =
                     ]
                     [ materialIcon "arrow_drop_up" Nothing ]
             ]
+
     else
         Utils.HtmlUtil.none
 
@@ -412,30 +420,30 @@ unreadStartLine : Context context -> Post -> Html AppMsg.Msg
 unreadStartLine context post =
     let
         postTimestamp =
-            Maybe.map (Date.toTime) post.postedAt
+            Maybe.map Date.toTime post.postedAt
 
         lastPostTimestamp =
-            Maybe.andThen (.lastPostTimestamp) context.cotonoma
+            Maybe.andThen .lastPostTimestamp context.cotonoma
     in
-        (Maybe.map3
-            (\postTimestamp lastPostTimestamp watch ->
-                if
-                    (postTimestamp /= lastPostTimestamp)
-                        && (watch.lastPostTimestamp == Just postTimestamp)
-                then
-                    div [ class "unread-start-line" ]
-                        [ hr [] []
-                        , div [ class "line-label" ]
-                            [ text (context.i18nText I18nKeys.Flow_NewPosts) ]
-                        ]
-                else
-                    Utils.HtmlUtil.none
-            )
-            postTimestamp
-            lastPostTimestamp
-            context.watchStateOnCotonomaLoad
+    Maybe.map3
+        (\postTimestamp lastPostTimestamp watch ->
+            if
+                (postTimestamp /= lastPostTimestamp)
+                    && (watch.lastPostTimestamp == Just postTimestamp)
+            then
+                div [ class "unread-start-line" ]
+                    [ hr [] []
+                    , div [ class "line-label" ]
+                        [ text (context.i18nText I18nKeys.Flow_NewPosts) ]
+                    ]
+
+            else
+                Utils.HtmlUtil.none
         )
-            |> Maybe.withDefault Utils.HtmlUtil.none
+        postTimestamp
+        lastPostTimestamp
+        context.watchStateOnCotonomaLoad
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 getKey : Post -> String
@@ -460,6 +468,7 @@ postEditor context session model =
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then
                     Utils.HtmlUtil.none
+
                   else
                     span [ class "connect-buttons" ]
                         [ button
@@ -514,10 +523,10 @@ newCotoButton context model =
     a
         [ class "tool-button new-coto-button"
         , title "New Coto"
-        , hidden (model.editorOpen)
+        , hidden model.editorOpen
         , onClick OpenNewEditorModal
         ]
         [ materialIcon "create" Nothing
         , span [ class "shortcut" ]
-            [ text ("(" ++ (context.i18nText I18nKeys.Flow_ShortcutToOpenEditor) ++ ")") ]
+            [ text ("(" ++ context.i18nText I18nKeys.Flow_ShortcutToOpenEditor ++ ")") ]
         ]

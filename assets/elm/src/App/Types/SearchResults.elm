@@ -1,8 +1,8 @@
-module App.Types.SearchResults exposing (..)
+module App.Types.SearchResults exposing (SearchResults, clearQuery, defaultSearchResults, getCoto, hasQuery, setLoading, setPosts, setQuery, setQuerying)
 
-import Utils.StringUtil
-import App.Types.Post exposing (Post)
 import App.Types.Coto exposing (Coto, CotoId)
+import App.Types.Post exposing (Post)
+import Utils.StringUtil
 
 
 type alias SearchResults =
@@ -40,6 +40,7 @@ setQuery query searchResults =
         , posts =
             if Utils.StringUtil.isBlank query then
                 []
+
             else
                 searchResults.posts
     }

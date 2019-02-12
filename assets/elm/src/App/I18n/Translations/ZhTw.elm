@@ -141,7 +141,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "投稿室的名字要符合以下的內容 需要在"
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " 文字以下編輯。現在的文字數: "
 
         ProfileModal_Title ->
@@ -185,9 +185,10 @@ text key =
 
         InviteModal_InvitesRemaining invites ->
             if invites == 1 then
-                (toString invites) ++ " invite remaining"
+                toString invites ++ " invite remaining"
+
             else
-                (toString invites) ++ " invites remaining"
+                toString invites ++ " invites remaining"
 
         CotoToolbar_Connect ->
             "連接選擇中的投稿"

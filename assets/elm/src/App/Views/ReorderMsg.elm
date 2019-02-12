@@ -1,7 +1,7 @@
 module App.Views.ReorderMsg exposing (Msg(..))
 
-import Http
 import App.Types.Coto exposing (CotoId)
+import Http
 
 
 type Msg

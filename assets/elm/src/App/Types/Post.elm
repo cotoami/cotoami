@@ -1,19 +1,19 @@
-module App.Types.Post
-    exposing
-        ( Post
-        , defaultPost
-        , toCoto
-        , isPostedInCotonoma
-        , isPostedInCoto
-        , isSelfOrPostedIn
-        , PaginatedPosts
-        , getCotoFromPosts
-        )
+module App.Types.Post exposing
+    ( PaginatedPosts
+    , Post
+    , defaultPost
+    , getCotoFromPosts
+    , isPostedInCoto
+    , isPostedInCotonoma
+    , isSelfOrPostedIn
+    , toCoto
+    )
 
-import Date exposing (Date)
-import Exts.Maybe exposing (isNothing)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import Date exposing (Date)
+import Exts.Maybe exposing (isNothing)
+
 
 
 -- https://twitter.com/marubinotto/status/827743441090072577
@@ -91,7 +91,7 @@ isPostedInCoto coto post =
 
 isSelfOrPostedIn : Coto -> Post -> Bool
 isSelfOrPostedIn coto post =
-    post.cotoId == Just coto.id || (isPostedInCoto coto post)
+    post.cotoId == Just coto.id || isPostedInCoto coto post
 
 
 type alias PaginatedPosts =

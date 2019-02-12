@@ -138,7 +138,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "Это имя должно быть длиной максимум "
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " символов, сейчас же: "
 
         ProfileModal_Title ->
@@ -182,9 +182,10 @@ text key =
 
         InviteModal_InvitesRemaining invites ->
             if invites == 1 then
-                (toString invites) ++ " invite remaining"
+                toString invites ++ " invite remaining"
+
             else
-                (toString invites) ++ " invites remaining"
+                toString invites ++ " invites remaining"
 
         CotoToolbar_Connect ->
             "Присоединить к выбранным объектам"
@@ -270,6 +271,7 @@ text key =
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "объект выбран"
+
             else
                 "объекты выбраны"
 

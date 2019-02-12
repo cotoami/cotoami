@@ -1,29 +1,28 @@
-module App.Modals.InviteModal
-    exposing
-        ( Model
-        , defaultModel
-        , sendInit
-        , update
-        , view
-        )
+module App.Modals.InviteModal exposing
+    ( Model
+    , defaultModel
+    , sendInit
+    , update
+    , view
+    )
 
+import App.Commands
+import App.I18n.Keys as I18nKeys
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
+import App.Server.Amishi
+import App.Submodels.Context exposing (Context)
+import App.Types.Amishi exposing (Amishi)
+import App.Types.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Utils.HtmlUtil
-import Utils.StringUtil exposing (validateEmail)
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.Modal as Modal
-import App.I18n.Keys as I18nKeys
-import App.Types.Amishi exposing (Amishi)
-import App.Types.Session exposing (Session)
-import App.Server.Amishi
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Commands
-import App.Submodels.Context exposing (Context)
-import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
+import Utils.StringUtil exposing (validateEmail)
+import Utils.UpdateUtil exposing (addCmd, withCmd, withoutCmd)
 
 
 type alias Model =
@@ -204,7 +203,8 @@ modalConfig context session model =
                     , onClick (AppMsg.InviteModalMsg SendInviteClick)
                     ]
                     [ if model.requestProcessing then
-                        text ((context.i18nText I18nKeys.InviteModal_Sending) ++ "...")
+                        text (context.i18nText I18nKeys.InviteModal_Sending ++ "...")
+
                       else
                         text (context.i18nText I18nKeys.InviteModal_SendInvite)
                     ]
@@ -222,7 +222,7 @@ inviteeSpan invitee =
 
 invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
 invitesRemainingDiv context session model =
-    (Maybe.map2
+    Maybe.map2
         (\limit invitees ->
             let
                 remaining =
@@ -231,14 +231,14 @@ invitesRemainingDiv context session model =
                 key =
                     if remaining >= 0 then
                         I18nKeys.InviteModal_InvitesRemaining remaining
+
                     else
                         I18nKeys.InviteModal_InvitesRemaining 0
             in
-                div [ class "invites-remaining" ] [ text (context.i18nText key) ]
+            div [ class "invites-remaining" ] [ text (context.i18nText key) ]
         )
         session.amishi.inviteLimit
         model.invitees
-    )
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
@@ -259,6 +259,7 @@ inviteesDiv model =
             (\invitees ->
                 if List.isEmpty invitees then
                     Utils.HtmlUtil.none
+
                 else
                     div [ class "invitees" ]
                         [ ol [ class "invitees" ]

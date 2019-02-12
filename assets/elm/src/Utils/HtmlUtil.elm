@@ -1,4 +1,4 @@
-module Utils.HtmlUtil exposing (none, faIcon, materialIcon)
+module Utils.HtmlUtil exposing (faIcon, materialIcon, none)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,7 +24,7 @@ faIcon name maybeAdditionalClass =
                 Just additionalClass ->
                     ( additionalClass, True )
             ]
-        , (attribute "aria-hidden" "true")
+        , attribute "aria-hidden" "true"
         ]
         []
 

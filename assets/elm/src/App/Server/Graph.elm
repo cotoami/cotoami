@@ -1,15 +1,15 @@
-module App.Server.Graph exposing (..)
+module App.Server.Graph exposing (connect, connectTask, connectUrl, cotoIdsAsJsonBody, decodeConnection, decodeCotonomaKeyField, decodeGraph, disconnect, fetchGraph, fetchSubgraph, fetchSubgraphIfCotonoma, pinCotos, pinUrl, reorder, unpinCoto)
 
+import App.Messages exposing (Msg(..))
+import App.Server.Coto
+import App.Types.Connection exposing (Connection, Direction)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Graph exposing (Graph)
 import Http
-import Task exposing (Task, andThen)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Utils.HttpUtil exposing (ClientId, httpPut, httpDelete)
-import App.Messages exposing (Msg(..))
-import App.Types.Connection exposing (Direction, Connection)
-import App.Types.Graph exposing (Graph)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Server.Coto
+import Task exposing (Task, andThen)
+import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 
 
 decodeConnection : Decode.Decoder Connection
@@ -44,7 +44,7 @@ fetchGraph maybeCotonomaKey =
                 Just cotonomaKey ->
                     "/api/graph/" ++ cotonomaKey
     in
-        Http.send GraphFetched (Http.get url decodeGraph)
+    Http.send GraphFetched (Http.get url decodeGraph)
 
 
 fetchSubgraph : CotonomaKey -> Cmd Msg
@@ -93,16 +93,16 @@ pinCotos clientId maybeCotonomaKey cotoIds =
         body =
             cotoIdsAsJsonBody "coto_ids" cotoIds
     in
-        Http.send CotoPinned (httpPut url clientId body (Decode.succeed "done"))
+    Http.send CotoPinned (httpPut url clientId body (Decode.succeed "done"))
 
 
 unpinCoto : ClientId -> Maybe CotonomaKey -> CotoId -> Cmd Msg
 unpinCoto clientId maybeCotonomaKey cotoId =
     let
         url =
-            (pinUrl maybeCotonomaKey) ++ "/" ++ cotoId
+            pinUrl maybeCotonomaKey ++ "/" ++ cotoId
     in
-        Http.send CotoUnpinned (httpDelete url clientId)
+    Http.send CotoUnpinned (httpDelete url clientId)
 
 
 connectUrl : Maybe CotonomaKey -> CotoId -> String
@@ -139,7 +139,7 @@ connectTask clientId maybeCotonomaKey direction objects subject =
                         )
                         objects
     in
-        requests |> List.map Http.toTask |> Task.sequence
+    requests |> List.map Http.toTask |> Task.sequence
 
 
 connect : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
@@ -152,9 +152,9 @@ disconnect : ClientId -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
 disconnect clientId maybeCotonomaKey startId endId =
     let
         url =
-            (connectUrl maybeCotonomaKey startId) ++ "/" ++ endId
+            connectUrl maybeCotonomaKey startId ++ "/" ++ endId
     in
-        Http.send ConnectionDeleted (httpDelete url clientId)
+    Http.send ConnectionDeleted (httpDelete url clientId)
 
 
 reorder :
@@ -181,9 +181,9 @@ reorder tag clientId maybeCotonomaKey maybeStartId endIds =
                         |> Maybe.withDefault "/api/graph/reorder"
                     )
     in
-        Http.send tag <|
-            httpPut
-                url
-                clientId
-                (cotoIdsAsJsonBody "end_ids" endIds)
-                (Decode.succeed "done")
+    Http.send tag <|
+        httpPut
+            url
+            clientId
+            (cotoIdsAsJsonBody "end_ids" endIds)
+            (Decode.succeed "done")

@@ -1,32 +1,31 @@
-module App.Modals.ImportModal
-    exposing
-        ( Model
-        , initModel
-        , update
-        , view
-        )
+module App.Modals.ImportModal exposing
+    ( Model
+    , initModel
+    , update
+    , view
+    )
 
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ImportModalMsg as ImportModalMsg
+    exposing
+        ( ImportConnectionsResult
+        , ImportCotosResult
+        , ImportResult
+        , Msg(..)
+        , Reject
+        )
+import App.Ports.ImportFile exposing (ImportFile)
+import App.Submodels.Context exposing (Context)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
-import Json.Encode as Encode
 import Json.Decode as Decode
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (..)
+import Json.Encode as Encode
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
-import App.Submodels.Context exposing (Context)
-import App.Ports.ImportFile exposing (ImportFile)
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ImportModalMsg as ImportModalMsg
-    exposing
-        ( ImportResult
-        , ImportCotosResult
-        , ImportConnectionsResult
-        , Reject
-        , Msg(..)
-        )
+import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -115,9 +114,9 @@ importData clientId data =
                     )
                 )
     in
-        Http.send
-            (AppMsg.ImportModalMsg << ImportDone)
-            (httpPost "/api/import" clientId requestBody decodeResult)
+    Http.send
+        (AppMsg.ImportModalMsg << ImportDone)
+        (httpPost "/api/import" clientId requestBody decodeResult)
 
 
 view : Maybe Model -> Html AppMsg.Msg
@@ -162,6 +161,7 @@ modalConfig model =
                     ]
                     [ if model.requestProcessing then
                         text "Importing..."
+
                       else
                         text "Import"
                     ]
@@ -226,12 +226,13 @@ importResultDiv { cotos, connections } =
                 , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
                 , text "rejected"
                 ]
-            , if (List.isEmpty cotos.rejected) && (List.isEmpty connections.rejected) then
+            , if List.isEmpty cotos.rejected && List.isEmpty connections.rejected then
                 div [] []
+
               else
                 div [ class "rejected" ]
-                    ((List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected)
-                        ++ (List.map (rejectInfoSpan "A connection rejected: ") connections.rejected)
+                    (List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected
+                        ++ List.map (rejectInfoSpan "A connection rejected: ") connections.rejected
                     )
             ]
         ]

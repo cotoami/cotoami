@@ -1,37 +1,36 @@
-module App.Views.Stock
-    exposing
-        ( Model
-        , defaultModel
-        , update
-        , renderGraph
-        , renderGraphWithDelay
-        , resizeGraphWithDelay
-        , view
-        )
+module App.Views.Stock exposing
+    ( Model
+    , defaultModel
+    , renderGraph
+    , renderGraphWithDelay
+    , resizeGraphWithDelay
+    , update
+    , view
+    )
 
-import Dict
-import Task
-import Process
-import Time
-import Html exposing (..)
-import Html.Keyed
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Exts.Maybe exposing (isJust)
-import Utils.UpdateUtil exposing (..)
-import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import App.I18n.Keys as I18nKeys
 import App.Commands
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, CotoSelection)
-import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
-import App.Types.Graph exposing (Graph)
+import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
-import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
+import App.Ports.Graph
 import App.Submodels.Context exposing (Context)
+import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
+import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
+import App.Types.Graph exposing (Graph)
 import App.Views.Coto
 import App.Views.Reorder
-import App.Ports.Graph
+import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
+import Dict
+import Exts.Maybe exposing (isJust)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Html.Keyed
+import Process
+import Task
+import Time
+import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -76,7 +75,7 @@ update context msg ({ stockView } as model) =
             { model
                 | stockView =
                     { stockView
-                        | graphCanvasFullyOpened = not (stockView.graphCanvasFullyOpened)
+                        | graphCanvasFullyOpened = not stockView.graphCanvasFullyOpened
                     }
             }
                 |> withoutCmd
@@ -84,6 +83,7 @@ update context msg ({ stockView } as model) =
         GraphNodeClicked cotoId ->
             if stockView.graphCanvasFullyOpened then
                 model |> withoutCmd
+
             else
                 ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
 
@@ -92,6 +92,7 @@ renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
 renderGraph context model =
     if model.stockView.view == GraphView then
         App.Ports.Graph.renderCotoGraph context.cotonoma model.graph
+
     else
         Cmd.none
 
@@ -100,14 +101,14 @@ renderGraphWithDelay : Cmd AppMsg.Msg
 renderGraphWithDelay =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Task.succeed ())
-        |> Task.perform (\_ -> (AppMsg.StockMsg RenderGraph))
+        |> Task.perform (\_ -> AppMsg.StockMsg RenderGraph)
 
 
 resizeGraphWithDelay : Cmd AppMsg.Msg
 resizeGraphWithDelay =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Task.succeed ())
-        |> Task.perform (\_ -> (AppMsg.StockMsg ResizeGraph))
+        |> Task.perform (\_ -> AppMsg.StockMsg ResizeGraph)
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -139,6 +140,7 @@ view context model =
                 ]
             , if App.Submodels.Context.hasPinnedCotosInReordering context then
                 App.Views.Reorder.closeButtonDiv context
+
               else
                 Utils.HtmlUtil.none
             ]
@@ -199,30 +201,31 @@ cotoDiv context inbound coto =
         cotonomaCotoId =
             context.cotonoma |> Maybe.map (\cotonoma -> cotonoma.cotoId)
     in
-        div
-            [ App.Views.Coto.cotoClassList context
-                elementId
-                (Just coto.id)
-                [ ( "pinned-coto", True )
-                , ( "animated", True )
-                , ( "fadeIn", True )
-                ]
-            , onClickWithoutPropagation (CotoClick elementId coto.id)
-            , onMouseEnter (CotoMouseEnter elementId coto.id)
-            , onMouseLeave (CotoMouseLeave elementId coto.id)
+    div
+        [ App.Views.Coto.cotoClassList context
+            elementId
+            (Just coto.id)
+            [ ( "pinned-coto", True )
+            , ( "animated", True )
+            , ( "fadeIn", True )
             ]
-            [ div
-                [ class "coto-inner" ]
-                [ unpinButtonDiv context inbound.connection coto.id
-                , App.Views.Coto.headerDiv context (Just inbound) elementId coto
-                , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
-                , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
-                , if inbound.reordering then
-                    Utils.HtmlUtil.none
-                  else
-                    App.Views.Coto.subCotosDiv context elementId coto
-                ]
+        , onClickWithoutPropagation (CotoClick elementId coto.id)
+        , onMouseEnter (CotoMouseEnter elementId coto.id)
+        , onMouseLeave (CotoMouseLeave elementId coto.id)
+        ]
+        [ div
+            [ class "coto-inner" ]
+            [ unpinButtonDiv context inbound.connection coto.id
+            , App.Views.Coto.headerDiv context (Just inbound) elementId coto
+            , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
+            , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
+            , if inbound.reordering then
+                Utils.HtmlUtil.none
+
+              else
+                App.Views.Coto.subCotosDiv context elementId coto
             ]
+        ]
 
 
 unpinButtonDiv : Context a -> Connection -> CotoId -> Html AppMsg.Msg
@@ -240,20 +243,21 @@ unpinButtonDiv context connection cotoId =
         unpinnable =
             App.Submodels.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
-                || ((isJust maybeAmishiId) && maybeAmishiId == maybeCotonomaOwnerId)
+                || (isJust maybeAmishiId && maybeAmishiId == maybeCotonomaOwnerId)
     in
-        div [ class "unpin-button" ]
-            [ if unpinnable then
-                a
-                    [ class "tool-button unpin"
-                    , onLinkButtonClick (ConfirmUnpinCoto cotoId)
-                    ]
-                    [ faIcon "thumb-tack" Nothing ]
-              else
-                span
-                    [ class "not-unpinnable" ]
-                    [ faIcon "thumb-tack" Nothing ]
-            ]
+    div [ class "unpin-button" ]
+        [ if unpinnable then
+            a
+                [ class "tool-button unpin"
+                , onLinkButtonClick (ConfirmUnpinCoto cotoId)
+                ]
+                [ faIcon "thumb-tack" Nothing ]
+
+          else
+            span
+                [ class "not-unpinnable" ]
+                [ faIcon "thumb-tack" Nothing ]
+        ]
 
 
 graphViewDiv : Context context -> Model -> Html AppMsg.Msg
@@ -273,6 +277,7 @@ graphViewDiv context model =
                 [ materialIcon
                     (if model.graphCanvasFullyOpened then
                         "fullscreen_exit"
+
                      else
                         "fullscreen"
                     )

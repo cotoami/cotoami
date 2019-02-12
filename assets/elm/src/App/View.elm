@@ -1,37 +1,37 @@
-module App.View exposing (..)
+module App.View exposing (flowColumn, flowDiv, graphExplorationDiv, modals, navColumn, openFlowButton, searchResultsColumn, selectionColumn, stockColumn, view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.EventUtil exposing (onLinkButtonClick)
 import App.I18n.Keys as I18nKeys
-import App.Types.Session exposing (Session)
-import App.Types.SearchResults
 import App.Messages exposing (..)
+import App.Modals.ConfirmModal
+import App.Modals.ConnectModal
+import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
+import App.Modals.EditorModal
+import App.Modals.ImportModal
+import App.Modals.InviteModal
+import App.Modals.ProfileModal
+import App.Modals.SigninModal
+import App.Modals.TimelineFilterModal
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
+import App.Types.SearchResults
+import App.Types.Session exposing (Session)
 import App.Views.AppHeader
-import App.Views.Navigation
-import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import App.Views.CotoSelection
 import App.Views.Flow
 import App.Views.FlowMsg
+import App.Views.Navigation
+import App.Views.SearchResults
 import App.Views.Stock
 import App.Views.Traversals
-import App.Views.CotoSelection
-import App.Views.SearchResults
-import App.Modals.ConnectModal
-import App.Modals.ProfileModal
-import App.Modals.InviteModal
-import App.Modals.CotoMenuModal
-import App.Modals.CotoModal
-import App.Modals.SigninModal
-import App.Modals.EditorModal
-import App.Modals.ConfirmModal
-import App.Modals.ImportModal
-import App.Modals.TimelineFilterModal
+import App.Views.ViewSwitch
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 
 
 view : Model -> Html Msg
@@ -40,7 +40,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( (App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView)
+            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView
                     ++ "-view-on-mobile"
               , True
               )
@@ -93,7 +93,7 @@ graphExplorationDiv model =
         ]
         (openFlowButton model
             :: stockColumn model
-            :: (App.Views.Traversals.view model model)
+            :: App.Views.Traversals.view model model
         )
 
 
@@ -108,6 +108,7 @@ openFlowButton model =
                 ]
                 [ materialIcon "chat" Nothing ]
             ]
+
     else
         Utils.HtmlUtil.none
 
@@ -124,19 +125,20 @@ flowColumn model =
                         , ( "hidden", True )
                         ]
                         model
+
                 else
                     let
                         active =
                             model.activeView == FlowView
                     in
-                        flowDiv
-                            session
-                            [ ( "main-column", True )
-                            , ( "active-in-narrow-viewport", active )
-                            , ( "animated", active )
-                            , ( "fadeIn", active )
-                            ]
-                            model
+                    flowDiv
+                        session
+                        [ ( "main-column", True )
+                        , ( "active-in-narrow-viewport", active )
+                        , ( "animated", active )
+                        , ( "fadeIn", active )
+                        ]
+                        model
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
 

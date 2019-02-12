@@ -1,4 +1,4 @@
-module App.Views.StockMsg exposing (StockView(..), Msg(..))
+module App.Views.StockMsg exposing (Msg(..), StockView(..))
 
 import App.Types.Coto exposing (CotoId)
 

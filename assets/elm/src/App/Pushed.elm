@@ -1,22 +1,22 @@
-module App.Pushed exposing (..)
+module App.Pushed exposing (ConnectPayloadBody, DisconnectPayloadBody, Handler, ReorderPayloadBody, decodeConnectPayloadBody, decodeDisconnectPayloadBody, decodeReorderPayloadBody, handle, handleConnect, handleCotoUpdate, handleCotonomaUpdate, handleCotonomatize, handleDelete, handleDisconnect, handlePost, handleReorder)
 
-import Json.Encode exposing (Value)
-import Json.Decode as Decode
-import Exts.Maybe exposing (isJust)
-import Utils.HttpUtil exposing (ClientId(ClientId))
-import Utils.UpdateUtil exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Post exposing (Post)
-import App.Types.Graph
-import App.Types.Timeline
+import App.Channels exposing (Payload)
+import App.Commands
 import App.Messages exposing (Msg(..))
 import App.Model exposing (Model)
-import App.Submodels.LocalCotos
-import App.Commands
-import App.Channels exposing (Payload)
+import App.Ports.App
 import App.Server.Coto
 import App.Server.Cotonoma
-import App.Ports.App
+import App.Submodels.LocalCotos
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Graph
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
+import Exts.Maybe exposing (isJust)
+import Json.Decode as Decode
+import Json.Encode exposing (Value)
+import Utils.HttpUtil exposing (ClientId(ClientId))
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Handler body =
@@ -34,10 +34,11 @@ handle payloadDecoder handler payload model =
                 (ClientId selfId) =
                     model.clientId
             in
-                if senderId /= selfId then
-                    handler decodedPayload model
-                else
-                    model |> withoutCmd
+            if senderId /= selfId then
+                handler decodedPayload model
+
+            else
+                model |> withoutCmd
 
         Err err ->
             Debug.log err ( model, Cmd.none )
@@ -106,6 +107,7 @@ handleConnect payload model =
                             payload.amishi.id
                             payload.body.end
                             model.graph
+
                 else
                     Nothing
             )
@@ -157,12 +159,13 @@ handleDisconnect payload model =
                                 App.Types.Graph.unpinCoto
                                     payload.body.endId
                                     graph1
+
                         else
                             Nothing
                     )
                 |> Maybe.withDefault graph1
     in
-        { model | graph = graph2 } |> withoutCmd
+    { model | graph = graph2 } |> withoutCmd
 
 
 type alias ReorderPayloadBody =
@@ -199,9 +202,10 @@ handleReorder payload model =
                                     Nothing
                                     payload.body.endIds
                                     graph1
+
                         else
                             Nothing
                     )
                 |> Maybe.withDefault graph1
     in
-        { model | graph = graph2 } |> withoutCmd
+    { model | graph = graph2 } |> withoutCmd

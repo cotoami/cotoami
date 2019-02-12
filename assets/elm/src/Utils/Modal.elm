@@ -1,10 +1,9 @@
 module Utils.Modal exposing (Config, view)
 
-import Html
+import Exts.Maybe exposing (isJust, maybe)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Exts.Maybe exposing (maybe, isJust)
 import Utils.HtmlUtil exposing (faIcon)
 
 

@@ -1,20 +1,20 @@
 module App.Modals.ProfileModal exposing (update, view)
 
+import App.I18n.Keys as I18nKeys
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.InviteModal
+import App.Modals.ProfileModalMsg as ProfileModalMsg exposing (Msg(..))
+import App.Ports.ImportFile
+import App.Submodels.Context exposing (Context)
+import App.Submodels.Modals exposing (Modal(InviteModal), Modals)
+import App.Types.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (..)
-import Utils.StringUtil
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import App.I18n.Keys as I18nKeys
-import App.Types.Session exposing (Session)
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ProfileModalMsg as ProfileModalMsg exposing (Msg(..))
-import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modals, Modal(InviteModal))
-import App.Modals.InviteModal
-import App.Ports.ImportFile
+import Utils.Modal as Modal
+import Utils.StringUtil
+import Utils.UpdateUtil exposing (..)
 
 
 type alias UpdateModel model =
@@ -66,6 +66,7 @@ modalConfig context session =
                             [ faIcon "key" (Just "owner-icon")
                             , text "Owner"
                             ]
+
                       else
                         div [] []
                     ]
@@ -98,6 +99,7 @@ modalConfig context session =
                     toolButton (context.i18nText I18nKeys.ProfileModal_Import)
                         "cloud_upload"
                         [ onClick (AppMsg.ProfileModalMsg SelectImportFile) ]
+
                   else
                     span [] []
                 ]

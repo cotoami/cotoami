@@ -1,50 +1,49 @@
-module App.Modals.EditorModal
-    exposing
-        ( Model
-        , Mode(..)
-        , defaultModel
-        , modelForNew
-        , modelForEdit
-        , modelForEditToCotonomatize
-        , getSummary
-        , setCotoSaveError
-        , openForNew
-        , update
-        , view
-        )
+module App.Modals.EditorModal exposing
+    ( Mode(..)
+    , Model
+    , defaultModel
+    , getSummary
+    , modelForEdit
+    , modelForEditToCotonomatize
+    , modelForNew
+    , openForNew
+    , setCotoSaveError
+    , update
+    , view
+    )
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onInput, onCheck)
-import Http exposing (Error(..))
-import Json.Decode as Decode
-import Exts.Maybe exposing (isJust)
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (..)
-import Utils.StringUtil exposing (isBlank, isNotBlank)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.Keyboard.Key
-import Utils.Keyboard.Event exposing (KeyboardEvent)
+import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Markdown
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ConnectModal exposing (WithConnectModal)
+import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
+import App.Server.Coto
+import App.Server.Cotonoma
+import App.Server.Graph
+import App.Server.Post
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
+import App.Types.Connection
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Types.Connection
-import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
-import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Commands
-import App.Server.Coto
-import App.Server.Cotonoma
-import App.Server.Post
-import App.Server.Graph
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
+import App.Update.Post
 import App.Views.Coto
 import App.Views.Flow
-import App.Modals.ConnectModal exposing (WithConnectModal)
-import App.Update.Post
+import Exts.Maybe exposing (isJust)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (on, onCheck, onClick, onInput)
+import Http exposing (Error(..))
+import Json.Decode as Decode
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.Keyboard.Event exposing (KeyboardEvent)
+import Utils.Keyboard.Key
+import Utils.Modal as Modal
+import Utils.StringUtil exposing (isBlank, isNotBlank)
+import Utils.UpdateUtil exposing (..)
 
 
 type Mode
@@ -111,13 +110,14 @@ modelForEdit coto =
 modelForEditToCotonomatize : Coto -> Model
 modelForEditToCotonomatize coto =
     modelForEdit coto
-        |> \model -> { model | editingToCotonomatize = True }
+        |> (\model -> { model | editingToCotonomatize = True })
 
 
 getSummary : Model -> Maybe String
 getSummary model =
     if isBlank model.summary then
         Nothing
+
     else
         Just model.summary
 
@@ -128,17 +128,19 @@ setCotoSaveError error model =
         BadStatus response ->
             if response.status.code == 409 then
                 { model | requestStatus = Conflict }
+
             else
                 { model | requestStatus = Rejected }
 
         _ ->
             { model | requestStatus = Rejected }
     )
-        |> \model ->
-            { model
-                | preview = False
-                , requestProcessing = False
-            }
+        |> (\model ->
+                { model
+                    | preview = False
+                    , requestProcessing = False
+                }
+           )
 
 
 type alias WithEditorModal model =
@@ -249,15 +251,15 @@ post context ({ editorModal } as model) =
         content =
             CotoContent editorModal.content (getSummary editorModal)
     in
-        case editorModal.mode of
-            NewCoto (Just source) ->
-                postSubcoto context source content model
+    case editorModal.mode of
+        NewCoto (Just source) ->
+            postSubcoto context source content model
 
-            NewCoto Nothing ->
-                App.Views.Flow.post context content model
+        NewCoto Nothing ->
+            App.Views.Flow.post context content model
 
-            _ ->
-                ( model, Cmd.none )
+        _ ->
+            ( model, Cmd.none )
 
 
 postSubcoto :
@@ -272,16 +274,16 @@ postSubcoto context coto content model =
             model.timeline
                 |> App.Types.Timeline.post context False content
     in
-        { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-              , App.Server.Post.post
-                    context.clientId
-                    context.cotonoma
-                    (AppMsg.EditorModalMsg
-                        << (PostedAndSubordinateToCoto timeline.postIdCounter coto)
-                    )
-                    newPost
-              ]
+    { model | timeline = timeline }
+        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
+          , App.Server.Post.post
+                context.clientId
+                context.cotonoma
+                (AppMsg.EditorModalMsg
+                    << PostedAndSubordinateToCoto timeline.postIdCounter coto
+                )
+                newPost
+          ]
 
 
 subordinatePostToCoto :
@@ -302,19 +304,19 @@ subordinatePostToCoto { clientId, session } coto post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( App.Submodels.LocalCotos.connect
-                        session
-                        direction
-                        [ coto ]
-                        target
-                        model
-                    , App.Server.Graph.connect
-                        clientId
-                        maybeCotonomaKey
-                        direction
-                        [ coto.id ]
-                        target.id
-                    )
+                ( App.Submodels.LocalCotos.connect
+                    session
+                    direction
+                    [ coto ]
+                    target
+                    model
+                , App.Server.Graph.connect
+                    clientId
+                    maybeCotonomaKey
+                    direction
+                    [ coto.id ]
+                    target.id
+                )
             )
         |> Maybe.withDefault ( model, Cmd.none )
 
@@ -342,12 +344,14 @@ handleShortcut context keyboardEvent model =
                             (Just model.editorModal.summary)
                         )
                     )
+
                 else
                     ( model, Cmd.none )
 
             _ ->
                 if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
                     post context model
+
                 else if
                     keyboardEvent.altKey
                         && App.Submodels.Context.anySelection context
@@ -358,8 +362,10 @@ handleShortcut context keyboardEvent model =
                             (getSummary model.editorModal)
                         )
                         model
+
                 else
                     ( model, Cmd.none )
+
     else
         ( model, Cmd.none )
 
@@ -377,17 +383,17 @@ postCotonoma context model =
                 (CotoContent cotonomaName Nothing)
                 model.timeline
     in
-        { model | timeline = timeline }
-            ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-              , App.Server.Post.postCotonoma
-                    context.clientId
-                    context.cotonoma
-                    (AppMsg.EditorModalMsg
-                        << (CotonomaPosted timeline.postIdCounter)
-                    )
-                    model.editorModal.shareCotonoma
-                    cotonomaName
-              ]
+    { model | timeline = timeline }
+        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
+          , App.Server.Post.postCotonoma
+                context.clientId
+                context.cotonoma
+                (AppMsg.EditorModalMsg
+                    << CotonomaPosted timeline.postIdCounter
+                )
+                model.editorModal.shareCotonoma
+                cotonomaName
+          ]
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -396,6 +402,7 @@ view context model =
         Edit coto ->
             if isJust coto.asCotonoma then
                 cotonomaEditorConfig context model
+
             else
                 cotoEditorConfig context model
 
@@ -439,11 +446,11 @@ cotoEditorConfig context model =
             , disabled (isBlank model.content || model.requestProcessing)
             , onClick (AppMsg.EditorModalMsg TogglePreview)
             ]
-            [ (if model.preview then
+            [ if model.preview then
                 text (context.i18nText I18nKeys.EditorModal_Edit)
-               else
+
+              else
                 text (context.i18nText I18nKeys.EditorModal_Preview)
-              )
             ]
         ]
             ++ (case model.mode of
@@ -463,6 +470,7 @@ cotoEditor context model =
             [ adviceOnCotonomaNameDiv context model
             , if model.editingToCotonomatize then
                 Utils.HtmlUtil.none
+
               else
                 input
                     [ type_ "text"
@@ -477,6 +485,7 @@ cotoEditor context model =
         , if model.preview then
             div [ class "content-preview" ]
                 [ App.Markdown.markdown model.content ]
+
           else
             div [ class "content-input" ]
                 [ textarea
@@ -563,7 +572,7 @@ cotonomaEditor context model =
                         [ span [ class "label" ]
                             [ text (context.i18nText I18nKeys.EditorModal_ShareCotonoma) ]
                         , span [ class "note" ]
-                            [ text (" (" ++ (context.i18nText I18nKeys.EditorModal_ShareCotonomaNote) ++ ")") ]
+                            [ text (" (" ++ context.i18nText I18nKeys.EditorModal_ShareCotonomaNote ++ ")") ]
                         ]
                     ]
                 ]
@@ -587,6 +596,7 @@ newEditorTitle context model =
                     [ class "sub-coto", disabled True ]
                     [ text (context.i18nText I18nKeys.Coto) ]
                 ]
+
             else
                 [ button
                     [ class "coto", disabled True ]
@@ -612,7 +622,7 @@ newEditorTitle context model =
         _ ->
             []
     )
-        |> (div [])
+        |> div []
 
 
 targetCotonomaDiv : Context context -> Model -> Html AppMsg.Msg
@@ -658,7 +668,7 @@ buttonsForNewCoto : Context context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if
         App.Submodels.Context.anySelection context
-            && (model.mode == (NewCoto Nothing))
+            && (model.mode == NewCoto Nothing)
       then
         button
             [ class "button connect"
@@ -673,6 +683,7 @@ buttonsForNewCoto context model =
             [ faIcon "link" Nothing
             , span [ class "shortcut-help" ] [ text "(Alt + Enter)" ]
             ]
+
       else
         Utils.HtmlUtil.none
     , button
@@ -682,6 +693,7 @@ buttonsForNewCoto context model =
         ]
         (if model.requestProcessing then
             [ text (context.i18nText I18nKeys.Posting ++ "...") ]
+
          else
             [ text (context.i18nText I18nKeys.Post)
             , span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
@@ -699,6 +711,7 @@ buttonsForNewCotonoma context model =
         ]
         (if model.requestProcessing then
             [ text (context.i18nText I18nKeys.Posting ++ "...") ]
+
          else
             [ text (context.i18nText I18nKeys.Post) ]
         )
@@ -714,10 +727,12 @@ buttonsForEdit context coto model =
         ]
         (if model.requestProcessing then
             [ text (context.i18nText I18nKeys.Saving ++ "...") ]
+
          else
             [ text (context.i18nText I18nKeys.Save)
             , if isJust coto.asCotonoma then
                 Utils.HtmlUtil.none
+
               else
                 span [ class "shortcut-help" ] [ text "(Ctrl + Enter)" ]
             ]
@@ -754,20 +769,22 @@ adviceOnCotonomaNameDiv context model =
             maxlength =
                 App.Types.Coto.cotonomaNameMaxlength
         in
-            div [ class "advice-on-cotonoma-name" ]
-                [ text
-                    (context.i18nText
-                        (I18nKeys.EditorModal_TooLongForCotonomaName maxlength)
+        div [ class "advice-on-cotonoma-name" ]
+            [ text
+                (context.i18nText
+                    (I18nKeys.EditorModal_TooLongForCotonomaName maxlength)
+                )
+            , span
+                [ class
+                    (if contentLength > maxlength then
+                        "too-long"
+
+                     else
+                        "ok"
                     )
-                , span
-                    [ class
-                        (if contentLength > maxlength then
-                            "too-long"
-                         else
-                            "ok"
-                        )
-                    ]
-                    [ text (toString contentLength) ]
                 ]
+                [ text (toString contentLength) ]
+            ]
+
     else
         Utils.HtmlUtil.none

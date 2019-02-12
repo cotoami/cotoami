@@ -1,39 +1,38 @@
-module App.Modals.ConnectModal
-    exposing
-        ( ConnectingTarget(..)
-        , Model
-        , defaultModel
-        , initModel
-        , WithConnectModal
-        , open
-        , openWithPost
-        , update
-        , view
-        )
+module App.Modals.ConnectModal exposing
+    ( ConnectingTarget(..)
+    , Model
+    , WithConnectModal
+    , defaultModel
+    , initModel
+    , open
+    , openWithPost
+    , update
+    , view
+    )
 
-import Maybe exposing (andThen)
+import App.Commands
+import App.I18n.Keys as I18nKeys
+import App.Markdown
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
+import App.Server.Graph
+import App.Server.Post
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
+import App.Types.Connection exposing (Direction(..))
+import App.Types.Coto exposing (Coto, CotoContent, CotoId)
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
+import App.Update.Post
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.Keyed
-import Utils.Modal as Modal
+import Maybe exposing (andThen)
 import Utils.HtmlUtil exposing (materialIcon)
+import Utils.Modal as Modal
 import Utils.UpdateUtil exposing (..)
-import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (Coto, CotoId, CotoContent)
-import App.Types.Post exposing (Post)
-import App.Types.Timeline
-import App.Types.Connection exposing (Direction(..))
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
-import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
-import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Commands
-import App.Server.Post
-import App.Server.Graph
-import App.Markdown
-import App.Update.Post
 
 
 type ConnectingTarget
@@ -102,8 +101,8 @@ update context msg ({ connectModal } as model) =
                         Inbound ->
                             Outbound
             in
-                { model | connectModal = { connectModal | direction = direction } }
-                    |> withoutCmd
+            { model | connectModal = { connectModal | direction = direction } }
+                |> withoutCmd
 
         Connect target objects direction ->
             model
@@ -146,17 +145,16 @@ postAndConnectToSelection context direction content model =
             App.Types.Timeline.post context False content model.timeline
 
         tag =
-            (AppMsg.ConnectModalMsg
-                << (PostedAndConnectToSelection newTimeline.postIdCounter direction)
-            )
+            AppMsg.ConnectModalMsg
+                << PostedAndConnectToSelection newTimeline.postIdCounter direction
     in
-        { model | timeline = newTimeline }
-            |> withCmds
-                (\model ->
-                    [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-                    , App.Server.Post.post context.clientId context.cotonoma tag newPost
-                    ]
-                )
+    { model | timeline = newTimeline }
+        |> withCmds
+            (\model ->
+                [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
+                , App.Server.Post.post context.clientId context.cotonoma tag newPost
+                ]
+            )
 
 
 connectPostToSelection :
@@ -177,19 +175,19 @@ connectPostToSelection context direction post model =
                     maybeCotonomaKey =
                         Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
-                    ( App.Submodels.LocalCotos.connect
-                        context.session
-                        direction
-                        objects
-                        target
-                        model
-                    , App.Server.Graph.connect
-                        context.clientId
-                        maybeCotonomaKey
-                        direction
-                        (List.map (\coto -> coto.id) objects)
-                        target.id
-                    )
+                ( App.Submodels.LocalCotos.connect
+                    context.session
+                    direction
+                    objects
+                    target
+                    model
+                , App.Server.Graph.connect
+                    context.clientId
+                    maybeCotonomaKey
+                    direction
+                    (List.map (\coto -> coto.id) objects)
+                    target.id
+                )
             )
         |> Maybe.withDefault ( model, Cmd.none )
 
@@ -205,40 +203,40 @@ modalConfig context selectedCotos model =
         primaryButtonId =
             "connect-modal-primary-button"
     in
-        { closeMessage = CloseModal
-        , title = text (context.i18nText I18nKeys.ConnectModal_Title)
-        , content = modalContent context selectedCotos model
-        , buttons =
-            case model.target of
-                None ->
-                    []
+    { closeMessage = CloseModal
+    , title = text (context.i18nText I18nKeys.ConnectModal_Title)
+    , content = modalContent context selectedCotos model
+    , buttons =
+        case model.target of
+            None ->
+                []
 
-                Coto coto ->
-                    [ button
-                        [ id primaryButtonId
-                        , class "button button-primary"
-                        , autofocus True
-                        , onClick
-                            (AppMsg.ConnectModalMsg
-                                (Connect coto selectedCotos model.direction)
-                            )
-                        ]
-                        [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
+            Coto coto ->
+                [ button
+                    [ id primaryButtonId
+                    , class "button button-primary"
+                    , autofocus True
+                    , onClick
+                        (AppMsg.ConnectModalMsg
+                            (Connect coto selectedCotos model.direction)
+                        )
                     ]
+                    [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
+                ]
 
-                NewPost content ->
-                    [ button
-                        [ id primaryButtonId
-                        , class "button button-primary"
-                        , autofocus True
-                        , onClick
-                            (AppMsg.ConnectModalMsg
-                                (PostAndConnectToSelection content model.direction)
-                            )
-                        ]
-                        [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
+            NewPost content ->
+                [ button
+                    [ id primaryButtonId
+                    , class "button button-primary"
+                    , autofocus True
+                    , onClick
+                        (AppMsg.ConnectModalMsg
+                            (PostAndConnectToSelection content model.direction)
+                        )
                     ]
-        }
+                    [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
+                ]
+    }
 
 
 modalContent : Context context -> List Coto -> Model -> Html AppMsg.Msg
@@ -279,29 +277,29 @@ modalContent context selectedCotos model =
                 Inbound ->
                     ( selectedCotosHtml, targetHtml )
     in
-        div []
-            [ div
-                [ class "tools" ]
-                [ button
-                    [ class "button reverse-direction"
-                    , onClick (AppMsg.ConnectModalMsg ReverseDirection)
-                    ]
-                    [ text (context.i18nText I18nKeys.ConnectModal_Reverse) ]
+    div []
+        [ div
+            [ class "tools" ]
+            [ button
+                [ class "button reverse-direction"
+                , onClick (AppMsg.ConnectModalMsg ReverseDirection)
                 ]
-            , div
-                [ class "start" ]
-                [ span [ class "node-title" ] [ text "From:" ]
-                , start
-                ]
-            , div
-                [ class "arrow" ]
-                [ materialIcon "arrow_downward" Nothing ]
-            , div
-                [ class "end" ]
-                [ span [ class "node-title" ] [ text "To:" ]
-                , end
-                ]
+                [ text (context.i18nText I18nKeys.ConnectModal_Reverse) ]
             ]
+        , div
+            [ class "start" ]
+            [ span [ class "node-title" ] [ text "From:" ]
+            , start
+            ]
+        , div
+            [ class "arrow" ]
+            [ materialIcon "arrow_downward" Nothing ]
+        , div
+            [ class "end" ]
+            [ span [ class "node-title" ] [ text "To:" ]
+            , end
+            ]
+        ]
 
 
 contentDiv : Maybe String -> String -> Html AppMsg.Msg

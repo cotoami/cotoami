@@ -1,9 +1,8 @@
-module App.Types.Session
-    exposing
-        ( Session
-        , AuthSettings
-        , defaultAuthSettings
-        )
+module App.Types.Session exposing
+    ( AuthSettings
+    , Session
+    , defaultAuthSettings
+    )
 
 import App.Types.Amishi exposing (Amishi)
 

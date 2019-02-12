@@ -1,12 +1,12 @@
 module App.Modals.ConfirmModal exposing (view)
 
+import App.I18n.Keys as I18nKeys
+import App.Messages exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.Modal as Modal
-import App.I18n.Keys as I18nKeys
-import App.Messages exposing (Msg(..))
-import App.Submodels.Context exposing (Context)
 
 
 view : Context context -> String -> Html Msg

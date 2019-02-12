@@ -1,12 +1,11 @@
-module App.Types.Connection
-    exposing
-        ( Direction(..)
-        , Connection
-        , initConnection
-        , Reordering(..)
-        , InboundConnection
-        , inReordering
-        )
+module App.Types.Connection exposing
+    ( Connection
+    , Direction(..)
+    , InboundConnection
+    , Reordering(..)
+    , inReordering
+    , initConnection
+    )
 
 import App.Types.Amishi exposing (AmishiId)
 import App.Types.Coto exposing (Coto, CotoId, ElementId)
@@ -29,9 +28,9 @@ initConnection : AmishiId -> Maybe CotoId -> CotoId -> Connection
 initConnection amishiId maybeStart end =
     let
         key =
-            (Maybe.withDefault "root" maybeStart) ++ " -> " ++ end
+            Maybe.withDefault "root" maybeStart ++ " -> " ++ end
     in
-        Connection key amishiId maybeStart end
+    Connection key amishiId maybeStart end
 
 
 type Reordering
@@ -51,5 +50,5 @@ type alias InboundConnection =
 
 inReordering : Maybe InboundConnection -> Bool
 inReordering maybeInbound =
-    Maybe.map (.reordering) maybeInbound
+    Maybe.map .reordering maybeInbound
         |> Maybe.withDefault False

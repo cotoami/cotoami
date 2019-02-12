@@ -1,15 +1,14 @@
-port module App.Ports.Graph
-    exposing
-        ( renderCotoGraph
-        , resizeGraph
-        , destroyGraph
-        , nodeClicked
-        )
+port module App.Ports.Graph exposing
+    ( destroyGraph
+    , nodeClicked
+    , renderCotoGraph
+    , resizeGraph
+    )
 
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Graph exposing (Graph)
 import Dict
 import Exts.Maybe exposing (isJust)
-import App.Types.Graph exposing (Graph)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 
 
 port renderGraph :
@@ -47,20 +46,20 @@ cotoToNode graph coto =
     , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
     , pinned = App.Types.Graph.pinned coto.id graph
     , asCotonoma = isJust coto.asCotonoma
-    , imageUrl = Maybe.map (.avatarUrl) coto.amishi
+    , imageUrl = Maybe.map .avatarUrl coto.amishi
     }
 
 
 currentCotonomaToNode : Graph -> Maybe Cotonoma -> Node
 currentCotonomaToNode graph currentCotonoma =
-    (currentCotonoma
+    currentCotonoma
         |> Maybe.map
             (\cotonoma ->
                 { id = cotonoma.cotoId
                 , name = cotonoma.name
                 , pinned = False
                 , asCotonoma = True
-                , imageUrl = Maybe.map (.avatarUrl) cotonoma.owner
+                , imageUrl = Maybe.map .avatarUrl cotonoma.owner
                 }
             )
         |> Maybe.withDefault
@@ -70,7 +69,6 @@ currentCotonomaToNode graph currentCotonoma =
             , asCotonoma = False
             , imageUrl = Nothing
             }
-    )
 
 
 renderCotoGraph : Maybe Cotonoma -> Graph -> Cmd msg
@@ -112,8 +110,8 @@ doRenderCotoGraph root graph =
                     )
                 |> List.concat
     in
-        renderGraph
-            { rootNodeId = root.id
-            , nodes = root :: nodes
-            , edges = rootEdges ++ edges
-            }
+    renderGraph
+        { rootNodeId = root.id
+        , nodes = root :: nodes
+        , edges = rootEdges ++ edges
+        }

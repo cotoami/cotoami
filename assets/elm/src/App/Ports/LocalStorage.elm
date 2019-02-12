@@ -1,11 +1,10 @@
-port module App.Ports.LocalStorage
-    exposing
-        ( setItem
-        , getItem
-        , getAllItems
-        , clearStorage
-        , receiveItem
-        )
+port module App.Ports.LocalStorage exposing
+    ( clearStorage
+    , getAllItems
+    , getItem
+    , receiveItem
+    , setItem
+    )
 
 import Json.Encode as Encode
 

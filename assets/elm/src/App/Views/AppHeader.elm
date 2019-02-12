@@ -1,23 +1,22 @@
-module App.Views.AppHeader exposing (..)
+module App.Views.AppHeader exposing (UpdateModel, navigationToggle, quickSearchForm, update, view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onFocus, onBlur, onSubmit)
-import Html.Keyed
-import Utils.StringUtil
-import Utils.UpdateUtil exposing (..)
-import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (materialIcon)
-import App.Types.SearchResults exposing (SearchResults)
-import App.Model exposing (Model)
 import App.Messages as AppMsg
-import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
+import App.Modals.SigninModal
+import App.Model exposing (Model)
+import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
-import App.Submodels.Modals exposing (Modals, Modal(SigninModal, ProfileModal))
-import App.Messages
-import App.Modals.SigninModal
-import App.Server.Post
+import App.Submodels.Modals exposing (Modal(ProfileModal, SigninModal), Modals)
+import App.Types.SearchResults exposing (SearchResults)
+import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onBlur, onClick, onFocus, onInput, onSubmit)
+import Html.Keyed
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (materialIcon)
+import Utils.StringUtil
+import Utils.UpdateUtil exposing (..)
 
 
 type alias UpdateModel model =
@@ -61,7 +60,7 @@ update context msg model =
         NavigationToggle ->
             { model
                 | navigationToggled = True
-                , navigationOpen = (not model.navigationOpen)
+                , navigationOpen = not model.navigationOpen
             }
                 |> withoutCmd
 
@@ -80,6 +79,7 @@ view model =
                         , if cotonoma.shared then
                             span [ class "shared", title "Shared" ]
                                 [ materialIcon "people" Nothing ]
+
                           else
                             Utils.HtmlUtil.none
                         , navigationToggle model
@@ -142,6 +142,7 @@ quickSearchForm searchResults =
                 , onLinkButtonClick (AppMsg.AppHeaderMsg ClearQuickSearchInput)
                 ]
                 [ materialIcon "close" Nothing ]
+
           else
             Utils.HtmlUtil.none
         ]
@@ -162,6 +163,7 @@ navigationToggle model =
             [ materialIcon
                 (if model.navigationOpen then
                     "arrow_drop_up"
+
                  else
                     "arrow_drop_down"
                 )
@@ -169,6 +171,7 @@ navigationToggle model =
             ]
         , if App.Submodels.Context.anyUnreadCotos model then
             materialIcon "fiber_manual_record" (Just "unread")
+
           else
             Utils.HtmlUtil.none
         ]

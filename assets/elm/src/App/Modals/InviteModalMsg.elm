@@ -1,7 +1,7 @@
 module App.Modals.InviteModalMsg exposing (Msg(..))
 
-import Http
 import App.Types.Amishi exposing (Amishi)
+import Http
 
 
 type Msg

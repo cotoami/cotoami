@@ -1,9 +1,9 @@
-module App.Types.Traversal exposing (..)
+module App.Types.Traversal exposing (Traversal, Traversals, closeTraversal, defaultTraversals, initTraversal, isActiveIndex, isEmpty, openTraversal, setActiveIndexOnMobile, size, traverse, traverseToParent, traversed, updateTraversal)
 
-import Dict
-import List.Extra
 import App.Types.Coto exposing (CotoId)
 import App.Types.Graph exposing (Graph)
+import Dict
+import List.Extra
 
 
 type alias Traversal =
@@ -24,7 +24,7 @@ traverse stepIndex nextCotoId traversal =
     { traversal
         | steps =
             traversal.steps
-                |> List.drop ((List.length traversal.steps) - (stepIndex + 1))
+                |> List.drop (List.length traversal.steps - (stepIndex + 1))
                 |> (::) nextCotoId
     }
 
@@ -36,6 +36,7 @@ traverseToParent graph parentId traversal =
         , steps =
             if App.Types.Graph.hasChildren traversal.start graph then
                 traversal.steps ++ [ traversal.start ]
+
             else
                 traversal.steps
     }
@@ -47,12 +48,13 @@ traversed index cotoId traversal =
         steps =
             if index < 0 then
                 traversal.steps |> List.reverse
+
             else
                 traversal.steps |> List.reverse |> List.drop (index + 1)
     in
-        List.head steps
-            |> Maybe.map (\nextStep -> nextStep == cotoId)
-            |> Maybe.withDefault False
+    List.head steps
+        |> Maybe.map (\nextStep -> nextStep == cotoId)
+        |> Maybe.withDefault False
 
 
 type alias Traversals =
@@ -100,11 +102,11 @@ openTraversal cotoId traversals =
         activeIndexOnMobile =
             List.length order - 1
     in
-        { traversals
-            | entries = entries
-            , order = order
-            , activeIndexOnMobile = activeIndexOnMobile
-        }
+    { traversals
+        | entries = entries
+        , order = order
+        , activeIndexOnMobile = activeIndexOnMobile
+    }
 
 
 updateTraversal : CotoId -> Traversal -> Traversals -> Traversals
@@ -118,6 +120,7 @@ updateTraversal oldStartId newTraversal traversals =
         order =
             if newTraversal.start == oldStartId then
                 traversals.order
+
             else
                 traversals.order
                     |> List.filter (\cotoId -> cotoId /= newTraversal.start)
@@ -125,6 +128,7 @@ updateTraversal oldStartId newTraversal traversals =
                         (\cotoId ->
                             if cotoId == oldStartId then
                                 newTraversal.start
+
                             else
                                 cotoId
                         )
@@ -135,11 +139,11 @@ updateTraversal oldStartId newTraversal traversals =
                 |> List.Extra.elemIndex newTraversal.start
                 |> Maybe.withDefault 0
     in
-        { traversals
-            | entries = entries
-            , order = order
-            , activeIndexOnMobile = activeIndexOnMobile
-        }
+    { traversals
+        | entries = entries
+        , order = order
+        , activeIndexOnMobile = activeIndexOnMobile
+    }
 
 
 closeTraversal : CotoId -> Traversals -> Traversals

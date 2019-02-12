@@ -1,15 +1,14 @@
-module App.Server.Session
-    exposing
-        ( decodeSession
-        , fetchSession
-        , decodeAuthSettingsString
-        )
+module App.Server.Session exposing
+    ( decodeAuthSettingsString
+    , decodeSession
+    , fetchSession
+    )
 
-import Http
-import Json.Decode as Decode exposing (bool, string, list)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi
-import App.Types.Session exposing (Session, AuthSettings)
+import App.Types.Session exposing (AuthSettings, Session)
+import Http
+import Json.Decode as Decode exposing (bool, list, string)
 
 
 decodeSession : Decode.Decoder Session

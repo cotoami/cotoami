@@ -1,21 +1,20 @@
-module App.Views.ViewSwitch
-    exposing
-        ( update
-        , view
-        )
+module App.Views.ViewSwitch exposing
+    ( update
+    , view
+    )
 
+import App.Messages as AppMsg exposing (..)
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Types.Coto exposing (CotoSelection)
+import App.Types.Traversal exposing (Traversals)
+import App.Views.Stock
+import App.Views.ViewSwitchMsg as ViewSwitchMsg exposing (ActiveView(..), Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Utils.UpdateUtil exposing (..)
 import Utils.HtmlUtil exposing (faIcon)
-import App.Types.Coto exposing (CotoSelection)
-import App.Types.Traversal exposing (Traversals)
-import App.Submodels.Context exposing (Context)
-import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Messages as AppMsg exposing (..)
-import App.Views.ViewSwitchMsg as ViewSwitchMsg exposing (Msg(..), ActiveView(..))
-import App.Views.Stock
+import Utils.UpdateUtil exposing (..)
 
 
 type alias UpdateModel model =
@@ -33,6 +32,7 @@ update context msg model =
                     (\model ->
                         if view == StockView then
                             App.Views.Stock.resizeGraphWithDelay
+
                         else
                             Cmd.none
                     )
@@ -103,6 +103,7 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
             span
                 [ class "tool-button" ]
                 [ faIcon iconName Nothing ]
+
           else
             a
                 [ class "tool-button"

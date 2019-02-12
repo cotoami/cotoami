@@ -1,37 +1,36 @@
-module App.Submodels.LocalCotos
-    exposing
-        ( LocalCotos
-        , getCoto
-        , getSelectedCotos
-        , getCotoIdsToWatch
-        , getCotonomaKeysToWatch
-        , updateCoto
-        , updateCotonoma
-        , updateCotonomaMaybe
-        , deleteCoto
-        , cotonomatize
-        , incorporateLocalCotoInGraph
-        , isStockEmpty
-        , isNavigationEmpty
-        , connect
-        , areTimelineAndGraphLoaded
-        , isTimelineReady
-        , onPosted
-        )
+module App.Submodels.LocalCotos exposing
+    ( LocalCotos
+    , areTimelineAndGraphLoaded
+    , connect
+    , cotonomatize
+    , deleteCoto
+    , getCoto
+    , getCotoIdsToWatch
+    , getCotonomaKeysToWatch
+    , getSelectedCotos
+    , incorporateLocalCotoInGraph
+    , isNavigationEmpty
+    , isStockEmpty
+    , isTimelineReady
+    , onPosted
+    , updateCoto
+    , updateCotonoma
+    , updateCotonomaMaybe
+    )
 
-import Set exposing (Set)
-import Dict
-import List.Extra
-import Exts.Maybe
+import App.Submodels.Context exposing (Context)
+import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Timeline exposing (Timeline)
+import App.Types.Graph exposing (Graph)
 import App.Types.Post exposing (Post)
 import App.Types.SearchResults exposing (SearchResults)
-import App.Types.Connection exposing (Direction)
-import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
+import App.Types.Timeline exposing (Timeline)
 import App.Types.Watch exposing (Watch)
-import App.Submodels.Context exposing (Context)
+import Dict
+import Exts.Maybe
+import List.Extra
+import Set exposing (Set)
 
 
 type alias LocalCotos a =
@@ -61,12 +60,13 @@ getCoto cotoId localCotos =
         , getCotoFromCotonomaList cotoId localCotos.globalCotonomas
         , getCotoFromCotonomaList cotoId localCotos.recentCotonomas
         , getCotoFromCotonomaList cotoId localCotos.subCotonomas
-        , getCotoFromCotonomaList cotoId (List.map (.cotonoma) localCotos.watchlist)
+        , getCotoFromCotonomaList cotoId (List.map .cotonoma localCotos.watchlist)
         , localCotos.cotonoma
             |> Maybe.map
                 (\cotonoma ->
                     if cotonoma.cotoId == cotoId then
                         Just (App.Types.Coto.toCoto cotonoma)
+
                     else
                         Nothing
                 )
@@ -111,8 +111,8 @@ getCotonomaKeysToWatch localCotos =
         |> List.append localCotos.globalCotonomas
         |> List.append localCotos.recentCotonomas
         |> List.append localCotos.subCotonomas
-        |> List.append (List.map (.cotonoma) localCotos.watchlist)
-        |> List.map (.key)
+        |> List.append (List.map .cotonoma localCotos.watchlist)
+        |> List.map .key
         |> Set.fromList
 
 
@@ -128,8 +128,9 @@ updateCotonoma : Cotonoma -> LocalCotos a -> LocalCotos a
 updateCotonoma cotonoma localCotos =
     { localCotos
         | cotonoma =
-            if (Maybe.map (.id) localCotos.cotonoma) == (Just cotonoma.id) then
+            if Maybe.map .id localCotos.cotonoma == Just cotonoma.id then
                 Just cotonoma
+
             else
                 localCotos.cotonoma
         , globalCotonomas = updateCotonomaInList cotonoma localCotos.globalCotonomas
@@ -156,6 +157,7 @@ updateCotonomaInList cotonoma cotonomas =
         cotonomas
             |> List.filter (\c -> c.id /= cotonoma.id)
             |> (::) cotonoma
+
     else
         cotonomas
 
@@ -182,6 +184,7 @@ incorporateLocalCotoInGraph cotoId localCotos =
         | graph =
             if App.Types.Graph.member cotoId localCotos.graph then
                 localCotos.graph
+
             else
                 case getCoto cotoId localCotos of
                     Nothing ->
@@ -199,10 +202,10 @@ isStockEmpty localCotos =
 
 isNavigationEmpty : LocalCotos a -> Bool
 isNavigationEmpty localCotos =
-    (Exts.Maybe.isNothing localCotos.cotonoma)
-        && (List.isEmpty localCotos.globalCotonomas)
-        && (List.isEmpty localCotos.recentCotonomas)
-        && (List.isEmpty localCotos.subCotonomas)
+    Exts.Maybe.isNothing localCotos.cotonoma
+        && List.isEmpty localCotos.globalCotonomas
+        && List.isEmpty localCotos.recentCotonomas
+        && List.isEmpty localCotos.subCotonomas
 
 
 connect : Maybe Session -> Direction -> List Coto -> Coto -> LocalCotos a -> LocalCotos a
@@ -221,18 +224,18 @@ connect maybeSession direction cotos target localCotos =
                     )
                 |> Maybe.withDefault localCotos.graph
     in
-        { localCotos | graph = graph }
+    { localCotos | graph = graph }
 
 
 areTimelineAndGraphLoaded : LocalCotos a -> Bool
 areTimelineAndGraphLoaded localCotos =
-    (not localCotos.timeline.loading) && (not localCotos.loadingGraph)
+    not localCotos.timeline.loading && not localCotos.loadingGraph
 
 
 isTimelineReady : LocalCotos a -> Bool
 isTimelineReady localCotos =
-    (areTimelineAndGraphLoaded localCotos)
-        && (not localCotos.timeline.initializingScrollPos)
+    areTimelineAndGraphLoaded localCotos
+        && not localCotos.timeline.initializingScrollPos
 
 
 onPosted : Int -> Post -> LocalCotos a -> LocalCotos a

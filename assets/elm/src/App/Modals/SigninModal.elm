@@ -1,26 +1,25 @@
-module App.Modals.SigninModal
-    exposing
-        ( Model
-        , defaultModel
-        , initModel
-        , update
-        , view
-        )
+module App.Modals.SigninModal exposing
+    ( Model
+    , defaultModel
+    , initModel
+    , update
+    , view
+    )
 
+import App.I18n.Keys as I18nKeys
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
+import App.Submodels.Context exposing (Context)
+import App.Types.Session exposing (AuthSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
-import Utils.StringUtil exposing (validateEmail)
-import Utils.UpdateUtil exposing (..)
 import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal as Modal
-import App.I18n.Keys as I18nKeys
-import App.Types.Session exposing (AuthSettings)
-import App.Submodels.Context exposing (Context)
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.SigninModalMsg as SigninModalMsg exposing (Msg(..))
+import Utils.StringUtil exposing (validateEmail)
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -87,9 +86,9 @@ requestSignin email =
         url =
             "/api/public/signin/request/" ++ email
     in
-        Http.send
-            (AppMsg.SigninModalMsg << RequestDone)
-            (Http.get url Decode.string)
+    Http.send
+        (AppMsg.SigninModalMsg << RequestDone)
+        (Http.get url Decode.string)
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -110,6 +109,7 @@ modalConfig context model =
         , buttons =
             [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
         }
+
     else
         { closeMessage = CloseModal
         , title = welcomeTitle context
@@ -135,6 +135,7 @@ oauthSigninDiv : Context context -> Model -> Html AppMsg.Msg
 oauthSigninDiv context model =
     if List.isEmpty model.authSettings.oauthProviders then
         Utils.HtmlUtil.none
+
     else
         div [ class "oauth-signin" ]
             [ div [ class "oauth-buttons" ]
@@ -181,6 +182,7 @@ emailSigninDiv context model =
     div [ class "email-signin" ]
         [ if model.authSettings.signupEnabled then
             p [] [ text (context.i18nText I18nKeys.SigninModal_SignupEnabled) ]
+
           else
             p [] [ text (context.i18nText I18nKeys.SigninModal_OnlyForSignin) ]
         , signinForm context model
@@ -206,6 +208,7 @@ signinForm context model =
                 [ span [ class "message" ]
                     [ text (context.i18nText I18nKeys.SigninModal_EmailNotFound) ]
                 ]
+
           else
             div [] []
         ]
@@ -219,7 +222,8 @@ sendLinkButton context model =
         , onClick (AppMsg.SigninModalMsg RequestClick)
         ]
         [ if model.requestProcessing then
-            text ((context.i18nText I18nKeys.SigninModal_Sending) ++ "...")
+            text (context.i18nText I18nKeys.SigninModal_Sending ++ "...")
+
           else
             text (context.i18nText I18nKeys.SigninModal_SendLink)
         ]

@@ -1,9 +1,9 @@
-module App.Markdown exposing (..)
+module App.Markdown exposing (customHtmlBlock, customHtmlInline, extractTextFromMarkdown, markdown, markdownOptions)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Markdown.Config exposing (defaultOptions)
 import Markdown.Block as Block exposing (Block(..))
+import Markdown.Config exposing (defaultOptions)
 import Markdown.Inline as Inline exposing (Inline(..))
 
 
@@ -53,7 +53,7 @@ extractTextFromMarkdown markdownText =
         |> Block.parse Nothing
         |> List.map
             (\block ->
-                (Block.queryInlines
+                Block.queryInlines
                     (\inline ->
                         case inline of
                             Text str ->
@@ -69,6 +69,5 @@ extractTextFromMarkdown markdownText =
                                 [ "" ]
                     )
                     block
-                )
                     |> String.join ""
             )

@@ -1,27 +1,26 @@
-module App.Views.CotoToolbar
-    exposing
-        ( update
-        , view
-        )
+module App.Views.CotoToolbar exposing
+    ( update
+    , view
+    )
 
-import Set
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Utils.UpdateUtil exposing (..)
-import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
-import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma)
-import App.Types.Graph exposing (Graph)
-import App.Types.Connection exposing (Connection, InboundConnection, Direction(..), Reordering(..))
 import App.Messages as AppMsg exposing (..)
-import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
-import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modals, Confirmation)
-import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Modals.CotoMenuModal exposing (WithCotoMenuModal)
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.Modals exposing (Confirmation, Modals)
+import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
+import App.Types.Graph exposing (Graph)
+import App.Types.Session exposing (Session)
+import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Set
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.UpdateUtil exposing (..)
 
 
 type alias UpdateModel model =
@@ -47,13 +46,12 @@ update context msg model =
             App.Modals.CotoMenuModal.open coto model
 
         ConfirmDisconnect conn ->
-            (App.Submodels.Modals.confirm
+            App.Submodels.Modals.confirm
                 (Confirmation
                     (context.i18nText I18nKeys.ConfirmDisconnect)
                     (DeleteConnection conn)
                 )
                 model
-            )
                 |> withoutCmd
 
 
@@ -73,6 +71,7 @@ view context session maybeInbound elementId coto =
         , span [ class "default-buttons" ]
             [ if isSharedCotonoma coto then
                 watchOrUnwatchButton context coto
+
               else
                 pinButton context coto
             , editButton context session coto
@@ -101,25 +100,28 @@ subCotoTools context session inbound elementId coto =
         buttonsWithBorder =
             if List.isEmpty buttons then
                 []
+
             else
                 buttons ++ [ span [ class "border" ] [] ]
     in
-        span [ class "sub-coto-buttons" ] buttonsWithBorder
+    span [ class "sub-coto-buttons" ] buttonsWithBorder
 
 
 isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
 isDisconnectable session parent connection child =
     session.amishi.owner
         || (session.amishi.id == connection.amishiId)
-        || ((Just session.amishi.id) == Maybe.map (.id) parent.amishi)
+        || (Just session.amishi.id == Maybe.map .id parent.amishi)
 
 
 isReorderble : Context context -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
     if inbound.siblings < 2 then
         False
+
     else if session.amishi.owner then
         True
+
     else
         inbound.parent
             |> Maybe.map
@@ -158,6 +160,7 @@ connectButton context coto =
                 [ faIcon "link" Nothing ]
             , span [ class "border" ] []
             ]
+
     else
         Utils.HtmlUtil.none
 
@@ -166,7 +169,7 @@ pinButton : Context context -> Coto -> Html AppMsg.Msg
 pinButton context coto =
     if
         not (App.Types.Graph.pinned coto.id context.graph)
-            && ((Just coto.id) /= (Maybe.map (.cotoId) context.cotonoma))
+            && (Just coto.id /= Maybe.map .cotoId context.cotonoma)
     then
         a
             [ class "tool-button pin-coto"
@@ -174,6 +177,7 @@ pinButton context coto =
             , onLinkButtonClick (PinCoto coto.id)
             ]
             [ faIcon "thumb-tack" Nothing ]
+
     else
         Utils.HtmlUtil.none
 
@@ -191,11 +195,12 @@ watchOrUnwatchButton context coto =
         |> Maybe.map
             (\cotonoma ->
                 if cotonoma.shared == True then
-                    (if App.Submodels.Context.isWatched cotonoma context then
+                    if App.Submodels.Context.isWatched cotonoma context then
                         unwatchButton context cotonoma
-                     else
+
+                    else
                         watchButton context cotonoma
-                    )
+
                 else
                     Utils.HtmlUtil.none
             )
@@ -214,6 +219,7 @@ watchButton context cotonoma =
         , onLinkButtonClick
             (if context.watchlistLoading then
                 AppMsg.NoOp
+
              else
                 AppMsg.Watch cotonoma.key
             )
@@ -233,6 +239,7 @@ unwatchButton context cotonoma =
         , onLinkButtonClick
             (if context.watchlistLoading then
                 AppMsg.NoOp
+
              else
                 AppMsg.Unwatch cotonoma.key
             )
@@ -249,6 +256,7 @@ editButton context session coto =
             , onLinkButtonClick (OpenEditorModal coto)
             ]
             [ materialIcon "edit" Nothing ]
+
     else
         Utils.HtmlUtil.none
 
@@ -276,6 +284,7 @@ selectButton context coto =
                     && not (Set.member coto.id context.deselecting)
              then
                 "check_box"
+
              else
                 "check_box_outline_blank"
             )
@@ -304,7 +313,7 @@ disconnectButton context session inbound coto =
         |> Maybe.andThen
             (\parent ->
                 if isDisconnectable session parent inbound.connection coto then
-                    (a
+                    a
                         [ class "tool-button disconnect"
                         , title (context.i18nText I18nKeys.CotoToolbar_Disconnect)
                         , onLinkButtonClick
@@ -313,8 +322,8 @@ disconnectButton context session inbound coto =
                             )
                         ]
                         [ faIcon "unlink" Nothing ]
-                    )
                         |> Just
+
                 else
                     Nothing
             )
@@ -329,7 +338,7 @@ reorderButton :
     -> Maybe (Html AppMsg.Msg)
 reorderButton context session inbound elementId coto =
     if isReorderble context session inbound coto then
-        (a
+        a
             [ class "tool-button toggle-reorder-mode"
             , title (context.i18nText I18nKeys.CotoToolbar_Reorder)
             , onLinkButtonClick
@@ -344,7 +353,7 @@ reorderButton context session inbound elementId coto =
                 )
             ]
             [ faIcon "sort" Nothing ]
-        )
             |> Just
+
     else
         Nothing

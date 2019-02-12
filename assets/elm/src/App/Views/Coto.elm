@@ -1,17 +1,25 @@
-module App.Views.Coto
-    exposing
-        ( cotoClassList
-        , bodyDiv
-        , bodyDivByCoto
-        , headerDiv
-        , parentsDiv
-        , subCotosButtonDiv
-        , subCotosDiv
-        , abbreviate
-        , cotonomaLink
-        , cotonomaLabel
-        )
+module App.Views.Coto exposing
+    ( abbreviate
+    , bodyDiv
+    , bodyDivByCoto
+    , cotoClassList
+    , cotonomaLabel
+    , cotonomaLink
+    , headerDiv
+    , parentsDiv
+    , subCotosButtonDiv
+    , subCotosDiv
+    )
 
+import App.Markdown exposing (extractTextFromMarkdown)
+import App.Messages exposing (..)
+import App.Submodels.Context exposing (Context)
+import App.Types.Amishi exposing (Amishi)
+import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Graph exposing (Graph)
+import App.Views.CotoToolbar
+import App.Views.Reorder
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -19,15 +27,6 @@ import Html.Events exposing (..)
 import Html.Keyed
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import App.Markdown exposing (extractTextFromMarkdown)
-import App.Types.Amishi exposing (Amishi)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Connection exposing (Direction(..), Connection, InboundConnection, Reordering(..))
-import App.Types.Graph exposing (Graph)
-import App.Submodels.Context exposing (Context)
-import App.Messages exposing (..)
-import App.Views.CotoToolbar
-import App.Views.Reorder
 
 
 cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
@@ -77,6 +76,7 @@ bodyDiv context maybeInbound elementId markdown model =
                 (if App.Types.Connection.inReordering maybeInbound then
                     div [ class "content-in-reorder" ]
                         [ text (abbreviate model) ]
+
                  else
                     contentDiv context elementId markdown model
                 )
@@ -104,6 +104,7 @@ contentDiv context elementId markdown model =
                             [ faIcon
                                 (if App.Submodels.Context.contentOpen elementId context then
                                     "angle-double-up"
+
                                  else
                                     "angle-double-down"
                                 )
@@ -153,6 +154,7 @@ headerDiv context maybeInbound elementId coto =
                 (\postedIn ->
                     if App.Submodels.Context.orignatedHere coto context then
                         Utils.HtmlUtil.none
+
                     else
                         a
                             [ class "posted-in"
@@ -164,6 +166,7 @@ headerDiv context maybeInbound elementId coto =
             |> Maybe.withDefault Utils.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id context.graph then
             faIcon "thumb-tack" (Just "pinned")
+
           else
             Utils.HtmlUtil.none
         ]
@@ -180,22 +183,23 @@ parentsDiv graph exclude childId =
     let
         parents =
             App.Types.Graph.getParents childId graph
-                |> List.filter (\parent -> (Just parent.id) /= exclude)
+                |> List.filter (\parent -> Just parent.id /= exclude)
     in
-        if List.isEmpty parents then
-            Utils.HtmlUtil.none
-        else
-            div [ class "parents" ]
-                (List.map
-                    (\parent ->
-                        div
-                            [ class "parent"
-                            , onClick (OpenTraversal parent.id)
-                            ]
-                            [ text (abbreviate parent) ]
-                    )
-                    parents
+    if List.isEmpty parents then
+        Utils.HtmlUtil.none
+
+    else
+        div [ class "parents" ]
+            (List.map
+                (\parent ->
+                    div
+                        [ class "parent"
+                        , onClick (OpenTraversal parent.id)
+                        ]
+                        [ text (abbreviate parent) ]
                 )
+                parents
+            )
 
 
 
@@ -220,6 +224,7 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                                 Nothing
                             ]
                         ]
+
                 else
                     Utils.HtmlUtil.none
             )
@@ -236,6 +241,7 @@ subCotosDiv context parentElementId coto =
                     [ div [ class "main-sub-border" ] []
                     , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
                         App.Views.Reorder.closeButtonDiv context
+
                       else
                         Utils.HtmlUtil.none
                     , connectionsDiv
@@ -294,22 +300,22 @@ subCotoDiv context parentElementId inbound coto =
         maybeParentId =
             inbound.parent |> Maybe.map (\parent -> parent.id)
     in
-        div
-            [ cotoClassList context elementId (Just coto.id) []
-            , onClickWithoutPropagation (CotoClick elementId coto.id)
-            , onMouseEnter (CotoMouseEnter elementId coto.id)
-            , onMouseLeave (CotoMouseLeave elementId coto.id)
-            ]
-            [ div
-                [ class "coto-inner" ]
-                [ headerDiv context (Just inbound) elementId coto
-                , parentsDiv context.graph maybeParentId coto.id
-                , div [ class "sub-coto-body" ]
-                    [ bodyDivByCoto context (Just inbound) elementId coto
-                    , subCotosButtonDiv context.graph (Just "more_vert") (Just coto.id)
-                    ]
+    div
+        [ cotoClassList context elementId (Just coto.id) []
+        , onClickWithoutPropagation (CotoClick elementId coto.id)
+        , onMouseEnter (CotoMouseEnter elementId coto.id)
+        , onMouseLeave (CotoMouseLeave elementId coto.id)
+        ]
+        [ div
+            [ class "coto-inner" ]
+            [ headerDiv context (Just inbound) elementId coto
+            , parentsDiv context.graph maybeParentId coto.id
+            , div [ class "sub-coto-body" ]
+                [ bodyDivByCoto context (Just inbound) elementId coto
+                , subCotosButtonDiv context.graph (Just "more_vert") (Just coto.id)
                 ]
             ]
+        ]
 
 
 
@@ -324,20 +330,21 @@ abbreviate { content, summary } =
         maxLength =
             App.Types.Coto.summaryMaxlength
     in
-        Maybe.withDefault
-            (extractTextFromMarkdown content
-                |> List.head
-                |> Maybe.withDefault ""
-                |> (\text ->
-                        (String.left maxLength text)
-                            ++ (if String.length text > maxLength then
-                                    "..."
-                                else
-                                    ""
-                               )
-                   )
-            )
-            summary
+    Maybe.withDefault
+        (extractTextFromMarkdown content
+            |> List.head
+            |> Maybe.withDefault ""
+            |> (\text ->
+                    String.left maxLength text
+                        ++ (if String.length text > maxLength then
+                                "..."
+
+                            else
+                                ""
+                           )
+               )
+        )
+        summary
 
 
 cotonomaLink : Context a -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
@@ -349,6 +356,7 @@ cotonomaLink context cotonomaClick maybeOwner cotonoma =
             , onLinkButtonClick (cotonomaClick cotonoma.key)
             ]
             [ cotonomaLabel maybeOwner cotonoma ]
+
     else
         span [ class "not-accessible" ]
             [ cotonomaLabel maybeOwner cotonoma
@@ -361,12 +369,12 @@ isCotonomaAccessible : Context a -> Maybe Amishi -> Cotonoma -> Bool
 isCotonomaAccessible context maybeOwner cotonoma =
     if cotonoma.shared then
         True
+
     else
-        (Maybe.map2
+        Maybe.map2
             (\session owner -> session.amishi.id == owner.id)
             context.session
             maybeOwner
-        )
             |> Maybe.withDefault False
 
 
@@ -381,6 +389,7 @@ cotonomaLabel maybeOwner cotonoma =
         , if cotonoma.shared then
             span [ class "shared", title "Shared" ]
                 [ materialIcon "people" Nothing ]
+
           else
             Utils.HtmlUtil.none
         ]

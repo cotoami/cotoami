@@ -1,59 +1,59 @@
-module App.Update exposing (..)
+module App.Update exposing (changeLocationToCotonoma, loadCotonoma, loadHome, update)
 
-import Task
-import Process
-import Time
-import Maybe
-import Http exposing (Error(..))
-import Json.Decode as Decode
-import Exts.Maybe exposing (isJust)
-import Utils.Keyboard.Key
-import Navigation
-import Utils.UpdateUtil exposing (..)
-import App.LocalConfig
-import App.I18n.Keys as I18nKeys
-import App.Types.Amishi exposing (Presences)
-import App.Types.Coto exposing (Coto, ElementId, CotoId, CotonomaKey)
-import App.Types.Watch
-import App.Types.Graph
-import App.Types.Timeline
-import App.Types.Traversal
-import App.Types.SearchResults
-import App.Model exposing (Model)
-import App.Messages exposing (..)
-import App.Submodels.Context exposing (Context)
-import App.Submodels.LocalCotos
-import App.Submodels.Modals exposing (Modal(..), Confirmation)
-import App.Route exposing (Route(..))
-import App.Server.Session
-import App.Server.Cotonoma
-import App.Server.Post
-import App.Server.Coto
-import App.Server.Graph
-import App.Server.Watch
-import App.Commands
 import App.Channels exposing (Payload)
-import App.Views.AppHeader
-import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
-import App.Views.Flow
-import App.Views.Stock
-import App.Views.Traversals
-import App.Views.CotoSelection
-import App.Views.CotoToolbar
-import App.Views.Reorder
-import App.Modals.SigninModal
-import App.Modals.ProfileModal
+import App.Commands
+import App.I18n.Keys as I18nKeys
+import App.LocalConfig
+import App.Messages exposing (..)
+import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
-import App.Modals.InviteModal
 import App.Modals.ImportModal
+import App.Modals.InviteModal
+import App.Modals.ProfileModal
+import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
-import App.Modals.ConnectModal exposing (ConnectingTarget(..))
-import App.Pushed
+import App.Model exposing (Model)
 import App.Ports.App
 import App.Ports.Graph
+import App.Pushed
+import App.Route exposing (Route(..))
+import App.Server.Coto
+import App.Server.Cotonoma
+import App.Server.Graph
+import App.Server.Post
+import App.Server.Session
+import App.Server.Watch
+import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos
+import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Types.Amishi exposing (Presences)
+import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
+import App.Types.Graph
+import App.Types.SearchResults
+import App.Types.Timeline
+import App.Types.Traversal
+import App.Types.Watch
+import App.Views.AppHeader
+import App.Views.CotoSelection
+import App.Views.CotoToolbar
+import App.Views.Flow
+import App.Views.Reorder
+import App.Views.Stock
+import App.Views.Traversals
+import App.Views.ViewSwitch
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import Exts.Maybe exposing (isJust)
+import Http exposing (Error(..))
+import Json.Decode as Decode
+import Maybe
+import Navigation
+import Process
+import Task
+import Time
+import Utils.Keyboard.Key
+import Utils.UpdateUtil exposing (..)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -69,13 +69,15 @@ update msg model =
         KeyDown keyCode ->
             if keyCode == Utils.Keyboard.Key.escapeKeyCode then
                 ( App.Submodels.Modals.closeActiveModal model, Cmd.none )
+
             else if
                 (keyCode == Utils.Keyboard.Key.nKeyCode)
-                    && (List.isEmpty model.modals)
-                    && (not model.flowView.editorOpen)
-                    && (not model.searchInputFocus)
+                    && List.isEmpty model.modals
+                    && not model.flowView.editorOpen
+                    && not model.searchInputFocus
             then
                 App.Modals.EditorModal.openForNew model Nothing model
+
             else
                 model |> withoutCmd
 
@@ -93,16 +95,17 @@ update msg model =
         OnLocationChange location ->
             App.Route.parseLocation location
                 |> (\route -> ( route, { model | route = route } ))
-                |> \( route, model ) ->
-                    case route of
-                        HomeRoute ->
-                            loadHome model
+                |> (\( route, model ) ->
+                        case route of
+                            HomeRoute ->
+                                loadHome model
 
-                        CotonomaRoute key ->
-                            loadCotonoma key model
+                            CotonomaRoute key ->
+                                loadCotonoma key model
 
-                        NotFoundRoute ->
-                            model |> withoutCmd
+                            NotFoundRoute ->
+                                model |> withoutCmd
+                   )
 
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
@@ -138,6 +141,7 @@ update msg model =
                             |> (\signinModal -> { model | signinModal = signinModal })
                             |> App.Submodels.Modals.openModal SigninModal
                             |> withoutCmd
+
                     else
                         model |> withoutCmd
 
@@ -286,13 +290,12 @@ update msg model =
                 |> withoutCmd
 
         ConfirmDeleteCoto coto ->
-            (App.Submodels.Modals.confirm
+            App.Submodels.Modals.confirm
                 (Confirmation
                     (model.i18nText I18nKeys.ConfirmDeleteCoto)
                     (DeleteCotoInServerSide coto)
                 )
                 model
-            )
                 |> withoutCmd
 
         DeleteCotoInServerSide coto ->
@@ -337,14 +340,14 @@ update msg model =
 
         ConfirmCotonomatize coto ->
             if String.length coto.content <= App.Types.Coto.cotonomaNameMaxlength then
-                (App.Submodels.Modals.confirm
+                App.Submodels.Modals.confirm
                     (Confirmation
                         (model.i18nText (I18nKeys.ConfirmCotonomatize coto.content))
                         (Cotonomatize coto.id)
                     )
                     model
-                )
                     |> withoutCmd
+
             else
                 { model | editorModal = App.Modals.EditorModal.modelForEditToCotonomatize coto }
                     |> App.Submodels.Modals.openModal EditorModal
@@ -371,7 +374,7 @@ update msg model =
                 |> withoutCmd
 
         PinCoto cotoId ->
-            (Maybe.map2
+            Maybe.map2
                 (\session coto ->
                     { model | graph = App.Types.Graph.pinCoto session.amishi.id coto model.graph }
                         |> withCmd
@@ -379,7 +382,7 @@ update msg model =
                                 Cmd.batch
                                     [ App.Server.Graph.pinCotos
                                         model.clientId
-                                        (Maybe.map (.key) model.cotonoma)
+                                        (Maybe.map .key model.cotonoma)
                                         [ cotoId ]
                                     , App.Commands.scrollPinnedCotosToBottom (\_ -> NoOp)
                                     ]
@@ -387,7 +390,6 @@ update msg model =
                 )
                 model.session
                 (App.Submodels.LocalCotos.getCoto cotoId model)
-            )
                 |> Maybe.withDefault (model |> withoutCmd)
 
         PinCotoToMyHome cotoId ->
@@ -407,13 +409,12 @@ update msg model =
             model |> withoutCmd
 
         ConfirmUnpinCoto cotoId ->
-            (App.Submodels.Modals.confirm
+            App.Submodels.Modals.confirm
                 (Confirmation
                     (model.i18nText I18nKeys.ConfirmUnpinCoto)
                     (UnpinCoto cotoId)
                 )
                 model
-            )
                 |> withoutCmd
 
         UnpinCoto cotoId ->
@@ -514,39 +515,35 @@ update msg model =
                 model
 
         CotoUpdatePushed payload ->
-            (App.Pushed.handle
+            App.Pushed.handle
                 App.Server.Coto.decodeCoto
                 App.Pushed.handleCotoUpdate
                 payload
                 model
-            )
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         CotonomatizePushed payload ->
-            (App.Pushed.handle
+            App.Pushed.handle
                 App.Server.Cotonoma.decodeCotonoma
                 App.Pushed.handleCotonomatize
                 payload
                 model
-            )
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         ConnectPushed payload ->
-            (App.Pushed.handle
+            App.Pushed.handle
                 App.Pushed.decodeConnectPayloadBody
                 App.Pushed.handleConnect
                 payload
                 model
-            )
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         DisconnectPushed payload ->
-            (App.Pushed.handle
+            App.Pushed.handle
                 App.Pushed.decodeDisconnectPayloadBody
                 App.Pushed.handleDisconnect
                 payload
                 model
-            )
                 |> addCmd (App.Views.Stock.renderGraph model)
 
         ReorderPushed payload ->

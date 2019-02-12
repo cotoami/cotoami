@@ -1,41 +1,40 @@
-module App.Model
-    exposing
-        ( Model
-        , initModel
-        , deleteCoto
-        , openTraversal
-        )
+module App.Model exposing
+    ( Model
+    , deleteCoto
+    , initModel
+    , openTraversal
+    )
 
+import App.I18n.Keys exposing (TextKey)
+import App.I18n.Translate
+import App.Modals.ConnectModal
+import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
+import App.Modals.EditorModal
+import App.Modals.ImportModal
+import App.Modals.InviteModal
+import App.Modals.SigninModal
+import App.Route exposing (Route)
+import App.Submodels.Context
+import App.Submodels.LocalCotos
+import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Submodels.Traversals
+import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
+import App.Types.Connection exposing (Direction(..), Reordering)
+import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Graph exposing (Graph)
+import App.Types.SearchResults exposing (SearchResults)
+import App.Types.Session exposing (Session)
+import App.Types.Timeline exposing (Timeline)
+import App.Types.Traversal exposing (Traversals)
+import App.Types.Watch exposing (Watch)
+import App.Views.CotoSelection
+import App.Views.Flow
+import App.Views.Stock
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Set exposing (Set)
 import Utils.HttpUtil exposing (ClientId(ClientId))
-import App.Route exposing (Route)
-import App.I18n.Keys exposing (TextKey)
-import App.I18n.Translate
-import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotonomaKey, CotoSelection)
-import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
-import App.Types.Session exposing (Session)
-import App.Types.Connection exposing (Direction(..), Reordering)
-import App.Types.Graph exposing (Graph)
-import App.Types.Timeline exposing (Timeline)
-import App.Types.Traversal exposing (Traversals)
-import App.Types.SearchResults exposing (SearchResults)
-import App.Types.Watch exposing (Watch)
-import App.Submodels.Context
-import App.Submodels.LocalCotos
-import App.Submodels.Modals exposing (Modal(..), Confirmation)
-import App.Submodels.Traversals
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
-import App.Views.Flow
-import App.Views.Stock
-import App.Views.CotoSelection
-import App.Modals.SigninModal
-import App.Modals.EditorModal
-import App.Modals.InviteModal
-import App.Modals.CotoMenuModal
-import App.Modals.CotoModal
-import App.Modals.ConnectModal
-import App.Modals.ImportModal
 
 
 type alias Model =

@@ -1,19 +1,19 @@
 module App.Modals.TimelineFilterModal exposing (update, view)
 
+import App.I18n.Keys as I18nKeys
+import App.LocalConfig
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
+import App.Server.Post
+import App.Submodels.Context exposing (Context)
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Views.Flow
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.HtmlUtil exposing (materialIcon)
-import App.LocalConfig
-import App.I18n.Keys as I18nKeys
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
-import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Submodels.Context exposing (Context)
-import App.Views.Flow
-import App.Server.Post
+import Utils.Modal as Modal
+import Utils.UpdateUtil exposing (addCmd, withCmd, withoutCmd)
 
 
 type alias UpdateModel model =
@@ -64,6 +64,7 @@ modalConfig context filter =
             [ excludePinnedGraphOption context filter
             , if App.Submodels.Context.atHome context then
                 excludePostsInCotonomaOption context filter
+
               else
                 Utils.HtmlUtil.none
             ]

@@ -1,11 +1,10 @@
-module App.Modals.ImportModalMsg
-    exposing
-        ( ImportResult
-        , ImportCotosResult
-        , ImportConnectionsResult
-        , Reject
-        , Msg(..)
-        )
+module App.Modals.ImportModalMsg exposing
+    ( ImportConnectionsResult
+    , ImportCotosResult
+    , ImportResult
+    , Msg(..)
+    , Reject
+    )
 
 import Http
 
