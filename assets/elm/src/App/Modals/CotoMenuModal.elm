@@ -189,12 +189,11 @@ pinOrUnpinMenuTitle context pinOrUnpin =
         else
             context.i18nText I18nKeys.CotoMenuModal_UnpinFromCotonoma
 
-    else
-        if pinOrUnpin then
-            context.i18nText I18nKeys.CotoMenuModal_PinToMyHome
+    else if pinOrUnpin then
+        context.i18nText I18nKeys.CotoMenuModal_PinToMyHome
 
-        else
-            context.i18nText I18nKeys.CotoMenuModal_UnpinFromMyHome
+    else
+        context.i18nText I18nKeys.CotoMenuModal_UnpinFromMyHome
 
 
 menuItemEdit : Context context -> Session -> Model -> Html AppMsg.Msg

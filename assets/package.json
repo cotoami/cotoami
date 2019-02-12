@@ -7,8 +7,8 @@
     "deploy": "NPM_BIN=$(npm bin) brunch build --production",
     "watch": "NPM_BIN=$(npm bin) brunch watch --stdin",
     "elm-install": "cd elm && elm-install",
-    "elm-format": "elm-format --elm-version 0.18 elm",
-    "elm-format:validate": "elm-format --validate --elm-version 0.18 elm",
+    "elm-format": "elm-format --elm-version=0.18 elm",
+    "elm-format:validate": "elm-format --validate --elm-version=0.18 elm",
     "postinstall": "npm run elm-install"
   },
   "dependencies": {
