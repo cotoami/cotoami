@@ -342,6 +342,7 @@ defmodule Cotoami.CotoGraphService do
       created_by: amishi_id,
       created_at: connection_json["created_at"],
       created_in: connection_json["created_in"],
+      linking_phrase: connection_json["linking_phrase"],
       order: connection_json["order"]
     }
     |> drop_nil
