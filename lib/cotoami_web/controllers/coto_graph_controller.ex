@@ -12,9 +12,10 @@ defmodule CotoamiWeb.CotoGraphController do
   def index(conn, params, amishi) do
     case get_cotonoma_if_specified(params) do
       nil ->
-        json conn, CotoGraphService.get_graph_in_amishi(Sips.conn, amishi)
+        json(conn, CotoGraphService.get_graph_in_amishi(Sips.conn(), amishi))
+
       cotonoma ->
-        json conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn, cotonoma, amishi)
+        json(conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn(), cotonoma, amishi))
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->
@@ -23,10 +24,11 @@ defmodule CotoamiWeb.CotoGraphController do
 
   def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
     case CotonomaService.get_by_key(cotonoma_key) do
-      nil -> 
+      nil ->
         send_resp(conn, :not_found, "")
-      cotonoma -> 
-        json conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn, cotonoma, amishi)
+
+      cotonoma ->
+        json(conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn(), cotonoma, amishi))
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->
@@ -35,86 +37,112 @@ defmodule CotoamiWeb.CotoGraphController do
 
   def pin(conn, %{"coto_ids" => coto_ids} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params)
+    linking_phrase = params["linking_phrase"]
+
     results =
       coto_ids
       |> CotoService.get_by_ids()
-      |> Enum.filter(&(&1))
-      |> Enum.map(fn(coto) ->
-          case cotonoma do
-            nil ->
-              CotoGraphService.pin(Sips.conn, coto, amishi)
-            cotonoma ->
-              CotoGraphService.pin(Sips.conn, coto, cotonoma, amishi)
-              broadcast_connect(
-                cotonoma.coto, 
-                CotoService.complement(coto, amishi), 
-                amishi, 
-                conn.assigns.client_id)
-          end
-        end)
-    json conn, results
+      |> Enum.filter(& &1)
+      |> Enum.map(fn coto ->
+        case cotonoma do
+          nil ->
+            CotoGraphService.pin(Sips.conn(), coto, linking_phrase, amishi)
+
+          cotonoma ->
+            CotoGraphService.pin(Sips.conn(), coto, cotonoma, linking_phrase, amishi)
+
+            broadcast_connect(
+              cotonoma.coto,
+              CotoService.complement(coto, amishi),
+              amishi,
+              conn.assigns.client_id
+            )
+        end
+      end)
+
+    json(conn, results)
   end
 
   def unpin(conn, %{"coto_id" => coto_id} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params)
     coto = ensure_to_get_coto(coto_id)
+
     case cotonoma do
-      nil -> CotoGraphService.unpin(Sips.conn, coto, amishi)
-      cotonoma -> 
-        CotoGraphService.unpin(Sips.conn, coto, cotonoma, amishi)
+      nil ->
+        CotoGraphService.unpin(Sips.conn(), coto, amishi)
+
+      cotonoma ->
+        CotoGraphService.unpin(Sips.conn(), coto, cotonoma, amishi)
         broadcast_disconnect(cotonoma.coto_id, coto.id, amishi, conn.assigns.client_id)
     end
-    text conn, "ok"
+
+    text(conn, "ok")
   end
 
   def connect(conn, %{"start_id" => start_id, "end_ids" => end_ids} = params, amishi) do
     cotonoma = get_cotonoma_if_specified(params)
     start_coto = ensure_to_get_coto(start_id)
+    linking_phrase = params["linking_phrase"]
+
     result =
       end_ids
       |> CotoService.get_by_ids()
-      |> Enum.filter(&(&1))
-      |> Enum.map(fn(end_coto) ->
-          case cotonoma do
-            nil ->
-              CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi)
-            cotonoma ->
-              CotoGraphService.connect(Sips.conn, start_coto, end_coto, amishi, cotonoma)
-          end
-          broadcast_connect(
-            CotoService.complement(start_coto, amishi), 
-            CotoService.complement(end_coto, amishi), 
-            amishi, 
-            conn.assigns.client_id)
-        end)
-    json conn, result
+      |> Enum.filter(& &1)
+      |> Enum.map(fn end_coto ->
+        case cotonoma do
+          nil ->
+            CotoGraphService.connect(Sips.conn(), start_coto, end_coto, linking_phrase, amishi)
+
+          cotonoma ->
+            CotoGraphService.connect(
+              Sips.conn(),
+              start_coto,
+              end_coto,
+              linking_phrase,
+              amishi,
+              cotonoma
+            )
+        end
+
+        broadcast_connect(
+          CotoService.complement(start_coto, amishi),
+          CotoService.complement(end_coto, amishi),
+          amishi,
+          conn.assigns.client_id
+        )
+      end)
+
+    json(conn, result)
   end
 
   def disconnect(conn, %{"start_id" => start_id, "end_id" => end_id}, amishi) do
     start_coto = ensure_to_get_coto(start_id)
     end_coto = ensure_to_get_coto(end_id)
-    CotoGraphService.disconnect(Sips.conn, start_coto, end_coto, amishi)
+    CotoGraphService.disconnect(Sips.conn(), start_coto, end_coto, amishi)
     broadcast_disconnect(start_coto.id, end_coto.id, amishi, conn.assigns.client_id)
-    text conn, "ok"
+    text(conn, "ok")
   end
 
   def reorder(conn, %{"end_ids" => end_ids} = params, amishi) do
     case params do
       %{"start_id" => start_id} ->
         start_coto = ensure_to_get_coto(start_id)
-        CotoGraphService.reorder_connections(Sips.conn, start_coto, end_ids, amishi)
+        CotoGraphService.reorder_connections(Sips.conn(), start_coto, end_ids, amishi)
         broadcast_reorder(start_id, end_ids, amishi, conn.assigns.client_id)
-      _ -> 
+
+      _ ->
         case get_cotonoma_if_specified(params) do
           nil ->
-            CotoGraphService.reorder_connections(Sips.conn, amishi, end_ids)
+            CotoGraphService.reorder_connections(Sips.conn(), amishi, end_ids)
+
           cotonoma ->
             cotonoma_coto = CotoService.complement_amishi(cotonoma.coto, amishi)
-            CotoGraphService.reorder_connections(Sips.conn, cotonoma_coto, end_ids, amishi)
+            CotoGraphService.reorder_connections(Sips.conn(), cotonoma_coto, end_ids, amishi)
             broadcast_reorder(cotonoma_coto.id, end_ids, amishi, conn.assigns.client_id)
         end
     end
-    text conn, "ok"
+
+    text(conn, "ok")
   end
 
   defp ensure_to_get_coto(coto_id) do
@@ -128,7 +156,9 @@ defmodule CotoamiWeb.CotoGraphController do
     case params do
       %{"cotonoma_key" => cotonoma_key} ->
         CotonomaService.get_by_key!(cotonoma_key)
-      _ -> nil
+
+      _ ->
+        nil
     end
   end
 end

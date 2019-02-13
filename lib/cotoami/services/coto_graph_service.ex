@@ -213,7 +213,7 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  def pin(bolt_conn, %Coto{} = coto, %Amishi{} = amishi) do
+  def pin(bolt_conn, %Coto{} = coto, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
     |> register_amishi(amishi)
     |> register_coto(coto)
@@ -221,20 +221,19 @@ defmodule Cotoami.CotoGraphService do
       amishi.id,
       coto.id,
       @rel_type_has_a,
-      common_rel_props(amishi.id)
+      common_rel_props(amishi, linking_phrase)
     )
   end
 
-  def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, %Amishi{} = amishi) do
+  def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
-    |> register_amishi(amishi)
-    |> register_coto(coto)
     |> register_cotonoma(cotonoma)
+    |> register_coto(coto)
     |> Neo4jService.get_or_create_ordered_relationship(
       cotonoma.coto.id,
       coto.id,
       @rel_type_has_a,
-      common_rel_props(amishi.id, cotonoma.id)
+      common_rel_props(amishi, linking_phrase, cotonoma)
     )
   end
 
@@ -269,25 +268,34 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.delete_relationship(cotonoma_coto.id, coto.id, @rel_type_has_a)
   end
 
-  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
-    do_connect(bolt_conn, source, target, amishi.id, nil)
+  def connect(bolt_conn, %Coto{} = source, %Coto{} = target, linking_phrase, %Amishi{} = amishi) do
+    do_connect(bolt_conn, source, target, linking_phrase, amishi, nil)
   end
 
   def connect(
         bolt_conn,
         %Coto{} = source,
         %Coto{} = target,
+        linking_phrase,
         %Amishi{} = amishi,
         %Cotonoma{} = cotonoma
       ) do
-    do_connect(bolt_conn, source, target, amishi.id, cotonoma.id)
+    do_connect(bolt_conn, source, target, linking_phrase, amishi, cotonoma)
   end
 
-  defp do_connect(bolt_conn, %Coto{} = source, %Coto{} = target, amishi_id, cotonoma_id) do
+  defp do_connect(
+         bolt_conn,
+         %Coto{} = source,
+         %Coto{} = target,
+         linking_phrase,
+         %Amishi{} = amishi,
+         cotonoma
+       ) do
     rel_props =
-      if cotonoma_id,
-        do: common_rel_props(amishi_id, cotonoma_id),
-        else: common_rel_props(amishi_id)
+      case cotonoma do
+        nil -> common_rel_props(amishi, linking_phrase)
+        cotonoma -> common_rel_props(amishi, linking_phrase, cotonoma)
+      end
 
     bolt_conn
     |> register_coto(source)
@@ -435,16 +443,17 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
   end
 
-  defp common_rel_props(amishi_id) do
+  defp common_rel_props(%Amishi{id: amishi_id}, linking_phrase) do
     %{
       created_by: amishi_id,
-      created_at: System.system_time(:millisecond)
+      created_at: System.system_time(:millisecond),
+      linking_phrase: linking_phrase
     }
+    |> drop_nil
   end
 
-  defp common_rel_props(amishi_id, cotonoma_id) do
-    amishi_id
-    |> common_rel_props()
+  defp common_rel_props(%Amishi{} = amishi, linking_phrase, %Cotonoma{id: cotonoma_id}) do
+    common_rel_props(amishi, linking_phrase)
     |> Map.put(:created_in, cotonoma_id)
   end
 
