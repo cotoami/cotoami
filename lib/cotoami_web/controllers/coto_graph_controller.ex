@@ -54,6 +54,7 @@ defmodule CotoamiWeb.CotoGraphController do
             broadcast_connect(
               cotonoma.coto,
               CotoService.complement(coto, amishi),
+              linking_phrase,
               amishi,
               conn.assigns.client_id
             )
@@ -107,6 +108,7 @@ defmodule CotoamiWeb.CotoGraphController do
         broadcast_connect(
           CotoService.complement(start_coto, amishi),
           CotoService.complement(end_coto, amishi),
+          linking_phrase,
           amishi,
           conn.assigns.client_id
         )
