@@ -15,7 +15,7 @@ defmodule Cotoami.CotoGraphService do
   @label_coto "Coto"
   @label_cotonoma "Cotonoma"
 
-  @rel_type_has_a "HAS_A"
+  @type_connection "HAS_A"
 
   def get_graph_in_amishi(bolt_conn, %Amishi{id: amishi_id}) do
     query =
@@ -23,7 +23,7 @@ defmodule Cotoami.CotoGraphService do
         ~s"""
           UNION
 
-          MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          MATCH (parent:#{@label_coto})-[has:#{@type_connection}
             { created_by: $created_by }]->(child:#{@label_coto})
           WHERE NOT exists(has.created_in)
           WITH DISTINCT parent, has, child
@@ -51,7 +51,7 @@ defmodule Cotoami.CotoGraphService do
         ~s"""
           UNION
 
-          MATCH (parent:#{@label_coto})-[has:#{@rel_type_has_a}
+          MATCH (parent:#{@label_coto})-[has:#{@type_connection}
             { created_in: $created_in }]->(child:#{@label_coto})
           WITH DISTINCT parent, has, child
           ORDER BY has.created_at DESC
@@ -85,8 +85,8 @@ defmodule Cotoami.CotoGraphService do
   # until finding an end edge or a cotonoma
   defp query_graph_from_uuid do
     ~s"""
-      MATCH path = ({ uuid: $uuid })-[:#{@rel_type_has_a}*0..]->
-        (parent)-[has:#{@rel_type_has_a}]->(child:#{@label_coto})
+      MATCH path = ({ uuid: $uuid })-[:#{@type_connection}*0..]->
+        (parent)-[has:#{@type_connection}]->(child:#{@label_coto})
       WITH size(filter(n IN tail(nodes(path)) WHERE n:#{@label_cotonoma}))
         AS subcotonomas, parent, has, child
       WHERE (child:#{@label_cotonoma} AND subcotonomas = 1) OR
@@ -187,7 +187,7 @@ defmodule Cotoami.CotoGraphService do
 
   def export_connections_by_amishi(bolt_conn, %Amishi{id: amishi_id}) do
     query = ~s"""
-      MATCH (parent)-[has:#{@rel_type_has_a} { created_by: $amishi_id }]->(child)
+      MATCH (parent)-[has:#{@type_connection} { created_by: $amishi_id }]->(child)
       RETURN DISTINCT parent, has, child
       ORDER BY has.created_at
     """
@@ -203,7 +203,7 @@ defmodule Cotoami.CotoGraphService do
 
   def count_connections_in_cotonoma(bolt_conn, %Cotonoma{id: cotonoma_id}) do
     query = ~s"""
-      MATCH (parent)-[has:#{@rel_type_has_a} { created_in: $created_in }]->(child)
+      MATCH (parent)-[has:#{@type_connection} { created_in: $created_in }]->(child)
       RETURN count(DISTINCT has) AS connections
     """
 
@@ -220,7 +220,7 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.get_or_create_ordered_relationship(
       amishi.id,
       coto.id,
-      @rel_type_has_a,
+      @type_connection,
       connection_props(amishi, linking_phrase)
     )
   end
@@ -232,14 +232,14 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.get_or_create_ordered_relationship(
       cotonoma.coto.id,
       coto.id,
-      @rel_type_has_a,
+      @type_connection,
       connection_props(amishi, linking_phrase, cotonoma)
     )
   end
 
   def pinned_cotonoma_keys(bolt_conn, %Amishi{id: amishi_id}) do
     query = ~s"""
-      MATCH ({ uuid: $uuid })-[has:#{@rel_type_has_a}]->(cotonoma:#{@label_cotonoma})
+      MATCH ({ uuid: $uuid })-[has:#{@type_connection}]->(cotonoma:#{@label_cotonoma})
       RETURN cotonoma.cotonoma_key AS key
       ORDER BY has.#{Neo4jService.rel_prop_order()}
     """
@@ -251,7 +251,7 @@ defmodule Cotoami.CotoGraphService do
 
   def unpin(bolt_conn, %Coto{id: coto_id}, %Amishi{id: amishi_id}) do
     bolt_conn
-    |> Neo4jService.delete_relationship(amishi_id, coto_id, @rel_type_has_a)
+    |> Neo4jService.delete_relationship(amishi_id, coto_id, @type_connection)
   end
 
   def unpin(
@@ -265,7 +265,7 @@ defmodule Cotoami.CotoGraphService do
 
     bolt_conn
     |> ensure_disconnectable(cotonoma_coto, coto, amishi)
-    |> Neo4jService.delete_relationship(cotonoma_coto.id, coto.id, @rel_type_has_a)
+    |> Neo4jService.delete_relationship(cotonoma_coto.id, coto.id, @type_connection)
   end
 
   def connect(bolt_conn, %Coto{} = source, %Coto{} = target, linking_phrase, %Amishi{} = amishi) do
@@ -303,7 +303,7 @@ defmodule Cotoami.CotoGraphService do
     |> Neo4jService.get_or_create_ordered_relationship(
       source.id,
       target.id,
-      @rel_type_has_a,
+      @type_connection,
       rel_props
     )
   end
@@ -319,7 +319,7 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
     |> register_amishi(amishi)
     |> register_coto(target)
-    |> Neo4jService.get_or_create_relationship(amishi.id, target.id, @rel_type_has_a, rel_props)
+    |> Neo4jService.get_or_create_relationship(amishi.id, target.id, @type_connection, rel_props)
   end
 
   def import_connection(
@@ -334,7 +334,7 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
     |> register_coto(source)
     |> register_coto(target)
-    |> Neo4jService.get_or_create_relationship(source.id, target.id, @rel_type_has_a, rel_props)
+    |> Neo4jService.get_or_create_relationship(source.id, target.id, @type_connection, rel_props)
   end
 
   defp rel_props_from_json(connection_json, %Amishi{id: amishi_id}) do
@@ -351,7 +351,7 @@ defmodule Cotoami.CotoGraphService do
   def disconnect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
     bolt_conn
     |> ensure_disconnectable(source, target, amishi)
-    |> Neo4jService.delete_relationship(source.id, target.id, @rel_type_has_a)
+    |> Neo4jService.delete_relationship(source.id, target.id, @type_connection)
   end
 
   defp ensure_disconnectable(
@@ -376,7 +376,7 @@ defmodule Cotoami.CotoGraphService do
     if Map.get(amishi, :owner) || source_amishi_id == amishi_id do
       true
     else
-      case Neo4jService.get_relationship(bolt_conn, source_id, target_id, @rel_type_has_a) do
+      case Neo4jService.get_relationship(bolt_conn, source_id, target_id, @type_connection) do
         nil -> true
         rel -> rel.properties["created_by"] == amishi_id
       end
@@ -465,7 +465,7 @@ defmodule Cotoami.CotoGraphService do
       )
       when is_list(target_uuids) do
     bolt_conn
-    |> Neo4jService.update_relationships_order(amishi_id, target_uuids, @rel_type_has_a)
+    |> Neo4jService.update_relationships_order(amishi_id, target_uuids, @type_connection)
   end
 
   def reorder_connections(
@@ -477,7 +477,7 @@ defmodule Cotoami.CotoGraphService do
       when is_list(target_uuids) do
     bolt_conn
     |> ensure_reorderable(source, amishi)
-    |> Neo4jService.update_relationships_order(source_uuid, target_uuids, @rel_type_has_a)
+    |> Neo4jService.update_relationships_order(source_uuid, target_uuids, @type_connection)
   end
 
   defp ensure_reorderable(
