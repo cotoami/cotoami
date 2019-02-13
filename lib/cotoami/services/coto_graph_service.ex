@@ -221,7 +221,7 @@ defmodule Cotoami.CotoGraphService do
       amishi.id,
       coto.id,
       @rel_type_has_a,
-      common_rel_props(amishi, linking_phrase)
+      connection_props(amishi, linking_phrase)
     )
   end
 
@@ -233,7 +233,7 @@ defmodule Cotoami.CotoGraphService do
       cotonoma.coto.id,
       coto.id,
       @rel_type_has_a,
-      common_rel_props(amishi, linking_phrase, cotonoma)
+      connection_props(amishi, linking_phrase, cotonoma)
     )
   end
 
@@ -293,8 +293,8 @@ defmodule Cotoami.CotoGraphService do
        ) do
     rel_props =
       case cotonoma do
-        nil -> common_rel_props(amishi, linking_phrase)
-        cotonoma -> common_rel_props(amishi, linking_phrase, cotonoma)
+        nil -> connection_props(amishi, linking_phrase)
+        cotonoma -> connection_props(amishi, linking_phrase, cotonoma)
       end
 
     bolt_conn
@@ -444,7 +444,7 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
   end
 
-  defp common_rel_props(%Amishi{id: amishi_id}, linking_phrase) do
+  defp connection_props(%Amishi{id: amishi_id}, linking_phrase) do
     %{
       created_by: amishi_id,
       created_at: System.system_time(:millisecond),
@@ -453,8 +453,8 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp common_rel_props(%Amishi{} = amishi, linking_phrase, %Cotonoma{id: cotonoma_id}) do
-    common_rel_props(amishi, linking_phrase)
+  defp connection_props(%Amishi{} = amishi, linking_phrase, %Cotonoma{id: cotonoma_id}) do
+    connection_props(amishi, linking_phrase)
     |> Map.put(:created_in, cotonoma_id)
   end
 
