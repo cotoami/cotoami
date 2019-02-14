@@ -175,12 +175,11 @@ removeCoto cotoId graph =
                         List.filter (\conn -> conn.end /= cotoId) children
                     )
     in
-    { graph
-        | cotos = graph.cotos |> Dict.remove cotoId
-        , rootConnections = rootConnections
-        , connections = connections
-    }
-        |> updateReachableCotoIds
+    graph
+        |> update
+            (Dict.remove cotoId graph.cotos)
+            rootConnections
+            connections
 
 
 updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
