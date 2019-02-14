@@ -16,6 +16,7 @@ import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph)
+import App.Types.Graph.Render
 import App.Views.Coto
 import App.Views.Reorder
 import App.Views.StockMsg as StockMsg exposing (Msg(..), StockView(..))
@@ -91,7 +92,7 @@ update context msg ({ stockView } as model) =
 renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
 renderGraph context model =
     if model.stockView.view == GraphView then
-        App.Ports.Graph.renderCotoGraph context.cotonoma model.graph
+        App.Types.Graph.Render.render context.cotonoma model.graph
 
     else
         Cmd.none

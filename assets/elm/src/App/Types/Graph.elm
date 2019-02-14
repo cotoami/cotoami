@@ -19,7 +19,6 @@ module App.Types.Graph exposing
     , removeCoto
     , reorder
     , swapOrder
-    , toTopicGraph
     , update
     , updateCoto
     )
@@ -305,34 +304,6 @@ collectReachableCotoIds sourceIds graph collectedIds =
         collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
-deleteInvalidConnections : Graph -> Graph
-deleteInvalidConnections graph =
-    let
-        rootConnections =
-            graph.rootConnections
-                |> List.filter (\conn -> Dict.member conn.end graph.cotos)
-
-        connections =
-            graph.connections
-                |> Dict.toList
-                |> List.filterMap
-                    (\( sourceId, conns ) ->
-                        if Dict.member sourceId graph.cotos then
-                            Just
-                                ( sourceId
-                                , List.filter
-                                    (\conn -> Dict.member conn.end graph.cotos)
-                                    conns
-                                )
-
-                        else
-                            Nothing
-                    )
-                |> Dict.fromList
-    in
-    { graph | rootConnections = rootConnections, connections = connections }
-
-
 updateReachableCotoIds : Graph -> Graph
 updateReachableCotoIds graph =
     let
@@ -345,30 +316,3 @@ updateReachableCotoIds graph =
             collectReachableCotoIds pinnedCotoIds graph Set.empty
     in
     { graph | reachableCotoIds = reachableCotoIds }
-
-
-excludeUnreachables : Graph -> Graph
-excludeUnreachables graph =
-    let
-        reachableCotos =
-            Dict.filter
-                (\cotoId coto -> Set.member cotoId graph.reachableCotoIds)
-                graph.cotos
-    in
-    { graph | cotos = reachableCotos }
-        |> deleteInvalidConnections
-
-
-toTopicGraph : Graph -> Graph
-toTopicGraph graph =
-    let
-        topicCotos =
-            graph.cotos
-                |> Dict.filter
-                    (\cotoId coto ->
-                        isJust (App.Types.Coto.toTopic coto)
-                    )
-    in
-    { graph | cotos = topicCotos }
-        |> deleteInvalidConnections
-        |> excludeUnreachables
