@@ -1,25 +1,12 @@
 port module App.Ports.Graph exposing
     ( Edge
+    , Model
     , Node
     , destroyGraph
     , nodeClicked
     , renderGraph
     , resizeGraph
     )
-
-
-port renderGraph :
-    { rootNodeId : String, nodes : List Node, edges : List Edge }
-    -> Cmd msg
-
-
-port resizeGraph : () -> Cmd msg
-
-
-port destroyGraph : () -> Cmd msg
-
-
-port nodeClicked : (String -> msg) -> Sub msg
 
 
 type alias Node =
@@ -35,3 +22,22 @@ type alias Edge =
     { source : String
     , target : String
     }
+
+
+type alias Model =
+    { rootNodeId : String
+    , nodes : List Node
+    , edges : List Edge
+    }
+
+
+port renderGraph : Model -> Cmd msg
+
+
+port resizeGraph : () -> Cmd msg
+
+
+port destroyGraph : () -> Cmd msg
+
+
+port nodeClicked : (String -> msg) -> Sub msg

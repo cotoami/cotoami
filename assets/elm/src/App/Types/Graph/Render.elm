@@ -1,6 +1,7 @@
 module App.Types.Graph.Render exposing (render)
 
 import App.Ports.Graph exposing (Node)
+import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import Dict
@@ -8,16 +9,20 @@ import Exts.Maybe exposing (isJust)
 import Set
 
 
-render : Maybe Cotonoma -> Graph -> Cmd msg
-render currentCotonoma graph =
-    doRenderCotoGraph
-        (currentCotonomaToNode graph currentCotonoma)
-        (toTopicGraph graph)
+render : Context context -> Graph -> Cmd msg
+render context graph =
+    graph
+        |> toTopicGraph
+        |> convert context
+        |> App.Ports.Graph.renderGraph
 
 
-doRenderCotoGraph : Node -> Graph -> Cmd msg
-doRenderCotoGraph root graph =
+convert : Context context -> Graph -> App.Ports.Graph.Model
+convert context graph =
     let
+        rootNode =
+            currentCotonomaAsNode context
+
         nodes =
             graph.cotos
                 |> Dict.values
@@ -27,7 +32,7 @@ doRenderCotoGraph root graph =
             graph.rootConnections
                 |> List.map
                     (\conn ->
-                        { source = root.id
+                        { source = rootNode.id
                         , target = conn.end
                         }
                     )
@@ -47,26 +52,15 @@ doRenderCotoGraph root graph =
                     )
                 |> List.concat
     in
-    App.Ports.Graph.renderGraph
-        { rootNodeId = root.id
-        , nodes = root :: nodes
-        , edges = rootEdges ++ edges
-        }
-
-
-cotoToNode : Graph -> Coto -> Node
-cotoToNode graph coto =
-    { id = coto.id
-    , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
-    , pinned = App.Types.Graph.pinned coto.id graph
-    , asCotonoma = isJust coto.asCotonoma
-    , imageUrl = Maybe.map .avatarUrl coto.amishi
+    { rootNodeId = rootNode.id
+    , nodes = rootNode :: nodes
+    , edges = rootEdges ++ edges
     }
 
 
-currentCotonomaToNode : Graph -> Maybe Cotonoma -> Node
-currentCotonomaToNode graph currentCotonoma =
-    currentCotonoma
+currentCotonomaAsNode : Context context -> Node
+currentCotonomaAsNode context =
+    context.cotonoma
         |> Maybe.map
             (\cotonoma ->
                 { id = cotonoma.cotoId
@@ -83,6 +77,16 @@ currentCotonomaToNode graph currentCotonoma =
             , asCotonoma = False
             , imageUrl = Nothing
             }
+
+
+cotoToNode : Graph -> Coto -> Node
+cotoToNode graph coto =
+    { id = coto.id
+    , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
+    , pinned = App.Types.Graph.pinned coto.id graph
+    , asCotonoma = isJust coto.asCotonoma
+    , imageUrl = Maybe.map .avatarUrl coto.amishi
+    }
 
 
 toTopicGraph : Graph -> Graph

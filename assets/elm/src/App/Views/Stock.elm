@@ -92,7 +92,7 @@ update context msg ({ stockView } as model) =
 renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
 renderGraph context model =
     if model.stockView.view == GraphView then
-        App.Types.Graph.Render.render context.cotonoma model.graph
+        App.Types.Graph.Render.render context model.graph
 
     else
         Cmd.none
