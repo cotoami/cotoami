@@ -2,7 +2,6 @@ module App.Server.Graph exposing
     ( connect
     , connectTask
     , connectUrl
-    , cotoIdsAsJsonBody
     , decodeConnection
     , decodeCotonomaKeyField
     , decodeGraph
