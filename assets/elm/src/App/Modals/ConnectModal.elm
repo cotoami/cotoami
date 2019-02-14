@@ -114,8 +114,9 @@ update context msg ({ connectModal } as model) =
                             context.clientId
                             (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
                             target.id
-                            (List.map (\coto -> coto.id) objects)
+                            (List.map .id objects)
                             direction
+                            Nothing
                     )
 
         PostAndConnectToSelection content direction ->
@@ -171,9 +172,6 @@ connectPostToSelection context direction post model =
                 let
                     objects =
                         App.Submodels.LocalCotos.getSelectedCotos context model
-
-                    maybeCotonomaKey =
-                        Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma
                 in
                 ( App.Submodels.LocalCotos.connect
                     context.session
@@ -183,10 +181,11 @@ connectPostToSelection context direction post model =
                     model
                 , App.Server.Graph.connect
                     context.clientId
-                    maybeCotonomaKey
+                    (Maybe.map .key model.cotonoma)
                     target.id
                     (List.map (\coto -> coto.id) objects)
                     direction
+                    Nothing
                 )
             )
         |> Maybe.withDefault ( model, Cmd.none )

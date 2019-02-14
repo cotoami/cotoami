@@ -1,6 +1,5 @@
 module App.Server.Graph exposing
     ( connect
-    , connectTask
     , connectUrl
     , decodeConnection
     , decodeCotonomaKeyField
@@ -90,16 +89,21 @@ pinUrl maybeCotonomaKey =
             "/api/graph/" ++ cotonomaKey ++ "/pin"
 
 
-cotoIdsAsJsonBody : String -> List CotoId -> Http.Body
-cotoIdsAsJsonBody key cotoIds =
-    Http.jsonBody <|
-        Encode.object
-            [ ( key
-              , cotoIds
-                    |> List.map Encode.string
-                    |> Encode.list
-              )
-            ]
+connectingParamsAsBody : String -> List CotoId -> Maybe String -> Http.Body
+connectingParamsAsBody key targetIds linkingPhrase =
+    Encode.object
+        [ ( key
+          , targetIds
+                |> List.map Encode.string
+                |> Encode.list
+          )
+        , ( "linking_phrase"
+          , linkingPhrase
+                |> Maybe.map Encode.string
+                |> Maybe.withDefault Encode.null
+          )
+        ]
+        |> Http.jsonBody
 
 
 pinCotos : ClientId -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
@@ -109,9 +113,10 @@ pinCotos clientId maybeCotonomaKey cotoIds =
             pinUrl maybeCotonomaKey
 
         body =
-            cotoIdsAsJsonBody "coto_ids" cotoIds
+            connectingParamsAsBody "coto_ids" cotoIds Nothing
     in
-    Http.send CotoPinned (httpPut url clientId body (Decode.succeed "done"))
+    httpPut url clientId body (Decode.succeed "done")
+        |> Http.send CotoPinned
 
 
 unpinCoto : ClientId -> Maybe CotonomaKey -> CotoId -> Cmd Msg
@@ -120,7 +125,7 @@ unpinCoto clientId maybeCotonomaKey cotoId =
         url =
             pinUrl maybeCotonomaKey ++ "/" ++ cotoId
     in
-    Http.send CotoUnpinned (httpDelete url clientId)
+    httpDelete url clientId |> Http.send CotoUnpinned
 
 
 connectUrl : Maybe CotonomaKey -> CotoId -> String
@@ -133,14 +138,15 @@ connectUrl maybeCotonomaKey startId =
         |> Maybe.withDefault ("/api/graph/connection/" ++ startId)
 
 
-connectTask :
+makeConnectTask :
     ClientId
     -> Maybe CotonomaKey
     -> CotoId
     -> List CotoId
     -> Direction
+    -> Maybe String
     -> Task Http.Error (List String)
-connectTask clientId maybeCotonomaKey subject objects direction =
+makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhrase =
     let
         requests =
             case direction of
@@ -148,7 +154,7 @@ connectTask clientId maybeCotonomaKey subject objects direction =
                     [ httpPut
                         (connectUrl maybeCotonomaKey subject)
                         clientId
-                        (cotoIdsAsJsonBody "end_ids" objects)
+                        (connectingParamsAsBody "end_ids" objects linkingPhrase)
                         (Decode.succeed "done")
                     ]
 
@@ -158,7 +164,7 @@ connectTask clientId maybeCotonomaKey subject objects direction =
                             httpPut
                                 (connectUrl maybeCotonomaKey startId)
                                 clientId
-                                (cotoIdsAsJsonBody "end_ids" [ subject ])
+                                (connectingParamsAsBody "end_ids" [ subject ] linkingPhrase)
                                 (Decode.succeed "done")
                         )
                         objects
@@ -166,9 +172,16 @@ connectTask clientId maybeCotonomaKey subject objects direction =
     requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : ClientId -> Maybe CotonomaKey -> CotoId -> List CotoId -> Direction -> Cmd Msg
-connect clientId maybeCotonomaKey subject objects direction =
-    connectTask clientId maybeCotonomaKey subject objects direction
+connect :
+    ClientId
+    -> Maybe CotonomaKey
+    -> CotoId
+    -> List CotoId
+    -> Direction
+    -> Maybe String
+    -> Cmd Msg
+connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
+    makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhrase
         |> Task.attempt Connected
 
 
@@ -204,10 +217,10 @@ reorder tag clientId maybeCotonomaKey maybeStartId endIds =
                             )
                         |> Maybe.withDefault "/api/graph/reorder"
                     )
+
+        body =
+            Encode.object
+                [ ( "end_ids", endIds |> List.map Encode.string |> Encode.list ) ]
+                |> Http.jsonBody
     in
-    Http.send tag <|
-        httpPut
-            url
-            clientId
-            (cotoIdsAsJsonBody "end_ids" endIds)
-            (Decode.succeed "done")
+    httpPut url clientId body (Decode.succeed "done") |> Http.send tag
