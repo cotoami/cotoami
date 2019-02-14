@@ -1,5 +1,5 @@
 defmodule Cotoami.CotoServiceTest do
-  use Cotoami.ModelCase
+  use Cotoami.DataCase
   import ShorterMaps
 
   alias Cotoami.{
