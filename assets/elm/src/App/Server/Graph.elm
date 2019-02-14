@@ -52,12 +52,9 @@ fetchGraph : Maybe CotonomaKey -> Cmd Msg
 fetchGraph maybeCotonomaKey =
     let
         url =
-            case maybeCotonomaKey of
-                Nothing ->
-                    "/api/graph"
-
-                Just cotonomaKey ->
-                    "/api/graph/" ++ cotonomaKey
+            maybeCotonomaKey
+                |> Maybe.map (\key -> "/api/graph/" ++ key)
+                |> Maybe.withDefault "/api/graph"
     in
     Http.send GraphFetched (Http.get url decodeGraph)
 
@@ -81,12 +78,9 @@ fetchSubgraphIfCotonoma graph cotoId =
 
 pinUrl : Maybe CotonomaKey -> String
 pinUrl maybeCotonomaKey =
-    case maybeCotonomaKey of
-        Nothing ->
-            "/api/graph/pin"
-
-        Just cotonomaKey ->
-            "/api/graph/" ++ cotonomaKey ++ "/pin"
+    maybeCotonomaKey
+        |> Maybe.map (\key -> "/api/graph/" ++ key ++ "/pin")
+        |> Maybe.withDefault "/api/graph/pin"
 
 
 connectingParamsAsBody : String -> List CotoId -> Maybe String -> Http.Body
@@ -131,10 +125,7 @@ unpinCoto clientId maybeCotonomaKey cotoId =
 connectUrl : Maybe CotonomaKey -> CotoId -> String
 connectUrl maybeCotonomaKey startId =
     maybeCotonomaKey
-        |> Maybe.map
-            (\cotonomaKey ->
-                "/api/graph/" ++ cotonomaKey ++ "/connection/" ++ startId
-            )
+        |> Maybe.map (\key -> "/api/graph/" ++ key ++ "/connection/" ++ startId)
         |> Maybe.withDefault ("/api/graph/connection/" ++ startId)
 
 
