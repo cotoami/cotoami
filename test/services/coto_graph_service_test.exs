@@ -303,6 +303,37 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
+  describe "when there is a connection with a linking phrase" do
+    setup ~M{conn, amishi} do
+      source = CotoService.create!(amishi, "graph")
+      target = CotoService.create!(amishi, "a line")
+      CotoGraphService.connect(conn, source, target, "expressed by", amishi)
+      ~M{source, target}
+    end
+
+    test "the relationship should has the linking phrase", ~M{conn, amishi, source, target} do
+      assert [%Relationship{properties: %{"linking_phrase" => "expressed by"}}] =
+               Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
+
+      source_id = source.id
+      target_id = target.id
+      amishi_id = amishi.id
+
+      assert %CotoGraph{
+               connections: %{
+                 ^source_id => [
+                   %{
+                     "start" => ^source_id,
+                     "end" => ^target_id,
+                     "linking_phrase" => "expressed by",
+                     "created_by" => ^amishi_id
+                   }
+                 ]
+               }
+             } = CotoGraphService.get_graph_from_uuid(conn, source.id)
+    end
+  end
+
   describe "when a coto has two outbound connections" do
     # a -> b
     #   -> c
