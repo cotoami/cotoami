@@ -20,7 +20,7 @@ module App.Types.Graph exposing
     , reorder
     , swapOrder
     , update
-    , updateCoto
+    , updateCotoContent
     )
 
 import App.Types.Connection exposing (Connection, Direction(..))
@@ -136,17 +136,17 @@ addCoto coto graph =
     { graph | cotos = Dict.insert coto.id coto graph.cotos }
 
 
-updateCoto_ : CotoId -> (Coto -> Coto) -> Graph -> Graph
-updateCoto_ cotoId update graph =
+updateCoto : CotoId -> (Coto -> Coto) -> Graph -> Graph
+updateCoto cotoId update graph =
     { graph | cotos = Dict.update cotoId (Maybe.map update) graph.cotos }
 
 
-updateCoto : Coto -> Graph -> Graph
-updateCoto coto graph =
-    updateCoto_
+updateCotoContent : Coto -> Graph -> Graph
+updateCotoContent coto graph =
+    updateCoto
         coto.id
-        (\currentCoto ->
-            { currentCoto
+        (\targetCoto ->
+            { targetCoto
                 | content = coto.content
                 , summary = coto.summary
                 , asCotonoma = coto.asCotonoma
@@ -157,7 +157,10 @@ updateCoto coto graph =
 
 cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
 cotonomatize cotonoma cotoId graph =
-    updateCoto_ cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
+    updateCoto
+        cotoId
+        (\targetCoto -> { targetCoto | asCotonoma = Just cotonoma })
+        graph
 
 
 removeCoto : CotoId -> Graph -> Graph

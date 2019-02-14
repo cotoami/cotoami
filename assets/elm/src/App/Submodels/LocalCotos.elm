@@ -121,7 +121,7 @@ updateCoto : Coto -> LocalCotos a -> LocalCotos a
 updateCoto coto localCotos =
     { localCotos
         | timeline = App.Types.Timeline.updatePost coto localCotos.timeline
-        , graph = App.Types.Graph.updateCoto coto localCotos.graph
+        , graph = App.Types.Graph.updateCotoContent coto localCotos.graph
     }
 
 
