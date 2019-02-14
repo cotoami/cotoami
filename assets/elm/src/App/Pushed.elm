@@ -10,6 +10,7 @@ import App.Server.Cotonoma
 import App.Submodels.LocalCotos
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph
+import App.Types.Graph.Connect
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import Exts.Maybe exposing (isJust)
@@ -103,7 +104,7 @@ handleConnect payload model =
             (\cotonoma ->
                 if cotonoma.cotoId == payload.body.start.id then
                     Just <|
-                        App.Types.Graph.pinCoto
+                        App.Types.Graph.Connect.pin
                             payload.amishi.id
                             payload.body.end
                             model.graph
@@ -115,7 +116,7 @@ handleConnect payload model =
             (App.Submodels.LocalCotos.getCoto payload.body.start.id model
                 |> Maybe.map
                     (\startCoto ->
-                        App.Types.Graph.connect
+                        App.Types.Graph.Connect.connect
                             payload.amishi.id
                             startCoto
                             payload.body.end
@@ -145,7 +146,7 @@ handleDisconnect payload model =
     let
         -- Delete the connection
         graph1 =
-            App.Types.Graph.disconnect
+            App.Types.Graph.Connect.disconnect
                 ( payload.body.startId, payload.body.endId )
                 model.graph
 
@@ -156,7 +157,7 @@ handleDisconnect payload model =
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then
                             Just <|
-                                App.Types.Graph.unpinCoto
+                                App.Types.Graph.Connect.unpin
                                     payload.body.endId
                                     graph1
 

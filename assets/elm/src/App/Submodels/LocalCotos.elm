@@ -22,6 +22,7 @@ import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph)
+import App.Types.Graph.Connect
 import App.Types.Post exposing (Post)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Session exposing (Session)
@@ -215,7 +216,7 @@ connect maybeSession direction cotos target localCotos =
             maybeSession
                 |> Maybe.map
                     (\session ->
-                        App.Types.Graph.batchConnect
+                        App.Types.Graph.Connect.batch
                             session.amishi.id
                             direction
                             cotos

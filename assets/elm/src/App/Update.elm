@@ -31,6 +31,7 @@ import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
 import App.Types.Graph
+import App.Types.Graph.Connect
 import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
@@ -376,7 +377,13 @@ update msg model =
         PinCoto cotoId ->
             Maybe.map2
                 (\session coto ->
-                    { model | graph = App.Types.Graph.pinCoto session.amishi.id coto model.graph }
+                    { model
+                        | graph =
+                            App.Types.Graph.Connect.pin
+                                session.amishi.id
+                                coto
+                                model.graph
+                    }
                         |> withCmd
                             (\model ->
                                 Cmd.batch
@@ -418,7 +425,7 @@ update msg model =
                 |> withoutCmd
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> App.Types.Graph.unpinCoto cotoId }
+            { model | graph = model.graph |> App.Types.Graph.Connect.unpin cotoId }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.unpinCoto
@@ -440,7 +447,7 @@ update msg model =
             model |> withoutCmd
 
         DeleteConnection ( startId, endId ) ->
-            { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
+            { model | graph = App.Types.Graph.Connect.disconnect ( startId, endId ) model.graph }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.disconnect

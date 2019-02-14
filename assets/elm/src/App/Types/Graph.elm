@@ -1,11 +1,11 @@
 module App.Types.Graph exposing
-    ( Graph
+    ( ConnectionDict
+    , CotoDict
+    , Graph
     , addCoto
-    , batchConnect
-    , connect
+    , connected
     , cotonomatize
     , defaultGraph
-    , disconnect
     , getCoto
     , getOutboundConnections
     , getParents
@@ -15,17 +15,15 @@ module App.Types.Graph exposing
     , mergeSubgraph
     , moveToFirst
     , moveToLast
-    , pinCoto
     , pinned
     , removeCoto
     , reorder
     , swapOrder
     , toTopicGraph
-    , unpinCoto
+    , update
     , updateCoto
     )
 
-import App.Types.Amishi exposing (AmishiId)
 import App.Types.Connection exposing (Connection, Direction(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
 import Dict exposing (Dict)
@@ -35,12 +33,16 @@ import Maybe exposing (withDefault)
 import Set exposing (Set)
 
 
+type alias CotoDict =
+    Dict CotoId Coto
+
+
 type alias ConnectionDict =
     Dict CotoId (List Connection)
 
 
 type alias Graph =
-    { cotos : Dict CotoId Coto
+    { cotos : CotoDict
     , rootConnections : List Connection
     , connections : ConnectionDict
     , reachableCotoIds : Set CotoId
@@ -56,23 +58,28 @@ defaultGraph =
     }
 
 
-initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
-initGraph cotos rootConnections connections =
-    { cotos = cotos
-    , rootConnections = rootConnections
-    , connections = connections
-    , reachableCotoIds = Set.empty
+update : CotoDict -> List Connection -> ConnectionDict -> Graph -> Graph
+update cotos rootConnections connections graph =
+    { graph
+        | cotos = cotos
+        , rootConnections = rootConnections
+        , connections = connections
     }
         |> updateReachableCotoIds
+
+
+initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
+initGraph cotos rootConnections connections =
+    defaultGraph |> update cotos rootConnections connections
 
 
 mergeSubgraph : Graph -> Graph -> Graph
 mergeSubgraph subgraph graph =
-    { graph
-        | cotos = Dict.union subgraph.cotos graph.cotos
-        , connections = Dict.union subgraph.connections graph.connections
-    }
-        |> updateReachableCotoIds
+    graph
+        |> update
+            (Dict.union subgraph.cotos graph.cotos)
+            graph.rootConnections
+            (Dict.union subgraph.connections graph.connections)
 
 
 pinned : CotoId -> Graph -> Bool
@@ -152,124 +159,6 @@ updateCoto coto graph =
 cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
 cotonomatize cotonoma cotoId graph =
     updateCoto_ cotoId (\coto -> { coto | asCotonoma = Just cotonoma }) graph
-
-
-pinCoto : AmishiId -> Coto -> Graph -> Graph
-pinCoto amishiId coto graph =
-    if pinned coto.id graph then
-        graph
-
-    else
-        { graph
-            | cotos = Dict.insert coto.id coto graph.cotos
-            , rootConnections =
-                { start = Nothing
-                , end = coto.id
-                , linkingPhrase = Nothing
-                , amishiId = amishiId
-                }
-                    :: graph.rootConnections
-        }
-            |> updateReachableCotoIds
-
-
-unpinCoto : CotoId -> Graph -> Graph
-unpinCoto cotoId graph =
-    { graph
-        | rootConnections =
-            graph.rootConnections
-                |> List.filter (\conn -> conn.end /= cotoId)
-    }
-        |> updateReachableCotoIds
-
-
-doConnect : AmishiId -> Coto -> Coto -> Graph -> Graph
-doConnect amishiId start end graph =
-    let
-        cotos =
-            graph.cotos
-                |> Dict.insert start.id start
-                |> Dict.insert end.id end
-
-        newConnection =
-            { start = Just start.id
-            , end = end.id
-            , linkingPhrase = Nothing
-            , amishiId = amishiId
-            }
-
-        connections =
-            if connected start.id end.id graph then
-                graph.connections
-
-            else
-                Dict.update
-                    start.id
-                    (\maybeConns ->
-                        maybeConns
-                            |> Maybe.map ((::) newConnection)
-                            |> Maybe.withDefault [ newConnection ]
-                            |> Just
-                    )
-                    graph.connections
-    in
-    { graph | cotos = cotos, connections = connections }
-
-
-connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany amishiId startCoto endCotos graph =
-    List.foldl (doConnect amishiId startCoto) graph endCotos
-
-
-connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne amishiId startCotos endCoto graph =
-    List.foldl
-        (\startCoto graph ->
-            doConnect amishiId startCoto endCoto graph
-        )
-        graph
-        startCotos
-
-
-batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
-batchConnect amishiId direction cotos subject graph =
-    (case direction of
-        Outbound ->
-            connectOneToMany amishiId subject cotos graph
-
-        Inbound ->
-            connectManyToOne amishiId cotos subject graph
-    )
-        |> updateReachableCotoIds
-
-
-connect : AmishiId -> Coto -> Coto -> Graph -> Graph
-connect amishiId start end graph =
-    batchConnect amishiId Outbound [ end ] start graph
-
-
-disconnect : ( CotoId, CotoId ) -> Graph -> Graph
-disconnect ( fromId, toId ) graph =
-    let
-        connections =
-            Dict.update
-                fromId
-                (\maybeConns ->
-                    maybeConns
-                        |> Maybe.map (List.filter (\conn -> conn.end /= toId))
-                        |> Maybe.andThen
-                            (\conns ->
-                                if List.isEmpty conns then
-                                    Nothing
-
-                                else
-                                    Just conns
-                            )
-                )
-                graph.connections
-    in
-    { graph | connections = connections }
-        |> updateReachableCotoIds
 
 
 removeCoto : CotoId -> Graph -> Graph
