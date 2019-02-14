@@ -185,6 +185,31 @@ removeCoto cotoId graph =
             connections
 
 
+sameLength : List a -> List b -> Bool
+sameLength listA listB =
+    List.length listA == List.length listB
+
+
+reorderConnections : List Int -> List Connection -> List Connection
+reorderConnections indexOrder connections =
+    if
+        sameLength indexOrder connections
+            && List.Extra.allDifferent indexOrder
+    then
+        let
+            orderedConnections =
+                List.filterMap (\index -> List.Extra.getAt index connections) indexOrder
+        in
+        if sameLength orderedConnections connections then
+            orderedConnections
+
+        else
+            connections
+
+    else
+        connections
+
+
 updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
 updateConnections maybeParentId update graph =
     maybeParentId
