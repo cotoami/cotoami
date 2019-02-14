@@ -314,12 +314,17 @@ defmodule Cotoami.CotoGraphService do
         connection_json,
         %Amishi{id: _} = amishi
       ) do
-    rel_props = rel_props_from_json(connection_json, amishi)
+    connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
     |> register_amishi(amishi)
     |> register_coto(target)
-    |> Neo4jService.get_or_create_relationship(amishi.id, target.id, @type_connection, rel_props)
+    |> Neo4jService.get_or_create_relationship(
+      amishi.id,
+      target.id,
+      @type_connection,
+      connection_props
+    )
   end
 
   def import_connection(
@@ -329,15 +334,20 @@ defmodule Cotoami.CotoGraphService do
         connection_json,
         %Amishi{id: _} = amishi
       ) do
-    rel_props = rel_props_from_json(connection_json, amishi)
+    connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
     |> register_coto(source)
     |> register_coto(target)
-    |> Neo4jService.get_or_create_relationship(source.id, target.id, @type_connection, rel_props)
+    |> Neo4jService.get_or_create_relationship(
+      source.id,
+      target.id,
+      @type_connection,
+      connection_props
+    )
   end
 
-  defp rel_props_from_json(connection_json, %Amishi{id: amishi_id}) do
+  defp connection_props_from_json(connection_json, %Amishi{id: amishi_id}) do
     %{
       created_by: amishi_id,
       created_at: connection_json["created_at"],
