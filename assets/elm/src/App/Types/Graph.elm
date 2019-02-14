@@ -63,7 +63,7 @@ initGraph cotos rootConnections connections =
     , connections = connections
     , reachableCotoIds = Set.empty
     }
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
 mergeSubgraph : Graph -> Graph -> Graph
@@ -72,7 +72,7 @@ mergeSubgraph subgraph graph =
         | cotos = Dict.union subgraph.cotos graph.cotos
         , connections = Dict.union subgraph.connections graph.connections
     }
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
 pinned : CotoId -> Graph -> Bool
@@ -170,7 +170,7 @@ pinCoto amishiId coto graph =
                 }
                     :: graph.rootConnections
         }
-            |> updateReachableCotoIds_
+            |> updateReachableCotoIds
 
 
 unpinCoto : CotoId -> Graph -> Graph
@@ -180,11 +180,11 @@ unpinCoto cotoId graph =
             graph.rootConnections
                 |> List.filter (\conn -> conn.end /= cotoId)
     }
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
-connect_ : AmishiId -> Coto -> Coto -> Graph -> Graph
-connect_ amishiId start end graph =
+doConnect : AmishiId -> Coto -> Coto -> Graph -> Graph
+doConnect amishiId start end graph =
     let
         cotos =
             graph.cotos
@@ -216,16 +216,16 @@ connect_ amishiId start end graph =
     { graph | cotos = cotos, connections = connections }
 
 
-connectOneToMany_ : AmishiId -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany_ amishiId startCoto endCotos graph =
-    List.foldl (connect_ amishiId startCoto) graph endCotos
+connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
+connectOneToMany amishiId startCoto endCotos graph =
+    List.foldl (doConnect amishiId startCoto) graph endCotos
 
 
-connectManyToOne_ : AmishiId -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne_ amishiId startCotos endCoto graph =
+connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
+connectManyToOne amishiId startCotos endCoto graph =
     List.foldl
         (\startCoto graph ->
-            connect_ amishiId startCoto endCoto graph
+            doConnect amishiId startCoto endCoto graph
         )
         graph
         startCotos
@@ -235,12 +235,12 @@ batchConnect : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
 batchConnect amishiId direction cotos subject graph =
     (case direction of
         Outbound ->
-            connectOneToMany_ amishiId subject cotos graph
+            connectOneToMany amishiId subject cotos graph
 
         Inbound ->
-            connectManyToOne_ amishiId cotos subject graph
+            connectManyToOne amishiId cotos subject graph
     )
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
 connect : AmishiId -> Coto -> Coto -> Graph -> Graph
@@ -269,7 +269,7 @@ disconnect ( fromId, toId ) graph =
                 graph.connections
     in
     { graph | connections = connections }
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
 removeCoto : CotoId -> Graph -> Graph
@@ -292,11 +292,11 @@ removeCoto cotoId graph =
         , rootConnections = rootConnections
         , connections = connections
     }
-        |> updateReachableCotoIds_
+        |> updateReachableCotoIds
 
 
-updateConnections_ : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
-updateConnections_ maybeParentId update graph =
+updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
+updateConnections maybeParentId update graph =
     maybeParentId
         |> Maybe.map
             (\parentId ->
@@ -313,7 +313,7 @@ updateConnections_ maybeParentId update graph =
 
 swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
 swapOrder maybeParentId index1 index2 graph =
-    updateConnections_
+    updateConnections
         maybeParentId
         (\connections ->
             connections
@@ -326,7 +326,7 @@ swapOrder maybeParentId index1 index2 graph =
 
 moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
 moveToFirst maybeParentId index graph =
-    updateConnections_
+    updateConnections
         maybeParentId
         (\connections ->
             let
@@ -349,7 +349,7 @@ moveToFirst maybeParentId index graph =
 
 moveToLast : Maybe CotoId -> Int -> Graph -> Graph
 moveToLast maybeParentId index graph =
-    updateConnections_
+    updateConnections
         maybeParentId
         (\connections ->
             let
@@ -372,7 +372,7 @@ moveToLast maybeParentId index graph =
 
 reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
 reorder maybeParentId newOrder graph =
-    updateConnections_
+    updateConnections
         maybeParentId
         (\connections ->
             newOrder
@@ -416,8 +416,8 @@ collectReachableCotoIds sourceIds graph collectedIds =
         collectReachableCotoIds nextCotoIds graph updatedCollectedIds
 
 
-deleteInvalidConnections_ : Graph -> Graph
-deleteInvalidConnections_ graph =
+deleteInvalidConnections : Graph -> Graph
+deleteInvalidConnections graph =
     let
         rootConnections =
             graph.rootConnections
@@ -444,8 +444,8 @@ deleteInvalidConnections_ graph =
     { graph | rootConnections = rootConnections, connections = connections }
 
 
-updateReachableCotoIds_ : Graph -> Graph
-updateReachableCotoIds_ graph =
+updateReachableCotoIds : Graph -> Graph
+updateReachableCotoIds graph =
     let
         pinnedCotoIds =
             graph.rootConnections
@@ -458,8 +458,8 @@ updateReachableCotoIds_ graph =
     { graph | reachableCotoIds = reachableCotoIds }
 
 
-excludeUnreachables_ : Graph -> Graph
-excludeUnreachables_ graph =
+excludeUnreachables : Graph -> Graph
+excludeUnreachables graph =
     let
         reachableCotos =
             Dict.filter
@@ -467,7 +467,7 @@ excludeUnreachables_ graph =
                 graph.cotos
     in
     { graph | cotos = reachableCotos }
-        |> deleteInvalidConnections_
+        |> deleteInvalidConnections
 
 
 toTopicGraph : Graph -> Graph
@@ -481,5 +481,5 @@ toTopicGraph graph =
                     )
     in
     { graph | cotos = topicCotos }
-        |> deleteInvalidConnections_
-        |> excludeUnreachables_
+        |> deleteInvalidConnections
+        |> excludeUnreachables
