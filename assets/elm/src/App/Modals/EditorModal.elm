@@ -313,9 +313,9 @@ subordinatePostToCoto { clientId, session } coto post model =
                 , App.Server.Graph.connect
                     clientId
                     maybeCotonomaKey
-                    direction
-                    [ coto.id ]
                     target.id
+                    [ coto.id ]
+                    direction
                 )
             )
         |> Maybe.withDefault ( model, Cmd.none )

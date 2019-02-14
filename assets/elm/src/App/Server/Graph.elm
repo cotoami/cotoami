@@ -1,4 +1,20 @@
-module App.Server.Graph exposing (connect, connectTask, connectUrl, cotoIdsAsJsonBody, decodeConnection, decodeCotonomaKeyField, decodeGraph, disconnect, fetchGraph, fetchSubgraph, fetchSubgraphIfCotonoma, pinCotos, pinUrl, reorder, unpinCoto)
+module App.Server.Graph exposing
+    ( connect
+    , connectTask
+    , connectUrl
+    , cotoIdsAsJsonBody
+    , decodeConnection
+    , decodeCotonomaKeyField
+    , decodeGraph
+    , disconnect
+    , fetchGraph
+    , fetchSubgraph
+    , fetchSubgraphIfCotonoma
+    , pinCotos
+    , pinUrl
+    , reorder
+    , unpinCoto
+    )
 
 import App.Messages exposing (Msg(..))
 import App.Server.Coto
@@ -80,7 +96,9 @@ cotoIdsAsJsonBody key cotoIds =
     Http.jsonBody <|
         Encode.object
             [ ( key
-              , Encode.list (cotoIds |> List.map (\id -> Encode.string id))
+              , cotoIds
+                    |> List.map Encode.string
+                    |> Encode.list
               )
             ]
 
@@ -116,8 +134,14 @@ connectUrl maybeCotonomaKey startId =
         |> Maybe.withDefault ("/api/graph/connection/" ++ startId)
 
 
-connectTask : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Task Http.Error (List String)
-connectTask clientId maybeCotonomaKey direction objects subject =
+connectTask :
+    ClientId
+    -> Maybe CotonomaKey
+    -> CotoId
+    -> List CotoId
+    -> Direction
+    -> Task Http.Error (List String)
+connectTask clientId maybeCotonomaKey subject objects direction =
     let
         requests =
             case direction of
@@ -143,9 +167,9 @@ connectTask clientId maybeCotonomaKey direction objects subject =
     requests |> List.map Http.toTask |> Task.sequence
 
 
-connect : ClientId -> Maybe CotonomaKey -> Direction -> List CotoId -> CotoId -> Cmd Msg
-connect clientId maybeCotonomaKey direction objects subject =
-    connectTask clientId maybeCotonomaKey direction objects subject
+connect : ClientId -> Maybe CotonomaKey -> CotoId -> List CotoId -> Direction -> Cmd Msg
+connect clientId maybeCotonomaKey subject objects direction =
+    connectTask clientId maybeCotonomaKey subject objects direction
         |> Task.attempt Connected
 
 
