@@ -182,14 +182,16 @@ connectionDiv context inbound =
         |> Dict.get inbound.connection.end
         |> Maybe.map
             (\coto ->
-                ( inbound.connection.key
+                ( App.Types.Connection.makeUniqueKey inbound.connection
                 , div
                     [ class "outbound-conn" ]
                     [ cotoDiv context inbound coto ]
                 )
             )
         |> Maybe.withDefault
-            ( inbound.connection.key, Utils.HtmlUtil.none )
+            ( App.Types.Connection.makeUniqueKey inbound.connection
+            , Utils.HtmlUtil.none
+            )
 
 
 cotoDiv : Context a -> InboundConnection -> Coto -> Html AppMsg.Msg

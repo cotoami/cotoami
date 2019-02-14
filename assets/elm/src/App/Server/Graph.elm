@@ -14,10 +14,11 @@ import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 
 decodeConnection : Decode.Decoder Connection
 decodeConnection =
-    Decode.map3 App.Types.Connection.initConnection
-        (Decode.field "created_by" Decode.string)
+    Decode.map4 Connection
         (Decode.maybe (Decode.field "start" Decode.string))
         (Decode.field "end" Decode.string)
+        (Decode.maybe (Decode.field "linking_phrase" Decode.string))
+        (Decode.field "created_by" Decode.string)
 
 
 decodeCotonomaKeyField : Decode.Decoder (Maybe String)

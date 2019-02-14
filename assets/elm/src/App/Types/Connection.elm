@@ -4,7 +4,7 @@ module App.Types.Connection exposing
     , InboundConnection
     , Reordering(..)
     , inReordering
-    , initConnection
+    , makeUniqueKey
     )
 
 import App.Types.Amishi exposing (AmishiId)
@@ -17,20 +17,20 @@ type Direction
 
 
 type alias Connection =
-    { key : String
-    , amishiId : AmishiId
-    , start : Maybe CotoId
+    { start : Maybe CotoId
     , end : CotoId
+    , linkingPhrase : Maybe String
+    , amishiId : AmishiId
     }
 
 
-initConnection : AmishiId -> Maybe CotoId -> CotoId -> Connection
-initConnection amishiId maybeStart end =
+makeUniqueKey : Connection -> String
+makeUniqueKey connection =
     let
-        key =
-            Maybe.withDefault "root" maybeStart ++ " -> " ++ end
+        start =
+            connection.start |> Maybe.withDefault "root"
     in
-    Connection key amishiId maybeStart end
+    start ++ "_" ++ connection.end
 
 
 type Reordering

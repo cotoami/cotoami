@@ -163,10 +163,11 @@ pinCoto amishiId coto graph =
         { graph
             | cotos = Dict.insert coto.id coto graph.cotos
             , rootConnections =
-                App.Types.Connection.initConnection
-                    amishiId
-                    Nothing
-                    coto.id
+                { start = Nothing
+                , end = coto.id
+                , linkingPhrase = Nothing
+                , amishiId = amishiId
+                }
                     :: graph.rootConnections
         }
             |> updateReachableCotoIds_
@@ -191,7 +192,11 @@ connect_ amishiId start end graph =
                 |> Dict.insert end.id end
 
         newConnection =
-            App.Types.Connection.initConnection amishiId (Just start.id) end.id
+            { start = Just start.id
+            , end = end.id
+            , linkingPhrase = Nothing
+            , amishiId = amishiId
+            }
 
         connections =
             if connected start.id end.id graph then

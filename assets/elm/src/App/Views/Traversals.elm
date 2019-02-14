@@ -256,7 +256,7 @@ connectionsDiv context step parentElementId parentCoto connections =
                     |> Dict.get connection.end
                     |> Maybe.map
                         (\coto ->
-                            ( connection.key
+                            ( App.Types.Connection.makeUniqueKey connection
                             , div
                                 [ classList
                                     [ ( "outbound-conn", True )
@@ -285,7 +285,9 @@ connectionsDiv context step parentElementId parentCoto connections =
                             )
                         )
                     |> Maybe.withDefault
-                        ( connection.key, div [] [] )
+                        ( App.Types.Connection.makeUniqueKey connection
+                        , Utils.HtmlUtil.none
+                        )
             )
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
