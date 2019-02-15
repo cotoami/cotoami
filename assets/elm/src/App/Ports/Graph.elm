@@ -21,6 +21,7 @@ type alias Node =
 type alias Edge =
     { source : String
     , target : String
+    , linkingPhrase : Maybe String
     }
 
 

@@ -1,7 +1,8 @@
 module App.Types.Graph.Render exposing (render)
 
-import App.Ports.Graph exposing (Node)
+import App.Ports.Graph exposing (Edge, Node)
 import App.Submodels.Context exposing (Context)
+import App.Types.Connection exposing (Connection)
 import App.Types.Coto exposing (Coto, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import Dict
@@ -30,25 +31,14 @@ convert context graph =
 
         rootEdges =
             graph.rootConnections
-                |> List.map
-                    (\conn ->
-                        { source = rootNode.id
-                        , target = conn.end
-                        }
-                    )
+                |> List.map (\conn -> connectionToEdge rootNode.id conn)
 
         edges =
             graph.connections
                 |> Dict.toList
                 |> List.map
                     (\( sourceId, conns ) ->
-                        List.map
-                            (\conn ->
-                                { source = sourceId
-                                , target = conn.end
-                                }
-                            )
-                            conns
+                        List.map (\conn -> connectionToEdge sourceId conn) conns
                     )
                 |> List.concat
     in
@@ -86,6 +76,14 @@ cotoToNode graph coto =
     , pinned = App.Types.Graph.pinned coto.id graph
     , asCotonoma = isJust coto.asCotonoma
     , imageUrl = Maybe.map .avatarUrl coto.amishi
+    }
+
+
+connectionToEdge : String -> Connection -> Edge
+connectionToEdge sourceId connection =
+    { source = sourceId
+    , target = connection.end
+    , linkingPhrase = connection.linkingPhrase
     }
 
 

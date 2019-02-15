@@ -36,6 +36,9 @@ const _style = cytoscape.stylesheet()
     'font-family': '"Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif'
   })
   .selector('edge').css({
+    'label': (node) => {
+      return node.data('linkingPhrase') || ""
+    },
     'curve-style': 'bezier',
     'width': 1,
     'line-color': '#ddd',
