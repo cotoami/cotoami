@@ -104,13 +104,13 @@ update context msg ({ connectModal } as model) =
             { model | connectModal = { connectModal | direction = direction } }
                 |> withoutCmd
 
-        Connect target objects direction ->
+        Connect target objects ->
             model
                 |> App.Submodels.LocalCotos.connect
                     context.session
                     target
                     objects
-                    direction
+                    model.connectModal.direction
                     Nothing
                 |> App.Submodels.Modals.closeModal ConnectModal
                 |> withCmd
@@ -120,22 +120,22 @@ update context msg ({ connectModal } as model) =
                             (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
                             target.id
                             (List.map .id objects)
-                            direction
+                            model.connectModal.direction
                             Nothing
                     )
 
-        PostAndConnectToSelection content direction ->
+        PostAndConnectToSelection content ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection context direction content
+                |> postAndConnectToSelection context model.connectModal.direction content
 
-        PostedAndConnectToSelection postId direction (Ok post) ->
+        PostedAndConnectToSelection postId (Ok post) ->
             model
                 |> App.Submodels.Modals.clearModals
                 |> App.Update.Post.onPosted context postId post
-                |> chain (connectPostToSelection context direction post)
+                |> chain (connectPostToSelection context model.connectModal.direction post)
 
-        PostedAndConnectToSelection postId direction (Err _) ->
+        PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd
 
 
@@ -152,7 +152,7 @@ postAndConnectToSelection context direction content model =
 
         tag =
             AppMsg.ConnectModalMsg
-                << PostedAndConnectToSelection newTimeline.postIdCounter direction
+                << PostedAndConnectToSelection newTimeline.postIdCounter
     in
     { model | timeline = newTimeline }
         |> withCmds
@@ -223,7 +223,7 @@ modalConfig context selectedCotos model =
                     , autofocus True
                     , onClick
                         (AppMsg.ConnectModalMsg
-                            (Connect coto selectedCotos model.direction)
+                            (Connect coto selectedCotos)
                         )
                     ]
                     [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
@@ -236,7 +236,7 @@ modalConfig context selectedCotos model =
                     , autofocus True
                     , onClick
                         (AppMsg.ConnectModalMsg
-                            (PostAndConnectToSelection content model.direction)
+                            (PostAndConnectToSelection content)
                         )
                     ]
                     [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
