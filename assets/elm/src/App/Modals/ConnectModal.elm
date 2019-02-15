@@ -27,11 +27,12 @@ import App.Types.Timeline
 import App.Update.Post
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Html.Keyed
 import Maybe exposing (andThen)
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.Modal as Modal
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -44,6 +45,7 @@ type ConnectingTarget
 type alias Model =
     { target : ConnectingTarget
     , direction : Direction
+    , linkingPhrase : String
     }
 
 
@@ -51,14 +53,25 @@ defaultModel : Model
 defaultModel =
     { target = None
     , direction = Inbound
+    , linkingPhrase = ""
     }
 
 
 initModel : ConnectingTarget -> Direction -> Model
 initModel target direction =
-    { target = target
-    , direction = direction
+    { defaultModel
+        | target = target
+        , direction = direction
     }
+
+
+getLinkingPhrase : Model -> Maybe String
+getLinkingPhrase model =
+    if Utils.StringUtil.isBlank model.linkingPhrase then
+        Nothing
+
+    else
+        Just model.linkingPhrase
 
 
 type alias WithConnectModal model =
@@ -104,6 +117,10 @@ update context msg ({ connectModal } as model) =
             { model | connectModal = { connectModal | direction = direction } }
                 |> withoutCmd
 
+        LinkingPhraseInput input ->
+            { model | connectModal = { connectModal | linkingPhrase = input } }
+                |> withoutCmd
+
         Connect target objects ->
             model
                 |> App.Submodels.LocalCotos.connect
@@ -111,17 +128,17 @@ update context msg ({ connectModal } as model) =
                     target
                     objects
                     model.connectModal.direction
-                    Nothing
+                    (getLinkingPhrase model.connectModal)
                 |> App.Submodels.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
                             context.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                            (Maybe.map .key model.cotonoma)
                             target.id
                             (List.map .id objects)
                             model.connectModal.direction
-                            Nothing
+                            (getLinkingPhrase model.connectModal)
                     )
 
         PostAndConnectToSelection content ->
@@ -306,6 +323,7 @@ modalContent context selectedCotos model =
                     , class "u-full-width"
                     , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
                     , maxlength App.Types.Coto.cotonomaNameMaxlength
+                    , onInput (AppMsg.ConnectModalMsg << LinkingPhraseInput)
                     ]
                     []
                 ]

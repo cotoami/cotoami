@@ -7,6 +7,7 @@ import Http
 
 type Msg
     = ReverseDirection
+    | LinkingPhraseInput String
     | Connect Coto (List Coto)
     | PostAndConnectToSelection CotoContent
     | PostedAndConnectToSelection Int (Result Http.Error Post)
