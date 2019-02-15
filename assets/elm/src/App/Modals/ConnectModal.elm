@@ -106,7 +106,12 @@ update context msg ({ connectModal } as model) =
 
         Connect target objects direction ->
             model
-                |> App.Submodels.LocalCotos.connect context.session direction objects target
+                |> App.Submodels.LocalCotos.connect
+                    context.session
+                    target
+                    objects
+                    direction
+                    Nothing
                 |> App.Submodels.Modals.closeModal ConnectModal
                 |> withCmd
                     (\model ->
@@ -175,9 +180,10 @@ connectPostToSelection context direction post model =
                 in
                 ( App.Submodels.LocalCotos.connect
                     context.session
-                    direction
-                    objects
                     target
+                    objects
+                    direction
+                    Nothing
                     model
                 , App.Server.Graph.connect
                     context.clientId

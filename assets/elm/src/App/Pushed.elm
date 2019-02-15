@@ -137,6 +137,7 @@ handleConnect payload model =
                             payload.amishi.id
                             startCoto
                             payload.body.end
+                            Nothing
                             model.graph
                     )
                 |> Maybe.withDefault model.graph

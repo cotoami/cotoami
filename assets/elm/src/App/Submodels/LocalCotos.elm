@@ -209,8 +209,15 @@ isNavigationEmpty localCotos =
         && List.isEmpty localCotos.subCotonomas
 
 
-connect : Maybe Session -> Direction -> List Coto -> Coto -> LocalCotos a -> LocalCotos a
-connect maybeSession direction cotos target localCotos =
+connect :
+    Maybe Session
+    -> Coto
+    -> List Coto
+    -> Direction
+    -> Maybe String
+    -> LocalCotos a
+    -> LocalCotos a
+connect maybeSession target cotos direction linkingPhrase localCotos =
     let
         graph =
             maybeSession
@@ -218,9 +225,10 @@ connect maybeSession direction cotos target localCotos =
                     (\session ->
                         App.Types.Graph.Connect.batch
                             session.amishi.id
-                            direction
-                            cotos
                             target
+                            cotos
+                            direction
+                            linkingPhrase
                             localCotos.graph
                     )
                 |> Maybe.withDefault localCotos.graph

@@ -44,38 +44,40 @@ unpin cotoId graph =
     graph |> App.Types.Graph.update graph.cotos rootConnections graph.connections
 
 
-connect : AmishiId -> Coto -> Coto -> Graph -> Graph
-connect amishiId start end graph =
-    batch amishiId Outbound [ end ] start graph
+connect : AmishiId -> Coto -> Coto -> Maybe String -> Graph -> Graph
+connect amishiId start end linkingPhrase graph =
+    batch amishiId start [ end ] Outbound linkingPhrase graph
 
 
-batch : AmishiId -> Direction -> List Coto -> Coto -> Graph -> Graph
-batch amishiId direction cotos subject graph =
+batch : AmishiId -> Coto -> List Coto -> Direction -> Maybe String -> Graph -> Graph
+batch amishiId subject cotos direction linkingPhrase graph =
     case direction of
         Outbound ->
-            connectOneToMany amishiId subject cotos graph
+            connectOneToMany amishiId subject cotos linkingPhrase graph
 
         Inbound ->
-            connectManyToOne amishiId cotos subject graph
+            connectManyToOne amishiId cotos subject linkingPhrase graph
 
 
-connectOneToMany : AmishiId -> Coto -> List Coto -> Graph -> Graph
-connectOneToMany amishiId startCoto endCotos graph =
+connectOneToMany : AmishiId -> Coto -> List Coto -> Maybe String -> Graph -> Graph
+connectOneToMany amishiId startCoto endCotos linkingPhrase graph =
     endCotos
         |> List.foldl
-            (singleConnect graph amishiId startCoto)
+            (\endCoto state ->
+                singleConnect graph amishiId startCoto endCoto linkingPhrase state
+            )
             ( graph.cotos, graph.connections )
         |> (\( cotos, connections ) ->
                 graph |> App.Types.Graph.update cotos graph.rootConnections connections
            )
 
 
-connectManyToOne : AmishiId -> List Coto -> Coto -> Graph -> Graph
-connectManyToOne amishiId startCotos endCoto graph =
+connectManyToOne : AmishiId -> List Coto -> Coto -> Maybe String -> Graph -> Graph
+connectManyToOne amishiId startCotos endCoto linkingPhrase graph =
     startCotos
         |> List.foldl
             (\startCoto state ->
-                singleConnect graph amishiId startCoto endCoto state
+                singleConnect graph amishiId startCoto endCoto linkingPhrase state
             )
             ( graph.cotos, graph.connections )
         |> (\( cotos, connections ) ->
@@ -87,8 +89,15 @@ type alias ConnectingState =
     ( CotoDict, ConnectionDict )
 
 
-singleConnect : Graph -> AmishiId -> Coto -> Coto -> ConnectingState -> ConnectingState
-singleConnect graph amishiId start end (( cotos, connections ) as state) =
+singleConnect :
+    Graph
+    -> AmishiId
+    -> Coto
+    -> Coto
+    -> Maybe String
+    -> ConnectingState
+    -> ConnectingState
+singleConnect graph amishiId start end linkingPhrase (( cotos, connections ) as state) =
     if App.Types.Graph.connected start.id end.id graph then
         state
 
@@ -97,7 +106,7 @@ singleConnect graph amishiId start end (( cotos, connections ) as state) =
             newConnection =
                 { start = Just start.id
                 , end = end.id
-                , linkingPhrase = Nothing
+                , linkingPhrase = linkingPhrase
                 , amishiId = amishiId
                 }
         in

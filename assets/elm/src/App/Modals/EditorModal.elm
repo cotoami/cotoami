@@ -296,17 +296,18 @@ subordinatePostToCoto { clientId, session } coto post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
-            (\target ->
+            (\postCoto ->
                 ( App.Submodels.LocalCotos.connect
                     session
-                    App.Types.Connection.Inbound
+                    postCoto
                     [ coto ]
-                    target
+                    App.Types.Connection.Inbound
+                    Nothing
                     model
                 , App.Server.Graph.connect
                     clientId
                     (Maybe.map .key model.cotonoma)
-                    target.id
+                    postCoto.id
                     [ coto.id ]
                     App.Types.Connection.Inbound
                     Nothing
