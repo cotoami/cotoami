@@ -1,4 +1,21 @@
-module App.Pushed exposing (ConnectPayloadBody, DisconnectPayloadBody, Handler, ReorderPayloadBody, decodeConnectPayloadBody, decodeDisconnectPayloadBody, decodeReorderPayloadBody, handle, handleConnect, handleCotoUpdate, handleCotonomaUpdate, handleCotonomatize, handleDelete, handleDisconnect, handlePost, handleReorder)
+module App.Pushed exposing
+    ( ConnectPayloadBody
+    , DisconnectPayloadBody
+    , Handler
+    , ReorderPayloadBody
+    , decodeConnectPayloadBody
+    , decodeDisconnectPayloadBody
+    , decodeReorderPayloadBody
+    , handle
+    , handleConnect
+    , handleCotoUpdate
+    , handleCotonomaUpdate
+    , handleCotonomatize
+    , handleDelete
+    , handleDisconnect
+    , handlePost
+    , handleReorder
+    )
 
 import App.Channels exposing (Payload)
 import App.Commands
@@ -9,8 +26,8 @@ import App.Server.Coto
 import App.Server.Cotonoma
 import App.Submodels.LocalCotos
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Graph
 import App.Types.Graph.Connect
+import App.Types.Graph.Reorder
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import Exts.Maybe exposing (isJust)
@@ -187,7 +204,7 @@ handleReorder payload model =
     let
         -- Reorder connections
         graph1 =
-            App.Types.Graph.reorder
+            App.Types.Graph.Reorder.byCotoId
                 (Just payload.body.startId)
                 payload.body.endIds
                 model.graph
@@ -199,7 +216,7 @@ handleReorder payload model =
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then
                             Just <|
-                                App.Types.Graph.reorder
+                                App.Types.Graph.Reorder.byCotoId
                                     Nothing
                                     payload.body.endIds
                                     graph1

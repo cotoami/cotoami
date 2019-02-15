@@ -13,12 +13,9 @@ module App.Types.Graph exposing
     , initGraph
     , member
     , mergeSubgraph
-    , moveToFirst
-    , moveToLast
     , pinned
     , removeCoto
     , reorder
-    , swapOrder
     , update
     , updateCotoContent
     )
@@ -26,7 +23,6 @@ module App.Types.Graph exposing
 import App.Types.Connection exposing (Connection, Direction(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
 import Dict exposing (Dict)
-import Exts.Maybe exposing (isJust)
 import List.Extra
 import Maybe exposing (withDefault)
 import Set exposing (Set)
@@ -123,12 +119,10 @@ getParents cotoId graph =
 
 getOutboundConnections : Maybe CotoId -> Graph -> Maybe (List Connection)
 getOutboundConnections maybeCotoId graph =
-    if isJust maybeCotoId then
-        maybeCotoId
-            |> Maybe.andThen (\cotoId -> Dict.get cotoId graph.connections)
-
-    else
-        Just graph.rootConnections
+    maybeCotoId
+        |> Maybe.map (\cotoId -> Dict.get cotoId graph.connections)
+        |> Maybe.withDefault (Just graph.rootConnections)
+        |> Maybe.map List.reverse
 
 
 addCoto : Coto -> Graph -> Graph
@@ -185,20 +179,41 @@ removeCoto cotoId graph =
             connections
 
 
-sameLength : List a -> List b -> Bool
-sameLength listA listB =
-    List.length listA == List.length listB
+reorder : Maybe CotoId -> List Int -> Graph -> Graph
+reorder maybeParentId indexOrder graph =
+    maybeParentId
+        |> Maybe.map
+            (\parentId ->
+                graph.connections
+                    |> Dict.update parentId (Maybe.map (reorderConnections indexOrder))
+                    |> (\connections -> { graph | connections = connections })
+            )
+        |> Maybe.withDefault
+            (graph.rootConnections
+                |> reorderConnections indexOrder
+                |> (\connections -> { graph | rootConnections = connections })
+            )
 
 
 reorderConnections : List Int -> List Connection -> List Connection
 reorderConnections indexOrder connections =
+    connections
+        |> List.reverse
+        |> reorderConnectionsInDisplayOrder indexOrder
+        |> List.reverse
+
+
+reorderConnectionsInDisplayOrder : List Int -> List Connection -> List Connection
+reorderConnectionsInDisplayOrder indexOrder connections =
     if
         sameLength indexOrder connections
             && List.Extra.allDifferent indexOrder
     then
         let
             orderedConnections =
-                List.filterMap (\index -> List.Extra.getAt index connections) indexOrder
+                List.filterMap
+                    (\index -> List.Extra.getAt index connections)
+                    indexOrder
         in
         if sameLength orderedConnections connections then
             orderedConnections
@@ -210,96 +225,9 @@ reorderConnections indexOrder connections =
         connections
 
 
-updateConnections : Maybe CotoId -> (List Connection -> List Connection) -> Graph -> Graph
-updateConnections maybeParentId update graph =
-    maybeParentId
-        |> Maybe.map
-            (\parentId ->
-                graph.connections
-                    |> Dict.update parentId (Maybe.map update)
-                    |> (\connections -> { graph | connections = connections })
-            )
-        |> Maybe.withDefault
-            (graph.rootConnections
-                |> update
-                |> (\connections -> { graph | rootConnections = connections })
-            )
-
-
-swapOrder : Maybe CotoId -> Int -> Int -> Graph -> Graph
-swapOrder maybeParentId index1 index2 graph =
-    updateConnections
-        maybeParentId
-        (\connections ->
-            connections
-                |> List.reverse
-                |> List.Extra.swapAt index1 index2
-                |> List.reverse
-        )
-        graph
-
-
-moveToFirst : Maybe CotoId -> Int -> Graph -> Graph
-moveToFirst maybeParentId index graph =
-    updateConnections
-        maybeParentId
-        (\connections ->
-            let
-                connectionsInDisplayOrder =
-                    List.reverse connections
-            in
-            connectionsInDisplayOrder
-                |> List.Extra.getAt index
-                |> Maybe.map
-                    (\conn ->
-                        connectionsInDisplayOrder
-                            |> List.Extra.removeAt index
-                            |> (::) conn
-                            |> List.reverse
-                    )
-                |> Maybe.withDefault connections
-        )
-        graph
-
-
-moveToLast : Maybe CotoId -> Int -> Graph -> Graph
-moveToLast maybeParentId index graph =
-    updateConnections
-        maybeParentId
-        (\connections ->
-            let
-                connectionsInDisplayOrder =
-                    List.reverse connections
-            in
-            connectionsInDisplayOrder
-                |> List.Extra.getAt index
-                |> Maybe.map
-                    (\conn ->
-                        connectionsInDisplayOrder
-                            |> List.Extra.removeAt index
-                            |> List.reverse
-                            |> (::) conn
-                    )
-                |> Maybe.withDefault connections
-        )
-        graph
-
-
-reorder : Maybe CotoId -> List CotoId -> Graph -> Graph
-reorder maybeParentId newOrder graph =
-    updateConnections
-        maybeParentId
-        (\connections ->
-            newOrder
-                |> List.reverse
-                |> List.filterMap
-                    (\cotoId ->
-                        List.Extra.find
-                            (\conn -> conn.end == cotoId)
-                            connections
-                    )
-        )
-        graph
+sameLength : List a -> List b -> Bool
+sameLength listA listB =
+    List.length listA == List.length listB
 
 
 collectReachableCotoIds : Set CotoId -> Graph -> Set CotoId -> Set CotoId
