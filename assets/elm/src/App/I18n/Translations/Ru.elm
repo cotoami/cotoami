@@ -268,6 +268,9 @@ text key =
         ConnectModal_Reverse ->
             "Реверс"
 
+        ConnectModal_LinkingPhrase ->
+            "Linking phrase (optional)"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "объект выбран"

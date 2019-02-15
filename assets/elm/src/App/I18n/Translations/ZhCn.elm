@@ -271,6 +271,9 @@ text key =
         ConnectModal_Reverse ->
             "逆方向"
 
+        ConnectModal_LinkingPhrase ->
+            "Linking phrase (optional)"
+
         CotoSelection_CotosSelected count ->
             "件在选择中"
 

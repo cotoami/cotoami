@@ -297,8 +297,19 @@ modalContent context selectedCotos model =
             , start
             ]
         , div
-            [ class "arrow" ]
-            [ materialIcon "arrow_downward" Nothing ]
+            [ class "connection" ]
+            [ div [ class "arrow" ]
+                [ materialIcon "arrow_downward" Nothing ]
+            , div [ class "linking-phrase" ]
+                [ input
+                    [ type_ "text"
+                    , class "u-full-width"
+                    , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
+                    , maxlength App.Types.Coto.cotonomaNameMaxlength
+                    ]
+                    []
+                ]
+            ]
         , div
             [ class "end" ]
             [ span [ class "node-title" ] [ text "To:" ]

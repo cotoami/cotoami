@@ -57,13 +57,27 @@
       }
     }
 
-    div.arrow {
-      height: 24px;
-      padding-top: 12px;
-      text-align: center;
+    div.connection {
+      display: flex;
+      flex-direction: row;
+      margin-top: 20px;
+      padding: 0 30px;
+    
+      div.arrow {
+        width: 30px;
+        padding-top: 6px;
 
-      i {
-        font-size: 24px;
+        i {
+          font-size: 24px;
+        }
+      }
+
+      div.linking-phrase {
+        flex: 1;
+
+        input {
+          margin-bottom: 0;
+        }
       }
     }
 

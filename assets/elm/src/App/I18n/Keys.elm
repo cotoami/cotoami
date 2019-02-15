@@ -87,5 +87,6 @@ type TextKey
     | ConnectModal_Connect
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
+    | ConnectModal_LinkingPhrase
     | CotoSelection_CotosSelected Int
     | Reorder_CloseReorderMode

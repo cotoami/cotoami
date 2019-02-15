@@ -267,6 +267,9 @@ text key =
         ConnectModal_Reverse ->
             "逆方向"
 
+        ConnectModal_LinkingPhrase ->
+            "説明（省略可）"
+
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
 
