@@ -26,14 +26,53 @@ const _style = cytoscape.stylesheet()
       return _makeTextBreakable(node.data('name'))
     },
     'font-size': 10,
-    'width': 10,
-    'height': 10,
+    'shape': 'roundrectangle',
+    'width': 'label',
+    'height': 'label',
+    'border-width': 1,
+    'border-style': 'solid',
+    'border-color': '#ccc',
+    'border-opacity': 1,
+    'padding': 8,
     'text-max-width': 150,
     'text-wrap': 'wrap',
+    'text-valign': 'center',
+    'background-color': 'white',
+    'font-family': '"Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif'
+  })
+  .selector('#home').css({
+    'shape': 'roundrectangle',
+    'width': 20,
+    'height': 20,
+    'border-width': 0,
+    'padding': 0,
+    'background-fit': 'contain',
+    'background-color': 'white',
+    'background-image': '/images/home.svg',
+    'background-image-opacity': 0.6
+  })
+  .selector('.pinned').css({
+    'border-width': 2
+  })
+  .selector('.pinned:selected').css({
+    'background-image': '/images/selected-pin.png'
+  })
+  .selector('.cotonoma').css({
+    'shape': 'roundrectangle',
+    'width': 20,
+    'height': 20,
+    'border-width': 0,
+    'padding': 0,
+    'background-fit': 'contain',
+    'background-color': 'white',
+    'background-image': (node) => {
+      return node.data('imageUrl')
+    },
+    'background-image-opacity': 1,
     'text-valign': 'bottom',
     'text-margin-y': 5,
-    'color': '#333',
-    'font-family': '"Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif'
+    'font-size': 10,
+    'font-weight': 'bold'
   })
   .selector('edge').css({
     'label': (node) => {
@@ -63,39 +102,6 @@ const _style = cytoscape.stylesheet()
   .selector('.faded').css({
     'opacity': 0.25,
     'text-opacity': 0
-  })
-  .selector('#home').css({
-    'shape': 'roundrectangle',
-    'width': 20,
-    'height': 20,
-    'background-fit': 'contain',
-    'background-color': 'white',
-    'background-image': '/images/home.svg',
-    'background-image-opacity': 0.6
-  })
-  .selector('.pinned').css({
-    'shape': 'roundrectangle',
-    'width': 20,
-    'height': 20,
-    'background-fit': 'contain',
-    'background-color': 'white',
-    'background-image': '/images/pinned.png'
-  })
-  .selector('.pinned:selected').css({
-    'background-image': '/images/selected-pin.png'
-  })
-  .selector('.cotonoma').css({
-    'shape': 'roundrectangle',
-    'width': 20,
-    'height': 20,
-    'background-fit': 'contain',
-    'background-color': 'white',
-    'background-image': (node) => {
-      return node.data('imageUrl')
-    },
-    'background-image-opacity': 1,
-    'font-size': 10,
-    'font-weight': 'bold'
   });
 
 const _layout = {
