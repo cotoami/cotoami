@@ -37,8 +37,17 @@ const _style = cytoscape.stylesheet()
   })
   .selector('edge').css({
     'label': (node) => {
-      return node.data('linkingPhrase') || ""
+      const phrase = node.data('linkingPhrase')
+      return phrase ? _makeTextBreakable(phrase) : ""
     },
+    'line-style': (node) => {
+      return node.data('linkingPhrase') ? "solid" : "dashed"
+    },
+    'font-size': 10,
+    // 'text-rotation': 'autorotate',
+    'text-margin-y': 10,
+    'text-max-width': 150,
+    'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
     'line-color': '#ddd',
