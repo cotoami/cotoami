@@ -114,6 +114,7 @@ const _layout = {
   name: 'cose-bilkent',
   nodeDimensionsIncludeLabels: true,
   fit: false,
+  idealEdgeLength: 100,
   animate: 'during'
 }
 
