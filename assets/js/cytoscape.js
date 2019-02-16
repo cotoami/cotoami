@@ -80,8 +80,14 @@ const _style = cytoscape.stylesheet()
       const phrase = node.data('linkingPhrase')
       return phrase ? _makeTextBreakable(phrase) : ""
     },
+    'color': (node) => {
+      return node.data('linkingPhrase') ? "#3572a5" : "#fff"
+    },
     'line-style': (node) => {
       return node.data('linkingPhrase') ? "solid" : "dashed"
+    },
+    'line-color': (node) => {
+      return node.data('linkingPhrase') ? "#84A9C7" : "#ddd"
     },
     'font-size': 10,
     // 'text-rotation': 'autorotate',
@@ -90,8 +96,9 @@ const _style = cytoscape.stylesheet()
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
-    'line-color': '#ddd',
-    'target-arrow-color': '#ddd',
+    'target-arrow-color': (node) => {
+      return node.data('linkingPhrase') ? "#84A9C7" : "#ddd"
+    },
     'target-arrow-shape': 'vee'
   })
   .selector(':selected').css({
