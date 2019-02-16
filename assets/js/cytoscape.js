@@ -94,10 +94,10 @@ const _style = cytoscape.stylesheet()
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
+    'target-arrow-shape': 'vee',
     'target-arrow-color': (node) => {
       return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
-    },
-    'target-arrow-shape': 'vee'
+    }
   })
   .selector(':selected').css({
     'border-color': '#ffa500',
