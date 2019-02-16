@@ -31,7 +31,7 @@ const _style = cytoscape.stylesheet()
     'height': 'label',
     'border-width': 1,
     'border-style': 'solid',
-    'border-color': '#ccc',
+    'border-color': '#ddd',
     'border-opacity': 1,
     'padding': 8,
     'text-max-width': 150,
@@ -53,10 +53,7 @@ const _style = cytoscape.stylesheet()
   })
   .selector('.pinned').css({
     'border-width': 2,
-    'border-color': '#888'
-  })
-  .selector('.pinned:selected').css({
-    'background-image': '/images/selected-pin.png'
+    'border-color': '#aaa'
   })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
@@ -95,10 +92,10 @@ const _style = cytoscape.stylesheet()
     'target-arrow-shape': 'vee'
   })
   .selector(':selected').css({
-    'background-color': '#ffa500',
-    'line-color': '#888',
-    'source-arrow-color': '#888',
-    'target-arrow-color': '#888'
+    'border-color': '#ffa500',
+    'line-color': '#ffa500',
+    'source-arrow-color': '#ffa500',
+    'target-arrow-color': '#ffa500'
   })
   .selector('.faded').css({
     'opacity': 0.25,
