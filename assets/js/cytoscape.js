@@ -20,6 +20,11 @@ const _makeTextBreakable = (text) => {
   }
 }
 
+const color_edge = "#ddd"
+const color_edgeWithPhrase = "#9AB8D1"
+const color_linkingPhrase = "#3572a5"
+const color_selected = "#ffa500"
+
 const _style = cytoscape.stylesheet()
   .selector('node').css({
     'label': (node) => {
@@ -81,13 +86,13 @@ const _style = cytoscape.stylesheet()
       return phrase ? _makeTextBreakable(phrase) : ""
     },
     'color': (node) => {
-      return node.data('linkingPhrase') ? "#3572a5" : "#fff"
+      return node.data('linkingPhrase') ? color_linkingPhrase : "#fff"
     },
     'line-style': (node) => {
       return node.data('linkingPhrase') ? "solid" : "dashed"
     },
     'line-color': (node) => {
-      return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
     },
     'font-size': 10,
     'text-max-width': 150,
@@ -96,14 +101,14 @@ const _style = cytoscape.stylesheet()
     'width': 1,
     'target-arrow-shape': 'vee',
     'target-arrow-color': (node) => {
-      return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
     }
   })
   .selector(':selected').css({
-    'border-color': '#ffa500',
-    'line-color': '#ffa500',
-    'source-arrow-color': '#ffa500',
-    'target-arrow-color': '#ffa500'
+    'border-color': color_selected,
+    'line-color': color_selected,
+    'source-arrow-color': color_selected,
+    'target-arrow-color': color_selected
   })
   .selector('.faded').css({
     'opacity': 0.25,
