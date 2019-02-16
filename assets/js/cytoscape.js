@@ -53,7 +53,7 @@ const _style = cytoscape.stylesheet()
   })
   .selector('.pinned').css({
     'border-width': 2,
-    'border-color': '#aaa'
+    'border-color': '#888'
   })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
@@ -104,7 +104,6 @@ const _style = cytoscape.stylesheet()
 
 const _layout = {
   name: 'cose-bilkent',
-  padding: 30,
   nodeDimensionsIncludeLabels: true,
   fit: false,
   animate: 'during'
