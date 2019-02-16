@@ -26,6 +26,7 @@ const _style = cytoscape.stylesheet()
       return _makeTextBreakable(node.data('name'))
     },
     'font-size': 10,
+    'color': '#666',
     'shape': 'roundrectangle',
     'width': 'label',
     'height': 'label',
@@ -52,6 +53,7 @@ const _style = cytoscape.stylesheet()
     'background-image-opacity': 0.6
   })
   .selector('.pinned').css({
+    'color': '#333',
     'border-width': 2,
     'border-color': '#888'
   })
@@ -59,6 +61,7 @@ const _style = cytoscape.stylesheet()
     'shape': 'roundrectangle',
     'width': 20,
     'height': 20,
+    'color': '#222',
     'border-width': 0,
     'padding': 0,
     'background-fit': 'contain',
