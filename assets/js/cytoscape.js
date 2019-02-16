@@ -52,7 +52,8 @@ const _style = cytoscape.stylesheet()
     'background-image-opacity': 0.6
   })
   .selector('.pinned').css({
-    'border-width': 2
+    'border-width': 2,
+    'border-color': '#888'
   })
   .selector('.pinned:selected').css({
     'background-image': '/images/selected-pin.png'
