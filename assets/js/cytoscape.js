@@ -11,12 +11,12 @@ const _insertSpaces = (text, chunkSize) => {
   return chunks != null ? chunks.join(" ") : text
 }
 
-const _makeTextBreakable = (text) => {
+const _makeTextBreakable = (text, chunkSize) => {
   if (_hankakuOnly(text)) {
     return text
   }
   else {
-    return _insertSpaces(text, 15)
+    return _insertSpaces(text, chunkSize)
   }
 }
 
@@ -28,7 +28,7 @@ const color_selected = "#ffa500"
 const _style = cytoscape.stylesheet()
   .selector('node').css({
     'label': (node) => {
-      return _makeTextBreakable(node.data('name'))
+      return _makeTextBreakable(node.data('name'), 15)
     },
     'font-size': 10,
     'color': '#666',
@@ -83,7 +83,7 @@ const _style = cytoscape.stylesheet()
   .selector('edge').css({
     'label': (node) => {
       const phrase = node.data('linkingPhrase')
-      return phrase ? _makeTextBreakable(phrase) : ""
+      return phrase ? _makeTextBreakable(phrase, 10) : ""
     },
     'color': (node) => {
       return node.data('linkingPhrase') ? color_linkingPhrase : "#fff"
@@ -95,7 +95,7 @@ const _style = cytoscape.stylesheet()
       return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
     },
     'font-size': 10,
-    'text-max-width': 150,
+    'text-max-width': 100,
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
