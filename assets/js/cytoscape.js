@@ -90,8 +90,6 @@ const _style = cytoscape.stylesheet()
       return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
     },
     'font-size': 10,
-    // 'text-rotation': 'autorotate',
-    'text-margin-y': 10,
     'text-max-width': 150,
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
