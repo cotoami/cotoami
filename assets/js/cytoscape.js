@@ -99,10 +99,15 @@ const _style = cytoscape.stylesheet()
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
-    'target-arrow-shape': 'vee',
+    'source-arrow-shape': 'circle',
+    'source-arrow-color': (node) => {
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
+    },
+    'target-arrow-shape': 'triangle',
     'target-arrow-color': (node) => {
       return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
-    }
+    },
+    'arrow-scale': 0.8
   })
   .selector(':selected').css({
     'border-color': color_selected,
