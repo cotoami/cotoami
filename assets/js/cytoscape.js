@@ -87,7 +87,7 @@ const _style = cytoscape.stylesheet()
       return node.data('linkingPhrase') ? "solid" : "dashed"
     },
     'line-color': (node) => {
-      return node.data('linkingPhrase') ? "#84A9C7" : "#ddd"
+      return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
     },
     'font-size': 10,
     // 'text-rotation': 'autorotate',
@@ -97,7 +97,7 @@ const _style = cytoscape.stylesheet()
     'curve-style': 'bezier',
     'width': 1,
     'target-arrow-color': (node) => {
-      return node.data('linkingPhrase') ? "#84A9C7" : "#ddd"
+      return node.data('linkingPhrase') ? "#9AB8D1" : "#ddd"
     },
     'target-arrow-shape': 'vee'
   })
