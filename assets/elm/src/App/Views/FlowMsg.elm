@@ -24,4 +24,5 @@ type Msg
     | Post
     | Posted Int (Result Http.Error Post)
     | ConfirmPostAndConnect CotoContent
+    | PostedByConnectModal
     | Scroll ScrollPos

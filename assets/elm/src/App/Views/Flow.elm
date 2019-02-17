@@ -179,7 +179,14 @@ update context msg ({ flowView, timeline } as model) =
             model |> withoutCmd
 
         ConfirmPostAndConnect content ->
-            App.Modals.ConnectModal.openWithPost content model
+            App.Modals.ConnectModal.openWithPost
+                (AppMsg.FlowMsg PostedByConnectModal)
+                content
+                model
+
+        PostedByConnectModal ->
+            { model | flowView = clearEditorContent model.flowView }
+                |> withoutCmd
 
         Scroll scrollPos ->
             if isScrolledToBottom scrollPos then
@@ -217,7 +224,10 @@ handleEditorShortcut context keyboardEvent content model =
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
         then
-            App.Modals.ConnectModal.openWithPost content model
+            App.Modals.ConnectModal.openWithPost
+                (AppMsg.FlowMsg PostedByConnectModal)
+                content
+                model
 
         else
             ( model, Cmd.none )

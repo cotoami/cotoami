@@ -46,6 +46,7 @@ type alias Model =
     { target : ConnectingTarget
     , direction : Direction
     , linkingPhrase : String
+    , onPosted : AppMsg.Msg
     }
 
 
@@ -54,6 +55,7 @@ defaultModel =
     { target = None
     , direction = Inbound
     , linkingPhrase = ""
+    , onPosted = AppMsg.NoOp
     }
 
 
@@ -90,11 +92,17 @@ open direction target model =
 
 
 openWithPost :
-    CotoContent
+    AppMsg.Msg
+    -> CotoContent
     -> Modals (WithConnectModal model)
     -> ( Modals (WithConnectModal model), Cmd AppMsg.Msg )
-openWithPost content =
-    open Inbound (NewPost content)
+openWithPost onPosted content model =
+    model
+        |> open Inbound (NewPost content)
+        |> Tuple.mapFirst
+            (\({ connectModal } as model) ->
+                { model | connectModal = { connectModal | onPosted = onPosted } }
+            )
 
 
 type alias UpdateModel model =
@@ -151,6 +159,7 @@ update context msg ({ connectModal } as model) =
                 |> App.Submodels.Modals.clearModals
                 |> App.Update.Post.onPosted context postId post
                 |> chain (connectPostToSelection context post)
+                |> addCmd (\_ -> App.Commands.sendMsg model.connectModal.onPosted)
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd

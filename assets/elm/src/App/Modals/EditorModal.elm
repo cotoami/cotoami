@@ -189,7 +189,7 @@ update context msg ({ editorModal, timeline } as model) =
                 |> post context
 
         ConfirmPostAndConnect content ->
-            App.Modals.ConnectModal.openWithPost content model
+            App.Modals.ConnectModal.openWithPost AppMsg.NoOp content model
 
         PostedAndSubordinateToCoto postId coto (Ok post) ->
             model
@@ -352,6 +352,7 @@ handleShortcut context keyboardEvent model =
                         && App.Submodels.Context.anySelection context
                 then
                     App.Modals.ConnectModal.openWithPost
+                        AppMsg.NoOp
                         (CotoContent
                             model.editorModal.content
                             (getSummary model.editorModal)
