@@ -144,13 +144,13 @@ update context msg ({ connectModal } as model) =
         PostAndConnectToSelection content ->
             model
                 |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection context model.connectModal.direction content
+                |> postAndConnectToSelection context content
 
         PostedAndConnectToSelection postId (Ok post) ->
             model
                 |> App.Submodels.Modals.clearModals
                 |> App.Update.Post.onPosted context postId post
-                |> chain (connectPostToSelection context model.connectModal.direction post)
+                |> chain (connectPostToSelection context post)
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd
@@ -158,11 +158,10 @@ update context msg ({ connectModal } as model) =
 
 postAndConnectToSelection :
     Context context
-    -> Direction
     -> CotoContent
     -> UpdateModel model
     -> ( UpdateModel model, Cmd AppMsg.Msg )
-postAndConnectToSelection context direction content model =
+postAndConnectToSelection context content model =
     let
         ( newTimeline, newPost ) =
             App.Types.Timeline.post context False content model.timeline
@@ -182,11 +181,10 @@ postAndConnectToSelection context direction content model =
 
 connectPostToSelection :
     Context context
-    -> Direction
     -> Post
     -> UpdateModel model
     -> ( UpdateModel model, Cmd AppMsg.Msg )
-connectPostToSelection context direction post model =
+connectPostToSelection context post model =
     post.cotoId
         |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
@@ -199,16 +197,16 @@ connectPostToSelection context direction post model =
                     context.session
                     target
                     objects
-                    direction
-                    Nothing
+                    model.connectModal.direction
+                    (getLinkingPhrase model.connectModal)
                     model
                 , App.Server.Graph.connect
                     context.clientId
                     (Maybe.map .key model.cotonoma)
                     target.id
-                    (List.map (\coto -> coto.id) objects)
-                    direction
-                    Nothing
+                    (List.map .id objects)
+                    model.connectModal.direction
+                    (getLinkingPhrase model.connectModal)
                 )
             )
         |> Maybe.withDefault ( model, Cmd.none )
