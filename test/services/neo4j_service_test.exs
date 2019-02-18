@@ -143,12 +143,13 @@ defmodule Cotoami.Neo4jServiceTest do
       %Node{id: node1_id} = Neo4jService.get_or_create_node(conn, uuid1)
       uuid2 = UUID.uuid4()
       %Node{id: node2_id} = Neo4jService.get_or_create_node(conn, uuid2)
-      rel = Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "A", %{a: "hello", b: 1})
-      ~M{uuid1, node1_id, uuid2, node2_id, rel}
+      Neo4jService.get_or_create_relationship(conn, uuid1, uuid2, "A", %{a: "hello", b: 1})
+      ~M{uuid1, uuid2, node1_id, node2_id}
     end
 
     test "the return should have correct attributes and properties",
-         ~M{node1_id, node2_id, rel} do
+         ~M{conn, uuid1, uuid2, node1_id, node2_id} do
+      rel = Neo4jService.get_relationship(conn, uuid1, uuid2, "A")
       assert rel.start == node1_id
       assert rel.end == node2_id
       assert rel.properties == %{"a" => "hello", "b" => 1}
