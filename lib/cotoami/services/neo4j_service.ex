@@ -4,6 +4,7 @@ defmodule Cotoami.Neo4jService do
   """
 
   require Logger
+  alias Bolt.Sips.Types.Relationship
 
   @rel_prop_order "order"
 
@@ -101,6 +102,25 @@ defmodule Cotoami.Neo4jService do
     case result do
       [%{"r" => relationship}] -> relationship
       _ -> nil
+    end
+  end
+
+  def reverse_relationship(conn, source_uuid, target_uuid, type) do
+    target_rel = get_relationship(conn, source_uuid, target_uuid, type)
+    reverse_rel = get_relationship(conn, target_uuid, source_uuid, type)
+
+    case {target_rel, reverse_rel} do
+      {nil, nil} ->
+        nil
+
+      {target_rel, nil} ->
+        %Relationship{properties: props} = target_rel
+        reverse_rel = get_or_create_relationship(conn, target_uuid, source_uuid, type, props)
+        delete_relationship(conn, source_uuid, target_uuid, type)
+        reverse_rel
+
+      _ ->
+        nil
     end
   end
 
