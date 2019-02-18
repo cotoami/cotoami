@@ -147,11 +147,12 @@ defmodule Cotoami.Neo4jServiceTest do
       ~M{uuid1, node1_id, uuid2, node2_id, rel}
     end
 
-    test "it should have correct attributes and properties", ~M{node1_id, node2_id, rel} do
-      assert node1_id == rel.start
-      assert node2_id == rel.end
-      assert %{"a" => "hello", "b" => 1} == rel.properties
-      assert "A" == rel.type
+    test "the return should have correct attributes and properties",
+         ~M{node1_id, node2_id, rel} do
+      assert rel.start == node1_id
+      assert rel.end == node2_id
+      assert rel.properties == %{"a" => "hello", "b" => 1}
+      assert rel.type == "A"
     end
   end
 
