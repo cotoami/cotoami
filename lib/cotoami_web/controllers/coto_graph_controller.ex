@@ -125,6 +125,24 @@ defmodule CotoamiWeb.CotoGraphController do
     text(conn, "ok")
   end
 
+  def update_connection(conn, %{"start_id" => start_id, "end_id" => end_id} = params, amishi) do
+    linking_phrase = params["linking_phrase"]
+    start_coto = ensure_to_get_coto(start_id)
+    end_coto = ensure_to_get_coto(end_id)
+
+    connection_as_json =
+      CotoGraphService.update_connection(
+        Sips.conn(),
+        start_coto,
+        end_coto,
+        linking_phrase,
+        false,
+        amishi
+      )
+
+    json(conn, connection_as_json)
+  end
+
   def reorder(conn, %{"end_ids" => end_ids} = params, amishi) do
     case params do
       %{"start_id" => start_id} ->
