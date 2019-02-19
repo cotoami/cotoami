@@ -312,8 +312,8 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
 
     test "the relationship should has the linking phrase", ~M{conn, amishi, source, target} do
-      assert [%Relationship{properties: %{"linking_phrase" => "expressed by"}}] =
-               Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A")
+      assert %Relationship{properties: %{"linking_phrase" => "expressed by"}} =
+               Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
 
       source_id = source.id
       target_id = target.id
@@ -331,6 +331,31 @@ defmodule Cotoami.CotoGraphServiceTest do
                  ]
                }
              } = CotoGraphService.get_graph_from_uuid(conn, source.id)
+    end
+
+    test "the linking phrase can be updated", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, "has a", false, amishi)
+
+      assert %Relationship{properties: %{"linking_phrase" => "has a"}} =
+               Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
+    end
+
+    test "the linking phrase can be deleted", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, nil, false, amishi)
+
+      %Relationship{properties: properties} =
+        Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
+
+      assert properties["linking_phrase"] == nil
+    end
+
+    test "the relationship can be reversed", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, "expresses", true, amishi)
+
+      assert Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A") == []
+
+      assert [%Relationship{properties: %{"linking_phrase" => "expresses"}}] =
+               Neo4jService.get_ordered_relationships(conn, target.id, "HAS_A")
     end
   end
 
