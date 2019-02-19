@@ -8,6 +8,7 @@ defmodule Cotoami.CotoGraphService do
   import Ecto.Query, only: [from: 2]
   alias Phoenix.View
   alias Bolt.Sips.Types.Node
+  alias Bolt.Sips.Types.Relationship
   alias Cotoami.{Repo, Coto, Amishi, Cotonoma, CotoGraph, Neo4jService}
   alias CotoamiWeb.{AmishiView, CotonomaView}
 
@@ -110,11 +111,7 @@ defmodule Cotoami.CotoGraphService do
       parent_id = parent.properties["uuid"]
       child_id = child.properties["uuid"]
 
-      connection =
-        has.properties
-        |> Map.put("id", has.id)
-        |> Map.put("start", parent_id)
-        |> Map.put("end", child_id)
+      connection = make_connection_json(has, parent_id, child_id)
 
       if from_root && parent_id == start_uuid do
         %{graph | root_connections: [connection | graph.root_connections]}
@@ -125,6 +122,13 @@ defmodule Cotoami.CotoGraphService do
       end
     end)
     |> (fn graph -> %{graph | cotos: complement_coto_nodes(graph.cotos)} end).()
+  end
+
+  defp make_connection_json(%Relationship{id: id, properties: properties}, start_uuid, end_uuid) do
+    properties
+    |> Map.put("id", id)
+    |> Map.put("start", start_uuid)
+    |> Map.put("end", end_uuid)
   end
 
   defp add_coto(%{} = cotos, %Node{labels: labels, properties: properties}) do
@@ -264,7 +268,7 @@ defmodule Cotoami.CotoGraphService do
     cotonoma_coto = %{cotonoma_coto | amishi: cotonoma_owner}
 
     bolt_conn
-    |> ensure_disconnectable(cotonoma_coto, coto, amishi)
+    |> ensure_amishi_has_permission_to_update_connection(amishi, cotonoma_coto, coto)
     |> Neo4jService.delete_relationship(cotonoma_coto.id, coto.id, @type_connection)
   end
 
@@ -360,28 +364,57 @@ defmodule Cotoami.CotoGraphService do
 
   def disconnect(bolt_conn, %Coto{} = source, %Coto{} = target, %Amishi{} = amishi) do
     bolt_conn
-    |> ensure_disconnectable(source, target, amishi)
+    |> ensure_amishi_has_permission_to_update_connection(amishi, source, target)
     |> Neo4jService.delete_relationship(source.id, target.id, @type_connection)
   end
 
-  defp ensure_disconnectable(
+  def update_connection(
+        bolt_conn,
+        %Coto{id: source_id} = source,
+        %Coto{id: target_id} = target,
+        linking_phrase,
+        reverse,
+        %Amishi{} = amishi
+      ) do
+    ensure_amishi_has_permission_to_update_connection(bolt_conn, amishi, source, target)
+
+    rel =
+      Neo4jService.set_relationship_properties(
+        bolt_conn,
+        source_id,
+        target_id,
+        @type_connection,
+        %{
+          linking_phrase: linking_phrase
+        }
+      )
+
+    if reverse do
+      rel = Neo4jService.reverse_relationship(bolt_conn, source_id, target_id, @type_connection)
+      make_connection_json(rel, target_id, source_id)
+    else
+      make_connection_json(rel, source_id, target_id)
+    end
+  end
+
+  defp ensure_amishi_has_permission_to_update_connection(
          bolt_conn,
+         %Amishi{} = amishi,
          %Coto{} = source,
-         %Coto{} = target,
-         %Amishi{} = amishi
+         %Coto{} = target
        ) do
-    if disconnectable?(bolt_conn, source, target, amishi) do
+    if has_permission_to_update_connection?(bolt_conn, amishi, source, target) do
       bolt_conn
     else
       raise Cotoami.Exceptions.NoPermission
     end
   end
 
-  def disconnectable?(
+  def has_permission_to_update_connection?(
         bolt_conn,
+        %Amishi{id: amishi_id} = amishi,
         %Coto{id: source_id, amishi: %Amishi{id: source_amishi_id}},
-        %Coto{id: target_id},
-        %Amishi{id: amishi_id} = amishi
+        %Coto{id: target_id}
       ) do
     if Map.get(amishi, :owner) || source_amishi_id == amishi_id do
       true
