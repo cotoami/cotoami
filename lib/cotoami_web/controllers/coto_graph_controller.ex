@@ -140,6 +140,8 @@ defmodule CotoamiWeb.CotoGraphController do
         amishi
       )
 
+    broadcast_connection_update(start_id, end_id, linking_phrase, amishi, conn.assigns.client_id)
+
     json(conn, connection_as_json)
   end
 
