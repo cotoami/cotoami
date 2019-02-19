@@ -105,6 +105,26 @@ defmodule Cotoami.Neo4jService do
     end
   end
 
+  def set_relationship_properties(conn, source_uuid, target_uuid, type, props) do
+    query = ~s"""
+      MATCH (source { uuid: $source_uuid })-[r:#{type}]->(target { uuid: $target_uuid })
+      SET r += $props
+      RETURN r
+    """
+
+    result =
+      Bolt.Sips.query!(conn, query, %{
+        source_uuid: source_uuid,
+        target_uuid: target_uuid,
+        props: props
+      })
+
+    case result do
+      [%{"r" => relationship}] -> relationship
+      _ -> nil
+    end
+  end
+
   def reverse_relationship(conn, source_uuid, target_uuid, type) do
     target_rel = get_relationship(conn, source_uuid, target_uuid, type)
     reverse_rel = get_relationship(conn, target_uuid, source_uuid, type)

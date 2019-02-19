@@ -156,6 +156,13 @@ defmodule Cotoami.Neo4jServiceTest do
       assert rel.type == "A"
     end
 
+    test "its properties can be updated", ~M{conn, uuid1, uuid2, node1_id, node2_id} do
+      Neo4jService.set_relationship_properties(conn, uuid1, uuid2, "A", %{b: 2, c: "bye"})
+
+      rel = Neo4jService.get_relationship(conn, uuid1, uuid2, "A")
+      assert rel.properties == %{"a" => "hello", "b" => 2, "c" => "bye"}
+    end
+
     test "it can be reversed", ~M{conn, uuid1, uuid2, node1_id, node2_id} do
       Neo4jService.reverse_relationship(conn, uuid1, uuid2, "A")
 
