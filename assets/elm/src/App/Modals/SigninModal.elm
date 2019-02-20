@@ -17,7 +17,7 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Utils.HtmlUtil exposing (faIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.StringUtil exposing (validateEmail)
 import Utils.UpdateUtil exposing (..)
 
@@ -93,12 +93,12 @@ requestSignin email =
 
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
-    modalConfig context model
-        |> Just
-        |> Modal.view "signin-modal"
+    model
+        |> modalConfig context
+        |> Utils.Modal.view "signin-modal"
 
 
-modalConfig : Context context -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig context model =
     if model.requestStatus == Approved then
         { closeMessage = CloseModal
@@ -210,7 +210,7 @@ signinForm context model =
                 ]
 
           else
-            div [] []
+            Utils.HtmlUtil.none
         ]
 
 

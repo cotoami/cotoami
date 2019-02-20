@@ -12,7 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
 import Utils.HtmlUtil exposing (materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.UpdateUtil exposing (addCmd, withCmd, withoutCmd)
 
 
@@ -49,13 +49,13 @@ saveUpdate context filter =
 
 
 view : Context a -> TimelineFilter -> Html AppMsg.Msg
-view context filter =
-    Modal.view
-        "timeline-filter-modal"
-        (Just (modalConfig context filter))
+view context model =
+    model
+        |> modalConfig context
+        |> Utils.Modal.view "timeline-filter-modal"
 
 
-modalConfig : Context a -> TimelineFilter -> Modal.Config AppMsg.Msg
+modalConfig : Context a -> TimelineFilter -> Utils.Modal.Config AppMsg.Msg
 modalConfig context filter =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.TimelineFilterModal_Title)

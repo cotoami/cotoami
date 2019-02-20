@@ -22,7 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.UpdateUtil exposing (..)
 
 
@@ -78,16 +78,14 @@ update context msg model =
             model |> withoutCmd
 
 
-view : Context context -> Maybe Model -> Html AppMsg.Msg
-view context maybeModel =
-    Maybe.map2
-        (\session model -> modalConfig context session model)
-        context.session
-        maybeModel
-        |> Modal.view "coto-menu-modal"
+view : Context context -> Session -> Model -> Html AppMsg.Msg
+view context session model =
+    model
+        |> modalConfig context session
+        |> Utils.Modal.view "coto-menu-modal"
 
 
-modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig context session model =
     { closeMessage = AppMsg.CloseModal
     , title = text ""

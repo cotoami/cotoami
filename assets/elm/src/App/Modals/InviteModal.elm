@@ -137,10 +137,10 @@ sendInvite email =
         (Http.get ("/api/invite/" ++ email) Decode.string)
 
 
-view : Context context -> Model -> Html AppMsg.Msg
-view context model =
-    context.session
-        |> Maybe.map (\session -> modalConfig context session model)
+view : Context context -> Session -> Model -> Html AppMsg.Msg
+view context session model =
+    model
+        |> modalConfig context session
         |> Modal.view "invite-modal"
 
 

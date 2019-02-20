@@ -56,7 +56,7 @@ type alias Model =
     , navigationToggled : Bool
     , navigationOpen : Bool
     , presences : Presences
-    , confirmation : Confirmation
+    , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
     , globalCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
@@ -104,7 +104,7 @@ initModel seed lang route =
     , navigationToggled = False
     , navigationOpen = False
     , presences = Dict.empty
-    , confirmation = App.Submodels.Modals.defaultConfirmation
+    , confirmation = Nothing
     , searchInputFocus = False
     , globalCotonomas = []
     , recentCotonomas = []

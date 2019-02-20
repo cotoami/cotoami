@@ -34,7 +34,7 @@ type Msg
     | LocalStorageItemFetched ( String, Value )
     | KeyDown KeyCode
     | CloseModal
-    | Confirm
+    | Confirm Msg
     | AppClick
     | OnLocationChange Location
     | MoveToHome

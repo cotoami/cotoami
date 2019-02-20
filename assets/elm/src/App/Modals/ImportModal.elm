@@ -24,7 +24,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.UpdateUtil exposing (..)
 
 
@@ -119,14 +119,14 @@ importData clientId data =
         (httpPost "/api/import" clientId requestBody decodeResult)
 
 
-view : Maybe Model -> Html AppMsg.Msg
-view maybeModel =
-    maybeModel
-        |> Maybe.map modalConfig
-        |> Modal.view "import-modal"
+view : Model -> Html AppMsg.Msg
+view model =
+    model
+        |> modalConfig
+        |> Utils.Modal.view "import-modal"
 
 
-modalConfig : Model -> Modal.Config AppMsg.Msg
+modalConfig : Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig model =
     case model.requestStatus of
         Imported result ->

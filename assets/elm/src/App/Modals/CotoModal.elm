@@ -6,12 +6,11 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(CotoModal), Modals)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
-import App.Types.Session exposing (Session)
 import App.Views.Coto exposing (cotonomaLabel)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils.DateUtil
-import Utils.Modal as Modal
+import Utils.Modal
 
 
 type alias Model =
@@ -35,24 +34,22 @@ open coto model =
         |> App.Submodels.Modals.openModal CotoModal
 
 
-view : Context context -> Maybe Model -> Html AppMsg.Msg
-view context maybeModel =
-    Maybe.map2
-        (\session model -> modalConfig context session model)
-        context.session
-        maybeModel
-        |> Modal.view "coto-modal"
+view : Context context -> Model -> Html AppMsg.Msg
+view context model =
+    model
+        |> modalConfig context
+        |> Utils.Modal.view "coto-modal"
 
 
-modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
-modalConfig context session model =
+modalConfig : Context context -> Model -> Utils.Modal.Config AppMsg.Msg
+modalConfig context model =
     model.coto.asCotonoma
-        |> Maybe.map (\cotonoma -> cotonomaModalConfig context session model cotonoma)
-        |> Maybe.withDefault (cotoModalConfig context session model)
+        |> Maybe.map (\cotonoma -> cotonomaModalConfig context model cotonoma)
+        |> Maybe.withDefault (cotoModalConfig context model)
 
 
-cotoModalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
-cotoModalConfig context session model =
+cotoModalConfig : Context context -> Model -> Utils.Modal.Config AppMsg.Msg
+cotoModalConfig context model =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.Coto)
     , content =
@@ -72,8 +69,8 @@ cotoModalConfig context session model =
     }
 
 
-cotonomaModalConfig : Context context -> Session -> Model -> Cotonoma -> Modal.Config AppMsg.Msg
-cotonomaModalConfig context session model cotonoma =
+cotonomaModalConfig : Context context -> Model -> Cotonoma -> Utils.Modal.Config AppMsg.Msg
+cotonomaModalConfig context model cotonoma =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.Cotonoma)
     , content =

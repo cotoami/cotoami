@@ -408,7 +408,6 @@ view context model =
         NewCotonoma ->
             cotonomaEditorConfig context model
     )
-        |> Just
         |> Modal.view "editor-modal"
 
 

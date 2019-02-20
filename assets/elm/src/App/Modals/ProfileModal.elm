@@ -12,7 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
@@ -33,20 +33,12 @@ update context msg model =
             ( model, App.Ports.ImportFile.selectImportFile () )
 
 
-view : Context context -> Html AppMsg.Msg
-view context =
-    Modal.view
-        "profile-modal"
-        (case context.session of
-            Nothing ->
-                Nothing
-
-            Just session ->
-                Just (modalConfig context session)
-        )
+view : Context context -> Session -> Html AppMsg.Msg
+view context session =
+    Utils.Modal.view "profile-modal" (modalConfig context session)
 
 
-modalConfig : Context context -> Session -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Utils.Modal.Config AppMsg.Msg
 modalConfig context session =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.ProfileModal_Title)
@@ -68,7 +60,7 @@ modalConfig context session =
                             ]
 
                       else
-                        div [] []
+                        Utils.HtmlUtil.none
                     ]
                 , div
                     [ class "profile-content nine columns" ]
@@ -101,7 +93,7 @@ modalConfig context session =
                         [ onClick (AppMsg.ProfileModalMsg SelectImportFile) ]
 
                   else
-                    span [] []
+                    Utils.HtmlUtil.none
                 ]
             ]
     , buttons =

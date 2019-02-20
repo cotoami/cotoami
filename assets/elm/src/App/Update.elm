@@ -85,9 +85,9 @@ update msg model =
         CloseModal ->
             App.Submodels.Modals.closeActiveModal model |> withoutCmd
 
-        Confirm ->
+        Confirm messageOnConfirm ->
             App.Submodels.Modals.closeActiveModal model
-                |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
+                |> withCmd (\_ -> App.Commands.sendMsg messageOnConfirm)
 
         AppClick ->
             { model | flowView = App.Views.Flow.openOrCloseEditor False model.flowView }

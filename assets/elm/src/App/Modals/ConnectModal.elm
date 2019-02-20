@@ -31,7 +31,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.Keyed
 import Maybe exposing (andThen)
 import Utils.HtmlUtil exposing (materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
@@ -223,10 +223,12 @@ connectPostToSelection context post model =
 
 view : Context context -> List Coto -> Model -> Html AppMsg.Msg
 view context cotos model =
-    Modal.view "connect-modal" <| Just (modalConfig context cotos model)
+    model
+        |> modalConfig context cotos
+        |> Utils.Modal.view "connect-modal"
 
 
-modalConfig : Context context -> List Coto -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> List Coto -> Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig context selectedCotos model =
     let
         primaryButtonId =
