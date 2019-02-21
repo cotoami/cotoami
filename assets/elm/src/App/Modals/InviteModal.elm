@@ -69,74 +69,6 @@ canInvite context model =
         |> Maybe.withDefault False
 
 
-sendInit : Cmd AppMsg.Msg
-sendInit =
-    AppMsg.InviteModalMsg Init
-        |> App.Commands.sendMsg
-
-
-update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update msg model =
-    case msg of
-        Init ->
-            ( model
-            , App.Server.Amishi.fetchInvitees
-                (AppMsg.InviteModalMsg << InviteesFetched)
-            )
-
-        InviteesFetched (Ok invitees) ->
-            { model | invitees = Just invitees } |> withoutCmd
-
-        InviteesFetched (Err error) ->
-            model |> withoutCmd
-
-        EmailInput content ->
-            { model | email = content } |> withoutCmd
-
-        SendInviteClick ->
-            { model | requestProcessing = True }
-                |> withCmd (\model -> sendInvite model.email)
-
-        SendInviteDone (Ok _) ->
-            { model
-                | email = ""
-                , requestProcessing = False
-                , requestStatus = Approved model.email
-            }
-                |> withoutCmd
-
-        SendInviteDone (Err error) ->
-            (case error of
-                BadStatus response ->
-                    Just response.body
-
-                _ ->
-                    Nothing
-            )
-                |> Maybe.map (Decode.decodeString App.Server.Amishi.decodeAmishi)
-                |> Maybe.andThen Result.toMaybe
-                |> Maybe.map
-                    (\invitee ->
-                        { model
-                            | requestProcessing = False
-                            , requestStatus = Conflict invitee
-                        }
-                    )
-                |> Maybe.withDefault
-                    { model
-                        | requestProcessing = False
-                        , requestStatus = Rejected
-                    }
-                |> withoutCmd
-
-
-sendInvite : String -> Cmd AppMsg.Msg
-sendInvite email =
-    Http.send
-        (AppMsg.InviteModalMsg << SendInviteDone)
-        (Http.get ("/api/invite/" ++ email) Decode.string)
-
-
 view : Context context -> Session -> Model -> Html AppMsg.Msg
 view context session model =
     model
@@ -267,3 +199,71 @@ inviteesDiv model =
                         ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update msg model =
+    case msg of
+        Init ->
+            ( model
+            , App.Server.Amishi.fetchInvitees
+                (AppMsg.InviteModalMsg << InviteesFetched)
+            )
+
+        InviteesFetched (Ok invitees) ->
+            { model | invitees = Just invitees } |> withoutCmd
+
+        InviteesFetched (Err error) ->
+            model |> withoutCmd
+
+        EmailInput content ->
+            { model | email = content } |> withoutCmd
+
+        SendInviteClick ->
+            { model | requestProcessing = True }
+                |> withCmd (\model -> sendInvite model.email)
+
+        SendInviteDone (Ok _) ->
+            { model
+                | email = ""
+                , requestProcessing = False
+                , requestStatus = Approved model.email
+            }
+                |> withoutCmd
+
+        SendInviteDone (Err error) ->
+            (case error of
+                BadStatus response ->
+                    Just response.body
+
+                _ ->
+                    Nothing
+            )
+                |> Maybe.map (Decode.decodeString App.Server.Amishi.decodeAmishi)
+                |> Maybe.andThen Result.toMaybe
+                |> Maybe.map
+                    (\invitee ->
+                        { model
+                            | requestProcessing = False
+                            , requestStatus = Conflict invitee
+                        }
+                    )
+                |> Maybe.withDefault
+                    { model
+                        | requestProcessing = False
+                        , requestStatus = Rejected
+                    }
+                |> withoutCmd
+
+
+sendInit : Cmd AppMsg.Msg
+sendInit =
+    AppMsg.InviteModalMsg Init
+        |> App.Commands.sendMsg
+
+
+sendInvite : String -> Cmd AppMsg.Msg
+sendInvite email =
+    Http.send
+        (AppMsg.InviteModalMsg << SendInviteDone)
+        (Http.get ("/api/invite/" ++ email) Decode.string)
