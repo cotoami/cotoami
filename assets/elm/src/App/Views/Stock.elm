@@ -47,71 +47,6 @@ defaultModel =
     }
 
 
-type alias UpdateModel model =
-    { model
-        | stockView : Model
-        , graph : Graph
-    }
-
-
-update : Context context -> StockMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ stockView } as model) =
-    case msg of
-        SwitchView view ->
-            { model | stockView = { stockView | view = view } }
-                |> withCmdIf
-                    (\_ -> view == GraphView)
-                    (\_ -> renderGraphWithDelay)
-
-        RenderGraph ->
-            model |> withCmd (\_ -> renderGraph context model)
-
-        ResizeGraph ->
-            model
-                |> withCmdIf
-                    (\model -> model.stockView.view == GraphView)
-                    (\_ -> App.Ports.Graph.resizeGraph ())
-
-        ToggleGraphCanvasSize ->
-            { model
-                | stockView =
-                    { stockView
-                        | graphCanvasFullyOpened = not stockView.graphCanvasFullyOpened
-                    }
-            }
-                |> withoutCmd
-
-        GraphNodeClicked cotoId ->
-            if stockView.graphCanvasFullyOpened then
-                model |> withoutCmd
-
-            else
-                ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
-
-
-renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
-renderGraph context model =
-    if model.stockView.view == GraphView then
-        App.Types.Graph.Render.render context model.graph
-
-    else
-        Cmd.none
-
-
-renderGraphWithDelay : Cmd AppMsg.Msg
-renderGraphWithDelay =
-    Process.sleep (100 * Time.millisecond)
-        |> Task.andThen (\_ -> Task.succeed ())
-        |> Task.perform (\_ -> AppMsg.StockMsg RenderGraph)
-
-
-resizeGraphWithDelay : Cmd AppMsg.Msg
-resizeGraphWithDelay =
-    Process.sleep (100 * Time.millisecond)
-        |> Task.andThen (\_ -> Task.succeed ())
-        |> Task.perform (\_ -> AppMsg.StockMsg ResizeGraph)
-
-
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     div [ id "stock" ]
@@ -289,3 +224,68 @@ graphViewDiv context model =
             ]
         , div [ id "coto-graph-canvas" ] []
         ]
+
+
+type alias UpdateModel model =
+    { model
+        | stockView : Model
+        , graph : Graph
+    }
+
+
+update : Context context -> StockMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ stockView } as model) =
+    case msg of
+        SwitchView view ->
+            { model | stockView = { stockView | view = view } }
+                |> withCmdIf
+                    (\_ -> view == GraphView)
+                    (\_ -> renderGraphWithDelay)
+
+        RenderGraph ->
+            model |> withCmd (\_ -> renderGraph context model)
+
+        ResizeGraph ->
+            model
+                |> withCmdIf
+                    (\model -> model.stockView.view == GraphView)
+                    (\_ -> App.Ports.Graph.resizeGraph ())
+
+        ToggleGraphCanvasSize ->
+            { model
+                | stockView =
+                    { stockView
+                        | graphCanvasFullyOpened = not stockView.graphCanvasFullyOpened
+                    }
+            }
+                |> withoutCmd
+
+        GraphNodeClicked cotoId ->
+            if stockView.graphCanvasFullyOpened then
+                model |> withoutCmd
+
+            else
+                ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
+
+
+renderGraph : Context context -> UpdateModel model -> Cmd AppMsg.Msg
+renderGraph context model =
+    if model.stockView.view == GraphView then
+        App.Types.Graph.Render.render context model.graph
+
+    else
+        Cmd.none
+
+
+renderGraphWithDelay : Cmd AppMsg.Msg
+renderGraphWithDelay =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> AppMsg.StockMsg RenderGraph)
+
+
+resizeGraphWithDelay : Cmd AppMsg.Msg
+resizeGraphWithDelay =
+    Process.sleep (100 * Time.millisecond)
+        |> Task.andThen (\_ -> Task.succeed ())
+        |> Task.perform (\_ -> AppMsg.StockMsg ResizeGraph)
