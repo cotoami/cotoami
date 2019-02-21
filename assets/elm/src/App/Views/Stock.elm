@@ -153,7 +153,7 @@ pinnedCotoDiv context inbound coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ pinButtonDiv context inbound.connection coto.id
+            [ pinButtonDiv context inbound.connection coto
             , App.Views.Coto.headerDiv context (Just inbound) elementId coto
             , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
             , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
@@ -166,8 +166,8 @@ pinnedCotoDiv context inbound coto =
         ]
 
 
-pinButtonDiv : Context context -> Connection -> CotoId -> Html AppMsg.Msg
-pinButtonDiv context connection cotoId =
+pinButtonDiv : Context context -> Connection -> Coto -> Html AppMsg.Msg
+pinButtonDiv context connection coto =
     let
         maybeAmishiId =
             context.session
@@ -182,12 +182,23 @@ pinButtonDiv context connection cotoId =
             App.Submodels.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || (isJust maybeAmishiId && maybeAmishiId == maybeCotonomaOwnerId)
+
+        msgOnClick =
+            context.cotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        AppMsg.OpenConnectionModal
+                            (App.Types.Coto.toCoto cotonoma)
+                            coto
+                            connection.linkingPhrase
+                    )
+                |> Maybe.withDefault (ConfirmUnpinCoto coto.id)
     in
     div [ class "pin-button" ]
         [ if editable then
             a
                 [ class "pin tool-button"
-                , onLinkButtonClick (ConfirmUnpinCoto cotoId)
+                , onLinkButtonClick msgOnClick
                 ]
                 [ faIcon "thumb-tack" Nothing ]
 
