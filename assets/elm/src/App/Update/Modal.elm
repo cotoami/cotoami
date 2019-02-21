@@ -5,6 +5,7 @@ module App.Update.Modal exposing
     , openCotoModal
     , openEditorModalForEdit
     , openEditorModalForNew
+    , openImportModal
     )
 
 import App.Commands
@@ -13,7 +14,9 @@ import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
+import App.Modals.ImportModal
 import App.Model exposing (Model)
+import App.Ports.ImportFile exposing (ImportFile)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(..))
 import App.Types.Connection exposing (Direction(..))
@@ -89,3 +92,9 @@ openConnectModal selectedCotos direction target model =
                     "connect-modal-primary-button"
                     App.Messages.NoOp
             )
+
+
+openImportModal : ImportFile -> Model -> Model
+openImportModal importFile model =
+    { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
+        |> App.Submodels.Modals.openModal ImportModal

@@ -589,8 +589,7 @@ update msg model =
                 |> withoutCmd
 
         OpenImportModal importFile ->
-            { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
-                |> App.Submodels.Modals.openModal ImportModal
+            App.Update.Modal.openImportModal importFile model
                 |> withoutCmd
 
         OpenTimelineFilterModal ->
