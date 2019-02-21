@@ -104,6 +104,8 @@ type Msg
       --
     | ClearModals
     | OpenConfirmModal String Msg
+    | OpenSigninModal
+    | OpenProfileModal
     | OpenCotoMenuModal Coto
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto

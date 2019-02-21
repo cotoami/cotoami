@@ -7,6 +7,7 @@ module App.Update.Modal exposing
     , openEditorModalForNew
     , openImportModal
     , openInviteModal
+    , openSigninModal
     )
 
 import App.Commands
@@ -17,13 +18,21 @@ import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.SigninModal
 import App.Model exposing (Model)
 import App.Ports.ImportFile exposing (ImportFile)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(..))
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent)
+import App.Types.Session exposing (AuthSettings)
 import Utils.UpdateUtil exposing (..)
+
+
+openSigninModal : AuthSettings -> Model -> Model
+openSigninModal authSettings model =
+    { model | signinModal = App.Modals.SigninModal.initModel authSettings }
+        |> App.Submodels.Modals.openModal SigninModal
 
 
 openCotoMenuModal : Coto -> Model -> ( Model, Cmd Msg )

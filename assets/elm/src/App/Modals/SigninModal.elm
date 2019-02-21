@@ -54,43 +54,6 @@ initModel authSettings =
     }
 
 
-update : SigninModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update msg model =
-    case msg of
-        EmailInput content ->
-            { model | email = content } |> withoutCmd
-
-        RequestClick ->
-            { model | requestProcessing = True }
-                |> withCmd (\model -> requestSignin model.email)
-
-        RequestDone (Ok _) ->
-            { model
-                | email = ""
-                , requestProcessing = False
-                , requestStatus = Approved
-            }
-                |> withoutCmd
-
-        RequestDone (Err _) ->
-            { model
-                | requestProcessing = False
-                , requestStatus = Rejected
-            }
-                |> withoutCmd
-
-
-requestSignin : String -> Cmd AppMsg.Msg
-requestSignin email =
-    let
-        url =
-            "/api/public/signin/request/" ++ email
-    in
-    Http.send
-        (AppMsg.SigninModalMsg << RequestDone)
-        (Http.get url Decode.string)
-
-
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     model
@@ -227,3 +190,40 @@ sendLinkButton context model =
           else
             text (context.i18nText I18nKeys.SigninModal_SendLink)
         ]
+
+
+update : SigninModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update msg model =
+    case msg of
+        EmailInput content ->
+            { model | email = content } |> withoutCmd
+
+        RequestClick ->
+            { model | requestProcessing = True }
+                |> withCmd (\model -> requestSignin model.email)
+
+        RequestDone (Ok _) ->
+            { model
+                | email = ""
+                , requestProcessing = False
+                , requestStatus = Approved
+            }
+                |> withoutCmd
+
+        RequestDone (Err _) ->
+            { model
+                | requestProcessing = False
+                , requestStatus = Rejected
+            }
+                |> withoutCmd
+
+
+requestSignin : String -> Cmd AppMsg.Msg
+requestSignin email =
+    let
+        url =
+            "/api/public/signin/request/" ++ email
+    in
+    Http.send
+        (AppMsg.SigninModalMsg << RequestDone)
+        (Http.get url Decode.string)

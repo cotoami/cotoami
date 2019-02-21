@@ -136,11 +136,9 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        response.body
-                            |> App.Server.Session.decodeAuthSettingsString
-                            |> App.Modals.SigninModal.initModel
-                            |> (\signinModal -> { model | signinModal = signinModal })
-                            |> App.Submodels.Modals.openModal SigninModal
+                        App.Update.Modal.openSigninModal
+                            (App.Server.Session.decodeAuthSettingsString response.body)
+                            model
                             |> withoutCmd
 
                     else
@@ -573,6 +571,14 @@ update msg model =
 
         OpenConfirmModal message msgOnConfirm ->
             App.Submodels.Modals.confirm (Confirmation message msgOnConfirm) model
+                |> withoutCmd
+
+        OpenSigninModal ->
+            App.Update.Modal.openSigninModal model.signinModal.authSettings model
+                |> withoutCmd
+
+        OpenProfileModal ->
+            App.Submodels.Modals.openModal ProfileModal model
                 |> withoutCmd
 
         OpenCotoMenuModal coto ->
