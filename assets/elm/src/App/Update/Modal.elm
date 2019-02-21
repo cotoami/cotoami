@@ -6,6 +6,7 @@ module App.Update.Modal exposing
     , openEditorModalForEdit
     , openEditorModalForNew
     , openImportModal
+    , openInviteModal
     )
 
 import App.Commands
@@ -15,6 +16,7 @@ import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
+import App.Modals.InviteModal
 import App.Model exposing (Model)
 import App.Ports.ImportFile exposing (ImportFile)
 import App.Submodels.Context exposing (Context)
@@ -98,3 +100,10 @@ openImportModal : ImportFile -> Model -> Model
 openImportModal importFile model =
     { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
         |> App.Submodels.Modals.openModal ImportModal
+
+
+openInviteModal : Model -> ( Model, Cmd Msg )
+openInviteModal model =
+    { model | inviteModal = App.Modals.InviteModal.defaultModel }
+        |> App.Submodels.Modals.openModal InviteModal
+        |> withCmd (\_ -> App.Modals.InviteModal.sendInit)

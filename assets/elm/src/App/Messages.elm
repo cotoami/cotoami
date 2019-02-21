@@ -5,7 +5,6 @@ import App.Modals.CotoMenuModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.InviteModalMsg
-import App.Modals.ProfileModalMsg
 import App.Modals.SigninModalMsg
 import App.Modals.TimelineFilterModalMsg
 import App.Ports.ImportFile exposing (ImportFile)
@@ -47,6 +46,7 @@ type Msg
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | GraphFetched (Result Http.Error Graph)
     | SubgraphFetched (Result Http.Error Graph)
+    | SelectImportFile
       --
       -- Search
       --
@@ -113,6 +113,7 @@ type Msg
     | OpenTimelineFilterModal
     | OpenConnectModalByCoto Coto
     | OpenConnectModalByNewPost CotoContent Msg
+    | OpenInviteModal
       --
       -- Sub components
       --
@@ -125,7 +126,6 @@ type Msg
     | CotoToolbarMsg App.Views.CotoToolbarMsg.Msg
     | ReorderMsg App.Views.ReorderMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
-    | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg

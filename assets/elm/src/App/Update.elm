@@ -10,12 +10,12 @@ import App.Modals.CotoMenuModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
-import App.Modals.ProfileModal
 import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
 import App.Model exposing (Model)
 import App.Ports.App
 import App.Ports.Graph
+import App.Ports.ImportFile
 import App.Pushed
 import App.Route exposing (Route(..))
 import App.Server.Coto
@@ -215,6 +215,9 @@ update msg model =
 
         SubgraphFetched (Err _) ->
             model |> withoutCmd
+
+        SelectImportFile ->
+            ( model, App.Ports.ImportFile.selectImportFile () )
 
         --
         -- Search
@@ -610,6 +613,9 @@ update msg model =
                 content
                 model
 
+        OpenInviteModal ->
+            App.Update.Modal.openInviteModal model
+
         --
         -- Sub components
         --
@@ -640,9 +646,6 @@ update msg model =
         SigninModalMsg subMsg ->
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
-
-        ProfileModalMsg subMsg ->
-            App.Modals.ProfileModal.update model subMsg model
 
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
