@@ -140,6 +140,12 @@ setCotoSaveError error model =
            )
 
 
+
+--
+-- view
+--
+
+
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     (case model.mode of
@@ -160,9 +166,7 @@ view context model =
 
 
 
---
 -- Coto Editor
---
 
 
 cotoEditorConfig : Context context -> Model -> Modal.Config AppMsg.Msg
@@ -248,9 +252,7 @@ cotoEditor context model =
 
 
 
---
 -- Cotonoma Editor
---
 
 
 cotonomaEditorConfig : Context context -> Model -> Modal.Config AppMsg.Msg
@@ -325,9 +327,7 @@ cotonomaEditor context model =
 
 
 
---
 -- Partials
---
 
 
 newEditorTitle : Context context -> Model -> Html AppMsg.Msg
@@ -530,6 +530,12 @@ adviceOnCotonomaNameDiv context model =
 
     else
         Utils.HtmlUtil.none
+
+
+
+--
+-- update
+--
 
 
 type alias UpdateModel model =
@@ -740,7 +746,7 @@ handleShortcut context keyboardEvent model =
         ( model, Cmd.none )
 
 
-postCotonoma : Context context -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+postCotonoma : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 postCotonoma context model =
     let
         cotonomaName =
