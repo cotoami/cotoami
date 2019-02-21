@@ -3,6 +3,7 @@ module App.Update.Modal exposing
     , openConnectModalByNewPost
     , openCotoMenuModal
     , openCotoModal
+    , openEditorModalForNew
     )
 
 import App.Commands
@@ -10,7 +11,9 @@ import App.Messages exposing (Msg)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
+import App.Modals.EditorModal
 import App.Model exposing (Model)
+import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(..))
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent)
@@ -28,6 +31,13 @@ openCotoModal : Coto -> Model -> Model
 openCotoModal coto model =
     { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
         |> App.Submodels.Modals.openModal CotoModal
+
+
+openEditorModalForNew : Context context -> Maybe Coto -> Model -> ( Model, Cmd Msg )
+openEditorModalForNew context source model =
+    { model | editorModal = App.Modals.EditorModal.modelForNew context source }
+        |> App.Submodels.Modals.openModal EditorModal
+        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
 
 
 openConnectModalByCoto : List Coto -> Coto -> Model -> ( Model, Cmd Msg )

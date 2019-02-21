@@ -77,7 +77,7 @@ update msg model =
                     && not model.flowView.editorOpen
                     && not model.searchInputFocus
             then
-                App.Modals.EditorModal.openForNew model Nothing model
+                App.Update.Modal.openEditorModalForNew model Nothing model
 
             else
                 model |> withoutCmd
@@ -576,10 +576,10 @@ update msg model =
             App.Update.Modal.openCotoMenuModal coto model
 
         OpenNewEditorModal ->
-            App.Modals.EditorModal.openForNew model Nothing model
+            App.Update.Modal.openEditorModalForNew model Nothing model
 
         OpenNewEditorModalWithSourceCoto coto ->
-            App.Modals.EditorModal.openForNew model (Just coto) model
+            App.Update.Modal.openEditorModalForNew model (Just coto) model
 
         OpenEditorModal coto ->
             { model | editorModal = App.Modals.EditorModal.modelForEdit coto }

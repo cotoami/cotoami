@@ -6,7 +6,6 @@ module App.Modals.EditorModal exposing
     , modelForEdit
     , modelForEditToCotonomatize
     , modelForNew
-    , openForNew
     , setCotoSaveError
     , update
     , view
@@ -16,7 +15,6 @@ import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Server.Coto
 import App.Server.Cotonoma
@@ -24,7 +22,6 @@ import App.Server.Graph
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Submodels.Modals exposing (Modal(EditorModal), Modals)
 import App.Types.Connection
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
@@ -141,255 +138,6 @@ setCotoSaveError error model =
                     , requestProcessing = False
                 }
            )
-
-
-type alias WithEditorModal model =
-    { model | editorModal : Model }
-
-
-openForNew :
-    Context context
-    -> Maybe Coto
-    -> Modals (WithEditorModal model)
-    -> ( Modals (WithEditorModal model), Cmd AppMsg.Msg )
-openForNew context source model =
-    { model | editorModal = modelForNew context source }
-        |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\model -> App.Commands.focus "editor-modal-content-input" AppMsg.NoOp)
-
-
-type alias UpdateModel model =
-    LocalCotos (Modals (WithConnectModal (WithEditorModal model)))
-
-
-update : Context context -> EditorModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ editorModal, timeline } as model) =
-    case msg of
-        EditorInput content ->
-            { model | editorModal = { editorModal | content = content } }
-                |> withoutCmd
-
-        SummaryInput summary ->
-            { model | editorModal = { editorModal | summary = summary } }
-                |> withoutCmd
-
-        TogglePreview ->
-            { model | editorModal = { editorModal | preview = not editorModal.preview } }
-                |> withoutCmd
-
-        EditorKeyDown keyboardEvent ->
-            handleShortcut context keyboardEvent model
-
-        ShareCotonomaCheck check ->
-            { model | editorModal = { editorModal | shareCotonoma = check } }
-                |> withoutCmd
-
-        Post ->
-            { model | editorModal = { editorModal | requestProcessing = True } }
-                |> post context
-
-        PostedAndSubordinateToCoto postId coto (Ok post) ->
-            model
-                |> App.Submodels.Modals.clearModals
-                |> App.Update.Post.onPosted context postId post
-                |> chain (subordinatePostToCoto context coto post)
-
-        PostedAndSubordinateToCoto postId coto (Err _) ->
-            model |> withoutCmd
-
-        PostCotonoma ->
-            { model | editorModal = { editorModal | requestProcessing = True } }
-                |> postCotonoma context
-
-        CotonomaPosted postId (Ok post) ->
-            { model | cotonomasLoading = True }
-                |> App.Submodels.Modals.clearModals
-                |> App.Update.Post.onPosted context postId post
-                |> addCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
-
-        CotonomaPosted postId (Err error) ->
-            { model
-                | editorModal = setCotoSaveError error editorModal
-                , timeline = App.Types.Timeline.deletePendingPost postId timeline
-            }
-                |> withoutCmd
-
-        Save ->
-            { model | editorModal = { editorModal | requestProcessing = True } }
-                |> withCmd
-                    (\model ->
-                        case model.editorModal.mode of
-                            Edit coto ->
-                                App.Server.Coto.updateContent
-                                    context.clientId
-                                    coto.id
-                                    model.editorModal.shareCotonoma
-                                    (CotoContent
-                                        model.editorModal.content
-                                        (Just model.editorModal.summary)
-                                    )
-
-                            _ ->
-                                Cmd.none
-                    )
-
-        SetNewCotoMode ->
-            { model | editorModal = { editorModal | mode = NewCoto Nothing } }
-                |> withoutCmd
-
-        SetNewCotonomaMode ->
-            { model | editorModal = { editorModal | mode = NewCotonoma } }
-                |> withoutCmd
-
-
-post : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-post context ({ editorModal } as model) =
-    let
-        content =
-            CotoContent editorModal.content (getSummary editorModal)
-    in
-    case editorModal.mode of
-        NewCoto (Just source) ->
-            postSubcoto context source content model
-
-        NewCoto Nothing ->
-            App.Views.Flow.post context content model
-
-        _ ->
-            ( model, Cmd.none )
-
-
-postSubcoto :
-    Context context
-    -> Coto
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postSubcoto context coto content model =
-    let
-        ( timeline, newPost ) =
-            model.timeline
-                |> App.Types.Timeline.post context False content
-    in
-    { model | timeline = timeline }
-        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-          , App.Server.Post.post
-                context.clientId
-                context.cotonoma
-                (AppMsg.EditorModalMsg
-                    << PostedAndSubordinateToCoto timeline.postIdCounter coto
-                )
-                newPost
-          ]
-
-
-subordinatePostToCoto :
-    Context context
-    -> Coto
-    -> Post
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-subordinatePostToCoto { clientId, session } coto post model =
-    post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
-        |> Maybe.map
-            (\postCoto ->
-                ( App.Submodels.LocalCotos.connect
-                    session
-                    postCoto
-                    [ coto ]
-                    App.Types.Connection.Inbound
-                    Nothing
-                    model
-                , App.Server.Graph.connect
-                    clientId
-                    (Maybe.map .key model.cotonoma)
-                    postCoto.id
-                    [ coto.id ]
-                    App.Types.Connection.Inbound
-                    Nothing
-                )
-            )
-        |> Maybe.withDefault ( model, Cmd.none )
-
-
-handleShortcut :
-    Context context
-    -> KeyboardEvent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-handleShortcut context keyboardEvent model =
-    if
-        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
-            && isNotBlank model.editorModal.content
-    then
-        case model.editorModal.mode of
-            Edit coto ->
-                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-                    ( model
-                    , App.Server.Coto.updateContent
-                        context.clientId
-                        coto.id
-                        model.editorModal.shareCotonoma
-                        (CotoContent
-                            model.editorModal.content
-                            (Just model.editorModal.summary)
-                        )
-                    )
-
-                else
-                    ( model, Cmd.none )
-
-            _ ->
-                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-                    post context model
-
-                else if
-                    keyboardEvent.altKey
-                        && App.Submodels.Context.anySelection context
-                then
-                    ( model
-                    , App.Commands.sendMsg
-                        (AppMsg.OpenConnectModalByNewPost
-                            (CotoContent
-                                model.editorModal.content
-                                (getSummary model.editorModal)
-                            )
-                            AppMsg.NoOp
-                        )
-                    )
-
-                else
-                    ( model, Cmd.none )
-
-    else
-        ( model, Cmd.none )
-
-
-postCotonoma : Context context -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
-postCotonoma context model =
-    let
-        cotonomaName =
-            model.editorModal.content
-
-        ( timeline, _ ) =
-            App.Types.Timeline.post
-                context
-                True
-                (CotoContent cotonomaName Nothing)
-                model.timeline
-    in
-    { model | timeline = timeline }
-        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-          , App.Server.Post.postCotonoma
-                context.clientId
-                context.cotonoma
-                (AppMsg.EditorModalMsg
-                    << CotonomaPosted timeline.postIdCounter
-                )
-                model.editorModal.shareCotonoma
-                cotonomaName
-          ]
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -782,3 +530,237 @@ adviceOnCotonomaNameDiv context model =
 
     else
         Utils.HtmlUtil.none
+
+
+type alias UpdateModel model =
+    LocalCotos { model | editorModal : Model }
+
+
+update : Context context -> EditorModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ editorModal, timeline } as model) =
+    case msg of
+        EditorInput content ->
+            { model | editorModal = { editorModal | content = content } }
+                |> withoutCmd
+
+        SummaryInput summary ->
+            { model | editorModal = { editorModal | summary = summary } }
+                |> withoutCmd
+
+        TogglePreview ->
+            { model | editorModal = { editorModal | preview = not editorModal.preview } }
+                |> withoutCmd
+
+        EditorKeyDown keyboardEvent ->
+            handleShortcut context keyboardEvent model
+
+        ShareCotonomaCheck check ->
+            { model | editorModal = { editorModal | shareCotonoma = check } }
+                |> withoutCmd
+
+        Post ->
+            { model | editorModal = { editorModal | requestProcessing = True } }
+                |> post context
+
+        PostedAndSubordinateToCoto postId coto (Ok post) ->
+            model
+                |> App.Update.Post.onPosted context postId post
+                |> chain (subordinatePostToCoto context coto post)
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+
+        PostedAndSubordinateToCoto postId coto (Err _) ->
+            model |> withoutCmd
+
+        PostCotonoma ->
+            { model | editorModal = { editorModal | requestProcessing = True } }
+                |> postCotonoma context
+
+        CotonomaPosted postId (Ok post) ->
+            { model | cotonomasLoading = True }
+                |> App.Update.Post.onPosted context postId post
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+                |> addCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
+
+        CotonomaPosted postId (Err error) ->
+            { model
+                | editorModal = setCotoSaveError error editorModal
+                , timeline = App.Types.Timeline.deletePendingPost postId timeline
+            }
+                |> withoutCmd
+
+        Save ->
+            { model | editorModal = { editorModal | requestProcessing = True } }
+                |> withCmd
+                    (\model ->
+                        case model.editorModal.mode of
+                            Edit coto ->
+                                App.Server.Coto.updateContent
+                                    context.clientId
+                                    coto.id
+                                    model.editorModal.shareCotonoma
+                                    (CotoContent
+                                        model.editorModal.content
+                                        (Just model.editorModal.summary)
+                                    )
+
+                            _ ->
+                                Cmd.none
+                    )
+
+        SetNewCotoMode ->
+            { model | editorModal = { editorModal | mode = NewCoto Nothing } }
+                |> withoutCmd
+
+        SetNewCotonomaMode ->
+            { model | editorModal = { editorModal | mode = NewCotonoma } }
+                |> withoutCmd
+
+
+post : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+post context ({ editorModal } as model) =
+    let
+        content =
+            CotoContent editorModal.content (getSummary editorModal)
+    in
+    case editorModal.mode of
+        NewCoto (Just source) ->
+            postSubcoto context source content model
+
+        NewCoto Nothing ->
+            App.Views.Flow.post context content model
+
+        _ ->
+            ( model, Cmd.none )
+
+
+postSubcoto :
+    Context context
+    -> Coto
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+postSubcoto context coto content model =
+    let
+        ( timeline, newPost ) =
+            model.timeline
+                |> App.Types.Timeline.post context False content
+    in
+    { model | timeline = timeline }
+        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
+          , App.Server.Post.post
+                context.clientId
+                context.cotonoma
+                (AppMsg.EditorModalMsg
+                    << PostedAndSubordinateToCoto timeline.postIdCounter coto
+                )
+                newPost
+          ]
+
+
+subordinatePostToCoto :
+    Context context
+    -> Coto
+    -> Post
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+subordinatePostToCoto { clientId, session } coto post model =
+    post.cotoId
+        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
+        |> Maybe.map
+            (\postCoto ->
+                ( App.Submodels.LocalCotos.connect
+                    session
+                    postCoto
+                    [ coto ]
+                    App.Types.Connection.Inbound
+                    Nothing
+                    model
+                , App.Server.Graph.connect
+                    clientId
+                    (Maybe.map .key model.cotonoma)
+                    postCoto.id
+                    [ coto.id ]
+                    App.Types.Connection.Inbound
+                    Nothing
+                )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+handleShortcut :
+    Context context
+    -> KeyboardEvent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+handleShortcut context keyboardEvent model =
+    if
+        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
+            && isNotBlank model.editorModal.content
+    then
+        case model.editorModal.mode of
+            Edit coto ->
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+                    ( model
+                    , App.Server.Coto.updateContent
+                        context.clientId
+                        coto.id
+                        model.editorModal.shareCotonoma
+                        (CotoContent
+                            model.editorModal.content
+                            (Just model.editorModal.summary)
+                        )
+                    )
+
+                else
+                    ( model, Cmd.none )
+
+            _ ->
+                if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+                    post context model
+
+                else if
+                    keyboardEvent.altKey
+                        && App.Submodels.Context.anySelection context
+                then
+                    ( model
+                    , App.Commands.sendMsg
+                        (AppMsg.OpenConnectModalByNewPost
+                            (CotoContent
+                                model.editorModal.content
+                                (getSummary model.editorModal)
+                            )
+                            AppMsg.NoOp
+                        )
+                    )
+
+                else
+                    ( model, Cmd.none )
+
+    else
+        ( model, Cmd.none )
+
+
+postCotonoma : Context context -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+postCotonoma context model =
+    let
+        cotonomaName =
+            model.editorModal.content
+
+        ( timeline, _ ) =
+            App.Types.Timeline.post
+                context
+                True
+                (CotoContent cotonomaName Nothing)
+                model.timeline
+    in
+    { model | timeline = timeline }
+        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
+          , App.Server.Post.postCotonoma
+                context.clientId
+                context.cotonoma
+                (AppMsg.EditorModalMsg
+                    << CotonomaPosted timeline.postIdCounter
+                )
+                model.editorModal.shareCotonoma
+                cotonomaName
+          ]
