@@ -186,14 +186,14 @@ pinButtonDiv context connection cotoId =
     div [ class "pin-button" ]
         [ if editable then
             a
-                [ class "tool-button pin"
+                [ class "pin tool-button"
                 , onLinkButtonClick (ConfirmUnpinCoto cotoId)
                 ]
                 [ faIcon "thumb-tack" Nothing ]
 
           else
             span
-                [ class "not-editable" ]
+                [ class "pin not-editable" ]
                 [ faIcon "thumb-tack" Nothing ]
         ]
 

@@ -115,8 +115,7 @@
       position: relative;
       height: 10px;
 
-      a.pin,
-      span.not-editable {
+      .pin {
         position: absolute;
         top: -12px;
         left: 0;
@@ -124,10 +123,10 @@
         i {
           font-size: 24px;
         }
-      }
 
-      span.not-unpinnable {
-        color: #ccc;
+        &.not-editable {
+          color: #ccc;
+        }
       }
     }
   }
