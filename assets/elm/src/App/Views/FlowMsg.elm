@@ -23,6 +23,5 @@ type Msg
     | EditorKeyDown KeyboardEvent
     | Post
     | Posted Int (Result Http.Error Post)
-    | ConfirmPostAndConnect CotoContent
     | PostedByConnectModal
     | Scroll ScrollPos

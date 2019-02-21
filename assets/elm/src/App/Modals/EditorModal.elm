@@ -188,9 +188,6 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> post context
 
-        ConfirmPostAndConnect content ->
-            App.Modals.ConnectModal.openWithPost AppMsg.NoOp content model
-
         PostedAndSubordinateToCoto postId coto (Ok post) ->
             model
                 |> App.Submodels.Modals.clearModals
@@ -351,13 +348,16 @@ handleShortcut context keyboardEvent model =
                     keyboardEvent.altKey
                         && App.Submodels.Context.anySelection context
                 then
-                    App.Modals.ConnectModal.openWithPost
-                        AppMsg.NoOp
-                        (CotoContent
-                            model.editorModal.content
-                            (getSummary model.editorModal)
+                    ( model
+                    , App.Commands.sendMsg
+                        (AppMsg.OpenConnectModalByNewPost
+                            (CotoContent
+                                model.editorModal.content
+                                (getSummary model.editorModal)
+                            )
+                            AppMsg.NoOp
                         )
-                        model
+                    )
 
                 else
                     ( model, Cmd.none )
@@ -669,10 +669,9 @@ buttonsForNewCoto context model =
             [ class "button connect"
             , disabled (isBlank model.content || model.requestProcessing)
             , onClick
-                (AppMsg.EditorModalMsg
-                    (ConfirmPostAndConnect
-                        (CotoContent model.content (getSummary model))
-                    )
+                (AppMsg.OpenConnectModalByNewPost
+                    (CotoContent model.content (getSummary model))
+                    AppMsg.NoOp
                 )
             ]
             [ faIcon "link" Nothing

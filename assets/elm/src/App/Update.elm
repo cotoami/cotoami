@@ -36,6 +36,7 @@ import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.Watch
+import App.Update.Modal
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
@@ -561,6 +562,52 @@ update msg model =
                 model
 
         --
+        -- Open modal
+        --
+        ClearModals ->
+            model
+                |> App.Submodels.Modals.clearModals
+                |> withoutCmd
+
+        OpenNewEditorModal ->
+            App.Modals.EditorModal.openForNew model Nothing model
+
+        OpenNewEditorModalWithSourceCoto coto ->
+            App.Modals.EditorModal.openForNew model (Just coto) model
+
+        OpenEditorModal coto ->
+            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
+                |> App.Submodels.Modals.openModal EditorModal
+                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
+
+        OpenCotoModal coto ->
+            App.Modals.CotoModal.open coto model
+                |> withoutCmd
+
+        OpenImportModal importFile ->
+            { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
+                |> App.Submodels.Modals.openModal ImportModal
+                |> withoutCmd
+
+        OpenTimelineFilterModal ->
+            model
+                |> App.Submodels.Modals.openModal TimelineFilterModal
+                |> withoutCmd
+
+        OpenConnectModalByCoto coto ->
+            App.Update.Modal.openConnectModalByCoto
+                (App.Submodels.LocalCotos.getSelectedCotos model model)
+                coto
+                model
+
+        OpenConnectModalByNewPost content onPosted ->
+            App.Update.Modal.openConnectModalByNewPost
+                onPosted
+                (App.Submodels.LocalCotos.getSelectedCotos model model)
+                content
+                model
+
+        --
         -- Sub components
         --
         AppHeaderMsg subMsg ->
@@ -594,17 +641,6 @@ update msg model =
         ProfileModalMsg subMsg ->
             App.Modals.ProfileModal.update model subMsg model
 
-        OpenNewEditorModal ->
-            App.Modals.EditorModal.openForNew model Nothing model
-
-        OpenNewEditorModalWithSourceCoto coto ->
-            App.Modals.EditorModal.openForNew model (Just coto) model
-
-        OpenEditorModal coto ->
-            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> App.Submodels.Modals.openModal EditorModal
-                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
-
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
 
@@ -614,10 +650,6 @@ update msg model =
                 |> Maybe.map (Tuple.mapFirst (\modal -> { model | cotoMenuModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
 
-        OpenCotoModal coto ->
-            App.Modals.CotoModal.open coto model
-                |> withoutCmd
-
         ConnectModalMsg subMsg ->
             App.Modals.ConnectModal.update model subMsg model
 
@@ -625,21 +657,11 @@ update msg model =
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
 
-        OpenImportModal importFile ->
-            { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
-                |> App.Submodels.Modals.openModal ImportModal
-                |> withoutCmd
-
         ImportModalMsg subMsg ->
             model.importModal
                 |> Maybe.map (App.Modals.ImportModal.update model subMsg)
                 |> Maybe.map (Tuple.mapFirst (\modal -> { model | importModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
-
-        OpenTimelineFilterModal ->
-            model
-                |> App.Submodels.Modals.openModal TimelineFilterModal
-                |> withoutCmd
 
         TimelineFilterModalMsg subMsg ->
             App.Modals.TimelineFilterModal.update model subMsg model

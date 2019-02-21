@@ -4,8 +4,6 @@ module App.Modals.ConnectModal exposing
     , WithConnectModal
     , defaultModel
     , initModel
-    , open
-    , openWithPost
     , update
     , view
     )
@@ -44,6 +42,7 @@ type ConnectingTarget
 
 type alias Model =
     { target : ConnectingTarget
+    , selectedCotos : List Coto
     , direction : Direction
     , linkingPhrase : String
     , onPosted : AppMsg.Msg
@@ -53,16 +52,18 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { target = None
+    , selectedCotos = []
     , direction = Inbound
     , linkingPhrase = ""
     , onPosted = AppMsg.NoOp
     }
 
 
-initModel : ConnectingTarget -> Direction -> Model
-initModel target direction =
+initModel : ConnectingTarget -> List Coto -> Direction -> Model
+initModel target selectedCotos direction =
     { defaultModel
         | target = target
+        , selectedCotos = selectedCotos
         , direction = direction
     }
 
@@ -80,29 +81,139 @@ type alias WithConnectModal model =
     { model | connectModal : Model }
 
 
-open :
-    Direction
-    -> ConnectingTarget
-    -> Modals (WithConnectModal model)
-    -> ( Modals (WithConnectModal model), Cmd AppMsg.Msg )
-open direction target model =
-    { model | connectModal = initModel target direction }
-        |> App.Submodels.Modals.openModal ConnectModal
-        |> withCmd (\model -> App.Commands.focus "connect-modal-primary-button" AppMsg.NoOp)
-
-
-openWithPost :
-    AppMsg.Msg
-    -> CotoContent
-    -> Modals (WithConnectModal model)
-    -> ( Modals (WithConnectModal model), Cmd AppMsg.Msg )
-openWithPost onPosted content model =
+view : Context context -> Model -> Html AppMsg.Msg
+view context model =
     model
-        |> open Inbound (NewPost content)
-        |> Tuple.mapFirst
-            (\({ connectModal } as model) ->
-                { model | connectModal = { connectModal | onPosted = onPosted } }
+        |> modalConfig context
+        |> Utils.Modal.view "connect-modal"
+
+
+modalConfig : Context context -> Model -> Utils.Modal.Config AppMsg.Msg
+modalConfig context model =
+    let
+        primaryButtonId =
+            "connect-modal-primary-button"
+    in
+    { closeMessage = CloseModal
+    , title = text (context.i18nText I18nKeys.ConnectModal_Title)
+    , content = modalContent context model
+    , buttons =
+        case model.target of
+            None ->
+                []
+
+            Coto coto ->
+                [ button
+                    [ id primaryButtonId
+                    , class "button button-primary"
+                    , autofocus True
+                    , onClick
+                        (AppMsg.ConnectModalMsg
+                            (Connect coto model.selectedCotos)
+                        )
+                    ]
+                    [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
+                ]
+
+            NewPost content ->
+                [ button
+                    [ id primaryButtonId
+                    , class "button button-primary"
+                    , autofocus True
+                    , onClick
+                        (AppMsg.ConnectModalMsg
+                            (PostAndConnectToSelection content)
+                        )
+                    ]
+                    [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
+                ]
+    }
+
+
+modalContent : Context context -> Model -> Html AppMsg.Msg
+modalContent context model =
+    let
+        selectedCotosHtml =
+            Html.Keyed.node
+                "div"
+                [ class "selected-cotos" ]
+                (List.map
+                    (\coto ->
+                        ( toString coto.id
+                        , div [ class "coto-content" ]
+                            [ contentDiv coto.summary coto.content ]
+                        )
+                    )
+                    model.selectedCotos
+                )
+
+        targetHtml =
+            case model.target of
+                None ->
+                    div [] []
+
+                Coto coto ->
+                    div [ class "target-coto coto-content" ]
+                        [ contentDiv coto.summary coto.content ]
+
+                NewPost content ->
+                    div [ class "target-new-post coto-content" ]
+                        [ contentDiv content.summary content.content ]
+
+        ( start, end ) =
+            case model.direction of
+                Outbound ->
+                    ( targetHtml, selectedCotosHtml )
+
+                Inbound ->
+                    ( selectedCotosHtml, targetHtml )
+    in
+    div []
+        [ div
+            [ class "tools" ]
+            [ button
+                [ class "button reverse-direction"
+                , onClick (AppMsg.ConnectModalMsg ReverseDirection)
+                ]
+                [ text (context.i18nText I18nKeys.ConnectModal_Reverse) ]
+            ]
+        , div
+            [ class "start" ]
+            [ span [ class "node-title" ] [ text "From:" ]
+            , start
+            ]
+        , div
+            [ class "connection" ]
+            [ div [ class "arrow" ]
+                [ materialIcon "arrow_downward" Nothing ]
+            , div [ class "linking-phrase" ]
+                [ input
+                    [ type_ "text"
+                    , class "u-full-width"
+                    , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
+                    , maxlength App.Types.Coto.cotonomaNameMaxlength
+                    , onInput (AppMsg.ConnectModalMsg << LinkingPhraseInput)
+                    ]
+                    []
+                ]
+            ]
+        , div
+            [ class "end" ]
+            [ span [ class "node-title" ] [ text "To:" ]
+            , end
+            ]
+        ]
+
+
+contentDiv : Maybe String -> String -> Html AppMsg.Msg
+contentDiv maybeSummary content =
+    maybeSummary
+        |> Maybe.map
+            (\summary ->
+                div [ class "coto-summary" ] [ text summary ]
             )
+        |> Maybe.withDefault (App.Markdown.markdown content)
+        |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
 
 
 type alias UpdateModel model =
@@ -219,138 +330,3 @@ connectPostToSelection context post model =
                 )
             )
         |> Maybe.withDefault ( model, Cmd.none )
-
-
-view : Context context -> List Coto -> Model -> Html AppMsg.Msg
-view context cotos model =
-    model
-        |> modalConfig context cotos
-        |> Utils.Modal.view "connect-modal"
-
-
-modalConfig : Context context -> List Coto -> Model -> Utils.Modal.Config AppMsg.Msg
-modalConfig context selectedCotos model =
-    let
-        primaryButtonId =
-            "connect-modal-primary-button"
-    in
-    { closeMessage = CloseModal
-    , title = text (context.i18nText I18nKeys.ConnectModal_Title)
-    , content = modalContent context selectedCotos model
-    , buttons =
-        case model.target of
-            None ->
-                []
-
-            Coto coto ->
-                [ button
-                    [ id primaryButtonId
-                    , class "button button-primary"
-                    , autofocus True
-                    , onClick
-                        (AppMsg.ConnectModalMsg
-                            (Connect coto selectedCotos)
-                        )
-                    ]
-                    [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
-                ]
-
-            NewPost content ->
-                [ button
-                    [ id primaryButtonId
-                    , class "button button-primary"
-                    , autofocus True
-                    , onClick
-                        (AppMsg.ConnectModalMsg
-                            (PostAndConnectToSelection content)
-                        )
-                    ]
-                    [ text (context.i18nText I18nKeys.ConnectModal_PostAndConnect) ]
-                ]
-    }
-
-
-modalContent : Context context -> List Coto -> Model -> Html AppMsg.Msg
-modalContent context selectedCotos model =
-    let
-        selectedCotosHtml =
-            Html.Keyed.node
-                "div"
-                [ class "selected-cotos" ]
-                (List.map
-                    (\coto ->
-                        ( toString coto.id
-                        , div [ class "coto-content" ]
-                            [ contentDiv coto.summary coto.content ]
-                        )
-                    )
-                    selectedCotos
-                )
-
-        targetHtml =
-            case model.target of
-                None ->
-                    div [] []
-
-                Coto coto ->
-                    div [ class "target-coto coto-content" ]
-                        [ contentDiv coto.summary coto.content ]
-
-                NewPost content ->
-                    div [ class "target-new-post coto-content" ]
-                        [ contentDiv content.summary content.content ]
-
-        ( start, end ) =
-            case model.direction of
-                Outbound ->
-                    ( targetHtml, selectedCotosHtml )
-
-                Inbound ->
-                    ( selectedCotosHtml, targetHtml )
-    in
-    div []
-        [ div
-            [ class "tools" ]
-            [ button
-                [ class "button reverse-direction"
-                , onClick (AppMsg.ConnectModalMsg ReverseDirection)
-                ]
-                [ text (context.i18nText I18nKeys.ConnectModal_Reverse) ]
-            ]
-        , div
-            [ class "start" ]
-            [ span [ class "node-title" ] [ text "From:" ]
-            , start
-            ]
-        , div
-            [ class "connection" ]
-            [ div [ class "arrow" ]
-                [ materialIcon "arrow_downward" Nothing ]
-            , div [ class "linking-phrase" ]
-                [ input
-                    [ type_ "text"
-                    , class "u-full-width"
-                    , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
-                    , maxlength App.Types.Coto.cotonomaNameMaxlength
-                    , onInput (AppMsg.ConnectModalMsg << LinkingPhraseInput)
-                    ]
-                    []
-                ]
-            ]
-        , div
-            [ class "end" ]
-            [ span [ class "node-title" ] [ text "To:" ]
-            , end
-            ]
-        ]
-
-
-contentDiv : Maybe String -> String -> Html AppMsg.Msg
-contentDiv maybeSummary content =
-    maybeSummary
-        |> Maybe.map
-            (\summary ->
-                div [ class "coto-summary" ] [ text summary ]
-            )
-        |> Maybe.withDefault (App.Markdown.markdown content)
-        |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])

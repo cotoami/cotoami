@@ -1,4 +1,16 @@
-module App.Commands exposing (focus, initScrollPositionOfPinnedCotos, scrollGraphExplorationToRight, scrollPinnedCotosToBottom, scrollTimelineByQuickEditorOpen, scrollTimelineToBottom, scrollToBottom, scrollToRight, scrollToTop, scrollTraversalsPaginationToRight, sendMsg)
+module App.Commands exposing
+    ( focus
+    , initScrollPositionOfPinnedCotos
+    , scrollGraphExplorationToRight
+    , scrollPinnedCotosToBottom
+    , scrollTimelineByQuickEditorOpen
+    , scrollTimelineToBottom
+    , scrollToBottom
+    , scrollToRight
+    , scrollToTop
+    , scrollTraversalsPaginationToRight
+    , sendMsg
+    )
 
 import Dom
 import Dom.Scroll

@@ -10,7 +10,7 @@ import App.Modals.SigninModalMsg
 import App.Modals.TimelineFilterModalMsg
 import App.Ports.ImportFile exposing (ImportFile)
 import App.Types.Connection exposing (Reordering)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.Post exposing (PaginatedPosts, Post)
 import App.Types.Session exposing (Session)
@@ -100,6 +100,18 @@ type Msg
     | ReorderPushed Value
     | PostPushed Value
       --
+      -- Open modal
+      --
+    | ClearModals
+    | OpenNewEditorModal
+    | OpenNewEditorModalWithSourceCoto Coto
+    | OpenEditorModal Coto
+    | OpenCotoModal Coto
+    | OpenImportModal ImportFile
+    | OpenTimelineFilterModal
+    | OpenConnectModalByCoto Coto
+    | OpenConnectModalByNewPost CotoContent Msg
+      --
       -- Sub components
       --
     | AppHeaderMsg App.Views.AppHeaderMsg.Msg
@@ -112,15 +124,9 @@ type Msg
     | ReorderMsg App.Views.ReorderMsg.Msg
     | SigninModalMsg App.Modals.SigninModalMsg.Msg
     | ProfileModalMsg App.Modals.ProfileModalMsg.Msg
-    | OpenNewEditorModal
-    | OpenNewEditorModalWithSourceCoto Coto
-    | OpenEditorModal Coto
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
-    | OpenCotoModal Coto
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
-    | OpenImportModal ImportFile
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
-    | OpenTimelineFilterModal
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg

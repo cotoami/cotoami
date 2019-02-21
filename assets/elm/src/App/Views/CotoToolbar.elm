@@ -5,7 +5,6 @@ module App.Views.CotoToolbar exposing
 
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
-import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Modals.CotoMenuModal exposing (WithCotoMenuModal)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -24,24 +23,12 @@ import Utils.UpdateUtil exposing (..)
 
 
 type alias UpdateModel model =
-    LocalCotos (Modals (WithConnectModal (WithCotoMenuModal model)))
+    LocalCotos (Modals (WithCotoMenuModal model))
 
 
 update : Context context -> CotoToolbarMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
-        ConfirmConnect cotoId direction ->
-            model
-                |> App.Submodels.LocalCotos.getCoto cotoId
-                |> Maybe.map
-                    (\coto ->
-                        App.Modals.ConnectModal.open
-                            direction
-                            (App.Modals.ConnectModal.Coto coto)
-                            model
-                    )
-                |> Maybe.withDefault ( model, Cmd.none )
-
         OpenCotoMenuModal coto ->
             App.Modals.CotoMenuModal.open coto model
 
@@ -154,8 +141,7 @@ connectButton context coto =
             [ a
                 [ class "tool-button connect"
                 , title (context.i18nText I18nKeys.CotoToolbar_Connect)
-                , onLinkButtonClick
-                    (AppMsg.CotoToolbarMsg (ConfirmConnect coto.id Inbound))
+                , onLinkButtonClick (AppMsg.OpenConnectModalByCoto coto)
                 ]
                 [ faIcon "link" Nothing ]
             , span [ class "border" ] []

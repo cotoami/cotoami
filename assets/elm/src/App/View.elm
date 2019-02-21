@@ -234,10 +234,7 @@ modals model =
                         |> Maybe.withDefault Utils.HtmlUtil.none
 
                 ( ConnectModal, _ ) ->
-                    App.Modals.ConnectModal.view
-                        model
-                        (App.Submodels.LocalCotos.getSelectedCotos model model)
-                        model.connectModal
+                    App.Modals.ConnectModal.view model model.connectModal
 
                 ( ImportModal, _ ) ->
                     model.importModal

@@ -12,11 +12,9 @@ module App.Views.Flow exposing
 import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
-import App.Modals.ConnectModal exposing (WithConnectModal)
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Submodels.Modals exposing (Modals)
 import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
 import App.Types.Session exposing (Session)
@@ -104,14 +102,7 @@ clearEditorContent model =
 
 
 type alias UpdateModel model =
-    LocalCotos
-        (Modals
-            (WithConnectModal
-                { model
-                    | flowView : Model
-                }
-            )
-        )
+    LocalCotos { model | flowView : Model }
 
 
 update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
@@ -172,17 +163,11 @@ update context msg ({ flowView, timeline } as model) =
 
         Posted postId (Ok post) ->
             model
-                |> App.Submodels.Modals.clearModals
                 |> App.Update.Post.onPosted context postId post
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
 
         Posted postId (Err _) ->
             model |> withoutCmd
-
-        ConfirmPostAndConnect content ->
-            App.Modals.ConnectModal.openWithPost
-                (AppMsg.FlowMsg PostedByConnectModal)
-                content
-                model
 
         PostedByConnectModal ->
             { model | flowView = clearEditorContent model.flowView }
@@ -224,10 +209,13 @@ handleEditorShortcut context keyboardEvent content model =
             keyboardEvent.altKey
                 && App.Submodels.Context.anySelection context
         then
-            App.Modals.ConnectModal.openWithPost
-                (AppMsg.FlowMsg PostedByConnectModal)
-                content
-                model
+            ( model
+            , App.Commands.sendMsg
+                (AppMsg.OpenConnectModalByNewPost
+                    content
+                    (AppMsg.FlowMsg PostedByConnectModal)
+                )
+            )
 
         else
             ( model, Cmd.none )
@@ -485,10 +473,9 @@ postEditor context session model =
                             [ class "button connect"
                             , disabled (isBlank model.editorContent)
                             , onMouseDown
-                                (AppMsg.FlowMsg
-                                    (ConfirmPostAndConnect
-                                        (CotoContent model.editorContent Nothing)
-                                    )
+                                (AppMsg.OpenConnectModalByNewPost
+                                    (CotoContent model.editorContent Nothing)
+                                    (AppMsg.FlowMsg PostedByConnectModal)
                                 )
                             ]
                             [ faIcon "link" Nothing
