@@ -582,9 +582,7 @@ update msg model =
             App.Update.Modal.openEditorModalForNew model (Just coto) model
 
         OpenEditorModal coto ->
-            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> App.Submodels.Modals.openModal EditorModal
-                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
+            App.Update.Modal.openEditorModalForEdit coto model
 
         OpenCotoModal coto ->
             App.Update.Modal.openCotoModal coto model

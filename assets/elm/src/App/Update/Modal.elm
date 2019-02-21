@@ -3,6 +3,7 @@ module App.Update.Modal exposing
     , openConnectModalByNewPost
     , openCotoMenuModal
     , openCotoModal
+    , openEditorModalForEdit
     , openEditorModalForNew
     )
 
@@ -36,6 +37,13 @@ openCotoModal coto model =
 openEditorModalForNew : Context context -> Maybe Coto -> Model -> ( Model, Cmd Msg )
 openEditorModalForNew context source model =
     { model | editorModal = App.Modals.EditorModal.modelForNew context source }
+        |> App.Submodels.Modals.openModal EditorModal
+        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
+
+
+openEditorModalForEdit : Coto -> Model -> ( Model, Cmd Msg )
+openEditorModalForEdit coto model =
+    { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
         |> App.Submodels.Modals.openModal EditorModal
         |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
 
