@@ -92,13 +92,13 @@ view context model =
         ]
 
 
-documentViewDiv : Context a -> Html AppMsg.Msg
+documentViewDiv : Context context -> Html AppMsg.Msg
 documentViewDiv context =
     context.graph.rootConnections
         |> List.reverse
         |> List.indexedMap
             (\index connection ->
-                connectionDiv
+                rootConnectionDiv
                     context
                     (InboundConnection
                         Nothing
@@ -112,8 +112,8 @@ documentViewDiv context =
         |> Html.Keyed.node "div" [ class "root-connections" ]
 
 
-connectionDiv : Context a -> InboundConnection -> ( String, Html AppMsg.Msg )
-connectionDiv context inbound =
+rootConnectionDiv : Context context -> InboundConnection -> ( String, Html AppMsg.Msg )
+rootConnectionDiv context inbound =
     context.graph.cotos
         |> Dict.get inbound.connection.end
         |> Maybe.map
@@ -121,7 +121,7 @@ connectionDiv context inbound =
                 ( App.Types.Connection.makeUniqueKey inbound.connection
                 , div
                     [ class "outbound-conn" ]
-                    [ cotoDiv context inbound coto ]
+                    [ pinnedCotoDiv context inbound coto ]
                 )
             )
         |> Maybe.withDefault
@@ -130,8 +130,8 @@ connectionDiv context inbound =
             )
 
 
-cotoDiv : Context a -> InboundConnection -> Coto -> Html AppMsg.Msg
-cotoDiv context inbound coto =
+pinnedCotoDiv : Context a -> InboundConnection -> Coto -> Html AppMsg.Msg
+pinnedCotoDiv context inbound coto =
     let
         elementId =
             "pinned-" ++ coto.id
@@ -153,7 +153,7 @@ cotoDiv context inbound coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ unpinButtonDiv context inbound.connection coto.id
+            [ pinButtonDiv context inbound.connection coto.id
             , App.Views.Coto.headerDiv context (Just inbound) elementId coto
             , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
             , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
@@ -166,8 +166,8 @@ cotoDiv context inbound coto =
         ]
 
 
-unpinButtonDiv : Context a -> Connection -> CotoId -> Html AppMsg.Msg
-unpinButtonDiv context connection cotoId =
+pinButtonDiv : Context context -> Connection -> CotoId -> Html AppMsg.Msg
+pinButtonDiv context connection cotoId =
     let
         maybeAmishiId =
             context.session
