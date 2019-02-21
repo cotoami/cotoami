@@ -274,6 +274,9 @@ text key =
         ConnectModal_LinkingPhrase ->
             "Linking phrase (optional)"
 
+        ConnectionModal_Title ->
+            "Edit Connection"
+
         CotoSelection_CotosSelected count ->
             "件在选择中"
 

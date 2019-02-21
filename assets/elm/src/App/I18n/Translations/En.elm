@@ -271,6 +271,9 @@ text key =
         ConnectModal_LinkingPhrase ->
             "Linking phrase (optional)"
 
+        ConnectionModal_Title ->
+            "Edit Connection"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "coto selected"

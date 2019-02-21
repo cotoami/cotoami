@@ -270,6 +270,9 @@ text key =
         ConnectModal_LinkingPhrase ->
             "関係（省略可）"
 
+        ConnectionModal_Title ->
+            "つながりを編集"
+
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
 
