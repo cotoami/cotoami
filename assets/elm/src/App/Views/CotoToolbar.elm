@@ -287,7 +287,7 @@ editConnectionButton context session inbound coto =
                                 inbound.connection.linkingPhrase
                             )
                         ]
-                        [ faIcon "link" Nothing ]
+                        [ materialIcon "subdirectory_arrow_right" Nothing ]
                         |> Just
 
                 else
