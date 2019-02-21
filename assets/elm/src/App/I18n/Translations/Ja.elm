@@ -207,6 +207,9 @@ text key =
         CotoToolbar_Disconnect ->
             "接続を解除"
 
+        CotoToolbar_EditConnection ->
+            "つながりを編集"
+
         CotoToolbar_Reorder ->
             "並び替え"
 

@@ -1,4 +1,8 @@
-module App.Modals.ConnectionModal exposing (Model, initModel)
+module App.Modals.ConnectionModal exposing
+    ( Model
+    , initModel
+    , view
+    )
 
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))

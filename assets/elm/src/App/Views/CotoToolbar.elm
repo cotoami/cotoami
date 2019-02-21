@@ -57,7 +57,7 @@ subCotoTools :
 subCotoTools context session inbound elementId coto =
     let
         buttons =
-            [ disconnectButton context session inbound coto
+            [ editConnectionButton context session inbound coto
             , reorderButton context session inbound elementId coto
             ]
                 |> List.filterMap identity
@@ -72,11 +72,11 @@ subCotoTools context session inbound elementId coto =
     span [ class "sub-coto-buttons" ] buttonsWithBorder
 
 
-isDisconnectable : Session -> Coto -> Connection -> Coto -> Bool
-isDisconnectable session parent connection child =
+canUpdateConnection : Session -> Coto -> Connection -> Bool
+canUpdateConnection session startCoto connection =
     session.amishi.owner
         || (session.amishi.id == connection.amishiId)
-        || (Just session.amishi.id == Maybe.map .id parent.amishi)
+        || (Just session.amishi.id == Maybe.map .id startCoto.amishi)
 
 
 isReorderble : Context context -> Session -> InboundConnection -> Coto -> Bool
@@ -266,27 +266,28 @@ openCotoMenuButton context coto =
         [ materialIcon "more_horiz" Nothing ]
 
 
-disconnectButton :
+editConnectionButton :
     Context context
     -> Session
     -> InboundConnection
     -> Coto
     -> Maybe (Html AppMsg.Msg)
-disconnectButton context session inbound coto =
+editConnectionButton context session inbound coto =
     inbound.parent
         |> Maybe.andThen
             (\parent ->
-                if isDisconnectable session parent inbound.connection coto then
+                if canUpdateConnection session parent inbound.connection then
                     a
-                        [ class "tool-button disconnect"
-                        , title (context.i18nText I18nKeys.CotoToolbar_Disconnect)
+                        [ class "tool-button"
+                        , title (context.i18nText I18nKeys.CotoToolbar_EditConnection)
                         , onLinkButtonClick
-                            (AppMsg.OpenConfirmModal
-                                (context.i18nText I18nKeys.ConfirmDisconnect)
-                                (DeleteConnection ( parent.id, coto.id ))
+                            (AppMsg.OpenConnectionModal
+                                parent
+                                coto
+                                inbound.connection.linkingPhrase
                             )
                         ]
-                        [ faIcon "unlink" Nothing ]
+                        [ faIcon "link" Nothing ]
                         |> Just
 
                 else

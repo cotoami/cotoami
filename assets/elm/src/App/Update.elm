@@ -622,6 +622,10 @@ update msg model =
                 content
                 model
 
+        OpenConnectionModal startCoto endCoto linkingPhrase ->
+            App.Update.Modal.openConnectionModal startCoto endCoto linkingPhrase model
+                |> withoutCmd
+
         OpenInviteModal ->
             App.Update.Modal.openInviteModal model
 

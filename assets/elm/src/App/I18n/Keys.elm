@@ -67,6 +67,7 @@ type TextKey
     | CotoToolbar_Select
     | CotoToolbar_More
     | CotoToolbar_Disconnect
+    | CotoToolbar_EditConnection
     | CotoToolbar_Reorder
     | CotoMenuModal_Info
     | CotoMenuModal_ExploreConnections

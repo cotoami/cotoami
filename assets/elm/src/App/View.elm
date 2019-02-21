@@ -4,6 +4,7 @@ import App.I18n.Keys as I18nKeys
 import App.Messages exposing (..)
 import App.Modals.ConfirmModal
 import App.Modals.ConnectModal
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
@@ -235,6 +236,11 @@ modals model =
 
                 ( ConnectModal, _ ) ->
                     App.Modals.ConnectModal.view model model.connectModal
+
+                ( ConnectionModal, _ ) ->
+                    model.connectionModal
+                        |> Maybe.map (App.Modals.ConnectionModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
                 ( ImportModal, _ ) ->
                     model.importModal

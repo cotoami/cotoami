@@ -116,6 +116,7 @@ type Msg
     | OpenTimelineFilterModal
     | OpenConnectModalByCoto Coto
     | OpenConnectModalByNewPost CotoContent Msg
+    | OpenConnectionModal Coto Coto (Maybe String)
     | OpenInviteModal
       --
       -- Sub components

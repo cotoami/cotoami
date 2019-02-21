@@ -208,6 +208,9 @@ text key =
         CotoToolbar_Disconnect ->
             "Роз'єднати"
 
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
+
         CotoToolbar_Reorder ->
             "Змінити порядок"
 

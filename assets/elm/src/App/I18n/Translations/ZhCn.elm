@@ -211,6 +211,9 @@ text key =
         CotoToolbar_Disconnect ->
             "解除连接"
 
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
+
         CotoToolbar_Reorder ->
             "重新排列"
 
