@@ -2,12 +2,14 @@ module App.Update.Modal exposing
     ( openConnectModalByCoto
     , openConnectModalByNewPost
     , openCotoMenuModal
+    , openCotoModal
     )
 
 import App.Commands
 import App.Messages exposing (Msg)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
 import App.Model exposing (Model)
 import App.Submodels.Modals exposing (Modal(..))
 import App.Types.Connection exposing (Direction(..))
@@ -20,6 +22,12 @@ openCotoMenuModal coto model =
     { model | cotoMenuModal = Just (App.Modals.CotoMenuModal.initModel coto) }
         |> App.Submodels.Modals.openModal CotoMenuModal
         |> withCmd (\_ -> App.Modals.CotoMenuModal.sendInit)
+
+
+openCotoModal : Coto -> Model -> Model
+openCotoModal coto model =
+    { model | cotoModal = Just (App.Modals.CotoModal.initModel coto) }
+        |> App.Submodels.Modals.openModal CotoModal
 
 
 openConnectModalByCoto : List Coto -> Coto -> Model -> ( Model, Cmd Msg )

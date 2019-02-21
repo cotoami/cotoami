@@ -7,7 +7,6 @@ import App.LocalConfig
 import App.Messages exposing (..)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
 import App.Modals.CotoMenuModal
-import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
@@ -588,7 +587,7 @@ update msg model =
                 |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
 
         OpenCotoModal coto ->
-            App.Modals.CotoModal.open coto model
+            App.Update.Modal.openCotoModal coto model
                 |> withoutCmd
 
         OpenImportModal importFile ->
