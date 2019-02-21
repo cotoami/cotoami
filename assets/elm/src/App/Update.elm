@@ -569,6 +569,13 @@ update msg model =
                 |> App.Submodels.Modals.clearModals
                 |> withoutCmd
 
+        OpenConfirmModal message msgOnConfirm ->
+            App.Submodels.Modals.confirm (Confirmation message msgOnConfirm) model
+                |> withoutCmd
+
+        OpenCotoMenuModal coto ->
+            App.Update.Modal.openCotoMenuModal coto model
+
         OpenNewEditorModal ->
             App.Modals.EditorModal.openForNew model Nothing model
 

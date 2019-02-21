@@ -103,6 +103,8 @@ type Msg
       -- Open modal
       --
     | ClearModals
+    | OpenConfirmModal String Msg
+    | OpenCotoMenuModal Coto
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto
     | OpenEditorModal Coto

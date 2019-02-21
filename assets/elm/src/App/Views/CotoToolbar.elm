@@ -5,10 +5,8 @@ module App.Views.CotoToolbar exposing
 
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
-import App.Modals.CotoMenuModal exposing (WithCotoMenuModal)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Submodels.Modals exposing (Confirmation, Modals)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
 import App.Types.Graph exposing (Graph)
@@ -20,26 +18,6 @@ import Set
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.UpdateUtil exposing (..)
-
-
-type alias UpdateModel model =
-    LocalCotos (Modals (WithCotoMenuModal model))
-
-
-update : Context context -> CotoToolbarMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        OpenCotoMenuModal coto ->
-            App.Modals.CotoMenuModal.open coto model
-
-        ConfirmDisconnect conn ->
-            App.Submodels.Modals.confirm
-                (Confirmation
-                    (context.i18nText I18nKeys.ConfirmDisconnect)
-                    (DeleteConnection conn)
-                )
-                model
-                |> withoutCmd
 
 
 view :
@@ -283,7 +261,7 @@ openCotoMenuButton context coto =
     a
         [ class "tool-button open-coto-menu"
         , title (context.i18nText I18nKeys.CotoToolbar_More)
-        , onLinkButtonClick (AppMsg.CotoToolbarMsg (OpenCotoMenuModal coto))
+        , onLinkButtonClick (AppMsg.OpenCotoMenuModal coto)
         ]
         [ materialIcon "more_horiz" Nothing ]
 
@@ -303,8 +281,9 @@ disconnectButton context session inbound coto =
                         [ class "tool-button disconnect"
                         , title (context.i18nText I18nKeys.CotoToolbar_Disconnect)
                         , onLinkButtonClick
-                            (AppMsg.CotoToolbarMsg
-                                (ConfirmDisconnect ( parent.id, coto.id ))
+                            (AppMsg.OpenConfirmModal
+                                (context.i18nText I18nKeys.ConfirmDisconnect)
+                                (DeleteConnection ( parent.id, coto.id ))
                             )
                         ]
                         [ faIcon "unlink" Nothing ]
@@ -343,3 +322,14 @@ reorderButton context session inbound elementId coto =
 
     else
         Nothing
+
+
+type alias UpdateModel model =
+    LocalCotos model
+
+
+update : Context context -> CotoToolbarMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        Init ->
+            model |> withoutCmd
