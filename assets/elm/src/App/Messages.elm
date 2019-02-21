@@ -103,6 +103,7 @@ type Msg
       -- Open modal
       --
     | ClearModals
+    | CloseActiveModal
     | OpenConfirmModal String Msg
     | OpenSigninModal
     | OpenProfileModal

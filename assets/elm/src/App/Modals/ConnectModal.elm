@@ -1,7 +1,6 @@
 module App.Modals.ConnectModal exposing
     ( ConnectingTarget(..)
     , Model
-    , WithConnectModal
     , defaultModel
     , initModel
     , update
@@ -17,7 +16,6 @@ import App.Server.Graph
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Submodels.Modals exposing (Modal(ConnectModal), Modals)
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
@@ -75,10 +73,6 @@ getLinkingPhrase model =
 
     else
         Just model.linkingPhrase
-
-
-type alias WithConnectModal model =
-    { model | connectModal : Model }
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -217,7 +211,7 @@ contentDiv maybeSummary content =
 
 
 type alias UpdateModel model =
-    LocalCotos (Modals (WithConnectModal model))
+    LocalCotos { model | connectModal : Model }
 
 
 update : Context context -> ConnectModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
@@ -241,14 +235,13 @@ update context msg ({ connectModal } as model) =
                 |> withoutCmd
 
         Connect target objects ->
-            model
-                |> App.Submodels.LocalCotos.connect
-                    context.session
-                    target
-                    objects
-                    model.connectModal.direction
-                    (getLinkingPhrase model.connectModal)
-                |> App.Submodels.Modals.closeModal ConnectModal
+            App.Submodels.LocalCotos.connect
+                context.session
+                target
+                objects
+                model.connectModal.direction
+                (getLinkingPhrase model.connectModal)
+                model
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
@@ -259,18 +252,17 @@ update context msg ({ connectModal } as model) =
                             model.connectModal.direction
                             (getLinkingPhrase model.connectModal)
                     )
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostAndConnectToSelection content ->
-            model
-                |> App.Submodels.Modals.closeModal ConnectModal
-                |> postAndConnectToSelection context content
+            postAndConnectToSelection context content model
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostedAndConnectToSelection postId (Ok post) ->
-            model
-                |> App.Submodels.Modals.clearModals
-                |> App.Update.Post.onPosted context postId post
+            App.Update.Post.onPosted context postId post model
                 |> chain (connectPostToSelection context post)
                 |> addCmd (\_ -> App.Commands.sendMsg model.connectModal.onPosted)
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd

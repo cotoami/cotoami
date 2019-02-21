@@ -565,8 +565,11 @@ update msg model =
         -- Open modal
         --
         ClearModals ->
-            model
-                |> App.Submodels.Modals.clearModals
+            App.Submodels.Modals.clearModals model
+                |> withoutCmd
+
+        CloseActiveModal ->
+            App.Submodels.Modals.closeActiveModal model
                 |> withoutCmd
 
         OpenConfirmModal message msgOnConfirm ->
