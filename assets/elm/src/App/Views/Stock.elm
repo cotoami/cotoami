@@ -130,7 +130,7 @@ rootConnectionDiv context inbound =
             )
 
 
-pinnedCotoDiv : Context a -> InboundConnection -> Coto -> Html AppMsg.Msg
+pinnedCotoDiv : Context context -> InboundConnection -> Coto -> Html AppMsg.Msg
 pinnedCotoDiv context inbound coto =
     let
         elementId =
@@ -178,22 +178,22 @@ pinButtonDiv context connection cotoId =
                 |> Maybe.andThen (\cotonoma -> cotonoma.owner)
                 |> Maybe.map (\owner -> owner.id)
 
-        unpinnable =
+        editable =
             App.Submodels.Context.isServerOwner context
                 || (maybeAmishiId == Just connection.amishiId)
                 || (isJust maybeAmishiId && maybeAmishiId == maybeCotonomaOwnerId)
     in
-    div [ class "unpin-button" ]
-        [ if unpinnable then
+    div [ class "pin-button" ]
+        [ if editable then
             a
-                [ class "tool-button unpin"
+                [ class "tool-button pin"
                 , onLinkButtonClick (ConfirmUnpinCoto cotoId)
                 ]
                 [ faIcon "thumb-tack" Nothing ]
 
           else
             span
-                [ class "not-unpinnable" ]
+                [ class "not-editable" ]
                 [ faIcon "thumb-tack" Nothing ]
         ]
 

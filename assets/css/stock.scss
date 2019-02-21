@@ -111,12 +111,12 @@
       }
     }
 
-    div.unpin-button {
+    div.pin-button {
       position: relative;
       height: 10px;
 
-      a.unpin,
-      span.not-unpinnable {
+      a.pin,
+      span.not-editable {
         position: absolute;
         top: -12px;
         left: 0;
