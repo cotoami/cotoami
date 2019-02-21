@@ -1,6 +1,7 @@
 module App.Update.Modal exposing
     ( openConnectModalByCoto
     , openConnectModalByNewPost
+    , openConnectionModal
     , openCotoMenuModal
     , openCotoModal
     , openEditorModalForEdit
@@ -13,6 +14,7 @@ module App.Update.Modal exposing
 import App.Commands
 import App.Messages exposing (Msg)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
@@ -103,6 +105,20 @@ openConnectModal selectedCotos direction target model =
                     "connect-modal-primary-button"
                     App.Messages.NoOp
             )
+
+
+openConnectionModal : Coto -> Coto -> Maybe String -> Model -> Model
+openConnectionModal startCoto endCoto linkingPhrase model =
+    { model
+        | connectionModal =
+            Just
+                (App.Modals.ConnectionModal.initModel
+                    startCoto
+                    endCoto
+                    linkingPhrase
+                )
+    }
+        |> App.Submodels.Modals.openModal ConnectionModal
 
 
 openImportModal : ImportFile -> Model -> Model

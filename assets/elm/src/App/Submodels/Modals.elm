@@ -21,6 +21,7 @@ type Modal
     | CotoMenuModal
     | CotoModal
     | ConnectModal
+    | ConnectionModal
     | ImportModal
     | TimelineFilterModal
 
