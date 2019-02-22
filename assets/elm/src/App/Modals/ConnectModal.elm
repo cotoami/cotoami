@@ -21,12 +21,12 @@ import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Update.Post
+import App.Views.Connection
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed
 import Maybe exposing (andThen)
-import Utils.HtmlUtil exposing (materialIcon)
 import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
@@ -176,21 +176,9 @@ modalContent context model =
             [ span [ class "node-title" ] [ text "From:" ]
             , start
             ]
-        , div
-            [ class "connection" ]
-            [ div [ class "arrow" ]
-                [ materialIcon "arrow_downward" Nothing ]
-            , div [ class "linking-phrase" ]
-                [ input
-                    [ type_ "text"
-                    , class "u-full-width"
-                    , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
-                    , maxlength App.Types.Coto.cotonomaNameMaxlength
-                    , onInput (AppMsg.ConnectModalMsg << LinkingPhraseInput)
-                    ]
-                    []
-                ]
-            ]
+        , App.Views.Connection.linkingPhraseInputDiv
+            context
+            (AppMsg.ConnectModalMsg << LinkingPhraseInput)
         , div
             [ class "end" ]
             [ span [ class "node-title" ] [ text "To:" ]
