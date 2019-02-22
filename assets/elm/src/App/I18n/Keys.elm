@@ -9,6 +9,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | Connection_LinkingPhraseInput
     | Confirm
     | ConfirmDeleteCoto
     | ConfirmUnpinCoto
@@ -87,7 +88,6 @@ type TextKey
     | ConnectModal_Connect
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
-    | ConnectModal_LinkingPhrase
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int

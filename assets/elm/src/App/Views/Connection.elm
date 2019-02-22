@@ -19,7 +19,7 @@ linkingPhraseInputDiv context onLinkingPhraseInput =
             [ input
                 [ type_ "text"
                 , class "u-full-width"
-                , placeholder (context.i18nText I18nKeys.ConnectModal_LinkingPhrase)
+                , placeholder (context.i18nText I18nKeys.Connection_LinkingPhraseInput)
                 , maxlength App.Types.Coto.cotonomaNameMaxlength
                 , onInput onLinkingPhraseInput
                 ]

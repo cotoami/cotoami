@@ -162,7 +162,7 @@ modalContent context model =
                 Inbound ->
                     ( selectedCotosHtml, targetHtml )
     in
-    div []
+    div [ id "connection" ]
         [ div
             [ class "tools" ]
             [ button

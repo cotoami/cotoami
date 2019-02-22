@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Connection_LinkingPhraseInput ->
+            "説明（省略可）"
+
         Confirm ->
             "確認"
 
@@ -266,9 +269,6 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
-
-        ConnectModal_LinkingPhrase ->
-            "関係（省略可）"
 
         ConnectionModal_Title ->
             "つながりを編集"

@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "确认"
 
@@ -270,9 +273,6 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
-
-        ConnectModal_LinkingPhrase ->
-            "Linking phrase (optional)"
 
         ConnectionModal_Title ->
             "Edit Connection"

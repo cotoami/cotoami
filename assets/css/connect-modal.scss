@@ -57,30 +57,6 @@
       }
     }
 
-    div.linking-phrase-input {
-      display: flex;
-      flex-direction: row;
-      margin-top: 20px;
-      padding: 0 30px;
-    
-      div.arrow {
-        width: 30px;
-        padding-top: 6px;
-
-        i {
-          font-size: 24px;
-        }
-      }
-
-      div.linking-phrase {
-        flex: 1;
-
-        input {
-          margin-bottom: 0;
-        }
-      }
-    }
-
     hr.modal-buttons-seperator {
       display: none;
     }

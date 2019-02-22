@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Сохранение"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "Подтвердить"
 
@@ -267,9 +270,6 @@ text key =
 
         ConnectModal_Reverse ->
             "Реверс"
-
-        ConnectModal_LinkingPhrase ->
-            "Linking phrase (optional)"
 
         ConnectionModal_Title ->
             "Edit Connection"
