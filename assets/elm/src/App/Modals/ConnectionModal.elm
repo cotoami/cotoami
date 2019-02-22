@@ -42,6 +42,19 @@ modalConfig context model =
     , title = text (context.i18nText I18nKeys.ConnectionModal_Title)
     , content = div [] []
     , buttons =
-        [ button [ class "button", onClick CloseModal ] [ text "Cancel" ]
+        [ button
+            [ class "button"
+            , onClick
+                (AppMsg.OpenConfirmModal
+                    (context.i18nText I18nKeys.ConfirmDisconnect)
+                    (AppMsg.DeleteConnection ( model.startCoto.id, model.endCoto.id ))
+                )
+            ]
+            [ text (context.i18nText I18nKeys.ConnectionModal_Disconnect) ]
+        , button
+            [ class "button button-primary"
+            , autofocus True
+            ]
+            [ text (context.i18nText I18nKeys.Save) ]
         ]
     }

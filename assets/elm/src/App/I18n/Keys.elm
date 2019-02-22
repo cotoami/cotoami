@@ -66,7 +66,6 @@ type TextKey
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
     | CotoToolbar_More
-    | CotoToolbar_Disconnect
     | CotoToolbar_EditConnection
     | CotoToolbar_Reorder
     | CotoMenuModal_Info
@@ -90,5 +89,6 @@ type TextKey
     | ConnectModal_Reverse
     | ConnectModal_LinkingPhrase
     | ConnectionModal_Title
+    | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int
     | Reorder_CloseReorderMode

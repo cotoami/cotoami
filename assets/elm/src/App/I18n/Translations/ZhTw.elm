@@ -208,9 +208,6 @@ text key =
         CotoToolbar_More ->
             "打開選單清單"
 
-        CotoToolbar_Disconnect ->
-            "解除連接"
-
         CotoToolbar_EditConnection ->
             "Edit the connection"
 
@@ -279,6 +276,9 @@ text key =
 
         ConnectionModal_Title ->
             "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "解除連接"
 
         CotoSelection_CotosSelected count ->
             "件在選擇中"

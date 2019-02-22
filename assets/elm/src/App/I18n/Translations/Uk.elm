@@ -205,9 +205,6 @@ text key =
         CotoToolbar_More ->
             "Більше"
 
-        CotoToolbar_Disconnect ->
-            "Роз'єднати"
-
         CotoToolbar_EditConnection ->
             "Edit the connection"
 
@@ -276,6 +273,9 @@ text key =
 
         ConnectionModal_Title ->
             "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "Роз'єднати"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

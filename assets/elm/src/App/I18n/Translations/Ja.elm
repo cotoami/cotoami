@@ -204,9 +204,6 @@ text key =
         CotoToolbar_More ->
             "メニュー一覧を開く"
 
-        CotoToolbar_Disconnect ->
-            "接続を解除"
-
         CotoToolbar_EditConnection ->
             "つながりを編集"
 
@@ -275,6 +272,9 @@ text key =
 
         ConnectionModal_Title ->
             "つながりを編集"
+
+        ConnectionModal_Disconnect ->
+            "接続を解除"
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
