@@ -1,12 +1,42 @@
-module App.Views.Connection exposing (linkingPhraseInputDiv)
+module App.Views.Connection exposing
+    ( cotoContentDiv
+    , cotoDiv
+    , linkingPhraseInputDiv
+    )
 
 import App.I18n.Keys as I18nKeys
+import App.Markdown
 import App.Submodels.Context exposing (Context)
-import App.Types.Coto
+import App.Types.Coto exposing (Coto)
+import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Utils.HtmlUtil exposing (materialIcon)
+
+
+cotoDiv : Coto -> Html msg
+cotoDiv coto =
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                div [ class "cotonoma-in-connection" ]
+                    [ App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma ]
+            )
+        |> Maybe.withDefault (cotoContentDiv coto.summary coto.content)
+
+
+cotoContentDiv : Maybe String -> String -> Html msg
+cotoContentDiv maybeSummary content =
+    div [ class "coto-in-connection" ]
+        [ maybeSummary
+            |> Maybe.map
+                (\summary ->
+                    div [ class "coto-summary" ] [ text summary ]
+                )
+            |> Maybe.withDefault (App.Markdown.markdown content)
+            |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
+        ]
 
 
 linkingPhraseInputDiv : Context context -> (String -> msg) -> Html msg

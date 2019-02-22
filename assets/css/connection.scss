@@ -1,6 +1,11 @@
 @import "variables.scss";
 
 #connection {
+  span.node-title {
+    font-weight: bold;
+    color: #aaa;
+  }
+  
   div.coto-in-connection {
     border: 1px solid #ddd;
 

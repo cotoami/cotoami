@@ -9,7 +9,6 @@ module App.Modals.ConnectModal exposing
 
 import App.Commands
 import App.I18n.Keys as I18nKeys
-import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
 import App.Server.Graph
@@ -22,7 +21,6 @@ import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Update.Post
 import App.Views.Connection
-import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -134,7 +132,7 @@ modalContent context model =
                 "div"
                 [ class "selected-cotos" ]
                 (List.map
-                    (\coto -> ( toString coto.id, cotoDiv coto ))
+                    (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
                     model.selectedCotos
                 )
 
@@ -145,11 +143,11 @@ modalContent context model =
 
                 Coto coto ->
                     div [ class "target-coto" ]
-                        [ cotoDiv coto ]
+                        [ App.Views.Connection.cotoDiv coto ]
 
                 NewPost content ->
                     div [ class "target-new-post" ]
-                        [ cotoContentDiv content.summary content.content ]
+                        [ App.Views.Connection.cotoContentDiv content.summary content.content ]
 
         ( start, end ) =
             case model.direction of
@@ -181,30 +179,6 @@ modalContent context model =
             [ span [ class "node-title" ] [ text "To:" ]
             , end
             ]
-        ]
-
-
-cotoDiv : Coto -> Html AppMsg.Msg
-cotoDiv coto =
-    coto.asCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                div [ class "cotonoma-in-connection" ]
-                    [ App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma ]
-            )
-        |> Maybe.withDefault (cotoContentDiv coto.summary coto.content)
-
-
-cotoContentDiv : Maybe String -> String -> Html AppMsg.Msg
-cotoContentDiv maybeSummary content =
-    div [ class "coto-in-connection" ]
-        [ maybeSummary
-            |> Maybe.map
-                (\summary ->
-                    div [ class "coto-summary" ] [ text summary ]
-                )
-            |> Maybe.withDefault (App.Markdown.markdown content)
-            |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
         ]
 
 
