@@ -13,15 +13,15 @@
       color: #aaa;
     }
 
-    div.target-coto,
-    div.target-new-post {
+    div.target-coto div.coto-in-connection,
+    div.target-new-post div.coto-in-connection {
       border-width: 2px;
       max-height: 15vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    div.target-new-post {
+    div.target-new-post div.coto-in-connection {
       border-style: dashed;
     }
 
@@ -30,17 +30,18 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
 
-      div.coto-content {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
-        margin-top: 20px;
+      div.coto-in-connection,
+      div.cotonoma-in-connection {
+        border: 2px solid #ffa500 !important;
+        margin-top: 10px;
 
         &:first-child {
           margin-top: 0;
         }
       }
 
-      div.coto-inner {
-        border: 2px solid #ffa500 !important;
+      div.cotonoma-in-connection {
+        padding: 2px;
       }
     }
 

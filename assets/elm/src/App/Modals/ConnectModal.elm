@@ -28,6 +28,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed
 import Maybe exposing (andThen)
+import Utils.HtmlUtil
 import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
@@ -133,26 +134,21 @@ modalContent context model =
                 "div"
                 [ class "selected-cotos" ]
                 (List.map
-                    (\coto ->
-                        ( toString coto.id
-                        , div [ class "coto-in-connection" ]
-                            [ cotoDiv coto ]
-                        )
-                    )
+                    (\coto -> ( toString coto.id, cotoDiv coto ))
                     model.selectedCotos
                 )
 
         targetHtml =
             case model.target of
                 None ->
-                    div [] []
+                    Utils.HtmlUtil.none
 
                 Coto coto ->
-                    div [ class "target-coto coto-in-connection" ]
+                    div [ class "target-coto" ]
                         [ cotoDiv coto ]
 
                 NewPost content ->
-                    div [ class "target-new-post coto-in-connection" ]
+                    div [ class "target-new-post" ]
                         [ cotoContentDiv content.summary content.content ]
 
         ( start, end ) =
@@ -191,19 +187,25 @@ modalContent context model =
 cotoDiv : Coto -> Html AppMsg.Msg
 cotoDiv coto =
     coto.asCotonoma
-        |> Maybe.map (\cotonoma -> App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma)
+        |> Maybe.map
+            (\cotonoma ->
+                div [ class "cotonoma-in-connection" ]
+                    [ App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma ]
+            )
         |> Maybe.withDefault (cotoContentDiv coto.summary coto.content)
 
 
 cotoContentDiv : Maybe String -> String -> Html AppMsg.Msg
 cotoContentDiv maybeSummary content =
-    maybeSummary
-        |> Maybe.map
-            (\summary ->
-                div [ class "coto-summary" ] [ text summary ]
-            )
-        |> Maybe.withDefault (App.Markdown.markdown content)
-        |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
+    div [ class "coto-in-connection" ]
+        [ maybeSummary
+            |> Maybe.map
+                (\summary ->
+                    div [ class "coto-summary" ] [ text summary ]
+                )
+            |> Maybe.withDefault (App.Markdown.markdown content)
+            |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
+        ]
 
 
 type alias UpdateModel model =
