@@ -1,0 +1,9 @@
+@import "variables.scss";
+
+#connection-modal {
+  button.disconnect i {
+    font-size: 15px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+}

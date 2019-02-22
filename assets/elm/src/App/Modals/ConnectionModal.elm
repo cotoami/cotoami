@@ -11,6 +11,7 @@ import App.Types.Coto exposing (Coto)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal
 
 
@@ -43,14 +44,16 @@ modalConfig context model =
     , content = div [] []
     , buttons =
         [ button
-            [ class "button"
+            [ class "button disconnect"
             , onClick
                 (AppMsg.OpenConfirmModal
                     (context.i18nText I18nKeys.ConfirmDisconnect)
                     (AppMsg.DeleteConnection ( model.startCoto.id, model.endCoto.id ))
                 )
             ]
-            [ text (context.i18nText I18nKeys.ConnectionModal_Disconnect) ]
+            [ faIcon "unlink" Nothing
+            , text (context.i18nText I18nKeys.ConnectionModal_Disconnect)
+            ]
         , button
             [ class "button button-primary"
             , autofocus True
