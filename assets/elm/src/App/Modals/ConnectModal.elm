@@ -174,6 +174,7 @@ modalContent context model =
         , App.Views.Connection.linkingPhraseInputDiv
             context
             (AppMsg.ConnectModalMsg << LinkingPhraseInput)
+            Nothing
         , div
             [ class "end" ]
             [ span [ class "node-title" ] [ text "To:" ]

@@ -39,8 +39,8 @@ cotoContentDiv maybeSummary content =
         ]
 
 
-linkingPhraseInputDiv : Context context -> (String -> msg) -> Html msg
-linkingPhraseInputDiv context onLinkingPhraseInput =
+linkingPhraseInputDiv : Context context -> (String -> msg) -> Maybe String -> Html msg
+linkingPhraseInputDiv context onLinkingPhraseInput defaultLinkingPhrase =
     div
         [ class "linking-phrase-input" ]
         [ div [ class "arrow" ]
@@ -52,6 +52,7 @@ linkingPhraseInputDiv context onLinkingPhraseInput =
                 , placeholder (context.i18nText I18nKeys.Connection_LinkingPhraseInput)
                 , maxlength App.Types.Coto.cotonomaNameMaxlength
                 , onInput onLinkingPhraseInput
+                , defaultValue (defaultLinkingPhrase |> Maybe.withDefault "")
                 ]
                 []
             ]

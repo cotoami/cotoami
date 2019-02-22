@@ -75,6 +75,7 @@ modalContent context model =
         , App.Views.Connection.linkingPhraseInputDiv
             context
             (\_ -> AppMsg.NoOp)
+            (Just model.linkingPhrase)
         , div
             [ class "end" ]
             [ span [ class "node-title" ] [ text "To:" ]
