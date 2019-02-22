@@ -22,6 +22,7 @@ import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Update.Post
 import App.Views.Connection
+import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -135,7 +136,7 @@ modalContent context model =
                     (\coto ->
                         ( toString coto.id
                         , div [ class "coto-in-connection" ]
-                            [ cotoContentDiv coto.summary coto.content ]
+                            [ cotoDiv coto ]
                         )
                     )
                     model.selectedCotos
@@ -148,7 +149,7 @@ modalContent context model =
 
                 Coto coto ->
                     div [ class "target-coto coto-in-connection" ]
-                        [ cotoContentDiv coto.summary coto.content ]
+                        [ cotoDiv coto ]
 
                 NewPost content ->
                     div [ class "target-new-post coto-in-connection" ]
@@ -185,6 +186,13 @@ modalContent context model =
             , end
             ]
         ]
+
+
+cotoDiv : Coto -> Html AppMsg.Msg
+cotoDiv coto =
+    coto.asCotonoma
+        |> Maybe.map (\cotonoma -> App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma)
+        |> Maybe.withDefault (cotoContentDiv coto.summary coto.content)
 
 
 cotoContentDiv : Maybe String -> String -> Html AppMsg.Msg
