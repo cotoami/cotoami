@@ -459,7 +459,9 @@ update msg model =
                     )
 
         ConnectionDeleted (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model
+                |> App.Submodels.Modals.closeModal ConnectionModal
+                |> withCmd (App.Views.Stock.renderGraph model)
 
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
