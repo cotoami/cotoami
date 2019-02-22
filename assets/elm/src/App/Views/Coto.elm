@@ -349,6 +349,26 @@ abbreviate { content, summary } =
         summary
 
 
+isCotonomaAccessible : Context a -> Maybe Amishi -> Cotonoma -> Bool
+isCotonomaAccessible context maybeOwner cotonoma =
+    if cotonoma.shared then
+        True
+
+    else
+        Maybe.map2
+            (\session owner -> session.amishi.id == owner.id)
+            context.session
+            maybeOwner
+            |> Maybe.withDefault False
+
+
+
+{-
+   cotonomaLink, cotonomaLabel:
+   The owner should be passed separately because cotonoma.owner possibly isn't populated.
+-}
+
+
 cotonomaLink : Context a -> (CotonomaKey -> Msg) -> Maybe Amishi -> Cotonoma -> Html Msg
 cotonomaLink context cotonomaClick maybeOwner cotonoma =
     if isCotonomaAccessible context maybeOwner cotonoma then
@@ -365,19 +385,6 @@ cotonomaLink context cotonomaClick maybeOwner cotonoma =
             , span [ class "private", title "Private" ]
                 [ materialIcon "lock" Nothing ]
             ]
-
-
-isCotonomaAccessible : Context a -> Maybe Amishi -> Cotonoma -> Bool
-isCotonomaAccessible context maybeOwner cotonoma =
-    if cotonoma.shared then
-        True
-
-    else
-        Maybe.map2
-            (\session owner -> session.amishi.id == owner.id)
-            context.session
-            maybeOwner
-            |> Maybe.withDefault False
 
 
 cotonomaLabel : Maybe Amishi -> Cotonoma -> Html msg

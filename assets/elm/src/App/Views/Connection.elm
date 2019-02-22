@@ -21,7 +21,7 @@ cotoDiv coto =
         |> Maybe.map
             (\cotonoma ->
                 div [ class "cotonoma-in-connection" ]
-                    [ App.Views.Coto.cotonomaLabel cotonoma.owner cotonoma ]
+                    [ App.Views.Coto.cotonomaLabel coto.amishi cotonoma ]
             )
         |> Maybe.withDefault (cotoContentDiv coto.summary coto.content)
 
