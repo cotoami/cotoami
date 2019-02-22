@@ -1,9 +1,27 @@
 @import "variables.scss";
 
 #connection-modal {
+  .modal-content {
+    width: 80vw;
+  }
+
   button.disconnect i {
     font-size: 15px;
     margin-right: 3px;
     vertical-align: middle;
+  }
+
+  div.coto-in-connection {
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  hr.modal-buttons-seperator {
+    display: none;
+  }
+
+  div.modal-buttons {
+    padding-top: 15px;
   }
 }
