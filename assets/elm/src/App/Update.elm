@@ -436,7 +436,9 @@ update msg model =
                     )
 
         CotoUnpinned (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model
+                |> App.Submodels.Modals.closeModal ConnectionModal
+                |> withCmd (App.Views.Stock.renderGraph model)
 
         CotoUnpinned (Err _) ->
             model |> withoutCmd

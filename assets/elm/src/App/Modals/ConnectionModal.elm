@@ -34,6 +34,11 @@ initModel connection startCoto endCoto =
     }
 
 
+isPin : Context context -> Model -> Bool
+isPin context model =
+    Just model.startCoto.id == Maybe.map .cotoId context.cotonoma
+
+
 view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     model
@@ -46,24 +51,7 @@ modalConfig context model =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.ConnectionModal_Title)
     , content = modalContent context model
-    , buttons =
-        [ button
-            [ class "button disconnect"
-            , onClick
-                (AppMsg.OpenConfirmModal
-                    (context.i18nText I18nKeys.ConfirmDisconnect)
-                    (AppMsg.DeleteConnection ( model.startCoto.id, model.endCoto.id ))
-                )
-            ]
-            [ faIcon "unlink" Nothing
-            , text (context.i18nText I18nKeys.ConnectionModal_Disconnect)
-            ]
-        , button
-            [ class "button button-primary"
-            , autofocus True
-            ]
-            [ text (context.i18nText I18nKeys.Save) ]
-        ]
+    , buttons = buttons context model
     }
 
 
@@ -85,3 +73,30 @@ modalContent context model =
             , App.Views.Connection.cotoDiv model.endCoto
             ]
         ]
+
+
+buttons : Context context -> Model -> List (Html AppMsg.Msg)
+buttons context model =
+    let
+        onDisconnectClick =
+            if isPin context model then
+                AppMsg.ConfirmUnpinCoto model.endCoto.id
+
+            else
+                AppMsg.OpenConfirmModal
+                    (context.i18nText I18nKeys.ConfirmDisconnect)
+                    (AppMsg.DeleteConnection ( model.startCoto.id, model.endCoto.id ))
+    in
+    [ button
+        [ class "button disconnect"
+        , onClick onDisconnectClick
+        ]
+        [ faIcon "unlink" Nothing
+        , text (context.i18nText I18nKeys.ConnectionModal_Disconnect)
+        ]
+    , button
+        [ class "button button-primary"
+        , autofocus True
+        ]
+        [ text (context.i18nText I18nKeys.Save) ]
+    ]
