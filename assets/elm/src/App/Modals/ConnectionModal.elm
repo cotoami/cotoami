@@ -1,14 +1,19 @@
 module App.Modals.ConnectionModal exposing
     ( Model
     , initModel
+    , sendInit
+    , update
     , view
     )
 
+import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ConnectionModalMsg as ModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection)
 import App.Types.Coto exposing (Coto)
+import App.Types.Graph exposing (Graph)
 import App.Views.Connection
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -100,3 +105,21 @@ buttons context model =
         ]
         [ text (context.i18nText I18nKeys.Save) ]
     ]
+
+
+update :
+    Context context
+    -> ModalMsg.Msg
+    -> Graph
+    -> Model
+    -> ( Model, Graph, Cmd AppMsg.Msg )
+update context msg graph model =
+    case msg of
+        Init ->
+            ( model, graph, Cmd.none )
+
+
+sendInit : Cmd AppMsg.Msg
+sendInit =
+    AppMsg.ConnectionModalMsg Init
+        |> App.Commands.sendMsg

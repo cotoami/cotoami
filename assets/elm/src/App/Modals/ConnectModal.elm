@@ -10,7 +10,7 @@ module App.Modals.ConnectModal exposing
 import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ConnectModalMsg as ConnectModalMsg exposing (Msg(..))
+import App.Modals.ConnectModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Graph
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
@@ -187,7 +187,7 @@ type alias UpdateModel model =
     LocalCotos { model | connectModal : Model }
 
 
-update : Context context -> ConnectModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update : Context context -> ModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ connectModal } as model) =
     case msg of
         ReverseDirection ->

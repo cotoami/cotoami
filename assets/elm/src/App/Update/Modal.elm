@@ -107,7 +107,7 @@ openConnectModal selectedCotos direction target model =
             )
 
 
-openConnectionModal : Connection -> Coto -> Coto -> Model -> Model
+openConnectionModal : Connection -> Coto -> Coto -> Model -> ( Model, Cmd Msg )
 openConnectionModal connection startCoto endCoto model =
     let
         modal =
@@ -115,6 +115,7 @@ openConnectionModal connection startCoto endCoto model =
     in
     { model | connectionModal = Just modal }
         |> App.Submodels.Modals.openModal ConnectionModal
+        |> withCmd (\_ -> App.Modals.ConnectionModal.sendInit)
 
 
 openImportModal : ImportFile -> Model -> Model

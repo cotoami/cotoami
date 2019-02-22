@@ -6,6 +6,7 @@ import App.I18n.Keys as I18nKeys
 import App.LocalConfig
 import App.Messages exposing (..)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
@@ -628,7 +629,6 @@ update msg model =
 
         OpenConnectionModal connection startCoto endCoto ->
             App.Update.Modal.openConnectionModal connection startCoto endCoto model
-                |> withoutCmd
 
         OpenInviteModal ->
             App.Update.Modal.openInviteModal model
@@ -675,6 +675,15 @@ update msg model =
 
         ConnectModalMsg subMsg ->
             App.Modals.ConnectModal.update model subMsg model
+
+        ConnectionModalMsg subMsg ->
+            model.connectionModal
+                |> Maybe.map (App.Modals.ConnectionModal.update model subMsg model.graph)
+                |> Maybe.map
+                    (\( modal, graph, cmd ) ->
+                        ( { model | connectionModal = Just modal, graph = graph }, cmd )
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal

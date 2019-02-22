@@ -1,6 +1,7 @@
 module App.Messages exposing (Msg(..))
 
 import App.Modals.ConnectModalMsg
+import App.Modals.ConnectionModalMsg
 import App.Modals.CotoMenuModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.ImportModalMsg
@@ -133,6 +134,7 @@ type Msg
     | EditorModalMsg App.Modals.EditorModalMsg.Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
+    | ConnectionModalMsg App.Modals.ConnectionModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg
