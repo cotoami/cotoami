@@ -7,6 +7,7 @@ module App.Modals.ConnectionModal exposing
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Submodels.Context exposing (Context)
+import App.Types.Connection exposing (Connection)
 import App.Types.Coto exposing (Coto)
 import App.Views.Connection
 import Html exposing (..)
@@ -17,17 +18,19 @@ import Utils.Modal
 
 
 type alias Model =
-    { startCoto : Coto
+    { connection : Connection
+    , startCoto : Coto
     , endCoto : Coto
     , linkingPhrase : String
     }
 
 
-initModel : Coto -> Coto -> Maybe String -> Model
-initModel startCoto endCoto linkingPhrase =
-    { startCoto = startCoto
+initModel : Connection -> Coto -> Coto -> Model
+initModel connection startCoto endCoto =
+    { connection = connection
+    , startCoto = startCoto
     , endCoto = endCoto
-    , linkingPhrase = linkingPhrase |> Maybe.withDefault ""
+    , linkingPhrase = connection.linkingPhrase |> Maybe.withDefault ""
     }
 
 

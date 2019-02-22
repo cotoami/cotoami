@@ -188,9 +188,9 @@ pinButtonDiv context connection coto =
                 |> Maybe.map
                     (\cotonoma ->
                         AppMsg.OpenConnectionModal
+                            connection
                             (App.Types.Coto.toCoto cotonoma)
                             coto
-                            connection.linkingPhrase
                     )
                 |> Maybe.withDefault (ConfirmUnpinCoto coto.id)
     in

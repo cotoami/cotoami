@@ -8,7 +8,7 @@ import App.Modals.InviteModalMsg
 import App.Modals.SigninModalMsg
 import App.Modals.TimelineFilterModalMsg
 import App.Ports.ImportFile exposing (ImportFile)
-import App.Types.Connection exposing (Reordering)
+import App.Types.Connection exposing (Connection, Reordering)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.Post exposing (PaginatedPosts, Post)
@@ -116,7 +116,7 @@ type Msg
     | OpenTimelineFilterModal
     | OpenConnectModalByCoto Coto
     | OpenConnectModalByNewPost CotoContent Msg
-    | OpenConnectionModal Coto Coto (Maybe String)
+    | OpenConnectionModal Connection Coto Coto
     | OpenInviteModal
       --
       -- Sub components

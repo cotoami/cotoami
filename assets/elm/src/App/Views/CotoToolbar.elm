@@ -281,11 +281,7 @@ editConnectionButton context session inbound coto =
                         [ class "tool-button"
                         , title (context.i18nText I18nKeys.CotoToolbar_EditConnection)
                         , onLinkButtonClick
-                            (AppMsg.OpenConnectionModal
-                                parent
-                                coto
-                                inbound.connection.linkingPhrase
-                            )
+                            (AppMsg.OpenConnectionModal inbound.connection parent coto)
                         ]
                         [ materialIcon "subdirectory_arrow_right" Nothing ]
                         |> Just

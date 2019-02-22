@@ -25,7 +25,7 @@ import App.Model exposing (Model)
 import App.Ports.ImportFile exposing (ImportFile)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(..))
-import App.Types.Connection exposing (Direction(..))
+import App.Types.Connection exposing (Connection, Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Session exposing (AuthSettings)
 import Utils.UpdateUtil exposing (..)
@@ -107,17 +107,13 @@ openConnectModal selectedCotos direction target model =
             )
 
 
-openConnectionModal : Coto -> Coto -> Maybe String -> Model -> Model
-openConnectionModal startCoto endCoto linkingPhrase model =
-    { model
-        | connectionModal =
-            Just
-                (App.Modals.ConnectionModal.initModel
-                    startCoto
-                    endCoto
-                    linkingPhrase
-                )
-    }
+openConnectionModal : Connection -> Coto -> Coto -> Model -> Model
+openConnectionModal connection startCoto endCoto model =
+    let
+        modal =
+            App.Modals.ConnectionModal.initModel connection startCoto endCoto
+    in
+    { model | connectionModal = Just modal }
         |> App.Submodels.Modals.openModal ConnectionModal
 
 
