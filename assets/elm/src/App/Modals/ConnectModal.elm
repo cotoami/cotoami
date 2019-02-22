@@ -134,8 +134,8 @@ modalContent context model =
                 (List.map
                     (\coto ->
                         ( toString coto.id
-                        , div [ class "coto-content" ]
-                            [ contentDiv coto.summary coto.content ]
+                        , div [ class "coto-in-connection" ]
+                            [ cotoContentDiv coto.summary coto.content ]
                         )
                     )
                     model.selectedCotos
@@ -147,12 +147,12 @@ modalContent context model =
                     div [] []
 
                 Coto coto ->
-                    div [ class "target-coto coto-content" ]
-                        [ contentDiv coto.summary coto.content ]
+                    div [ class "target-coto coto-in-connection" ]
+                        [ cotoContentDiv coto.summary coto.content ]
 
                 NewPost content ->
-                    div [ class "target-new-post coto-content" ]
-                        [ contentDiv content.summary content.content ]
+                    div [ class "target-new-post coto-in-connection" ]
+                        [ cotoContentDiv content.summary content.content ]
 
         ( start, end ) =
             case model.direction of
@@ -187,8 +187,8 @@ modalContent context model =
         ]
 
 
-contentDiv : Maybe String -> String -> Html AppMsg.Msg
-contentDiv maybeSummary content =
+cotoContentDiv : Maybe String -> String -> Html AppMsg.Msg
+cotoContentDiv maybeSummary content =
     maybeSummary
         |> Maybe.map
             (\summary ->
