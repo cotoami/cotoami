@@ -5,6 +5,7 @@ import App.Markdown
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaKey)
+import App.Views.Amishi
 import App.Views.Coto exposing (cotonomaLabel)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -91,10 +92,9 @@ authorSpan coto =
     coto.amishi
         |> Maybe.map
             (\author ->
-                span [ class "amishi author" ]
+                span [ class "author" ]
                     [ span [ class "preposition" ] [ text "by" ]
-                    , img [ class "avatar", src author.avatarUrl ] []
-                    , span [ class "name" ] [ text author.displayName ]
+                    , App.Views.Amishi.inline [] author
                     ]
             )
         |> Maybe.withDefault (span [] [])
