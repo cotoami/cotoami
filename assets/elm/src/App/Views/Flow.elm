@@ -22,6 +22,7 @@ import App.Types.Timeline exposing (Timeline)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Update.Post
 import App.Update.Watch
+import App.Views.Amishi
 import App.Views.FlowMsg as FlowMsg exposing (Msg(..), TimelineView(..))
 import App.Views.Post
 import Date
@@ -459,10 +460,7 @@ postEditor : Context context -> Session -> Model -> Html AppMsg.Msg
 postEditor context session model =
     div [ class "quick-coto-editor" ]
         [ div [ class "toolbar", hidden (not model.editorOpen) ]
-            [ span [ class "user session" ]
-                [ img [ class "avatar", src session.amishi.avatarUrl ] []
-                , span [ class "name" ] [ text session.amishi.displayName ]
-                ]
+            [ App.Views.Amishi.inline [ "session" ] session.amishi
             , div [ class "tool-buttons" ]
                 [ if List.isEmpty context.selection then
                     Utils.HtmlUtil.none
