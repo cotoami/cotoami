@@ -14,6 +14,7 @@ import App.Server.Amishi
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
+import App.Views.Amishi
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -116,7 +117,7 @@ modalConfig context session model =
                             div [ class "error" ]
                                 [ span [ class "message" ]
                                     [ text (context.i18nText I18nKeys.InviteModal_InviteeAlreadyExists) ]
-                                , inviteeSpan invitee
+                                , App.Views.Amishi.inline [ "invitee" ] invitee
                                 ]
 
                         _ ->
@@ -144,14 +145,6 @@ modalConfig context session model =
             }
 
 
-inviteeSpan : Amishi -> Html AppMsg.Msg
-inviteeSpan invitee =
-    span [ class "invitee" ]
-        [ img [ class "avatar", src invitee.avatarUrl ] []
-        , span [ class "name" ] [ text invitee.displayName ]
-        ]
-
-
 invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
 invitesRemainingDiv context session model =
     Maybe.map2
@@ -177,7 +170,7 @@ invitesRemainingDiv context session model =
 inviteeItem : Amishi -> Html AppMsg.Msg
 inviteeItem invitee =
     li [ class "invitee" ]
-        [ inviteeSpan invitee
+        [ App.Views.Amishi.inline [ "invitee" ] invitee
         , invitee.email
             |> Maybe.map (\email -> span [ class "email" ] [ text email ])
             |> Maybe.withDefault Utils.HtmlUtil.none

@@ -1,4 +1,10 @@
-module App.Types.Amishi exposing (Amishi, AmishiId, Presences, applyPresenceDiff, isPresent)
+module App.Types.Amishi exposing
+    ( Amishi
+    , AmishiId
+    , Presences
+    , applyPresenceDiff
+    , isPresent
+    )
 
 import Dict exposing (Dict)
 

@@ -11,9 +11,11 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectionModalMsg as ModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
+import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection)
 import App.Types.Coto exposing (Coto)
 import App.Types.Graph exposing (Graph)
+import App.Views.Amishi
 import App.Views.Connection
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,6 +26,7 @@ import Utils.Modal
 
 type alias Model =
     { connection : Connection
+    , amishi : Maybe Amishi
     , startCoto : Coto
     , endCoto : Coto
     , linkingPhrase : String
@@ -33,6 +36,7 @@ type alias Model =
 initModel : Connection -> Coto -> Coto -> Model
 initModel connection startCoto endCoto =
     { connection = connection
+    , amishi = Nothing
     , startCoto = startCoto
     , endCoto = endCoto
     , linkingPhrase = connection.linkingPhrase |> Maybe.withDefault ""
@@ -64,6 +68,12 @@ modalContent : Context context -> Model -> Html AppMsg.Msg
 modalContent context model =
     div [ id "connection" ]
         [ div
+            [ class "amishi" ]
+            [ model.amishi
+                |> Maybe.map (App.Views.Amishi.inline [])
+                |> Maybe.withDefault Utils.HtmlUtil.loadingHorizontalImg
+            ]
+        , div
             [ class "start" ]
             [ span [ class "node-title" ] [ text "From:" ]
             , App.Views.Connection.cotoDiv model.startCoto
