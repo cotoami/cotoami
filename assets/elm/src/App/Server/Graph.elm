@@ -176,13 +176,14 @@ connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
         |> Task.attempt Connected
 
 
-disconnect : ClientId -> Maybe CotonomaKey -> CotoId -> CotoId -> Cmd Msg
-disconnect clientId maybeCotonomaKey startId endId =
+disconnect : ClientId -> CotoId -> CotoId -> Cmd Msg
+disconnect clientId startId endId =
     let
         url =
-            connectUrl maybeCotonomaKey startId ++ "/" ++ endId
+            "/api/graph/connection/" ++ startId ++ "/" ++ endId
     in
-    Http.send ConnectionDeleted (httpDelete url clientId)
+    httpDelete url clientId
+        |> Http.send ConnectionDeleted
 
 
 reorder :

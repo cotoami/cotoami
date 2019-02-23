@@ -452,14 +452,7 @@ update msg model =
 
         DeleteConnection ( startId, endId ) ->
             { model | graph = App.Types.Graph.Connect.disconnect ( startId, endId ) model.graph }
-                |> withCmd
-                    (\model ->
-                        App.Server.Graph.disconnect
-                            model.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
-                            startId
-                            endId
-                    )
+                |> withCmd (\model -> App.Server.Graph.disconnect model.clientId startId endId)
 
         ConnectionDeleted (Ok _) ->
             model
