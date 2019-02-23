@@ -66,6 +66,7 @@ defmodule CotoamiWeb.Router do
     get("/invitees", AmishiController, :invitees)
     get("/amishis/email/refresh", AmishiController, :refresh_email_user_data)
     get("/amishis/email/:email", AmishiController, :show_by_email)
+    get("/amishis/:id", AmishiController, :show)
 
     get("/search/:query", CotoController, :search)
     resources("/cotos", CotoController, only: [:index, :create, :update, :delete])
