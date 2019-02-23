@@ -12,6 +12,7 @@ module App.Server.Graph exposing
     , pinUrl
     , reorder
     , unpinCoto
+    , updateConnection
     )
 
 import App.Messages exposing (Msg(..))
@@ -91,13 +92,18 @@ connectingParamsAsBody key targetIds linkingPhrase =
                 |> List.map Encode.string
                 |> Encode.list
           )
-        , ( "linking_phrase"
-          , linkingPhrase
-                |> Maybe.map Encode.string
-                |> Maybe.withDefault Encode.null
-          )
+        , linkingPhraseAsParam linkingPhrase
         ]
         |> Http.jsonBody
+
+
+linkingPhraseAsParam : Maybe String -> ( String, Encode.Value )
+linkingPhraseAsParam linkingPhrase =
+    ( "linking_phrase"
+    , linkingPhrase
+        |> Maybe.map Encode.string
+        |> Maybe.withDefault Encode.null
+    )
 
 
 pinCotos : ClientId -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
@@ -176,14 +182,32 @@ connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
         |> Task.attempt Connected
 
 
+connectionUrl : CotoId -> CotoId -> String
+connectionUrl startId endId =
+    "/api/graph/connection/" ++ startId ++ "/" ++ endId
+
+
 disconnect : ClientId -> CotoId -> CotoId -> Cmd Msg
 disconnect clientId startId endId =
-    let
-        url =
-            "/api/graph/connection/" ++ startId ++ "/" ++ endId
-    in
-    httpDelete url clientId
+    httpDelete (connectionUrl startId endId) clientId
         |> Http.send ConnectionDeleted
+
+
+updateConnection :
+    (Result Http.Error Connection -> msg)
+    -> ClientId
+    -> CotoId
+    -> CotoId
+    -> Maybe String
+    -> Cmd msg
+updateConnection tag clientId startId endId linkingPhrase =
+    let
+        body =
+            Encode.object [ linkingPhraseAsParam linkingPhrase ]
+                |> Http.jsonBody
+    in
+    httpPut (connectionUrl startId endId) clientId body decodeConnection
+        |> Http.send tag
 
 
 reorder :
