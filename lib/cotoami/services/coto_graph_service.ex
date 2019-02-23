@@ -389,11 +389,19 @@ defmodule Cotoami.CotoGraphService do
         }
       )
 
-    if reverse do
-      rel = Neo4jService.reverse_relationship(bolt_conn, source_id, target_id, @type_connection)
-      make_connection_json(rel, target_id, source_id)
-    else
-      make_connection_json(rel, source_id, target_id)
+    case rel do
+      nil ->
+        nil
+
+      rel ->
+        if reverse do
+          reversed_rel =
+            Neo4jService.reverse_relationship(bolt_conn, source_id, target_id, @type_connection)
+
+          make_connection_json(reversed_rel, target_id, source_id)
+        else
+          make_connection_json(rel, source_id, target_id)
+        end
     end
   end
 

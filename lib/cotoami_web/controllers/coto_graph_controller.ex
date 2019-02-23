@@ -140,9 +140,19 @@ defmodule CotoamiWeb.CotoGraphController do
         amishi
       )
 
-    broadcast_connection_update(start_id, end_id, linking_phrase, amishi, conn.assigns.client_id)
+    if connection_as_json do
+      broadcast_connection_update(
+        start_id,
+        end_id,
+        linking_phrase,
+        amishi,
+        conn.assigns.client_id
+      )
 
-    json(conn, connection_as_json)
+      json(conn, connection_as_json)
+    else
+      send_resp(conn, :not_found, "")
+    end
   end
 
   def reorder(conn, %{"end_ids" => end_ids} = params, amishi) do
