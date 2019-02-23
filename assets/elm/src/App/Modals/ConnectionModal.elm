@@ -22,6 +22,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -120,13 +121,19 @@ buttons context model =
 update :
     Context context
     -> ModalMsg.Msg
-    -> Graph
-    -> Model
-    -> ( Model, Graph, Cmd AppMsg.Msg )
-update context msg graph model =
+    -> ( Model, Graph )
+    -> ( ( Model, Graph ), Cmd AppMsg.Msg )
+update context msg (( modal, graph ) as model) =
     case msg of
         Init ->
-            ( model, graph, Cmd.none )
+            model |> withoutCmd
+
+        AmishiFetched (Ok amishi) ->
+            ( { modal | amishi = Just amishi }, graph )
+                |> withoutCmd
+
+        AmishiFetched (Err error) ->
+            model |> withoutCmd
 
 
 sendInit : Cmd AppMsg.Msg

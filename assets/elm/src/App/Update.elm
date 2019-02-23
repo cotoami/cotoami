@@ -678,9 +678,10 @@ update msg model =
 
         ConnectionModalMsg subMsg ->
             model.connectionModal
-                |> Maybe.map (App.Modals.ConnectionModal.update model subMsg model.graph)
+                |> Maybe.map (\modal -> ( modal, model.graph ))
+                |> Maybe.map (App.Modals.ConnectionModal.update model subMsg)
                 |> Maybe.map
-                    (\( modal, graph, cmd ) ->
+                    (\( ( modal, graph ), cmd ) ->
                         ( { model | connectionModal = Just modal, graph = graph }, cmd )
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
