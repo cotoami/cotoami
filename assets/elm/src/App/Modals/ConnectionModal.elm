@@ -10,6 +10,7 @@ import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectionModalMsg as ModalMsg exposing (Msg(..))
+import App.Server.Amishi
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection)
@@ -87,7 +88,8 @@ modalContent context model =
     div [ id "connection" ]
         [ div
             [ class "amishi" ]
-            [ model.amishi
+            [ span [ class "preposition" ] [ text "By:" ]
+            , model.amishi
                 |> Maybe.map (App.Views.Amishi.inline [])
                 |> Maybe.withDefault Utils.HtmlUtil.loadingHorizontalImg
             ]
@@ -143,7 +145,15 @@ update :
 update context msg (( modal, graph ) as model) =
     case msg of
         Init ->
-            model |> withoutCmd
+            ( model
+            , modal.amishi
+                |> Maybe.map (\_ -> Cmd.none)
+                |> Maybe.withDefault
+                    (App.Server.Amishi.fetchAmishi
+                        (AppMsg.ConnectionModalMsg << AmishiFetched)
+                        modal.connection.amishiId
+                    )
+            )
 
         AmishiFetched (Ok amishi) ->
             ( { modal | amishi = Just amishi }, graph )
