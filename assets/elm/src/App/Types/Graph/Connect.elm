@@ -69,7 +69,8 @@ connectOneToMany amishiId startCoto endCotos linkingPhrase graph =
             ( graph.cotos, graph.connections )
         |> (\( cotos, connections ) ->
                 graph
-                    |> App.Types.Graph.update cotos
+                    |> App.Types.Graph.update
+                        cotos
                         graph.rootConnections
                         connections
            )
