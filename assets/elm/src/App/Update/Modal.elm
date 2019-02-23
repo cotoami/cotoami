@@ -107,11 +107,11 @@ openConnectModal selectedCotos direction target model =
             )
 
 
-openConnectionModal : Connection -> Coto -> Coto -> Model -> ( Model, Cmd Msg )
-openConnectionModal connection startCoto endCoto model =
+openConnectionModal : Context context -> Connection -> Coto -> Coto -> Model -> ( Model, Cmd Msg )
+openConnectionModal context connection startCoto endCoto model =
     let
         modal =
-            App.Modals.ConnectionModal.initModel connection startCoto endCoto
+            App.Modals.ConnectionModal.initModel context connection startCoto endCoto
     in
     { model | connectionModal = Just modal }
         |> App.Submodels.Modals.openModal ConnectionModal

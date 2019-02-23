@@ -34,13 +34,30 @@ type alias Model =
     }
 
 
-initModel : Connection -> Coto -> Coto -> Model
-initModel connection startCoto endCoto =
+initModel : Context context -> Connection -> Coto -> Coto -> Model
+initModel context connection startCoto endCoto =
     { connection = connection
     , amishi = Nothing
     , startCoto = startCoto
     , endCoto = endCoto
     , linkingPhrase = connection.linkingPhrase |> Maybe.withDefault ""
+    }
+        |> setMeAsAmishiIfSo context
+
+
+setMeAsAmishiIfSo : Context context -> Model -> Model
+setMeAsAmishiIfSo context model =
+    { model
+        | amishi =
+            context.session
+                |> Maybe.andThen
+                    (\session ->
+                        if model.connection.amishiId == session.amishi.id then
+                            Just session.amishi
+
+                        else
+                            Nothing
+                    )
     }
 
 
