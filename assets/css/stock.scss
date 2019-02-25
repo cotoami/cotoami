@@ -143,6 +143,10 @@
         background-color: #fff;
         padding: 3px 10px;
         opacity: 1;
+        white-space: nowrap;
+        max-width: 80%;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
       }
 
       span.linking-phrase-pin {
