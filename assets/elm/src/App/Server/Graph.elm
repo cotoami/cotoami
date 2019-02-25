@@ -131,8 +131,8 @@ unpinCoto clientId maybeCotonomaKey cotoId =
 connectUrl : Maybe CotonomaKey -> CotoId -> String
 connectUrl maybeCotonomaKey startId =
     maybeCotonomaKey
-        |> Maybe.map (\key -> "/api/graph/" ++ key ++ "/connection/" ++ startId)
-        |> Maybe.withDefault ("/api/graph/connection/" ++ startId)
+        |> Maybe.map (\key -> "/api/graph/" ++ key ++ "/connections/" ++ startId)
+        |> Maybe.withDefault ("/api/graph/connections/" ++ startId)
 
 
 makeConnectTask :
@@ -184,7 +184,7 @@ connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
 
 connectionUrl : CotoId -> CotoId -> String
 connectionUrl startId endId =
-    "/api/graph/connection/" ++ startId ++ "/" ++ endId
+    "/api/graph/connections/" ++ startId ++ "/" ++ endId
 
 
 disconnect : ClientId -> CotoId -> CotoId -> Cmd Msg
@@ -223,7 +223,7 @@ reorder tag clientId maybeCotonomaKey maybeStartId endIds =
             maybeStartId
                 |> Maybe.map
                     (\startId ->
-                        "/api/graph/connection/" ++ startId ++ "/reorder"
+                        "/api/graph/connections/" ++ startId ++ "/reorder"
                     )
                 |> Maybe.withDefault
                     (maybeCotonomaKey
