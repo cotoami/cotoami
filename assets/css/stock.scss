@@ -111,7 +111,7 @@
       }
     }
 
-    div.pin-button {
+    div.pin {
       position: relative;
       height: 10px;
 
@@ -123,10 +123,29 @@
         i {
           font-size: 24px;
         }
+      }
 
-        &.not-editable {
-          color: #ccc;
-        }
+      span.pin {
+        color: #aaa;
+      }
+    }
+
+    div.linking-phrase-pin {
+      position: relative;
+      height: 10px;
+
+      .linking-phrase-pin {
+        position: absolute;
+        top: -12px;
+        left: 0;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        padding: 3px 10px;
+        opacity: 1;
+      }
+
+      span.linking-phrase-pin {
+        color: #aaa;
       }
     }
   }

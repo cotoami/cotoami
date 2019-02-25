@@ -153,7 +153,7 @@ pinnedCotoDiv context inbound coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ pinButtonDiv context inbound.connection coto
+            [ pinDiv context inbound.connection coto
             , App.Views.Coto.headerDiv context (Just inbound) elementId coto
             , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
             , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
@@ -166,8 +166,8 @@ pinnedCotoDiv context inbound coto =
         ]
 
 
-pinButtonDiv : Context context -> Connection -> Coto -> Html AppMsg.Msg
-pinButtonDiv context connection coto =
+pinDiv : Context context -> Connection -> Coto -> Html AppMsg.Msg
+pinDiv context connection coto =
     let
         maybeAmishiId =
             context.session
@@ -194,7 +194,14 @@ pinButtonDiv context connection coto =
                     )
                 |> Maybe.withDefault (ConfirmUnpinCoto coto.id)
     in
-    div [ class "pin-button" ]
+    connection.linkingPhrase
+        |> Maybe.map (linkingPhrasePinDiv editable msgOnClick)
+        |> Maybe.withDefault (defaultPinDiv editable msgOnClick)
+
+
+defaultPinDiv : Bool -> msg -> Html msg
+defaultPinDiv editable msgOnClick =
+    div [ class "pin" ]
         [ if editable then
             a
                 [ class "pin tool-button"
@@ -204,8 +211,25 @@ pinButtonDiv context connection coto =
 
           else
             span
-                [ class "pin not-editable" ]
+                [ class "pin" ]
                 [ faIcon "thumb-tack" Nothing ]
+        ]
+
+
+linkingPhrasePinDiv : Bool -> msg -> String -> Html msg
+linkingPhrasePinDiv editable msgOnClick linkingPhrase =
+    div [ class "linking-phrase-pin" ]
+        [ if editable then
+            a
+                [ class "linking-phrase-pin tool-button"
+                , onLinkButtonClick msgOnClick
+                ]
+                [ text linkingPhrase ]
+
+          else
+            span
+                [ class "linking-phrase-pin" ]
+                [ text linkingPhrase ]
         ]
 
 
