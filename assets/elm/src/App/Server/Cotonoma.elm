@@ -1,4 +1,12 @@
-module App.Server.Cotonoma exposing (decodeCotonoma, decodeStats, encodeCotonoma, fetchCotonomas, fetchStats, fetchSubCotonomas, refreshCotonomaList)
+module App.Server.Cotonoma exposing
+    ( decodeCotonoma
+    , decodeStats
+    , encodeCotonoma
+    , fetchCotonomas
+    , fetchStats
+    , fetchSubCotonomas
+    , refreshCotonomaList
+    )
 
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)

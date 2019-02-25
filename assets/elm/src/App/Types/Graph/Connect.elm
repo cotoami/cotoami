@@ -31,7 +31,11 @@ pin amishiId coto graph =
                 }
                     :: graph.rootConnections
         in
-        graph |> App.Types.Graph.update cotos rootConnections graph.connections
+        graph
+            |> App.Types.Graph.update
+                cotos
+                rootConnections
+                graph.connections
 
 
 unpin : CotoId -> Graph -> Graph

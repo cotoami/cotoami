@@ -104,14 +104,16 @@ handleCotonomatize payload model =
 type alias ConnectPayloadBody =
     { start : Coto
     , end : Coto
+    , linkingPhrase : Maybe String
     }
 
 
 decodeConnectPayloadBody : Decode.Decoder ConnectPayloadBody
 decodeConnectPayloadBody =
-    Decode.map2 ConnectPayloadBody
+    Decode.map3 ConnectPayloadBody
         (Decode.field "start" App.Server.Coto.decodeCoto)
         (Decode.field "end" App.Server.Coto.decodeCoto)
+        (Decode.field "linking_phrase" (Decode.maybe Decode.string))
 
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
@@ -137,7 +139,7 @@ handleConnect payload model =
                             payload.amishi.id
                             startCoto
                             payload.body.end
-                            Nothing
+                            payload.body.linkingPhrase
                             model.graph
                     )
                 |> Maybe.withDefault model.graph
@@ -155,8 +157,8 @@ type alias DisconnectPayloadBody =
 decodeDisconnectPayloadBody : Decode.Decoder DisconnectPayloadBody
 decodeDisconnectPayloadBody =
     Decode.map2 DisconnectPayloadBody
-        (Decode.field "startId" Decode.string)
-        (Decode.field "endId" Decode.string)
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_id" Decode.string)
 
 
 handleDisconnect : Payload DisconnectPayloadBody -> Model -> ( Model, Cmd Msg )
@@ -187,6 +189,21 @@ handleDisconnect payload model =
     { model | graph = graph2 } |> withoutCmd
 
 
+type alias ConnectionUpdatePayloadBody =
+    { startId : CotoId
+    , endId : CotoId
+    , linkingPhrase : Maybe String
+    }
+
+
+decodeConnectionUpdatePayloadBody : Decode.Decoder ConnectionUpdatePayloadBody
+decodeConnectionUpdatePayloadBody =
+    Decode.map3 ConnectionUpdatePayloadBody
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_id" Decode.string)
+        (Decode.field "linking_phrase" (Decode.maybe Decode.string))
+
+
 type alias ReorderPayloadBody =
     { startId : CotoId
     , endIds : List CotoId
@@ -196,8 +213,8 @@ type alias ReorderPayloadBody =
 decodeReorderPayloadBody : Decode.Decoder ReorderPayloadBody
 decodeReorderPayloadBody =
     Decode.map2 ReorderPayloadBody
-        (Decode.field "startId" Decode.string)
-        (Decode.field "endIds" (Decode.list Decode.string))
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_ids" (Decode.list Decode.string))
 
 
 handleReorder : Payload ReorderPayloadBody -> Model -> ( Model, Cmd Msg )
