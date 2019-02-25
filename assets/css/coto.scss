@@ -201,6 +201,27 @@ div.sub-cotos {
       padding-right: 0;
     }
 
+    div.linking-phrase {
+      position: relative;
+      height: 30px;
+
+      .linking-phrase {
+        position: absolute;
+        top: -6px;
+        left: -13px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 0;
+        background-color: #fff;
+        padding: 2px 10px;
+        opacity: 1;
+        
+      }
+
+      span.linking-phrase {
+        color: #aaa;
+      }
+    }
+
     div.coto-header {
       position: relative;
       min-height: auto;
