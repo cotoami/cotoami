@@ -3,6 +3,7 @@ module App.Types.Connection exposing
     , Direction(..)
     , InboundConnection
     , Reordering(..)
+    , canUpdate
     , inReordering
     , makeUniqueKey
     , setLinkingPhrase
@@ -10,6 +11,7 @@ module App.Types.Connection exposing
 
 import App.Types.Amishi exposing (AmishiId)
 import App.Types.Coto exposing (Coto, CotoId, ElementId)
+import App.Types.Session exposing (Session)
 
 
 type Direction
@@ -37,6 +39,13 @@ makeUniqueKey connection =
 setLinkingPhrase : Maybe String -> Connection -> Connection
 setLinkingPhrase linkingPhrase connection =
     { connection | linkingPhrase = linkingPhrase }
+
+
+canUpdate : Session -> Coto -> Connection -> Bool
+canUpdate session startCoto connection =
+    session.amishi.owner
+        || (session.amishi.id == connection.amishiId)
+        || (Just session.amishi.id == Maybe.map .id startCoto.amishi)
 
 
 type Reordering

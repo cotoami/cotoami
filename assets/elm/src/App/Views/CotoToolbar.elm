@@ -72,13 +72,6 @@ subCotoTools context session inbound elementId coto =
     span [ class "sub-coto-buttons" ] buttonsWithBorder
 
 
-canUpdateConnection : Session -> Coto -> Connection -> Bool
-canUpdateConnection session startCoto connection =
-    session.amishi.owner
-        || (session.amishi.id == connection.amishiId)
-        || (Just session.amishi.id == Maybe.map .id startCoto.amishi)
-
-
 isReorderble : Context context -> Session -> InboundConnection -> Coto -> Bool
 isReorderble context session inbound child =
     if inbound.siblings < 2 then
@@ -276,7 +269,7 @@ editConnectionButton context session inbound coto =
     inbound.parent
         |> Maybe.andThen
             (\parent ->
-                if canUpdateConnection session parent inbound.connection then
+                if App.Types.Connection.canUpdate session parent inbound.connection then
                     a
                         [ class "tool-button"
                         , title (context.i18nText I18nKeys.CotoToolbar_EditConnection)

@@ -12,7 +12,7 @@ module App.Views.Coto exposing
     )
 
 import App.Markdown exposing (extractTextFromMarkdown)
-import App.Messages exposing (..)
+import App.Messages exposing (Msg)
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
@@ -71,7 +71,7 @@ bodyDiv : Context a -> Maybe InboundConnection -> ElementId -> Markdown -> BodyM
 bodyDiv context maybeInbound elementId markdown model =
     div [ class "coto-body" ]
         [ model.asCotonoma
-            |> Maybe.map (cotonomaLink context CotonomaClick model.amishi)
+            |> Maybe.map (cotonomaLink context App.Messages.CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Connection.inReordering maybeInbound then
                     div [ class "content-in-reorder" ]
@@ -99,7 +99,7 @@ contentDiv context elementId markdown model =
                         [ a
                             [ class "tool-button toggle-coto-content"
                             , title "Toggle coto content"
-                            , onLinkButtonClick (ToggleCotoContent elementId)
+                            , onLinkButtonClick (App.Messages.ToggleCotoContent elementId)
                             ]
                             [ faIcon
                                 (if App.Submodels.Context.contentOpen elementId context then
@@ -159,7 +159,7 @@ headerDiv context maybeInbound elementId coto =
                         a
                             [ class "posted-in"
                             , href ("/cotonomas/" ++ postedIn.key)
-                            , onLinkButtonClick (CotonomaClick postedIn.key)
+                            , onLinkButtonClick (App.Messages.CotonomaClick postedIn.key)
                             ]
                             [ text postedIn.name ]
                 )
@@ -194,7 +194,7 @@ parentsDiv graph exclude childId =
                 (\parent ->
                     div
                         [ class "parent"
-                        , onClick (OpenTraversal parent.id)
+                        , onClick (App.Messages.OpenTraversal parent.id)
                         ]
                         [ text (abbreviate parent) ]
                 )
@@ -217,7 +217,7 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                     div [ class "sub-cotos-button" ]
                         [ a
                             [ class "tool-button"
-                            , onLinkButtonClick (OpenTraversal cotoId)
+                            , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
                             ]
                             [ materialIcon
                                 (Maybe.withDefault "more_horiz" maybeIconName)
@@ -304,13 +304,14 @@ subCotoDiv context parentElementId inbound coto =
     in
     div
         [ cotoClassList context elementId (Just coto.id) []
-        , onClickWithoutPropagation (CotoClick elementId coto.id)
-        , onMouseEnter (CotoMouseEnter elementId coto.id)
-        , onMouseLeave (CotoMouseLeave elementId coto.id)
+        , onClickWithoutPropagation (App.Messages.CotoClick elementId coto.id)
+        , onMouseEnter (App.Messages.CotoMouseEnter elementId coto.id)
+        , onMouseLeave (App.Messages.CotoMouseLeave elementId coto.id)
         ]
         [ div
             [ class "coto-inner" ]
-            [ headerDiv context (Just inbound) elementId coto
+            [ linkingPhraseDiv context inbound coto
+            , headerDiv context (Just inbound) elementId coto
             , parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ bodyDivByCoto context (Just inbound) elementId coto
@@ -318,6 +319,47 @@ subCotoDiv context parentElementId inbound coto =
                 ]
             ]
         ]
+
+
+linkingPhraseDiv : Context context -> InboundConnection -> Coto -> Html Msg
+linkingPhraseDiv context inbound coto =
+    let
+        canUpdate =
+            Maybe.map2
+                (\session parent ->
+                    App.Types.Connection.canUpdate
+                        session
+                        parent
+                        inbound.connection
+                )
+                context.session
+                inbound.parent
+                |> Maybe.withDefault False
+    in
+    Maybe.map2
+        (\parent linkingPhrase ->
+            div [ class "linking-phrase" ]
+                [ if canUpdate then
+                    a
+                        [ class "linking-phrase tool-button"
+                        , onLinkButtonClick
+                            (App.Messages.OpenConnectionModal
+                                inbound.connection
+                                parent
+                                coto
+                            )
+                        ]
+                        [ text linkingPhrase ]
+
+                  else
+                    span
+                        [ class "linking-phrase" ]
+                        [ text linkingPhrase ]
+                ]
+        )
+        inbound.parent
+        inbound.connection.linkingPhrase
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 
