@@ -134,14 +134,14 @@ singleConnect graph amishiId start end linkingPhrase (( cotos, connections ) as 
 
 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
-disconnect ( fromId, toId ) graph =
+disconnect ( startId, endId ) graph =
     let
         connections =
             Dict.update
-                fromId
+                startId
                 (\maybeConns ->
                     maybeConns
-                        |> Maybe.map (List.filter (\conn -> conn.end /= toId))
+                        |> Maybe.map (List.filter (\conn -> conn.end /= endId))
                         |> Maybe.andThen
                             (\conns ->
                                 if List.isEmpty conns then
@@ -153,4 +153,8 @@ disconnect ( fromId, toId ) graph =
                 )
                 graph.connections
     in
-    graph |> App.Types.Graph.update graph.cotos graph.rootConnections connections
+    graph
+        |> App.Types.Graph.update
+            graph.cotos
+            graph.rootConnections
+            connections

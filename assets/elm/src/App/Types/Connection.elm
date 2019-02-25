@@ -5,6 +5,7 @@ module App.Types.Connection exposing
     , Reordering(..)
     , inReordering
     , makeUniqueKey
+    , setLinkingPhrase
     )
 
 import App.Types.Amishi exposing (AmishiId)
@@ -31,6 +32,11 @@ makeUniqueKey connection =
             connection.start |> Maybe.withDefault "root"
     in
     start ++ "_" ++ connection.end
+
+
+setLinkingPhrase : Maybe String -> Connection -> Connection
+setLinkingPhrase linkingPhrase connection =
+    { connection | linkingPhrase = linkingPhrase }
 
 
 type Reordering

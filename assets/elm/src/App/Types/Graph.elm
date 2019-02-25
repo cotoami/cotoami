@@ -16,6 +16,7 @@ module App.Types.Graph exposing
     , pinned
     , removeCoto
     , reorder
+    , setLinkingPhrase
     , update
     , updateCotoContent
     )
@@ -271,3 +272,27 @@ updateReachableCotoIds graph =
             collectReachableCotoIds pinnedCotoIds graph Set.empty
     in
     { graph | reachableCotoIds = reachableCotoIds }
+
+
+setLinkingPhrase : Maybe Cotonoma -> CotoId -> CotoId -> Maybe String -> Graph -> Graph
+setLinkingPhrase currentCotonoma startId endId linkingPhrase graph =
+    let
+        setLinkingPhraseByEndId =
+            List.Extra.updateIf
+                (\conn -> conn.end == endId)
+                (App.Types.Connection.setLinkingPhrase linkingPhrase)
+    in
+    if Just startId == Maybe.map .cotoId currentCotonoma then
+        let
+            rootConnections =
+                setLinkingPhraseByEndId graph.rootConnections
+        in
+        { graph | rootConnections = rootConnections }
+
+    else
+        let
+            connections =
+                graph.connections
+                    |> Dict.update startId (Maybe.map setLinkingPhraseByEndId)
+        in
+        { graph | connections = connections }
