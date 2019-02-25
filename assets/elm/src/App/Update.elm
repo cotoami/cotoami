@@ -384,6 +384,7 @@ update msg model =
                             App.Types.Graph.Connect.pin
                                 session.amishi.id
                                 coto
+                                Nothing
                                 model.graph
                     }
                         |> withCmd

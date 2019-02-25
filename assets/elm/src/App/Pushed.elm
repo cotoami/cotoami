@@ -126,6 +126,7 @@ handleConnect payload model =
                         App.Types.Graph.Connect.pin
                             payload.amishi.id
                             payload.body.end
+                            payload.body.linkingPhrase
                             model.graph
 
                 else

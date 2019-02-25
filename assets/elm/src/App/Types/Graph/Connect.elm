@@ -13,8 +13,8 @@ import App.Types.Graph exposing (ConnectionDict, CotoDict, Graph)
 import Dict
 
 
-pin : AmishiId -> Coto -> Graph -> Graph
-pin amishiId coto graph =
+pin : AmishiId -> Coto -> Maybe String -> Graph -> Graph
+pin amishiId coto linkingPhrase graph =
     if App.Types.Graph.pinned coto.id graph then
         graph
 
@@ -26,7 +26,7 @@ pin amishiId coto graph =
             rootConnections =
                 { start = Nothing
                 , end = coto.id
-                , linkingPhrase = Nothing
+                , linkingPhrase = linkingPhrase
                 , amishiId = amishiId
                 }
                     :: graph.rootConnections
