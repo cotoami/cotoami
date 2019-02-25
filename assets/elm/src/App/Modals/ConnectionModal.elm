@@ -32,6 +32,7 @@ type alias Model =
     , startCoto : Coto
     , endCoto : Coto
     , linkingPhrase : String
+    , requestProcessing : Bool
     }
 
 
@@ -42,6 +43,7 @@ initModel context connection startCoto endCoto =
     , startCoto = startCoto
     , endCoto = endCoto
     , linkingPhrase = connection.linkingPhrase |> Maybe.withDefault ""
+    , requestProcessing = False
     }
         |> setMeAsAmishiIfSo context
 
@@ -131,9 +133,17 @@ buttons context model =
         ]
     , button
         [ class "button button-primary"
+        , disabled model.requestProcessing
         , autofocus True
         ]
-        [ text (context.i18nText I18nKeys.Save) ]
+        [ text
+            (if model.requestProcessing then
+                context.i18nText I18nKeys.Saving ++ "..."
+
+             else
+                context.i18nText I18nKeys.Save
+            )
+        ]
     ]
 
 
@@ -160,6 +170,20 @@ update context msg (( modal, graph ) as model) =
                 |> withoutCmd
 
         AmishiFetched (Err error) ->
+            model |> withoutCmd
+
+        ConnectionUpdated (Ok connection) ->
+            ( { modal | requestProcessing = False }
+            , graph
+                |> App.Types.Graph.setLinkingPhrase
+                    context.cotonoma
+                    modal.startCoto.id
+                    modal.endCoto.id
+                    connection.linkingPhrase
+            )
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
+
+        ConnectionUpdated (Err error) ->
             model |> withoutCmd
 
 
