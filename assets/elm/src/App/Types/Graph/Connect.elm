@@ -45,7 +45,11 @@ unpin cotoId graph =
             graph.rootConnections
                 |> List.filter (\conn -> conn.end /= cotoId)
     in
-    graph |> App.Types.Graph.update graph.cotos rootConnections graph.connections
+    graph
+        |> App.Types.Graph.update
+            graph.cotos
+            rootConnections
+            graph.connections
 
 
 connect : AmishiId -> Coto -> Coto -> Maybe String -> Graph -> Graph
