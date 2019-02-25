@@ -6,6 +6,7 @@ module App.Views.Coto exposing
     , cotonomaLabel
     , cotonomaLink
     , headerDiv
+    , linkingPhraseDiv
     , parentsDiv
     , subCotosButtonDiv
     , subCotosDiv

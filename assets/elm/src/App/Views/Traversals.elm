@@ -1,4 +1,7 @@
-module App.Views.Traversals exposing (TraversalStep, UpdateModel, ViewModel, connectionsDiv, getElementId, maybeTraversalDiv, openTraversalButton, parentsDiv, stepCotoDiv, stepDiv, subCotoDiv, toPageLabel, traversalDiv, traversalsPaginationDiv, traverseButtonDiv, update, view)
+module App.Views.Traversals exposing
+    ( update
+    , view
+    )
 
 import App.Markdown
 import App.Messages as AppMsg exposing (..)
@@ -21,42 +24,6 @@ import Html.Keyed
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import Utils.UpdateUtil exposing (..)
-
-
-type alias UpdateModel a =
-    App.Submodels.Traversals.Traversals a
-
-
-update : Context a -> TraversalsMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
-update context msg ({ traversals } as model) =
-    case msg of
-        Traverse traversal nextCotoId stepIndex ->
-            { model
-                | traversals =
-                    App.Types.Traversal.updateTraversal
-                        traversal.start
-                        (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
-                        traversals
-            }
-                |> withoutCmd
-
-        TraverseToParent traversal parentId ->
-            { model
-                | traversals =
-                    App.Types.Traversal.updateTraversal
-                        traversal.start
-                        (App.Types.Traversal.traverseToParent context.graph parentId traversal)
-                        traversals
-            }
-                |> withoutCmd
-
-        CloseTraversal cotoId ->
-            { model | traversals = App.Types.Traversal.closeTraversal cotoId traversals }
-                |> withoutCmd
-
-        SwitchTraversal index ->
-            { model | traversals = App.Types.Traversal.setActiveIndexOnMobile index traversals }
-                |> withoutCmd
 
 
 type alias ViewModel model =
@@ -292,7 +259,7 @@ connectionsDiv context step parentElementId parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context a -> TraversalStep -> ElementId -> InboundConnection -> Coto -> Html AppMsg.Msg
+subCotoDiv : Context context -> TraversalStep -> ElementId -> InboundConnection -> Coto -> Html AppMsg.Msg
 subCotoDiv context traversalStep parentElementId inbound coto =
     let
         elementId =
@@ -309,7 +276,8 @@ subCotoDiv context traversalStep parentElementId inbound coto =
         ]
         [ div
             [ class "coto-inner" ]
-            [ App.Views.Coto.headerDiv context (Just inbound) elementId coto
+            [ App.Views.Coto.linkingPhraseDiv context inbound coto
+            , App.Views.Coto.headerDiv context (Just inbound) elementId coto
             , App.Views.Coto.parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
@@ -388,3 +356,39 @@ openTraversalButton cotoId =
         , onLinkButtonClick (OpenTraversal cotoId)
         ]
         [ materialIcon "arrow_forward" Nothing ]
+
+
+type alias UpdateModel a =
+    App.Submodels.Traversals.Traversals a
+
+
+update : Context a -> TraversalsMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update context msg ({ traversals } as model) =
+    case msg of
+        Traverse traversal nextCotoId stepIndex ->
+            { model
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        traversal.start
+                        (App.Types.Traversal.traverse stepIndex nextCotoId traversal)
+                        traversals
+            }
+                |> withoutCmd
+
+        TraverseToParent traversal parentId ->
+            { model
+                | traversals =
+                    App.Types.Traversal.updateTraversal
+                        traversal.start
+                        (App.Types.Traversal.traverseToParent context.graph parentId traversal)
+                        traversals
+            }
+                |> withoutCmd
+
+        CloseTraversal cotoId ->
+            { model | traversals = App.Types.Traversal.closeTraversal cotoId traversals }
+                |> withoutCmd
+
+        SwitchTraversal index ->
+            { model | traversals = App.Types.Traversal.setActiveIndexOnMobile index traversals }
+                |> withoutCmd
