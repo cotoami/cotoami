@@ -11,6 +11,7 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectionModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Amishi
+import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection)
@@ -23,6 +24,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon)
 import Utils.Modal
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -46,6 +48,20 @@ initModel context connection startCoto endCoto =
     , requestProcessing = False
     }
         |> setMeAsAmishiIfSo context
+
+
+isConnectionModified : Model -> Bool
+isConnectionModified model =
+    getLinkingPhrase model /= model.connection.linkingPhrase
+
+
+getLinkingPhrase : Model -> Maybe String
+getLinkingPhrase model =
+    if Utils.StringUtil.isBlank model.linkingPhrase then
+        Nothing
+
+    else
+        Just model.linkingPhrase
 
 
 setMeAsAmishiIfSo : Context context -> Model -> Model
@@ -133,7 +149,7 @@ buttons context model =
         ]
     , button
         [ class "button button-primary"
-        , disabled model.requestProcessing
+        , disabled (not (isConnectionModified model) || model.requestProcessing)
         , autofocus True
         ]
         [ text
@@ -171,6 +187,16 @@ update context msg (( modal, graph ) as model) =
 
         AmishiFetched (Err error) ->
             model |> withoutCmd
+
+        Save ->
+            ( ( { modal | requestProcessing = True }, graph )
+            , App.Server.Graph.setLinkingPhrase
+                (AppMsg.ConnectionModalMsg << ConnectionUpdated)
+                context.clientId
+                modal.startCoto.id
+                modal.endCoto.id
+                (getLinkingPhrase modal)
+            )
 
         ConnectionUpdated (Ok connection) ->
             ( { modal | requestProcessing = False }
