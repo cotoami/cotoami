@@ -1,4 +1,4 @@
-module App.Update exposing (changeLocationToCotonoma, loadCotonoma, loadHome, update)
+module App.Update exposing (update)
 
 import App.Channels exposing (Payload)
 import App.Commands
@@ -433,7 +433,7 @@ update msg model =
                     (\model ->
                         App.Server.Graph.unpinCoto
                             model.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                            (Maybe.map .key model.cotonoma)
                             cotoId
                     )
 
