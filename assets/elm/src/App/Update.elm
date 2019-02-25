@@ -503,10 +503,6 @@ update msg model =
         --
         -- Pushed
         --
-        DeletePushed payload ->
-            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
-                |> addCmd (App.Views.Stock.renderGraph model)
-
         PostPushed payload ->
             App.Pushed.handle
                 App.Server.Post.decodePost
@@ -514,12 +510,9 @@ update msg model =
                 payload
                 model
 
-        CotonomaUpdatePushed payload ->
-            App.Pushed.handle
-                App.Server.Cotonoma.decodeCotonoma
-                App.Pushed.handleCotonomaUpdate
-                payload
-                model
+        DeletePushed payload ->
+            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+                |> addCmd (App.Views.Stock.renderGraph model)
 
         CotoUpdatePushed payload ->
             App.Pushed.handle
@@ -537,6 +530,13 @@ update msg model =
                 model
                 |> addCmd (App.Views.Stock.renderGraph model)
 
+        CotonomaUpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomaUpdate
+                payload
+                model
+
         ConnectPushed payload ->
             App.Pushed.handle
                 App.Pushed.decodeConnectPayloadBody
@@ -549,6 +549,14 @@ update msg model =
             App.Pushed.handle
                 App.Pushed.decodeDisconnectPayloadBody
                 App.Pushed.handleDisconnect
+                payload
+                model
+                |> addCmd (App.Views.Stock.renderGraph model)
+
+        ConnectionUpdatePushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeConnectionUpdatePayloadBody
+                App.Pushed.handleConnectionUpdate
                 payload
                 model
                 |> addCmd (App.Views.Stock.renderGraph model)

@@ -4,10 +4,12 @@ module App.Pushed exposing
     , Handler
     , ReorderPayloadBody
     , decodeConnectPayloadBody
+    , decodeConnectionUpdatePayloadBody
     , decodeDisconnectPayloadBody
     , decodeReorderPayloadBody
     , handle
     , handleConnect
+    , handleConnectionUpdate
     , handleCotoUpdate
     , handleCotonomaUpdate
     , handleCotonomatize
@@ -26,6 +28,7 @@ import App.Server.Coto
 import App.Server.Cotonoma
 import App.Submodels.LocalCotos
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Graph
 import App.Types.Graph.Connect
 import App.Types.Graph.Reorder
 import App.Types.Post exposing (Post)
@@ -203,6 +206,20 @@ decodeConnectionUpdatePayloadBody =
         (Decode.field "start_id" Decode.string)
         (Decode.field "end_id" Decode.string)
         (Decode.field "linking_phrase" (Decode.maybe Decode.string))
+
+
+handleConnectionUpdate : Payload ConnectionUpdatePayloadBody -> Model -> ( Model, Cmd Msg )
+handleConnectionUpdate payload model =
+    let
+        graph =
+            model.graph
+                |> App.Types.Graph.setLinkingPhrase
+                    model.cotonoma
+                    payload.body.startId
+                    payload.body.endId
+                    payload.body.linkingPhrase
+    in
+    { model | graph = graph } |> withoutCmd
 
 
 type alias ReorderPayloadBody =

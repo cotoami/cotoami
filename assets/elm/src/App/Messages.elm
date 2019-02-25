@@ -92,14 +92,15 @@ type Msg
       --
       -- Pushed
       --
-    | CotonomaUpdatePushed Value
-    | CotoUpdatePushed Value
+    | PostPushed Value
     | DeletePushed Value
+    | CotoUpdatePushed Value
     | CotonomatizePushed Value
+    | CotonomaUpdatePushed Value
     | ConnectPushed Value
     | DisconnectPushed Value
+    | ConnectionUpdatePushed Value
     | ReorderPushed Value
-    | PostPushed Value
       --
       -- Open modal
       --

@@ -24,20 +24,16 @@ cotonomaChannels keys =
         |> List.map
             (\key ->
                 Channel.init ("cotonomas:" ++ key)
-                    |> Channel.on "update"
-                        (\payload -> CotonomaUpdatePushed payload)
+                    |> Channel.on "update" CotonomaUpdatePushed
             )
 
 
 timelineChannel : CotonomaKey -> Channel Msg
 timelineChannel key =
     Channel.init ("timelines:" ++ key)
-        |> Channel.on "presence_state"
-            (\payload -> CotonomaPresenceState payload)
-        |> Channel.on "presence_diff"
-            (\payload -> CotonomaPresenceDiff payload)
-        |> Channel.on "post"
-            (\payload -> PostPushed payload)
+        |> Channel.on "presence_state" CotonomaPresenceState
+        |> Channel.on "presence_diff" CotonomaPresenceDiff
+        |> Channel.on "post" PostPushed
 
 
 cotoChannels : Set CotoId -> List (Channel Msg)
@@ -47,18 +43,13 @@ cotoChannels cotoIds =
         |> List.map
             (\cotoId ->
                 Channel.init ("cotos:" ++ cotoId)
-                    |> Channel.on "delete"
-                        (\payload -> DeletePushed payload)
-                    |> Channel.on "update"
-                        (\payload -> CotoUpdatePushed payload)
-                    |> Channel.on "cotonomatize"
-                        (\payload -> CotonomatizePushed payload)
-                    |> Channel.on "connect"
-                        (\payload -> ConnectPushed payload)
-                    |> Channel.on "disconnect"
-                        (\payload -> DisconnectPushed payload)
-                    |> Channel.on "reorder"
-                        (\payload -> ReorderPushed payload)
+                    |> Channel.on "delete" DeletePushed
+                    |> Channel.on "update" CotoUpdatePushed
+                    |> Channel.on "cotonomatize" CotonomatizePushed
+                    |> Channel.on "connect" ConnectPushed
+                    |> Channel.on "disconnect" DisconnectPushed
+                    |> Channel.on "connection_update" ConnectionUpdatePushed
+                    |> Channel.on "reorder" ReorderPushed
             )
 
 
