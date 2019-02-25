@@ -11,8 +11,8 @@ module App.Server.Graph exposing
     , pinCotos
     , pinUrl
     , reorder
+    , setLinkingPhrase
     , unpinCoto
-    , updateConnection
     )
 
 import App.Messages exposing (Msg(..))
@@ -193,14 +193,14 @@ disconnect clientId startId endId =
         |> Http.send ConnectionDeleted
 
 
-updateConnection :
+setLinkingPhrase :
     (Result Http.Error Connection -> msg)
     -> ClientId
     -> CotoId
     -> CotoId
     -> Maybe String
     -> Cmd msg
-updateConnection tag clientId startId endId linkingPhrase =
+setLinkingPhrase tag clientId startId endId linkingPhrase =
     let
         body =
             Encode.object [ linkingPhraseAsParam linkingPhrase ]
