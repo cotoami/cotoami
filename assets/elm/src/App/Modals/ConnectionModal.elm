@@ -118,7 +118,7 @@ modalContent context model =
             ]
         , App.Views.Connection.linkingPhraseInputDiv
             context
-            (\_ -> AppMsg.NoOp)
+            (AppMsg.ConnectionModalMsg << LinkingPhraseInput)
             (Just model.linkingPhrase)
         , div
             [ class "end" ]
@@ -151,6 +151,7 @@ buttons context model =
         [ class "button button-primary"
         , disabled (not (isConnectionModified model) || model.requestProcessing)
         , autofocus True
+        , onClick (AppMsg.ConnectionModalMsg Save)
         ]
         [ text
             (if model.requestProcessing then
@@ -187,6 +188,10 @@ update context msg (( modal, graph ) as model) =
 
         AmishiFetched (Err error) ->
             model |> withoutCmd
+
+        LinkingPhraseInput input ->
+            ( { modal | linkingPhrase = input }, graph )
+                |> withoutCmd
 
         Save ->
             ( ( { modal | requestProcessing = True }, graph )

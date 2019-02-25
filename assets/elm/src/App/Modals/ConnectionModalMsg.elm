@@ -8,5 +8,6 @@ import Http
 type Msg
     = Init
     | AmishiFetched (Result Http.Error Amishi)
+    | LinkingPhraseInput String
     | Save
     | ConnectionUpdated (Result Http.Error Connection)
