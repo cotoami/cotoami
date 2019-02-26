@@ -24,6 +24,7 @@
     "elm": "0.18.0",
     "elm-brunch": "0.12.0",
     "elm-format": "0.8.1",
-    "elm-github-install": "1.6.1"
+    "elm-github-install": "1.6.1",
+    "cryptiles": ">=4.1.2"
   }
 }
