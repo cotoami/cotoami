@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Збереження"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "Підтвердити"
 
@@ -205,8 +208,8 @@ text key =
         CotoToolbar_More ->
             "Більше"
 
-        CotoToolbar_Disconnect ->
-            "Роз'єднати"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "Змінити порядок"
@@ -267,6 +270,12 @@ text key =
 
         ConnectModal_Reverse ->
             "Обернути"
+
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "Роз'єднати"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

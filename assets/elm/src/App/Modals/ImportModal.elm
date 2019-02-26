@@ -24,7 +24,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.UpdateUtil exposing (..)
 
 
@@ -49,84 +49,14 @@ initModel importFile =
     }
 
 
-update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        ImportClick ->
-            { model | requestProcessing = True }
-                |> withCmd
-                    (\model ->
-                        importData
-                            context.clientId
-                            model.importFile.content
-                    )
-
-        ImportDone (Ok results) ->
-            { model
-                | requestProcessing = False
-                , requestStatus = Imported results
-            }
-                |> withoutCmd
-
-        ImportDone (Err error) ->
-            (case error of
-                BadStatus response ->
-                    response.body
-
-                _ ->
-                    "Error"
-            )
-                |> (\message ->
-                        { model
-                            | requestProcessing = False
-                            , requestStatus = Rejected message
-                        }
-                   )
-                |> withoutCmd
+view : Model -> Html AppMsg.Msg
+view model =
+    model
+        |> modalConfig
+        |> Utils.Modal.view "import-modal"
 
 
-importData : ClientId -> String -> Cmd AppMsg.Msg
-importData clientId data =
-    let
-        requestBody =
-            Http.jsonBody <|
-                Encode.object [ ( "data", Encode.string data ) ]
-
-        decodeReject =
-            Decode.map2 Reject
-                (Decode.field "json" Decode.string)
-                (Decode.field "reason" Decode.string)
-
-        decodeResult =
-            Decode.map2 ImportResult
-                (Decode.field "cotos"
-                    (Decode.map4 ImportCotosResult
-                        (Decode.field "inserts" Decode.int)
-                        (Decode.field "updates" Decode.int)
-                        (Decode.field "cotonomas" Decode.int)
-                        (Decode.field "rejected" (Decode.list decodeReject))
-                    )
-                )
-                (Decode.field "connections"
-                    (Decode.map2 ImportConnectionsResult
-                        (Decode.field "ok" Decode.int)
-                        (Decode.field "rejected" (Decode.list decodeReject))
-                    )
-                )
-    in
-    Http.send
-        (AppMsg.ImportModalMsg << ImportDone)
-        (httpPost "/api/import" clientId requestBody decodeResult)
-
-
-view : Maybe Model -> Html AppMsg.Msg
-view maybeModel =
-    maybeModel
-        |> Maybe.map modalConfig
-        |> Modal.view "import-modal"
-
-
-modalConfig : Model -> Modal.Config AppMsg.Msg
+modalConfig : Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig model =
     case model.requestStatus of
         Imported result ->
@@ -248,3 +178,73 @@ rejectInfoSpan caption reject =
             ]
         , pre [ class "json" ] [ code [] [ text reject.json ] ]
         ]
+
+
+update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        ImportClick ->
+            { model | requestProcessing = True }
+                |> withCmd
+                    (\model ->
+                        importData
+                            context.clientId
+                            model.importFile.content
+                    )
+
+        ImportDone (Ok results) ->
+            { model
+                | requestProcessing = False
+                , requestStatus = Imported results
+            }
+                |> withoutCmd
+
+        ImportDone (Err error) ->
+            (case error of
+                BadStatus response ->
+                    response.body
+
+                _ ->
+                    "Error"
+            )
+                |> (\message ->
+                        { model
+                            | requestProcessing = False
+                            , requestStatus = Rejected message
+                        }
+                   )
+                |> withoutCmd
+
+
+importData : ClientId -> String -> Cmd AppMsg.Msg
+importData clientId data =
+    let
+        requestBody =
+            Http.jsonBody <|
+                Encode.object [ ( "data", Encode.string data ) ]
+
+        decodeReject =
+            Decode.map2 Reject
+                (Decode.field "json" Decode.string)
+                (Decode.field "reason" Decode.string)
+
+        decodeResult =
+            Decode.map2 ImportResult
+                (Decode.field "cotos"
+                    (Decode.map4 ImportCotosResult
+                        (Decode.field "inserts" Decode.int)
+                        (Decode.field "updates" Decode.int)
+                        (Decode.field "cotonomas" Decode.int)
+                        (Decode.field "rejected" (Decode.list decodeReject))
+                    )
+                )
+                (Decode.field "connections"
+                    (Decode.map2 ImportConnectionsResult
+                        (Decode.field "ok" Decode.int)
+                        (Decode.field "rejected" (Decode.list decodeReject))
+                    )
+                )
+    in
+    Http.send
+        (AppMsg.ImportModalMsg << ImportDone)
+        (httpPost "/api/import" clientId requestBody decodeResult)

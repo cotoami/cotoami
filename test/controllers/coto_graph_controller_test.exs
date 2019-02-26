@@ -37,7 +37,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
   describe "a coto pinned to home" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       coto = CotoService.create!(amishi, "hello")
-      CotoGraphService.pin(bolt_conn, coto, amishi)
+      CotoGraphService.pin(bolt_conn, coto, nil, amishi)
       %{coto: coto}
     end
 
@@ -115,7 +115,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
              } == json_response(conn, 200)
     end
 
-    test "PUT /graph/connection/:start_id", %{
+    test "PUT /graph/connections/:start_id", %{
       conn: conn,
       amishi: amishi,
       coto: coto,
@@ -123,7 +123,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
     } do
       coto2 = CotoService.create!(amishi, "bye")
 
-      put(conn, "/api/graph/connection/#{coto.id}", %{"end_ids" => [coto2.id]})
+      put(conn, "/api/graph/connections/#{coto.id}", %{"end_ids" => [coto2.id]})
 
       amishi_id = amishi.id
       coto_node_id = Neo4jService.get_node(bolt_conn, coto.id).id
@@ -148,8 +148,8 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       coto1 = CotoService.create!(amishi, "hello")
       coto2 = CotoService.create!(amishi, "bye")
-      CotoGraphService.pin(bolt_conn, coto1, amishi)
-      CotoGraphService.connect(bolt_conn, coto1, coto2, amishi)
+      CotoGraphService.pin(bolt_conn, coto1, nil, amishi)
+      CotoGraphService.connect(bolt_conn, coto1, coto2, nil, amishi)
       %{coto1: coto1, coto2: coto2}
     end
 
@@ -174,13 +174,13 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
              } = json_response(conn, 200)
     end
 
-    test "DELETE /graph/connection/:start_id/:end_id", %{
+    test "DELETE /graph/connections/:start_id/:end_id", %{
       conn: conn,
       amishi: amishi,
       coto1: coto1,
       coto2: coto2
     } do
-      delete(conn, "/api/graph/connection/#{coto1.id}/#{coto2.id}")
+      delete(conn, "/api/graph/connections/#{coto1.id}/#{coto2.id}")
       graph = "/api/graph" |> http_get(amishi) |> json_response(200)
       assert Enum.empty?(graph["connections"])
     end
@@ -189,7 +189,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
   describe "a cotonoma pinned to an amishi" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       coto = CotonomaService.create!(amishi, "cotonoma coto", false)
-      CotoGraphService.pin(bolt_conn, coto, amishi)
+      CotoGraphService.pin(bolt_conn, coto, nil, amishi)
       %{coto: coto}
     end
 
@@ -220,7 +220,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
       coto = CotoService.create!(amishi, "hello", nil, cotonoma.id)
-      CotoGraphService.pin(bolt_conn, coto, cotonoma, amishi)
+      CotoGraphService.pin(bolt_conn, coto, cotonoma, nil, amishi)
       %{coto: coto, cotonoma: cotonoma}
     end
 
@@ -340,7 +340,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
              } == json_response(conn, 200)
     end
 
-    test "PUT /graph/:cotonoma_key/connection/:start_id", %{
+    test "PUT /graph/:cotonoma_key/connections/:start_id", %{
       conn: conn,
       amishi: amishi,
       coto: coto,
@@ -348,7 +348,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
     } do
       coto2 = CotoService.create!(amishi, "bye", nil, cotonoma.id)
 
-      put(conn, "/api/graph/#{cotonoma.key}/connection/#{coto.id}", %{"end_ids" => [coto2.id]})
+      put(conn, "/api/graph/#{cotonoma.key}/connections/#{coto.id}", %{"end_ids" => [coto2.id]})
 
       conn = http_get("/api/graph/#{cotonoma.key}", amishi)
 

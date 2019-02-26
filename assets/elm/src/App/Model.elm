@@ -8,6 +8,7 @@ module App.Model exposing
 import App.I18n.Keys exposing (TextKey)
 import App.I18n.Translate
 import App.Modals.ConnectModal
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
@@ -56,7 +57,7 @@ type alias Model =
     , navigationToggled : Bool
     , navigationOpen : Bool
     , presences : Presences
-    , confirmation : Confirmation
+    , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
     , globalCotonomas : List Cotonoma
     , recentCotonomas : List Cotonoma
@@ -79,6 +80,7 @@ type alias Model =
     , cotoMenuModal : Maybe App.Modals.CotoMenuModal.Model
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , connectModal : App.Modals.ConnectModal.Model
+    , connectionModal : Maybe App.Modals.ConnectionModal.Model
     , importModal : Maybe App.Modals.ImportModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     }
@@ -104,7 +106,7 @@ initModel seed lang route =
     , navigationToggled = False
     , navigationOpen = False
     , presences = Dict.empty
-    , confirmation = App.Submodels.Modals.defaultConfirmation
+    , confirmation = Nothing
     , searchInputFocus = False
     , globalCotonomas = []
     , recentCotonomas = []
@@ -127,6 +129,7 @@ initModel seed lang route =
     , cotoMenuModal = Nothing
     , cotoModal = Nothing
     , connectModal = App.Modals.ConnectModal.defaultModel
+    , connectionModal = Nothing
     , importModal = Nothing
     , inviteModal = App.Modals.InviteModal.defaultModel
     }

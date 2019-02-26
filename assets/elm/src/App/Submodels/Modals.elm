@@ -6,8 +6,6 @@ module App.Submodels.Modals exposing
     , closeActiveModal
     , closeModal
     , confirm
-    , defaultConfirmation
-    , maybeConfirm
     , openModal
     )
 
@@ -23,27 +21,15 @@ type Modal
     | CotoMenuModal
     | CotoModal
     | ConnectModal
+    | ConnectionModal
     | ImportModal
     | TimelineFilterModal
-
-
-type alias Confirmation =
-    { message : String
-    , msgOnConfirm : Msg
-    }
-
-
-defaultConfirmation : Confirmation
-defaultConfirmation =
-    { message = ""
-    , msgOnConfirm = App.Messages.NoOp
-    }
 
 
 type alias Modals a =
     { a
         | modals : List Modal
-        , confirmation : Confirmation
+        , confirmation : Maybe Confirmation
     }
 
 
@@ -71,14 +57,13 @@ clearModals model =
     { model | modals = [] }
 
 
+type alias Confirmation =
+    { message : String
+    , msgOnConfirm : Msg
+    }
+
+
 confirm : Confirmation -> Modals a -> Modals a
 confirm confirmation model =
-    { model | confirmation = confirmation }
+    { model | confirmation = Just confirmation }
         |> openModal ConfirmModal
-
-
-maybeConfirm : Maybe Confirmation -> Modals a -> Modals a
-maybeConfirm maybeConfirmation model =
-    maybeConfirmation
-        |> Maybe.map (\confirmation -> confirm confirmation model)
-        |> Maybe.withDefault model

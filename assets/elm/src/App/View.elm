@@ -4,6 +4,7 @@ import App.I18n.Keys as I18nKeys
 import App.Messages exposing (..)
 import App.Modals.ConfirmModal
 import App.Modals.ConnectModal
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
 import App.Modals.CotoModal
 import App.Modals.EditorModal
@@ -205,38 +206,51 @@ modals : Model -> List (Html Msg)
 modals model =
     List.map
         (\modal ->
-            case modal of
-                ConfirmModal ->
-                    App.Modals.ConfirmModal.view model model.confirmation.message
+            case ( modal, model.session ) of
+                ( ConfirmModal, _ ) ->
+                    model.confirmation
+                        |> Maybe.map (App.Modals.ConfirmModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                SigninModal ->
+                ( SigninModal, _ ) ->
                     App.Modals.SigninModal.view model model.signinModal
 
-                EditorModal ->
+                ( EditorModal, _ ) ->
                     App.Modals.EditorModal.view model model.editorModal
 
-                ProfileModal ->
-                    App.Modals.ProfileModal.view model
+                ( ProfileModal, Just session ) ->
+                    App.Modals.ProfileModal.view model session
 
-                InviteModal ->
-                    App.Modals.InviteModal.view model model.inviteModal
+                ( InviteModal, Just session ) ->
+                    App.Modals.InviteModal.view model session model.inviteModal
 
-                CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model model.cotoMenuModal
+                ( CotoMenuModal, Just session ) ->
+                    model.cotoMenuModal
+                        |> Maybe.map (App.Modals.CotoMenuModal.view model session)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                CotoModal ->
-                    App.Modals.CotoModal.view model model.cotoModal
+                ( CotoModal, _ ) ->
+                    model.cotoModal
+                        |> Maybe.map (App.Modals.CotoModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                ConnectModal ->
-                    App.Modals.ConnectModal.view
-                        model
-                        (App.Submodels.LocalCotos.getSelectedCotos model model)
-                        model.connectModal
+                ( ConnectModal, _ ) ->
+                    App.Modals.ConnectModal.view model model.connectModal
 
-                ImportModal ->
-                    App.Modals.ImportModal.view model.importModal
+                ( ConnectionModal, _ ) ->
+                    model.connectionModal
+                        |> Maybe.map (App.Modals.ConnectionModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                TimelineFilterModal ->
+                ( ImportModal, _ ) ->
+                    model.importModal
+                        |> Maybe.map App.Modals.ImportModal.view
+                        |> Maybe.withDefault Utils.HtmlUtil.none
+
+                ( TimelineFilterModal, _ ) ->
                     App.Modals.TimelineFilterModal.view model model.flowView.filter
+
+                ( _, _ ) ->
+                    Utils.HtmlUtil.none
         )
         (List.reverse model.modals)

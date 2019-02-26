@@ -7,17 +7,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, .65);
-  visibility: hidden;
-  backface-visibility: hidden;
-  opacity: 0;
-  transition: opacity .15s ease-in-out;
-
-  &.modal-open {
-    visibility: visible;
-  	backface-visibility: visible;
-    opacity: 1;
-    z-index: 20;
-  }
+  z-index: 20;
 
   .modal-inner {
     position: relative;

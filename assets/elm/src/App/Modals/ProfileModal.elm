@@ -1,52 +1,23 @@
-module App.Modals.ProfileModal exposing (update, view)
+module App.Modals.ProfileModal exposing (view)
 
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.InviteModal
-import App.Modals.ProfileModalMsg as ProfileModalMsg exposing (Msg(..))
-import App.Ports.ImportFile
 import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modal(InviteModal), Modals)
 import App.Types.Session exposing (Session)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.StringUtil
-import Utils.UpdateUtil exposing (..)
 
 
-type alias UpdateModel model =
-    Modals { model | inviteModal : App.Modals.InviteModal.Model }
+view : Context context -> Session -> Html AppMsg.Msg
+view context session =
+    Utils.Modal.view "profile-modal" (modalConfig context session)
 
 
-update : Context context -> ProfileModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        OpenInviteModal ->
-            { model | inviteModal = App.Modals.InviteModal.defaultModel }
-                |> App.Submodels.Modals.openModal InviteModal
-                |> withCmd (\_ -> App.Modals.InviteModal.sendInit)
-
-        SelectImportFile ->
-            ( model, App.Ports.ImportFile.selectImportFile () )
-
-
-view : Context context -> Html AppMsg.Msg
-view context =
-    Modal.view
-        "profile-modal"
-        (case context.session of
-            Nothing ->
-                Nothing
-
-            Just session ->
-                Just (modalConfig context session)
-        )
-
-
-modalConfig : Context context -> Session -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Utils.Modal.Config AppMsg.Msg
 modalConfig context session =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.ProfileModal_Title)
@@ -68,7 +39,7 @@ modalConfig context session =
                             ]
 
                       else
-                        div [] []
+                        Utils.HtmlUtil.none
                     ]
                 , div
                     [ class "profile-content nine columns" ]
@@ -91,17 +62,17 @@ modalConfig context session =
             , div [ class "tools" ]
                 [ toolButton (context.i18nText I18nKeys.ProfileModal_Invite)
                     "person_add"
-                    [ onClick (AppMsg.ProfileModalMsg OpenInviteModal) ]
+                    [ onClick AppMsg.OpenInviteModal ]
                 , toolButton (context.i18nText I18nKeys.ProfileModal_Export)
                     "cloud_download"
                     [ href "/export" ]
                 , if session.amishi.owner then
                     toolButton (context.i18nText I18nKeys.ProfileModal_Import)
                         "cloud_upload"
-                        [ onClick (AppMsg.ProfileModalMsg SelectImportFile) ]
+                        [ onClick AppMsg.SelectImportFile ]
 
                   else
-                    span [] []
+                    Utils.HtmlUtil.none
                 ]
             ]
     , buttons =

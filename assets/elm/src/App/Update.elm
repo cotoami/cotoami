@@ -1,4 +1,4 @@
-module App.Update exposing (changeLocationToCotonoma, loadCotonoma, loadHome, update)
+module App.Update exposing (update)
 
 import App.Channels exposing (Payload)
 import App.Commands
@@ -6,17 +6,17 @@ import App.I18n.Keys as I18nKeys
 import App.LocalConfig
 import App.Messages exposing (..)
 import App.Modals.ConnectModal exposing (ConnectingTarget(..))
+import App.Modals.ConnectionModal
 import App.Modals.CotoMenuModal
-import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
-import App.Modals.ProfileModal
 import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
 import App.Model exposing (Model)
 import App.Ports.App
 import App.Ports.Graph
+import App.Ports.ImportFile
 import App.Pushed
 import App.Route exposing (Route(..))
 import App.Server.Coto
@@ -31,10 +31,12 @@ import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
 import App.Types.Graph
+import App.Types.Graph.Connect
 import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.Watch
+import App.Update.Modal
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
@@ -76,7 +78,7 @@ update msg model =
                     && not model.flowView.editorOpen
                     && not model.searchInputFocus
             then
-                App.Modals.EditorModal.openForNew model Nothing model
+                App.Update.Modal.openEditorModalForNew model Nothing model
 
             else
                 model |> withoutCmd
@@ -84,9 +86,9 @@ update msg model =
         CloseModal ->
             App.Submodels.Modals.closeActiveModal model |> withoutCmd
 
-        Confirm ->
+        Confirm messageOnConfirm ->
             App.Submodels.Modals.closeActiveModal model
-                |> withCmd (\model -> App.Commands.sendMsg model.confirmation.msgOnConfirm)
+                |> withCmd (\_ -> App.Commands.sendMsg messageOnConfirm)
 
         AppClick ->
             { model | flowView = App.Views.Flow.openOrCloseEditor False model.flowView }
@@ -135,11 +137,9 @@ update msg model =
             case error of
                 BadStatus response ->
                     if response.status.code == 404 then
-                        response.body
-                            |> App.Server.Session.decodeAuthSettingsString
-                            |> App.Modals.SigninModal.initModel
-                            |> (\signinModal -> { model | signinModal = signinModal })
-                            |> App.Submodels.Modals.openModal SigninModal
+                        App.Update.Modal.openSigninModal
+                            (App.Server.Session.decodeAuthSettingsString response.body)
+                            model
                             |> withoutCmd
 
                     else
@@ -201,7 +201,7 @@ update msg model =
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
                             , App.Commands.initScrollPositionOfPinnedCotos NoOp
-                            , App.Views.Stock.renderGraph model model
+                            , App.Commands.sendMsg GraphChanged
                             ]
                     )
 
@@ -210,10 +210,13 @@ update msg model =
 
         SubgraphFetched (Ok subgraph) ->
             { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
-                |> withCmd (\model -> App.Views.Stock.renderGraph model model)
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         SubgraphFetched (Err _) ->
             model |> withoutCmd
+
+        SelectImportFile ->
+            ( model, App.Ports.ImportFile.selectImportFile () )
 
         --
         -- Search
@@ -314,7 +317,7 @@ update msg model =
         DeleteCotoInClientSide coto ->
             model
                 |> App.Model.deleteCoto coto
-                |> withCmd (App.Views.Stock.renderGraph model)
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoDeleted (Ok _) ->
             model |> withCmd App.Server.Cotonoma.refreshCotonomaList
@@ -330,7 +333,7 @@ update msg model =
                 |> withCmdIf
                     (\_ -> isJust coto.asCotonoma)
                     App.Server.Cotonoma.refreshCotonomaList
-                |> addCmd (App.Views.Stock.renderGraph model)
+                |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -362,7 +365,7 @@ update msg model =
                 |> Maybe.withDefault model
                 |> App.Submodels.Modals.clearModals
                 |> withCmd App.Server.Cotonoma.refreshCotonomaList
-                |> addCmd (App.Views.Stock.renderGraph model)
+                |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         Cotonomatized (Err error) ->
             model.cotoMenuModal
@@ -376,7 +379,14 @@ update msg model =
         PinCoto cotoId ->
             Maybe.map2
                 (\session coto ->
-                    { model | graph = App.Types.Graph.pinCoto session.amishi.id coto model.graph }
+                    { model
+                        | graph =
+                            App.Types.Graph.Connect.pin
+                                session.amishi.id
+                                coto
+                                Nothing
+                                model.graph
+                    }
                         |> withCmd
                             (\model ->
                                 Cmd.batch
@@ -403,7 +413,7 @@ update msg model =
                     )
 
         CotoPinned (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoPinned (Err _) ->
             model |> withoutCmd
@@ -418,40 +428,37 @@ update msg model =
                 |> withoutCmd
 
         UnpinCoto cotoId ->
-            { model | graph = model.graph |> App.Types.Graph.unpinCoto cotoId }
+            { model | graph = model.graph |> App.Types.Graph.Connect.unpin cotoId }
                 |> withCmd
                     (\model ->
                         App.Server.Graph.unpinCoto
                             model.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
+                            (Maybe.map .key model.cotonoma)
                             cotoId
                     )
 
         CotoUnpinned (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model
+                |> App.Submodels.Modals.closeModal ConnectionModal
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoUnpinned (Err _) ->
             model |> withoutCmd
 
         Connected (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         Connected (Err _) ->
             model |> withoutCmd
 
         DeleteConnection ( startId, endId ) ->
-            { model | graph = App.Types.Graph.disconnect ( startId, endId ) model.graph }
-                |> withCmd
-                    (\model ->
-                        App.Server.Graph.disconnect
-                            model.clientId
-                            (Maybe.map (\cotonoma -> cotonoma.key) model.cotonoma)
-                            startId
-                            endId
-                    )
+            { model | graph = App.Types.Graph.Connect.disconnect ( startId, endId ) model.graph }
+                |> withCmd (\model -> App.Server.Graph.disconnect model.clientId startId endId)
 
         ConnectionDeleted (Ok _) ->
-            model |> withCmd (App.Views.Stock.renderGraph model)
+            model
+                |> App.Submodels.Modals.closeModal ConnectionModal
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         ConnectionDeleted (Err _) ->
             model |> withoutCmd
@@ -493,17 +500,33 @@ update msg model =
             { model | watchUpdating = False }
                 |> withCmd App.Ports.App.updateUnreadStateInTitle
 
+        GraphChanged ->
+            model |> withCmd (App.Views.Stock.renderGraph model)
+
         --
         -- Pushed
         --
-        DeletePushed payload ->
-            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
-                |> addCmd (App.Views.Stock.renderGraph model)
-
         PostPushed payload ->
             App.Pushed.handle
                 App.Server.Post.decodePost
                 App.Pushed.handlePost
+                payload
+                model
+
+        DeletePushed payload ->
+            App.Pushed.handle Decode.string App.Pushed.handleDelete payload model
+
+        CotoUpdatePushed payload ->
+            App.Pushed.handle
+                App.Server.Coto.decodeCoto
+                App.Pushed.handleCotoUpdate
+                payload
+                model
+
+        CotonomatizePushed payload ->
+            App.Pushed.handle
+                App.Server.Cotonoma.decodeCotonoma
+                App.Pushed.handleCotonomatize
                 payload
                 model
 
@@ -514,29 +537,12 @@ update msg model =
                 payload
                 model
 
-        CotoUpdatePushed payload ->
-            App.Pushed.handle
-                App.Server.Coto.decodeCoto
-                App.Pushed.handleCotoUpdate
-                payload
-                model
-                |> addCmd (App.Views.Stock.renderGraph model)
-
-        CotonomatizePushed payload ->
-            App.Pushed.handle
-                App.Server.Cotonoma.decodeCotonoma
-                App.Pushed.handleCotonomatize
-                payload
-                model
-                |> addCmd (App.Views.Stock.renderGraph model)
-
         ConnectPushed payload ->
             App.Pushed.handle
                 App.Pushed.decodeConnectPayloadBody
                 App.Pushed.handleConnect
                 payload
                 model
-                |> addCmd (App.Views.Stock.renderGraph model)
 
         DisconnectPushed payload ->
             App.Pushed.handle
@@ -544,7 +550,13 @@ update msg model =
                 App.Pushed.handleDisconnect
                 payload
                 model
-                |> addCmd (App.Views.Stock.renderGraph model)
+
+        ConnectionUpdatePushed payload ->
+            App.Pushed.handle
+                App.Pushed.decodeConnectionUpdatePayloadBody
+                App.Pushed.handleConnectionUpdate
+                payload
+                model
 
         ReorderPushed payload ->
             App.Pushed.handle
@@ -552,6 +564,73 @@ update msg model =
                 App.Pushed.handleReorder
                 payload
                 model
+
+        --
+        -- Open modal
+        --
+        ClearModals ->
+            App.Submodels.Modals.clearModals model
+                |> withoutCmd
+
+        CloseActiveModal ->
+            App.Submodels.Modals.closeActiveModal model
+                |> withoutCmd
+
+        OpenConfirmModal message msgOnConfirm ->
+            App.Submodels.Modals.confirm (Confirmation message msgOnConfirm) model
+                |> withoutCmd
+
+        OpenSigninModal ->
+            App.Update.Modal.openSigninModal model.signinModal.authSettings model
+                |> withoutCmd
+
+        OpenProfileModal ->
+            App.Submodels.Modals.openModal ProfileModal model
+                |> withoutCmd
+
+        OpenCotoMenuModal coto ->
+            App.Update.Modal.openCotoMenuModal coto model
+
+        OpenNewEditorModal ->
+            App.Update.Modal.openEditorModalForNew model Nothing model
+
+        OpenNewEditorModalWithSourceCoto coto ->
+            App.Update.Modal.openEditorModalForNew model (Just coto) model
+
+        OpenEditorModal coto ->
+            App.Update.Modal.openEditorModalForEdit coto model
+
+        OpenCotoModal coto ->
+            App.Update.Modal.openCotoModal coto model
+                |> withoutCmd
+
+        OpenImportModal importFile ->
+            App.Update.Modal.openImportModal importFile model
+                |> withoutCmd
+
+        OpenTimelineFilterModal ->
+            model
+                |> App.Submodels.Modals.openModal TimelineFilterModal
+                |> withoutCmd
+
+        OpenConnectModalByCoto coto ->
+            App.Update.Modal.openConnectModalByCoto
+                (App.Submodels.LocalCotos.getSelectedCotos model model)
+                coto
+                model
+
+        OpenConnectModalByNewPost content onPosted ->
+            App.Update.Modal.openConnectModalByNewPost
+                onPosted
+                (App.Submodels.LocalCotos.getSelectedCotos model model)
+                content
+                model
+
+        OpenConnectionModal connection startCoto endCoto ->
+            App.Update.Modal.openConnectionModal model connection startCoto endCoto model
+
+        OpenInviteModal ->
+            App.Update.Modal.openInviteModal model
 
         --
         -- Sub components
@@ -584,20 +663,6 @@ update msg model =
             App.Modals.SigninModal.update subMsg model.signinModal
                 |> Tuple.mapFirst (\modal -> { model | signinModal = modal })
 
-        ProfileModalMsg subMsg ->
-            App.Modals.ProfileModal.update model subMsg model
-
-        OpenNewEditorModal ->
-            App.Modals.EditorModal.openForNew model Nothing model
-
-        OpenNewEditorModalWithSourceCoto coto ->
-            App.Modals.EditorModal.openForNew model (Just coto) model
-
-        OpenEditorModal coto ->
-            { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
-                |> App.Submodels.Modals.openModal EditorModal
-                |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" NoOp)
-
         EditorModalMsg subMsg ->
             App.Modals.EditorModal.update model subMsg model
 
@@ -607,32 +672,28 @@ update msg model =
                 |> Maybe.map (Tuple.mapFirst (\modal -> { model | cotoMenuModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
 
-        OpenCotoModal coto ->
-            App.Modals.CotoModal.open coto model
-                |> withoutCmd
-
         ConnectModalMsg subMsg ->
             App.Modals.ConnectModal.update model subMsg model
+
+        ConnectionModalMsg subMsg ->
+            model.connectionModal
+                |> Maybe.map (\modal -> ( modal, model.graph ))
+                |> Maybe.map (App.Modals.ConnectionModal.update model subMsg)
+                |> Maybe.map
+                    (\( ( modal, graph ), cmd ) ->
+                        ( { model | connectionModal = Just modal, graph = graph }, cmd )
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
-
-        OpenImportModal importFile ->
-            { model | importModal = Just (App.Modals.ImportModal.initModel importFile) }
-                |> App.Submodels.Modals.openModal ImportModal
-                |> withoutCmd
 
         ImportModalMsg subMsg ->
             model.importModal
                 |> Maybe.map (App.Modals.ImportModal.update model subMsg)
                 |> Maybe.map (Tuple.mapFirst (\modal -> { model | importModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
-
-        OpenTimelineFilterModal ->
-            model
-                |> App.Submodels.Modals.openModal TimelineFilterModal
-                |> withoutCmd
 
         TimelineFilterModalMsg subMsg ->
             App.Modals.TimelineFilterModal.update model subMsg model

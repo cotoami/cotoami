@@ -13,6 +13,7 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (InboundConnection)
 import App.Types.Coto exposing (CotoId, ElementId)
 import App.Types.Graph
+import App.Types.Graph.Reorder
 import App.Views.ReorderMsg as ReorderMsg exposing (Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -31,19 +32,19 @@ update context msg model =
     case msg of
         SwapOrder maybeParentId index1 index2 ->
             model.graph
-                |> App.Types.Graph.swapOrder maybeParentId index1 index2
+                |> App.Types.Graph.Reorder.swap maybeParentId index1 index2
                 |> (\graph -> { model | graph = graph })
                 |> withCmd (saveOrder context maybeParentId)
 
         MoveToFirst maybeParentId index ->
             model.graph
-                |> App.Types.Graph.moveToFirst maybeParentId index
+                |> App.Types.Graph.Reorder.moveToFirst maybeParentId index
                 |> (\graph -> { model | graph = graph })
                 |> withCmd (saveOrder context maybeParentId)
 
         MoveToLast maybeParentId index ->
             model.graph
-                |> App.Types.Graph.moveToLast maybeParentId index
+                |> App.Types.Graph.Reorder.moveToLast maybeParentId index
                 |> (\graph -> { model | graph = graph })
                 |> withCmd (saveOrder context maybeParentId)
 
@@ -59,7 +60,6 @@ saveOrder context maybeParentId model =
     model.graph
         |> App.Types.Graph.getOutboundConnections maybeParentId
         |> Maybe.map (List.map .end)
-        |> Maybe.map List.reverse
         |> Maybe.map
             (App.Server.Graph.reorder
                 (AppMsg.ReorderMsg << ConnectionsReordered)

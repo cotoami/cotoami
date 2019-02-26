@@ -11,86 +11,120 @@ const _insertSpaces = (text, chunkSize) => {
   return chunks != null ? chunks.join(" ") : text
 }
 
-const _makeTextBreakable = (text) => {
+const _makeTextBreakable = (text, chunkSize) => {
   if (_hankakuOnly(text)) {
     return text
   }
   else {
-    return _insertSpaces(text, 15)
+    return _insertSpaces(text, chunkSize)
   }
 }
+
+const color_edge = "#ddd"
+const color_edgeWithPhrase = "#9AB8D1"
+const color_linkingPhrase = "#3572a5"
+const color_selected = "#ffa500"
 
 const _style = cytoscape.stylesheet()
   .selector('node').css({
     'label': (node) => {
-      return _makeTextBreakable(node.data('name'))
+      return _makeTextBreakable(node.data('name'), 15)
     },
     'font-size': 10,
-    'width': 10,
-    'height': 10,
+    'color': '#666',
+    'shape': 'roundrectangle',
+    'width': 'label',
+    'height': 'label',
+    'border-width': 1,
+    'border-style': 'solid',
+    'border-color': '#ddd',
+    'border-opacity': 1,
+    'padding': 8,
     'text-max-width': 150,
     'text-wrap': 'wrap',
-    'text-valign': 'bottom',
-    'text-margin-y': 5,
-    'color': '#333',
+    'text-valign': 'center',
+    'background-color': 'white',
     'font-family': '"Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif'
-  })
-  .selector('edge').css({
-    'curve-style': 'bezier',
-    'width': 1,
-    'line-color': '#ddd',
-    'target-arrow-color': '#ddd',
-    'target-arrow-shape': 'vee'
-  })
-  .selector(':selected').css({
-    'background-color': '#ffa500',
-    'line-color': '#888',
-    'source-arrow-color': '#888',
-    'target-arrow-color': '#888'
-  })
-  .selector('.faded').css({
-    'opacity': 0.25,
-    'text-opacity': 0
   })
   .selector('#home').css({
     'shape': 'roundrectangle',
     'width': 20,
     'height': 20,
+    'border-width': 0,
+    'padding': 0,
     'background-fit': 'contain',
     'background-color': 'white',
     'background-image': '/images/home.svg',
     'background-image-opacity': 0.6
   })
   .selector('.pinned').css({
-    'shape': 'roundrectangle',
-    'width': 20,
-    'height': 20,
-    'background-fit': 'contain',
-    'background-color': 'white',
-    'background-image': '/images/pinned.png'
-  })
-  .selector('.pinned:selected').css({
-    'background-image': '/images/selected-pin.png'
+    'color': '#333',
+    'border-width': 2,
+    'border-color': '#888'
   })
   .selector('.cotonoma').css({
     'shape': 'roundrectangle',
     'width': 20,
     'height': 20,
+    'color': '#222',
+    'border-width': 0,
+    'padding': 0,
     'background-fit': 'contain',
     'background-color': 'white',
     'background-image': (node) => {
       return node.data('imageUrl')
     },
     'background-image-opacity': 1,
+    'text-valign': 'bottom',
+    'text-margin-y': 5,
     'font-size': 10,
     'font-weight': 'bold'
+  })
+  .selector('edge').css({
+    'label': (node) => {
+      const phrase = node.data('linkingPhrase')
+      return phrase ? _makeTextBreakable(phrase, 10) : ""
+    },
+    'color': (node) => {
+      return node.data('linkingPhrase') ? color_linkingPhrase : "#fff"
+    },
+    'line-style': (node) => {
+      return node.data('linkingPhrase') ? "solid" : "dashed"
+    },
+    'line-color': (node) => {
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
+    },
+    'font-size': 10,
+    'text-max-width': 100,
+    'text-wrap': 'wrap',
+    'curve-style': 'bezier',
+    'width': 1,
+    'source-arrow-shape': 'circle',
+    'source-arrow-color': (node) => {
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
+    },
+    'target-arrow-shape': 'triangle',
+    'target-arrow-color': (node) => {
+      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
+    },
+    'arrow-scale': 0.8
+  })
+  .selector(':selected').css({
+    'border-color': color_selected,
+    'line-color': color_selected,
+    'source-arrow-color': color_selected,
+    'target-arrow-color': color_selected
+  })
+  .selector('.faded').css({
+    'opacity': 0.25,
+    'text-opacity': 0
   });
 
 const _layout = {
   name: 'cose-bilkent',
-  padding: 30,
   nodeDimensionsIncludeLabels: true,
   fit: false,
+  idealEdgeLength: 100,
   animate: 'during'
 }
 

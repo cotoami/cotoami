@@ -13,7 +13,6 @@ type Msg
     | EditorKeyDown KeyboardEvent
     | ShareCotonomaCheck Bool
     | Post
-    | ConfirmPostAndConnect CotoContent
     | PostedAndSubordinateToCoto Int Coto (Result Http.Error Post)
     | PostCotonoma
     | CotonomaPosted Int (Result Http.Error Post)

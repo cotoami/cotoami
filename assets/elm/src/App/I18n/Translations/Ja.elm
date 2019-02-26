@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Connection_LinkingPhraseInput ->
+            "説明（省略可）"
+
         Confirm ->
             "確認"
 
@@ -204,8 +207,8 @@ text key =
         CotoToolbar_More ->
             "メニュー一覧を開く"
 
-        CotoToolbar_Disconnect ->
-            "接続を解除"
+        CotoToolbar_EditConnection ->
+            "つながりを編集"
 
         CotoToolbar_Reorder ->
             "並び替え"
@@ -266,6 +269,12 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
+
+        ConnectionModal_Title ->
+            "つながりを編集"
+
+        ConnectionModal_Disconnect ->
+            "接続を解除"
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"

@@ -1,8 +1,7 @@
 module App.Modals.CotoMenuModal exposing
     ( Model
-    , WithCotoMenuModal
     , initModel
-    , open
+    , sendInit
     , update
     , view
     )
@@ -10,10 +9,9 @@ module App.Modals.CotoMenuModal exposing
 import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg
-import App.Modals.CotoMenuModalMsg as CotoMenuModalMsg exposing (Msg(..))
+import App.Modals.CotoMenuModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Cotonoma
 import App.Submodels.Context exposing (Context)
-import App.Submodels.Modals exposing (Modal(CotoMenuModal), Modals)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
@@ -22,7 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.Modal as Modal
+import Utils.Modal
 import Utils.UpdateUtil exposing (..)
 
 
@@ -44,50 +42,14 @@ isCotonomaEmpty stats =
     stats.cotos == 0 && stats.connections == 0
 
 
-type alias WithCotoMenuModal model =
-    { model | cotoMenuModal : Maybe Model }
+view : Context context -> Session -> Model -> Html AppMsg.Msg
+view context session model =
+    model
+        |> modalConfig context session
+        |> Utils.Modal.view "coto-menu-modal"
 
 
-open : Coto -> Modals (WithCotoMenuModal model) -> ( Modals (WithCotoMenuModal model), Cmd AppMsg.Msg )
-open coto model =
-    { model | cotoMenuModal = Just (initModel coto) }
-        |> App.Submodels.Modals.openModal CotoMenuModal
-        |> withCmd (\_ -> App.Commands.sendMsg (AppMsg.CotoMenuModalMsg Init))
-
-
-update : Context context -> CotoMenuModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        Init ->
-            ( model
-            , model.coto.asCotonoma
-                |> Maybe.map
-                    (\cotonoma ->
-                        App.Server.Cotonoma.fetchStats
-                            (AppMsg.CotoMenuModalMsg << CotonomaStatsFetched)
-                            cotonoma.key
-                    )
-                |> Maybe.withDefault Cmd.none
-            )
-
-        CotonomaStatsFetched (Ok stats) ->
-            { model | cotonomaStats = Just stats }
-                |> withoutCmd
-
-        CotonomaStatsFetched (Err _) ->
-            model |> withoutCmd
-
-
-view : Context context -> Maybe Model -> Html AppMsg.Msg
-view context maybeModel =
-    Maybe.map2
-        (\session model -> modalConfig context session model)
-        context.session
-        maybeModel
-        |> Modal.view "coto-menu-modal"
-
-
-modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig : Context context -> Session -> Model -> Utils.Modal.Config AppMsg.Msg
 modalConfig context session model =
     { closeMessage = AppMsg.CloseModal
     , title = text ""
@@ -321,3 +283,33 @@ menuItem disabled cssClass label msg =
             , onLinkButtonClick msg
             ]
             [ a [ class cssClass ] label ]
+
+
+update : Context context -> ModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        Init ->
+            ( model
+            , model.coto.asCotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        App.Server.Cotonoma.fetchStats
+                            (AppMsg.CotoMenuModalMsg << CotonomaStatsFetched)
+                            cotonoma.key
+                    )
+                |> Maybe.withDefault Cmd.none
+            )
+
+        CotonomaStatsFetched (Ok stats) ->
+            { model | cotonomaStats = Just stats }
+                |> withoutCmd
+
+        CotonomaStatsFetched (Err _) ->
+            model |> withoutCmd
+
+
+sendInit : Cmd AppMsg.Msg
+sendInit =
+    ModalMsg.Init
+        |> AppMsg.CotoMenuModalMsg
+        |> App.Commands.sendMsg

@@ -1,4 +1,19 @@
-module App.Types.Traversal exposing (Traversal, Traversals, closeTraversal, defaultTraversals, initTraversal, isActiveIndex, isEmpty, openTraversal, setActiveIndexOnMobile, size, traverse, traverseToParent, traversed, updateTraversal)
+module App.Types.Traversal exposing
+    ( Traversal
+    , Traversals
+    , closeTraversal
+    , defaultTraversals
+    , initTraversal
+    , isActiveIndex
+    , isEmpty
+    , openTraversal
+    , setActiveIndexOnMobile
+    , size
+    , traverse
+    , traverseToParent
+    , traversed
+    , updateTraversal
+    )
 
 import App.Types.Coto exposing (CotoId)
 import App.Types.Graph exposing (Graph)

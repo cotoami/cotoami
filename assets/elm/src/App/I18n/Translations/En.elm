@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Saving"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "Confirm"
 
@@ -205,8 +208,8 @@ text key =
         CotoToolbar_More ->
             "More"
 
-        CotoToolbar_Disconnect ->
-            "Disconnect"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "Reorder"
@@ -267,6 +270,12 @@ text key =
 
         ConnectModal_Reverse ->
             "Reverse"
+
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "Disconnect"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

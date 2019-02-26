@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "確認"
 
@@ -208,8 +211,8 @@ text key =
         CotoToolbar_More ->
             "打開選單清單"
 
-        CotoToolbar_Disconnect ->
-            "解除連接"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "重新排列"
@@ -270,6 +273,12 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
+
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "解除連接"
 
         CotoSelection_CotosSelected count ->
             "件在選擇中"

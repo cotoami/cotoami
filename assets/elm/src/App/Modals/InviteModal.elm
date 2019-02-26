@@ -14,6 +14,7 @@ import App.Server.Amishi
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Session exposing (Session)
+import App.Views.Amishi
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -69,10 +70,128 @@ canInvite context model =
         |> Maybe.withDefault False
 
 
-sendInit : Cmd AppMsg.Msg
-sendInit =
-    AppMsg.InviteModalMsg Init
-        |> App.Commands.sendMsg
+view : Context context -> Session -> Model -> Html AppMsg.Msg
+view context session model =
+    model
+        |> modalConfig context session
+        |> Modal.view "invite-modal"
+
+
+modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
+modalConfig context session model =
+    case model.requestStatus of
+        Approved acceptedEmail ->
+            { closeMessage = CloseModal
+            , title = text (context.i18nText I18nKeys.InviteModal_Title)
+            , content =
+                div []
+                    [ p []
+                        [ text (context.i18nText I18nKeys.InviteModal_SentMessage)
+                        , span [ class "accepted-email" ] [ text acceptedEmail ]
+                        ]
+                    ]
+            , buttons =
+                [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
+            }
+
+        _ ->
+            { closeMessage = CloseModal
+            , title = text (context.i18nText I18nKeys.InviteModal_Title)
+            , content =
+                div []
+                    [ p [] [ text (context.i18nText I18nKeys.InviteModal_Message) ]
+                    , div []
+                        [ input
+                            [ type_ "email"
+                            , class "email u-full-width"
+                            , name "email"
+                            , placeholder "amishi@example.com"
+                            , disabled (not (canInvite context model))
+                            , value model.email
+                            , onInput (AppMsg.InviteModalMsg << EmailInput)
+                            ]
+                            []
+                        ]
+                    , case model.requestStatus of
+                        Conflict invitee ->
+                            div [ class "error" ]
+                                [ span [ class "message" ]
+                                    [ text (context.i18nText I18nKeys.InviteModal_InviteeAlreadyExists) ]
+                                , App.Views.Amishi.inline [ "invitee" ] invitee
+                                ]
+
+                        _ ->
+                            Utils.HtmlUtil.none
+                    , invitesRemainingDiv context session model
+                    , inviteesDiv model
+                    ]
+            , buttons =
+                [ button
+                    [ class "button button-primary"
+                    , disabled
+                        (not (canInvite context model)
+                            || not (validateEmail model.email)
+                            || model.requestProcessing
+                        )
+                    , onClick (AppMsg.InviteModalMsg SendInviteClick)
+                    ]
+                    [ if model.requestProcessing then
+                        text (context.i18nText I18nKeys.InviteModal_Sending ++ "...")
+
+                      else
+                        text (context.i18nText I18nKeys.InviteModal_SendInvite)
+                    ]
+                ]
+            }
+
+
+invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
+invitesRemainingDiv context session model =
+    Maybe.map2
+        (\limit invitees ->
+            let
+                remaining =
+                    limit - List.length invitees
+
+                key =
+                    if remaining >= 0 then
+                        I18nKeys.InviteModal_InvitesRemaining remaining
+
+                    else
+                        I18nKeys.InviteModal_InvitesRemaining 0
+            in
+            div [ class "invites-remaining" ] [ text (context.i18nText key) ]
+        )
+        session.amishi.inviteLimit
+        model.invitees
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+inviteeItem : Amishi -> Html AppMsg.Msg
+inviteeItem invitee =
+    li [ class "invitee" ]
+        [ App.Views.Amishi.inline [ "invitee" ] invitee
+        , invitee.email
+            |> Maybe.map (\email -> span [ class "email" ] [ text email ])
+            |> Maybe.withDefault Utils.HtmlUtil.none
+        ]
+
+
+inviteesDiv : Model -> Html AppMsg.Msg
+inviteesDiv model =
+    model.invitees
+        |> Maybe.map
+            (\invitees ->
+                if List.isEmpty invitees then
+                    Utils.HtmlUtil.none
+
+                else
+                    div [ class "invitees" ]
+                        [ ol [ class "invitees" ]
+                            (List.map inviteeItem invitees)
+                        ]
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -130,140 +249,14 @@ update msg model =
                 |> withoutCmd
 
 
+sendInit : Cmd AppMsg.Msg
+sendInit =
+    AppMsg.InviteModalMsg Init
+        |> App.Commands.sendMsg
+
+
 sendInvite : String -> Cmd AppMsg.Msg
 sendInvite email =
     Http.send
         (AppMsg.InviteModalMsg << SendInviteDone)
         (Http.get ("/api/invite/" ++ email) Decode.string)
-
-
-view : Context context -> Model -> Html AppMsg.Msg
-view context model =
-    context.session
-        |> Maybe.map (\session -> modalConfig context session model)
-        |> Modal.view "invite-modal"
-
-
-modalConfig : Context context -> Session -> Model -> Modal.Config AppMsg.Msg
-modalConfig context session model =
-    case model.requestStatus of
-        Approved acceptedEmail ->
-            { closeMessage = CloseModal
-            , title = text (context.i18nText I18nKeys.InviteModal_Title)
-            , content =
-                div []
-                    [ p []
-                        [ text (context.i18nText I18nKeys.InviteModal_SentMessage)
-                        , span [ class "accepted-email" ] [ text acceptedEmail ]
-                        ]
-                    ]
-            , buttons =
-                [ button [ class "button", onClick CloseModal ] [ text "OK" ] ]
-            }
-
-        _ ->
-            { closeMessage = CloseModal
-            , title = text (context.i18nText I18nKeys.InviteModal_Title)
-            , content =
-                div []
-                    [ p [] [ text (context.i18nText I18nKeys.InviteModal_Message) ]
-                    , div []
-                        [ input
-                            [ type_ "email"
-                            , class "email u-full-width"
-                            , name "email"
-                            , placeholder "amishi@example.com"
-                            , disabled (not (canInvite context model))
-                            , value model.email
-                            , onInput (AppMsg.InviteModalMsg << EmailInput)
-                            ]
-                            []
-                        ]
-                    , case model.requestStatus of
-                        Conflict invitee ->
-                            div [ class "error" ]
-                                [ span [ class "message" ]
-                                    [ text (context.i18nText I18nKeys.InviteModal_InviteeAlreadyExists) ]
-                                , inviteeSpan invitee
-                                ]
-
-                        _ ->
-                            Utils.HtmlUtil.none
-                    , invitesRemainingDiv context session model
-                    , inviteesDiv model
-                    ]
-            , buttons =
-                [ button
-                    [ class "button button-primary"
-                    , disabled
-                        (not (canInvite context model)
-                            || not (validateEmail model.email)
-                            || model.requestProcessing
-                        )
-                    , onClick (AppMsg.InviteModalMsg SendInviteClick)
-                    ]
-                    [ if model.requestProcessing then
-                        text (context.i18nText I18nKeys.InviteModal_Sending ++ "...")
-
-                      else
-                        text (context.i18nText I18nKeys.InviteModal_SendInvite)
-                    ]
-                ]
-            }
-
-
-inviteeSpan : Amishi -> Html AppMsg.Msg
-inviteeSpan invitee =
-    span [ class "invitee" ]
-        [ img [ class "avatar", src invitee.avatarUrl ] []
-        , span [ class "name" ] [ text invitee.displayName ]
-        ]
-
-
-invitesRemainingDiv : Context context -> Session -> Model -> Html AppMsg.Msg
-invitesRemainingDiv context session model =
-    Maybe.map2
-        (\limit invitees ->
-            let
-                remaining =
-                    limit - List.length invitees
-
-                key =
-                    if remaining >= 0 then
-                        I18nKeys.InviteModal_InvitesRemaining remaining
-
-                    else
-                        I18nKeys.InviteModal_InvitesRemaining 0
-            in
-            div [ class "invites-remaining" ] [ text (context.i18nText key) ]
-        )
-        session.amishi.inviteLimit
-        model.invitees
-        |> Maybe.withDefault Utils.HtmlUtil.none
-
-
-inviteeItem : Amishi -> Html AppMsg.Msg
-inviteeItem invitee =
-    li [ class "invitee" ]
-        [ inviteeSpan invitee
-        , invitee.email
-            |> Maybe.map (\email -> span [ class "email" ] [ text email ])
-            |> Maybe.withDefault Utils.HtmlUtil.none
-        ]
-
-
-inviteesDiv : Model -> Html AppMsg.Msg
-inviteesDiv model =
-    model.invitees
-        |> Maybe.map
-            (\invitees ->
-                if List.isEmpty invitees then
-                    Utils.HtmlUtil.none
-
-                else
-                    div [ class "invitees" ]
-                        [ ol [ class "invitees" ]
-                            (List.map inviteeItem invitees)
-                        ]
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none

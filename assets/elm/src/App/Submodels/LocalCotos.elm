@@ -22,6 +22,7 @@ import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph)
+import App.Types.Graph.Connect
 import App.Types.Post exposing (Post)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Session exposing (Session)
@@ -120,7 +121,7 @@ updateCoto : Coto -> LocalCotos a -> LocalCotos a
 updateCoto coto localCotos =
     { localCotos
         | timeline = App.Types.Timeline.updatePost coto localCotos.timeline
-        , graph = App.Types.Graph.updateCoto coto localCotos.graph
+        , graph = App.Types.Graph.updateCotoContent coto localCotos.graph
     }
 
 
@@ -208,18 +209,26 @@ isNavigationEmpty localCotos =
         && List.isEmpty localCotos.subCotonomas
 
 
-connect : Maybe Session -> Direction -> List Coto -> Coto -> LocalCotos a -> LocalCotos a
-connect maybeSession direction cotos target localCotos =
+connect :
+    Maybe Session
+    -> Coto
+    -> List Coto
+    -> Direction
+    -> Maybe String
+    -> LocalCotos a
+    -> LocalCotos a
+connect maybeSession target cotos direction linkingPhrase localCotos =
     let
         graph =
             maybeSession
                 |> Maybe.map
                     (\session ->
-                        App.Types.Graph.batchConnect
+                        App.Types.Graph.Connect.batch
                             session.amishi.id
-                            direction
-                            cotos
                             target
+                            cotos
+                            direction
+                            linkingPhrase
                             localCotos.graph
                     )
                 |> Maybe.withDefault localCotos.graph
