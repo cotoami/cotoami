@@ -213,6 +213,7 @@ update context msg (( modal, graph ) as model) =
                     connection.linkingPhrase
             )
                 |> withCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
 
         ConnectionUpdated (Err error) ->
             model |> withoutCmd

@@ -80,6 +80,7 @@ handleDelete payload model =
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
         |> withCmd App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
@@ -96,12 +97,14 @@ handleCotoUpdate payload model =
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
             App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
     App.Submodels.LocalCotos.cotonomatize payload.body payload.body.cotoId model
         |> withCmd App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias ConnectPayloadBody =
@@ -149,7 +152,7 @@ handleConnect payload model =
                 |> Maybe.withDefault model.graph
             )
         |> (\graph -> { model | graph = graph })
-        |> withoutCmd
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias DisconnectPayloadBody =
@@ -190,7 +193,8 @@ handleDisconnect payload model =
                     )
                 |> Maybe.withDefault graph1
     in
-    { model | graph = graph2 } |> withoutCmd
+    { model | graph = graph2 }
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias ConnectionUpdatePayloadBody =
@@ -219,7 +223,8 @@ handleConnectionUpdate payload model =
                     payload.body.endId
                     payload.body.linkingPhrase
     in
-    { model | graph = graph } |> withoutCmd
+    { model | graph = graph }
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias ReorderPayloadBody =
