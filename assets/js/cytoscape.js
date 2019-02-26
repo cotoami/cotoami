@@ -125,7 +125,8 @@ const _layout = {
   nodeDimensionsIncludeLabels: true,
   fit: false,
   idealEdgeLength: 100,
-  animate: 'during'
+  animate: 'false',
+  numIter: 30000
 }
 
 let _graph = null
