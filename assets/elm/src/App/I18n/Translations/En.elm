@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Saving"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "Confirm"
 
@@ -138,7 +141,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "A cotonoma name have to be under "
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " characters, currently: "
 
         ProfileModal_Title ->
@@ -182,9 +185,10 @@ text key =
 
         InviteModal_InvitesRemaining invites ->
             if invites == 1 then
-                (toString invites) ++ " invite remaining"
+                toString invites ++ " invite remaining"
+
             else
-                (toString invites) ++ " invites remaining"
+                toString invites ++ " invites remaining"
 
         CotoToolbar_Connect ->
             "Connect from the selected cotos"
@@ -204,8 +208,8 @@ text key =
         CotoToolbar_More ->
             "More"
 
-        CotoToolbar_Disconnect ->
-            "Disconnect"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "Reorder"
@@ -267,9 +271,16 @@ text key =
         ConnectModal_Reverse ->
             "Reverse"
 
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "Disconnect"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "coto selected"
+
             else
                 "cotos selected"
 

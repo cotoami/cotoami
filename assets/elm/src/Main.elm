@@ -1,14 +1,14 @@
-module Main exposing (..)
+module Main exposing (Flags, init, main)
 
-import Navigation exposing (Location)
-import App.Route exposing (parseLocation, Route(..))
-import App.Model exposing (Model)
 import App.Messages exposing (Msg(OnLocationChange))
-import App.Update exposing (update)
-import App.Server.Session exposing (fetchSession)
-import App.View exposing (view)
-import App.Subscriptions exposing (subscriptions)
+import App.Model exposing (Model)
 import App.Ports.LocalStorage
+import App.Route exposing (Route(..), parseLocation)
+import App.Server.Session exposing (fetchSession)
+import App.Subscriptions exposing (subscriptions)
+import App.Update exposing (update)
+import App.View exposing (view)
+import Navigation exposing (Location)
 
 
 type alias Flags =

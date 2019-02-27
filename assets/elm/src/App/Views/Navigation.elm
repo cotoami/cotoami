@@ -1,15 +1,15 @@
-module App.Views.Navigation exposing (..)
+module App.Views.Navigation exposing (ViewModel, currentCotonomaNav, globalCotonomasDiv, homeNav, recentCotonomasDiv, view, watchlistDiv)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Exts.Maybe exposing (isNothing)
-import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (materialIcon, faIcon)
 import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (Cotonoma)
 import App.Messages exposing (Msg(MoveToHome))
 import App.Submodels.Context exposing (Context)
+import App.Types.Coto exposing (Cotonoma)
 import App.Views.Cotonomas
+import Exts.Maybe exposing (isNothing)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 
 
 type alias ViewModel model =
@@ -80,6 +80,7 @@ globalCotonomasDiv : ViewModel model -> Html Msg
 globalCotonomasDiv model =
     if List.isEmpty model.globalCotonomas then
         Utils.HtmlUtil.none
+
     else
         div [ class "global-cotonomas" ]
             [ div [ class "navigation-title" ]
@@ -92,6 +93,7 @@ watchlistDiv : ViewModel model -> Html Msg
 watchlistDiv model =
     if List.isEmpty model.watchlist then
         Utils.HtmlUtil.none
+
     else
         div [ class "watchlist" ]
             [ div [ class "navigation-title" ]
@@ -106,6 +108,7 @@ recentCotonomasDiv : ViewModel model -> Html Msg
 recentCotonomasDiv model =
     if List.isEmpty model.recentCotonomas then
         Utils.HtmlUtil.none
+
     else
         div [ class "recent-cotonomas" ]
             [ div [ class "navigation-title" ]

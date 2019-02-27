@@ -1,32 +1,31 @@
-module App.Modals.ImportModal
-    exposing
-        ( Model
-        , initModel
-        , update
-        , view
-        )
+module App.Modals.ImportModal exposing
+    ( Model
+    , initModel
+    , update
+    , view
+    )
 
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.ImportModalMsg as ImportModalMsg
+    exposing
+        ( ImportConnectionsResult
+        , ImportCotosResult
+        , ImportResult
+        , Msg(..)
+        , Reject
+        )
+import App.Ports.ImportFile exposing (ImportFile)
+import App.Submodels.Context exposing (Context)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
-import Json.Encode as Encode
 import Json.Decode as Decode
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (..)
+import Json.Encode as Encode
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.HttpUtil exposing (ClientId, httpPost)
-import App.Submodels.Context exposing (Context)
-import App.Ports.ImportFile exposing (ImportFile)
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.ImportModalMsg as ImportModalMsg
-    exposing
-        ( ImportResult
-        , ImportCotosResult
-        , ImportConnectionsResult
-        , Reject
-        , Msg(..)
-        )
+import Utils.Modal
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -48,6 +47,137 @@ initModel importFile =
     , requestProcessing = False
     , requestStatus = None
     }
+
+
+view : Model -> Html AppMsg.Msg
+view model =
+    model
+        |> modalConfig
+        |> Utils.Modal.view "import-modal"
+
+
+modalConfig : Model -> Utils.Modal.Config AppMsg.Msg
+modalConfig model =
+    case model.requestStatus of
+        Imported result ->
+            { closeMessage = CloseModal
+            , title = text "Import cotos and connections"
+            , content = importResultDiv result
+            , buttons =
+                [ a [ class "button", href "/" ] [ text "Reload browser" ]
+                ]
+            }
+
+        _ ->
+            { closeMessage = CloseModal
+            , title = text "Import cotos and connections"
+            , content =
+                div []
+                    [ p [] [ text "You are about to import the cotos/connections in the file you selected." ]
+                    , importFileInfoDiv model.importFile
+                    , case model.requestStatus of
+                        Rejected message ->
+                            div [ class "error" ]
+                                [ span [ class "message" ] [ text message ] ]
+
+                        _ ->
+                            div [] []
+                    ]
+            , buttons =
+                [ button
+                    [ class "button button-primary"
+                    , disabled (not model.importFile.valid || model.requestProcessing)
+                    , onClick (AppMsg.ImportModalMsg ImportClick)
+                    ]
+                    [ if model.requestProcessing then
+                        text "Importing..."
+
+                      else
+                        text "Import"
+                    ]
+                ]
+            }
+
+
+importFileInfoDiv : ImportFile -> Html AppMsg.Msg
+importFileInfoDiv importFile =
+    div [ class "import-file-info" ]
+        [ div [ class "file-name" ]
+            [ materialIcon "insert_drive_file" Nothing
+            , text importFile.fileName
+            ]
+        , div [ class "content" ]
+            [ div [ class "stats" ]
+                [ text "contains:"
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotos) ]
+                    , text "cotos"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.cotonomas) ]
+                    , text "cotonomas"
+                    ]
+                , span [ class "entry" ]
+                    [ span [ class "number" ] [ text (toString importFile.connections) ]
+                    , text "connections"
+                    ]
+                ]
+            , div [ class "amishi author" ]
+                [ text "by:"
+                , img [ class "avatar", src importFile.amishiAvatarUrl ] []
+                , span [ class "name" ] [ text importFile.amishiDisplayName ]
+                , span [ class "note" ]
+                    [ text "(The ownership will be transferred to you.)" ]
+                ]
+            ]
+        ]
+
+
+importResultDiv : ImportResult -> Html AppMsg.Msg
+importResultDiv { cotos, connections } =
+    div []
+        [ div [] [ text "The data has been successfully imported: " ]
+        , div [ class "import-result" ]
+            [ div [ class "cotos-result" ]
+                [ div [ class "result-caption" ] [ text "Cotos:" ]
+                , span [ class "number" ] [ text (toString cotos.inserts) ]
+                , text "inserts"
+                , span [ class "number" ] [ text (toString cotos.updates) ]
+                , text "updates"
+                , span [ class "number" ] [ text (toString cotos.cotonomas) ]
+                , text "cotonomas"
+                , span [ class "number" ] [ text (List.length cotos.rejected |> toString) ]
+                , text "rejected"
+                ]
+            , div [ class "connections-result" ]
+                [ div [ class "result-caption" ] [ text "Connections:" ]
+                , span [ class "number" ] [ text (toString connections.ok) ]
+                , text "imported"
+                , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
+                , text "rejected"
+                ]
+            , if List.isEmpty cotos.rejected && List.isEmpty connections.rejected then
+                div [] []
+
+              else
+                div [ class "rejected" ]
+                    (List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected
+                        ++ List.map (rejectInfoSpan "A connection rejected: ") connections.rejected
+                    )
+            ]
+        ]
+
+
+rejectInfoSpan : String -> Reject -> Html AppMsg.Msg
+rejectInfoSpan caption reject =
+    div
+        [ class "reject" ]
+        [ span [ class "head" ]
+            [ span [ class "caption" ] [ text caption ]
+            , span [ class "reason" ] [ text reject.reason ]
+            ]
+        , pre [ class "json" ] [ code [] [ text reject.json ] ]
+        ]
 
 
 update : Context a -> ImportModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
@@ -115,135 +245,6 @@ importData clientId data =
                     )
                 )
     in
-        Http.send
-            (AppMsg.ImportModalMsg << ImportDone)
-            (httpPost "/api/import" clientId requestBody decodeResult)
-
-
-view : Maybe Model -> Html AppMsg.Msg
-view maybeModel =
-    maybeModel
-        |> Maybe.map modalConfig
-        |> Modal.view "import-modal"
-
-
-modalConfig : Model -> Modal.Config AppMsg.Msg
-modalConfig model =
-    case model.requestStatus of
-        Imported result ->
-            { closeMessage = CloseModal
-            , title = text "Import cotos and connections"
-            , content = importResultDiv result
-            , buttons =
-                [ a [ class "button", href "/" ] [ text "Reload browser" ]
-                ]
-            }
-
-        _ ->
-            { closeMessage = CloseModal
-            , title = text "Import cotos and connections"
-            , content =
-                div []
-                    [ p [] [ text "You are about to import the cotos/connections in the file you selected." ]
-                    , importFileInfoDiv model.importFile
-                    , case model.requestStatus of
-                        Rejected message ->
-                            div [ class "error" ]
-                                [ span [ class "message" ] [ text message ] ]
-
-                        _ ->
-                            div [] []
-                    ]
-            , buttons =
-                [ button
-                    [ class "button button-primary"
-                    , disabled (not model.importFile.valid || model.requestProcessing)
-                    , onClick (AppMsg.ImportModalMsg ImportClick)
-                    ]
-                    [ if model.requestProcessing then
-                        text "Importing..."
-                      else
-                        text "Import"
-                    ]
-                ]
-            }
-
-
-importFileInfoDiv : ImportFile -> Html AppMsg.Msg
-importFileInfoDiv importFile =
-    div [ class "import-file-info" ]
-        [ div [ class "file-name" ]
-            [ materialIcon "insert_drive_file" Nothing
-            , text importFile.fileName
-            ]
-        , div [ class "content" ]
-            [ div [ class "stats" ]
-                [ text "contains:"
-                , span [ class "entry" ]
-                    [ span [ class "number" ] [ text (toString importFile.cotos) ]
-                    , text "cotos"
-                    ]
-                , span [ class "entry" ]
-                    [ span [ class "number" ] [ text (toString importFile.cotonomas) ]
-                    , text "cotonomas"
-                    ]
-                , span [ class "entry" ]
-                    [ span [ class "number" ] [ text (toString importFile.connections) ]
-                    , text "connections"
-                    ]
-                ]
-            , div [ class "amishi author" ]
-                [ text "by:"
-                , img [ class "avatar", src importFile.amishiAvatarUrl ] []
-                , span [ class "name" ] [ text importFile.amishiDisplayName ]
-                , span [ class "note" ]
-                    [ text "(The ownership will be transferred to you.)" ]
-                ]
-            ]
-        ]
-
-
-importResultDiv : ImportResult -> Html AppMsg.Msg
-importResultDiv { cotos, connections } =
-    div []
-        [ div [] [ text "The data has been successfully imported: " ]
-        , div [ class "import-result" ]
-            [ div [ class "cotos-result" ]
-                [ div [ class "result-caption" ] [ text "Cotos:" ]
-                , span [ class "number" ] [ text (toString cotos.inserts) ]
-                , text "inserts"
-                , span [ class "number" ] [ text (toString cotos.updates) ]
-                , text "updates"
-                , span [ class "number" ] [ text (toString cotos.cotonomas) ]
-                , text "cotonomas"
-                , span [ class "number" ] [ text (List.length cotos.rejected |> toString) ]
-                , text "rejected"
-                ]
-            , div [ class "connections-result" ]
-                [ div [ class "result-caption" ] [ text "Connections:" ]
-                , span [ class "number" ] [ text (toString connections.ok) ]
-                , text "imported"
-                , span [ class "number" ] [ text (List.length connections.rejected |> toString) ]
-                , text "rejected"
-                ]
-            , if (List.isEmpty cotos.rejected) && (List.isEmpty connections.rejected) then
-                div [] []
-              else
-                div [ class "rejected" ]
-                    ((List.map (rejectInfoSpan "A coto rejected: ") cotos.rejected)
-                        ++ (List.map (rejectInfoSpan "A connection rejected: ") connections.rejected)
-                    )
-            ]
-        ]
-
-
-rejectInfoSpan : String -> Reject -> Html AppMsg.Msg
-rejectInfoSpan caption reject =
-    div
-        [ class "reject" ]
-        [ span [ class "head" ]
-            [ span [ class "caption" ] [ text caption ]
-            , span [ class "reason" ] [ text reject.reason ]
-            ]
-        , pre [ class "json" ] [ code [] [ text reject.json ] ]
-        ]
+    Http.send
+        (AppMsg.ImportModalMsg << ImportDone)
+        (httpPost "/api/import" clientId requestBody decodeResult)

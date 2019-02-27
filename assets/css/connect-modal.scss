@@ -1,78 +1,49 @@
 @import "variables.scss";
 
-#connect-modal {
-  .modal-content {
-    width: 80vw;
+#connect-modal .modal-content {
+  width: 80vw;
 
-    div.tools {
-      text-align: right;
-    }
+  div.tools {
+    text-align: right;
+  }
 
-    span.node-title {
-      font-weight: bold;
-      color: #aaa;
-    }
+  div.target-coto div.coto-in-connection,
+  div.target-new-post div.coto-in-connection {
+    border-width: 2px;
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
-    div.coto-content {
-      border: 1px solid #ddd;
-    }
+  div.target-new-post div.coto-in-connection {
+    border-style: dashed;
+  }
 
-    div.coto-inner {
-      padding-top: 10px;
-    }
+  div.selected-cotos {
+    max-height: 25vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 
-    div.coto-summary {
-      font-weight: bold;
-      opacity: .5;
-    }
+    div.coto-in-connection,
+    div.cotonoma-in-connection {
+      border: 2px solid #ffa500 !important;
+      margin-top: 10px;
 
-    div.target-coto,
-    div.target-new-post {
-      border-width: 2px;
-      max-height: 15vh;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    div.target-new-post {
-      border-style: dashed;
-    }
-
-    div.selected-cotos {
-      max-height: 25vh;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-
-      div.coto-content {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
-        margin-top: 20px;
-
-        &:first-child {
-          margin-top: 0;
-        }
-      }
-
-      div.coto-inner {
-        border: 2px solid #ffa500 !important;
+      &:first-child {
+        margin-top: 0;
       }
     }
 
-    div.arrow {
-      height: 24px;
-      padding-top: 12px;
-      text-align: center;
-
-      i {
-        font-size: 24px;
-      }
+    div.cotonoma-in-connection {
+      padding: 2px;
     }
+  }
 
-    hr.modal-buttons-seperator {
-      display: none;
-    }
+  hr.modal-buttons-seperator {
+    display: none;
+  }
 
-    div.modal-buttons {
-      padding-top: 15px;
-    }
+  div.modal-buttons {
+    padding-top: 15px;
   }
 }

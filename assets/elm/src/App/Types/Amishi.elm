@@ -1,4 +1,10 @@
-module App.Types.Amishi exposing (..)
+module App.Types.Amishi exposing
+    ( Amishi
+    , AmishiId
+    , Presences
+    , applyPresenceDiff
+    , isPresent
+    )
 
 import Dict exposing (Dict)
 
@@ -30,7 +36,7 @@ isPresent amishiId presences =
 applyPresenceDiff : ( Presences, Presences ) -> Presences -> Presences
 applyPresenceDiff ( joins, leaves ) presences =
     -- Join
-    (Dict.foldl
+    Dict.foldl
         (\amishiId count presences ->
             Dict.update
                 amishiId
@@ -46,22 +52,22 @@ applyPresenceDiff ( joins, leaves ) presences =
         )
         presences
         joins
-    )
-        |> \presences ->
-            -- Leave
-            Dict.foldl
-                (\amishiId count presences ->
-                    Dict.update
-                        amishiId
-                        (\maybeValue ->
-                            case maybeValue of
-                                Nothing ->
-                                    Nothing
+        |> (\presences ->
+                -- Leave
+                Dict.foldl
+                    (\amishiId count presences ->
+                        Dict.update
+                            amishiId
+                            (\maybeValue ->
+                                case maybeValue of
+                                    Nothing ->
+                                        Nothing
 
-                                Just value ->
-                                    Just (value - count)
-                        )
-                        presences
-                )
-                presences
-                leaves
+                                    Just value ->
+                                        Just (value - count)
+                            )
+                            presences
+                    )
+                    presences
+                    leaves
+           )

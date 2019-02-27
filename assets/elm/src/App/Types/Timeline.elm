@@ -1,30 +1,29 @@
-module App.Types.Timeline
-    exposing
-        ( Timeline
-        , defaultTimeline
-        , setScrollPosInitialized
-        , isEmpty
-        , addPost
-        , setPaginatedPosts
-        , nextPageIndex
-        , latestPost
-        , getCoto
-        , deleteCoto
-        , deletePendingPost
-        , setLoading
-        , setLoadingMore
-        , updatePost
-        , cotonomatize
-        , setCotoSaved
-        , setBeingDeleted
-        , post
-        )
+module App.Types.Timeline exposing
+    ( Timeline
+    , addPost
+    , cotonomatize
+    , defaultTimeline
+    , deleteCoto
+    , deletePendingPost
+    , getCoto
+    , isEmpty
+    , latestPost
+    , nextPageIndex
+    , post
+    , setBeingDeleted
+    , setCotoSaved
+    , setLoading
+    , setLoadingMore
+    , setPaginatedPosts
+    , setScrollPosInitialized
+    , updatePost
+    )
 
-import Maybe
-import Exts.Maybe exposing (isJust)
-import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post, PaginatedPosts)
 import App.Submodels.Context exposing (Context)
+import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
+import App.Types.Post exposing (PaginatedPosts, Post)
+import Exts.Maybe exposing (isJust)
+import Maybe
 
 
 type alias Timeline =
@@ -71,6 +70,7 @@ setPaginatedPosts paginatedPosts timeline =
         | posts =
             if paginatedPosts.pageIndex == 0 then
                 paginatedPosts.posts
+
             else
                 timeline.posts ++ paginatedPosts.posts
         , pageIndex = paginatedPosts.pageIndex
@@ -106,7 +106,7 @@ deletePendingPost : Int -> Timeline -> Timeline
 deletePendingPost postId timeline =
     timeline.posts
         |> List.filter
-            (\post -> (isJust post.cotoId) || post.postId /= (Just postId))
+            (\post -> isJust post.cotoId || post.postId /= Just postId)
         |> (\posts -> { timeline | posts = posts })
 
 
@@ -131,6 +131,7 @@ updatePost_ predicate update timeline =
             (\post ->
                 if predicate post then
                     update post
+
                 else
                     post
             )
@@ -201,14 +202,14 @@ post context isCotonoma content timeline =
                 | postId = Just postId
                 , content = content.content
                 , summary = content.summary
-                , amishi = Maybe.map (.amishi) context.session
+                , amishi = Maybe.map .amishi context.session
                 , isCotonoma = isCotonoma
                 , postedIn = context.cotonoma
             }
     in
-        ( { timeline
-            | posts = newPost :: timeline.posts
-            , postIdCounter = postId
-          }
-        , newPost
-        )
+    ( { timeline
+        | posts = newPost :: timeline.posts
+        , postIdCounter = postId
+      }
+    , newPost
+    )

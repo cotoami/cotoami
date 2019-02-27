@@ -1,0 +1,45 @@
+@import "variables.scss";
+
+#connection {
+  span.node-title {
+    font-weight: bold;
+    color: #aaa;
+  }
+  
+  div.coto-in-connection {
+    border: 1px solid #ddd;
+
+    div.coto-inner {
+      padding-top: 10px;
+    }
+  
+    div.coto-summary {
+      font-weight: bold;
+      opacity: .5;
+    }
+  }
+
+  div.linking-phrase-input {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    padding: 0 30px;
+  
+    div.arrow {
+      width: 30px;
+      padding-top: 6px;
+
+      i {
+        font-size: 24px;
+      }
+    }
+
+    div.linking-phrase {
+      flex: 1;
+
+      input {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

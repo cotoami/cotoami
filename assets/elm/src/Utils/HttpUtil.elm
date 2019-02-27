@@ -1,13 +1,12 @@
-module Utils.HttpUtil
-    exposing
-        ( ClientId(ClientId)
-        , httpRequestWithBody
-        , httpDelete
-        , httpDeleteWithExpect
-        , httpPost
-        , httpPut
-        , httpPatch
-        )
+module Utils.HttpUtil exposing
+    ( ClientId(ClientId)
+    , httpDelete
+    , httpDeleteWithExpect
+    , httpPatch
+    , httpPost
+    , httpPut
+    , httpRequestWithBody
+    )
 
 import Http exposing (Expect)
 import Json.Decode as Decode

@@ -111,12 +111,11 @@
       }
     }
 
-    div.unpin-button {
+    div.pin {
       position: relative;
       height: 10px;
 
-      a.unpin,
-      span.not-unpinnable {
+      .pin {
         position: absolute;
         top: -12px;
         left: 0;
@@ -126,8 +125,32 @@
         }
       }
 
-      span.not-unpinnable {
-        color: #ccc;
+      span.pin {
+        color: #aaa;
+      }
+    }
+
+    div.linking-phrase-pin {
+      position: relative;
+      height: 10px;
+
+      .linking-phrase-pin {
+        position: absolute;
+        top: -12px;
+        left: 0;
+        border: 1px solid #ddd;
+        border-radius: 4px 4px 0 0;
+        background-color: #fff;
+        padding: 3px 10px;
+        opacity: 1;
+        white-space: nowrap;
+        max-width: 80%;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+      }
+
+      span.linking-phrase-pin {
+        color: #aaa;
       }
     }
   }

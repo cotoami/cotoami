@@ -1,17 +1,17 @@
-module App.Subscriptions exposing (..)
+module App.Subscriptions exposing (phoenixChannels, phoenixChannelsInSession, socket, subscriptions)
 
+import App.Channels
+import App.Messages exposing (..)
+import App.Model exposing (Model)
+import App.Ports.Graph
+import App.Ports.ImportFile
+import App.Ports.LocalStorage
+import App.Submodels.LocalCotos
+import App.Types.Session exposing (Session)
+import App.Views.StockMsg
 import Keyboard exposing (..)
 import Phoenix
 import Phoenix.Socket as Socket exposing (Socket)
-import App.Types.Session exposing (Session)
-import App.Model exposing (Model)
-import App.Messages exposing (..)
-import App.Views.StockMsg
-import App.Submodels.LocalCotos
-import App.Channels
-import App.Ports.LocalStorage
-import App.Ports.Graph
-import App.Ports.ImportFile
 
 
 socket : String -> String -> Socket Msg
@@ -40,7 +40,7 @@ phoenixChannelsInSession model session =
             ]
                 |> List.concat
     in
-        Phoenix.connect (socket session.token session.websocketUrl) channels
+    Phoenix.connect (socket session.token session.websocketUrl) channels
 
 
 subscriptions : Model -> Sub Msg

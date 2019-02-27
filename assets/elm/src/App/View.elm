@@ -1,37 +1,38 @@
-module App.View exposing (..)
+module App.View exposing (flowColumn, flowDiv, graphExplorationDiv, modals, navColumn, openFlowButton, searchResultsColumn, selectionColumn, stockColumn, view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.EventUtil exposing (onLinkButtonClick)
 import App.I18n.Keys as I18nKeys
-import App.Types.Session exposing (Session)
-import App.Types.SearchResults
 import App.Messages exposing (..)
+import App.Modals.ConfirmModal
+import App.Modals.ConnectModal
+import App.Modals.ConnectionModal
+import App.Modals.CotoMenuModal
+import App.Modals.CotoModal
+import App.Modals.EditorModal
+import App.Modals.ImportModal
+import App.Modals.InviteModal
+import App.Modals.ProfileModal
+import App.Modals.SigninModal
+import App.Modals.TimelineFilterModal
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
+import App.Types.SearchResults
+import App.Types.Session exposing (Session)
 import App.Views.AppHeader
-import App.Views.Navigation
-import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import App.Views.CotoSelection
 import App.Views.Flow
 import App.Views.FlowMsg
+import App.Views.Navigation
+import App.Views.SearchResults
 import App.Views.Stock
 import App.Views.Traversals
-import App.Views.CotoSelection
-import App.Views.SearchResults
-import App.Modals.ConnectModal
-import App.Modals.ProfileModal
-import App.Modals.InviteModal
-import App.Modals.CotoMenuModal
-import App.Modals.CotoModal
-import App.Modals.SigninModal
-import App.Modals.EditorModal
-import App.Modals.ConfirmModal
-import App.Modals.ImportModal
-import App.Modals.TimelineFilterModal
+import App.Views.ViewSwitch
+import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
 
 
 view : Model -> Html Msg
@@ -40,7 +41,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( (App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView)
+            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView
                     ++ "-view-on-mobile"
               , True
               )
@@ -93,7 +94,7 @@ graphExplorationDiv model =
         ]
         (openFlowButton model
             :: stockColumn model
-            :: (App.Views.Traversals.view model model)
+            :: App.Views.Traversals.view model model
         )
 
 
@@ -108,6 +109,7 @@ openFlowButton model =
                 ]
                 [ materialIcon "chat" Nothing ]
             ]
+
     else
         Utils.HtmlUtil.none
 
@@ -124,19 +126,20 @@ flowColumn model =
                         , ( "hidden", True )
                         ]
                         model
+
                 else
                     let
                         active =
                             model.activeView == FlowView
                     in
-                        flowDiv
-                            session
-                            [ ( "main-column", True )
-                            , ( "active-in-narrow-viewport", active )
-                            , ( "animated", active )
-                            , ( "fadeIn", active )
-                            ]
-                            model
+                    flowDiv
+                        session
+                        [ ( "main-column", True )
+                        , ( "active-in-narrow-viewport", active )
+                        , ( "animated", active )
+                        , ( "fadeIn", active )
+                        ]
+                        model
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
 
@@ -203,38 +206,51 @@ modals : Model -> List (Html Msg)
 modals model =
     List.map
         (\modal ->
-            case modal of
-                ConfirmModal ->
-                    App.Modals.ConfirmModal.view model model.confirmation.message
+            case ( modal, model.session ) of
+                ( ConfirmModal, _ ) ->
+                    model.confirmation
+                        |> Maybe.map (App.Modals.ConfirmModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                SigninModal ->
+                ( SigninModal, _ ) ->
                     App.Modals.SigninModal.view model model.signinModal
 
-                EditorModal ->
+                ( EditorModal, _ ) ->
                     App.Modals.EditorModal.view model model.editorModal
 
-                ProfileModal ->
-                    App.Modals.ProfileModal.view model
+                ( ProfileModal, Just session ) ->
+                    App.Modals.ProfileModal.view model session
 
-                InviteModal ->
-                    App.Modals.InviteModal.view model model.inviteModal
+                ( InviteModal, Just session ) ->
+                    App.Modals.InviteModal.view model session model.inviteModal
 
-                CotoMenuModal ->
-                    App.Modals.CotoMenuModal.view model model.cotoMenuModal
+                ( CotoMenuModal, Just session ) ->
+                    model.cotoMenuModal
+                        |> Maybe.map (App.Modals.CotoMenuModal.view model session)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                CotoModal ->
-                    App.Modals.CotoModal.view model model.cotoModal
+                ( CotoModal, _ ) ->
+                    model.cotoModal
+                        |> Maybe.map (App.Modals.CotoModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                ConnectModal ->
-                    App.Modals.ConnectModal.view
-                        model
-                        (App.Submodels.LocalCotos.getSelectedCotos model model)
-                        model.connectModal
+                ( ConnectModal, _ ) ->
+                    App.Modals.ConnectModal.view model model.connectModal
 
-                ImportModal ->
-                    App.Modals.ImportModal.view model.importModal
+                ( ConnectionModal, _ ) ->
+                    model.connectionModal
+                        |> Maybe.map (App.Modals.ConnectionModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
 
-                TimelineFilterModal ->
+                ( ImportModal, _ ) ->
+                    model.importModal
+                        |> Maybe.map App.Modals.ImportModal.view
+                        |> Maybe.withDefault Utils.HtmlUtil.none
+
+                ( TimelineFilterModal, _ ) ->
                     App.Modals.TimelineFilterModal.view model model.flowView.filter
+
+                ( _, _ ) ->
+                    Utils.HtmlUtil.none
         )
         (List.reverse model.modals)

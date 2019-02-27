@@ -1,9 +1,8 @@
-port module App.Ports.ImportFile
-    exposing
-        ( selectImportFile
-        , ImportFile
-        , importFileContentRead
-        )
+port module App.Ports.ImportFile exposing
+    ( ImportFile
+    , importFileContentRead
+    , selectImportFile
+    )
 
 
 port selectImportFile : () -> Cmd msg

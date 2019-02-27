@@ -1,9 +1,9 @@
 module App.Update.Post exposing (onPosted)
 
 import App.Messages exposing (Msg)
-import App.Types.Post exposing (Post)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Types.Post exposing (Post)
 import App.Update.Watch
 
 

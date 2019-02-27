@@ -9,6 +9,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | Connection_LinkingPhraseInput
     | Confirm
     | ConfirmDeleteCoto
     | ConfirmUnpinCoto
@@ -66,7 +67,7 @@ type TextKey
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
     | CotoToolbar_More
-    | CotoToolbar_Disconnect
+    | CotoToolbar_EditConnection
     | CotoToolbar_Reorder
     | CotoMenuModal_Info
     | CotoMenuModal_ExploreConnections
@@ -87,5 +88,7 @@ type TextKey
     | ConnectModal_Connect
     | ConnectModal_PostAndConnect
     | ConnectModal_Reverse
+    | ConnectionModal_Title
+    | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int
     | Reorder_CloseReorderMode

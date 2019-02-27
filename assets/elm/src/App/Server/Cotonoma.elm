@@ -1,14 +1,22 @@
-module App.Server.Cotonoma exposing (..)
+module App.Server.Cotonoma exposing
+    ( decodeCotonoma
+    , decodeStats
+    , encodeCotonoma
+    , fetchCotonomas
+    , fetchStats
+    , fetchSubCotonomas
+    , refreshCotonomaList
+    )
 
-import Date
-import Http
-import Json.Decode as Decode exposing (maybe, int, string, float, bool)
-import Json.Encode as Encode
-import Json.Decode.Pipeline exposing (required, optional, hardcoded)
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
 import App.Submodels.Context exposing (Context)
+import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
+import Date
+import Http
+import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Encode as Encode
 
 
 decodeCotonoma : Decode.Decoder Cotonoma
@@ -35,8 +43,8 @@ fetchCotonomas =
                 (Decode.field "global" (Decode.list decodeCotonoma))
                 (Decode.field "recent" (Decode.list decodeCotonoma))
     in
-        Http.get "/api/cotonomas" decodeResponse
-            |> Http.send CotonomasFetched
+    Http.get "/api/cotonomas" decodeResponse
+        |> Http.send CotonomasFetched
 
 
 fetchSubCotonomas : Context a -> Cmd Msg
@@ -55,7 +63,7 @@ encodeCotonoma : Maybe Cotonoma -> Bool -> String -> Encode.Value
 encodeCotonoma maybeCotonoma shared name =
     Encode.object
         [ ( "cotonoma"
-          , (Encode.object
+          , Encode.object
                 [ ( "cotonoma_id"
                   , maybeCotonoma
                         |> Maybe.map (\cotonoma -> Encode.string cotonoma.id)
@@ -64,7 +72,6 @@ encodeCotonoma maybeCotonoma shared name =
                 , ( "name", Encode.string name )
                 , ( "shared", Encode.bool shared )
                 ]
-            )
           )
         ]
 

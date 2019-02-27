@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Збереження"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "Підтвердити"
 
@@ -138,7 +141,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "Це ім‘я має бути довжиною максимум "
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " символів, зараз же: "
 
         ProfileModal_Title ->
@@ -182,9 +185,10 @@ text key =
 
         InviteModal_InvitesRemaining invites ->
             if invites == 1 then
-                (toString invites) ++ " invite remaining"
+                toString invites ++ " invite remaining"
+
             else
-                (toString invites) ++ " invites remaining"
+                toString invites ++ " invites remaining"
 
         CotoToolbar_Connect ->
             "Приєднати до вибраних об'єктів"
@@ -204,8 +208,8 @@ text key =
         CotoToolbar_More ->
             "Більше"
 
-        CotoToolbar_Disconnect ->
-            "Роз'єднати"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "Змінити порядок"
@@ -267,9 +271,16 @@ text key =
         ConnectModal_Reverse ->
             "Обернути"
 
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "Роз'єднати"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "об'єкт вибрано"
+
             else
                 "об'єкти вибрані"
 

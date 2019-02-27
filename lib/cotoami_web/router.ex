@@ -66,6 +66,7 @@ defmodule CotoamiWeb.Router do
     get("/invitees", AmishiController, :invitees)
     get("/amishis/email/refresh", AmishiController, :refresh_email_user_data)
     get("/amishis/email/:email", AmishiController, :show_by_email)
+    get("/amishis/:id", AmishiController, :show)
 
     get("/search/:query", CotoController, :search)
     resources("/cotos", CotoController, only: [:index, :create, :update, :delete])
@@ -88,12 +89,12 @@ defmodule CotoamiWeb.Router do
     delete("/graph/pin/:coto_id", CotoGraphController, :unpin)
     put("/graph/:cotonoma_key/pin", CotoGraphController, :pin)
     delete("/graph/:cotonoma_key/pin/:coto_id", CotoGraphController, :unpin)
-    put("/graph/connection/:start_id", CotoGraphController, :connect)
-    put("/graph/:cotonoma_key/connection/:start_id", CotoGraphController, :connect)
-    delete("/graph/connection/:start_id/:end_id", CotoGraphController, :disconnect)
-    delete("/graph/:cotonoma_key/connection/:start_id/:end_id", CotoGraphController, :disconnect)
+    put("/graph/connections/:start_id", CotoGraphController, :connect)
+    put("/graph/:cotonoma_key/connections/:start_id", CotoGraphController, :connect)
     put("/graph/reorder", CotoGraphController, :reorder)
     put("/graph/:cotonoma_key/reorder", CotoGraphController, :reorder)
-    put("/graph/connection/:start_id/reorder", CotoGraphController, :reorder)
+    put("/graph/connections/:start_id/reorder", CotoGraphController, :reorder)
+    put("/graph/connections/:start_id/:end_id", CotoGraphController, :update_connection)
+    delete("/graph/connections/:start_id/:end_id", CotoGraphController, :disconnect)
   end
 end

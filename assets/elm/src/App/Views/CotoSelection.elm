@@ -1,34 +1,33 @@
-module App.Views.CotoSelection
-    exposing
-        ( Model
-        , defaultModel
-        , update
-        , closeColumnIfEmpty
-        , statusBar
-        , view
-        )
+module App.Views.CotoSelection exposing
+    ( Model
+    , closeColumnIfEmpty
+    , defaultModel
+    , statusBar
+    , update
+    , view
+    )
 
-import Set
-import Task
-import Process
-import Time
-import Html exposing (..)
-import Html.Keyed
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
-import Utils.UpdateUtil exposing (..)
-import Utils.StringUtil exposing (isBlank)
-import Utils.EventUtil exposing (onLinkButtonClick)
-import Utils.HtmlUtil exposing (faIcon, materialIcon)
 import App.I18n.Keys as I18nKeys
-import App.Types.Coto exposing (Coto, CotoId, ElementId, Cotonoma, CotoSelection)
+import App.Markdown
 import App.Messages as AppMsg exposing (..)
-import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Markdown
+import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
 import App.Views.Coto
+import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
+import Html.Keyed
+import Process
+import Set
+import Task
+import Time
+import Utils.EventUtil exposing (onLinkButtonClick)
+import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.StringUtil exposing (isBlank)
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
@@ -57,7 +56,7 @@ update context msg ({ selectionView } as model) =
         ColumnToggle ->
             { model
                 | selectionView =
-                    { selectionView | columnOpen = (not selectionView.columnOpen) }
+                    { selectionView | columnOpen = not selectionView.columnOpen }
             }
                 |> withoutCmd
 
@@ -96,6 +95,7 @@ closeColumnIfEmpty : UpdateModel model -> UpdateModel model
 closeColumnIfEmpty ({ selectionView } as model) =
     if List.isEmpty model.selection then
         { model | selectionView = { selectionView | columnOpen = False } }
+
     else
         model
 
@@ -117,26 +117,27 @@ statusBar context model =
         message =
             context.i18nText (I18nKeys.CotoSelection_CotosSelected count)
     in
-        div
-            [ id "coto-selection-bar"
-            , classList
-                [ ( "empty", List.isEmpty model.selection )
+    div
+        [ id "coto-selection-bar"
+        , classList
+            [ ( "empty", List.isEmpty model.selection )
+            ]
+        ]
+        [ a [ class "close", onClick (AppMsg.CotoSelectionMsg ClearSelection) ]
+            [ faIcon "times" Nothing ]
+        , div [ class "selection-info" ]
+            [ faIcon "check-square-o" Nothing
+            , span [ class "selection-count" ] [ text (toString count) ]
+            , span [ class "text" ] [ text (" " ++ message) ]
+            , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
+                [ if model.selectionView.columnOpen then
+                    faIcon "caret-up" Nothing
+
+                  else
+                    faIcon "caret-down" Nothing
                 ]
             ]
-            [ a [ class "close", onClick (AppMsg.CotoSelectionMsg ClearSelection) ]
-                [ faIcon "times" Nothing ]
-            , div [ class "selection-info" ]
-                [ faIcon "check-square-o" Nothing
-                , span [ class "selection-count" ] [ text (toString count) ]
-                , span [ class "text" ] [ text (" " ++ message) ]
-                , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
-                    [ if model.selectionView.columnOpen then
-                        faIcon "caret-up" Nothing
-                      else
-                        faIcon "caret-down" Nothing
-                    ]
-                ]
-            ]
+        ]
 
 
 view : Context context -> ViewModel model -> Html AppMsg.Msg
@@ -158,7 +159,7 @@ titleMaxlength =
 
 validateTitle : String -> Bool
 validateTitle title =
-    not (isBlank title) && (String.length title) <= titleMaxlength
+    not (isBlank title) && String.length title <= titleMaxlength
 
 
 selectedCotosDiv : Context context -> ViewModel model -> Html AppMsg.Msg
@@ -191,31 +192,32 @@ cotoDiv context beingDeselected coto =
         elementId =
             "selection-" ++ coto.id
     in
-        div
-            [ classList
-                [ ( "coto", True )
-                , ( "animated", True )
-                , ( "fadeOut", beingDeselected )
-                ]
+    div
+        [ classList
+            [ ( "coto", True )
+            , ( "animated", True )
+            , ( "fadeOut", beingDeselected )
             ]
-            [ div
-                [ class "coto-inner" ]
-                [ a
-                    [ class "tool-button deselect-coto"
-                    , title "Deselect coto"
-                    , onLinkButtonClick
-                        (AppMsg.CotoSelectionMsg (DeselectingCoto coto.id))
-                    ]
-                    [ materialIcon
-                        (if beingDeselected then
-                            "check_box_outline_blank"
-                         else
-                            "check_box"
-                        )
-                        Nothing
-                    ]
-                , App.Views.Coto.headerDiv context Nothing elementId coto
-                , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
-                , App.Views.Coto.subCotosButtonDiv context.graph Nothing (Just coto.id)
+        ]
+        [ div
+            [ class "coto-inner" ]
+            [ a
+                [ class "tool-button deselect-coto"
+                , title "Deselect coto"
+                , onLinkButtonClick
+                    (AppMsg.CotoSelectionMsg (DeselectingCoto coto.id))
                 ]
+                [ materialIcon
+                    (if beingDeselected then
+                        "check_box_outline_blank"
+
+                     else
+                        "check_box"
+                    )
+                    Nothing
+                ]
+            , App.Views.Coto.headerDiv context Nothing elementId coto
+            , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
+            , App.Views.Coto.subCotosButtonDiv context.graph Nothing (Just coto.id)
             ]
+        ]

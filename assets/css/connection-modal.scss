@@ -1,0 +1,38 @@
+@import "variables.scss";
+
+#connection-modal {
+  .modal-content {
+    width: 80vw;
+  }
+
+  div.amishi {
+    padding-top: 5px;
+    text-align: right;
+
+    span.preposition {
+      font-weight: bold;
+      color: #aaa;
+      margin-right: 2px;
+    }
+  }
+
+  button.disconnect i {
+    font-size: 15px;
+    margin-right: 3px;
+    vertical-align: -2px;
+  }
+
+  div.coto-in-connection {
+    max-height: 20vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  hr.modal-buttons-seperator {
+    display: none;
+  }
+
+  div.modal-buttons {
+    padding-top: 15px;
+  }
+}

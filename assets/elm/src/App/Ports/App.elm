@@ -1,7 +1,4 @@
-port module App.Ports.App
-    exposing
-        ( updateUnreadStateInTitle
-        )
+port module App.Ports.App exposing (updateUnreadStateInTitle)
 
 import App.Submodels.Context exposing (Context)
 

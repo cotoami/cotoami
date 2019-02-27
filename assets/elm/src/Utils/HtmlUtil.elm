@@ -1,4 +1,9 @@
-module Utils.HtmlUtil exposing (none, faIcon, materialIcon)
+module Utils.HtmlUtil exposing
+    ( faIcon
+    , loadingHorizontalImg
+    , materialIcon
+    , none
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -9,6 +14,11 @@ import Html.Attributes exposing (..)
 none : Html msg
 none =
     text ""
+
+
+loadingHorizontalImg : Html msg
+loadingHorizontalImg =
+    img [ src "/images/loading-horizontal.gif" ] []
 
 
 faIcon : String -> Maybe String -> Html msg
@@ -24,7 +34,7 @@ faIcon name maybeAdditionalClass =
                 Just additionalClass ->
                     ( additionalClass, True )
             ]
-        , (attribute "aria-hidden" "true")
+        , attribute "aria-hidden" "true"
         ]
         []
 

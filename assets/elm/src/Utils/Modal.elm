@@ -1,10 +1,8 @@
 module Utils.Modal exposing (Config, view)
 
-import Html
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Exts.Maybe exposing (maybe, isJust)
 import Utils.HtmlUtil exposing (faIcon)
 
 
@@ -16,20 +14,14 @@ type alias Config msg =
     }
 
 
-view : String -> Maybe (Config msg) -> Html msg
-view modalId maybeConfig =
+view : String -> Config msg -> Html msg
+view modalId config =
     div
         [ id modalId
-        , classList
-            [ ( "modal", True )
-            , ( "modal-open", isJust maybeConfig )
-            ]
+        , class "modal"
         ]
         [ div [ class "modal-inner" ]
-            [ maybeConfig
-                |> Maybe.map (\config -> modalContent config)
-                |> Maybe.withDefault (div [ class "modal-content" ] [])
-            ]
+            [ modalContent config ]
         ]
 
 

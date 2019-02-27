@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Connection_LinkingPhraseInput ->
+            "Linking phrase (optional)"
+
         Confirm ->
             "確認"
 
@@ -141,7 +144,7 @@ text key =
 
         EditorModal_TooLongForCotonomaName maxlength ->
             "投稿室的名字要符合以下的內容 需要在"
-                ++ (toString maxlength)
+                ++ toString maxlength
                 ++ " 文字以下編輯。現在的文字數: "
 
         ProfileModal_Title ->
@@ -185,9 +188,10 @@ text key =
 
         InviteModal_InvitesRemaining invites ->
             if invites == 1 then
-                (toString invites) ++ " invite remaining"
+                toString invites ++ " invite remaining"
+
             else
-                (toString invites) ++ " invites remaining"
+                toString invites ++ " invites remaining"
 
         CotoToolbar_Connect ->
             "連接選擇中的投稿"
@@ -207,8 +211,8 @@ text key =
         CotoToolbar_More ->
             "打開選單清單"
 
-        CotoToolbar_Disconnect ->
-            "解除連接"
+        CotoToolbar_EditConnection ->
+            "Edit the connection"
 
         CotoToolbar_Reorder ->
             "重新排列"
@@ -269,6 +273,12 @@ text key =
 
         ConnectModal_Reverse ->
             "逆方向"
+
+        ConnectionModal_Title ->
+            "Edit Connection"
+
+        ConnectionModal_Disconnect ->
+            "解除連接"
 
         CotoSelection_CotosSelected count ->
             "件在選擇中"
