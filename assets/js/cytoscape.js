@@ -125,7 +125,7 @@ const _layout = {
   nodeDimensionsIncludeLabels: true,
   fit: false,
   idealEdgeLength: 100,
-  animate: 'false',
+  animate: false,
   numIter: 30000
 }
 
