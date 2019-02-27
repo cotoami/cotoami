@@ -14,6 +14,7 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ![](docs/images/screenshot-mobile.png)
 
+![](docs/images/concept-map.png)
 
 ## Concept
 
