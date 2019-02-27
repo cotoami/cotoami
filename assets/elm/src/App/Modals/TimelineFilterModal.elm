@@ -1,61 +1,29 @@
 module App.Modals.TimelineFilterModal exposing (update, view)
 
+import App.I18n.Keys as I18nKeys
+import App.LocalConfig
+import App.Messages as AppMsg exposing (Msg(CloseModal))
+import App.Modals.TimelineFilterModalMsg as ModalMsg exposing (Msg(..))
+import App.Server.Post
+import App.Submodels.Context exposing (Context)
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Views.Flow
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
-import Utils.Modal as Modal
-import Utils.UpdateUtil exposing (withCmd, withoutCmd, addCmd)
 import Utils.HtmlUtil exposing (materialIcon)
-import App.LocalConfig
-import App.I18n.Keys as I18nKeys
-import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.TimelineFilterModalMsg as TimelineFilterModalMsg exposing (Msg(..))
-import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Submodels.Context exposing (Context)
-import App.Views.Flow
-import App.Server.Post
-
-
-type alias UpdateModel model =
-    { model
-        | flowView : App.Views.Flow.Model
-    }
-
-
-update : Context a -> TimelineFilterModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ flowView } as model) =
-    case msg of
-        ExcludePinnedGraphOptionCheck check ->
-            flowView.filter
-                |> (\filter -> { filter | excludePinnedGraph = check })
-                |> (\filter -> App.Views.Flow.setFilter filter flowView)
-                |> (\flowView -> { model | flowView = flowView })
-                |> withCmd (\model -> saveUpdate context model.flowView.filter)
-
-        ExcludePostsInCotonomaOptionCheck check ->
-            flowView.filter
-                |> (\filter -> { filter | excludePostsInCotonoma = check })
-                |> (\filter -> App.Views.Flow.setFilter filter flowView)
-                |> (\flowView -> { model | flowView = flowView })
-                |> withCmd (\model -> saveUpdate context model.flowView.filter)
-
-
-saveUpdate : Context a -> TimelineFilter -> Cmd AppMsg.Msg
-saveUpdate context filter =
-    Cmd.batch
-        [ App.Server.Post.fetchPostsByContext 0 filter context
-        , App.LocalConfig.saveTimelineFilter filter
-        ]
+import Utils.Modal
+import Utils.UpdateUtil exposing (addCmd, withCmd, withoutCmd)
 
 
 view : Context a -> TimelineFilter -> Html AppMsg.Msg
-view context filter =
-    Modal.view
-        "timeline-filter-modal"
-        (Just (modalConfig context filter))
+view context model =
+    model
+        |> modalConfig context
+        |> Utils.Modal.view "timeline-filter-modal"
 
 
-modalConfig : Context a -> TimelineFilter -> Modal.Config AppMsg.Msg
+modalConfig : Context a -> TimelineFilter -> Utils.Modal.Config AppMsg.Msg
 modalConfig context filter =
     { closeMessage = CloseModal
     , title = text (context.i18nText I18nKeys.TimelineFilterModal_Title)
@@ -64,6 +32,7 @@ modalConfig context filter =
             [ excludePinnedGraphOption context filter
             , if App.Submodels.Context.atHome context then
                 excludePostsInCotonomaOption context filter
+
               else
                 Utils.HtmlUtil.none
             ]
@@ -114,4 +83,36 @@ excludePostsInCotonomaOption context filter =
                     ]
                 ]
             ]
+        ]
+
+
+type alias UpdateModel model =
+    { model
+        | flowView : App.Views.Flow.Model
+    }
+
+
+update : Context a -> ModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ flowView } as model) =
+    case msg of
+        ExcludePinnedGraphOptionCheck check ->
+            flowView.filter
+                |> (\filter -> { filter | excludePinnedGraph = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
+
+        ExcludePostsInCotonomaOptionCheck check ->
+            flowView.filter
+                |> (\filter -> { filter | excludePostsInCotonoma = check })
+                |> (\filter -> App.Views.Flow.setFilter filter flowView)
+                |> (\flowView -> { model | flowView = flowView })
+                |> withCmd (\model -> saveUpdate context model.flowView.filter)
+
+
+saveUpdate : Context a -> TimelineFilter -> Cmd AppMsg.Msg
+saveUpdate context filter =
+    Cmd.batch
+        [ App.Server.Post.fetchPostsByContext 0 filter context
+        , App.LocalConfig.saveTimelineFilter filter
         ]

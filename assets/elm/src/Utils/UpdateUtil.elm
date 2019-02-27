@@ -1,13 +1,12 @@
-module Utils.UpdateUtil
-    exposing
-        ( withCmd
-        , withCmds
-        , withCmdIf
-        , withoutCmd
-        , addCmd
-        , addCmdIf
-        , chain
-        )
+module Utils.UpdateUtil exposing
+    ( addCmd
+    , addCmdIf
+    , chain
+    , withCmd
+    , withCmdIf
+    , withCmds
+    , withoutCmd
+    )
 
 
 withCmd : (model -> Cmd msg) -> model -> ( model, Cmd msg )
@@ -24,6 +23,7 @@ withCmdIf : (model -> Bool) -> (model -> Cmd msg) -> model -> ( model, Cmd msg )
 withCmdIf condition createCmd model =
     if condition model then
         withCmd createCmd model
+
     else
         ( model, Cmd.none )
 
@@ -42,6 +42,7 @@ addCmdIf : (model -> Bool) -> (model -> Cmd msg) -> ( model, Cmd msg ) -> ( mode
 addCmdIf condition createCmd ( model, cmd ) =
     if condition model then
         addCmd createCmd ( model, cmd )
+
     else
         ( model, cmd )
 

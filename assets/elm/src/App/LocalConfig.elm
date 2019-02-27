@@ -1,16 +1,15 @@
-module App.LocalConfig
-    exposing
-        ( configure
-        , saveTimelineFilter
-        )
+module App.LocalConfig exposing
+    ( configure
+    , saveTimelineFilter
+    )
 
-import Json.Encode as Encode exposing (Value)
-import Json.Decode as Decode
-import App.Model exposing (Model)
-import App.Types.TimelineFilter exposing (TimelineFilter)
 import App.Messages exposing (Msg)
-import App.Views.Flow
+import App.Model exposing (Model)
 import App.Ports.LocalStorage
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import App.Views.Flow
+import Json.Decode as Decode
+import Json.Encode as Encode exposing (Value)
 
 
 configure : ( String, Value ) -> Model -> Model

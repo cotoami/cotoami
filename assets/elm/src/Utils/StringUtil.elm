@@ -1,12 +1,11 @@
-module Utils.StringUtil
-    exposing
-        ( isBlank
-        , isNotBlank
-        , validateEmail
-        , capitalize
-        )
+module Utils.StringUtil exposing
+    ( capitalize
+    , isBlank
+    , isNotBlank
+    , validateEmail
+    )
 
-import Regex exposing (Regex, caseInsensitive, regex, contains)
+import Regex exposing (Regex, caseInsensitive, contains, regex)
 
 
 isBlank : String -> Bool

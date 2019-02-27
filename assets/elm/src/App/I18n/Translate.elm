@@ -3,8 +3,8 @@ module App.I18n.Translate exposing (text)
 import App.I18n.Keys exposing (TextKey)
 import App.I18n.Translations.En
 import App.I18n.Translations.Ja
-import App.I18n.Translations.Uk
 import App.I18n.Translations.Ru
+import App.I18n.Translations.Uk
 import App.I18n.Translations.ZhCn
 import App.I18n.Translations.ZhTw
 
@@ -50,4 +50,4 @@ text lang key =
                 _ ->
                     App.I18n.Translations.En.text
     in
-        translation key
+    translation key

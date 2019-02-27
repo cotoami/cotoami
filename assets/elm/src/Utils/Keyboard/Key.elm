@@ -1,4 +1,4 @@
-module Utils.Keyboard.Key exposing (..)
+module Utils.Keyboard.Key exposing (Key(..), Side(..), code, escapeKeyCode, fromCode, nKeyCode, toChar)
 
 {-| Original version: <https://github.com/SwiftsNamesake/proper-keyboard>
 -}
@@ -602,6 +602,7 @@ code key =
         Ambiguous choices ->
             if List.all (flip List.member [ Windows, Command, ChromeSearch ]) choices then
                 Just 91
+
             else
                 Nothing
 

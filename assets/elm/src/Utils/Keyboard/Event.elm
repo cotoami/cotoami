@@ -1,19 +1,18 @@
-module Utils.Keyboard.Event
-    exposing
-        ( KeyboardEvent
-        , decodeKeyboardEvent
-        , considerKeyboardEvent
-        , KeyCode
-        , decodeKeyCode
-        , decodeKey
-        )
+module Utils.Keyboard.Event exposing
+    ( KeyCode
+    , KeyboardEvent
+    , considerKeyboardEvent
+    , decodeKey
+    , decodeKeyCode
+    , decodeKeyboardEvent
+    )
 
 {-| Original version: <https://github.com/Gizra/elm-keyboard-event>
 -}
 
-import Json.Decode exposing (Decoder, map, map7, int, field, oneOf, andThen, maybe, succeed, fail, bool, string)
-import Utils.Keyboard.Key exposing (Key, fromCode)
+import Json.Decode exposing (Decoder, andThen, bool, fail, field, int, map, map7, maybe, oneOf, string, succeed)
 import String
+import Utils.Keyboard.Key exposing (Key, fromCode)
 
 
 {-| A type alias for `Int`.
@@ -47,6 +46,7 @@ decodeNonZero =
         (\code ->
             if code == 0 then
                 fail "code was zero"
+
             else
                 succeed code
         )
@@ -64,6 +64,7 @@ decodeKey =
             (\key ->
                 if String.isEmpty key then
                     fail "empty key"
+
                 else
                     succeed key
             )

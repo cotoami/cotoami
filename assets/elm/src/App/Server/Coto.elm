@@ -1,15 +1,15 @@
-module App.Server.Coto exposing (..)
+module App.Server.Coto exposing (cotonomatize, decodeCoto, deleteCoto, updateContent)
 
-import Date
-import Http exposing (Request)
-import Json.Encode as Encode
-import Json.Decode as Decode exposing (maybe, string, bool, float)
-import Json.Decode.Pipeline exposing (required, optional)
-import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 import App.Messages exposing (Msg(CotoDeleted, CotoUpdated, Cotonomatized))
-import App.Types.Coto exposing (CotoId, Coto, CotoContent, Cotonoma)
 import App.Server.Amishi
 import App.Server.Cotonoma
+import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma)
+import Date
+import Http exposing (Request)
+import Json.Decode as Decode exposing (bool, float, maybe, string)
+import Json.Decode.Pipeline exposing (optional, required)
+import Json.Encode as Encode
+import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
 
 
 decodeCoto : Decode.Decoder Coto
@@ -51,7 +51,7 @@ updateContent clientId cotoId shared content =
                       )
                     ]
     in
-        Http.send CotoUpdated (httpPut url clientId body decodeCoto)
+    Http.send CotoUpdated (httpPut url clientId body decodeCoto)
 
 
 cotonomatize : ClientId -> CotoId -> Cmd Msg

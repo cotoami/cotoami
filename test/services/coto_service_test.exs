@@ -1,5 +1,5 @@
 defmodule Cotoami.CotoServiceTest do
-  use Cotoami.ModelCase
+  use Cotoami.DataCase
   import ShorterMaps
 
   alias Cotoami.{
@@ -52,9 +52,9 @@ defmodule Cotoami.CotoServiceTest do
 
       coto1 = CotoService.create!(amishi, "coto1")
       coto2 = CotoService.create!(amishi, "coto2")
-      CotoGraphService.pin(conn, coto2, amishi)
+      CotoGraphService.pin(conn, coto2, nil, amishi)
       coto3 = CotoService.create!(amishi, "coto3")
-      CotoGraphService.connect(conn, coto2, coto3, amishi)
+      CotoGraphService.connect(conn, coto2, coto3, nil, amishi)
       coto4 = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}

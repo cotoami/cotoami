@@ -1,22 +1,43 @@
-module App.Pushed exposing (..)
+module App.Pushed exposing
+    ( ConnectPayloadBody
+    , DisconnectPayloadBody
+    , Handler
+    , ReorderPayloadBody
+    , decodeConnectPayloadBody
+    , decodeConnectionUpdatePayloadBody
+    , decodeDisconnectPayloadBody
+    , decodeReorderPayloadBody
+    , handle
+    , handleConnect
+    , handleConnectionUpdate
+    , handleCotoUpdate
+    , handleCotonomaUpdate
+    , handleCotonomatize
+    , handleDelete
+    , handleDisconnect
+    , handlePost
+    , handleReorder
+    )
 
-import Json.Encode exposing (Value)
-import Json.Decode as Decode
-import Exts.Maybe exposing (isJust)
-import Utils.HttpUtil exposing (ClientId(ClientId))
-import Utils.UpdateUtil exposing (..)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
-import App.Types.Post exposing (Post)
-import App.Types.Graph
-import App.Types.Timeline
+import App.Channels exposing (Payload)
+import App.Commands
 import App.Messages exposing (Msg(..))
 import App.Model exposing (Model)
-import App.Submodels.LocalCotos
-import App.Commands
-import App.Channels exposing (Payload)
+import App.Ports.App
 import App.Server.Coto
 import App.Server.Cotonoma
-import App.Ports.App
+import App.Submodels.LocalCotos
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
+import App.Types.Graph
+import App.Types.Graph.Connect
+import App.Types.Graph.Reorder
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
+import Exts.Maybe exposing (isJust)
+import Json.Decode as Decode
+import Json.Encode exposing (Value)
+import Utils.HttpUtil exposing (ClientId(ClientId))
+import Utils.UpdateUtil exposing (..)
 
 
 type alias Handler body =
@@ -34,10 +55,11 @@ handle payloadDecoder handler payload model =
                 (ClientId selfId) =
                     model.clientId
             in
-                if senderId /= selfId then
-                    handler decodedPayload model
-                else
-                    model |> withoutCmd
+            if senderId /= selfId then
+                handler decodedPayload model
+
+            else
+                model |> withoutCmd
 
         Err err ->
             Debug.log err ( model, Cmd.none )
@@ -58,6 +80,7 @@ handleDelete payload model =
         |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
         |> Maybe.withDefault model
         |> withCmd App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 handleCotonomaUpdate : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
@@ -74,25 +97,29 @@ handleCotoUpdate payload model =
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
             App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 handleCotonomatize : Payload Cotonoma -> Model -> ( Model, Cmd Msg )
 handleCotonomatize payload model =
     App.Submodels.LocalCotos.cotonomatize payload.body payload.body.cotoId model
         |> withCmd App.Server.Cotonoma.refreshCotonomaList
+        |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias ConnectPayloadBody =
     { start : Coto
     , end : Coto
+    , linkingPhrase : Maybe String
     }
 
 
 decodeConnectPayloadBody : Decode.Decoder ConnectPayloadBody
 decodeConnectPayloadBody =
-    Decode.map2 ConnectPayloadBody
+    Decode.map3 ConnectPayloadBody
         (Decode.field "start" App.Server.Coto.decodeCoto)
         (Decode.field "end" App.Server.Coto.decodeCoto)
+        (Decode.field "linking_phrase" (Decode.maybe Decode.string))
 
 
 handleConnect : Payload ConnectPayloadBody -> Model -> ( Model, Cmd Msg )
@@ -102,10 +129,12 @@ handleConnect payload model =
             (\cotonoma ->
                 if cotonoma.cotoId == payload.body.start.id then
                     Just <|
-                        App.Types.Graph.pinCoto
+                        App.Types.Graph.Connect.pin
                             payload.amishi.id
                             payload.body.end
+                            payload.body.linkingPhrase
                             model.graph
+
                 else
                     Nothing
             )
@@ -113,16 +142,17 @@ handleConnect payload model =
             (App.Submodels.LocalCotos.getCoto payload.body.start.id model
                 |> Maybe.map
                     (\startCoto ->
-                        App.Types.Graph.connect
+                        App.Types.Graph.Connect.connect
                             payload.amishi.id
                             startCoto
                             payload.body.end
+                            payload.body.linkingPhrase
                             model.graph
                     )
                 |> Maybe.withDefault model.graph
             )
         |> (\graph -> { model | graph = graph })
-        |> withoutCmd
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias DisconnectPayloadBody =
@@ -134,8 +164,8 @@ type alias DisconnectPayloadBody =
 decodeDisconnectPayloadBody : Decode.Decoder DisconnectPayloadBody
 decodeDisconnectPayloadBody =
     Decode.map2 DisconnectPayloadBody
-        (Decode.field "startId" Decode.string)
-        (Decode.field "endId" Decode.string)
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_id" Decode.string)
 
 
 handleDisconnect : Payload DisconnectPayloadBody -> Model -> ( Model, Cmd Msg )
@@ -143,7 +173,7 @@ handleDisconnect payload model =
     let
         -- Delete the connection
         graph1 =
-            App.Types.Graph.disconnect
+            App.Types.Graph.Connect.disconnect
                 ( payload.body.startId, payload.body.endId )
                 model.graph
 
@@ -154,15 +184,47 @@ handleDisconnect payload model =
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then
                             Just <|
-                                App.Types.Graph.unpinCoto
+                                App.Types.Graph.Connect.unpin
                                     payload.body.endId
                                     graph1
+
                         else
                             Nothing
                     )
                 |> Maybe.withDefault graph1
     in
-        { model | graph = graph2 } |> withoutCmd
+    { model | graph = graph2 }
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
+
+
+type alias ConnectionUpdatePayloadBody =
+    { startId : CotoId
+    , endId : CotoId
+    , linkingPhrase : Maybe String
+    }
+
+
+decodeConnectionUpdatePayloadBody : Decode.Decoder ConnectionUpdatePayloadBody
+decodeConnectionUpdatePayloadBody =
+    Decode.map3 ConnectionUpdatePayloadBody
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_id" Decode.string)
+        (Decode.field "linking_phrase" (Decode.maybe Decode.string))
+
+
+handleConnectionUpdate : Payload ConnectionUpdatePayloadBody -> Model -> ( Model, Cmd Msg )
+handleConnectionUpdate payload model =
+    let
+        graph =
+            model.graph
+                |> App.Types.Graph.setLinkingPhrase
+                    model.cotonoma
+                    payload.body.startId
+                    payload.body.endId
+                    payload.body.linkingPhrase
+    in
+    { model | graph = graph }
+        |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
 
 type alias ReorderPayloadBody =
@@ -174,8 +236,8 @@ type alias ReorderPayloadBody =
 decodeReorderPayloadBody : Decode.Decoder ReorderPayloadBody
 decodeReorderPayloadBody =
     Decode.map2 ReorderPayloadBody
-        (Decode.field "startId" Decode.string)
-        (Decode.field "endIds" (Decode.list Decode.string))
+        (Decode.field "start_id" Decode.string)
+        (Decode.field "end_ids" (Decode.list Decode.string))
 
 
 handleReorder : Payload ReorderPayloadBody -> Model -> ( Model, Cmd Msg )
@@ -183,7 +245,7 @@ handleReorder payload model =
     let
         -- Reorder connections
         graph1 =
-            App.Types.Graph.reorder
+            App.Types.Graph.Reorder.byCotoId
                 (Just payload.body.startId)
                 payload.body.endIds
                 model.graph
@@ -195,13 +257,14 @@ handleReorder payload model =
                     (\cotonoma ->
                         if cotonoma.cotoId == payload.body.startId then
                             Just <|
-                                App.Types.Graph.reorder
+                                App.Types.Graph.Reorder.byCotoId
                                     Nothing
                                     payload.body.endIds
                                     graph1
+
                         else
                             Nothing
                     )
                 |> Maybe.withDefault graph1
     in
-        { model | graph = graph2 } |> withoutCmd
+    { model | graph = graph2 } |> withoutCmd

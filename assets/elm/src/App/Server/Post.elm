@@ -1,25 +1,25 @@
-module App.Server.Post exposing (..)
+module App.Server.Post exposing (decodePaginatedPosts, decodePost, encodePost, fetchCotonomaPosts, fetchHomePosts, fetchPostsByContext, post, postCotonoma, postRequest, search)
 
-import Date exposing (Date)
-import Http exposing (Request)
-import Json.Decode as Decode exposing (maybe, int, string, float, bool)
-import Json.Decode.Pipeline exposing (required, optional, hardcoded)
-import Json.Encode as Encode
-import Utils.HttpUtil exposing (ClientId, httpPost)
 import App.Messages
     exposing
         ( Msg
-            ( HomePostsFetched
-            , CotonomaPostsFetched
+            ( CotonomaPostsFetched
+            , HomePostsFetched
             , SearchResultsFetched
             )
         )
-import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (Post, PaginatedPosts)
-import App.Types.TimelineFilter exposing (TimelineFilter)
-import App.Submodels.Context exposing (Context)
 import App.Server.Amishi
 import App.Server.Cotonoma
+import App.Submodels.Context exposing (Context)
+import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
+import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.TimelineFilter exposing (TimelineFilter)
+import Date exposing (Date)
+import Http exposing (Request)
+import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Encode as Encode
+import Utils.HttpUtil exposing (ClientId, httpPost)
 
 
 decodePost : Decode.Decoder Post
@@ -50,20 +50,22 @@ fetchHomePosts pageIndex filter =
     let
         url =
             "/api/cotos"
-                ++ ("?page=" ++ (toString pageIndex))
+                ++ ("?page=" ++ toString pageIndex)
                 ++ (if filter.excludePinnedGraph then
                         "&exclude_pinned_graph=true"
+
                     else
                         ""
                    )
                 ++ (if filter.excludePostsInCotonoma then
                         "&exclude_posts_in_cotonoma=true"
+
                     else
                         ""
                    )
     in
-        Http.send HomePostsFetched <|
-            Http.get url decodePaginatedPosts
+    Http.send HomePostsFetched <|
+        Http.get url decodePaginatedPosts
 
 
 fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
@@ -71,18 +73,19 @@ fetchCotonomaPosts pageIndex filter key =
     let
         url =
             ("/api/cotonomas/" ++ key ++ "/cotos")
-                ++ ("?page=" ++ (toString pageIndex))
+                ++ ("?page=" ++ toString pageIndex)
                 ++ (if filter.excludePinnedGraph then
                         "&exclude_pinned_graph=true"
+
                     else
                         ""
                    )
     in
-        Http.send CotonomaPostsFetched <|
-            Http.get url <|
-                Decode.map2 (,)
-                    (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
-                    (Decode.field "paginated_cotos" decodePaginatedPosts)
+    Http.send CotonomaPostsFetched <|
+        Http.get url <|
+            Decode.map2 (,)
+                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
+                (Decode.field "paginated_cotos" decodePaginatedPosts)
 
 
 fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
@@ -96,10 +99,10 @@ search : String -> Cmd Msg
 search query =
     let
         url =
-            "/api/search/" ++ (query)
+            "/api/search/" ++ query
     in
-        Http.send SearchResultsFetched <|
-            Http.get url decodePaginatedPosts
+    Http.send SearchResultsFetched <|
+        Http.get url decodePaginatedPosts
 
 
 postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
@@ -130,15 +133,15 @@ postCotonoma clientId maybeCotonoma tag shared name =
             App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
                 |> Http.jsonBody
     in
-        httpPost "/api/cotonomas" clientId body decodePost
-            |> Http.send tag
+    httpPost "/api/cotonomas" clientId body decodePost
+        |> Http.send tag
 
 
 encodePost : Maybe Cotonoma -> Post -> Encode.Value
 encodePost maybeCotonoma post =
     Encode.object
         [ ( "coto"
-          , (Encode.object
+          , Encode.object
                 [ ( "content", Encode.string post.content )
                 , ( "summary"
                   , post.summary
@@ -151,6 +154,5 @@ encodePost maybeCotonoma post =
                         |> Maybe.withDefault Encode.null
                   )
                 ]
-            )
           )
         ]

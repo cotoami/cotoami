@@ -1,8 +1,8 @@
-module App.Route exposing (..)
+module App.Route exposing (Route(..), matchers, parseLocation)
 
+import App.Types.Coto exposing (CotonomaKey)
 import Navigation exposing (Location)
 import UrlParser exposing (..)
-import App.Types.Coto exposing (CotonomaKey)
 
 
 type Route
@@ -21,7 +21,7 @@ matchers =
 
 parseLocation : Location -> Route
 parseLocation location =
-    case (parsePath matchers location) of
+    case parsePath matchers location of
         Just route ->
             route
 

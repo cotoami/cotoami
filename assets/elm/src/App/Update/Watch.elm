@@ -1,20 +1,19 @@
-module App.Update.Watch
-    exposing
-        ( clearUnread
-        , updateByPost
-        )
+module App.Update.Watch exposing
+    ( clearUnread
+    , updateByPost
+    )
 
-import Date
-import Time exposing (Time)
-import List.Extra
-import Utils.UpdateUtil exposing (..)
 import App.Messages exposing (Msg(WatchTimestampUpdated))
-import App.Types.Watch exposing (Watch)
-import App.Types.Post exposing (Post)
-import App.Types.Timeline
+import App.Server.Watch
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Server.Watch
+import App.Types.Post exposing (Post)
+import App.Types.Timeline
+import App.Types.Watch exposing (Watch)
+import Date
+import List.Extra
+import Time exposing (Time)
+import Utils.UpdateUtil exposing (..)
 
 
 clearUnread :
@@ -55,22 +54,23 @@ updateTimestamp context timestamp watch model =
                 |> Maybe.map (\watchTimestamp -> watchTimestamp < timestamp)
                 |> Maybe.withDefault True
     in
-        if (not model.watchUpdating) && isNewPost then
-            let
-                watchlist =
-                    model.watchlist
-                        |> List.Extra.updateIf
-                            (\w -> w.cotonoma.id == watch.cotonoma.id)
-                            (\w -> { w | lastPostTimestamp = Just timestamp })
-            in
-                { model | watchlist = watchlist, watchUpdating = True }
-                    |> withCmd
-                        (\_ ->
-                            App.Server.Watch.updateLastPostTimestamp
-                                (WatchTimestampUpdated)
-                                context.clientId
-                                watch.cotonoma.key
-                                timestamp
-                        )
-        else
-            ( model, Cmd.none )
+    if not model.watchUpdating && isNewPost then
+        let
+            watchlist =
+                model.watchlist
+                    |> List.Extra.updateIf
+                        (\w -> w.cotonoma.id == watch.cotonoma.id)
+                        (\w -> { w | lastPostTimestamp = Just timestamp })
+        in
+        { model | watchlist = watchlist, watchUpdating = True }
+            |> withCmd
+                (\_ ->
+                    App.Server.Watch.updateLastPostTimestamp
+                        WatchTimestampUpdated
+                        context.clientId
+                        watch.cotonoma.key
+                        timestamp
+                )
+
+    else
+        ( model, Cmd.none )

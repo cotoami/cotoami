@@ -1,8 +1,7 @@
-module App.Types.TimelineFilter
-    exposing
-        ( TimelineFilter
-        , defaultTimelineFilter
-        )
+module App.Types.TimelineFilter exposing
+    ( TimelineFilter
+    , defaultTimelineFilter
+    )
 
 
 type alias TimelineFilter =

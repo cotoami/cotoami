@@ -189,7 +189,7 @@ div.quick-coto-editor {
     position: relative;
     height: 40px;
 
-    span.user {
+    span.session {
       margin-left: 5px;
       line-height: 40px;
       vertical-align: middle;
@@ -201,16 +201,14 @@ div.quick-coto-editor {
         vertical-align: -6px;
       }
 
-      &.session {
-        img.avatar {
-          margin: 0;
-          padding: 0;
-          width: 32px;
-          height: 32px;
-          margin-right: 8px;
-          border-radius: 4px;
-          vertical-align: middle;
-        }
+      img.avatar {
+        margin: 0;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+        border-radius: 4px;
+        vertical-align: middle;
       }
     }
 

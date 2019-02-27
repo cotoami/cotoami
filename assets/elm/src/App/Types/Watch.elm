@@ -1,15 +1,14 @@
-module App.Types.Watch
-    exposing
-        ( Watch
-        , anyUnreadCotos
-        , findWatchByCotonomaId
-        , anyUnreadCotosInCotonoma
-        )
+module App.Types.Watch exposing
+    ( Watch
+    , anyUnreadCotos
+    , anyUnreadCotosInCotonoma
+    , findWatchByCotonomaId
+    )
 
-import Time exposing (Time)
-import List.Extra
-import Exts.Maybe exposing (isJust)
 import App.Types.Coto exposing (Cotonoma)
+import Exts.Maybe exposing (isJust)
+import List.Extra
+import Time exposing (Time)
 
 
 type alias Watch =

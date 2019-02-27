@@ -1,9 +1,21 @@
-module App.Commands exposing (..)
+module App.Commands exposing
+    ( focus
+    , initScrollPositionOfPinnedCotos
+    , scrollGraphExplorationToRight
+    , scrollPinnedCotosToBottom
+    , scrollTimelineByQuickEditorOpen
+    , scrollTimelineToBottom
+    , scrollToBottom
+    , scrollToRight
+    , scrollToTop
+    , scrollTraversalsPaginationToRight
+    , sendMsg
+    )
 
 import Dom
 import Dom.Scroll
-import Task
 import Process
+import Task
 import Time
 
 
@@ -25,7 +37,7 @@ scrollTraversalsPaginationToRight msg =
 scrollToRight : String -> msg -> Cmd msg
 scrollToRight elementId msg =
     Process.sleep (100 * Time.millisecond)
-        |> Task.andThen (\_ -> (Dom.Scroll.toRight elementId))
+        |> Task.andThen (\_ -> Dom.Scroll.toRight elementId)
         |> Task.attempt (\_ -> msg)
 
 
@@ -37,8 +49,8 @@ scrollTimelineToBottom tag =
 scrollTimelineByQuickEditorOpen : msg -> Cmd msg
 scrollTimelineByQuickEditorOpen msg =
     Process.sleep (1 * Time.millisecond)
-        |> Task.andThen (\_ -> (Dom.Scroll.y "timeline"))
-        |> Task.andThen (\y -> (Dom.Scroll.toY "timeline" (y + 142)))
+        |> Task.andThen (\_ -> Dom.Scroll.y "timeline")
+        |> Task.andThen (\y -> Dom.Scroll.toY "timeline" (y + 142))
         |> Task.attempt (\_ -> msg)
 
 
@@ -55,15 +67,15 @@ scrollPinnedCotosToBottom tag =
 scrollToTop : String -> msg -> Cmd msg
 scrollToTop elementId msg =
     Process.sleep (100 * Time.millisecond)
-        |> Task.andThen (\_ -> (Dom.Scroll.toTop elementId))
+        |> Task.andThen (\_ -> Dom.Scroll.toTop elementId)
         |> Task.attempt (\_ -> msg)
 
 
 scrollToBottom : (Float -> msg) -> String -> Cmd msg
 scrollToBottom tag elementId =
     Process.sleep (100 * Time.millisecond)
-        |> Task.andThen (\_ -> (Dom.Scroll.toBottom elementId))
-        |> Task.andThen (\_ -> (Dom.Scroll.y elementId))
+        |> Task.andThen (\_ -> Dom.Scroll.toBottom elementId)
+        |> Task.andThen (\_ -> Dom.Scroll.y elementId)
         |> Task.attempt (\result -> Result.withDefault -1 result |> tag)
 
 

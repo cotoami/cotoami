@@ -1,16 +1,13 @@
-module App.Submodels.Modals
-    exposing
-        ( Modal(..)
-        , Confirmation
-        , defaultConfirmation
-        , Modals
-        , openModal
-        , closeActiveModal
-        , closeModal
-        , clearModals
-        , confirm
-        , maybeConfirm
-        )
+module App.Submodels.Modals exposing
+    ( Confirmation
+    , Modal(..)
+    , Modals
+    , clearModals
+    , closeActiveModal
+    , closeModal
+    , confirm
+    , openModal
+    )
 
 import App.Messages exposing (Msg(NoOp))
 
@@ -24,27 +21,15 @@ type Modal
     | CotoMenuModal
     | CotoModal
     | ConnectModal
+    | ConnectionModal
     | ImportModal
     | TimelineFilterModal
-
-
-type alias Confirmation =
-    { message : String
-    , msgOnConfirm : Msg
-    }
-
-
-defaultConfirmation : Confirmation
-defaultConfirmation =
-    { message = ""
-    , msgOnConfirm = App.Messages.NoOp
-    }
 
 
 type alias Modals a =
     { a
         | modals : List Modal
-        , confirmation : Confirmation
+        , confirmation : Maybe Confirmation
     }
 
 
@@ -52,6 +37,7 @@ openModal : Modal -> Modals a -> Modals a
 openModal modal model =
     if List.member modal model.modals then
         model
+
     else
         { model | modals = modal :: model.modals }
 
@@ -71,14 +57,13 @@ clearModals model =
     { model | modals = [] }
 
 
+type alias Confirmation =
+    { message : String
+    , msgOnConfirm : Msg
+    }
+
+
 confirm : Confirmation -> Modals a -> Modals a
 confirm confirmation model =
-    { model | confirmation = confirmation }
+    { model | confirmation = Just confirmation }
         |> openModal ConfirmModal
-
-
-maybeConfirm : Maybe Confirmation -> Modals a -> Modals a
-maybeConfirm maybeConfirmation model =
-    maybeConfirmation
-        |> Maybe.map (\confirmation -> confirm confirmation model)
-        |> Maybe.withDefault model

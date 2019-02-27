@@ -1,12 +1,11 @@
-module Utils.EventUtil
-    exposing
-        ( onClickWithoutPropagation
-        , onLinkButtonClick
-        , onKeyDown
-        , onLoad
-        , ScrollPos
-        , onScroll
-        )
+module Utils.EventUtil exposing
+    ( ScrollPos
+    , onClickWithoutPropagation
+    , onKeyDown
+    , onLinkButtonClick
+    , onLoad
+    , onScroll
+    )
 
 import Html exposing (Attribute)
 import Html.Events exposing (..)

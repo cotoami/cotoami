@@ -1,51 +1,52 @@
-module App.Views.Post exposing (view, postDivAttrs, headerDiv, authorDiv)
+module App.Views.Post exposing (authorDiv, headerDiv, postDivAttrs, view)
 
-import Set
+import App.Markdown exposing (extractTextFromMarkdown)
+import App.Messages exposing (..)
+import App.Submodels.Context exposing (Context)
+import App.Types.Coto exposing (ElementId)
+import App.Types.Post exposing (Post, toCoto)
+import App.Views.Coto
+import App.Views.FlowMsg
+import Exts.Maybe exposing (isJust, isNothing)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
-import Exts.Maybe exposing (isJust, isNothing)
+import Set
 import Utils.DateUtil
-import Utils.HtmlUtil
 import Utils.EventUtil exposing (onLoad)
-import App.Types.Coto exposing (ElementId)
-import App.Types.Post exposing (Post, toCoto)
-import App.Submodels.Context exposing (Context)
-import App.Messages exposing (..)
-import App.Views.FlowMsg
-import App.Markdown exposing (extractTextFromMarkdown)
-import App.Views.Coto
+import Utils.HtmlUtil
 
 
 view : Context a -> Post -> Html Msg
 view context post =
     let
         elementId =
-            "timeline-" ++ (Maybe.withDefault "none" post.cotoId)
+            "timeline-" ++ Maybe.withDefault "none" post.cotoId
     in
-        div
-            (postDivAttrs context elementId post)
-            [ div
-                [ class "coto-inner" ]
-                [ headerDiv context elementId post
-                , post.cotoId
-                    |> Maybe.map
-                        (\cotoId ->
-                            App.Views.Coto.parentsDiv context.graph Nothing cotoId
-                        )
-                    |> Maybe.withDefault Utils.HtmlUtil.none
-                , if post.isCotonoma then
-                    Utils.HtmlUtil.none
-                  else
-                    authorDiv context post
-                , App.Views.Coto.bodyDiv context Nothing elementId markdown post
-                , footerDiv post
-                , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
-                , authorIcon context post
-                ]
+    div
+        (postDivAttrs context elementId post)
+        [ div
+            [ class "coto-inner" ]
+            [ headerDiv context elementId post
+            , post.cotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        App.Views.Coto.parentsDiv context.graph Nothing cotoId
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
+            , if post.isCotonoma then
+                Utils.HtmlUtil.none
+
+              else
+                authorDiv context post
+            , App.Views.Coto.bodyDiv context Nothing elementId markdown post
+            , footerDiv post
+            , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
+            , authorIcon context post
             ]
+        ]
 
 
 postDivAttrs : Context a -> String -> Post -> List (Attribute Msg)
@@ -55,7 +56,7 @@ postDivAttrs context elementId post =
             App.Views.Coto.cotoClassList context
                 elementId
                 post.cotoId
-                [ ( "posting", (isJust context.session) && (isNothing post.cotoId) )
+                [ ( "posting", isJust context.session && isNothing post.cotoId )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "by-another-amishi", not (isAuthor context post) )
                 , ( "in-pinned-graph"
@@ -79,16 +80,15 @@ postDivAttrs context elementId post =
                     )
                 |> Maybe.withDefault []
     in
-        classAttr :: eventAttrs
+    classAttr :: eventAttrs
 
 
 isAuthor : Context a -> Post -> Bool
 isAuthor context post =
-    (Maybe.map2
+    Maybe.map2
         (\session author -> author.id == session.amishi.id)
         context.session
         post.amishi
-    )
         |> Maybe.withDefault False
 
 
@@ -101,25 +101,25 @@ headerDiv context elementId post =
 
 authorDiv : Context a -> Post -> Html Msg
 authorDiv context post =
-    (Maybe.map2
+    Maybe.map2
         (\session author ->
             if author.id /= session.amishi.id then
                 div [ class "amishi author" ]
                     [ img [ class "avatar", src author.avatarUrl ] []
                     , span [ class "name" ] [ text author.displayName ]
                     ]
+
             else
                 Utils.HtmlUtil.none
         )
         context.session
         post.amishi
-    )
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 authorIcon : Context a -> Post -> Html Msg
 authorIcon context post =
-    (Maybe.map2
+    Maybe.map2
         (\session author ->
             if author.id /= session.amishi.id then
                 img
@@ -128,12 +128,12 @@ authorIcon context post =
                     , title author.displayName
                     ]
                     []
+
             else
                 Utils.HtmlUtil.none
         )
         context.session
         post.amishi
-    )
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 

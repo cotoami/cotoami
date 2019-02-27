@@ -1,5 +1,5 @@
 defmodule Cotoami.CotoGraphServiceTest do
-  use Cotoami.ModelCase
+  use Cotoami.DataCase
   import ShorterMaps
 
   alias Cotoami.{
@@ -24,7 +24,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   describe "when a coto is pinned to an amishi" do
     setup ~M{conn, amishi} do
       coto = CotoService.create!(amishi, "hello")
-      CotoGraphService.pin(conn, coto, amishi)
+      CotoGraphService.pin(conn, coto, nil, amishi)
       ~M{coto}
     end
 
@@ -110,7 +110,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   describe "when a cotonoma is pinned to an amishi" do
     setup ~M{conn, amishi} do
       coto = CotonomaService.create!(amishi, "cotonoma coto", false)
-      CotoGraphService.pin(conn, coto, amishi)
+      CotoGraphService.pin(conn, coto, nil, amishi)
       ~M{coto}
     end
 
@@ -154,7 +154,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       coto_amishi = AmishiService.insert_or_update!(%EmailUser{email: "coto@example.com"})
       coto = CotoService.create!(coto_amishi, "hello", nil, cotonoma.id)
 
-      CotoGraphService.pin(conn, coto, cotonoma, amishi)
+      CotoGraphService.pin(conn, coto, cotonoma, nil, amishi)
 
       ~M{coto, coto_amishi, cotonoma}
     end
@@ -251,7 +251,7 @@ defmodule Cotoami.CotoGraphServiceTest do
       target_amishi = AmishiService.insert_or_update!(%EmailUser{email: "target@example.com"})
       target = CotoService.create!(target_amishi, "bye")
 
-      CotoGraphService.connect(conn, source, target, amishi)
+      CotoGraphService.connect(conn, source, target, nil, amishi)
       ~M{source, source_amishi, target, target_amishi}
     end
 
@@ -303,6 +303,62 @@ defmodule Cotoami.CotoGraphServiceTest do
     end
   end
 
+  describe "when there is a connection with a linking phrase" do
+    setup ~M{conn, amishi} do
+      source = CotoService.create!(amishi, "graph")
+      target = CotoService.create!(amishi, "a line")
+      CotoGraphService.connect(conn, source, target, "expressed by", amishi)
+      ~M{source, target}
+    end
+
+    test "the relationship should has the linking phrase", ~M{conn, amishi, source, target} do
+      assert %Relationship{properties: %{"linking_phrase" => "expressed by"}} =
+               Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
+
+      source_id = source.id
+      target_id = target.id
+      amishi_id = amishi.id
+
+      assert %CotoGraph{
+               connections: %{
+                 ^source_id => [
+                   %{
+                     "start" => ^source_id,
+                     "end" => ^target_id,
+                     "linking_phrase" => "expressed by",
+                     "created_by" => ^amishi_id
+                   }
+                 ]
+               }
+             } = CotoGraphService.get_graph_from_uuid(conn, source.id)
+    end
+
+    test "the linking phrase can be updated", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, "has a", false, amishi)
+
+      assert %Relationship{properties: %{"linking_phrase" => "has a"}} =
+               Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
+    end
+
+    test "the linking phrase can be deleted", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, nil, false, amishi)
+
+      %Relationship{properties: properties} =
+        Neo4jService.get_relationship(conn, source.id, target.id, "HAS_A")
+
+      assert properties["linking_phrase"] == nil
+    end
+
+    test "the relationship can be reversed", ~M{conn, amishi, source, target} do
+      CotoGraphService.update_connection(conn, source, target, "expresses", true, amishi)
+
+      assert Neo4jService.get_ordered_relationships(conn, source.id, "HAS_A") == []
+
+      assert [%Relationship{properties: %{"linking_phrase" => "expresses"}}] =
+               Neo4jService.get_ordered_relationships(conn, target.id, "HAS_A")
+    end
+  end
+
   describe "when a coto has two outbound connections" do
     # a -> b
     #   -> c
@@ -310,8 +366,8 @@ defmodule Cotoami.CotoGraphServiceTest do
       coto_a = CotoService.create!(amishi, "a")
       coto_b = CotoService.create!(amishi, "b")
       coto_c = CotoService.create!(amishi, "c")
-      %Relationship{id: rel_ab_id} = CotoGraphService.connect(conn, coto_a, coto_b, amishi)
-      %Relationship{id: rel_ac_id} = CotoGraphService.connect(conn, coto_a, coto_c, amishi)
+      %Relationship{id: rel_ab_id} = CotoGraphService.connect(conn, coto_a, coto_b, nil, amishi)
+      %Relationship{id: rel_ac_id} = CotoGraphService.connect(conn, coto_a, coto_c, nil, amishi)
       ~M{coto_a, coto_b, coto_c, rel_ab_id, rel_ac_id}
     end
 
@@ -341,8 +397,8 @@ defmodule Cotoami.CotoGraphServiceTest do
       coto_a = CotoService.create!(amishi, "a")
       coto_b = CotoService.create!(amishi, "b")
       coto_c = CotoService.create!(amishi, "c")
-      CotoGraphService.connect(conn, coto_a, coto_b, amishi)
-      CotoGraphService.connect(conn, coto_c, coto_a, amishi)
+      CotoGraphService.connect(conn, coto_a, coto_b, nil, amishi)
+      CotoGraphService.connect(conn, coto_c, coto_a, nil, amishi)
       ~M{coto_a, coto_b, coto_c}
     end
 

@@ -1,42 +1,41 @@
-module App.Submodels.Context
-    exposing
-        ( Context
-        , generateClientId
-        , isServerOwner
-        , atHome
-        , focusCoto
-        , clearCotoFocus
-        , toggleContent
-        , contentOpen
-        , anySelection
-        , isSelected
-        , updateSelection
-        , clearSelection
-        , deleteSelection
-        , setBeingDeselected
-        , finishBeingDeselected
-        , setCotonomaLoading
-        , setCotonoma
-        , orignatedHere
-        , hasPinnedCotosInReordering
-        , hasSubCotosInReordering
-        , isTriggerElementInReordering
-        , isWatched
-        , findWatchForCurrentCotonoma
-        , anyUnreadCotos
-        )
+module App.Submodels.Context exposing
+    ( Context
+    , anySelection
+    , anyUnreadCotos
+    , atHome
+    , clearCotoFocus
+    , clearSelection
+    , contentOpen
+    , deleteSelection
+    , findWatchForCurrentCotonoma
+    , finishBeingDeselected
+    , focusCoto
+    , generateClientId
+    , hasPinnedCotosInReordering
+    , hasSubCotosInReordering
+    , isSelected
+    , isServerOwner
+    , isTriggerElementInReordering
+    , isWatched
+    , orignatedHere
+    , setBeingDeselected
+    , setCotonoma
+    , setCotonomaLoading
+    , toggleContent
+    , updateSelection
+    )
 
-import Set exposing (Set)
-import Random.Pcg
-import Uuid
-import Exts.Maybe exposing (isNothing)
-import Utils.HttpUtil exposing (ClientId(ClientId))
 import App.I18n.Keys exposing (TextKey)
-import App.Types.Session exposing (Session)
-import App.Types.Coto exposing (ElementId, Coto, CotoId, Cotonoma, CotoSelection)
-import App.Types.Graph exposing (Graph)
-import App.Types.Watch exposing (Watch)
 import App.Types.Connection exposing (Reordering(..))
+import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
+import App.Types.Graph exposing (Graph)
+import App.Types.Session exposing (Session)
+import App.Types.Watch exposing (Watch)
+import Exts.Maybe exposing (isNothing)
+import Random.Pcg
+import Set exposing (Set)
+import Utils.HttpUtil exposing (ClientId(ClientId))
+import Uuid
 
 
 type alias Context a =
@@ -64,7 +63,7 @@ generateClientId : Int -> ClientId
 generateClientId seed =
     Random.Pcg.initialSeed seed
         |> Random.Pcg.step Uuid.uuidGenerator
-        |> \( uuid, _ ) -> ClientId (Uuid.toString uuid)
+        |> (\( uuid, _ ) -> ClientId (Uuid.toString uuid))
 
 
 isServerOwner : Context a -> Bool
@@ -107,6 +106,7 @@ toggleSetMember : comparable -> Set comparable -> Set comparable
 toggleSetMember value set =
     if Set.member value set then
         Set.remove value set
+
     else
         Set.insert value set
 
@@ -134,6 +134,7 @@ updateSelection cotoId context =
         | selection =
             if context.selection |> List.member cotoId then
                 List.filter (\id -> cotoId /= id) context.selection
+
             else
                 cotoId :: context.selection
     }
@@ -184,13 +185,12 @@ setCotonoma maybeCotonoma context =
 
 orignatedHere : Coto -> Context a -> Bool
 orignatedHere coto context =
-    (Maybe.map2
+    Maybe.map2
         (\here postedIn -> here.id == postedIn.id)
         context.cotonoma
         coto.postedIn
-    )
         |> Maybe.withDefault
-            ((isNothing coto.postedIn) && (atHome context))
+            (isNothing coto.postedIn && atHome context)
 
 
 hasPinnedCotosInReordering : Context a -> Bool

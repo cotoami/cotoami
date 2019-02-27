@@ -14,6 +14,7 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ![](docs/images/screenshot-mobile.png)
 
+![](docs/images/concept-map.png)
 
 ## Concept
 
@@ -148,6 +149,10 @@ You can launch Cotoami as a Docker container with the following configuration:
 If you have a Docker environment running (`docker info` outputs some info), just execute the following commands:
 
 ```
+$ cd assets
+$ npm install
+$ cd ../
+$ mix deps.get
 $ source run-backend-containers.sh 
 $ mix phx.server
 ...
