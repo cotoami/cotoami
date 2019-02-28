@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget -q https://raw.githubusercontent.com/cotoami/cotoami/develop/launch/docker-compose.yml
+wget -q https://raw.githubusercontent.com/cotoami/cotoami/develop/launch/docker-compose.yml -O docker-compose.yml
 
 if [ -n "$DOCKER_HOST" ]; then
   DOCKER_HOST_IP=$(echo $DOCKER_HOST | sed 's/^.*\/\/\(.*\):[0-9][0-9]*$/\1/g')
@@ -13,3 +13,6 @@ export COTOAMI_VERSION=develop
 export COTOAMI_HOST=$DOCKER_HOST_IP
 
 docker-compose up -d
+
+echo "Cotoami will be ready at http://$DOCKER_HOST_IP:4000"
+echo "You can check sign-up/in mails at http://$DOCKER_HOST_IP:8080"

@@ -32,25 +32,18 @@ services:
 
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
 
   postgres:
     image: postgres:9.5-alpine
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cotoami
     volumes:
-      - postgres-data:/var/lib/postgresql/data:z
+      - postgres-data:/var/lib/postgresql/data
 
   neo4j:
     image: neo4j:3.2.2
-    ports:
-      - "7687:7687"
-      - "7474:7474"
     environment:
       NEO4J_AUTH: none
     volumes:
@@ -59,7 +52,6 @@ services:
   maildev:
     image: djfarrelly/maildev:latest
     ports:
-      - "25:25"
       - "8080:80"
 
 volumes:
