@@ -9,33 +9,44 @@ defmodule Cotoami.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
-    redix_workers = for i <- 0..(Cotoami.Redix.redix_pool_size() - 1) do
-      worker(
-        Redix,
-        [
-          case Cotoami.Redix.url() do
-            nil -> [host: Cotoami.Redix.host(), port: Cotoami.Redix.port()]
-            url -> url
-          end,
-          [name: :"redix_#{i}"]
-        ],
-        id: {Redix, i}
-      )
-    end
+    redix_workers =
+      for i <- 0..(Cotoami.Redix.redix_pool_size() - 1) do
+        worker(
+          Redix,
+          [
+            case Cotoami.Redix.url() do
+              nil -> [host: Cotoami.Redix.host(), port: Cotoami.Redix.port()]
+              url -> url
+            end,
+            [name: :"redix_#{i}"]
+          ],
+          id: {Redix, i}
+        )
+      end
 
-    children = [
-      supervisor(Cotoami.Repo, []),
-      supervisor(CotoamiWeb.Endpoint, []),
-      supervisor(CotoamiWeb.Presence, []),
-      worker(Bolt.Sips, [Application.get_env(:bolt_sips, Bolt)])
-    ] ++ redix_workers
+    children =
+      [
+        supervisor(Cotoami.Repo, []),
+        supervisor(CotoamiWeb.Endpoint, []),
+        supervisor(CotoamiWeb.Presence, []),
+        worker(Bolt.Sips, [Application.get_env(:bolt_sips, Bolt)])
+      ] ++ redix_workers
 
     opts = [strategy: :one_for_one, name: Cotoami.Supervisor]
     start_result = Supervisor.start_link(children, opts)
 
     # Run migrations on start
-    Logger.info "Running migrations on start..."
-    Ecto.Migrator.run(Cotoami.Repo, "priv/repo/migrations", :up, all: true)
+    Logger.info("Running migrations on start...")
+
+    try do
+      run_migrations()
+    rescue
+      _ in DBConnection.ConnectionError ->
+        # wait for database startup and try again
+        Logger.info("Waiting for database startup and running migrations again...")
+        Process.sleep(20000)
+        run_migrations()
+    end
 
     start_result
   end
@@ -43,5 +54,9 @@ defmodule Cotoami.Application do
   def config_change(changed, _new, removed) do
     CotoamiWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp run_migrations do
+    Ecto.Migrator.run(Cotoami.Repo, "priv/repo/migrations", :up, all: true)
   end
 end
