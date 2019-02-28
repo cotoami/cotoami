@@ -39,11 +39,13 @@ Cotonoma or connected to other Cotos.
 
 ## Try it
 
-### Official demo server
+### Demo server
 
-There is an official Cotoami server to demonstrate its features.
+Demo server: https://demo.cotoa.me
 
-The official Cotoami server - [https://cotoa.me/](https://cotoa.me/)
+### Official Cotoami server
+
+If you are interested in using a fully-managed Cotoami server, consider becoming a patron at https://www.patreon.com/cotoami
 
 ### Launch your own server with Docker
 
@@ -58,6 +60,14 @@ If you want to stop the servers (a Cotoami server and backend services like data
 
 ```
 $ docker-compose stop
+```
+
+Your data will be stored in Docker's named volumes: `cotoami_postgres-data`, `cotoami_neo4j-data`.
+You can view the detail information by:
+
+```
+$ docker volume inspect cotoami_postgres-data
+$ docker volume inspect cotoami_neo4j-data
 ```
 
 ### Launch your own server on Heroku
