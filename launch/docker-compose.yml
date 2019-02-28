@@ -1,8 +1,13 @@
 version: '3'
 services:
 
+  # You need to set the following env vars.
+  # $COMPOSE_PROJECT_NAME
+  # $COTOAMI_VERSION
+  # $COTOAMI_HOST
+
   cotoami:
-    image: cotoami/cotoami:develop
+    image: cotoami/cotoami:${COTOAMI_VERSION}
     ports:
       - "4000:4000"
     links:
@@ -13,7 +18,7 @@ services:
     environment:
       SECRET_KEY_BASE: iirr+1hGL0ew7N/jQmnQ2crnwBBwjHWPkM/QZk7tmD8/ARQhvAH4j69wh1WHH7gv
       COTOAMI_URL_SCHEME: http
-      COTOAMI_URL_HOST: ${COTOAMI_HOST:-localhost}
+      COTOAMI_URL_HOST: ${COTOAMI_HOST}
       COTOAMI_URL_PORT: "4000"
       COTOAMI_REDIS_HOST: redis
       COTOAMI_REPO_USER: postgres
@@ -38,6 +43,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cotoami
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:z
 
   neo4j:
     image: neo4j:3.2.2
@@ -46,9 +53,15 @@ services:
       - "7474:7474"
     environment:
       NEO4J_AUTH: none
+    volumes:
+      - neo4j-data:/data 
 
   maildev:
     image: djfarrelly/maildev:latest
     ports:
       - "25:25"
       - "8080:80"
+
+volumes:
+  postgres-data:
+  neo4j-data:
