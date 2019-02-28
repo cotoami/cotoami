@@ -53,7 +53,8 @@ moveToFirst maybeParentId index graph =
         maybeParentId
         (\connections ->
             List.range 0 (List.length connections - 1)
-                |> List.Extra.swapAt 0 index
+                |> List.Extra.removeAt index
+                |> (::) index
         )
         graph
 
@@ -63,11 +64,8 @@ moveToLast maybeParentId index graph =
     reorder
         maybeParentId
         (\connections ->
-            let
-                lastIndex =
-                    List.length connections - 1
-            in
-            List.range 0 lastIndex
-                |> List.Extra.swapAt index lastIndex
+            List.range 0 (List.length connections - 1)
+                |> List.Extra.removeAt index
+                |> (\indexes -> List.append indexes [ index ])
         )
         graph
