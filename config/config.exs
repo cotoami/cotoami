@@ -6,16 +6,14 @@
 use Mix.Config
 
 # General application configuration
-config :cotoami,
-  ecto_repos: [Cotoami.Repo]
+config :cotoami, ecto_repos: [Cotoami.Repo]
 
 # Configures the endpoint
 config :cotoami, CotoamiWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ykbmEEU9u3Hoeh7tt8X6XMhLwRFPZw2PF3qZw1uO0+r6+3zbVD5s8b12rpiN7CzU",
   render_errors: [view: CotoamiWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Cotoami.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Cotoami.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -25,11 +23,11 @@ config :logger, :console,
 # EmailAuth
 config :cotoami, CotoamiWeb.EmailAuthController,
   signup_enabled:
-  (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
-  |> String.to_existing_atom()
+    (System.get_env("COTOAMI_SIGNUP_ENABLED") || "true")
+    |> String.to_existing_atom()
 
 # OAuth2
-config :oauth2, 
+config :oauth2,
   serializers: %{
     "application/json" => Poison,
     "application/vnd.api+json" => Poison
@@ -70,7 +68,8 @@ case System.get_env("REDIS_URL") do
   nil ->
     config :cotoami, Cotoami.Redix,
       host: System.get_env("COTOAMI_REDIS_HOST") || "localhost",
-      port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer
+      port: (System.get_env("COTOAMI_REDIS_PORT") || "6379") |> String.to_integer()
+
   url ->
     config :cotoami, Cotoami.Redix, url: url
 end
@@ -81,34 +80,37 @@ case System.get_env("SENDGRID_USERNAME") do
     config :cotoami, Cotoami.Mailer,
       adapter: Bamboo.SMTPAdapter,
       server: System.get_env("COTOAMI_SMTP_SERVER") || "localhost",
-      port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer,
+      port: (System.get_env("COTOAMI_SMTP_PORT") || "587") |> String.to_integer(),
       username: System.get_env("COTOAMI_SMTP_USER"),
       password: System.get_env("COTOAMI_SMTP_PASSWORD"),
-      tls: :if_available, # can be `:always` or `:never`
-      ssl: false, # can be `true`
+      # can be `:always` or `:never`
+      tls: :if_available,
+      # can be `true`
+      ssl: false,
       retries: 1
+
   username ->
     config :cotoami, Cotoami.Mailer,
       adapter: Bamboo.SendgridAdapter,
       api_key: System.get_env("SENDGRID_API_KEY")
 end
 
-config :cotoami, CotoamiWeb.Email,
-  from: System.get_env("COTOAMI_EMAIL_FROM")
+config :cotoami, CotoamiWeb.Email, from: System.get_env("COTOAMI_EMAIL_FROM")
 
 # Neo4j
 case System.get_env("GRAPHENEDB_BOLT_URL") do
   nil ->
     config :bolt_sips, Bolt,
       hostname: System.get_env("COTOAMI_NEO4J_HOST") || "localhost",
-      port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer,
+      port: (System.get_env("COTOAMI_NEO4J_PORT") || "7687") |> String.to_integer(),
       pool_size: 5,
       max_overflow: 1
+
   url ->
     config :bolt_sips, Bolt,
       url: url,
       basic_auth: [
-        username: System.get_env("GRAPHENEDB_BOLT_USER"), 
+        username: System.get_env("GRAPHENEDB_BOLT_USER"),
         password: System.get_env("GRAPHENEDB_BOLT_PASSWORD")
       ],
       ssl: true
@@ -116,4 +118,4 @@ end
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
