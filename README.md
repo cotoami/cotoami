@@ -34,7 +34,7 @@ If you are interested in how this concept map was created with Cotoami, here is 
 ## Concept
 
 * **Coto**: Post. A unit of information in Cotoami.
-* **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected).
+* **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected) to it.
 
 ![](docs/images/cotonoma.png)
 
