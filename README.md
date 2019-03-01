@@ -55,7 +55,7 @@ Cotonoma or connected to other Cotos.
 
 ### Linking Phrases
 
-Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with it as introduced in the "Screenshots / Concept Mapping" section above.
+Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Screenshots / Concept Mapping](#concept-mapping) section above.
 
 ![](https://user-images.githubusercontent.com/764015/53540799-4effe780-3b5a-11e9-8b3a-7dc463aecdc9.png)
 
