@@ -34,7 +34,7 @@ If you are interested in how this concept map was created with Cotoami, here is 
 ## Concept
 
 * **Coto**: Post. A unit of information in Cotoami.
-* **Cotonoma**: A Cotonoma is a chatroom-like unit which has its own timeline and pinned Cotos.
+* **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected).
 
 ![](docs/images/cotonoma.png)
 
@@ -50,6 +50,22 @@ Cotonoma or connected to other Cotos.
 2. Look for connections between Cotos and make them as they are found.
 3. Cotonomatize: Convert a hub Coto that has many outbound connections and looks worth discussing into a Cotonoma.
 4. Repeat the same thing in the new Cotonoma.
+
+### Cotonomatizing
+
+### Linking Phrases
+
+Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with it as introduced in the "Screenshots / Concept Mapping" section above.
+
+![](https://user-images.githubusercontent.com/764015/53540799-4effe780-3b5a-11e9-8b3a-7dc463aecdc9.png)
+
+Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami. 
+
+Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should avoid annotating connections unless the relationships are obscure to you. Those obscure relationships are possibly valuable knowledge for you (since you didn't know them before), and should be highlighted in your knowledge-base  (That's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
+
+On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
+
+Which connection is vertical or horizontal depends on you like cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
 
 
 ## Try it
