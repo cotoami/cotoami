@@ -1,7 +1,10 @@
 @import "variables.scss";
 
-#connect-modal .modal-content {
-  width: 80vw;
+#connect-modal {
+  .modal-content {
+    width: 80vw;
+    max-height: 90%;
+  }
 
   div.tools {
     text-align: right;
