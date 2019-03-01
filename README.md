@@ -60,18 +60,24 @@ There's a server only for demonstration purposes: https://demo.cotoa.me
 
 It may be slow to respond at first because it's run by Heroku free plan (which puts unused apps to sleep).
 
-### Official Cotoami server
-
-If you are interested in using a fully-managed Cotoami server, consider becoming a patron at https://www.patreon.com/cotoami
-
 ### Launch your own server with Docker
 
 The easiest way to launch your own Cotoami server is to use Docker. If you have a Docker environment running 
-(`docker info` outputs some info), just execute the following command:
+(`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services):
 
 ```
 $ wget -qO - https://raw.githubusercontent.com/cotoami/cotoami/master/launch/run.sh | bash
 ```
+
+At the end of the launching process, something like the following should be output to the console:
+
+```
+...
+Cotoami will be ready at http://192.168.99.100:4000
+You can check sign-up/in mails at http://192.168.99.100:8080
+```
+
+If there are no errors, you should be able to open the start page at the URL in the log (it may be take some time for the servers to start up completely).
 
 If you want to stop the servers (a Cotoami server and backend services like databases), execute the following command in the same directory:
 
@@ -86,6 +92,10 @@ You can view the detail information by:
 $ docker volume inspect cotoami_postgres-data
 $ docker volume inspect cotoami_neo4j-data
 ```
+
+### Official Cotoami server
+
+If you are interested in using a fully-managed Cotoami server, consider becoming a patron at https://www.patreon.com/cotoami
 
 
 ## Deploy to Heroku
