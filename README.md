@@ -88,11 +88,9 @@ $ docker volume inspect cotoami_neo4j-data
 
 ## Deploy to Heroku
 
-You can launch your own Cotoami server on Heroku by clicking the following Heroku Button:
+You can launch your own Cotoami server on Heroku with the following Heroku Button:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-and the configuration is a bit tricky.
 
 Replace the highlighted values with your custom values:
 
@@ -108,9 +106,7 @@ Replace the highlighted values with your custom values:
 * `COTOAMI_OWNER_EMAILS`
     * Specify owner email addresses (comma separated).
 
-You should know the limitations of Cotoami on Heroku as described in:
-
-* <https://hexdocs.pm/phoenix/heroku.html#limitations>
+You should know the limitations of Cotoami on Heroku as described in: https://hexdocs.pm/phoenix/heroku.html#limitations
     
 ### Obtain a SendGrid API key
 
