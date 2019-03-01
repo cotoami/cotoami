@@ -45,6 +45,8 @@ Then you make connections to enrich your stock.
 
 ![](docs/images/anime/anime3-connect.gif)
 
+### Basic building blocks
+
 Individual posts are called "Cotos", which is a Japanese word meaning "thing" and there's a special type of Coto called "Cotonoma" (Coto-no-ma means "a space of Cotos"). A Cotonoma is a Coto that has a dedicated chat timeline associated with it. These two concepts are basic building blocks of a knowledge base in Cotoami.
 
 ![](docs/images/cotonoma.png)
