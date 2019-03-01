@@ -97,7 +97,7 @@ It may be slow to respond at first because it's run by Heroku free plan (which p
 * [Install Docker Desktop for Windows \| Docker Documentation](https://docs.docker.com/docker-for-windows/install/)
 
 The easiest way to launch your own Cotoami server is to use Docker. If you have a Docker environment running 
-(`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services), with default configuration:
+(`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services, with default configuration:
 
 ```
 $ wget -qO - https://raw.githubusercontent.com/cotoami/cotoami/master/launch/run.sh | bash
