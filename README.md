@@ -68,7 +68,7 @@ During a process of chatting, posting random ideas, and creating structured cont
 
 ![](docs/images/cotonomatizing.png)
 
-If you follow this bottom-up process, Cotonomas would be emerged or discovered concepts describing your or your team's hidden interest. 
+If you follow this bottom-up and recursive process, Cotonomas would be emerged or discovered concepts describing your or your team's hidden interest. 
 
 ### Linking Phrases
 
