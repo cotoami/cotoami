@@ -53,6 +53,12 @@ Cotonoma or connected to other Cotos.
 
 ### Cotonomatizing
 
+During a process of chatting, posting random ideas, and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as focus questions. Cotonomatizing allows you to convert them into Cotonomas to make the process recursive.
+
+![](docs/images/cotonomatizing.png)
+
+If you follow this bottom-up process, Cotonomas would be emerged or discovered concepts describing your or your team's hidden interest. 
+
 ### Linking Phrases
 
 Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Screenshots / Concept Mapping](#concept-mapping) section above.
@@ -65,7 +71,7 @@ Why is the Linking Phrases feature so important? Concept mapping is a good way t
 
 On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
 
-Which connection is vertical or horizontal depends on you like cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
+Which connection is vertical or horizontal depends on you like Cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
 
 
 ## Try it
