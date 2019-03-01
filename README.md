@@ -36,7 +36,7 @@ If you are interested in how this concept map was created with Cotoami, here is 
 * **Coto**: Post. A unit of information in Cotoami.
 * **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected) to it.
 
-In Cotoami, individual posts are called “Cotos”, which is a Japanese word meaning “thing” and there’s a special type of Coto called “Cotonoma” (Coto-no-ma means “a space of Cotos”). A Cotonoma is a Coto that has a dedicated chat timeline associated with it. These two concepts are basic building blocks of a knowledge base in Cotoami.
+In Cotoami, individual posts are called "Cotos", which is a Japanese word meaning "thing" and there's a special type of Coto called "Cotonoma" (Coto-no-ma means "a space of Cotos"). A Cotonoma is a Coto that has a dedicated chat timeline associated with it. These two concepts are basic building blocks of a knowledge base in Cotoami.
 
 ![](docs/images/cotonoma.png)
 
