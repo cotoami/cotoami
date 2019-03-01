@@ -68,8 +68,6 @@ During a process of chatting, posting random ideas, and creating structured cont
 
 ![](docs/images/cotonomatizing.png)
 
-If you follow this bottom-up and recursive process, Cotonomas would be emerged or discovered concepts describing your or your team's hidden interest. 
-
 ### Linking Phrases
 
 Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Screenshots / Concept Mapping](#concept-mapping) section above.
