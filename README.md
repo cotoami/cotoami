@@ -22,6 +22,8 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ## Concept Mapping
 
+[What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
+
 ![](docs/images/concept-map.png)
 
 The screenshot above is an example of a concept map explaining why we have seasons (originally presented in the article at Concept Maps official website: http://cmap.ihmc.us/docs/theory-of-concept-maps).
