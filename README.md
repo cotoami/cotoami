@@ -133,7 +133,7 @@ $ docker volume inspect cotoami_neo4j-data
 
 Cotoami project also runs a fully-managed official server. You can get an account of it by becoming a patron at https://www.patreon.com/cotoami
 
-If you are interested in using it or supporting the project, please consider becoming a patron.
+If you are interested in using it or supporting the project, please consider becoming a patron 😉
 
 
 ## Deploy to Heroku
