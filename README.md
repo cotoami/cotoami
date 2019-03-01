@@ -78,7 +78,7 @@ Since the version 0.21.0, you can annotate connections. The term "Linking Phrase
 
 Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami. 
 
-Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should avoid annotating connections unless the relationships are obscure to you. Those obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base  (That's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
+Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should avoid annotating connections unless the relationships are obscure to you. Those obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
 
 On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
 
