@@ -7,20 +7,18 @@ defmodule Cotoami.Redix do
 
   @default_host "localhost"
   @default_port 6379
-  @redix_pool_size 10
+  @redix_pool_size 8
 
   def host() do
     :cotoami
     |> Application.get_env(__MODULE__, [])
-    |> Keyword.get(:host)
-    || @default_host
+    |> Keyword.get(:host) || @default_host
   end
 
   def port() do
     :cotoami
     |> Application.get_env(__MODULE__, [])
-    |> Keyword.get(:port)
-    || @default_port
+    |> Keyword.get(:port) || @default_port
   end
 
   # An optional way to specify a redis server
