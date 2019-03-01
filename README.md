@@ -41,8 +41,6 @@ You would feel free to write anything that comes in your mind. Your posts just f
 
 ![](docs/images/anime/anime2-pin-cotos.gif)
 
-There are two panes side by side representing flow and stock respectvely.
-
 Then you make connections to enrich your stock.
 
 ![](docs/images/anime/anime3-connect.gif)
