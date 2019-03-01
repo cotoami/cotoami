@@ -70,17 +70,18 @@ $ docker volume inspect cotoami_postgres-data
 $ docker volume inspect cotoami_neo4j-data
 ```
 
-### Launch your own server on Heroku
+
+## Deploy to Heroku
 
 You can launch your own Cotoami server on Heroku by clicking the following Heroku Button:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-and set the required configurations.
-
-![](docs/images/cotoami-heroku-configs.png)
+and the configuration is a bit tricky.
 
 Replace the highlighted values with your custom values:
+
+![](docs/images/cotoami-heroku-configs.png)
 
 * `SECRET_KEY_BASE`
     * Specify a random 64-bytes-long string.
@@ -96,7 +97,7 @@ You should know the limitations of Cotoami on Heroku as described in:
 
 * <https://hexdocs.pm/phoenix/heroku.html#limitations>
     
-#### Obtain a SendGrid API key
+### Obtain a SendGrid API key
 
 1. First, you need to get SendGrid's username and password by deploying an app (Click the "Deploy app" button in the Heroku site).
 2. After finishing the deployment, you can check your username and password via config vars: `SENDGRID_USERNAME` and `SENDGRID_PASSWORD`, which can be viewed in the app's settings page in the Heroku site (click the "Reveal Config Vars" button).
