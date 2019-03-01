@@ -51,9 +51,6 @@ Individual posts are called "Cotos", which is a Japanese word meaning "thing", a
 
 ![](docs/images/cotonoma.png)
 
-* **Coto**: Post. A unit of information in Cotoami.
-* **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected) to it.
-
 As you can see in the image above, Cotonomas are posted to a timeline like Cotos. Actually, you can treat Cotonomas as Cotos. They can be pinned to another Cotonoma or connected to other Cotos.
 
 ### Cotoami's concept of knowledge generation
