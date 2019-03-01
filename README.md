@@ -56,7 +56,9 @@ Cotonoma or connected to other Cotos.
 
 ### Demo server
 
-Demo server: https://demo.cotoa.me
+There's a server only for demonstration purposes: https://demo.cotoa.me
+
+It may be slow to respond at first because it's run by Heroku free plan (which puts unused apps to sleep).
 
 ### Official Cotoami server
 
