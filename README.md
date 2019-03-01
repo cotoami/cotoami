@@ -88,11 +88,11 @@ $ docker volume inspect cotoami_neo4j-data
 
 ## Deploy to Heroku
 
-You can launch your own Cotoami server on Heroku with the following Heroku Button:
+You can deploy Cotoami to your Heroku account with the Heroku Button:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-Replace the highlighted values with your custom values:
+On the "Create New App" page, set the app name and replace the highlighted values with your custom values:
 
 ![](docs/images/cotoami-heroku-configs.png)
 
