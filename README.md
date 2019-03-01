@@ -62,8 +62,11 @@ It may be slow to respond at first because it's run by Heroku free plan (which p
 
 ### Launch your own server with Docker
 
+* [Install Docker Desktop for Mac \| Docker Documentation](https://docs.docker.com/docker-for-mac/install/)
+* [Install Docker Desktop for Windows \| Docker Documentation](https://docs.docker.com/docker-for-windows/install/)
+
 The easiest way to launch your own Cotoami server is to use Docker. If you have a Docker environment running 
-(`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services):
+(`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services), with default configuration:
 
 ```
 $ wget -qO - https://raw.githubusercontent.com/cotoami/cotoami/master/launch/run.sh | bash
@@ -79,7 +82,7 @@ You can check sign-up/in mails at http://192.168.99.100:8080
 
 If there are no errors, you should be able to open the start page at the URL in the log (it may be take some time for the servers to start up completely).
 
-If you want to stop the servers (a Cotoami server and backend services like databases), execute the following command in the same directory:
+If you want to stop the servers, execute the following command in the same directory:
 
 ```
 $ docker-compose stop
