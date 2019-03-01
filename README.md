@@ -33,12 +33,26 @@ If you are interested in how this concept map was created with Cotoami, here is 
 
 ## Concept
 
+In Cotoami, you post your ideas and thoughts like chatting. The timeline actually has a chatting feature where you can chat with other users sharing the same space.
+
+![](docs/images/anime/anime1-posting-cotos.gif)
+
+You would feel free to write anything that comes in your mind. Your posts just flow into the past unless they are pinned:
+
+![](docs/images/anime/anime2-pin-cotos.gif)
+
+There are two panes side by side representing flow and stock respectvely.
+
+Then you make connections to enrich your stock.
+
+![](docs/images/anime/anime3-connect.gif)
+
+Individual posts are called "Cotos", which is a Japanese word meaning "thing" and there's a special type of Coto called "Cotonoma" (Coto-no-ma means "a space of Cotos"). A Cotonoma is a Coto that has a dedicated chat timeline associated with it. These two concepts are basic building blocks of a knowledge base in Cotoami.
+
 ![](docs/images/cotonoma.png)
 
 * **Coto**: Post. A unit of information in Cotoami.
 * **Cotonoma**: A special type of Coto. A Cotonoma is a chatroom-like unit with its own timeline and Cotos pinned (connected) to it.
-
-In Cotoami, individual posts are called "Cotos", which is a Japanese word meaning "thing" and there's a special type of Coto called "Cotonoma" (Coto-no-ma means "a space of Cotos"). A Cotonoma is a Coto that has a dedicated chat timeline associated with it. These two concepts are basic building blocks of a knowledge base in Cotoami.
 
 As you can see in the image above, Cotonomas are posted to a timeline like Cotos. Actually, you can treat Cotonomas as Cotos. They can be pinned to another Cotonoma or connected to other Cotos.
 
