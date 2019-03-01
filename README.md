@@ -3,18 +3,27 @@
 
 [![CircleCI](https://circleci.com/gh/cotoami/cotoami.svg?style=svg)](https://circleci.com/gh/cotoami/cotoami)
 
-Cotoami (言編み・言網) is a platform where people can weave a large network of knowledge from tiny ideas.
+Cotoami (言編み・言網) is a platform where people can weave a large network of wisdom from tiny ideas.
 
 
 ## Screenshots
 
+### Flow (timeline) and Stock (structured content)
+
 ![](docs/images/timeline-and-pinned-docs.png)
+
+## Stock rendered as a graph
 
 ![](docs/images/timeline-and-graph.png)
 
+## Fully usable on mobile devices
+
 ![](docs/images/screenshot-mobile.png)
 
+## Concept Mapping
+
 ![](docs/images/concept-map.png)
+
 
 ## Concept
 
@@ -111,7 +120,7 @@ You should know the limitations of Cotoami on Heroku as described in:
 ## Related URLs
 
 * News and updates - https://twitter.com/cotoami
-* Docker image - https://hub.docker.com/r/cotoami/cotoami/
+* Docker images - https://hub.docker.com/r/cotoami/cotoami/
 
 
 ## Special Thanks
