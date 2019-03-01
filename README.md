@@ -96,7 +96,7 @@ $ docker volume inspect cotoami_postgres-data
 $ docker volume inspect cotoami_neo4j-data
 ```
 
-### Official Cotoami server
+### Official server
 
 Cotoami project also runs a fully-managed official server. You can get an account of it by becoming a patron at https://www.patreon.com/cotoami
 
