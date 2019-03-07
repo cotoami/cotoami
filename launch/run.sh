@@ -2,8 +2,10 @@
 
 if [ -n "$DOCKER_HOST" ]; then
   DOCKER_HOST_IP=$(echo $DOCKER_HOST | sed 's/^.*\/\/\(.*\):[0-9][0-9]*$/\1/g')
-else
+elif [ -x "$(command -v docker-machine)" ]; then
   DOCKER_HOST_IP=$(docker-machine ip default)
+else
+  DOCKER_HOST_IP="127.0.0.1"
 fi
 
 export COMPOSE_PROJECT_NAME=cotoami
