@@ -58,6 +58,8 @@ currentCotonomaAsNode context =
                 , pinned = False
                 , asCotonoma = True
                 , imageUrl = Maybe.map .avatarUrl cotonoma.owner
+                , incoming = 0
+                , outgoing = 0
                 }
             )
         |> Maybe.withDefault
@@ -66,6 +68,8 @@ currentCotonomaAsNode context =
             , pinned = False
             , asCotonoma = False
             , imageUrl = Nothing
+            , incoming = 0
+            , outgoing = 0
             }
 
 
@@ -76,6 +80,8 @@ cotoToNode graph coto =
     , pinned = App.Types.Graph.pinned coto.id graph
     , asCotonoma = isJust coto.asCotonoma
     , imageUrl = Maybe.map .avatarUrl coto.amishi
+    , incoming = coto.incoming |> Maybe.withDefault 0
+    , outgoing = coto.outgoing |> Maybe.withDefault 0
     }
 
 

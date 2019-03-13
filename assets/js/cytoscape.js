@@ -30,17 +30,23 @@ const _style = cytoscape.stylesheet()
     'label': (node) => {
       return _makeTextBreakable(node.data('name'), 15)
     },
-    'font-size': 10,
+    'font-size': (node) => {
+      return Math.min(node.data('outgoing'), 10) / 2 + 10
+    },
     'color': '#666',
     'shape': 'roundrectangle',
     'width': 'label',
     'height': 'label',
-    'border-width': 1,
+    'border-width': (node) => {
+      return Math.min(node.data('incoming'), 10)
+    },
     'border-style': 'solid',
     'border-color': '#ddd',
     'border-opacity': 1,
     'padding': 8,
-    'text-max-width': 150,
+    'text-max-width': (node) => {
+      return Math.min(node.data('outgoing'), 10) * 10 + 150
+    },
     'text-wrap': 'wrap',
     'text-valign': 'center',
     'background-color': 'white',
@@ -60,7 +66,6 @@ const _style = cytoscape.stylesheet()
   .selector('.pinned').css({
     'color': '#fff',
     'background-color': '#aaa',
-    'border-width': 1,
     'border-color': '#666'
   })
   .selector('.cotonoma').css({
