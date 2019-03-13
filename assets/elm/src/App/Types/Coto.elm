@@ -50,6 +50,8 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    , incoming : Maybe Int
+    , outgoing : Maybe Int
     }
 
 
@@ -130,14 +132,16 @@ type alias Cotonoma =
 
 toCoto : Cotonoma -> Coto
 toCoto cotonoma =
-    Coto
-        cotonoma.cotoId
-        cotonoma.name
-        Nothing
-        cotonoma.owner
-        Nothing
-        cotonoma.postedAt
-        (Just cotonoma)
+    { id = cotonoma.cotoId
+    , content = cotonoma.name
+    , summary = Nothing
+    , amishi = cotonoma.owner
+    , postedIn = Nothing
+    , postedAt = cotonoma.postedAt
+    , asCotonoma = Just cotonoma
+    , incoming = Nothing
+    , outgoing = Nothing
+    }
 
 
 cotonomaNameMaxlength : Int
