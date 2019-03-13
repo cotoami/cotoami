@@ -121,7 +121,7 @@ defmodule Cotoami.CotoGraphService do
         %{graph | connections: connections}
       end
     end)
-    |> (fn graph -> %{graph | cotos: complement_coto_nodes(graph.cotos)} end).()
+    |> convert_coto_nodes_into_coto_jsons()
   end
 
   defp make_connection_json(%Relationship{id: id, properties: properties}, start_uuid, end_uuid) do
@@ -140,23 +140,41 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  defp complement_coto_nodes(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
+  defp convert_coto_nodes_into_coto_jsons(
+         %CotoGraph{
+           cotos: id_to_coto_nodes,
+           root_connections: root_connections,
+           connections: id_to_connections
+         } = graph
+       ) do
     coto_nodes = Map.values(id_to_coto_nodes)
     amishi_jsons = get_amishi_jsons_in_coto_nodes(coto_nodes)
     posted_in_jsons = get_posted_in_jsons_in_coto_nodes(coto_nodes)
     cotonoma_jsons = get_cotonoma_jsons_in_coto_nodes(coto_nodes)
+    connections = Map.values(id_to_connections) |> List.flatten()
 
-    id_to_coto_nodes
-    |> Enum.map(fn {id, node} ->
-      {id,
-       node
-       |> Map.put("id", node["uuid"])
-       |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
-       |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
-       |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
-       |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])}
-    end)
-    |> Map.new()
+    id_to_coto =
+      id_to_coto_nodes
+      |> Enum.map(fn {coto_id, node} ->
+        incoming =
+          Enum.count(root_connections, &(&1["end"] == coto_id)) +
+            Enum.count(connections, &(&1["end"] == coto_id))
+
+        outgoing = Enum.count(connections, &(&1["start"] == coto_id))
+
+        {coto_id,
+         node
+         |> Map.put("id", coto_id)
+         |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
+         |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
+         |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
+         |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])
+         |> Map.put("incoming", incoming)
+         |> Map.put("outgoing", outgoing)}
+      end)
+      |> Map.new()
+
+    %{graph | cotos: id_to_coto}
   end
 
   defp get_amishi_jsons_in_coto_nodes(coto_nodes) do
