@@ -86,7 +86,9 @@ defmodule Cotoami.CotoGraphServiceTest do
                    },
                    "content" => "hello",
                    "inserted_at" => _inserted_at,
-                   "updated_at" => _updated_at
+                   "updated_at" => _updated_at,
+                   "incoming" => 1,
+                   "outgoing" => 0
                  }
                },
                root_connections: [
