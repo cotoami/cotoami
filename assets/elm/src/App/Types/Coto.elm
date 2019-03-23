@@ -7,6 +7,8 @@ module App.Types.Coto exposing
     , CotonomaKey
     , CotonomaStats
     , ElementId
+    , addIncomings
+    , addOutgoings
     , checkWritePermission
     , cotonomaNameMaxlength
     , revisedBefore
@@ -69,6 +71,28 @@ summaryMaxlength =
 updateContent : String -> Coto -> Coto
 updateContent content coto =
     { coto | content = content }
+
+
+addIncomings : Int -> Coto -> Coto
+addIncomings diff coto =
+    { coto
+        | incomings =
+            coto.incomings
+                |> Maybe.map ((+) diff)
+                |> Maybe.withDefault (max 0 diff)
+                |> Just
+    }
+
+
+addOutgoings : Int -> Coto -> Coto
+addOutgoings diff coto =
+    { coto
+        | outgoings =
+            coto.outgoings
+                |> Maybe.map ((+) diff)
+                |> Maybe.withDefault (max 0 diff)
+                |> Just
+    }
 
 
 checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
