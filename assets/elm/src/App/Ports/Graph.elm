@@ -15,8 +15,8 @@ type alias Node =
     , pinned : Bool
     , asCotonoma : Bool
     , imageUrl : Maybe String
-    , incoming : Int
-    , outgoing : Int
+    , incomings : Int
+    , outgoings : Int
     }
 
 

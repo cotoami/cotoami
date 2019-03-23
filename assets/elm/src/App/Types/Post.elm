@@ -59,8 +59,8 @@ toCoto post =
             , postedIn = post.postedIn
             , postedAt = postedAt
             , asCotonoma = post.asCotonoma
-            , incoming = Nothing
-            , outgoing = Nothing
+            , incomings = Nothing
+            , outgoings = Nothing
             }
         )
         post.cotoId

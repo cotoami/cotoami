@@ -31,21 +31,21 @@ const _style = cytoscape.stylesheet()
       return _makeTextBreakable(node.data('name'), 15)
     },
     'font-size': (node) => {
-      return Math.min(node.data('outgoing'), 10) / 2 + 10
+      return Math.min(node.data('outgoings'), 10) / 2 + 10
     },
     'color': '#666',
     'shape': 'roundrectangle',
     'width': 'label',
     'height': 'label',
     'border-width': (node) => {
-      return Math.min(node.data('incoming'), 10)
+      return Math.min(node.data('incomings'), 10)
     },
     'border-style': 'solid',
     'border-color': '#ddd',
     'border-opacity': 1,
     'padding': 8,
     'text-max-width': (node) => {
-      return Math.min(node.data('outgoing'), 10) * 10 + 150
+      return Math.min(node.data('outgoings'), 10) * 10 + 150
     },
     'text-wrap': 'wrap',
     'text-valign': 'center',

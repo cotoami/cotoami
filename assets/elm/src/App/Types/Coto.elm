@@ -50,8 +50,8 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
-    , incoming : Maybe Int
-    , outgoing : Maybe Int
+    , incomings : Maybe Int
+    , outgoings : Maybe Int
     }
 
 
@@ -139,8 +139,8 @@ toCoto cotonoma =
     , postedIn = Nothing
     , postedAt = cotonoma.postedAt
     , asCotonoma = Just cotonoma
-    , incoming = Nothing
-    , outgoing = Nothing
+    , incomings = Nothing
+    , outgoings = Nothing
     }
 
 
