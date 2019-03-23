@@ -22,8 +22,7 @@ pin amishiId coto linkingPhrase graph =
         let
             cotos =
                 graph.cotos
-                    |> Dict.insert coto.id
-                        (App.Types.Coto.incrementIncoming coto)
+                    |> App.Types.Graph.incrementIncoming coto
 
             rootConnections =
                 { start = Nothing
@@ -134,8 +133,8 @@ singleConnect graph amishiId start end linkingPhrase (( cotos, connections ) as 
                 }
         in
         ( cotos
-            |> Dict.insert start.id (App.Types.Coto.incrementOutgoing start)
-            |> Dict.insert end.id (App.Types.Coto.incrementIncoming end)
+            |> App.Types.Graph.incrementOutgoing start
+            |> App.Types.Graph.incrementIncoming end
         , Dict.update
             start.id
             (\maybeConns ->

@@ -10,6 +10,8 @@ module App.Types.Graph exposing
     , getOutboundConnections
     , getParents
     , hasChildren
+    , incrementIncoming
+    , incrementOutgoing
     , initGraph
     , member
     , mergeSubgraph
@@ -31,6 +33,28 @@ import Set exposing (Set)
 
 type alias CotoDict =
     Dict CotoId Coto
+
+
+incrementOutgoing : Coto -> CotoDict -> CotoDict
+incrementOutgoing coto cotoDict =
+    cotoDict
+        |> Dict.insert coto.id
+            (cotoDict
+                |> Dict.get coto.id
+                |> Maybe.withDefault coto
+                |> App.Types.Coto.incrementOutgoing
+            )
+
+
+incrementIncoming : Coto -> CotoDict -> CotoDict
+incrementIncoming coto cotoDict =
+    cotoDict
+        |> Dict.insert coto.id
+            (cotoDict
+                |> Dict.get coto.id
+                |> Maybe.withDefault coto
+                |> App.Types.Coto.incrementIncoming
+            )
 
 
 type alias ConnectionDict =
