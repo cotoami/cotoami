@@ -123,7 +123,9 @@ const _style = cytoscape.stylesheet()
   })
   .selector('.faded').css({
     'opacity': 0.25,
-    'text-opacity': 0
+    'text-opacity': 0,
+    'border-color': '#ddd',
+    'background-color': 'white'
   });
 
 const _layout = {
