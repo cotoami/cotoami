@@ -11,6 +11,10 @@ module App.Types.Coto exposing
     , addOutgoings
     , checkWritePermission
     , cotonomaNameMaxlength
+    , decrementIncoming
+    , decrementOutgoing
+    , incrementIncoming
+    , incrementOutgoing
     , revisedBefore
     , summaryMaxlength
     , toCoto
@@ -73,6 +77,16 @@ updateContent content coto =
     { coto | content = content }
 
 
+incrementIncoming : Coto -> Coto
+incrementIncoming =
+    addIncomings 1
+
+
+decrementIncoming : Coto -> Coto
+decrementIncoming =
+    addIncomings -1
+
+
 addIncomings : Int -> Coto -> Coto
 addIncomings diff coto =
     { coto
@@ -82,6 +96,16 @@ addIncomings diff coto =
                 |> Maybe.withDefault (max 0 diff)
                 |> Just
     }
+
+
+incrementOutgoing : Coto -> Coto
+incrementOutgoing =
+    addOutgoings 1
+
+
+decrementOutgoing : Coto -> Coto
+decrementOutgoing =
+    addOutgoings -1
 
 
 addOutgoings : Int -> Coto -> Coto

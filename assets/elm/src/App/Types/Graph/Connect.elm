@@ -21,7 +21,9 @@ pin amishiId coto linkingPhrase graph =
     else
         let
             cotos =
-                Dict.insert coto.id coto graph.cotos
+                graph.cotos
+                    |> Dict.insert coto.id
+                        (App.Types.Coto.incrementIncoming coto)
 
             rootConnections =
                 { start = Nothing
@@ -41,13 +43,18 @@ pin amishiId coto linkingPhrase graph =
 unpin : CotoId -> Graph -> Graph
 unpin cotoId graph =
     let
+        cotos =
+            graph.cotos
+                |> Dict.update cotoId
+                    (Maybe.map App.Types.Coto.decrementIncoming)
+
         rootConnections =
             graph.rootConnections
                 |> List.filter (\conn -> conn.end /= cotoId)
     in
     graph
         |> App.Types.Graph.update
-            graph.cotos
+            cotos
             rootConnections
             graph.connections
 
@@ -127,8 +134,8 @@ singleConnect graph amishiId start end linkingPhrase (( cotos, connections ) as 
                 }
         in
         ( cotos
-            |> Dict.insert start.id start
-            |> Dict.insert end.id end
+            |> Dict.insert start.id (App.Types.Coto.incrementOutgoing start)
+            |> Dict.insert end.id (App.Types.Coto.incrementIncoming end)
         , Dict.update
             start.id
             (\maybeConns ->
@@ -144,6 +151,13 @@ singleConnect graph amishiId start end linkingPhrase (( cotos, connections ) as 
 disconnect : ( CotoId, CotoId ) -> Graph -> Graph
 disconnect ( startId, endId ) graph =
     let
+        cotos =
+            graph.cotos
+                |> Dict.update startId
+                    (Maybe.map App.Types.Coto.decrementOutgoing)
+                |> Dict.update endId
+                    (Maybe.map App.Types.Coto.decrementIncoming)
+
         connections =
             Dict.update
                 startId
@@ -163,6 +177,6 @@ disconnect ( startId, endId ) graph =
     in
     graph
         |> App.Types.Graph.update
-            graph.cotos
+            cotos
             graph.rootConnections
             connections
