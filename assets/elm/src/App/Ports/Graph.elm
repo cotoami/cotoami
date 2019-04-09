@@ -2,6 +2,8 @@ port module App.Ports.Graph exposing
     ( Edge
     , Model
     , Node
+    , defaultEdge
+    , defaultNode
     , destroyGraph
     , nodeClicked
     , renderGraph
@@ -11,19 +13,43 @@ port module App.Ports.Graph exposing
 
 type alias Node =
     { id : String
-    , name : String
+    , label : String
     , pinned : Bool
     , asCotonoma : Bool
+    , asLinkingPhrase : Bool
     , imageUrl : Maybe String
     , incomings : Int
     , outgoings : Int
     }
 
 
+defaultNode : Node
+defaultNode =
+    { id = ""
+    , label = ""
+    , pinned = False
+    , asCotonoma = False
+    , asLinkingPhrase = False
+    , imageUrl = Nothing
+    , incomings = 0
+    , outgoings = 0
+    }
+
+
 type alias Edge =
     { source : String
     , target : String
-    , linkingPhrase : Maybe String
+    , toLinkingPhrase : Bool
+    , fromLinkingPhrase : Bool
+    }
+
+
+defaultEdge : Edge
+defaultEdge =
+    { source = ""
+    , target = ""
+    , toLinkingPhrase = False
+    , fromLinkingPhrase = False
     }
 
 

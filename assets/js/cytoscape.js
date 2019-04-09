@@ -28,7 +28,7 @@ const color_selected = "#ffa500"
 const _style = cytoscape.stylesheet()
   .selector('node').css({
     'label': (node) => {
-      return _makeTextBreakable(node.data('name'), 15)
+      return _makeTextBreakable(node.data('label'), 15)
     },
     'font-size': (node) => {
       return Math.min(node.data('outgoings'), 10) / 2 + 10
@@ -86,34 +86,37 @@ const _style = cytoscape.stylesheet()
     'font-size': 10,
     'font-weight': 'bold'
   })
+  .selector('.linking-phrase').css({
+    'border-width': 0,
+    'color': color_linkingPhrase
+  })
   .selector('edge').css({
-    'label': (node) => {
-      const phrase = node.data('linkingPhrase')
-      return phrase ? _makeTextBreakable(phrase, 10) : ""
-    },
-    'color': (node) => {
-      return node.data('linkingPhrase') ? color_linkingPhrase : "#fff"
-    },
-    'line-style': (node) => {
-      return node.data('linkingPhrase') ? "solid" : "dashed"
-    },
-    'line-color': (node) => {
-      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
-    },
+    'line-style': "dashed",
+    'line-color': color_edge,
     'font-size': 10,
     'text-max-width': 100,
     'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
     'source-arrow-shape': 'circle',
-    'source-arrow-color': (node) => {
-      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
-    },
+    'source-arrow-color': color_edge,
     'target-arrow-shape': 'triangle',
-    'target-arrow-color': (node) => {
-      return node.data('linkingPhrase') ? color_edgeWithPhrase : color_edge
-    },
+    'target-arrow-color': color_edge,
     'arrow-scale': 0.8
+  })
+  .selector('.to-linking-phrase').css({
+    'line-style': "solid",
+    'line-color': color_linkingPhrase,
+    'source-arrow-color': color_linkingPhrase,
+    'target-arrow-shape': 'none',
+    'target-arrow-color': color_linkingPhrase
+  })
+  .selector('.from-linking-phrase').css({
+    'line-style': "solid",
+    'line-color': color_linkingPhrase,
+    'source-arrow-shape': 'none',
+    'source-arrow-color': color_linkingPhrase,
+    'target-arrow-color': color_linkingPhrase
   })
   .selector(':selected').css({
     'border-color': color_selected,
@@ -132,7 +135,7 @@ const _layout = {
   name: 'cose-bilkent',
   nodeDimensionsIncludeLabels: true,
   fit: false,
-  idealEdgeLength: 100,
+  idealEdgeLength: 60,
   animate: false,
   numIter: 30000
 }
