@@ -42,7 +42,10 @@ elmApp.ports.renderGraph.subscribe(({ rootNodeId, nodes, edges }) => {
         classes:
           compact([
             element.asCotonoma ? 'cotonoma' : null,
-            element.pinned ? 'pinned' : null
+            element.asLinkingPhrase ? 'linking-phrase' : null,
+            element.pinned ? 'pinned' : null,
+            element.toLinkingPhrase ? 'to-linking-phrase' : null,
+            element.fromLinkingPhrase ? 'from-linking-phrase' : null
           ]).join(' ')
       }
     }),

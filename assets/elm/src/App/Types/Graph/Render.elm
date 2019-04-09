@@ -1,6 +1,6 @@
 module App.Types.Graph.Render exposing (render)
 
-import App.Ports.Graph exposing (Edge, Node)
+import App.Ports.Graph exposing (Edge, Node, defaultEdge, defaultNode)
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection)
 import App.Types.Coto exposing (Coto, Cotonoma)
@@ -22,75 +22,100 @@ convert : Context context -> Graph -> App.Ports.Graph.Model
 convert context graph =
     let
         rootNode =
-            currentCotonomaAsNode context
+            convertCurrentCotonoma context
 
-        nodes =
+        cotoNodes =
             graph.cotos
                 |> Dict.values
-                |> List.map (cotoToNode graph)
+                |> List.map (convertCoto graph)
 
-        rootEdges =
+        rootConnections =
             graph.rootConnections
-                |> List.map (\conn -> connectionToEdge rootNode.id conn)
+                |> List.map (convertConnection rootNode.id)
 
-        edges =
+        connections =
             graph.connections
                 |> Dict.toList
                 |> List.map
                     (\( sourceId, conns ) ->
-                        List.map (\conn -> connectionToEdge sourceId conn) conns
+                        List.map (convertConnection sourceId) conns
                     )
                 |> List.concat
+
+        ( edges, phraseNodes ) =
+            (rootConnections ++ connections)
+                |> List.foldl (\( e1, n1 ) ( e2, n2 ) -> ( e1 ++ e2, n1 ++ n2 )) ( [], [] )
     in
     { rootNodeId = rootNode.id
-    , nodes = rootNode :: nodes
-    , edges = rootEdges ++ edges
+    , nodes = rootNode :: (cotoNodes ++ phraseNodes)
+    , edges = edges
     }
 
 
-currentCotonomaAsNode : Context context -> Node
-currentCotonomaAsNode context =
+convertCurrentCotonoma : Context context -> Node
+convertCurrentCotonoma context =
     context.cotonoma
         |> Maybe.map
             (\cotonoma ->
-                { id = cotonoma.cotoId
-                , name = cotonoma.name
-                , pinned = False
-                , asCotonoma = True
-                , imageUrl = Maybe.map .avatarUrl cotonoma.owner
-                , incomings = 0
-                , outgoings = 0
+                { defaultNode
+                    | id = cotonoma.cotoId
+                    , label = cotonoma.name
+                    , asCotonoma = True
+                    , imageUrl = Maybe.map .avatarUrl cotonoma.owner
                 }
             )
+        |> Maybe.withDefault { defaultNode | id = "home" }
+
+
+convertCoto : Graph -> Coto -> Node
+convertCoto graph coto =
+    { defaultNode
+        | id = coto.id
+        , label = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
+        , pinned = App.Types.Graph.pinned coto.id graph
+        , asCotonoma = isJust coto.asCotonoma
+        , imageUrl = Maybe.map .avatarUrl coto.amishi
+        , incomings = coto.incomings |> Maybe.withDefault 0
+        , outgoings = coto.outgoings |> Maybe.withDefault 0
+    }
+
+
+convertConnection : String -> Connection -> ( List Edge, List Node )
+convertConnection sourceId connection =
+    connection.linkingPhrase
+        |> Maybe.map
+            (\linkingPhrase ->
+                let
+                    phraseNodeId =
+                        sourceId ++ "-" ++ connection.end
+                in
+                ( [ { defaultEdge
+                        | source = sourceId
+                        , target = phraseNodeId
+                        , toLinkingPhrase = True
+                    }
+                  , { defaultEdge
+                        | source = phraseNodeId
+                        , target = connection.end
+                        , fromLinkingPhrase = True
+                    }
+                  ]
+                , [ { defaultNode
+                        | id = phraseNodeId
+                        , label = linkingPhrase
+                        , asLinkingPhrase = True
+                    }
+                  ]
+                )
+            )
         |> Maybe.withDefault
-            { id = "home"
-            , name = ""
-            , pinned = False
-            , asCotonoma = False
-            , imageUrl = Nothing
-            , incomings = 0
-            , outgoings = 0
-            }
-
-
-cotoToNode : Graph -> Coto -> Node
-cotoToNode graph coto =
-    { id = coto.id
-    , name = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
-    , pinned = App.Types.Graph.pinned coto.id graph
-    , asCotonoma = isJust coto.asCotonoma
-    , imageUrl = Maybe.map .avatarUrl coto.amishi
-    , incomings = coto.incomings |> Maybe.withDefault 0
-    , outgoings = coto.outgoings |> Maybe.withDefault 0
-    }
-
-
-connectionToEdge : String -> Connection -> Edge
-connectionToEdge sourceId connection =
-    { source = sourceId
-    , target = connection.end
-    , linkingPhrase = connection.linkingPhrase
-    }
+            ( [ { defaultEdge
+                    | source = sourceId
+                    , target = connection.end
+                }
+              ]
+            , []
+            )
 
 
 toTopicGraph : Graph -> Graph
