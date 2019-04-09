@@ -134,7 +134,7 @@ const _layout = {
   name: 'cose-bilkent',
   nodeDimensionsIncludeLabels: true,
   fit: false,
-  nodeRepulsion: 50000,
+  nodeRepulsion: 8000,
   idealEdgeLength: 60,
   animate: false,
   numIter: 30000
