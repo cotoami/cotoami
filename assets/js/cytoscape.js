@@ -88,6 +88,7 @@ const _style = cytoscape.stylesheet()
   })
   .selector('.linking-phrase').css({
     'border-width': 0,
+    'padding': 4,
     'font-size': 10,
     'color': color_linkingPhrase
   })
