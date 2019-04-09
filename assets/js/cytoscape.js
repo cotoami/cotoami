@@ -88,14 +88,12 @@ const _style = cytoscape.stylesheet()
   })
   .selector('.linking-phrase').css({
     'border-width': 0,
+    'font-size': 10,
     'color': color_linkingPhrase
   })
   .selector('edge').css({
     'line-style': "dashed",
     'line-color': color_edge,
-    'font-size': 10,
-    'text-max-width': 100,
-    'text-wrap': 'wrap',
     'curve-style': 'bezier',
     'width': 1,
     'source-arrow-shape': 'circle',
@@ -135,6 +133,7 @@ const _layout = {
   name: 'cose-bilkent',
   nodeDimensionsIncludeLabels: true,
   fit: false,
+  nodeRepulsion: 6000,
   idealEdgeLength: 60,
   animate: false,
   numIter: 30000
