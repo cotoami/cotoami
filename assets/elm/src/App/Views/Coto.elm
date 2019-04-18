@@ -97,7 +97,7 @@ bodyDivByCoto context maybeInbound elementId coto =
                         |> Maybe.map
                             (\_ ->
                                 div [ class "topic-coto-body" ]
-                                    [ img [ class "topic-icon", src "/images/graph.svg" ] []
+                                    [ img [ class "topic-icon", src "/images/topic.svg" ] []
                                     , contentDiv context elementId App.Markdown.markdown coto
                                     ]
                             )
