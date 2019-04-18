@@ -85,7 +85,26 @@ bodyDiv context maybeInbound elementId markdown model =
 
 bodyDivByCoto : Context a -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
 bodyDivByCoto context maybeInbound elementId coto =
-    bodyDiv context maybeInbound elementId App.Markdown.markdown coto
+    div [ class "coto-body" ]
+        [ coto.asCotonoma
+            |> Maybe.map (cotonomaLink context App.Messages.CotonomaClick coto.amishi)
+            |> Maybe.withDefault
+                (if App.Types.Connection.inReordering maybeInbound then
+                    div [ class "content-in-reorder" ] [ text (abbreviate coto) ]
+
+                 else
+                    App.Types.Coto.toTopic coto
+                        |> Maybe.map
+                            (\_ ->
+                                div [ class "topic-coto-body" ]
+                                    [ img [ class "topic-icon", src "/images/graph.svg" ] []
+                                    , contentDiv context elementId App.Markdown.markdown coto
+                                    ]
+                            )
+                        |> Maybe.withDefault
+                            (contentDiv context elementId App.Markdown.markdown coto)
+                )
+        ]
 
 
 contentDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg

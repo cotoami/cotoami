@@ -78,6 +78,27 @@ div.parents {
 div.coto-body {
   position: relative;
 
+  div.topic-coto-body {
+    position: relative;
+
+    .topic-icon {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 15px;
+      height: 15px;
+      opacity: 0.5;
+    }
+
+    div.coto-summary {
+      padding-left: 20px;
+    }
+
+    div.content > p {
+      text-indent: 20px;
+    }
+  }
+
   div.coto-summary {
     span.summary {
       font-weight: bold;
