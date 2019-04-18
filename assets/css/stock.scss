@@ -58,6 +58,10 @@
     }
   }
 
+  i.in-pinned-graph {
+    display: none;
+  }
+
   #coto-graph {
     position: absolute;
     top: 10px;
@@ -106,8 +110,7 @@
     animation-duration: 1s;
 
     & > div.coto-inner > div.coto-header {
-      i.pinned,
-      i.connected {
+      i.pinned {
         display: none;
       }
     }

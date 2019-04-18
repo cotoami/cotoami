@@ -100,8 +100,7 @@ traversalDiv context traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description" ] [ faIcon "sitemap" Nothing ]
-            , a
+            [ a
                 [ class "tool-button close-traversal"
                 , href "/"
                 , onLinkButtonClick (AppMsg.TraversalsMsg (CloseTraversal traversal.start))

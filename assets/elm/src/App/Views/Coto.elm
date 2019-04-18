@@ -166,7 +166,10 @@ headerDiv context maybeInbound elementId coto =
                 )
             |> Maybe.withDefault Utils.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id context.graph then
-            faIcon "thumb-tack" (Just "pinned")
+            faIcon "thumb-tack" (Just "coto-status pinned")
+
+          else if App.Types.Graph.reachableFromPins coto.id context.graph then
+            faIcon "sitemap" (Just "coto-status in-pinned-graph")
 
           else
             Utils.HtmlUtil.none
