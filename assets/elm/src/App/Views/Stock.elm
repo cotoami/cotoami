@@ -72,7 +72,8 @@ view context model =
                     , title (context.i18nText I18nKeys.Stock_GraphView)
                     , onClick (AppMsg.StockMsg (SwitchView GraphView))
                     ]
-                    [ materialIcon "share" Nothing ]
+                    [ img [ class "graph", src "/images/graph-button.svg" ] []
+                    ]
                 ]
             , if App.Submodels.Context.hasPinnedCotosInReordering context then
                 App.Views.Reorder.closeButtonDiv context
