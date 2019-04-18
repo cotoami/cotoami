@@ -1,4 +1,12 @@
-module App.Views.Navigation exposing (ViewModel, currentCotonomaNav, globalCotonomasDiv, homeNav, recentCotonomasDiv, view, watchlistDiv)
+module App.Views.Navigation exposing
+    ( ViewModel
+    , currentCotonomaNav
+    , globalCotonomasDiv
+    , homeNav
+    , recentCotonomasDiv
+    , view
+    , watchlistDiv
+    )
 
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (Msg(MoveToHome))
