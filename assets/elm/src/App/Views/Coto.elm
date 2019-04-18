@@ -75,8 +75,7 @@ bodyDiv context maybeInbound elementId markdown model =
             |> Maybe.map (cotonomaLink context App.Messages.CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Connection.inReordering maybeInbound then
-                    div [ class "content-in-reorder" ]
-                        [ text (abbreviate model) ]
+                    div [ class "content-in-reorder" ] [ text (abbreviate model) ]
 
                  else
                     contentDiv context elementId markdown model
