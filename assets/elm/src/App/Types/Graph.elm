@@ -16,6 +16,7 @@ module App.Types.Graph exposing
     , member
     , mergeSubgraph
     , pinned
+    , reachableFromPins
     , removeCoto
     , reorder
     , setLinkingPhrase
@@ -118,6 +119,11 @@ connected startId endId graph =
         |> Dict.get startId
         |> Maybe.map (List.any (\conn -> conn.end == endId))
         |> Maybe.withDefault False
+
+
+reachableFromPins : CotoId -> Graph -> Bool
+reachableFromPins cotoId graph =
+    Set.member cotoId graph.reachableCotoIds
 
 
 hasChildren : CotoId -> Graph -> Bool

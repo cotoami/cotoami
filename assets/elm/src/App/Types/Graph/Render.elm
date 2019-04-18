@@ -138,7 +138,7 @@ excludeUnreachables graph =
     let
         reachableCotos =
             Dict.filter
-                (\cotoId coto -> Set.member cotoId graph.reachableCotoIds)
+                (\cotoId coto -> App.Types.Graph.reachableFromPins cotoId graph)
                 graph.cotos
     in
     { graph | cotos = reachableCotos }
