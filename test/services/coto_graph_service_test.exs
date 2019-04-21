@@ -104,6 +104,20 @@ defmodule Cotoami.CotoGraphServiceTest do
              } = CotoGraphService.get_graph_in_amishi(conn, amishi)
     end
 
+    test "syncing coto update", ~M{conn, coto} do
+      coto2 = %{coto | content: "hello2"}
+      CotoGraphService.sync(conn, coto2)
+
+      assert %Node{properties: %{"content" => "hello2"}} =
+               Neo4jService.get_or_create_node(conn, coto.id)
+    end
+
+    test "syncing an unregistered coto should return nil", ~M{conn, amishi} do
+      coto = CotoService.create!(amishi, "bye")
+      result = CotoGraphService.sync(conn, coto)
+      assert result == nil
+    end
+
     test "pinned_cotonoma_keys should be empty", ~M{conn, amishi} do
       assert CotoGraphService.pinned_cotonoma_keys(conn, amishi) == []
     end
