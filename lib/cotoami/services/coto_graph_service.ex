@@ -237,8 +237,8 @@ defmodule Cotoami.CotoGraphService do
 
   def pin(bolt_conn, %Coto{} = coto, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
-    |> register_amishi(amishi)
-    |> register_coto(coto)
+    |> register(amishi)
+    |> register(coto)
     |> Neo4jService.get_or_create_ordered_relationship(
       amishi.id,
       coto.id,
@@ -249,8 +249,8 @@ defmodule Cotoami.CotoGraphService do
 
   def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
-    |> register_cotonoma(cotonoma)
-    |> register_coto(coto)
+    |> register(cotonoma)
+    |> register(coto)
     |> Neo4jService.get_or_create_ordered_relationship(
       cotonoma.coto.id,
       coto.id,
@@ -320,8 +320,8 @@ defmodule Cotoami.CotoGraphService do
       end
 
     bolt_conn
-    |> register_coto(source)
-    |> register_coto(target)
+    |> register(source)
+    |> register(target)
     |> Neo4jService.get_or_create_ordered_relationship(
       source.id,
       target.id,
@@ -339,8 +339,8 @@ defmodule Cotoami.CotoGraphService do
     connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
-    |> register_amishi(amishi)
-    |> register_coto(target)
+    |> register(amishi)
+    |> register(target)
     |> Neo4jService.get_or_create_relationship(
       amishi.id,
       target.id,
@@ -359,8 +359,8 @@ defmodule Cotoami.CotoGraphService do
     connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
-    |> register_coto(source)
-    |> register_coto(target)
+    |> register(source)
+    |> register(target)
     |> Neo4jService.get_or_create_relationship(
       source.id,
       target.id,
@@ -491,17 +491,17 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp register_amishi(bolt_conn, %Amishi{id: amishi_id}) do
+  defp register(bolt_conn, %Amishi{id: amishi_id}) do
     Neo4jService.get_or_create_node(bolt_conn, amishi_id, [@label_amishi])
     bolt_conn
   end
 
-  defp register_coto(bolt_conn, coto) do
+  defp register(bolt_conn, %Coto{} = coto) do
     Neo4jService.get_or_create_node(bolt_conn, coto.id, node_labels(coto), node_props(coto))
     bolt_conn
   end
 
-  defp register_cotonoma(bolt_conn, cotonoma) do
+  defp register(bolt_conn, %Cotonoma{} = cotonoma) do
     labels = [@label_coto, @label_cotonoma]
 
     Neo4jService.get_or_create_node(
