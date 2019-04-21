@@ -456,8 +456,17 @@ defmodule Cotoami.CotoGraphService do
     Neo4jService.delete_node_with_relationships(bolt_conn, coto_id)
   end
 
-  def sync_props(bolt_conn, %Coto{id: uuid} = coto) do
-    Neo4jService.replace_node_properties(bolt_conn, uuid, node_props(coto))
+  def sync(bolt_conn, %Coto{id: uuid} = coto) do
+    node = Neo4jService.replace_node_properties!(bolt_conn, uuid, node_props(coto))
+    %Node{labels: labels} = node
+
+    cond do
+      coto.as_cotonoma and not Enum.member?(labels, @label_cotonoma) ->
+        Neo4jService.set_labels!(bolt_conn, uuid, [@label_cotonoma])
+
+      true ->
+        node
+    end
   end
 
   defp node_labels(%Coto{} = coto) do
