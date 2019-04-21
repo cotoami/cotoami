@@ -453,19 +453,20 @@ defmodule Cotoami.CotoGraphService do
   end
 
   def sync_coto_props(bolt_conn, %Coto{id: uuid} = coto) do
-    Neo4jService.replace_node_properties(bolt_conn, uuid, to_coto_props(coto))
+    Neo4jService.replace_node_properties(bolt_conn, uuid, node_props(coto))
   end
 
   def delete_coto(bolt_conn, coto_id) do
     Neo4jService.delete_node_with_relationships(bolt_conn, coto_id)
   end
 
-  defp register_amishi(bolt_conn, %Amishi{id: amishi_id}) do
-    Neo4jService.get_or_create_node(bolt_conn, amishi_id, [@label_amishi])
-    bolt_conn
+  defp node_labels(%Coto{} = coto) do
+    if coto.as_cotonoma,
+      do: [@label_coto, @label_cotonoma],
+      else: [@label_coto]
   end
 
-  defp to_coto_props(%Coto{} = coto) do
+  defp node_props(%Coto{} = coto) do
     %{
       content: coto.content,
       summary: coto.summary,
@@ -478,7 +479,7 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp to_cotonoma_props(%Cotonoma{} = cotonoma) do
+  defp node_props(%Cotonoma{} = cotonoma) do
     %{
       content: cotonoma.name,
       amishi_id: cotonoma.coto.amishi_id,
@@ -490,13 +491,13 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp register_coto(bolt_conn, coto) do
-    labels =
-      if coto.as_cotonoma,
-        do: [@label_coto, @label_cotonoma],
-        else: [@label_coto]
+  defp register_amishi(bolt_conn, %Amishi{id: amishi_id}) do
+    Neo4jService.get_or_create_node(bolt_conn, amishi_id, [@label_amishi])
+    bolt_conn
+  end
 
-    Neo4jService.get_or_create_node(bolt_conn, coto.id, labels, to_coto_props(coto))
+  defp register_coto(bolt_conn, coto) do
+    Neo4jService.get_or_create_node(bolt_conn, coto.id, node_labels(coto), node_props(coto))
     bolt_conn
   end
 
@@ -507,7 +508,7 @@ defmodule Cotoami.CotoGraphService do
       bolt_conn,
       cotonoma.coto.id,
       labels,
-      to_cotonoma_props(cotonoma)
+      node_props(cotonoma)
     )
 
     bolt_conn
