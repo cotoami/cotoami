@@ -32,6 +32,7 @@ import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
 import App.Types.Graph
 import App.Types.Graph.Connect
+import App.Types.Graph.Render
 import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
@@ -210,7 +211,7 @@ update msg model =
 
         SubgraphFetched cotonomaKey (Ok subgraph) ->
             { model | graph = App.Types.Graph.mergeSubgraph cotonomaKey subgraph model.graph }
-                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
+                |> withCmd (\model -> App.Types.Graph.Render.addSubgraph model model.graph)
 
         SubgraphFetched cotonomaKey (Err _) ->
             model |> withoutCmd
