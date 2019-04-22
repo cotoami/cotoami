@@ -69,10 +69,9 @@ fetchSubgraph cotonomaKey graph =
     )
 
 
-fetchSubgraphIfCotonoma : CotoId -> Graph -> ( Graph, Cmd Msg )
-fetchSubgraphIfCotonoma cotoId graph =
-    graph
-        |> App.Types.Graph.getCoto cotoId
+fetchSubgraphIfCotonoma : Maybe Coto -> Graph -> ( Graph, Cmd Msg )
+fetchSubgraphIfCotonoma maybeCoto graph =
+    maybeCoto
         |> Maybe.andThen (\coto -> coto.asCotonoma)
         |> Maybe.map (\cotonoma -> cotonoma.key)
         |> Maybe.map (\key -> fetchSubgraph key graph)

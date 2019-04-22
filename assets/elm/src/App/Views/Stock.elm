@@ -299,7 +299,9 @@ update context msg ({ stockView } as model) =
 
         GraphNodeClicked cotoId ->
             if stockView.graphCanvasFullyOpened then
-                App.Server.Graph.fetchSubgraphIfCotonoma cotoId model.graph
+                App.Server.Graph.fetchSubgraphIfCotonoma
+                    (App.Types.Graph.getCoto cotoId model.graph)
+                    model.graph
                     |> Tuple.mapFirst (\graph -> { model | graph = graph })
 
             else

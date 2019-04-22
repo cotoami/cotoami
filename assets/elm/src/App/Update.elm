@@ -278,7 +278,9 @@ update msg model =
         OpenTraversal cotoId ->
             let
                 ( graph, fetchSubgraph ) =
-                    App.Server.Graph.fetchSubgraphIfCotonoma cotoId model.graph
+                    App.Server.Graph.fetchSubgraphIfCotonoma
+                        (App.Submodels.LocalCotos.getCoto cotoId model)
+                        model.graph
             in
             { model | graph = graph }
                 |> App.Model.openTraversal cotoId
