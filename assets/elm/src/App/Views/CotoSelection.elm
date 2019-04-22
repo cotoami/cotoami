@@ -16,6 +16,7 @@ import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
 import App.Views.ViewSwitchMsg exposing (ActiveView(..))
+import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -218,6 +219,6 @@ cotoDiv context beingDeselected coto =
                 ]
             , App.Views.Coto.headerDiv context Nothing elementId coto
             , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
-            , App.Views.Coto.subCotosButtonDiv context.graph Nothing (Just coto.id)
+            , App.Views.Coto.openTraversalButtonDiv context.graph (isJust coto.asCotonoma) coto.id
             ]
         ]

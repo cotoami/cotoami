@@ -43,7 +43,9 @@ view context post =
                 authorDiv context post
             , App.Views.Coto.bodyDiv context Nothing elementId markdown post
             , footerDiv post
-            , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
+            , post.cotoId
+                |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
+                |> Maybe.withDefault Utils.HtmlUtil.none
             , authorIcon context post
             ]
         ]

@@ -7,8 +7,8 @@ module App.Views.Coto exposing
     , cotonomaLink
     , headerDiv
     , linkingPhraseDiv
+    , openTraversalButtonDiv
     , parentsDiv
-    , subCotosButtonDiv
     , subCotosDiv
     )
 
@@ -22,6 +22,7 @@ import App.Types.Graph exposing (Graph)
 import App.Views.CotoToolbar
 import App.Views.Reorder
 import Dict
+import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -230,27 +231,19 @@ parentsDiv graph exclude childId =
 --
 
 
-subCotosButtonDiv : Graph -> Maybe String -> Maybe CotoId -> Html Msg
-subCotosButtonDiv graph maybeIconName maybeCotoId =
-    maybeCotoId
-        |> Maybe.map
-            (\cotoId ->
-                if App.Types.Graph.hasChildren cotoId graph then
-                    div [ class "sub-cotos-button" ]
-                        [ a
-                            [ class "tool-button"
-                            , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
-                            ]
-                            [ materialIcon
-                                "view_headline"
-                                Nothing
-                            ]
-                        ]
+openTraversalButtonDiv : Graph -> Bool -> CotoId -> Html Msg
+openTraversalButtonDiv graph isCotonoma cotoId =
+    if isCotonoma || App.Types.Graph.hasChildren cotoId graph then
+        div [ class "sub-cotos-button" ]
+            [ a
+                [ class "tool-button"
+                , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
+                ]
+                [ materialIcon "view_headline" Nothing ]
+            ]
 
-                else
-                    Utils.HtmlUtil.none
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+    else
+        Utils.HtmlUtil.none
 
 
 subCotosDiv : Context a -> ElementId -> Coto -> Html Msg
@@ -337,7 +330,7 @@ subCotoDiv context parentElementId inbound coto =
             , parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ bodyDivByCoto context (Just inbound) elementId coto
-                , subCotosButtonDiv context.graph (Just "more_vert") (Just coto.id)
+                , openTraversalButtonDiv context.graph (isJust coto.asCotonoma) coto.id
                 ]
             ]
         ]
