@@ -209,6 +209,10 @@ update msg model =
         GraphFetched (Err _) ->
             model |> withoutCmd
 
+        LoadSubgraph cotonomaKey ->
+            { model | graph = App.Types.Graph.setSubgraphLoading cotonomaKey model.graph }
+                |> withCmd (\_ -> App.Server.Graph.fetchSubgraph cotonomaKey)
+
         SubgraphFetched cotonomaKey (Ok subgraph) ->
             { model | graph = App.Types.Graph.mergeSubgraph cotonomaKey subgraph model.graph }
                 |> withCmd (\model -> App.Types.Graph.Render.addSubgraph model model.graph)

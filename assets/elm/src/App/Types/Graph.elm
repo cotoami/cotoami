@@ -11,6 +11,7 @@ module App.Types.Graph exposing
     , getParents
     , hasChildren
     , hasSubgraphLoaded
+    , hasSubgraphLoading
     , incrementIncoming
     , incrementOutgoing
     , initGraph
@@ -21,6 +22,7 @@ module App.Types.Graph exposing
     , removeCoto
     , reorder
     , setLinkingPhrase
+    , setSubgraphLoading
     , update
     , updateCotoContent
     )
@@ -69,6 +71,7 @@ type alias Graph =
     , connections : ConnectionDict
     , reachableCotoIds : Set CotoId
     , loadedSubgraphs : Set CotonomaKey
+    , loadingSubgraphs : Set CotonomaKey
     }
 
 
@@ -79,6 +82,7 @@ defaultGraph =
     , connections = Dict.empty
     , reachableCotoIds = Set.empty
     , loadedSubgraphs = Set.empty
+    , loadingSubgraphs = Set.empty
     }
 
 
@@ -97,6 +101,16 @@ initGraph cotos rootConnections connections =
     defaultGraph |> update cotos rootConnections connections
 
 
+setSubgraphLoading : CotonomaKey -> Graph -> Graph
+setSubgraphLoading cotonomaKey graph =
+    { graph | loadingSubgraphs = Set.insert cotonomaKey graph.loadingSubgraphs }
+
+
+hasSubgraphLoading : CotonomaKey -> Graph -> Bool
+hasSubgraphLoading cotonomaKey graph =
+    Set.member cotonomaKey graph.loadingSubgraphs
+
+
 mergeSubgraph : CotonomaKey -> Graph -> Graph -> Graph
 mergeSubgraph cotonomaKey subgraph graph =
     graph
@@ -104,12 +118,15 @@ mergeSubgraph cotonomaKey subgraph graph =
             (Dict.union subgraph.cotos graph.cotos)
             graph.rootConnections
             (Dict.union subgraph.connections graph.connections)
-        |> subgraphLoaded cotonomaKey
+        |> setSubgraphLoaded cotonomaKey
 
 
-subgraphLoaded : CotonomaKey -> Graph -> Graph
-subgraphLoaded cotonomaKey graph =
-    { graph | loadedSubgraphs = Set.insert cotonomaKey graph.loadedSubgraphs }
+setSubgraphLoaded : CotonomaKey -> Graph -> Graph
+setSubgraphLoaded cotonomaKey graph =
+    { graph
+        | loadedSubgraphs = Set.insert cotonomaKey graph.loadedSubgraphs
+        , loadingSubgraphs = Set.remove cotonomaKey graph.loadingSubgraphs
+    }
 
 
 hasSubgraphLoaded : CotonomaKey -> Graph -> Bool

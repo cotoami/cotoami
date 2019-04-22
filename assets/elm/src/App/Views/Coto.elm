@@ -259,18 +259,7 @@ subCotosDiv context parentElementId coto =
 
           else
             Utils.HtmlUtil.none
-        , coto.asCotonoma
-            |> Maybe.map
-                (\cotonoma ->
-                    div [ class "load-subgraph" ]
-                        [ a
-                            [ class "tool-button"
-                            , title "Load sub cotos"
-                            ]
-                            [ materialIcon "more_horiz" Nothing ]
-                        ]
-                )
-            |> Maybe.withDefault Utils.HtmlUtil.none
+        , loadSubgraphButton context coto
         , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
             App.Views.Reorder.closeButtonDiv context
 
@@ -282,7 +271,32 @@ subCotosDiv context parentElementId coto =
         ]
 
 
-connectionsDiv : Context a -> ElementId -> Coto -> List Connection -> Html Msg
+loadSubgraphButton : Context context -> Coto -> Html Msg
+loadSubgraphButton context coto =
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                if App.Types.Graph.hasSubgraphLoaded cotonoma.key context.graph then
+                    Utils.HtmlUtil.none
+
+                else
+                    div [ class "load-subgraph" ]
+                        [ if App.Types.Graph.hasSubgraphLoading cotonoma.key context.graph then
+                            Utils.HtmlUtil.loadingHorizontalImg
+
+                          else
+                            a
+                                [ class "tool-button"
+                                , title "Load sub cotos"
+                                , onLinkButtonClick (App.Messages.LoadSubgraph cotonoma.key)
+                                ]
+                                [ materialIcon "more_horiz" Nothing ]
+                        ]
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+connectionsDiv : Context context -> ElementId -> Coto -> List Connection -> Html Msg
 connectionsDiv context parentElementId parentCoto connections =
     connections
         |> List.reverse
