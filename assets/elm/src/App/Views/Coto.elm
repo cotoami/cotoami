@@ -249,25 +249,37 @@ openTraversalButtonDiv graph isCotonoma cotoId =
 
 subCotosDiv : Context a -> ElementId -> Coto -> Html Msg
 subCotosDiv context parentElementId coto =
-    context.graph.connections
-        |> Dict.get coto.id
-        |> Maybe.map
-            (\connections ->
-                div []
-                    [ div [ class "main-sub-border" ] []
-                    , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
-                        App.Views.Reorder.closeButtonDiv context
+    let
+        maybeConnections =
+            Dict.get coto.id context.graph.connections
+    in
+    div []
+        [ if isJust maybeConnections || isJust coto.asCotonoma then
+            div [ class "main-sub-border" ] []
 
-                      else
-                        Utils.HtmlUtil.none
-                    , connectionsDiv
-                        context
-                        parentElementId
-                        coto
-                        connections
-                    ]
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+          else
+            Utils.HtmlUtil.none
+        , coto.asCotonoma
+            |> Maybe.map
+                (\cotonoma ->
+                    div [ class "load-subgraph" ]
+                        [ a
+                            [ class "tool-button"
+                            , title "Load sub cotos"
+                            ]
+                            [ materialIcon "more_horiz" Nothing ]
+                        ]
+                )
+            |> Maybe.withDefault Utils.HtmlUtil.none
+        , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
+            App.Views.Reorder.closeButtonDiv context
+
+          else
+            Utils.HtmlUtil.none
+        , maybeConnections
+            |> Maybe.map (connectionsDiv context parentElementId coto)
+            |> Maybe.withDefault Utils.HtmlUtil.none
+        ]
 
 
 connectionsDiv : Context a -> ElementId -> Coto -> List Connection -> Html Msg
