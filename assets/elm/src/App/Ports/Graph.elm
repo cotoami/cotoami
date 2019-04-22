@@ -2,9 +2,13 @@ port module App.Ports.Graph exposing
     ( Edge
     , Model
     , Node
+    , addSubgraph
     , defaultEdge
     , defaultNode
     , destroyGraph
+    , initEdge
+    , initEdgeFromLinkingPhrase
+    , initEdgeToLinkingPhrase
     , nodeClicked
     , renderGraph
     , resizeGraph
@@ -37,7 +41,8 @@ defaultNode =
 
 
 type alias Edge =
-    { source : String
+    { id : String
+    , source : String
     , target : String
     , toLinkingPhrase : Bool
     , fromLinkingPhrase : Bool
@@ -46,11 +51,33 @@ type alias Edge =
 
 defaultEdge : Edge
 defaultEdge =
-    { source = ""
+    { id = ""
+    , source = ""
     , target = ""
     , toLinkingPhrase = False
     , fromLinkingPhrase = False
     }
+
+
+initEdge : String -> String -> Edge
+initEdge source target =
+    { defaultEdge
+        | id = source ++ "-" ++ target
+        , source = source
+        , target = target
+    }
+
+
+initEdgeToLinkingPhrase : String -> String -> Edge
+initEdgeToLinkingPhrase source target =
+    initEdge source target
+        |> (\edge -> { edge | toLinkingPhrase = True })
+
+
+initEdgeFromLinkingPhrase : String -> String -> Edge
+initEdgeFromLinkingPhrase source target =
+    initEdge source target
+        |> (\edge -> { edge | fromLinkingPhrase = True })
 
 
 type alias Model =
@@ -61,6 +88,9 @@ type alias Model =
 
 
 port renderGraph : Model -> Cmd msg
+
+
+port addSubgraph : Model -> Cmd msg
 
 
 port resizeGraph : () -> Cmd msg

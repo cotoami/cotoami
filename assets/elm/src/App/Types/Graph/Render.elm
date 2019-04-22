@@ -1,4 +1,4 @@
-module App.Types.Graph.Render exposing (render)
+module App.Types.Graph.Render exposing (addSubgraph, render)
 
 import App.Ports.Graph exposing (Edge, Node, defaultEdge, defaultNode)
 import App.Submodels.Context exposing (Context)
@@ -15,6 +15,14 @@ render context graph =
         |> toTopicGraph
         |> convert context
         |> App.Ports.Graph.renderGraph
+
+
+addSubgraph : Context context -> Graph -> Cmd msg
+addSubgraph context graph =
+    graph
+        |> toTopicGraph
+        |> convert context
+        |> App.Ports.Graph.addSubgraph
 
 
 convert : Context context -> Graph -> App.Ports.Graph.Model
@@ -88,16 +96,8 @@ convertConnection sourceId connection =
                     phraseNodeId =
                         sourceId ++ "-" ++ connection.end
                 in
-                ( [ { defaultEdge
-                        | source = sourceId
-                        , target = phraseNodeId
-                        , toLinkingPhrase = True
-                    }
-                  , { defaultEdge
-                        | source = phraseNodeId
-                        , target = connection.end
-                        , fromLinkingPhrase = True
-                    }
+                ( [ App.Ports.Graph.initEdgeToLinkingPhrase sourceId phraseNodeId
+                  , App.Ports.Graph.initEdgeFromLinkingPhrase phraseNodeId connection.end
                   ]
                 , [ { defaultNode
                         | id = phraseNodeId
@@ -108,11 +108,7 @@ convertConnection sourceId connection =
                 )
             )
         |> Maybe.withDefault
-            ( [ { defaultEdge
-                    | source = sourceId
-                    , target = connection.end
-                }
-              ]
+            ( [ App.Ports.Graph.initEdge sourceId connection.end ]
             , []
             )
 

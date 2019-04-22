@@ -205,6 +205,7 @@ export default class {
   static addSubgraph(subgraph) {
     if (_graph != null) {
       _graph.add(subgraph)
+      _graph.layout(_layout).run()
     }
   }
 

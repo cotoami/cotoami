@@ -61,6 +61,10 @@ elmApp.ports.renderGraph.subscribe(({ rootNodeId, nodes, edges }) => {
   )
 })
 
+elmApp.ports.addSubgraph.subscribe(({ rootNodeId, nodes, edges }) => {
+  Cytoscape.addSubgraph(_convertGraphData(nodes, edges))
+})
+
 elmApp.ports.resizeGraph.subscribe(() => {
   Cytoscape.resize()
 })
