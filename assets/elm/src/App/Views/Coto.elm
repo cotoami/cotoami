@@ -237,6 +237,7 @@ openTraversalButtonDiv graph isCotonoma cotoId =
         div [ class "sub-cotos-button" ]
             [ a
                 [ class "tool-button"
+                , title "Open sub cotos"
                 , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
                 ]
                 [ materialIcon "view_headline" Nothing ]
