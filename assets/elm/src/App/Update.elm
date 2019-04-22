@@ -210,8 +210,8 @@ update msg model =
             model |> withoutCmd
 
         LoadSubgraph cotonomaKey ->
-            { model | graph = App.Types.Graph.setSubgraphLoading cotonomaKey model.graph }
-                |> withCmd (\_ -> App.Server.Graph.fetchSubgraph cotonomaKey)
+            App.Server.Graph.fetchSubgraph cotonomaKey model.graph
+                |> Tuple.mapFirst (\graph -> { model | graph = graph })
 
         SubgraphFetched cotonomaKey (Ok subgraph) ->
             { model | graph = App.Types.Graph.mergeSubgraph cotonomaKey subgraph model.graph }
@@ -276,7 +276,11 @@ update msg model =
                 |> withoutCmd
 
         OpenTraversal cotoId ->
-            model
+            let
+                ( graph, fetchSubgraph ) =
+                    App.Server.Graph.fetchSubgraphIfCotonoma cotoId model.graph
+            in
+            { model | graph = graph }
                 |> App.Model.openTraversal cotoId
                 |> App.Submodels.Modals.clearModals
                 |> withCmd
@@ -284,7 +288,7 @@ update msg model =
                         Cmd.batch
                             [ App.Commands.scrollGraphExplorationToRight NoOp
                             , App.Commands.scrollTraversalsPaginationToRight NoOp
-                            , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
+                            , fetchSubgraph
                             , App.Views.Stock.resizeGraphWithDelay
                             ]
                     )
