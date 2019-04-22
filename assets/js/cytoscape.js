@@ -202,6 +202,12 @@ export default class {
     }, 500))
   }
 
+  static addSubgraph(subgraph) {
+    if (_graph != null) {
+      _graph.add(subgraph)
+    }
+  }
+
   static resize() {
     if (_graph != null) {
       _graph.resize()
