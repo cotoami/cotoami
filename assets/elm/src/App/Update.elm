@@ -208,11 +208,11 @@ update msg model =
         GraphFetched (Err _) ->
             model |> withoutCmd
 
-        SubgraphFetched (Ok subgraph) ->
-            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
+        SubgraphFetched cotonomaKey (Ok subgraph) ->
+            { model | graph = App.Types.Graph.mergeSubgraph cotonomaKey subgraph model.graph }
                 |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
-        SubgraphFetched (Err _) ->
+        SubgraphFetched cotonomaKey (Err _) ->
             model |> withoutCmd
 
         SelectImportFile ->

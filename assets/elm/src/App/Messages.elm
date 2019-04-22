@@ -46,7 +46,7 @@ type Msg
     | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
     | SubCotonomasFetched (Result Http.Error (List Cotonoma))
     | GraphFetched (Result Http.Error Graph)
-    | SubgraphFetched (Result Http.Error Graph)
+    | SubgraphFetched CotonomaKey (Result Http.Error Graph)
     | SelectImportFile
       --
       -- Search

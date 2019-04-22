@@ -63,7 +63,7 @@ fetchGraph maybeCotonomaKey =
 fetchSubgraph : CotonomaKey -> Cmd Msg
 fetchSubgraph cotonomaKey =
     Http.send
-        SubgraphFetched
+        (SubgraphFetched cotonomaKey)
         (Http.get ("/api/graph/subgraph/" ++ cotonomaKey) decodeGraph)
 
 

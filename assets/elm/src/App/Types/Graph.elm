@@ -10,6 +10,7 @@ module App.Types.Graph exposing
     , getOutboundConnections
     , getParents
     , hasChildren
+    , hasSubgraphLoaded
     , incrementIncoming
     , incrementOutgoing
     , initGraph
@@ -67,6 +68,7 @@ type alias Graph =
     , rootConnections : List Connection
     , connections : ConnectionDict
     , reachableCotoIds : Set CotoId
+    , loadedSubgraphs : Set CotonomaKey
     }
 
 
@@ -76,6 +78,7 @@ defaultGraph =
     , rootConnections = []
     , connections = Dict.empty
     , reachableCotoIds = Set.empty
+    , loadedSubgraphs = Set.empty
     }
 
 
@@ -94,13 +97,24 @@ initGraph cotos rootConnections connections =
     defaultGraph |> update cotos rootConnections connections
 
 
-mergeSubgraph : Graph -> Graph -> Graph
-mergeSubgraph subgraph graph =
+mergeSubgraph : CotonomaKey -> Graph -> Graph -> Graph
+mergeSubgraph cotonomaKey subgraph graph =
     graph
         |> update
             (Dict.union subgraph.cotos graph.cotos)
             graph.rootConnections
             (Dict.union subgraph.connections graph.connections)
+        |> subgraphLoaded cotonomaKey
+
+
+subgraphLoaded : CotonomaKey -> Graph -> Graph
+subgraphLoaded cotonomaKey graph =
+    { graph | loadedSubgraphs = Set.insert cotonomaKey graph.loadedSubgraphs }
+
+
+hasSubgraphLoaded : CotonomaKey -> Graph -> Bool
+hasSubgraphLoaded cotonomaKey graph =
+    Set.member cotonomaKey graph.loadedSubgraphs
 
 
 pinned : CotoId -> Graph -> Bool

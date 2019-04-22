@@ -7,7 +7,6 @@ import App.Types.Coto exposing (Coto, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import Dict
 import Exts.Maybe exposing (isJust)
-import Set
 
 
 render : Context context -> Graph -> Cmd msg
