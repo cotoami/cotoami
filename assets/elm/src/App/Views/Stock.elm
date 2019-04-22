@@ -12,6 +12,7 @@ import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
 import App.Ports.Graph
+import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
@@ -298,7 +299,7 @@ update context msg ({ stockView } as model) =
 
         GraphNodeClicked cotoId ->
             if stockView.graphCanvasFullyOpened then
-                model |> withoutCmd
+                ( model, App.Server.Graph.fetchSubgraphIfCotonoma context.graph cotoId )
 
             else
                 ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )
