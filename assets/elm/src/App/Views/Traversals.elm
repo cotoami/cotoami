@@ -352,7 +352,7 @@ traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html AppMsg.Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
         [ if isJust coto.asCotonoma then
-            openTraversalButton coto.id
+            App.Views.Coto.openTraversalButton coto.id
 
           else if App.Types.Graph.hasChildren coto.id graph then
             a
@@ -365,15 +365,6 @@ traverseButtonDiv graph { traversal, index } coto =
           else
             Utils.HtmlUtil.none
         ]
-
-
-openTraversalButton : CotoId -> Html AppMsg.Msg
-openTraversalButton cotoId =
-    a
-        [ class "tool-button open-traversal"
-        , onLinkButtonClick (OpenTraversal cotoId)
-        ]
-        [ materialIcon "arrow_forward" Nothing ]
 
 
 type alias UpdateModel a =

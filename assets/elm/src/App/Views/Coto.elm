@@ -7,6 +7,7 @@ module App.Views.Coto exposing
     , cotonomaLink
     , headerDiv
     , linkingPhraseDiv
+    , openTraversalButton
     , openTraversalButtonDiv
     , parentsDiv
     , subCotosDiv
@@ -234,17 +235,20 @@ parentsDiv graph exclude childId =
 openTraversalButtonDiv : Graph -> Bool -> CotoId -> Html Msg
 openTraversalButtonDiv graph isCotonoma cotoId =
     if isCotonoma || App.Types.Graph.hasChildren cotoId graph then
-        div [ class "sub-cotos-button" ]
-            [ a
-                [ class "tool-button"
-                , title "Open sub cotos"
-                , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
-                ]
-                [ materialIcon "view_headline" Nothing ]
-            ]
+        div [ class "sub-cotos-button" ] [ openTraversalButton cotoId ]
 
     else
         Utils.HtmlUtil.none
+
+
+openTraversalButton : CotoId -> Html Msg
+openTraversalButton cotoId =
+    a
+        [ class "tool-button open-traversal"
+        , title "Open sub cotos"
+        , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
+        ]
+        [ materialIcon "view_headline" Nothing ]
 
 
 subCotosDiv : Context a -> ElementId -> Coto -> Html Msg
