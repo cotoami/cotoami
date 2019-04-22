@@ -150,12 +150,18 @@ const _getCenterNodeId = () => {
 }
 
 const _setFocus = (nodeId) => {
+  _focusNodeId = nodeId
   if (_graph != null) {
     _graph.elements().addClass('faded')
     const node = _graph.getElementById(nodeId)
     node.select()
     node.neighborhood().add(node).removeClass('faded')
   }
+}
+
+const _unfocus = () => {
+  _graph.elements().removeClass('faded')
+  _focusNodeId = null
 }
 
 export default class {
@@ -177,16 +183,14 @@ export default class {
     })
 
     _graph.on('tap', 'node', (e) => {
-      const node = e.target
-      _focusNodeId = node.data('id')
-      _setFocus(_focusNodeId)
-      onNodeClick(_focusNodeId)
+      const nodeId = e.target.data('id')
+      _setFocus(nodeId)
+      onNodeClick(nodeId)
     })
 
     _graph.on('tap', (e) => {
       if (e.target === _graph) {
-        _graph.elements().removeClass('faded')
-        _focusNodeId = null
+        _unfocus()
       }
     })
 
