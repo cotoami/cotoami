@@ -123,6 +123,9 @@ const _style = cytoscape.stylesheet()
     'source-arrow-color': color_selected,
     'target-arrow-color': color_selected
   })
+  .selector('.cotonoma:selected').css({
+    'border-width': 2
+  })
   .selector('.faded').css({
     'opacity': 0.25,
     'text-opacity': 0,
