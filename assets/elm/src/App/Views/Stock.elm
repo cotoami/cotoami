@@ -63,7 +63,7 @@ view context model =
                     , title (context.i18nText I18nKeys.Stock_DocumentView)
                     , onClick (AppMsg.StockMsg (SwitchView DocumentView))
                     ]
-                    [ materialIcon "view_stream" Nothing ]
+                    [ materialIcon "view_headline" Nothing ]
                 , a
                     [ classList
                         [ ( "tool-button", True )

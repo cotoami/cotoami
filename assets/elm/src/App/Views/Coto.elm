@@ -242,7 +242,7 @@ subCotosButtonDiv graph maybeIconName maybeCotoId =
                             , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
                             ]
                             [ materialIcon
-                                (Maybe.withDefault "more_horiz" maybeIconName)
+                                "view_headline"
                                 Nothing
                             ]
                         ]
