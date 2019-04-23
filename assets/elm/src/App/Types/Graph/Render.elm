@@ -76,12 +76,22 @@ convertCurrentCotonoma context =
 
 convertCoto : Graph -> Coto -> Node
 convertCoto graph coto =
+    let
+        subgraphLoaded =
+            coto.asCotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        App.Types.Graph.hasSubgraphLoaded cotonoma.key graph
+                    )
+                |> Maybe.withDefault True
+    in
     { defaultNode
         | id = coto.id
         , label = App.Types.Coto.toTopic coto |> Maybe.withDefault ""
         , pinned = App.Types.Graph.pinned coto.id graph
         , asCotonoma = isJust coto.asCotonoma
         , imageUrl = Maybe.map .avatarUrl coto.amishi
+        , subgraphLoaded = subgraphLoaded
         , incomings = coto.incomings |> Maybe.withDefault 0
         , outgoings = coto.outgoings |> Maybe.withDefault 0
     }

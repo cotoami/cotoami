@@ -42,7 +42,8 @@ const _convertGraphData = (nodes, edges) => {
           element.asLinkingPhrase ? 'linking-phrase' : null,
           element.pinned ? 'pinned' : null,
           element.toLinkingPhrase ? 'to-linking-phrase' : null,
-          element.fromLinkingPhrase ? 'from-linking-phrase' : null
+          element.fromLinkingPhrase ? 'from-linking-phrase' : null,
+          element.subgraphLoaded ? null : 'subgraph-not-loaded'
         ]).join(' ')
     }
   })

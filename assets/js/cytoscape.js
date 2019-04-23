@@ -1,6 +1,7 @@
 // Graph rendering by Cytoscape.js
 
 import debounce from 'lodash/debounce'
+import forEach from 'lodash/forEach'
 
 const _hankakuOnly = (text) => {
   return text.match(/^[\x01-\x7E\uFF65-\uFF9F\u2019]+$/) != null
@@ -85,6 +86,9 @@ const _style = cytoscape.stylesheet()
     'text-margin-y': 5,
     'font-size': 10,
     'font-weight': 'bold'
+  })
+  .selector('.cotonoma.subgraph-not-loaded').css({
+    'background-image-opacity': 0.5
   })
   .selector('.linking-phrase').css({
     'border-width': 0,
@@ -207,6 +211,9 @@ export default class {
 
   static addSubgraph(subgraph) {
     if (_graph != null) {
+      forEach(subgraph, (element) => {
+        _graph.remove('#' + element.data.id)
+      })
       _graph.add(subgraph)
       _graph.layout(_layout).run()
     }

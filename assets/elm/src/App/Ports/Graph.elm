@@ -22,6 +22,7 @@ type alias Node =
     , asCotonoma : Bool
     , asLinkingPhrase : Bool
     , imageUrl : Maybe String
+    , subgraphLoaded : Bool
     , incomings : Int
     , outgoings : Int
     }
@@ -35,6 +36,7 @@ defaultNode =
     , asCotonoma = False
     , asLinkingPhrase = False
     , imageUrl = Nothing
+    , subgraphLoaded = True
     , incomings = 0
     , outgoings = 0
     }
