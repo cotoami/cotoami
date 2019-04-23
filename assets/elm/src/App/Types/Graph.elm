@@ -87,6 +87,11 @@ defaultGraph =
     }
 
 
+initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
+initGraph cotos rootConnections connections =
+    defaultGraph |> update cotos rootConnections connections
+
+
 update : CotoDict -> List Connection -> ConnectionDict -> Graph -> Graph
 update cotos rootConnections connections graph =
     { graph
@@ -95,11 +100,6 @@ update cotos rootConnections connections graph =
         , connections = connections
     }
         |> updateReachableCotoIds
-
-
-initGraph : Dict CotoId Coto -> List Connection -> ConnectionDict -> Graph
-initGraph cotos rootConnections connections =
-    defaultGraph |> update cotos rootConnections connections
 
 
 setSubgraphLoading : CotonomaKey -> Graph -> Graph

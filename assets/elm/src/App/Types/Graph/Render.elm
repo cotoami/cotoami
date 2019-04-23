@@ -11,22 +11,21 @@ import Exts.Maybe exposing (isJust)
 
 render : Context context -> Graph -> Cmd msg
 render context graph =
-    graph
-        |> toTopicGraph
-        |> convert context
-        |> App.Ports.Graph.renderGraph
+    App.Ports.Graph.renderGraph (convert context graph)
 
 
 addSubgraph : Context context -> Graph -> Cmd msg
 addSubgraph context graph =
-    graph
-        |> toTopicGraph
-        |> convert context
-        |> App.Ports.Graph.addSubgraph
+    App.Ports.Graph.addSubgraph (convert context graph)
 
 
 convert : Context context -> Graph -> App.Ports.Graph.Model
 convert context graph =
+    graph |> prune |> toRenderModel context
+
+
+toRenderModel : Context context -> Graph -> App.Ports.Graph.Model
+toRenderModel context graph =
     let
         rootNode =
             convertCurrentCotonoma context
@@ -123,31 +122,30 @@ convertConnection sourceId connection =
             )
 
 
-toTopicGraph : Graph -> Graph
-toTopicGraph graph =
+prune : Graph -> Graph
+prune graph =
     let
         topicCotos =
             graph.cotos
                 |> Dict.filter
-                    (\cotoId coto ->
-                        isJust (App.Types.Coto.toTopic coto)
+                    (\_ coto -> isJust (App.Types.Coto.toTopic coto))
+
+        connections =
+            graph.connections
+                |> Dict.filter
+                    (\sourceId _ ->
+                        App.Types.Graph.getCoto sourceId graph
+                            |> Maybe.andThen .asCotonoma
+                            |> Maybe.map
+                                (\cotonoma ->
+                                    App.Types.Graph.hasSubgraphLoaded cotonoma.key graph
+                                )
+                            |> Maybe.withDefault True
                     )
     in
-    { graph | cotos = topicCotos }
+    { graph | cotos = topicCotos, connections = connections }
         |> deleteInvalidConnections
         |> excludeUnreachables
-
-
-excludeUnreachables : Graph -> Graph
-excludeUnreachables graph =
-    let
-        reachableCotos =
-            Dict.filter
-                (\cotoId coto -> App.Types.Graph.reachableFromPins cotoId graph)
-                graph.cotos
-    in
-    { graph | cotos = reachableCotos }
-        |> deleteInvalidConnections
 
 
 deleteInvalidConnections : Graph -> Graph
@@ -180,3 +178,15 @@ deleteInvalidConnections graph =
             graph.cotos
             rootConnections
             connections
+
+
+excludeUnreachables : Graph -> Graph
+excludeUnreachables graph =
+    let
+        reachableCotos =
+            Dict.filter
+                (\cotoId coto -> App.Types.Graph.reachableFromPins cotoId graph)
+                graph.cotos
+    in
+    { graph | cotos = reachableCotos }
+        |> deleteInvalidConnections
