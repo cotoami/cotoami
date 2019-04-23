@@ -219,10 +219,10 @@ updateCotoContent coto graph =
 
 cotonomatize : Cotonoma -> CotoId -> Graph -> Graph
 cotonomatize cotonoma cotoId graph =
-    updateCoto
-        cotoId
-        (\targetCoto -> { targetCoto | asCotonoma = Just cotonoma })
-        graph
+    graph
+        |> updateCoto cotoId
+            (\targetCoto -> { targetCoto | asCotonoma = Just cotonoma })
+        |> setSubgraphLoaded cotonoma.key
 
 
 removeCoto : CotoId -> Graph -> Graph
