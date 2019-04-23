@@ -259,6 +259,14 @@ graphViewDiv context model =
                     Nothing
                 ]
             ]
+        , if
+            model.graphCanvasFullyOpened
+                && App.Types.Graph.hasSubgraphsLoading context.graph
+          then
+            div [ class "loading-subgraphs" ] [ Utils.HtmlUtil.loadingImg ]
+
+          else
+            Utils.HtmlUtil.none
         , div [ id "coto-graph-canvas" ] []
         ]
 

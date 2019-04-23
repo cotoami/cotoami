@@ -12,6 +12,7 @@ module App.Types.Graph exposing
     , hasChildren
     , hasSubgraphLoaded
     , hasSubgraphLoading
+    , hasSubgraphsLoading
     , incrementIncoming
     , incrementOutgoing
     , initGraph
@@ -104,6 +105,11 @@ initGraph cotos rootConnections connections =
 setSubgraphLoading : CotonomaKey -> Graph -> Graph
 setSubgraphLoading cotonomaKey graph =
     { graph | loadingSubgraphs = Set.insert cotonomaKey graph.loadingSubgraphs }
+
+
+hasSubgraphsLoading : Graph -> Bool
+hasSubgraphsLoading graph =
+    not (Set.isEmpty graph.loadingSubgraphs)
 
 
 hasSubgraphLoading : CotonomaKey -> Graph -> Bool

@@ -84,6 +84,14 @@
       }
     }
 
+    div.loading-subgraphs {
+      display: inline-block;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 15;
+    }
+
     #coto-graph-canvas {
       background-color: #fff;
       width: 100%;
