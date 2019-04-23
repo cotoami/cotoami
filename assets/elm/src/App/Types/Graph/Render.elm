@@ -165,4 +165,8 @@ deleteInvalidConnections graph =
                     )
                 |> Dict.fromList
     in
-    { graph | rootConnections = rootConnections, connections = connections }
+    graph
+        |> App.Types.Graph.update
+            graph.cotos
+            rootConnections
+            connections
