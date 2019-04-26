@@ -88,7 +88,6 @@ graphExplorationDiv model =
             [ ( "active-in-narrow-viewport"
               , List.member model.activeView [ StockView, TraversalsView ]
               )
-            , ( "flow-hidden", model.flowHiddenOnWideViewport )
             ]
         ]
         (openFlowButton model
