@@ -6,6 +6,7 @@ module App.Views.Traversals exposing
 import App.Markdown
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.Traversals
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
@@ -14,7 +15,6 @@ import App.Types.Traversal exposing (..)
 import App.Views.Coto
 import App.Views.Reorder
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)
@@ -27,10 +27,7 @@ import Utils.UpdateUtil exposing (..)
 
 
 type alias ViewModel model =
-    { model
-        | activeView : ActiveView
-        , traversals : Traversals
-    }
+    NarrowViewport { model | traversals : Traversals }
 
 
 view : Context a -> ViewModel model -> List (Html AppMsg.Msg)
@@ -49,7 +46,7 @@ view context ({ traversals } as model) =
             (\index traversalDiv ->
                 let
                     active =
-                        (model.activeView == TraversalsView)
+                        (model.narrowViewport.activeView == TraversalsView)
                             && isActiveIndex index traversals
                 in
                 div
@@ -367,11 +364,11 @@ traverseButtonDiv graph { traversal, index } coto =
         ]
 
 
-type alias UpdateModel a =
-    App.Submodels.Traversals.Traversals a
+type alias UpdateModel model =
+    App.Submodels.Traversals.Traversals model
 
 
-update : Context a -> TraversalsMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context context -> TraversalsMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ traversals } as model) =
     case msg of
         Traverse traversal nextCotoId stepIndex ->

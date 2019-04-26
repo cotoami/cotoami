@@ -27,6 +27,9 @@ text key =
         Saving ->
             "Збереження"
 
+        Hide ->
+            "Hide"
+
         Connection_LinkingPhraseInput ->
             "Linking phrase (optional)"
 

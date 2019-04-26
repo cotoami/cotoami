@@ -9,6 +9,7 @@ import App.Modals.InviteModalMsg
 import App.Modals.SigninModalMsg
 import App.Modals.TimelineFilterModalMsg
 import App.Ports.ImportFile exposing (ImportFile)
+import App.Submodels.NarrowViewport exposing (ActiveView)
 import App.Types.Connection exposing (Connection, Reordering)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey, ElementId)
 import App.Types.Graph exposing (Graph)
@@ -22,7 +23,6 @@ import App.Views.FlowMsg
 import App.Views.ReorderMsg
 import App.Views.StockMsg
 import App.Views.TraversalsMsg
-import App.Views.ViewSwitchMsg
 import Http
 import Json.Encode exposing (Value)
 import Keyboard exposing (..)
@@ -37,8 +37,10 @@ type Msg
     | Confirm Msg
     | AppClick
     | OnLocationChange Location
-    | NavigationToggle
-    | ToggleFlow
+    | ToggleNavInNarrowViewport
+    | ToggleNavInWideViewport
+    | ToggleFlowInWideViewport
+    | SwitchViewInNarrowViewport ActiveView
     | MoveToHome
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value
@@ -128,7 +130,6 @@ type Msg
       -- Sub components
       --
     | AppHeaderMsg App.Views.AppHeaderMsg.Msg
-    | ViewSwitchMsg App.Views.ViewSwitchMsg.Msg
     | FlowMsg App.Views.FlowMsg.Msg
     | StockMsg App.Views.StockMsg.Msg
     | TraversalsMsg App.Views.TraversalsMsg.Msg

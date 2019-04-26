@@ -19,7 +19,9 @@ import App.Route exposing (Route)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewportState)
 import App.Submodels.Traversals
+import App.Submodels.WideViewport exposing (WideViewportState)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Connection exposing (Direction(..), Reordering)
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey, ElementId)
@@ -32,7 +34,6 @@ import App.Types.Watch exposing (Watch)
 import App.Views.CotoSelection
 import App.Views.Flow
 import App.Views.Stock
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Set exposing (Set)
 import Utils.HttpUtil exposing (ClientId(ClientId))
@@ -44,10 +45,8 @@ type alias Model =
     , lang : String
     , i18nText : TextKey -> String
     , session : Maybe Session
-    , navOpenOnNarrowViewport : Bool
-    , navEverToggled : Bool
-    , flowHiddenOnWideViewport : Bool
-    , activeView : ActiveView
+    , narrowViewport : NarrowViewportState
+    , wideViewport : WideViewportState
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
     , watchStateOnCotonomaLoad : Maybe Watch
@@ -94,10 +93,8 @@ initModel seed lang route =
     , lang = lang
     , i18nText = App.I18n.Translate.text lang
     , session = Nothing
-    , navOpenOnNarrowViewport = False
-    , navEverToggled = False
-    , flowHiddenOnWideViewport = False
-    , activeView = FlowView
+    , narrowViewport = App.Submodels.NarrowViewport.defaultNarrowViewportState
+    , wideViewport = App.Submodels.WideViewport.defaultWideViewportState
     , cotonoma = Nothing
     , cotonomaLoading = False
     , watchStateOnCotonomaLoad = Nothing

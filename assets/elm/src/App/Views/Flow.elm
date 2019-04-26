@@ -268,7 +268,7 @@ view context session model =
             div [ class "loading-overlay" ] []
 
           else
-            div [] []
+            Utils.HtmlUtil.none
         , toolbarDiv context model.flowView
         , timelineDiv context model
         , postEditor context session model.flowView
@@ -279,13 +279,7 @@ view context session model =
 toolbarDiv : Context context -> Model -> Html AppMsg.Msg
 toolbarDiv context model =
     div [ class "flow-toolbar" ]
-        [ a
-            [ class "tool-button flow-toggle"
-            , title (context.i18nText I18nKeys.Flow_HideFlow)
-            , onLinkButtonClick AppMsg.ToggleFlow
-            ]
-            [ materialIcon "arrow_left" Nothing ]
-        , div [ class "tools" ]
+        [ div [ class "tools" ]
             [ a
                 [ classList
                     [ ( "tool-button", True )

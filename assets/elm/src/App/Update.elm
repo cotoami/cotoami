@@ -27,8 +27,9 @@ import App.Server.Session
 import App.Server.Watch
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
-import App.Submodels.MainLayout
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
+import App.Submodels.WideViewport
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
 import App.Types.Graph
@@ -46,8 +47,6 @@ import App.Views.Flow
 import App.Views.Reorder
 import App.Views.Stock
 import App.Views.Traversals
-import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Exts.Maybe exposing (isJust)
 import Http exposing (Error(..))
 import Json.Decode as Decode
@@ -111,15 +110,32 @@ update msg model =
                                 model |> withoutCmd
                    )
 
-        NavigationToggle ->
+        ToggleNavInNarrowViewport ->
             model
-                |> App.Submodels.MainLayout.toggleNavOnNarrowViewport
+                |> App.Submodels.NarrowViewport.toggleNav
                 |> withoutCmd
 
-        ToggleFlow ->
+        ToggleNavInWideViewport ->
             model
-                |> App.Submodels.MainLayout.toggleFlowOnWideViewport
+                |> App.Submodels.WideViewport.toggleNav
                 |> withoutCmd
+
+        ToggleFlowInWideViewport ->
+            model
+                |> App.Submodels.WideViewport.toggleFlow
+                |> withoutCmd
+
+        SwitchViewInNarrowViewport view ->
+            model
+                |> App.Submodels.NarrowViewport.switchActiveView view
+                |> withCmd
+                    (\model ->
+                        if view == StockView then
+                            App.Views.Stock.resizeGraphWithDelay
+
+                        else
+                            Cmd.none
+                    )
 
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
@@ -172,7 +188,7 @@ update msg model =
 
         CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
-                |> App.Submodels.MainLayout.closeNavOnNarrowViewport
+                |> App.Submodels.NarrowViewport.closeNav
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
@@ -658,9 +674,6 @@ update msg model =
         AppHeaderMsg subMsg ->
             App.Views.AppHeader.update model subMsg model
 
-        ViewSwitchMsg subMsg ->
-            App.Views.ViewSwitch.update model subMsg model
-
         FlowMsg subMsg ->
             App.Views.Flow.update model subMsg model
 
@@ -728,12 +741,12 @@ loadHome model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
-        |> App.Submodels.MainLayout.closeNavOnNarrowViewport
+        |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch
@@ -759,12 +772,12 @@ loadCotonoma key model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
-        |> App.Submodels.MainLayout.closeNavOnNarrowViewport
+        |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch

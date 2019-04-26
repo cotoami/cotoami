@@ -120,7 +120,7 @@ div.traversal {
     }
   }
 }
-.traversals-view-on-mobile #traversals-pagination {
+.traversals-in-narrow-viewport #traversals-pagination {
   display: flex;
 
   @media (#{$wide-viewport}) {
