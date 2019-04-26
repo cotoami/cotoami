@@ -76,6 +76,7 @@ navColumn model =
             ([ ( "hidden-in-narrow-viewport", not model.narrowViewport.navEverToggled )
              , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
              , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
+             , ( "hidden", model.wideViewport.navHidden )
              ]
                 ++ (if model.narrowViewport.navEverToggled then
                         [ ( "animated", True )
