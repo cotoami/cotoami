@@ -16,6 +16,7 @@ import App.Modals.TimelineFilterModal
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
 import App.Types.SearchResults
 import App.Types.Session exposing (Session)
 import App.Views.AppHeader
@@ -26,7 +27,6 @@ import App.Views.SearchResults
 import App.Views.Stock
 import App.Views.Traversals
 import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -40,7 +40,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView ++ "-view-on-mobile"
+            , ( App.Submodels.NarrowViewport.getActiveViewAsString model ++ "-view-on-mobile"
               , True
               )
             , ( "full-viewport-graph-mode", model.stockView.graphCanvasFullyOpened )

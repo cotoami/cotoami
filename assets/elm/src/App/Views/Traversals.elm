@@ -6,6 +6,7 @@ module App.Views.Traversals exposing
 import App.Markdown
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
 import App.Submodels.Traversals
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
@@ -14,7 +15,6 @@ import App.Types.Traversal exposing (..)
 import App.Views.Coto
 import App.Views.Reorder
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)

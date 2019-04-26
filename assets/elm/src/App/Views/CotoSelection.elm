@@ -12,10 +12,10 @@ import App.Markdown
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
