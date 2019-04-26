@@ -8,7 +8,7 @@ module App.Submodels.MainLayout exposing
 type alias MainLayout a =
     { a
         | navOpenOnNarrowViewport : Bool
-        , navEverToggled : Bool
+        , navEverToggledOnNarrowViewport : Bool
         , flowHiddenOnWideViewport : Bool
     }
 
@@ -22,7 +22,7 @@ toggleNavOnNarrowViewport : MainLayout a -> MainLayout a
 toggleNavOnNarrowViewport model =
     { model
         | navOpenOnNarrowViewport = not model.navOpenOnNarrowViewport
-        , navEverToggled = True
+        , navEverToggledOnNarrowViewport = True
     }
 
 

@@ -67,6 +67,10 @@ div.loading {
 }
 
 @media (#{$narrow-viewport}) {
+  .hidden-on-narrow-viewport {
+    display: none;
+  }
+
   input, textarea {
     // http://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
     font-size: 16px;

@@ -73,13 +73,20 @@ navColumn model =
     div
         [ id "main-nav"
         , classList
-            [ ( "neverToggled", not model.navEverToggled ) -- to avoid slide animation on page load
-            , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
-            , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
-            , ( "animated", model.navEverToggled )
-            , ( "slideInDown", model.navEverToggled && model.navOpenOnNarrowViewport )
-            , ( "slideOutUp", model.navEverToggled && not model.navOpenOnNarrowViewport )
-            ]
+            ([ ( "hidden-on-narrow-viewport", not model.navEverToggledOnNarrowViewport )
+             , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
+             , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
+             ]
+                ++ (if model.navEverToggledOnNarrowViewport then
+                        [ ( "animated", True )
+                        , ( "slideInDown", model.navOpenOnNarrowViewport )
+                        , ( "slideOutUp", not model.navOpenOnNarrowViewport )
+                        ]
+
+                    else
+                        []
+                   )
+            )
         ]
         [ App.Views.Navigation.view model ]
 

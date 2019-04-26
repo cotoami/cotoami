@@ -49,9 +49,10 @@ div.main-column,
   background-color: #fff;
   animation-duration: 0.5s;
 
-  &.neverToggled,
-  &.empty {
-    display: none;
+  @media (#{$narrow-viewport}) {
+    &.empty {
+      display: none;
+    }
   }
 
   #navigation-content {
@@ -160,7 +161,7 @@ div.main-traversal {
   }
 
   #main-nav {
-    display: block !important;
+    display: block;
     position: relative;
     top: auto;
     width: 230px;

@@ -45,7 +45,7 @@ type alias Model =
     , i18nText : TextKey -> String
     , session : Maybe Session
     , navOpenOnNarrowViewport : Bool
-    , navEverToggled : Bool
+    , navEverToggledOnNarrowViewport : Bool
     , flowHiddenOnWideViewport : Bool
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
@@ -95,7 +95,7 @@ initModel seed lang route =
     , i18nText = App.I18n.Translate.text lang
     , session = Nothing
     , navOpenOnNarrowViewport = False
-    , navEverToggled = False
+    , navEverToggledOnNarrowViewport = False
     , flowHiddenOnWideViewport = False
     , activeView = FlowView
     , cotonoma = Nothing
