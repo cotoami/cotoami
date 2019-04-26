@@ -10,10 +10,7 @@ import App.Types.Traversal
 
 
 type alias Traversals a =
-    NarrowViewport
-        { a
-            | traversals : App.Types.Traversal.Traversals
-        }
+    NarrowViewport { a | traversals : App.Types.Traversal.Traversals }
 
 
 closeTraversal : CotoId -> Traversals a -> Traversals a

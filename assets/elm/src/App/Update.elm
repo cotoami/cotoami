@@ -736,12 +736,12 @@ loadHome model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
         |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch
@@ -767,12 +767,12 @@ loadCotonoma key model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
         |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch

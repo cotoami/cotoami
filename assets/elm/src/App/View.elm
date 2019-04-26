@@ -40,7 +40,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( App.Submodels.NarrowViewport.getActiveViewAsString model ++ "-view-on-mobile"
+            , ( App.Submodels.NarrowViewport.getActiveViewAsString model ++ "-in-narrow-viewport"
               , True
               )
             , ( "full-viewport-graph-mode", model.stockView.graphCanvasFullyOpened )
@@ -104,7 +104,7 @@ flowColumn session model =
     else
         let
             active =
-                model.activeView == FlowView
+                model.narrowViewport.activeView == FlowView
         in
         flowDiv
             session
@@ -147,7 +147,7 @@ graphExplorationDiv model =
         [ id "graph-exploration"
         , classList
             [ ( "active-in-narrow-viewport"
-              , List.member model.activeView [ StockView, TraversalsView ]
+              , List.member model.narrowViewport.activeView [ StockView, TraversalsView ]
               )
             ]
         ]
@@ -164,9 +164,9 @@ stockColumn model =
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
-            , ( "active-in-narrow-viewport", model.activeView == StockView )
-            , ( "animated", model.activeView == StockView )
-            , ( "fadeIn", model.activeView == StockView )
+            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == StockView )
+            , ( "animated", model.narrowViewport.activeView == StockView )
+            , ( "fadeIn", model.narrowViewport.activeView == StockView )
             ]
         ]
         [ App.Views.Stock.view model model.stockView ]
@@ -178,7 +178,7 @@ selectionColumn model =
         [ id "main-selection"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.activeView == SelectionView )
+            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == SelectionView )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
@@ -194,7 +194,7 @@ searchResultsColumn model =
         [ id "main-search-results"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.activeView == SearchResultsView )
+            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == SearchResultsView )
             , ( "animated", True )
             , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )

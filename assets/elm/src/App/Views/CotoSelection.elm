@@ -12,7 +12,7 @@ import App.Markdown
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Submodels.NarrowViewport exposing (ActiveView(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
@@ -44,11 +44,12 @@ defaultModel =
 
 type alias UpdateModel model =
     Context
-        { model
-            | selectionView : Model
-            , selection : CotoSelection
-            , activeView : ActiveView
-        }
+        (NarrowViewport
+            { model
+                | selectionView : Model
+                , selection : CotoSelection
+            }
+        )
 
 
 update : Context context -> CotoSelectionMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
@@ -78,17 +79,18 @@ update context msg ({ selectionView } as model) =
                 |> withoutCmd
 
         ClearSelection ->
-            { model
-                | selectionView = { selectionView | columnOpen = False }
-                , activeView =
-                    case model.activeView of
+            let
+                activeView =
+                    case model.narrowViewport.activeView of
                         SelectionView ->
                             FlowView
 
                         anotherView ->
                             anotherView
-            }
+            in
+            { model | selectionView = { selectionView | columnOpen = False } }
                 |> App.Submodels.Context.clearSelection
+                |> App.Submodels.NarrowViewport.switchActiveView activeView
                 |> withoutCmd
 
 

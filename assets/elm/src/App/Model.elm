@@ -47,7 +47,6 @@ type alias Model =
     , session : Maybe Session
     , narrowViewport : NarrowViewportState
     , wideViewport : WideViewportState
-    , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
     , watchStateOnCotonomaLoad : Maybe Watch
@@ -96,7 +95,6 @@ initModel seed lang route =
     , session = Nothing
     , narrowViewport = App.Submodels.NarrowViewport.defaultNarrowViewportState
     , wideViewport = App.Submodels.WideViewport.defaultWideViewportState
-    , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False
     , watchStateOnCotonomaLoad = Nothing
