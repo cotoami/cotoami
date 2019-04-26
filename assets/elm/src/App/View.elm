@@ -80,38 +80,6 @@ navColumn model =
         [ App.Views.Navigation.view model ]
 
 
-graphExplorationDiv : Model -> Html Msg
-graphExplorationDiv model =
-    div
-        [ id "graph-exploration"
-        , classList
-            [ ( "active-in-narrow-viewport"
-              , List.member model.activeView [ StockView, TraversalsView ]
-              )
-            ]
-        ]
-        (openFlowButton model
-            :: stockColumn model
-            :: App.Views.Traversals.view model model
-        )
-
-
-openFlowButton : Model -> Html Msg
-openFlowButton model =
-    if model.flowHiddenOnWideViewport then
-        div [ id "open-flow" ]
-            [ a
-                [ class "tool-button flow-toggle"
-                , title (model.i18nText I18nKeys.Flow_OpenFlow)
-                , onLinkButtonClick ToggleFlow
-                ]
-                [ materialIcon "forum" Nothing ]
-            ]
-
-    else
-        Utils.HtmlUtil.none
-
-
 flowColumn : Model -> Html Msg
 flowColumn model =
     model.session
@@ -149,6 +117,38 @@ flowDiv session classes model =
         , classList classes
         ]
         [ App.Views.Flow.view model session model ]
+
+
+openFlowButton : Model -> Html Msg
+openFlowButton model =
+    if model.flowHiddenOnWideViewport then
+        div [ id "open-flow" ]
+            [ a
+                [ class "tool-button flow-toggle"
+                , title (model.i18nText I18nKeys.Flow_OpenFlow)
+                , onLinkButtonClick ToggleFlow
+                ]
+                [ materialIcon "forum" Nothing ]
+            ]
+
+    else
+        Utils.HtmlUtil.none
+
+
+graphExplorationDiv : Model -> Html Msg
+graphExplorationDiv model =
+    div
+        [ id "graph-exploration"
+        , classList
+            [ ( "active-in-narrow-viewport"
+              , List.member model.activeView [ StockView, TraversalsView ]
+              )
+            ]
+        ]
+        (openFlowButton model
+            :: stockColumn model
+            :: App.Views.Traversals.view model model
+        )
 
 
 stockColumn : Model -> Html Msg
