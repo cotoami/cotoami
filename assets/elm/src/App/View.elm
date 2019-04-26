@@ -115,7 +115,14 @@ flowColumn session model =
             , ( "hidden", model.wideViewport.flowHidden )
             ]
         ]
-        [ App.Views.Flow.view model session model ]
+        [ a
+            [ class "tool-button flow-toggle-in-wide-viewport hidden-in-narrow-viewport"
+            , title (model.i18nText I18nKeys.Flow_HideFlow)
+            , onLinkButtonClick ToggleFlowInWideViewport
+            ]
+            [ materialIcon "arrow_left" Nothing ]
+        , App.Views.Flow.view model session model
+        ]
 
 
 openFlowButton : Model -> Html Msg

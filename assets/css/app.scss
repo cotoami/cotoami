@@ -207,9 +207,17 @@ div.main-traversal {
     background-color: #f8f8f8;
     border-right: solid 1px #ddd;
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+    position: relative;
 
-    &.hidden {
-      display: none;
+    a.flow-toggle-in-wide-viewport {
+      position: absolute;
+      top: 4px;
+      right: -3px;
+      z-index: 5;
+   
+      i {
+        font-size: 30px;
+      }
     }
   }
 
