@@ -101,34 +101,19 @@ navColumn model =
 
 flowColumn : Session -> Model -> Html Msg
 flowColumn session model =
-    if model.wideViewport.flowHidden then
-        flowDiv
-            session
-            [ ( "main-column", True )
-            , ( "hidden", True )
-            ]
-            model
-
-    else
-        let
-            active =
-                model.narrowViewport.activeView == FlowView
-        in
-        flowDiv
-            session
+    let
+        active =
+            model.narrowViewport.activeView == FlowView
+    in
+    div
+        [ id "main-flow"
+        , classList
             [ ( "main-column", True )
             , ( "active-in-narrow-viewport", active )
             , ( "animated", active )
             , ( "fadeIn", active )
+            , ( "hidden", model.wideViewport.flowHidden )
             ]
-            model
-
-
-flowDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
-flowDiv session classes model =
-    div
-        [ id "main-flow"
-        , classList classes
         ]
         [ App.Views.Flow.view model session model ]
 
