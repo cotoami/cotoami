@@ -40,8 +40,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView
-                    ++ "-view-on-mobile"
+            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView ++ "-view-on-mobile"
               , True
               )
             , ( "full-viewport-graph-mode", model.stockView.graphCanvasFullyOpened )
@@ -50,14 +49,19 @@ view model =
         ]
         [ App.Views.AppHeader.view model
         , div [ id "app-body" ]
-            [ div [ id "app-layout" ]
-                [ navColumn model
-                , flowColumn model
-                , graphExplorationDiv model
-                , selectionColumn model
-                , searchResultsColumn model
-                , App.Views.ViewSwitch.view model
-                ]
+            [ model.session
+                |> Maybe.map
+                    (\session ->
+                        div [ id "app-layout" ]
+                            [ navColumn model
+                            , flowColumn session model
+                            , graphExplorationDiv model
+                            , selectionColumn model
+                            , searchResultsColumn model
+                            , App.Views.ViewSwitch.view model
+                            ]
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             ]
         , App.Views.CotoSelection.statusBar model model
         , div [] (modals model)
@@ -80,34 +84,29 @@ navColumn model =
         [ App.Views.Navigation.view model ]
 
 
-flowColumn : Model -> Html Msg
-flowColumn model =
-    model.session
-        |> Maybe.map
-            (\session ->
-                if model.flowHiddenOnWideViewport then
-                    flowDiv
-                        session
-                        [ ( "main-column", True )
-                        , ( "hidden", True )
-                        ]
-                        model
+flowColumn : Session -> Model -> Html Msg
+flowColumn session model =
+    if model.flowHiddenOnWideViewport then
+        flowDiv
+            session
+            [ ( "main-column", True )
+            , ( "hidden", True )
+            ]
+            model
 
-                else
-                    let
-                        active =
-                            model.activeView == FlowView
-                    in
-                    flowDiv
-                        session
-                        [ ( "main-column", True )
-                        , ( "active-in-narrow-viewport", active )
-                        , ( "animated", active )
-                        , ( "fadeIn", active )
-                        ]
-                        model
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+    else
+        let
+            active =
+                model.activeView == FlowView
+        in
+        flowDiv
+            session
+            [ ( "main-column", True )
+            , ( "active-in-narrow-viewport", active )
+            , ( "animated", active )
+            , ( "fadeIn", active )
+            ]
+            model
 
 
 flowDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
