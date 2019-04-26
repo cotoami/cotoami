@@ -46,7 +46,6 @@
   -webkit-overflow-scrolling: touch;
   padding: 10px;
   padding-top: 18px;
-  padding-bottom: 50px;
 
   @media (#{$wide-viewport}) {
     display: flex;
@@ -56,6 +55,10 @@
       min-width: 460px;
       max-width: 640px;
     }
+  }
+
+  div.root-connections > div.outbound-conn:last-child {
+    padding-bottom: 50px; // margin-bottom won't work on Safari
   }
 
   #coto-graph {
