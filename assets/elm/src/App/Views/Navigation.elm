@@ -28,9 +28,9 @@ type alias ViewModel model =
         }
 
 
-view : ViewModel model -> List (Html Msg)
+view : ViewModel model -> Html Msg
 view model =
-    [ div [ id "navigation-content" ]
+    div [ id "navigation-content" ]
         [ model.session
             |> Maybe.map (\_ -> homeNav model)
             |> Maybe.withDefault Utils.HtmlUtil.none
@@ -44,7 +44,6 @@ view model =
             , recentCotonomasDiv model
             ]
         ]
-    ]
 
 
 homeNav : ViewModel model -> Html Msg

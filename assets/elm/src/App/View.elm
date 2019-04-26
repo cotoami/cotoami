@@ -78,7 +78,7 @@ navColumn model =
             , ( "slideOutUp", model.navEverToggled && not model.navOpenOnNarrowViewport )
             ]
         ]
-        (App.Views.Navigation.view model)
+        [ App.Views.Navigation.view model ]
 
 
 graphExplorationDiv : Model -> Html Msg
@@ -165,8 +165,7 @@ stockColumn model =
             , ( "fadeIn", model.activeView == StockView )
             ]
         ]
-        [ App.Views.Stock.view model model.stockView
-        ]
+        [ App.Views.Stock.view model model.stockView ]
 
 
 selectionColumn : Model -> Html Msg
@@ -182,8 +181,7 @@ selectionColumn model =
             , ( "hidden", not model.selectionView.columnOpen )
             ]
         ]
-        [ App.Views.CotoSelection.view model model
-        ]
+        [ App.Views.CotoSelection.view model model ]
 
 
 searchResultsColumn : Model -> Html Msg
@@ -198,8 +196,7 @@ searchResultsColumn model =
             , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
             ]
         ]
-        [ App.Views.SearchResults.view model model.searchResults
-        ]
+        [ App.Views.SearchResults.view model model.searchResults ]
 
 
 modals : Model -> List (Html Msg)
