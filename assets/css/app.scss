@@ -169,6 +169,17 @@ div.main-traversal {
     padding: 0;
     animation-name: none;
 
+    a.nav-toggle-in-wide-viewport {
+      position: absolute;
+      top: 4px;
+      right: -3px;
+      z-index: 4;
+
+      i {
+        font-size: 30px;
+      }
+    }
+
     #navigation-content {
       position: absolute;
       top: 0;

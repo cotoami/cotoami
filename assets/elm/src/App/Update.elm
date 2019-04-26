@@ -110,12 +110,17 @@ update msg model =
                                 model |> withoutCmd
                    )
 
-        NavigationToggle ->
+        ToggleNavInNarrowViewport ->
             model
                 |> App.Submodels.NarrowViewport.toggleNav
                 |> withoutCmd
 
-        ToggleFlow ->
+        ToggleNavInWideViewport ->
+            model
+                |> App.Submodels.WideViewport.toggleNav
+                |> withoutCmd
+
+        ToggleFlowInWideViewport ->
             model
                 |> App.Submodels.WideViewport.toggleFlow
                 |> withoutCmd

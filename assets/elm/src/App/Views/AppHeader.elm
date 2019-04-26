@@ -1,4 +1,9 @@
-module App.Views.AppHeader exposing (UpdateModel, navigationToggle, quickSearchForm, update, view)
+module App.Views.AppHeader exposing
+    ( navigationToggle
+    , quickSearchForm
+    , update
+    , view
+    )
 
 import App.Messages as AppMsg
 import App.Model exposing (Model)
@@ -110,7 +115,7 @@ navigationToggle model =
         ]
         [ a
             [ class "tool-button"
-            , onClick AppMsg.NavigationToggle
+            , onClick AppMsg.ToggleNavInNarrowViewport
             ]
             [ materialIcon
                 (if model.narrowViewport.navOpen then

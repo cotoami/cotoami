@@ -8,7 +8,7 @@ module App.Views.Navigation exposing
     )
 
 import App.I18n.Keys as I18nKeys
-import App.Messages exposing (Msg(MoveToHome))
+import App.Messages exposing (Msg(MoveToHome, ToggleNavInWideViewport))
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Views.Cotonomas

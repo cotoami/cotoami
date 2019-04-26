@@ -88,7 +88,14 @@ navColumn model =
                    )
             )
         ]
-        [ App.Views.Navigation.view model ]
+        [ a
+            [ class "tool-button nav-toggle-in-wide-viewport hidden-in-narrow-viewport"
+            , title (model.i18nText I18nKeys.Hide)
+            , onLinkButtonClick ToggleNavInWideViewport
+            ]
+            [ materialIcon "arrow_left" Nothing ]
+        , App.Views.Navigation.view model
+        ]
 
 
 flowColumn : Session -> Model -> Html Msg
@@ -132,7 +139,7 @@ openFlowButton model =
             [ a
                 [ class "tool-button flow-toggle"
                 , title (model.i18nText I18nKeys.Flow_OpenFlow)
-                , onLinkButtonClick ToggleFlow
+                , onLinkButtonClick ToggleFlowInWideViewport
                 ]
                 [ materialIcon "forum" Nothing ]
             ]

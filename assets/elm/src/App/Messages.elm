@@ -37,8 +37,9 @@ type Msg
     | Confirm Msg
     | AppClick
     | OnLocationChange Location
-    | NavigationToggle
-    | ToggleFlow
+    | ToggleNavInNarrowViewport
+    | ToggleNavInWideViewport
+    | ToggleFlowInWideViewport
     | SwitchViewInNarrowViewport ActiveView
     | MoveToHome
     | CotonomaPresenceState Value

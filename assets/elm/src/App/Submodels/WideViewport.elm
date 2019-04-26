@@ -3,22 +3,33 @@ module App.Submodels.WideViewport exposing
     , WideViewportState
     , defaultWideViewportState
     , toggleFlow
+    , toggleNav
     )
 
 
 type alias WideViewportState =
-    { flowHidden : Bool
+    { navHidden : Bool
+    , flowHidden : Bool
     }
 
 
 defaultWideViewportState : WideViewportState
 defaultWideViewportState =
-    { flowHidden = False
+    { navHidden = False
+    , flowHidden = False
     }
 
 
 type alias WideViewport a =
     { a | wideViewport : WideViewportState }
+
+
+toggleNav : WideViewport a -> WideViewport a
+toggleNav ({ wideViewport } as model) =
+    { model
+        | wideViewport =
+            { wideViewport | navHidden = not wideViewport.navHidden }
+    }
 
 
 toggleFlow : WideViewport a -> WideViewport a

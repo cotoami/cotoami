@@ -282,7 +282,7 @@ toolbarDiv context model =
         [ a
             [ class "tool-button flow-toggle"
             , title (context.i18nText I18nKeys.Flow_HideFlow)
-            , onLinkButtonClick AppMsg.ToggleFlow
+            , onLinkButtonClick AppMsg.ToggleFlowInWideViewport
             ]
             [ materialIcon "arrow_left" Nothing ]
         , div [ class "tools" ]
