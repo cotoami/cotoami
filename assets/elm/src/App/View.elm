@@ -53,7 +53,8 @@ view model =
                 |> Maybe.map
                     (\session ->
                         div [ id "app-layout" ]
-                            [ navColumn model
+                            [ openNavButton model
+                            , navColumn model
                             , flowColumn session model
                             , graphExplorationDiv model
                             , selectionColumn model
@@ -99,6 +100,27 @@ navColumn model =
         ]
 
 
+openNavButton : Model -> Html Msg
+openNavButton model =
+    if model.wideViewport.navHidden then
+        div
+            [ id "open-nav"
+            , classList
+                [ ( "open-column-button", True )
+                , ( "hidden-in-narrow-viewport", True )
+                ]
+            ]
+            [ a
+                [ class "tool-button"
+                , onLinkButtonClick ToggleNavInWideViewport
+                ]
+                [ materialIcon "format_list_bulleted" Nothing ]
+            ]
+
+    else
+        Utils.HtmlUtil.none
+
+
 flowColumn : Session -> Model -> Html Msg
 flowColumn session model =
     let
@@ -128,9 +150,16 @@ flowColumn session model =
 openFlowButton : Model -> Html Msg
 openFlowButton model =
     if model.wideViewport.flowHidden then
-        div [ id "open-flow" ]
+        div
+            [ id "open-flow"
+            , classList
+                [ ( "open-column-button", True )
+                , ( "hidden-in-narrow-viewport", True )
+                , ( "second", model.wideViewport.navHidden )
+                ]
+            ]
             [ a
-                [ class "tool-button flow-toggle"
+                [ class "tool-button"
                 , title (model.i18nText I18nKeys.Flow_OpenFlow)
                 , onLinkButtonClick ToggleFlowInWideViewport
                 ]

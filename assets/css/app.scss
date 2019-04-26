@@ -103,10 +103,6 @@ div.main-traversal {
   -webkit-overflow-scrolling: touch;
 }
 
-#open-flow {
-  display: none;
-}
-
 #view-switch-container {
   z-index: 5;
   display: inline-block;
@@ -282,12 +278,10 @@ div.main-traversal {
     }
   }
 
-  #open-flow {
+  div.open-column-button {
     z-index: 6;
     display: inline-block;
     position: absolute;
-    left: 0;
-    top: 0;
     width: 36px;
     height: 36px;
     background-color: #f8f8f8;
@@ -295,9 +289,23 @@ div.main-traversal {
     border-bottom: solid 1px #ddd;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
-    a.flow-toggle i {
+    i {
       margin-top: 8px;
       margin-left: 6px;
+    }
+  }
+
+  #open-nav {
+    left: 0;
+    top: 35px;
+  }
+
+  #open-flow {
+    left: 0;
+    top: 0;
+
+    &.second {
+      left: 37px;
     }
   }
 
