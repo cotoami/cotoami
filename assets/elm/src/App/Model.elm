@@ -18,6 +18,7 @@ import App.Modals.SigninModal
 import App.Route exposing (Route)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
+import App.Submodels.MainLayout exposing (NarrowViewport, WideViewport)
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Submodels.Traversals
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
@@ -44,9 +45,8 @@ type alias Model =
     , lang : String
     , i18nText : TextKey -> String
     , session : Maybe Session
-    , navOpenOnNarrowViewport : Bool
-    , navEverToggledOnNarrowViewport : Bool
-    , flowHiddenOnWideViewport : Bool
+    , narrowViewport : NarrowViewport
+    , wideViewport : WideViewport
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
@@ -94,9 +94,8 @@ initModel seed lang route =
     , lang = lang
     , i18nText = App.I18n.Translate.text lang
     , session = Nothing
-    , navOpenOnNarrowViewport = False
-    , navEverToggledOnNarrowViewport = False
-    , flowHiddenOnWideViewport = False
+    , narrowViewport = App.Submodels.MainLayout.defaultNarrowViewport
+    , wideViewport = App.Submodels.MainLayout.defaultWideViewport
     , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False

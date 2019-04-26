@@ -113,7 +113,7 @@ navigationToggle model =
             , onClick AppMsg.NavigationToggle
             ]
             [ materialIcon
-                (if model.navOpenOnNarrowViewport then
+                (if model.narrowViewport.navOpen then
                     "arrow_drop_up"
 
                  else

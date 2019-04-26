@@ -73,14 +73,14 @@ navColumn model =
     div
         [ id "main-nav"
         , classList
-            ([ ( "hidden-in-narrow-viewport", not model.navEverToggledOnNarrowViewport )
+            ([ ( "hidden-in-narrow-viewport", not model.narrowViewport.navEverToggled )
              , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
              , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
              ]
-                ++ (if model.navEverToggledOnNarrowViewport then
+                ++ (if model.narrowViewport.navEverToggled then
                         [ ( "animated", True )
-                        , ( "slideInDown", model.navOpenOnNarrowViewport )
-                        , ( "slideOutUp", not model.navOpenOnNarrowViewport )
+                        , ( "slideInDown", model.narrowViewport.navOpen )
+                        , ( "slideOutUp", not model.narrowViewport.navOpen )
                         ]
 
                     else
@@ -93,7 +93,7 @@ navColumn model =
 
 flowColumn : Session -> Model -> Html Msg
 flowColumn session model =
-    if model.flowHiddenOnWideViewport then
+    if model.wideViewport.flowHidden then
         flowDiv
             session
             [ ( "main-column", True )
@@ -127,7 +127,7 @@ flowDiv session classes model =
 
 openFlowButton : Model -> Html Msg
 openFlowButton model =
-    if model.flowHiddenOnWideViewport then
+    if model.wideViewport.flowHidden then
         div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
