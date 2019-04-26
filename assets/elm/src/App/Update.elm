@@ -116,6 +116,11 @@ update msg model =
                 |> App.Submodels.MainLayout.toggleNavOnNarrowViewport
                 |> withoutCmd
 
+        ToggleFlow ->
+            model
+                |> App.Submodels.MainLayout.toggleFlowOnWideViewport
+                |> withoutCmd
+
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
 

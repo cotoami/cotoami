@@ -1,4 +1,4 @@
-module App.View exposing (flowColumn, flowDiv, graphExplorationDiv, modals, navColumn, openFlowButton, searchResultsColumn, selectionColumn, stockColumn, view)
+module App.View exposing (view)
 
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (..)
@@ -21,7 +21,6 @@ import App.Types.Session exposing (Session)
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.Flow
-import App.Views.FlowMsg
 import App.Views.Navigation
 import App.Views.SearchResults
 import App.Views.Stock
@@ -89,7 +88,7 @@ graphExplorationDiv model =
             [ ( "active-in-narrow-viewport"
               , List.member model.activeView [ StockView, TraversalsView ]
               )
-            , ( "flow-hidden", model.flowView.hidden )
+            , ( "flow-hidden", model.flowHiddenOnWideViewport )
             ]
         ]
         (openFlowButton model
@@ -100,12 +99,12 @@ graphExplorationDiv model =
 
 openFlowButton : Model -> Html Msg
 openFlowButton model =
-    if model.flowView.hidden then
+    if model.flowHiddenOnWideViewport then
         div [ id "open-flow" ]
             [ a
                 [ class "tool-button flow-toggle"
                 , title (model.i18nText I18nKeys.Flow_OpenFlow)
-                , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
+                , onLinkButtonClick ToggleFlow
                 ]
                 [ materialIcon "forum" Nothing ]
             ]
@@ -119,7 +118,7 @@ flowColumn model =
     model.session
         |> Maybe.map
             (\session ->
-                if model.flowView.hidden then
+                if model.flowHiddenOnWideViewport then
                     flowDiv
                         session
                         [ ( "main-column", True )

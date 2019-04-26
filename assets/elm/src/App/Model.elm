@@ -46,6 +46,7 @@ type alias Model =
     , session : Maybe Session
     , navOpenOnNarrowViewport : Bool
     , navEverToggled : Bool
+    , flowHiddenOnWideViewport : Bool
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
@@ -95,6 +96,7 @@ initModel seed lang route =
     , session = Nothing
     , navOpenOnNarrowViewport = False
     , navEverToggled = False
+    , flowHiddenOnWideViewport = False
     , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False

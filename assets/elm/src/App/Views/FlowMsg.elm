@@ -12,8 +12,7 @@ type TimelineView
 
 
 type Msg
-    = ToggleFlow
-    | TimelineScrollPosInitialized Float
+    = TimelineScrollPosInitialized Float
     | ImageLoaded
     | SwitchView TimelineView
     | LoadMorePosts
