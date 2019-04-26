@@ -73,7 +73,7 @@ navColumn model =
     div
         [ id "main-nav"
         , classList
-            ([ ( "hidden-on-narrow-viewport", not model.navEverToggledOnNarrowViewport )
+            ([ ( "hidden-in-narrow-viewport", not model.navEverToggledOnNarrowViewport )
              , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
              , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
              ]

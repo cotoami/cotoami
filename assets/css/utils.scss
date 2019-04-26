@@ -67,7 +67,7 @@ div.loading {
 }
 
 @media (#{$narrow-viewport}) {
-  .hidden-on-narrow-viewport {
+  .hidden-in-narrow-viewport {
     display: none;
   }
 
