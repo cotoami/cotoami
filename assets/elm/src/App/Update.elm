@@ -27,6 +27,7 @@ import App.Server.Session
 import App.Server.Watch
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
+import App.Submodels.MainLayout
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
@@ -110,6 +111,11 @@ update msg model =
                                 model |> withoutCmd
                    )
 
+        NavigationToggle ->
+            model
+                |> App.Submodels.MainLayout.toggleNavOnNarrowViewport
+                |> withoutCmd
+
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
 
@@ -160,10 +166,8 @@ update msg model =
             model |> withoutCmd
 
         CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
-            { model
-                | navigationOpen = False
-                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
-            }
+            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
+                |> App.Submodels.MainLayout.closeNavOnNarrowViewport
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
@@ -720,11 +724,11 @@ loadHome model =
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
-        , navigationOpen = False
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
+        |> App.Submodels.MainLayout.closeNavOnNarrowViewport
         |> withCmd
             (\model ->
                 Cmd.batch
@@ -751,11 +755,11 @@ loadCotonoma key model =
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
         , activeView = FlowView
-        , navigationOpen = False
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
+        |> App.Submodels.MainLayout.closeNavOnNarrowViewport
         |> withCmd
             (\model ->
                 Cmd.batch

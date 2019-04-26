@@ -44,6 +44,8 @@ type alias Model =
     , lang : String
     , i18nText : TextKey -> String
     , session : Maybe Session
+    , navOpenOnNarrowViewport : Bool
+    , navEverToggled : Bool
     , activeView : ActiveView
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
@@ -54,8 +56,6 @@ type alias Model =
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
-    , navigationToggled : Bool
-    , navigationOpen : Bool
     , presences : Presences
     , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
@@ -93,6 +93,8 @@ initModel seed lang route =
     , lang = lang
     , i18nText = App.I18n.Translate.text lang
     , session = Nothing
+    , navOpenOnNarrowViewport = False
+    , navEverToggled = False
     , activeView = FlowView
     , cotonoma = Nothing
     , cotonomaLoading = False
@@ -103,8 +105,6 @@ initModel seed lang route =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
-    , navigationToggled = False
-    , navigationOpen = False
     , presences = Dict.empty
     , confirmation = Nothing
     , searchInputFocus = False

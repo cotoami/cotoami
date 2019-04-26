@@ -1,6 +1,5 @@
 module App.Views.Navigation exposing
-    ( ViewModel
-    , currentCotonomaNav
+    ( currentCotonomaNav
     , globalCotonomasDiv
     , homeNav
     , recentCotonomasDiv

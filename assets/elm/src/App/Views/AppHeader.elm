@@ -110,10 +110,10 @@ navigationToggle model =
         ]
         [ a
             [ class "tool-button"
-            , onClick (AppMsg.AppHeaderMsg NavigationToggle)
+            , onClick AppMsg.NavigationToggle
             ]
             [ materialIcon
-                (if model.navigationOpen then
+                (if model.navOpenOnNarrowViewport then
                     "arrow_drop_up"
 
                  else
@@ -130,21 +130,14 @@ navigationToggle model =
 
 
 type alias UpdateModel model =
-    { model
-        | searchResults : SearchResults
-        , navigationToggled : Bool
-        , navigationOpen : Bool
-    }
+    { model | searchResults : SearchResults }
 
 
 update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         ClearQuickSearchInput ->
-            { model
-                | searchResults =
-                    App.Types.SearchResults.clearQuery model.searchResults
-            }
+            { model | searchResults = App.Types.SearchResults.clearQuery model.searchResults }
                 |> withoutCmd
 
         QuickSearchInput query ->
@@ -152,10 +145,3 @@ update context msg model =
                 |> withCmdIf
                     (\_ -> Utils.StringUtil.isNotBlank query)
                     (\_ -> App.Server.Post.search query)
-
-        NavigationToggle ->
-            { model
-                | navigationToggled = True
-                , navigationOpen = not model.navigationOpen
-            }
-                |> withoutCmd

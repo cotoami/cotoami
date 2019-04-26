@@ -37,6 +37,7 @@ type Msg
     | Confirm Msg
     | AppClick
     | OnLocationChange Location
+    | NavigationToggle
     | MoveToHome
     | CotonomaPresenceState Value
     | CotonomaPresenceDiff Value

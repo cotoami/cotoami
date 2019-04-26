@@ -54,7 +54,7 @@
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
       }
 
-      @media (min-width: 750px) {
+      @media (#{$wide-viewport}) {
         display: none;
       }
     }
