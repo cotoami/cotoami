@@ -107,7 +107,7 @@ openFlowButton model =
                 , title (model.i18nText I18nKeys.Flow_OpenFlow)
                 , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
                 ]
-                [ materialIcon "chat" Nothing ]
+                [ materialIcon "forum" Nothing ]
             ]
 
     else
