@@ -1,6 +1,10 @@
 @import 'variables';
 
 #app-info-modal {
+  .modal-buttons-seperator {
+    display: none;
+  }
+
   #app-logo {
     text-align: center;
 
@@ -9,7 +13,8 @@
     }
   }
 
-  .modal-buttons-seperator {
-    display: none;
+  #app-basic-info {
+    text-align: center;
+    margin: 1.5rem;
   }
 }
