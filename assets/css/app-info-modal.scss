@@ -1,0 +1,15 @@
+@import 'variables';
+
+#app-info-modal {
+  #app-logo {
+    text-align: center;
+
+    img {
+      width: 30%;
+    }
+  }
+
+  .modal-buttons-seperator {
+    display: none;
+  }
+}

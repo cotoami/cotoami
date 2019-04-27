@@ -3,6 +3,7 @@ module App.Modals.AppInfoModal exposing (view)
 import App.Messages as AppMsg
 import App.Submodels.Context exposing (Context)
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Utils.Modal
 
 
@@ -15,6 +16,14 @@ modalConfig : Context context -> Utils.Modal.Config AppMsg.Msg
 modalConfig context =
     { closeMessage = AppMsg.CloseModal
     , title = text ""
-    , content = div [] []
+    , content =
+        div []
+            [ appLogoDiv ]
     , buttons = []
     }
+
+
+appLogoDiv : Html AppMsg.Msg
+appLogoDiv =
+    div [ id "app-logo" ]
+        [ img [ class "app-icon", src "/images/logo/vertical.svg" ] [] ]
