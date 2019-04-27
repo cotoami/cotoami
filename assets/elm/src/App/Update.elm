@@ -297,7 +297,7 @@ update msg model =
         SelectCoto cotoId ->
             model
                 |> App.Submodels.Context.updateSelection cotoId
-                |> App.Views.CotoSelection.closeColumnIfEmpty
+                |> App.Submodels.WideViewport.closeSelectionIfEmpty model
                 |> withoutCmd
 
         OpenTraversal cotoId ->

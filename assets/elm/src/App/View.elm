@@ -203,15 +203,22 @@ stockColumn model =
 
 selectionColumn : Model -> Html Msg
 selectionColumn model =
+    let
+        activeInNarrowViewport =
+            model.narrowViewport.activeView == SelectionView
+    in
     div
         [ id "main-selection"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == SelectionView )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
-            , ( "hidden", not model.selectionView.columnOpen )
+            , ( "hidden"
+              , not activeInNarrowViewport
+                    && not model.wideViewport.selectionOpen
+              )
             ]
         ]
         [ App.Views.CotoSelection.view model model ]

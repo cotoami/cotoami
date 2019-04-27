@@ -31,7 +31,6 @@ import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.Watch exposing (Watch)
-import App.Views.CotoSelection
 import App.Views.Flow
 import App.Views.Stock
 import Dict
@@ -73,7 +72,6 @@ type alias Model =
     , traversals : Traversals
     , flowView : App.Views.Flow.Model
     , stockView : App.Views.Stock.Model
-    , selectionView : App.Views.CotoSelection.Model
     , modals : List Modal
     , signinModal : App.Modals.SigninModal.Model
     , editorModal : App.Modals.EditorModal.Model
@@ -121,7 +119,6 @@ initModel seed lang route =
     , traversals = App.Types.Traversal.defaultTraversals
     , flowView = App.Views.Flow.defaultModel
     , stockView = App.Views.Stock.defaultModel
-    , selectionView = App.Views.CotoSelection.defaultModel
     , modals = []
     , signinModal = App.Modals.SigninModal.defaultModel
     , editorModal = App.Modals.EditorModal.defaultModel

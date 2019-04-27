@@ -1,8 +1,5 @@
 module App.Views.CotoSelection exposing
-    ( Model
-    , closeColumnIfEmpty
-    , defaultModel
-    , statusBar
+    ( statusBar
     , update
     , view
     )
@@ -13,6 +10,7 @@ import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
+import App.Submodels.WideViewport exposing (WideViewport)
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
@@ -31,35 +29,20 @@ import Utils.StringUtil exposing (isBlank)
 import Utils.UpdateUtil exposing (..)
 
 
-type alias Model =
-    { columnOpen : Bool
-    }
-
-
-defaultModel : Model
-defaultModel =
-    { columnOpen = False
-    }
-
-
 type alias UpdateModel model =
-    Context
-        (NarrowViewport
-            { model
-                | selectionView : Model
-                , selection : CotoSelection
-            }
-        )
+    Context (WideViewport (NarrowViewport { model | selection : CotoSelection }))
 
 
-update : Context context -> CotoSelectionMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ selectionView } as model) =
+update :
+    Context context
+    -> CotoSelectionMsg.Msg
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
     case msg of
         ColumnToggle ->
-            { model
-                | selectionView =
-                    { selectionView | columnOpen = not selectionView.columnOpen }
-            }
+            model
+                |> App.Submodels.WideViewport.toggleSelection
                 |> withoutCmd
 
         DeselectingCoto cotoId ->
@@ -75,7 +58,7 @@ update context msg ({ selectionView } as model) =
         DeselectCoto ->
             model
                 |> App.Submodels.Context.finishBeingDeselected
-                |> closeColumnIfEmpty
+                |> App.Submodels.WideViewport.closeSelectionIfEmpty context
                 |> withoutCmd
 
         ClearSelection ->
@@ -88,27 +71,15 @@ update context msg ({ selectionView } as model) =
                         anotherView ->
                             anotherView
             in
-            { model | selectionView = { selectionView | columnOpen = False } }
+            model
                 |> App.Submodels.Context.clearSelection
+                |> App.Submodels.WideViewport.closeSelection
                 |> App.Submodels.NarrowViewport.switchActiveView activeView
                 |> withoutCmd
 
 
-closeColumnIfEmpty : UpdateModel model -> UpdateModel model
-closeColumnIfEmpty ({ selectionView } as model) =
-    if List.isEmpty model.selection then
-        { model | selectionView = { selectionView | columnOpen = False } }
-
-    else
-        model
-
-
 type alias ViewModel model =
-    LocalCotos
-        { model
-            | selectionView : Model
-            , selection : CotoSelection
-        }
+    LocalCotos (WideViewport { model | selection : CotoSelection })
 
 
 statusBar : Context context -> ViewModel model -> Html AppMsg.Msg
@@ -133,7 +104,7 @@ statusBar context model =
             , span [ class "selection-count" ] [ text (toString count) ]
             , span [ class "text" ] [ text (" " ++ message) ]
             , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
-                [ if model.selectionView.columnOpen then
+                [ if model.wideViewport.selectionOpen then
                     faIcon "caret-up" Nothing
 
                   else
