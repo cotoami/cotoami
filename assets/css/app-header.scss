@@ -17,6 +17,26 @@
     padding-top: 1px;
   }
 
+  div.app-info {
+    display: inline-block;
+    position: absolute;
+    top: 2px;
+    left: 8px;
+    
+    a {
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
   div.location {
     margin: 0 auto;
     text-align: center;
