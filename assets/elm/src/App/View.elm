@@ -2,6 +2,7 @@ module App.View exposing (view)
 
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (..)
+import App.Modals.AppInfoModal
 import App.Modals.ConfirmModal
 import App.Modals.ConnectModal
 import App.Modals.ConnectionModal
@@ -255,6 +256,9 @@ modals model =
                     model.confirmation
                         |> Maybe.map (App.Modals.ConfirmModal.view model)
                         |> Maybe.withDefault Utils.HtmlUtil.none
+
+                ( AppInfoModal, _ ) ->
+                    App.Modals.AppInfoModal.view model
 
                 ( SigninModal, _ ) ->
                     App.Modals.SigninModal.view model model.signinModal

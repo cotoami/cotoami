@@ -28,7 +28,7 @@ view model =
         [ div [ class "app-info" ]
             [ a
                 [ title "View app info"
-                , onClick AppMsg.OpenSigninModal
+                , onClick AppMsg.OpenAppInfoModal
                 ]
                 [ img [ class "app-icon", src "/images/logo/logomark.svg" ] [] ]
             ]
