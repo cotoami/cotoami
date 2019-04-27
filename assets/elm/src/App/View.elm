@@ -124,16 +124,16 @@ openNavButton model =
 flowColumn : Session -> Model -> Html Msg
 flowColumn session model =
     let
-        active =
+        activeInNarrowViewport =
             model.narrowViewport.activeView == FlowView
     in
     div
         [ id "main-flow"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", active )
-            , ( "animated", active )
-            , ( "fadeIn", active )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
+            , ( "animated", activeInNarrowViewport )
+            , ( "fadeIn", activeInNarrowViewport )
             , ( "hidden", model.wideViewport.flowHidden )
             ]
         ]
@@ -219,14 +219,21 @@ selectionColumn model =
 
 searchResultsColumn : Model -> Html Msg
 searchResultsColumn model =
+    let
+        activeInNarrowViewport =
+            model.narrowViewport.activeView == SearchResultsView
+    in
     div
         [ id "main-search-results"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == SearchResultsView )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
             , ( "animated", True )
             , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
-            , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
+            , ( "hidden"
+              , not activeInNarrowViewport
+                    && not (App.Types.SearchResults.hasQuery model.searchResults)
+              )
             ]
         ]
         [ App.Views.SearchResults.view model model.searchResults ]
