@@ -34,7 +34,8 @@ appLogoDiv =
 basicInfo : Html AppMsg.Msg
 basicInfo =
     div [ id "app-basic-info" ]
-        [ p []
+        [ div [ id "app-version" ] [ text "Version 0.21.2" ]
+        , div []
             [ text "Being developed as open source at "
             , a [ href "https://github.com/cotoami/cotoami", target "_blank" ]
                 [ text "GitHub" ]
