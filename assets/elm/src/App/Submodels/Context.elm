@@ -40,7 +40,8 @@ import Uuid
 
 type alias Context a =
     { a
-        | clientId : ClientId
+        | clientVersion : String
+        , clientId : ClientId
         , i18nText : TextKey -> String
         , session : Maybe Session
         , cotonoma : Maybe Cotonoma

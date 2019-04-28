@@ -40,6 +40,7 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 
 type alias Model =
     { route : Route
+    , clientVersion : String
     , clientId : ClientId
     , lang : String
     , i18nText : TextKey -> String
@@ -84,9 +85,10 @@ type alias Model =
     }
 
 
-initModel : Int -> String -> Route -> Model
-initModel seed lang route =
+initModel : String -> Int -> String -> Route -> Model
+initModel version seed lang route =
     { route = route
+    , clientVersion = version
     , clientId = App.Submodels.Context.generateClientId seed
     , lang = lang
     , i18nText = App.I18n.Translate.text lang

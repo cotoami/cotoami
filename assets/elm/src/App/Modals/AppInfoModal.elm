@@ -19,7 +19,7 @@ modalConfig context =
     , content =
         div []
             [ appLogoDiv
-            , basicInfo
+            , basicInfo context
             ]
     , buttons = []
     }
@@ -31,10 +31,10 @@ appLogoDiv =
         [ img [ class "app-icon", src "/images/logo/vertical.svg" ] [] ]
 
 
-basicInfo : Html AppMsg.Msg
-basicInfo =
+basicInfo : Context context -> Html AppMsg.Msg
+basicInfo context =
     div [ id "app-basic-info" ]
-        [ div [ id "app-version" ] [ text "Version 0.21.2" ]
+        [ div [ id "app-version" ] [ text ("Version " ++ context.clientVersion) ]
         , div []
             [ text "Being developed as open source at "
             , a [ href "https://github.com/cotoami/cotoami", target "_blank" ]
