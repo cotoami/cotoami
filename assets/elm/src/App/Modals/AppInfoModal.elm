@@ -74,7 +74,7 @@ creditsDiv =
                         [ text "Elm" ]
                     ]
                 , li []
-                    [ text "The app logo is designed by "
+                    [ text "The app logo designed by "
                     , a [ href "https://github.com/reallinfo", target "_blank" ]
                         [ text "@reallinfo" ]
                     ]
