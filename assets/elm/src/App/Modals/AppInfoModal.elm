@@ -47,7 +47,7 @@ basicInfoDiv context =
 creditsDiv : Html AppMsg.Msg
 creditsDiv =
     div [ id "credits" ]
-        [ div [ class "title" ] [ text "Credits" ]
+        [ div [ class "title" ] [ text "Credits:" ]
         , div [ class "content" ]
             [ ul []
                 [ li []
