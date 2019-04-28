@@ -47,10 +47,18 @@ basicInfoDiv context =
 creditsDiv : Html AppMsg.Msg
 creditsDiv =
     div [ id "credits" ]
-        [ div [ class "title" ] [ text "Powered By" ]
+        [ div [ class "title" ] [ text "Credits" ]
         , div [ class "content" ]
             [ ul []
                 [ li []
+                    [ a [ href "https://neo4j.com/", target "_blank" ]
+                        [ text "Neo4j" ]
+                    ]
+                , li []
+                    [ a [ href "https://www.postgresql.org/", target "_blank" ]
+                        [ text "PostgreSQL" ]
+                    ]
+                , li []
                     [ a [ href "https://elixir-lang.org/", target "_blank" ]
                         [ text "Elixir" ]
                     ]
@@ -59,11 +67,21 @@ creditsDiv =
                         [ text "Elm" ]
                     ]
                 , li []
+                    [ text "The app logo is designed by "
+                    , a [ href "https://github.com/reallinfo", target "_blank" ]
+                        [ text "@reallinfo" ]
+                    ]
+                , li []
                     [ a [ href "https://material.io/tools/icons/", target "_blank" ]
                         [ text "Material icons" ]
                     , text " made by "
                     , a [ href "https://policies.google.com/terms", target "_blank" ]
                         [ text "Google" ]
+                    ]
+                , li []
+                    [ text "Icons made by "
+                    , a [ href "https://fontawesome.com/", target "_blank" ]
+                        [ text "Font Awesome" ]
                     ]
                 , li []
                     [ text "Icons made by "
