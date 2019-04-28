@@ -113,6 +113,7 @@ type Msg
     | ClearModals
     | CloseActiveModal
     | OpenConfirmModal String Msg
+    | OpenAppInfoModal
     | OpenSigninModal
     | OpenProfileModal
     | OpenCotoMenuModal Coto

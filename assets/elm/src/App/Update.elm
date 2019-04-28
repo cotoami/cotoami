@@ -616,6 +616,10 @@ update msg model =
             App.Submodels.Modals.confirm (Confirmation message msgOnConfirm) model
                 |> withoutCmd
 
+        OpenAppInfoModal ->
+            App.Submodels.Modals.openModal AppInfoModal model
+                |> withoutCmd
+
         OpenSigninModal ->
             App.Update.Modal.openSigninModal model.signinModal.authSettings model
                 |> withoutCmd

@@ -25,7 +25,14 @@ import Utils.UpdateUtil exposing (..)
 view : Model -> Html AppMsg.Msg
 view model =
     div [ id "app-header" ]
-        [ div [ class "location" ]
+        [ div [ class "app-info" ]
+            [ a
+                [ title "View app info"
+                , onClick AppMsg.OpenAppInfoModal
+                ]
+                [ img [ class "app-icon", src "/images/logo/logomark.svg" ] [] ]
+            ]
+        , div [ class "location" ]
             (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->

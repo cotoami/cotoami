@@ -4,7 +4,7 @@ defmodule Cotoami.Mixfile do
   def project do
     [
       app: :cotoami,
-      version: "0.21.2",
+      version: "0.22.0-dev+#{build_timestamp()}",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -13,6 +13,14 @@ defmodule Cotoami.Mixfile do
       aliases: aliases(),
       deps: deps()
     ]
+  end
+
+  defp build_timestamp do
+    {{year, month, day}, {_hour, _minute, _}} = :calendar.local_time()
+
+    :io_lib.format("~4..0B~2..0B~2..0B", [year, month, day])
+    |> List.flatten()
+    |> to_string
   end
 
   # Configuration for the OTP application.

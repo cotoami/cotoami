@@ -21,6 +21,7 @@ import Cytoscape from "js/cytoscape"
 // Set up our Elm App
 const elmDiv = document.querySelector("#elm-container")
 const elmApp = Elm.Main.embed(elmDiv, {
+  version: document.documentElement.getAttribute("data-app-version"),
   seed: Math.floor(Math.random() * 0x0FFFFFFF),
   lang: document.documentElement.lang
 })
