@@ -103,7 +103,8 @@ div.coto-body {
       padding-left: 20px;
     }
 
-    div.content > p {
+    // text-indent for topic-coto content without summary
+    & > div.content > p {
       text-indent: 20px;
     }
   }
