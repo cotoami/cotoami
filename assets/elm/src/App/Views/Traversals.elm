@@ -347,21 +347,22 @@ toPageLabel defaultLabel { content, summary } =
 
 traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html AppMsg.Msg
 traverseButtonDiv graph { traversal, index } coto =
-    div [ class "sub-cotos-button" ]
-        [ if isJust coto.asCotonoma then
-            App.Views.Coto.openTraversalButton coto.id
+    if isJust coto.asCotonoma then
+        div [ class "sub-cotos-button" ]
+            [ App.Views.Coto.openTraversalButton coto.id ]
 
-          else if App.Types.Graph.hasChildren coto.id graph then
-            a
+    else if App.Types.Graph.hasChildren coto.id graph then
+        div [ class "sub-cotos-button" ]
+            [ a
                 [ class "tool-button traverse"
                 , onLinkButtonClick
                     (AppMsg.TraversalsMsg (Traverse traversal coto.id index))
                 ]
                 [ materialIcon "arrow_downward" Nothing ]
+            ]
 
-          else
-            Utils.HtmlUtil.none
-        ]
+    else
+        Utils.HtmlUtil.none
 
 
 type alias UpdateModel model =
