@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Hide ->
+            "Hide"
+
         Connection_LinkingPhraseInput ->
             "Linking phrase (optional)"
 

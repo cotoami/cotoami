@@ -1,0 +1,51 @@
+@import 'variables';
+
+#app-info-modal {
+  .modal-buttons-seperator {
+    display: none;
+  }
+
+  #app-logo {
+    text-align: center;
+
+    img {
+      width: 30%;
+    }
+  }
+
+  #app-basic-info {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
+
+    #app-version {
+      font-size: 1.5rem;
+    }
+  }
+
+  #credits {
+    margin-top: 1.5rem;
+
+    div.title {
+      text-align: center;
+    }
+
+    div.content {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      background-color: #f8f8f8;
+      max-height: 20vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+
+      ul {
+        margin-right: 1rem;
+      }
+
+      li {
+        margin: 2px 0;
+      }
+    }
+  }
+}

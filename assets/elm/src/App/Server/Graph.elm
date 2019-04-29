@@ -60,21 +60,22 @@ fetchGraph maybeCotonomaKey =
     Http.send GraphFetched (Http.get url decodeGraph)
 
 
-fetchSubgraph : CotonomaKey -> Cmd Msg
-fetchSubgraph cotonomaKey =
-    Http.send
-        SubgraphFetched
+fetchSubgraph : CotonomaKey -> Graph -> ( Graph, Cmd Msg )
+fetchSubgraph cotonomaKey graph =
+    ( App.Types.Graph.setSubgraphLoading cotonomaKey graph
+    , Http.send
+        (SubgraphFetched cotonomaKey)
         (Http.get ("/api/graph/subgraph/" ++ cotonomaKey) decodeGraph)
+    )
 
 
-fetchSubgraphIfCotonoma : Graph -> CotoId -> Cmd Msg
-fetchSubgraphIfCotonoma graph cotoId =
-    graph
-        |> App.Types.Graph.getCoto cotoId
+fetchSubgraphIfCotonoma : Maybe Coto -> Graph -> ( Graph, Cmd Msg )
+fetchSubgraphIfCotonoma maybeCoto graph =
+    maybeCoto
         |> Maybe.andThen (\coto -> coto.asCotonoma)
         |> Maybe.map (\cotonoma -> cotonoma.key)
-        |> Maybe.map fetchSubgraph
-        |> Maybe.withDefault Cmd.none
+        |> Maybe.map (\key -> fetchSubgraph key graph)
+        |> Maybe.withDefault ( graph, Cmd.none )
 
 
 pinUrl : Maybe CotonomaKey -> String

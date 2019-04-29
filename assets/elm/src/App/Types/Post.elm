@@ -52,14 +52,16 @@ toCoto : Post -> Maybe Coto
 toCoto post =
     Maybe.map2
         (\cotoId postedAt ->
-            Coto
-                cotoId
-                post.content
-                post.summary
-                post.amishi
-                post.postedIn
-                postedAt
-                post.asCotonoma
+            { id = cotoId
+            , content = post.content
+            , summary = post.summary
+            , amishi = post.amishi
+            , postedIn = post.postedIn
+            , postedAt = postedAt
+            , asCotonoma = post.asCotonoma
+            , incomings = Nothing
+            , outgoings = Nothing
+            }
         )
         post.cotoId
         post.postedAt

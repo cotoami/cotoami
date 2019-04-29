@@ -82,7 +82,7 @@ defmodule CotoamiWeb.CotoController do
 
       # Fix inconsistent state caused by the cotonomatizing-won't-affect-graph bug
       %Coto{as_cotonoma: true} = coto ->
-        CotoGraphService.sync_coto_props(Bolt.Sips.conn(), coto)
+        CotoGraphService.sync(Bolt.Sips.conn(), coto)
         render(conn, "coto.json", coto: coto)
 
       _ ->

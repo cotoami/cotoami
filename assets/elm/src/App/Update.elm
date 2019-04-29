@@ -28,10 +28,13 @@ import App.Server.Watch
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
+import App.Submodels.WideViewport
 import App.Types.Amishi exposing (Presences)
 import App.Types.Coto exposing (Coto, CotoId, CotonomaKey, ElementId)
 import App.Types.Graph
 import App.Types.Graph.Connect
+import App.Types.Graph.Render
 import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
@@ -44,8 +47,6 @@ import App.Views.Flow
 import App.Views.Reorder
 import App.Views.Stock
 import App.Views.Traversals
-import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Exts.Maybe exposing (isJust)
 import Http exposing (Error(..))
 import Json.Decode as Decode
@@ -109,6 +110,33 @@ update msg model =
                                 model |> withoutCmd
                    )
 
+        ToggleNavInNarrowViewport ->
+            model
+                |> App.Submodels.NarrowViewport.toggleNav
+                |> withoutCmd
+
+        ToggleNavInWideViewport ->
+            model
+                |> App.Submodels.WideViewport.toggleNav
+                |> withoutCmd
+
+        ToggleFlowInWideViewport ->
+            model
+                |> App.Submodels.WideViewport.toggleFlow
+                |> withoutCmd
+
+        SwitchViewInNarrowViewport view ->
+            model
+                |> App.Submodels.NarrowViewport.switchActiveView view
+                |> withCmd
+                    (\model ->
+                        if view == StockView then
+                            App.Views.Stock.resizeGraphWithDelay
+
+                        else
+                            Cmd.none
+                    )
+
         MoveToHome ->
             ( model, Navigation.newUrl "/" )
 
@@ -159,10 +187,8 @@ update msg model =
             model |> withoutCmd
 
         CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
-            { model
-                | navigationOpen = False
-                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
-            }
+            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
+                |> App.Submodels.NarrowViewport.closeNav
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
@@ -208,11 +234,15 @@ update msg model =
         GraphFetched (Err _) ->
             model |> withoutCmd
 
-        SubgraphFetched (Ok subgraph) ->
-            { model | graph = App.Types.Graph.mergeSubgraph subgraph model.graph }
-                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
+        LoadSubgraph cotonomaKey ->
+            App.Server.Graph.fetchSubgraph cotonomaKey model.graph
+                |> Tuple.mapFirst (\graph -> { model | graph = graph })
 
-        SubgraphFetched (Err _) ->
+        SubgraphFetched cotonomaKey (Ok subgraph) ->
+            { model | graph = App.Types.Graph.mergeSubgraph cotonomaKey subgraph model.graph }
+                |> withCmd (\model -> App.Types.Graph.Render.addSubgraph model model.graph)
+
+        SubgraphFetched cotonomaKey (Err _) ->
             model |> withoutCmd
 
         SelectImportFile ->
@@ -267,11 +297,17 @@ update msg model =
         SelectCoto cotoId ->
             model
                 |> App.Submodels.Context.updateSelection cotoId
-                |> App.Views.CotoSelection.closeColumnIfEmpty
+                |> App.Submodels.WideViewport.closeSelectionIfEmpty model
                 |> withoutCmd
 
         OpenTraversal cotoId ->
-            model
+            let
+                ( graph, fetchSubgraph ) =
+                    App.Server.Graph.fetchSubgraphIfCotonoma
+                        (App.Submodels.LocalCotos.getCoto cotoId model)
+                        model.graph
+            in
+            { model | graph = graph }
                 |> App.Model.openTraversal cotoId
                 |> App.Submodels.Modals.clearModals
                 |> withCmd
@@ -279,7 +315,7 @@ update msg model =
                         Cmd.batch
                             [ App.Commands.scrollGraphExplorationToRight NoOp
                             , App.Commands.scrollTraversalsPaginationToRight NoOp
-                            , App.Server.Graph.fetchSubgraphIfCotonoma model.graph cotoId
+                            , fetchSubgraph
                             , App.Views.Stock.resizeGraphWithDelay
                             ]
                     )
@@ -580,6 +616,10 @@ update msg model =
             App.Submodels.Modals.confirm (Confirmation message msgOnConfirm) model
                 |> withoutCmd
 
+        OpenAppInfoModal ->
+            App.Submodels.Modals.openModal AppInfoModal model
+                |> withoutCmd
+
         OpenSigninModal ->
             App.Update.Modal.openSigninModal model.signinModal.authSettings model
                 |> withoutCmd
@@ -637,9 +677,6 @@ update msg model =
         --
         AppHeaderMsg subMsg ->
             App.Views.AppHeader.update model subMsg model
-
-        ViewSwitchMsg subMsg ->
-            App.Views.ViewSwitch.update model subMsg model
 
         FlowMsg subMsg ->
             App.Views.Flow.update model subMsg model
@@ -708,12 +745,12 @@ loadHome model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
-        , navigationOpen = False
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
+        |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch
@@ -739,12 +776,12 @@ loadCotonoma key model =
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
-        , activeView = FlowView
-        , navigationOpen = False
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
         |> App.Submodels.Context.clearSelection
+        |> App.Submodels.NarrowViewport.closeNav
+        |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
             (\model ->
                 Cmd.batch

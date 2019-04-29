@@ -6,6 +6,7 @@ module App.Views.Traversals exposing
 import App.Markdown
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.Traversals
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
@@ -14,7 +15,6 @@ import App.Types.Traversal exposing (..)
 import App.Views.Coto
 import App.Views.Reorder
 import App.Views.TraversalsMsg as TraversalsMsg exposing (Msg(..))
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)
@@ -27,10 +27,7 @@ import Utils.UpdateUtil exposing (..)
 
 
 type alias ViewModel model =
-    { model
-        | activeView : ActiveView
-        , traversals : Traversals
-    }
+    NarrowViewport { model | traversals : Traversals }
 
 
 view : Context a -> ViewModel model -> List (Html AppMsg.Msg)
@@ -49,7 +46,7 @@ view context ({ traversals } as model) =
             (\index traversalDiv ->
                 let
                     active =
-                        (model.activeView == TraversalsView)
+                        (model.narrowViewport.activeView == TraversalsView)
                             && isActiveIndex index traversals
                 in
                 div
@@ -100,8 +97,7 @@ traversalDiv context traversal connections startCoto =
     div [ class "traversal" ]
         [ div
             [ class "column-header" ]
-            [ span [ class "description" ] [ faIcon "sitemap" Nothing ]
-            , a
+            [ a
                 [ class "tool-button close-traversal"
                 , href "/"
                 , onLinkButtonClick (AppMsg.TraversalsMsg (CloseTraversal traversal.start))
@@ -178,6 +174,7 @@ stepCotoDiv context connections step coto =
             [ App.Views.Coto.headerDiv context Nothing elementId coto
             , App.Views.Coto.bodyDivByCoto context Nothing elementId coto
             , div [ class "main-sub-border" ] []
+            , loadingSubgraphDiv context step coto
             , if App.Submodels.Context.hasSubCotosInReordering elementId context then
                 App.Views.Reorder.closeButtonDiv context
 
@@ -193,7 +190,25 @@ stepCotoDiv context connections step coto =
         ]
 
 
-stepDiv : Context a -> TraversalStep -> Maybe (Html AppMsg.Msg)
+loadingSubgraphDiv : Context context -> TraversalStep -> Coto -> Html AppMsg.Msg
+loadingSubgraphDiv context step coto =
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                if
+                    (step.index == -1)
+                        && not (App.Types.Graph.hasSubgraphLoaded cotonoma.key context.graph)
+                then
+                    div [ class "loading-subgraph" ]
+                        [ Utils.HtmlUtil.loadingHorizontalImg ]
+
+                else
+                    Utils.HtmlUtil.none
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+stepDiv : Context context -> TraversalStep -> Maybe (Html AppMsg.Msg)
 stepDiv context step =
     let
         connections =
@@ -334,7 +349,7 @@ traverseButtonDiv : Graph -> TraversalStep -> Coto -> Html AppMsg.Msg
 traverseButtonDiv graph { traversal, index } coto =
     div [ class "sub-cotos-button" ]
         [ if isJust coto.asCotonoma then
-            openTraversalButton coto.id
+            App.Views.Coto.openTraversalButton coto.id
 
           else if App.Types.Graph.hasChildren coto.id graph then
             a
@@ -349,20 +364,11 @@ traverseButtonDiv graph { traversal, index } coto =
         ]
 
 
-openTraversalButton : CotoId -> Html AppMsg.Msg
-openTraversalButton cotoId =
-    a
-        [ class "tool-button open-traversal"
-        , onLinkButtonClick (OpenTraversal cotoId)
-        ]
-        [ materialIcon "arrow_forward" Nothing ]
+type alias UpdateModel model =
+    App.Submodels.Traversals.Traversals model
 
 
-type alias UpdateModel a =
-    App.Submodels.Traversals.Traversals a
-
-
-update : Context a -> TraversalsMsg.Msg -> UpdateModel b -> ( UpdateModel b, Cmd AppMsg.Msg )
+update : Context context -> TraversalsMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ traversals } as model) =
     case msg of
         Traverse traversal nextCotoId stepIndex ->

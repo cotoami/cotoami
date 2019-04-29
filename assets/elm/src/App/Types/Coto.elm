@@ -7,8 +7,14 @@ module App.Types.Coto exposing
     , CotonomaKey
     , CotonomaStats
     , ElementId
+    , addIncomings
+    , addOutgoings
     , checkWritePermission
     , cotonomaNameMaxlength
+    , decrementIncoming
+    , decrementOutgoing
+    , incrementIncoming
+    , incrementOutgoing
     , revisedBefore
     , summaryMaxlength
     , toCoto
@@ -50,6 +56,8 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    , incomings : Maybe Int
+    , outgoings : Maybe Int
     }
 
 
@@ -67,6 +75,48 @@ summaryMaxlength =
 updateContent : String -> Coto -> Coto
 updateContent content coto =
     { coto | content = content }
+
+
+incrementIncoming : Coto -> Coto
+incrementIncoming =
+    addIncomings 1
+
+
+decrementIncoming : Coto -> Coto
+decrementIncoming =
+    addIncomings -1
+
+
+addIncomings : Int -> Coto -> Coto
+addIncomings diff coto =
+    { coto
+        | incomings =
+            coto.incomings
+                |> Maybe.map ((+) diff)
+                |> Maybe.withDefault (max 0 diff)
+                |> Just
+    }
+
+
+incrementOutgoing : Coto -> Coto
+incrementOutgoing =
+    addOutgoings 1
+
+
+decrementOutgoing : Coto -> Coto
+decrementOutgoing =
+    addOutgoings -1
+
+
+addOutgoings : Int -> Coto -> Coto
+addOutgoings diff coto =
+    { coto
+        | outgoings =
+            coto.outgoings
+                |> Maybe.map ((+) diff)
+                |> Maybe.withDefault (max 0 diff)
+                |> Just
+    }
 
 
 checkWritePermission : Session -> { r | amishi : Maybe Amishi } -> Bool
@@ -130,14 +180,16 @@ type alias Cotonoma =
 
 toCoto : Cotonoma -> Coto
 toCoto cotonoma =
-    Coto
-        cotonoma.cotoId
-        cotonoma.name
-        Nothing
-        cotonoma.owner
-        Nothing
-        cotonoma.postedAt
-        (Just cotonoma)
+    { id = cotonoma.cotoId
+    , content = cotonoma.name
+    , summary = Nothing
+    , amishi = cotonoma.owner
+    , postedIn = Nothing
+    , postedAt = cotonoma.postedAt
+    , asCotonoma = Just cotonoma
+    , incomings = Nothing
+    , outgoings = Nothing
+    }
 
 
 cotonomaNameMaxlength : Int

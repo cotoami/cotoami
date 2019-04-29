@@ -1,6 +1,7 @@
 module Utils.HtmlUtil exposing
     ( faIcon
     , loadingHorizontalImg
+    , loadingImg
     , materialIcon
     , none
     )
@@ -14,6 +15,11 @@ import Html.Attributes exposing (..)
 none : Html msg
 none =
     text ""
+
+
+loadingImg : Html msg
+loadingImg =
+    img [ src "/images/loading.gif" ] []
 
 
 loadingHorizontalImg : Html msg

@@ -27,6 +27,9 @@ text key =
         Saving ->
             "保存中"
 
+        Hide ->
+            "隠す"
+
         Connection_LinkingPhraseInput ->
             "説明（省略可）"
 

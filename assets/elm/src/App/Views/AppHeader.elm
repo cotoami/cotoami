@@ -1,4 +1,9 @@
-module App.Views.AppHeader exposing (UpdateModel, navigationToggle, quickSearchForm, update, view)
+module App.Views.AppHeader exposing
+    ( navigationToggle
+    , quickSearchForm
+    , update
+    , view
+    )
 
 import App.Messages as AppMsg
 import App.Model exposing (Model)
@@ -20,7 +25,14 @@ import Utils.UpdateUtil exposing (..)
 view : Model -> Html AppMsg.Msg
 view model =
     div [ id "app-header" ]
-        [ div [ class "location" ]
+        [ div [ class "app-info" ]
+            [ a
+                [ title "View app info"
+                , onClick AppMsg.OpenAppInfoModal
+                ]
+                [ img [ class "app-icon", src "/images/logo/logomark.svg" ] [] ]
+            ]
+        , div [ class "location" ]
             (model.cotonoma
                 |> Maybe.map
                     (\cotonoma ->
@@ -110,10 +122,10 @@ navigationToggle model =
         ]
         [ a
             [ class "tool-button"
-            , onClick (AppMsg.AppHeaderMsg NavigationToggle)
+            , onClick AppMsg.ToggleNavInNarrowViewport
             ]
             [ materialIcon
-                (if model.navigationOpen then
+                (if model.narrowViewport.navOpen then
                     "arrow_drop_up"
 
                  else
@@ -130,21 +142,14 @@ navigationToggle model =
 
 
 type alias UpdateModel model =
-    { model
-        | searchResults : SearchResults
-        , navigationToggled : Bool
-        , navigationOpen : Bool
-    }
+    { model | searchResults : SearchResults }
 
 
 update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         ClearQuickSearchInput ->
-            { model
-                | searchResults =
-                    App.Types.SearchResults.clearQuery model.searchResults
-            }
+            { model | searchResults = App.Types.SearchResults.clearQuery model.searchResults }
                 |> withoutCmd
 
         QuickSearchInput query ->
@@ -152,10 +157,3 @@ update context msg model =
                 |> withCmdIf
                     (\_ -> Utils.StringUtil.isNotBlank query)
                     (\_ -> App.Server.Post.search query)
-
-        NavigationToggle ->
-            { model
-                | navigationToggled = True
-                , navigationOpen = not model.navigationOpen
-            }
-                |> withoutCmd

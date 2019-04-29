@@ -29,7 +29,7 @@ defmodule Cotoami.Neo4jService do
   def get_or_create_node(conn, uuid, labels \\ [], props \\ %{}) do
     set_labels =
       if length(labels) > 0,
-        do: ", n :" <> Enum.join(labels, ":"),
+        do: ", n:" <> Enum.join(labels, ":"),
         else: ""
 
     query = ~s"""
@@ -44,6 +44,24 @@ defmodule Cotoami.Neo4jService do
         props: Map.put(props, :uuid, uuid)
       })
 
+    node
+  end
+
+  def set_labels(conn, uuid, labels) do
+    query = ~s"""
+      MATCH (n { uuid: $uuid })
+      SET n:#{Enum.join(labels, ":")}
+      RETURN n
+    """
+
+    case Bolt.Sips.query!(conn, query, %{uuid: uuid}) do
+      [%{"n" => node}] -> {:ok, node}
+      _ -> {:error, "not-found"}
+    end
+  end
+
+  def set_labels!(conn, uuid, labels) do
+    {:ok, node} = set_labels(conn, uuid, labels)
     node
   end
 
@@ -64,6 +82,11 @@ defmodule Cotoami.Neo4jService do
       [%{"n" => node}] -> {:ok, node}
       _ -> {:error, "not-found"}
     end
+  end
+
+  def replace_node_properties!(conn, uuid, props) do
+    {:ok, node} = replace_node_properties(conn, uuid, props)
+    node
   end
 
   def get_or_create_relationship(conn, source_uuid, target_uuid, type, props \\ %{}) do
