@@ -9,7 +9,7 @@ else
 fi
 
 export COMPOSE_PROJECT_NAME=cotoami
-export COTOAMI_VERSION="v0.21.2"
+export COTOAMI_VERSION="v0.22.0"
 export COTOAMI_HOST=$DOCKER_HOST_IP
 
 wget -q https://raw.githubusercontent.com/cotoami/cotoami/$COTOAMI_VERSION/launch/docker-compose.yml -O docker-compose.yml
