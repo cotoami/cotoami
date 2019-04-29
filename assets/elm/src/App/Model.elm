@@ -19,7 +19,9 @@ import App.Route exposing (Route)
 import App.Submodels.Context
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewportState)
 import App.Submodels.Traversals
+import App.Submodels.WideViewport exposing (WideViewportState)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Connection exposing (Direction(..), Reordering)
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey, ElementId)
@@ -29,10 +31,8 @@ import App.Types.Session exposing (Session)
 import App.Types.Timeline exposing (Timeline)
 import App.Types.Traversal exposing (Traversals)
 import App.Types.Watch exposing (Watch)
-import App.Views.CotoSelection
 import App.Views.Flow
 import App.Views.Stock
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Dict
 import Set exposing (Set)
 import Utils.HttpUtil exposing (ClientId(ClientId))
@@ -40,11 +40,13 @@ import Utils.HttpUtil exposing (ClientId(ClientId))
 
 type alias Model =
     { route : Route
+    , clientVersion : String
     , clientId : ClientId
     , lang : String
     , i18nText : TextKey -> String
     , session : Maybe Session
-    , activeView : ActiveView
+    , narrowViewport : NarrowViewportState
+    , wideViewport : WideViewportState
     , cotonoma : Maybe Cotonoma
     , cotonomaLoading : Bool
     , watchStateOnCotonomaLoad : Maybe Watch
@@ -54,8 +56,6 @@ type alias Model =
     , cotoFocus : Maybe CotoId
     , selection : CotoSelection
     , deselecting : Set CotoId
-    , navigationToggled : Bool
-    , navigationOpen : Bool
     , presences : Presences
     , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
@@ -73,7 +73,6 @@ type alias Model =
     , traversals : Traversals
     , flowView : App.Views.Flow.Model
     , stockView : App.Views.Stock.Model
-    , selectionView : App.Views.CotoSelection.Model
     , modals : List Modal
     , signinModal : App.Modals.SigninModal.Model
     , editorModal : App.Modals.EditorModal.Model
@@ -86,14 +85,16 @@ type alias Model =
     }
 
 
-initModel : Int -> String -> Route -> Model
-initModel seed lang route =
+initModel : String -> Int -> String -> Route -> Model
+initModel version seed lang route =
     { route = route
+    , clientVersion = version
     , clientId = App.Submodels.Context.generateClientId seed
     , lang = lang
     , i18nText = App.I18n.Translate.text lang
     , session = Nothing
-    , activeView = FlowView
+    , narrowViewport = App.Submodels.NarrowViewport.defaultNarrowViewportState
+    , wideViewport = App.Submodels.WideViewport.defaultWideViewportState
     , cotonoma = Nothing
     , cotonomaLoading = False
     , watchStateOnCotonomaLoad = Nothing
@@ -103,8 +104,6 @@ initModel seed lang route =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
-    , navigationToggled = False
-    , navigationOpen = False
     , presences = Dict.empty
     , confirmation = Nothing
     , searchInputFocus = False
@@ -122,7 +121,6 @@ initModel seed lang route =
     , traversals = App.Types.Traversal.defaultTraversals
     , flowView = App.Views.Flow.defaultModel
     , stockView = App.Views.Stock.defaultModel
-    , selectionView = App.Views.CotoSelection.defaultModel
     , modals = []
     , signinModal = App.Modals.SigninModal.defaultModel
     , editorModal = App.Modals.EditorModal.defaultModel

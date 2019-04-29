@@ -9,6 +9,7 @@ type TextKey
     | Posting
     | Save
     | Saving
+    | Hide
     | Connection_LinkingPhraseInput
     | Confirm
     | ConfirmDeleteCoto

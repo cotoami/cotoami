@@ -14,6 +14,7 @@ import App.Messages exposing (Msg(NoOp))
 
 type Modal
     = ConfirmModal
+    | AppInfoModal
     | SigninModal
     | EditorModal
     | ProfileModal

@@ -90,7 +90,7 @@ defmodule Cotoami.CotonomaService do
         cotonoma: %{cotonoma | owner: amishi, coto: cotonoma_coto}
     }
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn(), cotonoma_coto)
+    CotoGraphService.sync(Bolt.Sips.conn(), cotonoma_coto)
 
     cotonoma_coto
   end

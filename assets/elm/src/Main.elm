@@ -12,7 +12,8 @@ import Navigation exposing (Location)
 
 
 type alias Flags =
-    { seed : Int
+    { version : String
+    , seed : Int
     , lang : String
     }
 
@@ -30,6 +31,7 @@ main =
 init : Flags -> Location -> ( Model, Cmd Msg )
 init flags location =
     ( App.Model.initModel
+        flags.version
         flags.seed
         flags.lang
         (parseLocation location)

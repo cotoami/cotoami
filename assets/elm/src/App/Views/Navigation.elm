@@ -1,7 +1,14 @@
-module App.Views.Navigation exposing (ViewModel, currentCotonomaNav, globalCotonomasDiv, homeNav, recentCotonomasDiv, view, watchlistDiv)
+module App.Views.Navigation exposing
+    ( currentCotonomaNav
+    , globalCotonomasDiv
+    , homeNav
+    , recentCotonomasDiv
+    , view
+    , watchlistDiv
+    )
 
 import App.I18n.Keys as I18nKeys
-import App.Messages exposing (Msg(MoveToHome))
+import App.Messages exposing (Msg(MoveToHome, ToggleNavInWideViewport))
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Cotonoma)
 import App.Views.Cotonomas
@@ -21,9 +28,9 @@ type alias ViewModel model =
         }
 
 
-view : ViewModel model -> List (Html Msg)
+view : ViewModel model -> Html Msg
 view model =
-    [ div [ id "navigation-content" ]
+    div [ id "navigation-content" ]
         [ model.session
             |> Maybe.map (\_ -> homeNav model)
             |> Maybe.withDefault Utils.HtmlUtil.none
@@ -37,7 +44,6 @@ view model =
             , recentCotonomasDiv model
             ]
         ]
-    ]
 
 
 homeNav : ViewModel model -> Html Msg

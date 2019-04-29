@@ -49,8 +49,7 @@ import Utils.UpdateUtil exposing (..)
 
 
 type alias Model =
-    { hidden : Bool
-    , view : TimelineView
+    { view : TimelineView
     , filter : TimelineFilter
     , editorOpen : Bool
     , editorContent : String
@@ -60,18 +59,12 @@ type alias Model =
 
 defaultModel : Model
 defaultModel =
-    { hidden = False
-    , view = StreamView
+    { view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
     }
-
-
-toggle : Model -> Model
-toggle model =
-    { model | hidden = not model.hidden }
 
 
 switchView : TimelineView -> Model -> Model
@@ -109,10 +102,6 @@ type alias UpdateModel model =
 update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ flowView, timeline } as model) =
     case msg of
-        ToggleFlow ->
-            { model | flowView = toggle flowView }
-                |> withoutCmd
-
         TimelineScrollPosInitialized scrollTop ->
             { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
                 |> (\model ->
@@ -279,7 +268,7 @@ view context session model =
             div [ class "loading-overlay" ] []
 
           else
-            div [] []
+            Utils.HtmlUtil.none
         , toolbarDiv context model.flowView
         , timelineDiv context model
         , postEditor context session model.flowView
@@ -290,13 +279,7 @@ view context session model =
 toolbarDiv : Context context -> Model -> Html AppMsg.Msg
 toolbarDiv context model =
     div [ class "flow-toolbar" ]
-        [ a
-            [ class "tool-button flow-toggle"
-            , title (context.i18nText I18nKeys.Flow_HideFlow)
-            , onLinkButtonClick (AppMsg.FlowMsg ToggleFlow)
-            ]
-            [ materialIcon "arrow_left" Nothing ]
-        , div [ class "tools" ]
+        [ div [ class "tools" ]
             [ a
                 [ classList
                     [ ( "tool-button", True )

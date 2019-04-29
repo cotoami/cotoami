@@ -4,6 +4,7 @@ import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (ElementId)
+import App.Types.Graph
 import App.Types.Post exposing (Post, toCoto)
 import App.Views.Coto
 import App.Views.FlowMsg
@@ -13,7 +14,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
-import Set
 import Utils.DateUtil
 import Utils.EventUtil exposing (onLoad)
 import Utils.HtmlUtil
@@ -43,7 +43,9 @@ view context post =
                 authorDiv context post
             , App.Views.Coto.bodyDiv context Nothing elementId markdown post
             , footerDiv post
-            , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
+            , post.cotoId
+                |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
+                |> Maybe.withDefault Utils.HtmlUtil.none
             , authorIcon context post
             ]
         ]
@@ -63,7 +65,7 @@ postDivAttrs context elementId post =
                   , post.cotoId
                         |> Maybe.map
                             (\cotoId ->
-                                Set.member cotoId context.graph.reachableCotoIds
+                                App.Types.Graph.reachableFromPins cotoId context.graph
                             )
                         |> Maybe.withDefault False
                   )

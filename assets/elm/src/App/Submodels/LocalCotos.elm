@@ -187,12 +187,9 @@ incorporateLocalCotoInGraph cotoId localCotos =
                 localCotos.graph
 
             else
-                case getCoto cotoId localCotos of
-                    Nothing ->
-                        localCotos.graph
-
-                    Just coto ->
-                        App.Types.Graph.addCoto coto localCotos.graph
+                getCoto cotoId localCotos
+                    |> Maybe.map (\coto -> App.Types.Graph.addCoto coto localCotos.graph)
+                    |> Maybe.withDefault localCotos.graph
     }
 
 

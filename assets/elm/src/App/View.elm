@@ -1,7 +1,8 @@
-module App.View exposing (flowColumn, flowDiv, graphExplorationDiv, modals, navColumn, openFlowButton, searchResultsColumn, selectionColumn, stockColumn, view)
+module App.View exposing (view)
 
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (..)
+import App.Modals.AppInfoModal
 import App.Modals.ConfirmModal
 import App.Modals.ConnectModal
 import App.Modals.ConnectionModal
@@ -16,18 +17,17 @@ import App.Modals.TimelineFilterModal
 import App.Model exposing (..)
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Modal(..))
+import App.Submodels.NarrowViewport exposing (ActiveView(..))
 import App.Types.SearchResults
 import App.Types.Session exposing (Session)
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.Flow
-import App.Views.FlowMsg
 import App.Views.Navigation
 import App.Views.SearchResults
 import App.Views.Stock
 import App.Views.Traversals
 import App.Views.ViewSwitch
-import App.Views.ViewSwitchMsg exposing (ActiveView(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -41,8 +41,7 @@ view model =
         [ id "app"
         , classList
             [ ( "cotonomas-loading", model.cotonomasLoading )
-            , ( App.Views.ViewSwitchMsg.getActiveViewAsString model.activeView
-                    ++ "-view-on-mobile"
+            , ( App.Submodels.NarrowViewport.getActiveViewAsString model ++ "-in-narrow-viewport"
               , True
               )
             , ( "full-viewport-graph-mode", model.stockView.graphCanvasFullyOpened )
@@ -51,14 +50,20 @@ view model =
         ]
         [ App.Views.AppHeader.view model
         , div [ id "app-body" ]
-            [ div [ id "app-layout" ]
-                [ navColumn model
-                , flowColumn model
-                , graphExplorationDiv model
-                , selectionColumn model
-                , searchResultsColumn model
-                , App.Views.ViewSwitch.view model
-                ]
+            [ model.session
+                |> Maybe.map
+                    (\session ->
+                        div [ id "app-layout" ]
+                            [ openNavButton model
+                            , navColumn model
+                            , flowColumn session model
+                            , graphExplorationDiv model
+                            , selectionColumn model
+                            , searchResultsColumn model
+                            , App.Views.ViewSwitch.view model
+                            ]
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             ]
         , App.Views.CotoSelection.statusBar model model
         , div [] (modals model)
@@ -70,15 +75,100 @@ navColumn model =
     div
         [ id "main-nav"
         , classList
-            [ ( "neverToggled", not model.navigationToggled )
-            , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
-            , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
-            , ( "animated", model.navigationToggled )
-            , ( "slideInDown", model.navigationToggled && model.navigationOpen )
-            , ( "slideOutUp", model.navigationToggled && not model.navigationOpen )
+            ([ ( "hidden-in-narrow-viewport", not model.narrowViewport.navEverToggled )
+             , ( "empty", App.Submodels.LocalCotos.isNavigationEmpty model )
+             , ( "notEmpty", not (App.Submodels.LocalCotos.isNavigationEmpty model) )
+             , ( "hidden", model.wideViewport.navHidden )
+             ]
+                ++ (if model.narrowViewport.navEverToggled then
+                        [ ( "animated", True )
+                        , ( "slideInDown", model.narrowViewport.navOpen )
+                        , ( "slideOutUp", not model.narrowViewport.navOpen )
+                        ]
+
+                    else
+                        []
+                   )
+            )
+        ]
+        [ a
+            [ class "tool-button nav-toggle-in-wide-viewport hidden-in-narrow-viewport"
+            , title (model.i18nText I18nKeys.Hide)
+            , onLinkButtonClick ToggleNavInWideViewport
+            ]
+            [ materialIcon "arrow_left" Nothing ]
+        , App.Views.Navigation.view model
+        ]
+
+
+openNavButton : Model -> Html Msg
+openNavButton model =
+    if model.wideViewport.navHidden then
+        div
+            [ id "open-nav"
+            , classList
+                [ ( "open-column-button", True )
+                , ( "hidden-in-narrow-viewport", True )
+                ]
+            ]
+            [ a
+                [ class "tool-button"
+                , onLinkButtonClick ToggleNavInWideViewport
+                ]
+                [ materialIcon "format_list_bulleted" Nothing ]
+            ]
+
+    else
+        Utils.HtmlUtil.none
+
+
+flowColumn : Session -> Model -> Html Msg
+flowColumn session model =
+    let
+        activeInNarrowViewport =
+            model.narrowViewport.activeView == FlowView
+    in
+    div
+        [ id "main-flow"
+        , classList
+            [ ( "main-column", True )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
+            , ( "animated", activeInNarrowViewport )
+            , ( "fadeIn", activeInNarrowViewport )
+            , ( "hidden", model.wideViewport.flowHidden )
             ]
         ]
-        (App.Views.Navigation.view model)
+        [ a
+            [ class "tool-button flow-toggle-in-wide-viewport hidden-in-narrow-viewport"
+            , title (model.i18nText I18nKeys.Flow_HideFlow)
+            , onLinkButtonClick ToggleFlowInWideViewport
+            ]
+            [ materialIcon "arrow_left" Nothing ]
+        , App.Views.Flow.view model session model
+        ]
+
+
+openFlowButton : Model -> Html Msg
+openFlowButton model =
+    if model.wideViewport.flowHidden then
+        div
+            [ id "open-flow"
+            , classList
+                [ ( "open-column-button", True )
+                , ( "hidden-in-narrow-viewport", True )
+                , ( "second", model.wideViewport.navHidden )
+                ]
+            ]
+            [ a
+                [ class "tool-button"
+                , title (model.i18nText I18nKeys.Flow_OpenFlow)
+                , onLinkButtonClick ToggleFlowInWideViewport
+                ]
+                [ materialIcon "forum" Nothing ]
+            ]
+
+    else
+        Utils.HtmlUtil.none
 
 
 graphExplorationDiv : Model -> Html Msg
@@ -87,70 +177,14 @@ graphExplorationDiv model =
         [ id "graph-exploration"
         , classList
             [ ( "active-in-narrow-viewport"
-              , List.member model.activeView [ StockView, TraversalsView ]
+              , List.member model.narrowViewport.activeView [ StockView, TraversalsView ]
               )
-            , ( "flow-hidden", model.flowView.hidden )
             ]
         ]
         (openFlowButton model
             :: stockColumn model
             :: App.Views.Traversals.view model model
         )
-
-
-openFlowButton : Model -> Html Msg
-openFlowButton model =
-    if model.flowView.hidden then
-        div [ id "open-flow" ]
-            [ a
-                [ class "tool-button flow-toggle"
-                , title (model.i18nText I18nKeys.Flow_OpenFlow)
-                , onLinkButtonClick (FlowMsg App.Views.FlowMsg.ToggleFlow)
-                ]
-                [ materialIcon "chat" Nothing ]
-            ]
-
-    else
-        Utils.HtmlUtil.none
-
-
-flowColumn : Model -> Html Msg
-flowColumn model =
-    model.session
-        |> Maybe.map
-            (\session ->
-                if model.flowView.hidden then
-                    flowDiv
-                        session
-                        [ ( "main-column", True )
-                        , ( "hidden", True )
-                        ]
-                        model
-
-                else
-                    let
-                        active =
-                            model.activeView == FlowView
-                    in
-                    flowDiv
-                        session
-                        [ ( "main-column", True )
-                        , ( "active-in-narrow-viewport", active )
-                        , ( "animated", active )
-                        , ( "fadeIn", active )
-                        ]
-                        model
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
-
-
-flowDiv : Session -> List ( String, Bool ) -> Model -> Html Msg
-flowDiv session classes model =
-    div
-        [ id "main-flow"
-        , classList classes
-        ]
-        [ App.Views.Flow.view model session model ]
 
 
 stockColumn : Model -> Html Msg
@@ -160,46 +194,57 @@ stockColumn model =
         , classList
             [ ( "main-column", True )
             , ( "empty", List.isEmpty model.graph.rootConnections )
-            , ( "active-in-narrow-viewport", model.activeView == StockView )
-            , ( "animated", model.activeView == StockView )
-            , ( "fadeIn", model.activeView == StockView )
+            , ( "active-in-narrow-viewport", model.narrowViewport.activeView == StockView )
+            , ( "animated", model.narrowViewport.activeView == StockView )
+            , ( "fadeIn", model.narrowViewport.activeView == StockView )
             ]
         ]
-        [ App.Views.Stock.view model model.stockView
-        ]
+        [ App.Views.Stock.view model model.stockView ]
 
 
 selectionColumn : Model -> Html Msg
 selectionColumn model =
+    let
+        activeInNarrowViewport =
+            model.narrowViewport.activeView == SelectionView
+    in
     div
         [ id "main-selection"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.activeView == SelectionView )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
-            , ( "hidden", not model.selectionView.columnOpen )
+            , ( "hidden"
+              , not activeInNarrowViewport
+                    && not model.wideViewport.selectionOpen
+              )
             ]
         ]
-        [ App.Views.CotoSelection.view model model
-        ]
+        [ App.Views.CotoSelection.view model model ]
 
 
 searchResultsColumn : Model -> Html Msg
 searchResultsColumn model =
+    let
+        activeInNarrowViewport =
+            model.narrowViewport.activeView == SearchResultsView
+    in
     div
         [ id "main-search-results"
         , classList
             [ ( "main-column", True )
-            , ( "active-in-narrow-viewport", model.activeView == SearchResultsView )
+            , ( "active-in-narrow-viewport", activeInNarrowViewport )
             , ( "animated", True )
             , ( "fadeIn", App.Types.SearchResults.hasQuery model.searchResults )
-            , ( "hidden", not (App.Types.SearchResults.hasQuery model.searchResults) )
+            , ( "hidden"
+              , not activeInNarrowViewport
+                    && not (App.Types.SearchResults.hasQuery model.searchResults)
+              )
             ]
         ]
-        [ App.Views.SearchResults.view model model.searchResults
-        ]
+        [ App.Views.SearchResults.view model model.searchResults ]
 
 
 modals : Model -> List (Html Msg)
@@ -211,6 +256,9 @@ modals model =
                     model.confirmation
                         |> Maybe.map (App.Modals.ConfirmModal.view model)
                         |> Maybe.withDefault Utils.HtmlUtil.none
+
+                ( AppInfoModal, _ ) ->
+                    App.Modals.AppInfoModal.view model
 
                 ( SigninModal, _ ) ->
                     App.Modals.SigninModal.view model model.signinModal

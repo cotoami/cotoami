@@ -49,9 +49,10 @@ div.main-column,
   background-color: #fff;
   animation-duration: 0.5s;
 
-  &.neverToggled,
-  &.empty {
-    display: none;
+  @media (#{$narrow-viewport}) {
+    &.empty {
+      display: none;
+    }
   }
 
   #navigation-content {
@@ -91,7 +92,6 @@ div.main-column,
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 
-  &.neverToggled,
   &.empty {
     display: none;
   }
@@ -101,10 +101,6 @@ div.main-traversal {
   padding-right: 5px;   // for view-switch on mobile
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-#open-flow {
-  display: none;
 }
 
 #view-switch-container {
@@ -160,7 +156,7 @@ div.main-traversal {
   }
 
   #main-nav {
-    display: block !important;
+    display: block;
     position: relative;
     top: auto;
     width: 230px;
@@ -169,14 +165,24 @@ div.main-traversal {
     padding: 0;
     animation-name: none;
 
+    a.nav-toggle-in-wide-viewport {
+      position: absolute;
+      top: 2px;
+      right: -3px;
+      z-index: 4;
+
+      i {
+        font-size: 30px;
+      }
+    }
+
     #navigation-content {
       position: absolute;
-      top: 0;
+      top: 32px;
       bottom: 0;
       left: 0;
       right: 0;
       padding: 0;
-      padding-top: 10px;
       max-height: none;
 
       div.home-nav,
@@ -196,9 +202,17 @@ div.main-traversal {
     background-color: #f8f8f8;
     border-right: solid 1px #ddd;
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+    position: relative;
 
-    &.hidden {
-      display: none;
+    a.flow-toggle-in-wide-viewport {
+      position: absolute;
+      top: 2px;
+      right: -3px;
+      z-index: 5;
+   
+      i {
+        font-size: 30px;
+      }
     }
   }
 
@@ -235,10 +249,6 @@ div.main-traversal {
     }
   }
 
-  #graph-exploration.flow-hidden #main-stock {
-    padding-top: 20px;
-  }
-
   div.main-traversal {
     min-width: auto;
     width: auto;
@@ -267,12 +277,10 @@ div.main-traversal {
     }
   }
 
-  #open-flow {
+  div.open-column-button {
     z-index: 6;
     display: inline-block;
     position: absolute;
-    left: 0;
-    top: 0;
     width: 36px;
     height: 36px;
     background-color: #f8f8f8;
@@ -280,9 +288,23 @@ div.main-traversal {
     border-bottom: solid 1px #ddd;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
-    a.flow-toggle i {
+    i {
       margin-top: 8px;
       margin-left: 6px;
+    }
+  }
+
+  #open-nav {
+    left: 0;
+    top: 35px;
+  }
+
+  #open-flow {
+    left: 0;
+    top: 0;
+
+    &.second {
+      left: 37px;
     }
   }
 

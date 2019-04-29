@@ -20,6 +20,11 @@ div.coto-inner {
     }
   }
 
+  div.load-subgraph {
+    padding-top: 10px;
+    text-align: center;
+  }
+
   div.main-sub-border {
     padding-top: 3px;
     border-bottom: 1px solid #eee;
@@ -51,10 +56,13 @@ div.coto-header {
     opacity: .3;
   }
 
-  i.pinned,
-  i.connected {
+  i.coto-status {
     margin-left: 10px;
     opacity: .5;
+  }
+
+  i.in-pinned-graph {
+    display: none;
   }
 }
 
@@ -78,6 +86,28 @@ div.parents {
 
 div.coto-body {
   position: relative;
+
+  div.topic-coto-body {
+    position: relative;
+
+    .topic-icon {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 15px;
+      height: 15px;
+      opacity: 0.8;
+    }
+
+    div.coto-summary {
+      padding-left: 20px;
+    }
+
+    // text-indent for topic-coto content without summary
+    & > div.content > p {
+      text-indent: 20px;
+    }
+  }
 
   div.coto-summary {
     span.summary {

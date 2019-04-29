@@ -12,6 +12,7 @@ import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
 import App.Ports.Graph
+import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
@@ -62,7 +63,7 @@ view context model =
                     , title (context.i18nText I18nKeys.Stock_DocumentView)
                     , onClick (AppMsg.StockMsg (SwitchView DocumentView))
                     ]
-                    [ materialIcon "view_stream" Nothing ]
+                    [ materialIcon "view_headline" Nothing ]
                 , a
                     [ classList
                         [ ( "tool-button", True )
@@ -72,7 +73,8 @@ view context model =
                     , title (context.i18nText I18nKeys.Stock_GraphView)
                     , onClick (AppMsg.StockMsg (SwitchView GraphView))
                     ]
-                    [ materialIcon "share" Nothing ]
+                    [ img [ class "graph", src "/images/graph-button.svg" ] []
+                    ]
                 ]
             , if App.Submodels.Context.hasPinnedCotosInReordering context then
                 App.Views.Reorder.closeButtonDiv context
@@ -257,6 +259,14 @@ graphViewDiv context model =
                     Nothing
                 ]
             ]
+        , if
+            model.graphCanvasFullyOpened
+                && App.Types.Graph.hasSubgraphsLoading context.graph
+          then
+            div [ class "loading-subgraphs" ] [ Utils.HtmlUtil.loadingImg ]
+
+          else
+            Utils.HtmlUtil.none
         , div [ id "coto-graph-canvas" ] []
         ]
 
@@ -297,7 +307,10 @@ update context msg ({ stockView } as model) =
 
         GraphNodeClicked cotoId ->
             if stockView.graphCanvasFullyOpened then
-                model |> withoutCmd
+                App.Server.Graph.fetchSubgraphIfCotonoma
+                    (App.Types.Graph.getCoto cotoId model.graph)
+                    model.graph
+                    |> Tuple.mapFirst (\graph -> { model | graph = graph })
 
             else
                 ( model, App.Commands.sendMsg (AppMsg.OpenTraversal cotoId) )

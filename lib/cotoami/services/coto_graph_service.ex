@@ -121,7 +121,7 @@ defmodule Cotoami.CotoGraphService do
         %{graph | connections: connections}
       end
     end)
-    |> (fn graph -> %{graph | cotos: complement_coto_nodes(graph.cotos)} end).()
+    |> convert_coto_nodes_into_coto_jsons()
   end
 
   defp make_connection_json(%Relationship{id: id, properties: properties}, start_uuid, end_uuid) do
@@ -140,23 +140,41 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  defp complement_coto_nodes(id_to_coto_nodes) when is_map(id_to_coto_nodes) do
+  defp convert_coto_nodes_into_coto_jsons(
+         %CotoGraph{
+           cotos: id_to_coto_nodes,
+           root_connections: root_connections,
+           connections: id_to_connections
+         } = graph
+       ) do
     coto_nodes = Map.values(id_to_coto_nodes)
     amishi_jsons = get_amishi_jsons_in_coto_nodes(coto_nodes)
     posted_in_jsons = get_posted_in_jsons_in_coto_nodes(coto_nodes)
     cotonoma_jsons = get_cotonoma_jsons_in_coto_nodes(coto_nodes)
+    connections = Map.values(id_to_connections) |> List.flatten()
 
-    id_to_coto_nodes
-    |> Enum.map(fn {id, node} ->
-      {id,
-       node
-       |> Map.put("id", node["uuid"])
-       |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
-       |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
-       |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
-       |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])}
-    end)
-    |> Map.new()
+    id_to_coto =
+      id_to_coto_nodes
+      |> Enum.map(fn {coto_id, node} ->
+        incoming =
+          Enum.count(root_connections, &(&1["end"] == coto_id)) +
+            Enum.count(connections, &(&1["end"] == coto_id))
+
+        outgoing = Enum.count(connections, &(&1["start"] == coto_id))
+
+        {coto_id,
+         node
+         |> Map.put("id", coto_id)
+         |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
+         |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
+         |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
+         |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])
+         |> Map.put("incoming", incoming)
+         |> Map.put("outgoing", outgoing)}
+      end)
+      |> Map.new()
+
+    %{graph | cotos: id_to_coto}
   end
 
   defp get_amishi_jsons_in_coto_nodes(coto_nodes) do
@@ -219,8 +237,8 @@ defmodule Cotoami.CotoGraphService do
 
   def pin(bolt_conn, %Coto{} = coto, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
-    |> register_amishi(amishi)
-    |> register_coto(coto)
+    |> register(amishi)
+    |> register(coto)
     |> Neo4jService.get_or_create_ordered_relationship(
       amishi.id,
       coto.id,
@@ -231,8 +249,8 @@ defmodule Cotoami.CotoGraphService do
 
   def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
-    |> register_cotonoma(cotonoma)
-    |> register_coto(coto)
+    |> register(cotonoma)
+    |> register(coto)
     |> Neo4jService.get_or_create_ordered_relationship(
       cotonoma.coto.id,
       coto.id,
@@ -302,8 +320,8 @@ defmodule Cotoami.CotoGraphService do
       end
 
     bolt_conn
-    |> register_coto(source)
-    |> register_coto(target)
+    |> register(source)
+    |> register(target)
     |> Neo4jService.get_or_create_ordered_relationship(
       source.id,
       target.id,
@@ -321,8 +339,8 @@ defmodule Cotoami.CotoGraphService do
     connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
-    |> register_amishi(amishi)
-    |> register_coto(target)
+    |> register(amishi)
+    |> register(target)
     |> Neo4jService.get_or_create_relationship(
       amishi.id,
       target.id,
@@ -341,8 +359,8 @@ defmodule Cotoami.CotoGraphService do
     connection_props = connection_props_from_json(connection_json, amishi)
 
     bolt_conn
-    |> register_coto(source)
-    |> register_coto(target)
+    |> register(source)
+    |> register(target)
     |> Neo4jService.get_or_create_relationship(
       source.id,
       target.id,
@@ -434,20 +452,33 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  def sync_coto_props(bolt_conn, %Coto{id: uuid} = coto) do
-    Neo4jService.replace_node_properties(bolt_conn, uuid, to_coto_props(coto))
-  end
-
   def delete_coto(bolt_conn, coto_id) do
     Neo4jService.delete_node_with_relationships(bolt_conn, coto_id)
   end
 
-  defp register_amishi(bolt_conn, %Amishi{id: amishi_id}) do
-    Neo4jService.get_or_create_node(bolt_conn, amishi_id, [@label_amishi])
-    bolt_conn
+  def sync(bolt_conn, %Coto{id: uuid} = coto) do
+    case Neo4jService.replace_node_properties(bolt_conn, uuid, node_props(coto)) do
+      {:ok, node} ->
+        cond do
+          coto.as_cotonoma and not Enum.member?(node.labels, @label_cotonoma) ->
+            Neo4jService.set_labels!(bolt_conn, uuid, [@label_cotonoma])
+
+          true ->
+            node
+        end
+
+      _ ->
+        nil
+    end
   end
 
-  defp to_coto_props(%Coto{} = coto) do
+  defp node_labels(%Coto{} = coto) do
+    if coto.as_cotonoma,
+      do: [@label_coto, @label_cotonoma],
+      else: [@label_coto]
+  end
+
+  defp node_props(%Coto{} = coto) do
     %{
       content: coto.content,
       summary: coto.summary,
@@ -460,7 +491,7 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp to_cotonoma_props(%Cotonoma{} = cotonoma) do
+  defp node_props(%Cotonoma{} = cotonoma) do
     %{
       content: cotonoma.name,
       amishi_id: cotonoma.coto.amishi_id,
@@ -472,24 +503,24 @@ defmodule Cotoami.CotoGraphService do
     |> drop_nil
   end
 
-  defp register_coto(bolt_conn, coto) do
-    labels =
-      if coto.as_cotonoma,
-        do: [@label_coto, @label_cotonoma],
-        else: [@label_coto]
-
-    Neo4jService.get_or_create_node(bolt_conn, coto.id, labels, to_coto_props(coto))
+  defp register(bolt_conn, %Amishi{id: amishi_id}) do
+    Neo4jService.get_or_create_node(bolt_conn, amishi_id, [@label_amishi])
     bolt_conn
   end
 
-  defp register_cotonoma(bolt_conn, cotonoma) do
+  defp register(bolt_conn, %Coto{} = coto) do
+    Neo4jService.get_or_create_node(bolt_conn, coto.id, node_labels(coto), node_props(coto))
+    bolt_conn
+  end
+
+  defp register(bolt_conn, %Cotonoma{} = cotonoma) do
     labels = [@label_coto, @label_cotonoma]
 
     Neo4jService.get_or_create_node(
       bolt_conn,
       cotonoma.coto.id,
       labels,
-      to_cotonoma_props(cotonoma)
+      node_props(cotonoma)
     )
 
     bolt_conn

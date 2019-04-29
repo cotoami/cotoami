@@ -1,50 +1,24 @@
-module App.Views.ViewSwitch exposing
-    ( update
-    , view
-    )
+module App.Views.ViewSwitch exposing (view)
 
 import App.Messages as AppMsg exposing (..)
-import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Types.Coto exposing (CotoSelection)
 import App.Types.Traversal exposing (Traversals)
-import App.Views.Stock
-import App.Views.ViewSwitchMsg as ViewSwitchMsg exposing (ActiveView(..), Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Utils.HtmlUtil exposing (faIcon)
-import Utils.UpdateUtil exposing (..)
-
-
-type alias UpdateModel model =
-    { model
-        | activeView : ActiveView
-    }
-
-
-update : Context context -> ViewSwitchMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        SwitchView view ->
-            { model | activeView = view }
-                |> withCmd
-                    (\model ->
-                        if view == StockView then
-                            App.Views.Stock.resizeGraphWithDelay
-
-                        else
-                            Cmd.none
-                    )
 
 
 type alias ViewModel model =
-    LocalCotos
-        { model
-            | activeView : ActiveView
-            , traversals : Traversals
-            , selection : CotoSelection
-        }
+    NarrowViewport
+        (LocalCotos
+            { model
+                | traversals : Traversals
+                , selection : CotoSelection
+            }
+        )
 
 
 view : ViewModel model -> Html AppMsg.Msg
@@ -55,37 +29,37 @@ view model =
             "switch-to-flow"
             "comments"
             "Switch to flow view"
-            (model.activeView == FlowView)
+            (model.narrowViewport.activeView == FlowView)
             False
-            (AppMsg.ViewSwitchMsg (SwitchView FlowView))
+            (SwitchViewInNarrowViewport FlowView)
         , viewSwitchDiv
             "switch-to-stock"
             "thumb-tack"
             "Switch to stock view"
-            (model.activeView == StockView)
+            (model.narrowViewport.activeView == StockView)
             (App.Submodels.LocalCotos.isStockEmpty model)
-            (AppMsg.ViewSwitchMsg (SwitchView StockView))
+            (SwitchViewInNarrowViewport StockView)
         , viewSwitchDiv
             "switch-to-traversals"
             "sitemap"
             "Switch to traversals"
-            (model.activeView == TraversalsView)
+            (model.narrowViewport.activeView == TraversalsView)
             (App.Types.Traversal.isEmpty model.traversals)
-            (AppMsg.ViewSwitchMsg (SwitchView TraversalsView))
+            (SwitchViewInNarrowViewport TraversalsView)
         , viewSwitchDiv
             "switch-to-selection"
             "check-square-o"
             "Switch to coto selection"
-            (model.activeView == SelectionView)
+            (model.narrowViewport.activeView == SelectionView)
             (List.isEmpty model.selection)
-            (AppMsg.ViewSwitchMsg (SwitchView SelectionView))
+            (SwitchViewInNarrowViewport SelectionView)
         , viewSwitchDiv
             "switch-to-search"
             "search"
             "Switch to search cotos"
-            (model.activeView == SearchResultsView)
+            (model.narrowViewport.activeView == SearchResultsView)
             False
-            (AppMsg.ViewSwitchMsg (SwitchView SearchResultsView))
+            (SwitchViewInNarrowViewport SearchResultsView)
         ]
 
 

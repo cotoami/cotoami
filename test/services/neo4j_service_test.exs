@@ -41,6 +41,11 @@ defmodule Cotoami.Neo4jServiceTest do
       assert {:ok, nil} = Neo4jService.delete_node_with_relationships(conn, uuid)
       assert nil == Neo4jService.get_node(conn, uuid)
     end
+
+    test "adding labels", ~M{conn, uuid} do
+      %Node{labels: labels} = Neo4jService.set_labels!(conn, uuid, ["Foo", "Bar"])
+      assert Enum.sort(labels) == ["Bar", "Foo"]
+    end
   end
 
   describe "when there is a node with labels and properties" do

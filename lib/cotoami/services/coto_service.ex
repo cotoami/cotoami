@@ -190,7 +190,7 @@ defmodule Cotoami.CotoService do
         nil
       end
 
-    CotoGraphService.sync_coto_props(Bolt.Sips.conn(), coto)
+    CotoGraphService.sync(Bolt.Sips.conn(), coto)
 
     %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in), cotonoma: cotonoma}
     |> complement_amishi(amishi)

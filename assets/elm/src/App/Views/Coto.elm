@@ -7,8 +7,9 @@ module App.Views.Coto exposing
     , cotonomaLink
     , headerDiv
     , linkingPhraseDiv
+    , openTraversalButton
+    , openTraversalButtonDiv
     , parentsDiv
-    , subCotosButtonDiv
     , subCotosDiv
     )
 
@@ -22,6 +23,7 @@ import App.Types.Graph exposing (Graph)
 import App.Views.CotoToolbar
 import App.Views.Reorder
 import Dict
+import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -75,8 +77,7 @@ bodyDiv context maybeInbound elementId markdown model =
             |> Maybe.map (cotonomaLink context App.Messages.CotonomaClick model.amishi)
             |> Maybe.withDefault
                 (if App.Types.Connection.inReordering maybeInbound then
-                    div [ class "content-in-reorder" ]
-                        [ text (abbreviate model) ]
+                    div [ class "content-in-reorder" ] [ text (abbreviate model) ]
 
                  else
                     contentDiv context elementId markdown model
@@ -86,7 +87,26 @@ bodyDiv context maybeInbound elementId markdown model =
 
 bodyDivByCoto : Context a -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
 bodyDivByCoto context maybeInbound elementId coto =
-    bodyDiv context maybeInbound elementId App.Markdown.markdown coto
+    div [ class "coto-body" ]
+        [ coto.asCotonoma
+            |> Maybe.map (cotonomaLink context App.Messages.CotonomaClick coto.amishi)
+            |> Maybe.withDefault
+                (if App.Types.Connection.inReordering maybeInbound then
+                    div [ class "content-in-reorder" ] [ text (abbreviate coto) ]
+
+                 else
+                    App.Types.Coto.toTopic coto
+                        |> Maybe.map
+                            (\_ ->
+                                div [ class "topic-coto-body" ]
+                                    [ img [ class "topic-icon", src "/images/topic.svg" ] []
+                                    , contentDiv context elementId App.Markdown.markdown coto
+                                    ]
+                            )
+                        |> Maybe.withDefault
+                            (contentDiv context elementId App.Markdown.markdown coto)
+                )
+        ]
 
 
 contentDiv : Context a -> ElementId -> Markdown -> BodyModel r -> Html Msg
@@ -166,7 +186,10 @@ headerDiv context maybeInbound elementId coto =
                 )
             |> Maybe.withDefault Utils.HtmlUtil.none
         , if App.Types.Graph.pinned coto.id context.graph then
-            faIcon "thumb-tack" (Just "pinned")
+            faIcon "thumb-tack" (Just "coto-status pinned")
+
+          else if App.Types.Graph.reachableFromPins coto.id context.graph then
+            faIcon "sitemap" (Just "coto-status in-pinned-graph")
 
           else
             Utils.HtmlUtil.none
@@ -209,53 +232,75 @@ parentsDiv graph exclude childId =
 --
 
 
-subCotosButtonDiv : Graph -> Maybe String -> Maybe CotoId -> Html Msg
-subCotosButtonDiv graph maybeIconName maybeCotoId =
-    maybeCotoId
-        |> Maybe.map
-            (\cotoId ->
-                if App.Types.Graph.hasChildren cotoId graph then
-                    div [ class "sub-cotos-button" ]
-                        [ a
-                            [ class "tool-button"
-                            , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
-                            ]
-                            [ materialIcon
-                                (Maybe.withDefault "more_horiz" maybeIconName)
-                                Nothing
-                            ]
-                        ]
+openTraversalButtonDiv : Graph -> Bool -> CotoId -> Html Msg
+openTraversalButtonDiv graph isCotonoma cotoId =
+    if isCotonoma || App.Types.Graph.hasChildren cotoId graph then
+        div [ class "sub-cotos-button" ] [ openTraversalButton cotoId ]
 
-                else
-                    Utils.HtmlUtil.none
-            )
-        |> Maybe.withDefault Utils.HtmlUtil.none
+    else
+        Utils.HtmlUtil.none
+
+
+openTraversalButton : CotoId -> Html Msg
+openTraversalButton cotoId =
+    a
+        [ class "tool-button open-traversal"
+        , title "Open sub cotos"
+        , onLinkButtonClick (App.Messages.OpenTraversal cotoId)
+        ]
+        [ materialIcon "view_headline" Nothing ]
 
 
 subCotosDiv : Context a -> ElementId -> Coto -> Html Msg
 subCotosDiv context parentElementId coto =
-    context.graph.connections
-        |> Dict.get coto.id
-        |> Maybe.map
-            (\connections ->
-                div []
-                    [ div [ class "main-sub-border" ] []
-                    , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
-                        App.Views.Reorder.closeButtonDiv context
+    let
+        maybeConnections =
+            Dict.get coto.id context.graph.connections
+    in
+    div []
+        [ if isJust maybeConnections || isJust coto.asCotonoma then
+            div [ class "main-sub-border" ] []
 
-                      else
-                        Utils.HtmlUtil.none
-                    , connectionsDiv
-                        context
-                        parentElementId
-                        coto
-                        connections
-                    ]
+          else
+            Utils.HtmlUtil.none
+        , loadSubgraphButton context coto
+        , if App.Submodels.Context.hasSubCotosInReordering parentElementId context then
+            App.Views.Reorder.closeButtonDiv context
+
+          else
+            Utils.HtmlUtil.none
+        , maybeConnections
+            |> Maybe.map (connectionsDiv context parentElementId coto)
+            |> Maybe.withDefault Utils.HtmlUtil.none
+        ]
+
+
+loadSubgraphButton : Context context -> Coto -> Html Msg
+loadSubgraphButton context coto =
+    coto.asCotonoma
+        |> Maybe.map
+            (\cotonoma ->
+                if App.Types.Graph.hasSubgraphLoaded cotonoma.key context.graph then
+                    Utils.HtmlUtil.none
+
+                else
+                    div [ class "load-subgraph" ]
+                        [ if App.Types.Graph.hasSubgraphLoading cotonoma.key context.graph then
+                            Utils.HtmlUtil.loadingHorizontalImg
+
+                          else
+                            a
+                                [ class "tool-button"
+                                , title "Load sub cotos"
+                                , onLinkButtonClick (App.Messages.LoadSubgraph cotonoma.key)
+                                ]
+                                [ materialIcon "more_horiz" Nothing ]
+                        ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-connectionsDiv : Context a -> ElementId -> Coto -> List Connection -> Html Msg
+connectionsDiv : Context context -> ElementId -> Coto -> List Connection -> Html Msg
 connectionsDiv context parentElementId parentCoto connections =
     connections
         |> List.reverse
@@ -316,7 +361,7 @@ subCotoDiv context parentElementId inbound coto =
             , parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ bodyDivByCoto context (Just inbound) elementId coto
-                , subCotosButtonDiv context.graph (Just "more_vert") (Just coto.id)
+                , openTraversalButtonDiv context.graph (isJust coto.asCotonoma) coto.id
                 ]
             ]
         ]

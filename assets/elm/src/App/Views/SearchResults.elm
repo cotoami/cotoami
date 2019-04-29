@@ -87,7 +87,9 @@ postDiv context post =
                 App.Views.Post.authorDiv context post
             , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown post
             , footerDiv context post
-            , App.Views.Coto.subCotosButtonDiv context.graph Nothing post.cotoId
+            , post.cotoId
+                |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
+                |> Maybe.withDefault Utils.HtmlUtil.none
             ]
         ]
 
