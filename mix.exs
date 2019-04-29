@@ -4,7 +4,7 @@ defmodule Cotoami.Mixfile do
   def project do
     [
       app: :cotoami,
-      version: "0.22.0+#{build_timestamp()}",
+      version: "0.23.0-dev+#{build_timestamp()}",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
