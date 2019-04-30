@@ -321,41 +321,17 @@ timelineDiv context model =
         [ id "timeline"
         , classList
             [ ( "timeline", True )
-            , ( "stream", model.flowView.view == StreamView )
-            , ( "tile", model.flowView.view == TileView )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
         , onScroll (AppMsg.FlowMsg << Scroll)
         ]
         [ moreButton model.timeline
-        , model.timeline.posts
-            |> List.reverse
-            |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
-            |> List.map
-                (\postsOnDay ->
-                    let
-                        lang =
-                            context.session
-                                |> Maybe.map (\session -> session.lang)
-                                |> Maybe.withDefault ""
+        , case model.flowView.view of
+            StreamView ->
+                postsAsStream context model.timeline.posts
 
-                        postDateString =
-                            List.head postsOnDay
-                                |> Maybe.andThen (\post -> post.postedAt)
-                                |> Maybe.map (formatDay lang)
-                                |> Maybe.withDefault ""
-                    in
-                    ( postDateString
-                    , div
-                        [ class "posts-on-day" ]
-                        [ div
-                            [ class "date-header" ]
-                            [ span [ class "date" ] [ text postDateString ] ]
-                        , postsDiv context postsOnDay
-                        ]
-                    )
-                )
-            |> Html.Keyed.node "div" [ class "posts" ]
+            TileView ->
+                postsAsTiles context model.timeline.posts
         ]
 
 
@@ -378,6 +354,43 @@ moreButton timeline =
 
     else
         Utils.HtmlUtil.none
+
+
+postsAsStream : Context context -> List Post -> Html AppMsg.Msg
+postsAsStream context posts =
+    posts
+        |> List.reverse
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
+        |> List.map
+            (\postsOnDay ->
+                let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
+                    postDateString =
+                        List.head postsOnDay
+                            |> Maybe.andThen (\post -> post.postedAt)
+                            |> Maybe.map (formatDay lang)
+                            |> Maybe.withDefault ""
+                in
+                ( postDateString
+                , div
+                    [ class "posts-on-day" ]
+                    [ div
+                        [ class "date-header" ]
+                        [ span [ class "date" ] [ text postDateString ] ]
+                    , postsDiv context postsOnDay
+                    ]
+                )
+            )
+        |> Html.Keyed.node "div" [ class "posts-as-stream" ]
+
+
+postsAsTiles : Context context -> List Post -> Html AppMsg.Msg
+postsAsTiles context posts =
+    div [ class "posts-as-tiles" ] [ postsDiv context posts ]
 
 
 postsDiv : Context context -> List Post -> Html AppMsg.Msg

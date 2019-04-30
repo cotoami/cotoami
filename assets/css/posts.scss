@@ -68,7 +68,7 @@ div.posts {
   }
 }
 
-div.timeline.stream {
+div.posts-as-stream {
   div.coto.by-another-amishi {
     margin-left: 8px;
 
@@ -110,7 +110,7 @@ div.timeline.stream {
   }
 }
 
-div.timeline.tile div.posts {
+div.posts-as-tiles div.posts {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
