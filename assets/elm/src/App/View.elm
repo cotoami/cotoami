@@ -23,6 +23,7 @@ import App.Types.Session exposing (Session)
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.Flow
+import App.Views.FlowMsg
 import App.Views.Navigation
 import App.Views.SearchResults
 import App.Views.Stock
@@ -136,6 +137,7 @@ flowColumn session model =
             , ( "animated", activeInNarrowViewport )
             , ( "fadeIn", activeInNarrowViewport )
             , ( "hidden", model.wideViewport.flowHidden )
+            , ( "tile-view", model.flowView.view == App.Views.FlowMsg.TileView )
             ]
         ]
         [ a
