@@ -111,12 +111,10 @@ div.posts-as-stream {
 }
 
 div.posts-as-tiles div.posts {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  column-count: 3;
+  column-gap: 0;
 
   div.coto {
-    flex: 30%;
     font-size: 1.2rem;
     border-radius: 4px;
     margin-bottom: 4px;
@@ -141,7 +139,7 @@ div.posts-as-tiles div.posts {
     }
 
     div.coto-body {
-      max-height: 120px;
+      max-height: 300px;
       overflow: hidden;
     }
 

@@ -404,17 +404,15 @@ postsAsStream context posts =
 postsAsTiles : Context context -> List Post -> Html AppMsg.Msg
 postsAsTiles context posts =
     div [ class "posts-as-tiles" ]
-        [ Html.Keyed.node
-            "div"
-            [ class "posts" ]
-            (List.map
+        [ posts
+            |> List.reverse
+            |> List.map
                 (\post ->
                     ( getKey post
                     , App.Views.Post.view context post
                     )
                 )
-                posts
-            )
+            |> Html.Keyed.node "div" [ class "posts" ]
         ]
 
 
