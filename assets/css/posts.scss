@@ -121,6 +121,10 @@ div.posts-as-tiles div.posts {
     margin-right: 4px;
     position: relative;
 
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+
     div.coto-inner {
       height: 100%;
       box-sizing: border-box;
