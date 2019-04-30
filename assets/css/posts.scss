@@ -132,7 +132,6 @@ div.posts-as-stream {
 }
 
 div.posts-as-tiles div.posts {
-  padding-top: 38px;
   column-count: 3;
   column-gap: 0;
 
@@ -150,7 +149,6 @@ div.posts-as-tiles div.posts {
     -webkit-column-break-inside: avoid;
     page-break-inside: avoid;
     break-inside: avoid;
-    will-change: transform;
 
     div.coto-inner {
       height: 100%;
@@ -159,6 +157,18 @@ div.posts-as-tiles div.posts {
     
     div.coto-header {
       min-height: 6px;
+    }
+
+    span.coto-tool-buttons {
+      top: 0;
+      right: -12px;
+
+      &::before {
+        content: none;
+      }
+      &::after {
+        content: none;
+      }
     }
 
     div.parents {
