@@ -381,7 +381,20 @@ postsAsStream context posts =
                     [ div
                         [ class "date-header" ]
                         [ span [ class "date" ] [ text postDateString ] ]
-                    , postsDiv context postsOnDay
+                    , Html.Keyed.node
+                        "div"
+                        [ class "posts" ]
+                        (List.map
+                            (\post ->
+                                ( getKey post
+                                , div []
+                                    [ App.Views.Post.view context post
+                                    , unreadStartLine context post
+                                    ]
+                                )
+                            )
+                            postsOnDay
+                        )
                     ]
                 )
             )
@@ -390,25 +403,19 @@ postsAsStream context posts =
 
 postsAsTiles : Context context -> List Post -> Html AppMsg.Msg
 postsAsTiles context posts =
-    div [ class "posts-as-tiles" ] [ postsDiv context posts ]
-
-
-postsDiv : Context context -> List Post -> Html AppMsg.Msg
-postsDiv context posts =
-    Html.Keyed.node
-        "div"
-        [ class "posts" ]
-        (List.map
-            (\post ->
-                ( getKey post
-                , div []
-                    [ App.Views.Post.view context post
-                    , unreadStartLine context post
-                    ]
+    div [ class "posts-as-tiles" ]
+        [ Html.Keyed.node
+            "div"
+            [ class "posts" ]
+            (List.map
+                (\post ->
+                    ( getKey post
+                    , App.Views.Post.view context post
+                    )
                 )
+                posts
             )
-            posts
-        )
+        ]
 
 
 unreadStartLine : Context context -> Post -> Html AppMsg.Msg
