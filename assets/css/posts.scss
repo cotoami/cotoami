@@ -114,6 +114,10 @@ div.posts-as-tiles div.posts {
   column-count: 3;
   column-gap: 0;
 
+  @media (#{$narrow-viewport}) {
+    column-count: 2;
+  }
+
   div.coto {
     font-size: 1.2rem;
     border-radius: 4px;
