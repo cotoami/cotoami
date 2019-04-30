@@ -156,7 +156,7 @@ div.posts-as-tiles div.posts {
     }
     
     div.coto-header {
-      min-height: 6px;
+      min-height: 10px;
     }
 
     span.coto-tool-buttons {
@@ -182,6 +182,7 @@ div.posts-as-tiles div.posts {
     div.coto-body {
       max-height: 300px;
       overflow: hidden;
+      padding-bottom: 8px;
     }
 
     div.post-footer {
