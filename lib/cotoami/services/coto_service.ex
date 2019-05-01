@@ -48,14 +48,18 @@ defmodule Cotoami.CotoService do
 
   @page_size 30
 
-  def all_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
+  def all_by_amishi(%Amishi{} = amishi, page_index, options \\ []) do
+    query_by_amishi(amishi, options)
+    |> order_by(desc: :inserted_at)
+    |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
+  end
+
+  defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
     Coto
     |> Coto.for_amishi(amishi_id)
-    |> order_by(desc: :inserted_at)
     |> query_to_exclude_pinned_graph(amishi_id, options)
     |> query_to_exclude_posts_in_cotonoma(amishi, options)
     |> preload([:posted_in, :cotonoma])
-    |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
 
   def all_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
@@ -64,16 +68,20 @@ defmodule Cotoami.CotoService do
         nil
 
       cotonoma ->
-        Cotonoma.ensure_accessible_by(cotonoma, amishi)
-
-        Coto
-        |> Coto.in_cotonoma(cotonoma.id)
+        query_by_cotonoma(cotonoma, amishi, options)
         |> order_by(desc: :inserted_at)
-        |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
-        |> preload([:amishi, :posted_in, :cotonoma])
-        |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
+        |> query_with_pagination(@page_size, page_index)
         |> Map.put(:cotonoma, cotonoma)
     end
+  end
+
+  defp query_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options) do
+    Cotonoma.ensure_accessible_by(cotonoma, amishi)
+
+    Coto
+    |> Coto.in_cotonoma(cotonoma.id)
+    |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
+    |> preload([:amishi, :posted_in, :cotonoma])
   end
 
   defp query_to_exclude_pinned_graph(query, uuid, options) do
