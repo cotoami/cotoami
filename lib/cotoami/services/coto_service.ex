@@ -26,7 +26,7 @@ defmodule Cotoami.CotoService do
     |> Repo.get(id)
   end
 
-  def get_by_ids(coto_ids) do
+  def all_by_ids(coto_ids) do
     Coto
     |> where([c], c.id in ^coto_ids)
     |> preload([:amishi, :posted_in, :cotonoma])
@@ -48,7 +48,7 @@ defmodule Cotoami.CotoService do
 
   @page_size 30
 
-  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
+  def all_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
     Coto
     |> Coto.for_amishi(amishi_id)
     |> order_by(desc: :inserted_at)
@@ -58,7 +58,7 @@ defmodule Cotoami.CotoService do
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
 
-  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
+  def all_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
     case CotonomaService.get_by_key(key) do
       nil ->
         nil

@@ -57,7 +57,7 @@ defmodule CotoamiWeb.CotonomaController do
         {String.to_atom(key), Map.has_key?(params, key)}
       end)
 
-    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options) do
+    case CotoService.all_by_cotonoma(key, amishi, page_index, options) do
       nil ->
         send_resp(conn, :not_found, "")
 

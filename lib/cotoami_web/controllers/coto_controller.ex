@@ -20,7 +20,7 @@ defmodule CotoamiWeb.CotoController do
         {String.to_atom(key), Map.has_key?(params, key)}
       end)
 
-    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index, options)
+    paginated_results = CotoService.all_by_amishi(amishi, page_index, options)
     render(conn, "cotos.json", paginated_results)
   end
 
