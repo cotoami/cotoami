@@ -54,17 +54,11 @@ defmodule Cotoami.CotoService do
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
 
-  def all_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        nil
-
-      cotonoma ->
-        query_by_cotonoma(cotonoma, amishi, options)
-        |> order_by(desc: :inserted_at)
-        |> query_with_pagination(@page_size, page_index)
-        |> Map.put(:cotonoma, cotonoma)
-    end
+  def all_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, page_index, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(desc: :inserted_at)
+    |> query_with_pagination(@page_size, page_index)
+    |> Map.put(:cotonoma, cotonoma)
   end
 
   @random_limit 100
@@ -77,19 +71,13 @@ defmodule Cotoami.CotoService do
     |> Enum.map(&complement_amishi(&1, amishi))
   end
 
-  def random_by_cotonoma(key, %Amishi{} = amishi, options \\ []) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        nil
-
-      cotonoma ->
-        query_by_cotonoma(cotonoma, amishi, options)
-        |> order_by(fragment("random()"))
-        |> limit(@random_limit)
-        |> Repo.all()
-        |> Enum.map(&complement_amishi(&1, amishi))
-        |> Map.put(:cotonoma, cotonoma)
-    end
+  def random_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+    |> Enum.map(&complement_amishi(&1, amishi))
+    |> Map.put(:cotonoma, cotonoma)
   end
 
   defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do

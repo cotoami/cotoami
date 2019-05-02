@@ -73,7 +73,7 @@ defmodule Cotoami.CotoServiceTest do
     test "all_by_cotonoma", ~M{amishi, cotonoma} do
       assert [
                %Coto{content: "coto4"}
-             ] = CotoService.all_by_cotonoma(cotonoma.key, amishi, 0).rows
+             ] = CotoService.all_by_cotonoma(cotonoma, amishi, 0).rows
     end
 
     test "all_by_amishi with :exclude_pinned_graph", ~M{amishi} do
