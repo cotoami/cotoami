@@ -50,14 +50,13 @@ defmodule CotoamiWeb.CotonomaController do
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
-    page_index = String.to_integer(page)
-    options = get_flags_in_params(params, @cotos_options)
-
     case CotonomaService.get_by_key(key) do
       nil ->
         send_resp(conn, :not_found, "")
 
       cotonoma ->
+        page_index = String.to_integer(page)
+        options = get_flags_in_params(params, @cotos_options)
         paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
         render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
     end
@@ -67,13 +66,12 @@ defmodule CotoamiWeb.CotonomaController do
   end
 
   def random(conn, %{"key" => key} = params, amishi) do
-    options = get_flags_in_params(params, @cotos_options)
-
     case CotonomaService.get_by_key(key) do
       nil ->
         send_resp(conn, :not_found, "")
 
       cotonoma ->
+        options = get_flags_in_params(params, @cotos_options)
         cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
         render(conn, "random.json", cotos: cotos)
     end
