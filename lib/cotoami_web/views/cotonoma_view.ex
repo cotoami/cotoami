@@ -48,6 +48,13 @@ defmodule CotoamiWeb.CotonomaView do
     }
   end
 
+  def render("cotos.json", %{cotonoma: cotonoma, cotos: cotos}) do
+    %{
+      cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
+      cotos: render(CotoView, "cotos.json", cotos: cotos)
+    }
+  end
+
   def render("paginated_cotos.json", %{
         cotonoma: cotonoma,
         rows: rows,

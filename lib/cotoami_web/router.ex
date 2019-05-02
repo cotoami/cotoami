@@ -76,6 +76,7 @@ defmodule CotoamiWeb.Router do
     resources("/cotonomas", CotonomaController, only: [:index, :create])
     get("/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub)
     get("/cotonomas/:key/cotos", CotonomaController, :cotos)
+    get("/cotonomas/:key/cotos/random", CotonomaController, :random)
     get("/cotonomas/:key/stats", CotonomaController, :stats)
 
     get("/watchlist", WatchController, :index)

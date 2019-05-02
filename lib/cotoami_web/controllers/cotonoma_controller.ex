@@ -66,6 +66,22 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp(conn, :not_found, "")
   end
 
+  def random(conn, %{"key" => key} = params, amishi) do
+    options = get_flags_in_params(params, @cotos_options)
+
+    case CotonomaService.get_by_key(key) do
+      nil ->
+        send_resp(conn, :not_found, "")
+
+      cotonoma ->
+        cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
+        render(conn, "cotos.json", cotos)
+    end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
+  end
+
   def stats(conn, %{"key" => key}, _amishi) do
     stats =
       Cotonoma
