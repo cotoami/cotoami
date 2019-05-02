@@ -59,7 +59,7 @@ defmodule CotoamiWeb.CotonomaController do
 
       cotonoma ->
         cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
-        render(conn, "cotos.json", cotos)
+        render(conn, "paginated_cotos.json", cotos)
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->

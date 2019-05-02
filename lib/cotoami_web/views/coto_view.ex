@@ -3,7 +3,11 @@ defmodule CotoamiWeb.CotoView do
   alias Cotoami.{Coto}
   alias CotoamiWeb.{CotonomaView, AmishiView}
 
-  def render("cotos.json", %{
+  def render("cotos.json", %{cotos: cotos}) do
+    render_many(cotos, __MODULE__, "coto.json")
+  end
+
+  def render("paginated_cotos.json", %{
         rows: rows,
         page_index: page_index,
         total_pages: total_pages

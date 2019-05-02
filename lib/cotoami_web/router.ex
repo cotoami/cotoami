@@ -70,6 +70,7 @@ defmodule CotoamiWeb.Router do
 
     get("/search/:query", CotoController, :search)
     resources("/cotos", CotoController, only: [:index, :create, :update, :delete])
+    get("/cotos/random", CotoController, :random)
     put("/cotos/:id/cotonomatize", CotoController, :cotonomatize)
 
     resources("/cotonomas", CotonomaController, only: [:index, :create])

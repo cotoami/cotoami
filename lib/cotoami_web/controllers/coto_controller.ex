@@ -16,12 +16,17 @@ defmodule CotoamiWeb.CotoController do
     page_index = String.to_integer(page)
     options = get_flags_in_params(params, @index_options)
     paginated_results = CotoService.all_by_amishi(amishi, page_index, options)
-    render(conn, "cotos.json", paginated_results)
+    render(conn, "paginated_cotos.json", paginated_results)
+  end
+
+  def random(conn, params, amishi) do
+    options = get_flags_in_params(params, @index_options)
+    render(conn, "cotos.json", CotoService.random_by_amishi(amishi, options))
   end
 
   def search(conn, %{"query" => query}, amishi) do
     cotos = CotoService.search(query, amishi)
-    render(conn, "cotos.json", rows: cotos, page_index: 0, total_pages: 1)
+    render(conn, "paginated_cotos.json", rows: cotos, page_index: 0, total_pages: 1)
   end
 
   def create(
