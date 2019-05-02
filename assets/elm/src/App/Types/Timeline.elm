@@ -19,9 +19,10 @@ module App.Types.Timeline exposing
     , updatePost
     )
 
+import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Post exposing (Post)
 import Exts.Maybe exposing (isJust)
 import Maybe
 
@@ -64,15 +65,15 @@ addPost post timeline =
     { timeline | posts = post :: timeline.posts }
 
 
-setPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+setPaginatedPosts : PaginatedList Post -> Timeline -> Timeline
 setPaginatedPosts paginatedPosts timeline =
     { timeline
         | posts =
             if paginatedPosts.pageIndex == 0 then
-                paginatedPosts.posts
+                paginatedPosts.list
 
             else
-                timeline.posts ++ paginatedPosts.posts
+                timeline.posts ++ paginatedPosts.list
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
         , loading = False

@@ -264,12 +264,10 @@ update msg model =
                     (\model -> App.Types.SearchResults.hasQuery model.searchResults)
                     (\model -> App.Server.Post.search model.searchResults.query)
 
-        SearchResultsFetched (Ok paginatedPosts) ->
+        SearchResultsFetched (Ok posts) ->
             { model
                 | searchResults =
-                    App.Types.SearchResults.setPosts
-                        paginatedPosts.posts
-                        model.searchResults
+                    App.Types.SearchResults.setPosts posts model.searchResults
             }
                 |> withoutCmd
 

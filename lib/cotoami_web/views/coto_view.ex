@@ -9,12 +9,16 @@ defmodule CotoamiWeb.CotoView do
 
   def render("paginated_cotos.json", %{
         rows: rows,
+        page_size: page_size,
         page_index: page_index,
+        total_rows: total_rows,
         total_pages: total_pages
       }) do
     %{
-      cotos: render_many(rows, __MODULE__, "coto.json"),
+      rows: render_many(rows, __MODULE__, "coto.json"),
+      page_size: page_size,
       page_index: page_index,
+      total_rows: total_rows,
       total_pages: total_pages
     }
   end

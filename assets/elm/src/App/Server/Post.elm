@@ -1,4 +1,13 @@
-module App.Server.Post exposing (decodePaginatedPosts, decodePost, encodePost, fetchCotonomaPosts, fetchHomePosts, fetchPostsByContext, post, postCotonoma, postRequest, search)
+module App.Server.Post exposing
+    ( decodePost
+    , fetchCotonomaPosts
+    , fetchHomePosts
+    , fetchPostsByContext
+    , post
+    , postCotonoma
+    , postRequest
+    , search
+    )
 
 import App.Messages
     exposing
@@ -10,9 +19,10 @@ import App.Messages
         )
 import App.Server.Amishi
 import App.Server.Cotonoma
+import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Post exposing (Post)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import Date exposing (Date)
 import Http exposing (Request)
@@ -37,14 +47,6 @@ decodePost =
         |> hardcoded False
 
 
-decodePaginatedPosts : Decode.Decoder PaginatedPosts
-decodePaginatedPosts =
-    Json.Decode.Pipeline.decode PaginatedPosts
-        |> required "cotos" (Decode.list decodePost)
-        |> required "page_index" int
-        |> required "total_pages" int
-
-
 fetchHomePosts : Int -> TimelineFilter -> Cmd Msg
 fetchHomePosts pageIndex filter =
     let
@@ -65,7 +67,7 @@ fetchHomePosts pageIndex filter =
                    )
     in
     Http.send HomePostsFetched <|
-        Http.get url decodePaginatedPosts
+        Http.get url (App.Server.Pagination.decodePaginatedList decodePost)
 
 
 fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
@@ -85,7 +87,7 @@ fetchCotonomaPosts pageIndex filter key =
         Http.get url <|
             Decode.map2 (,)
                 (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
-                (Decode.field "paginated_cotos" decodePaginatedPosts)
+                (Decode.field "paginated_cotos" (App.Server.Pagination.decodePaginatedList decodePost))
 
 
 fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
@@ -101,8 +103,7 @@ search query =
         url =
             "/api/search/" ++ query
     in
-    Http.send SearchResultsFetched <|
-        Http.get url decodePaginatedPosts
+    Http.get url (Decode.list decodePost) |> Http.send SearchResultsFetched
 
 
 postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
