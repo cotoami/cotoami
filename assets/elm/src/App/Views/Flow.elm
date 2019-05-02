@@ -167,6 +167,7 @@ toolbarDiv context timeline model =
                             , ( "random", True )
                             , ( "disabled", timeline.loading )
                             ]
+                        , title (context.i18nText I18nKeys.Flow_Random)
                         , onClick (AppMsg.FlowMsg Random)
                         ]
                         [ faIcon "random" Nothing ]

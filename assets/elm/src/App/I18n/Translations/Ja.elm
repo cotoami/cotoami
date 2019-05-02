@@ -108,6 +108,9 @@ text key =
         Flow_TileView ->
             "タイル"
 
+        Flow_Random ->
+            "ランダム"
+
         Flow_NewPosts ->
             "新しい投稿"
 

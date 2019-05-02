@@ -105,6 +105,9 @@ text key =
         Flow_TileView ->
             "Просмотр списка заголовков"
 
+        Flow_Random ->
+            "Random"
+
         Flow_NewPosts ->
             "new posts"
 
