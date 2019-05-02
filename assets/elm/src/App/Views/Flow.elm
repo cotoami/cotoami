@@ -399,7 +399,10 @@ update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel mo
 update context msg ({ flowView, timeline } as model) =
     case msg of
         TimelineScrollPosInitialized scrollTop ->
-            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
+            { model
+                | timeline = App.Types.Timeline.setScrollPosInitialized timeline
+                , flowView = { flowView | random = False }
+            }
                 |> (\model ->
                         if scrollTop == 0 then
                             -- Clear unread because there's no scrollbar
@@ -416,8 +419,13 @@ update context msg ({ flowView, timeline } as model) =
                     (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
         SwitchView view ->
-            { model | flowView = switchView view flowView }
-                |> withoutCmd
+            if model.flowView.random then
+                { model | flowView = switchView view flowView }
+                    |> reloadRecentPosts context
+
+            else
+                { model | flowView = switchView view flowView }
+                    |> withoutCmd
 
         LoadMorePosts ->
             { model | timeline = App.Types.Timeline.setLoadingMore timeline }
@@ -562,3 +570,18 @@ isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
     (contentHeight - containerHeight - scrollTop)
         --|> Debug.log "scrollPosFromBottom: "
         |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
+
+
+reloadRecentPosts : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+reloadRecentPosts context ({ flowView, timeline } as model) =
+    { model
+        | timeline = App.Types.Timeline.setInitializing timeline
+        , flowView = { flowView | random = False }
+    }
+        |> withCmd
+            (\model ->
+                context.cotonoma
+                    |> Maybe.map .key
+                    |> Maybe.map (App.Server.Post.fetchCotonomaPosts 0 model.flowView.filter)
+                    |> Maybe.withDefault (App.Server.Post.fetchHomePosts 0 model.flowView.filter)
+            )
