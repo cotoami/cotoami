@@ -26,13 +26,6 @@ defmodule Cotoami.CotoService do
     |> Repo.get(id)
   end
 
-  def all_by_ids(coto_ids) do
-    Coto
-    |> where([c], c.id in ^coto_ids)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> Repo.all()
-  end
-
   def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
     coto =
       Coto
@@ -46,14 +39,35 @@ defmodule Cotoami.CotoService do
     end
   end
 
+  def all_by_ids(coto_ids) do
+    Coto
+    |> where([c], c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
+  end
+
   @page_size 30
-  @random_limit 100
 
   def all_by_amishi(%Amishi{} = amishi, page_index, options \\ []) do
     query_by_amishi(amishi, options)
     |> order_by(desc: :inserted_at)
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
+
+  def all_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
+    case CotonomaService.get_by_key(key) do
+      nil ->
+        nil
+
+      cotonoma ->
+        query_by_cotonoma(cotonoma, amishi, options)
+        |> order_by(desc: :inserted_at)
+        |> query_with_pagination(@page_size, page_index)
+        |> Map.put(:cotonoma, cotonoma)
+    end
+  end
+
+  @random_limit 100
 
   def random_by_amishi(%Amishi{} = amishi, options \\ []) do
     query_by_amishi(amishi, options)
@@ -69,19 +83,6 @@ defmodule Cotoami.CotoService do
     |> query_to_exclude_pinned_graph(amishi_id, options)
     |> query_to_exclude_posts_in_cotonoma(amishi, options)
     |> preload([:posted_in, :cotonoma])
-  end
-
-  def all_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        nil
-
-      cotonoma ->
-        query_by_cotonoma(cotonoma, amishi, options)
-        |> order_by(desc: :inserted_at)
-        |> query_with_pagination(@page_size, page_index)
-        |> Map.put(:cotonoma, cotonoma)
-    end
   end
 
   defp query_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options) do
