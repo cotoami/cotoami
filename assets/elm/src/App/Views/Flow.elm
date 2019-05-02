@@ -95,160 +95,6 @@ clearEditorContent model =
     }
 
 
-type alias UpdateModel model =
-    LocalCotos { model | flowView : Model }
-
-
-update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ flowView, timeline } as model) =
-    case msg of
-        TimelineScrollPosInitialized scrollTop ->
-            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                |> (\model ->
-                        if scrollTop == 0 then
-                            -- Clear unread because there's no scrollbar
-                            App.Update.Watch.clearUnread context model
-
-                        else
-                            ( model, Cmd.none )
-                   )
-
-        ImageLoaded ->
-            model
-                |> withCmdIf
-                    (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
-
-        SwitchView view ->
-            { model | flowView = switchView view flowView }
-                |> withoutCmd
-
-        LoadMorePosts ->
-            { model | timeline = App.Types.Timeline.setLoadingMore timeline }
-                |> withCmd
-                    (\model ->
-                        App.Server.Post.fetchPostsByContext
-                            (App.Types.Timeline.nextPageIndex timeline)
-                            flowView.filter
-                            context
-                    )
-
-        EditorFocus ->
-            { model | flowView = openOrCloseEditor True flowView }
-                |> withCmdIf
-                    (\model -> flowView.editorOpen)
-                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
-
-        EditorInput content ->
-            { model | flowView = setEditorContent content flowView }
-                |> withoutCmd
-
-        EditorKeyDown keyboardEvent ->
-            handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Post ->
-            postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Posted postId (Ok post) ->
-            model
-                |> App.Update.Post.onPosted context postId post
-                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
-
-        Posted postId (Err _) ->
-            model |> withoutCmd
-
-        PostedByConnectModal ->
-            { model | flowView = clearEditorContent model.flowView }
-                |> withoutCmd
-
-        Scroll scrollPos ->
-            if isScrolledToBottom scrollPos then
-                App.Update.Watch.clearUnread context model
-
-            else
-                model |> withoutCmd
-
-
-initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
-initScrollPos localCotos =
-    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom
-            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
-
-    else
-        Cmd.none
-
-
-handleEditorShortcut :
-    Context context
-    -> KeyboardEvent
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-handleEditorShortcut context keyboardEvent content model =
-    if
-        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
-            && isNotBlank content.content
-    then
-        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            postFromQuickEditor context content model
-
-        else if
-            keyboardEvent.altKey
-                && App.Submodels.Context.anySelection context
-        then
-            ( model
-            , App.Commands.sendMsg
-                (AppMsg.OpenConnectModalByNewPost
-                    content
-                    (AppMsg.FlowMsg PostedByConnectModal)
-                )
-            )
-
-        else
-            ( model, Cmd.none )
-
-    else
-        ( model, Cmd.none )
-
-
-postFromQuickEditor :
-    Context context
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postFromQuickEditor context content model =
-    { model | flowView = clearEditorContent model.flowView }
-        |> post context content
-
-
-post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd AppMsg.Msg )
-post context content model =
-    let
-        ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content model.timeline
-    in
-    ( { model | timeline = newTimeline }
-    , Cmd.batch
-        [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
-        , App.Server.Post.post
-            context.clientId
-            context.cotonoma
-            (AppMsg.FlowMsg << Posted newTimeline.postIdCounter)
-            newPost
-        ]
-    )
-
-
-isScrolledToBottom : ScrollPos -> Bool
-isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
-    (contentHeight - containerHeight - scrollTop)
-        --|> Debug.log "scrollPosFromBottom: "
-        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
-
-
 type alias ViewModel model =
     LocalCotos
         { model
@@ -526,3 +372,157 @@ newCotoButton context model =
         , span [ class "shortcut" ]
             [ text ("(" ++ context.i18nText I18nKeys.Flow_ShortcutToOpenEditor ++ ")") ]
         ]
+
+
+type alias UpdateModel model =
+    LocalCotos { model | flowView : Model }
+
+
+update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ flowView, timeline } as model) =
+    case msg of
+        TimelineScrollPosInitialized scrollTop ->
+            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
+                |> (\model ->
+                        if scrollTop == 0 then
+                            -- Clear unread because there's no scrollbar
+                            App.Update.Watch.clearUnread context model
+
+                        else
+                            ( model, Cmd.none )
+                   )
+
+        ImageLoaded ->
+            model
+                |> withCmdIf
+                    (\model -> model.timeline.pageIndex == 0)
+                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
+
+        SwitchView view ->
+            { model | flowView = switchView view flowView }
+                |> withoutCmd
+
+        LoadMorePosts ->
+            { model | timeline = App.Types.Timeline.setLoadingMore timeline }
+                |> withCmd
+                    (\model ->
+                        App.Server.Post.fetchPostsByContext
+                            (App.Types.Timeline.nextPageIndex timeline)
+                            flowView.filter
+                            context
+                    )
+
+        EditorFocus ->
+            { model | flowView = openOrCloseEditor True flowView }
+                |> withCmdIf
+                    (\model -> flowView.editorOpen)
+                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
+
+        EditorInput content ->
+            { model | flowView = setEditorContent content flowView }
+                |> withoutCmd
+
+        EditorKeyDown keyboardEvent ->
+            handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+
+        Post ->
+            postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
+                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+
+        Posted postId (Ok post) ->
+            model
+                |> App.Update.Post.onPosted context postId post
+                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+
+        Posted postId (Err _) ->
+            model |> withoutCmd
+
+        PostedByConnectModal ->
+            { model | flowView = clearEditorContent model.flowView }
+                |> withoutCmd
+
+        Scroll scrollPos ->
+            if isScrolledToBottom scrollPos then
+                App.Update.Watch.clearUnread context model
+
+            else
+                model |> withoutCmd
+
+
+initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
+initScrollPos localCotos =
+    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
+        App.Commands.scrollTimelineToBottom
+            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
+
+    else
+        Cmd.none
+
+
+handleEditorShortcut :
+    Context context
+    -> KeyboardEvent
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+handleEditorShortcut context keyboardEvent content model =
+    if
+        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
+            && isNotBlank content.content
+    then
+        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+            postFromQuickEditor context content model
+
+        else if
+            keyboardEvent.altKey
+                && App.Submodels.Context.anySelection context
+        then
+            ( model
+            , App.Commands.sendMsg
+                (AppMsg.OpenConnectModalByNewPost
+                    content
+                    (AppMsg.FlowMsg PostedByConnectModal)
+                )
+            )
+
+        else
+            ( model, Cmd.none )
+
+    else
+        ( model, Cmd.none )
+
+
+postFromQuickEditor :
+    Context context
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor context content model =
+    { model | flowView = clearEditorContent model.flowView }
+        |> post context content
+
+
+post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd AppMsg.Msg )
+post context content model =
+    let
+        ( newTimeline, newPost ) =
+            App.Types.Timeline.post context False content model.timeline
+    in
+    ( { model | timeline = newTimeline }
+    , Cmd.batch
+        [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
+        , App.Server.Post.post
+            context.clientId
+            context.cotonoma
+            (AppMsg.FlowMsg << Posted newTimeline.postIdCounter)
+            newPost
+        ]
+    )
+
+
+isScrolledToBottom : ScrollPos -> Bool
+isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
+    (contentHeight - containerHeight - scrollTop)
+        --|> Debug.log "scrollPosFromBottom: "
+        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
