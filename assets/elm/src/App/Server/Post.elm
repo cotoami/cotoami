@@ -2,6 +2,7 @@ module App.Server.Post exposing
     ( decodePost
     , fetchCotonomaPosts
     , fetchHomePosts
+    , fetchHomeRandomPosts
     , fetchPostsByContext
     , post
     , postCotonoma
@@ -95,6 +96,15 @@ fetchPostsByContext pageIndex filter context =
     context.cotonoma
         |> Maybe.map (\cotonoma -> fetchCotonomaPosts pageIndex filter cotonoma.key)
         |> Maybe.withDefault (fetchHomePosts pageIndex filter)
+
+
+fetchHomeRandomPosts : (Result Http.Error (List Post) -> msg) -> TimelineFilter -> Cmd msg
+fetchHomeRandomPosts tag filter =
+    let
+        url =
+            "/api/cotos/random?page=0" ++ filterAsQueryString filter
+    in
+    Http.get url (Decode.list decodePost) |> Http.send tag
 
 
 search : String -> Cmd Msg
