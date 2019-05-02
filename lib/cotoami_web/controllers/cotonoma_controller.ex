@@ -51,11 +51,7 @@ defmodule CotoamiWeb.CotonomaController do
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
     page_index = String.to_integer(page)
-
-    options =
-      Enum.map(@cotos_options, fn key ->
-        {String.to_atom(key), Map.has_key?(params, key)}
-      end)
+    options = get_flags_in_params(params, @cotos_options)
 
     case CotonomaService.get_by_key(key) do
       nil ->

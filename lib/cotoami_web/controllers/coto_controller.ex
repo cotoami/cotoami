@@ -14,12 +14,7 @@ defmodule CotoamiWeb.CotoController do
 
   def index(conn, %{"page" => page} = params, amishi) do
     page_index = String.to_integer(page)
-
-    options =
-      Enum.map(@index_options, fn key ->
-        {String.to_atom(key), Map.has_key?(params, key)}
-      end)
-
+    options = get_flags_in_params(params, @index_options)
     paginated_results = CotoService.all_by_amishi(amishi, page_index, options)
     render(conn, "cotos.json", paginated_results)
   end
