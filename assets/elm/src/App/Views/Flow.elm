@@ -157,6 +157,16 @@ toolbarDiv context model =
                     ]
                     [ materialIcon "view_module" Nothing ]
                 ]
+            , if model.view == TileView then
+                span [ class "random" ]
+                    [ a
+                        [ class "tool-button random"
+                        ]
+                        [ faIcon "random" Nothing ]
+                    ]
+
+              else
+                Utils.HtmlUtil.none
             ]
         ]
 
