@@ -47,24 +47,29 @@ decodePost =
         |> hardcoded False
 
 
+filterAsQueryString : TimelineFilter -> String
+filterAsQueryString filter =
+    [ if filter.excludePinnedGraph then
+        "&exclude_pinned_graph=true"
+
+      else
+        ""
+    , if filter.excludePostsInCotonoma then
+        "&exclude_posts_in_cotonoma=true"
+
+      else
+        ""
+    ]
+        |> List.foldl (++) ""
+
+
 fetchHomePosts : Int -> TimelineFilter -> Cmd Msg
 fetchHomePosts pageIndex filter =
     let
         url =
             "/api/cotos"
                 ++ ("?page=" ++ toString pageIndex)
-                ++ (if filter.excludePinnedGraph then
-                        "&exclude_pinned_graph=true"
-
-                    else
-                        ""
-                   )
-                ++ (if filter.excludePostsInCotonoma then
-                        "&exclude_posts_in_cotonoma=true"
-
-                    else
-                        ""
-                   )
+                ++ filterAsQueryString filter
     in
     Http.send HomePostsFetched <|
         Http.get url (App.Server.Pagination.decodePaginatedList decodePost)
@@ -76,12 +81,7 @@ fetchCotonomaPosts pageIndex filter key =
         url =
             ("/api/cotonomas/" ++ key ++ "/cotos")
                 ++ ("?page=" ++ toString pageIndex)
-                ++ (if filter.excludePinnedGraph then
-                        "&exclude_pinned_graph=true"
-
-                    else
-                        ""
-                   )
+                ++ filterAsQueryString filter
     in
     Http.send CotonomaPostsFetched <|
         Http.get url <|
