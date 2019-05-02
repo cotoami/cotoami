@@ -21,7 +21,7 @@ defmodule CotoamiWeb.CotoController do
 
   def random(conn, params, amishi) do
     options = get_flags_in_params(params, @index_options)
-    render(conn, "cotos.json", CotoService.random_by_amishi(amishi, options))
+    render(conn, "cotos.json", cotos: CotoService.random_by_amishi(amishi, options))
   end
 
   def search(conn, %{"query" => query}, amishi) do

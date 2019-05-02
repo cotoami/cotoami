@@ -58,7 +58,6 @@ defmodule Cotoami.CotoService do
     query_by_cotonoma(cotonoma, amishi, options)
     |> order_by(desc: :inserted_at)
     |> query_with_pagination(@page_size, page_index)
-    |> Map.put(:cotonoma, cotonoma)
   end
 
   @random_limit 100
@@ -76,8 +75,6 @@ defmodule Cotoami.CotoService do
     |> order_by(fragment("random()"))
     |> limit(@random_limit)
     |> Repo.all()
-    |> Enum.map(&complement_amishi(&1, amishi))
-    |> Map.put(:cotonoma, cotonoma)
   end
 
   defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do

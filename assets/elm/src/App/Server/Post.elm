@@ -109,7 +109,7 @@ fetchHomeRandomPosts tag filter =
 
 
 fetchCotonomaRandomPosts :
-    (Result Http.Error ( Cotonoma, List Post ) -> msg)
+    (Result Http.Error (List Post) -> msg)
     -> TimelineFilter
     -> CotonomaKey
     -> Cmd msg
@@ -117,13 +117,8 @@ fetchCotonomaRandomPosts tag filter key =
     let
         url =
             ("/api/cotonomas/" ++ key ++ "/cotos?page=0") ++ filterAsQueryString filter
-
-        decodeResponse =
-            Decode.map2 (,)
-                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
-                (Decode.field "cotos" (Decode.list decodePost))
     in
-    Http.get url decodeResponse |> Http.send tag
+    Http.get url (Decode.list decodePost) |> Http.send tag
 
 
 search : String -> Cmd Msg

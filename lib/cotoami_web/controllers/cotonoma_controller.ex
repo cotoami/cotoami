@@ -58,8 +58,8 @@ defmodule CotoamiWeb.CotonomaController do
         send_resp(conn, :not_found, "")
 
       cotonoma ->
-        cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
-        render(conn, "paginated_cotos.json", cotos)
+        paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
+        render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->
@@ -75,7 +75,7 @@ defmodule CotoamiWeb.CotonomaController do
 
       cotonoma ->
         cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
-        render(conn, "cotos.json", cotos)
+        render(conn, "random.json", cotos: cotos)
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->
