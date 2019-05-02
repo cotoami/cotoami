@@ -16,6 +16,12 @@ defmodule CotoamiWeb.ControllerHelpers do
     end
   end
 
+  def get_flags_in_params(params, keys) do
+    Enum.map(keys, fn key ->
+      {String.to_atom(key), Map.has_key?(params, key)}
+    end)
+  end
+
   defp payload_base(%Amishi{} = amishi, client_id) do
     %{
       clientId: client_id,

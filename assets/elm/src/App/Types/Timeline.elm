@@ -12,16 +12,19 @@ module App.Types.Timeline exposing
     , post
     , setBeingDeleted
     , setCotoSaved
+    , setInitializing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
+    , setPosts
     , setScrollPosInitialized
     , updatePost
     )
 
+import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Post exposing (Post)
 import Exts.Maybe exposing (isJust)
 import Maybe
 
@@ -64,15 +67,26 @@ addPost post timeline =
     { timeline | posts = post :: timeline.posts }
 
 
-setPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+setPosts : List Post -> Timeline -> Timeline
+setPosts posts timeline =
+    { timeline
+        | posts = posts
+        , pageIndex = 0
+        , more = False
+        , loading = False
+        , loadingMore = False
+    }
+
+
+setPaginatedPosts : PaginatedList Post -> Timeline -> Timeline
 setPaginatedPosts paginatedPosts timeline =
     { timeline
         | posts =
             if paginatedPosts.pageIndex == 0 then
-                paginatedPosts.posts
+                paginatedPosts.list
 
             else
-                timeline.posts ++ paginatedPosts.posts
+                timeline.posts ++ paginatedPosts.list
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
         , loading = False
@@ -110,13 +124,18 @@ deletePendingPost postId timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-setLoading : Timeline -> Timeline
-setLoading timeline =
+setInitializing : Timeline -> Timeline
+setInitializing timeline =
     { timeline
         | posts = []
         , loading = True
         , initializingScrollPos = True
     }
+
+
+setLoading : Timeline -> Timeline
+setLoading timeline =
+    { timeline | loading = True }
 
 
 setLoadingMore : Timeline -> Timeline

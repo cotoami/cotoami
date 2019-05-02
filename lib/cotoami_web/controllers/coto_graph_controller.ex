@@ -41,7 +41,7 @@ defmodule CotoamiWeb.CotoGraphController do
 
     results =
       coto_ids
-      |> CotoService.get_by_ids()
+      |> CotoService.all_by_ids()
       |> Enum.filter(& &1)
       |> Enum.map(fn coto ->
         case cotonoma do
@@ -87,7 +87,7 @@ defmodule CotoamiWeb.CotoGraphController do
 
     result =
       end_ids
-      |> CotoService.get_by_ids()
+      |> CotoService.all_by_ids()
       |> Enum.filter(& &1)
       |> Enum.map(fn end_coto ->
         case cotonoma do

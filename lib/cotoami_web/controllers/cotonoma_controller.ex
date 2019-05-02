@@ -50,19 +50,30 @@ defmodule CotoamiWeb.CotonomaController do
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
-    page_index = String.to_integer(page)
-
-    options =
-      Enum.map(@cotos_options, fn key ->
-        {String.to_atom(key), Map.has_key?(params, key)}
-      end)
-
-    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options) do
+    case CotonomaService.get_by_key(key) do
       nil ->
         send_resp(conn, :not_found, "")
 
-      paginated_results ->
-        render(conn, "cotos.json", paginated_results)
+      cotonoma ->
+        page_index = String.to_integer(page)
+        options = get_flags_in_params(params, @cotos_options)
+        paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
+        render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
+    end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
+  end
+
+  def random(conn, %{"key" => key} = params, amishi) do
+    case CotonomaService.get_by_key(key) do
+      nil ->
+        send_resp(conn, :not_found, "")
+
+      cotonoma ->
+        options = get_flags_in_params(params, @cotos_options)
+        cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
+        render(conn, "random.json", cotos: cotos)
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->

@@ -108,6 +108,9 @@ text key =
         Flow_TileView ->
             "平铺"
 
+        Flow_Random ->
+            "Random"
+
         Flow_NewPosts ->
             "new posts"
 

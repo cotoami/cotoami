@@ -26,13 +26,6 @@ defmodule Cotoami.CotoService do
     |> Repo.get(id)
   end
 
-  def get_by_ids(coto_ids) do
-    Coto
-    |> where([c], c.id in ^coto_ids)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> Repo.all()
-  end
-
   def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
     coto =
       Coto
@@ -46,34 +39,59 @@ defmodule Cotoami.CotoService do
     end
   end
 
+  def all_by_ids(coto_ids) do
+    Coto
+    |> where([c], c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
+  end
+
   @page_size 30
 
-  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
-    Coto
-    |> Coto.for_amishi(amishi_id)
+  def all_by_amishi(%Amishi{} = amishi, page_index, options \\ []) do
+    query_by_amishi(amishi, options)
     |> order_by(desc: :inserted_at)
-    |> query_to_exclude_pinned_graph(amishi_id, options)
-    |> query_to_exclude_posts_in_cotonoma(amishi, options)
-    |> preload([:posted_in, :cotonoma])
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
 
-  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        nil
+  def all_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, page_index, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(desc: :inserted_at)
+    |> query_with_pagination(@page_size, page_index)
+  end
 
-      cotonoma ->
-        Cotonoma.ensure_accessible_by(cotonoma, amishi)
+  @random_limit 100
 
-        Coto
-        |> Coto.in_cotonoma(cotonoma.id)
-        |> order_by(desc: :inserted_at)
-        |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
-        |> preload([:amishi, :posted_in, :cotonoma])
-        |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
-        |> Map.put(:cotonoma, cotonoma)
-    end
+  def random_by_amishi(%Amishi{} = amishi, options \\ []) do
+    query_by_amishi(amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+    |> Enum.map(&complement_amishi(&1, amishi))
+  end
+
+  def random_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+  end
+
+  defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> query_to_exclude_pinned_graph(amishi_id, options)
+    |> query_to_exclude_posts_in_cotonoma(amishi, options)
+    |> preload([:posted_in, :cotonoma])
+  end
+
+  defp query_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options) do
+    Cotonoma.ensure_accessible_by(cotonoma, amishi)
+
+    Coto
+    |> Coto.in_cotonoma(cotonoma.id)
+    |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
+    |> preload([:amishi, :posted_in, :cotonoma])
   end
 
   defp query_to_exclude_pinned_graph(query, uuid, options) do
