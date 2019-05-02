@@ -1,6 +1,7 @@
 module App.Server.Post exposing
     ( decodePost
     , fetchCotonomaPosts
+    , fetchCotonomaRandomPosts
     , fetchHomePosts
     , fetchHomeRandomPosts
     , fetchPostsByContext
@@ -105,6 +106,24 @@ fetchHomeRandomPosts tag filter =
             "/api/cotos/random?page=0" ++ filterAsQueryString filter
     in
     Http.get url (Decode.list decodePost) |> Http.send tag
+
+
+fetchCotonomaRandomPosts :
+    (Result Http.Error ( Cotonoma, List Post ) -> msg)
+    -> TimelineFilter
+    -> CotonomaKey
+    -> Cmd msg
+fetchCotonomaRandomPosts tag filter key =
+    let
+        url =
+            ("/api/cotonomas/" ++ key ++ "/cotos?page=0") ++ filterAsQueryString filter
+
+        decodeResponse =
+            Decode.map2 (,)
+                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
+                (Decode.field "cotos" (Decode.list decodePost))
+    in
+    Http.get url decodeResponse |> Http.send tag
 
 
 search : String -> Cmd Msg
