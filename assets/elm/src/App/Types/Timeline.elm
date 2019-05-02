@@ -12,6 +12,7 @@ module App.Types.Timeline exposing
     , post
     , setBeingDeleted
     , setCotoSaved
+    , setInitializing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
@@ -123,13 +124,18 @@ deletePendingPost postId timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-setLoading : Timeline -> Timeline
-setLoading timeline =
+setInitializing : Timeline -> Timeline
+setInitializing timeline =
     { timeline
         | posts = []
         , loading = True
         , initializingScrollPos = True
     }
+
+
+setLoading : Timeline -> Timeline
+setLoading timeline =
+    { timeline | loading = True }
 
 
 setLoadingMore : Timeline -> Timeline

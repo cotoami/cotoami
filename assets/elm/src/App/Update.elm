@@ -739,7 +739,7 @@ loadHome model =
     { model
         | cotonomasLoading = True
         , subCotonomas = []
-        , timeline = App.Types.Timeline.setLoading model.timeline
+        , timeline = App.Types.Timeline.setInitializing model.timeline
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
@@ -770,7 +770,7 @@ loadCotonoma : CotonomaKey -> Model -> ( Model, Cmd Msg )
 loadCotonoma key model =
     { model
         | cotonomasLoading = True
-        , timeline = App.Types.Timeline.setLoading model.timeline
+        , timeline = App.Types.Timeline.setInitializing model.timeline
         , graph = App.Types.Graph.defaultGraph
         , loadingGraph = True
         , traversals = App.Types.Traversal.defaultTraversals
