@@ -23,3 +23,5 @@ type Msg
     | Posted Int (Result Http.Error Post)
     | PostedByConnectModal
     | Scroll ScrollPos
+    | Random
+    | RandomPostsFetched (Result Http.Error (List Post))

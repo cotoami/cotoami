@@ -51,6 +51,7 @@ import Utils.UpdateUtil exposing (..)
 type alias Model =
     { view : TimelineView
     , filter : TimelineFilter
+    , random : Bool
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
@@ -61,6 +62,7 @@ defaultModel : Model
 defaultModel =
     { view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
+    , random = False
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
@@ -115,15 +117,15 @@ view context session model =
 
           else
             Utils.HtmlUtil.none
-        , toolbarDiv context model.flowView
+        , toolbarDiv context model.timeline model.flowView
         , timelineDiv context model
         , postEditor context session model.flowView
         , newCotoButton context model.flowView
         ]
 
 
-toolbarDiv : Context context -> Model -> Html AppMsg.Msg
-toolbarDiv context model =
+toolbarDiv : Context context -> Timeline -> Model -> Html AppMsg.Msg
+toolbarDiv context timeline model =
     div [ class "flow-toolbar" ]
         [ div [ class "tools" ]
             [ a
@@ -160,7 +162,12 @@ toolbarDiv context model =
             , if model.view == TileView then
                 span [ class "random" ]
                     [ a
-                        [ class "tool-button random"
+                        [ classList
+                            [ ( "tool-button", True )
+                            , ( "random", True )
+                            , ( "disabled", timeline.loading )
+                            ]
+                        , onClick (AppMsg.FlowMsg Random)
                         ]
                         [ faIcon "random" Nothing ]
                     ]
@@ -458,6 +465,25 @@ update context msg ({ flowView, timeline } as model) =
 
             else
                 model |> withoutCmd
+
+        Random ->
+            ( { model | timeline = App.Types.Timeline.setLoading timeline }
+            , App.Server.Post.fetchRandomPosts
+                (AppMsg.FlowMsg << RandomPostsFetched)
+                flowView.filter
+                (Maybe.map .key context.cotonoma)
+            )
+
+        RandomPostsFetched (Ok posts) ->
+            ( { model
+                | flowView = { flowView | random = True }
+                , timeline = App.Types.Timeline.setPosts posts timeline
+              }
+            , Cmd.none
+            )
+
+        RandomPostsFetched (Err _) ->
+            model |> withoutCmd
 
 
 initScrollPos : LocalCotos a -> Cmd AppMsg.Msg

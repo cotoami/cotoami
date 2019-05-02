@@ -15,6 +15,7 @@ module App.Types.Timeline exposing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
+    , setPosts
     , setScrollPosInitialized
     , updatePost
     )
@@ -63,6 +64,17 @@ isEmpty timeline =
 addPost : Post -> Timeline -> Timeline
 addPost post timeline =
     { timeline | posts = post :: timeline.posts }
+
+
+setPosts : List Post -> Timeline -> Timeline
+setPosts posts timeline =
+    { timeline
+        | posts = posts
+        , pageIndex = 0
+        , more = False
+        , loading = False
+        , loadingMore = False
+    }
 
 
 setPaginatedPosts : PaginatedList Post -> Timeline -> Timeline
