@@ -54,14 +54,14 @@ openEditorModalForNew : Context context -> Maybe Coto -> Model -> ( Model, Cmd M
 openEditorModalForNew context source model =
     { model | editorModal = App.Modals.EditorModal.modelForNew context source }
         |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
+        |> withCmd (\_ -> App.Commands.focus App.Messages.NoOp "editor-modal-content-input")
 
 
 openEditorModalForEdit : Coto -> Model -> ( Model, Cmd Msg )
 openEditorModalForEdit coto model =
     { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
         |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
+        |> withCmd (\_ -> App.Commands.focus App.Messages.NoOp "editor-modal-content-input")
 
 
 openConnectModalByCoto : List Coto -> Coto -> Model -> ( Model, Cmd Msg )
@@ -102,8 +102,8 @@ openConnectModal selectedCotos direction target model =
         |> withCmd
             (\_ ->
                 App.Commands.focus
-                    "connect-modal-primary-button"
                     App.Messages.NoOp
+                    "connect-modal-primary-button"
             )
 
 

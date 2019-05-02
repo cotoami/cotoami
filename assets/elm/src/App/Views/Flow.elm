@@ -441,11 +441,11 @@ update context msg ({ flowView, timeline } as model) =
 
         EditorKeyDown keyboardEvent ->
             handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+                |> addCmd (\_ -> App.Commands.focus NoOp "quick-coto-input")
 
         Post ->
             postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
+                |> addCmd (\_ -> App.Commands.focus NoOp "quick-coto-input")
 
         Posted postId (Ok post) ->
             model
@@ -479,7 +479,7 @@ update context msg ({ flowView, timeline } as model) =
                 | flowView = { flowView | random = True }
                 , timeline = App.Types.Timeline.setPosts posts timeline
               }
-            , Cmd.none
+            , App.Commands.scrollTimelineToTop NoOp
             )
 
         RandomPostsFetched (Err _) ->
