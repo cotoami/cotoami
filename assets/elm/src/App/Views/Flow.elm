@@ -416,7 +416,7 @@ update context msg ({ flowView, timeline } as model) =
         ImageLoaded ->
             model
                 |> withCmdIf
-                    (\model -> model.timeline.pageIndex == 0)
+                    (\model -> model.timeline.pageIndex == 0 && not model.flowView.random)
                     (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
 
         SwitchView view ->
