@@ -47,11 +47,20 @@ defmodule Cotoami.CotoService do
   end
 
   @page_size 30
+  @random_limit 100
 
   def all_by_amishi(%Amishi{} = amishi, page_index, options \\ []) do
     query_by_amishi(amishi, options)
     |> order_by(desc: :inserted_at)
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
+  end
+
+  def random_by_amishi(%Amishi{} = amishi, options \\ []) do
+    query_by_amishi(amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+    |> Enum.map(&complement_amishi(&1, amishi))
   end
 
   defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
