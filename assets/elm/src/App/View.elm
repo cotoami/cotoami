@@ -215,13 +215,10 @@ selectionColumn model =
         , classList
             [ ( "main-column", True )
             , ( "active-in-narrow-viewport", activeInNarrowViewport )
+            , ( "active-in-wide-viewport", model.wideViewport.selectionOpen )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
-            , ( "hidden"
-              , not activeInNarrowViewport
-                    && not model.wideViewport.selectionOpen
-              )
             ]
         ]
         [ App.Views.CotoSelection.view model model ]

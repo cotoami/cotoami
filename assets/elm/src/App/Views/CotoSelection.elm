@@ -97,13 +97,24 @@ statusBar context model =
             [ ( "empty", List.isEmpty model.selection )
             ]
         ]
-        [ a [ class "close", onClick (AppMsg.CotoSelectionMsg ClearSelection) ]
+        [ a
+            [ class "close"
+            , onClick (AppMsg.CotoSelectionMsg ClearSelection)
+            ]
             [ faIcon "times" Nothing ]
-        , div [ class "selection-info" ]
-            [ faIcon "check-square-o" Nothing
-            , span [ class "selection-count" ] [ text (toString count) ]
-            , span [ class "text" ] [ text (" " ++ message) ]
-            , a [ class "toggle", onClick (AppMsg.CotoSelectionMsg ColumnToggle) ]
+        , div [ class "content" ]
+            [ span
+                [ class "selection-info"
+                , onClick (AppMsg.SwitchViewInNarrowViewport SelectionView)
+                ]
+                [ faIcon "check-square-o" Nothing
+                , span [ class "selection-count" ] [ text (toString count) ]
+                , span [ class "text" ] [ text (" " ++ message) ]
+                ]
+            , a
+                [ class "toggle"
+                , onClick (AppMsg.CotoSelectionMsg ColumnToggle)
+                ]
                 [ if model.wideViewport.selectionOpen then
                     faIcon "caret-up" Nothing
 

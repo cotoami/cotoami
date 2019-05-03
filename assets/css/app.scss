@@ -33,8 +33,10 @@ div.main-column,
   display: none;
   flex: 1;
 
-  &.active-in-narrow-viewport {
-    display: flex;
+  @media (#{$narrow-viewport}) {
+    &.active-in-narrow-viewport {
+      display: flex;
+    }
   }
 }
 
@@ -262,7 +264,7 @@ div.main-traversal {
     background-color: #e8e8e8;
   }
 
-  #main-selection,
+  #main-selection.active-in-wide-viewport,
   #main-search-results {
     flex: none;
     width: 500px;
@@ -275,8 +277,7 @@ div.main-traversal {
     box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
     padding: 0;
 
-    &.empty,
-    &.hidden {
+    &.empty {
       display: none;
     }
   }
