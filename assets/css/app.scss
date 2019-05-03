@@ -67,7 +67,7 @@ div.main-column,
 #main-flow {
   width: 100%;
   padding-left: 10px;
-  padding-right: 15px;   // for view-switch on mobile
+  padding-right: 15px;   // for main-view-switch on mobile
   overflow: hidden;
 }
 
@@ -87,7 +87,7 @@ div.main-column,
   left: 0;
   right: 0;
   bottom: 0;
-  padding-right: 5px;   // for view-switch on mobile
+  padding-right: 5px;   // for main-view-switch on mobile
   animation-duration: 0.5s;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -98,12 +98,12 @@ div.main-column,
 }
 
 div.main-traversal {
-  padding-right: 5px;   // for view-switch on mobile
+  padding-right: 5px;   // for main-view-switch on mobile
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-#view-switch-container {
+#main-view-switch {
   z-index: 5;
   display: inline-block;
   position: absolute;
@@ -113,7 +113,7 @@ div.main-traversal {
   margin: auto;
   height: 350px;
 
-  div.view-switch {
+  div.switch-button {
     margin-top: 5px;
     margin-bottom: 5px;
     height: 60px;
@@ -312,7 +312,7 @@ div.main-traversal {
     }
   }
 
-  #view-switch-container {
+  #main-view-switch {
     display: none;
   }
 }

@@ -1,4 +1,4 @@
-module App.Views.ViewSwitch exposing (view)
+module App.Views.MainViewSwitch exposing (view)
 
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -24,7 +24,7 @@ type alias ViewModel model =
 view : ViewModel model -> Html AppMsg.Msg
 view model =
     div
-        [ id "view-switch-container" ]
+        [ id "main-view-switch" ]
         [ viewSwitchDiv
             "switch-to-flow"
             "comments"
@@ -68,7 +68,7 @@ viewSwitchDiv divId iconName buttonTitle selected empty onClickMsg =
     div
         [ id divId
         , classList
-            [ ( "view-switch", True )
+            [ ( "switch-button", True )
             , ( "selected", selected )
             , ( "empty", empty )
             ]
