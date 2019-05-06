@@ -14,6 +14,7 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -521,7 +522,7 @@ handleEditorShortcut context keyboardEvent content model =
 
         else if
             keyboardEvent.altKey
-                && App.Submodels.Context.anySelection context
+                && App.Submodels.CotoSelection.anySelection context
         then
             ( model
             , App.Commands.sendMsg

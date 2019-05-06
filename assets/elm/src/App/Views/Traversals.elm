@@ -9,7 +9,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.Traversals
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
-import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.Traversal exposing (..)
 import App.Views.Coto

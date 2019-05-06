@@ -7,7 +7,6 @@ module App.Submodels.LocalCotos exposing
     , getCoto
     , getCotoIdsToWatch
     , getCotonomaKeysToWatch
-    , getSelectedCotos
     , incorporateLocalCotoInGraph
     , isNavigationEmpty
     , isStockEmpty
@@ -18,7 +17,6 @@ module App.Submodels.LocalCotos exposing
     , updateCotonomaMaybe
     )
 
-import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph)
@@ -73,13 +71,6 @@ getCoto cotoId localCotos =
                 )
             |> Maybe.withDefault Nothing
         ]
-
-
-getSelectedCotos : Context a -> LocalCotos b -> List Coto
-getSelectedCotos context localCotos =
-    context.selection
-        |> List.filterMap (\cotoId -> getCoto cotoId localCotos)
-        |> List.reverse
 
 
 getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto

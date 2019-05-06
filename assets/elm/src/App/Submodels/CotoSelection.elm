@@ -1,9 +1,11 @@
 module App.Submodels.CotoSelection exposing
     ( CotoSelection
     , anySelection
-    , clearSelection
+    , clear
+    , cotosInSelectedOrder
     , deselect
     , finishBeingDeselected
+    , isBeingDeselected
     , isSelected
     , setBeingDeselected
     , toggleSelection
@@ -45,9 +47,14 @@ toggleSelection coto model =
         { model | selection = coto :: model.selection }
 
 
-clearSelection : CotoSelection model -> CotoSelection model
-clearSelection model =
+clear : CotoSelection model -> CotoSelection model
+clear model =
     { model | selection = [] }
+
+
+cotosInSelectedOrder : CotoSelection model -> List Coto
+cotosInSelectedOrder model =
+    List.reverse model.selection
 
 
 updateCoto : Coto -> CotoSelection model -> CotoSelection model
@@ -70,6 +77,11 @@ updateCoto newCoto model =
 setBeingDeselected : CotoId -> CotoSelection model -> CotoSelection model
 setBeingDeselected cotoId model =
     { model | deselecting = Set.insert cotoId model.deselecting }
+
+
+isBeingDeselected : CotoId -> CotoSelection model -> Bool
+isBeingDeselected cotoId model =
+    Set.member cotoId model.deselecting
 
 
 finishBeingDeselected : CotoSelection model -> CotoSelection model

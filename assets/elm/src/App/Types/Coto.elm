@@ -2,7 +2,6 @@ module App.Types.Coto exposing
     ( Coto
     , CotoContent
     , CotoId
-    , CotoSelection
     , Cotonoma
     , CotonomaKey
     , CotonomaStats
@@ -38,10 +37,6 @@ type alias ElementId =
 
 type alias CotoId =
     String
-
-
-type alias CotoSelection =
-    List CotoId
 
 
 type alias CotonomaKey =

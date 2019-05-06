@@ -21,6 +21,7 @@ import App.Server.Cotonoma
 import App.Server.Graph
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection
 import App.Types.Coto exposing (Coto, CotoContent)
@@ -410,7 +411,7 @@ sourceCotoDiv context model =
 buttonsForNewCoto : Context context -> Model -> List (Html AppMsg.Msg)
 buttonsForNewCoto context model =
     [ if
-        App.Submodels.Context.anySelection context
+        App.Submodels.CotoSelection.anySelection context
             && (model.mode == NewCoto Nothing)
       then
         button
@@ -726,7 +727,7 @@ handleShortcut context keyboardEvent model =
 
                 else if
                     keyboardEvent.altKey
-                        && App.Submodels.Context.anySelection context
+                        && App.Submodels.CotoSelection.anySelection context
                 then
                     ( model
                     , App.Commands.sendMsg

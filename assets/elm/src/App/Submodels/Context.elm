@@ -1,33 +1,26 @@
 module App.Submodels.Context exposing
     ( Context
-    , anySelection
     , anyUnreadCotos
     , atHome
     , clearCotoFocus
-    , clearSelection
     , contentOpen
-    , deleteSelection
     , findWatchForCurrentCotonoma
-    , finishBeingDeselected
     , focusCoto
     , generateClientId
     , hasPinnedCotosInReordering
     , hasSubCotosInReordering
-    , isSelected
     , isServerOwner
     , isTriggerElementInReordering
     , isWatched
     , orignatedHere
-    , setBeingDeselected
     , setCotonoma
     , setCotonomaLoading
     , toggleContent
-    , updateSelection
     )
 
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Connection exposing (Reordering(..))
-import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
 import App.Types.Watch exposing (Watch)
@@ -51,7 +44,7 @@ type alias Context a =
         , contentOpenElements : Set ElementId
         , reordering : Maybe Reordering
         , cotoFocus : Maybe CotoId
-        , selection : CotoSelection
+        , selection : List Coto
         , deselecting : Set CotoId
         , graph : Graph
         , loadingGraph : Bool
@@ -115,59 +108,6 @@ toggleSetMember value set =
 contentOpen : ElementId -> Context a -> Bool
 contentOpen elementId context =
     Set.member elementId context.contentOpenElements
-
-
-anySelection : Context a -> Bool
-anySelection context =
-    not (List.isEmpty context.selection)
-
-
-isSelected : Maybe CotoId -> Context a -> Bool
-isSelected maybeCotoId context =
-    maybeCotoId
-        |> Maybe.map (\cotoId -> List.member cotoId context.selection)
-        |> Maybe.withDefault False
-
-
-updateSelection : CotoId -> Context a -> Context a
-updateSelection cotoId context =
-    { context
-        | selection =
-            if context.selection |> List.member cotoId then
-                List.filter (\id -> cotoId /= id) context.selection
-
-            else
-                cotoId :: context.selection
-    }
-
-
-clearSelection : Context a -> Context a
-clearSelection context =
-    { context | selection = [] }
-
-
-deleteSelection : CotoId -> Context a -> Context a
-deleteSelection cotoId context =
-    { context | selection = List.filter (\id -> cotoId /= id) context.selection }
-
-
-setBeingDeselected : CotoId -> Context a -> Context a
-setBeingDeselected cotoId context =
-    { context
-        | deselecting =
-            context.deselecting |> Set.insert cotoId
-    }
-
-
-finishBeingDeselected : Context a -> Context a
-finishBeingDeselected context =
-    { context
-        | selection =
-            List.filter
-                (\id -> not (Set.member id context.deselecting))
-                context.selection
-        , deselecting = Set.empty
-    }
 
 
 setCotonomaLoading : Context a -> Context a

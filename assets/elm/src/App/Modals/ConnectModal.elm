@@ -14,6 +14,7 @@ import App.Modals.ConnectModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Graph
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
@@ -276,7 +277,7 @@ connectPostToSelection context post model =
             (\target ->
                 let
                     objects =
-                        App.Submodels.LocalCotos.getSelectedCotos context model
+                        App.Submodels.CotoSelection.cotosInSelectedOrder context
                 in
                 ( App.Submodels.LocalCotos.connect
                     context.session

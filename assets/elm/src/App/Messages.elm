@@ -67,7 +67,7 @@ type Msg
     | CotoClick ElementId CotoId
     | CotoMouseEnter ElementId CotoId
     | CotoMouseLeave ElementId CotoId
-    | SelectCoto CotoId
+    | SelectCoto Coto
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
