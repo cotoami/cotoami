@@ -6,8 +6,8 @@ module App.Submodels.LocalCotos exposing
     , cotonomaKeys
     , cotonomatize
     , deleteCoto
+    , ensureCotoIsInGraph
     , getCoto
-    , incorporateLocalCotoInGraph
     , isNavigationEmpty
     , isStockEmpty
     , isTimelineReady
@@ -162,8 +162,8 @@ cotonomatize cotonoma cotoId model =
     }
 
 
-incorporateLocalCotoInGraph : CotoId -> LocalCotos model -> LocalCotos model
-incorporateLocalCotoInGraph cotoId model =
+ensureCotoIsInGraph : CotoId -> LocalCotos model -> LocalCotos model
+ensureCotoIsInGraph cotoId model =
     { model
         | graph =
             if App.Types.Graph.member cotoId model.graph then

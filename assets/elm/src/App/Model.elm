@@ -145,5 +145,5 @@ deleteCoto coto model =
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     model
-        |> App.Submodels.LocalCotos.incorporateLocalCotoInGraph cotoId
+        |> App.Submodels.LocalCotos.ensureCotoIsInGraph cotoId
         |> App.Submodels.Traversals.openTraversal cotoId
