@@ -41,7 +41,6 @@ type ConnectingTarget
 
 type alias Model =
     { target : ConnectingTarget
-    , selectedCotos : List Coto
     , direction : Direction
     , linkingPhrase : String
     , onPosted : AppMsg.Msg
@@ -51,18 +50,16 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { target = None
-    , selectedCotos = []
     , direction = Inbound
     , linkingPhrase = ""
     , onPosted = AppMsg.NoOp
     }
 
 
-initModel : ConnectingTarget -> List Coto -> Direction -> Model
-initModel target selectedCotos direction =
+initModel : ConnectingTarget -> Direction -> Model
+initModel target direction =
     { defaultModel
         | target = target
-        , selectedCotos = selectedCotos
         , direction = direction
     }
 
@@ -102,10 +99,7 @@ modalConfig context model =
                     [ id primaryButtonId
                     , class "button button-primary"
                     , autofocus True
-                    , onClick
-                        (AppMsg.ConnectModalMsg
-                            (Connect coto model.selectedCotos)
-                        )
+                    , onClick (AppMsg.ConnectModalMsg (Connect coto))
                     ]
                     [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
                 ]
@@ -129,13 +123,10 @@ modalContent : Context context -> Model -> Html AppMsg.Msg
 modalContent context model =
     let
         selectedCotosHtml =
-            Html.Keyed.node
-                "div"
-                [ class "selected-cotos" ]
-                (List.map
-                    (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
-                    model.selectedCotos
-                )
+            context
+                |> App.Submodels.CotoSelection.cotosInSelectedOrder
+                |> List.map (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
+                |> Html.Keyed.node "div" [ class "selected-cotos" ]
 
         targetHtml =
             case model.target of
@@ -208,11 +199,15 @@ update context msg ({ connectModal } as model) =
             { model | connectModal = { connectModal | linkingPhrase = input } }
                 |> withoutCmd
 
-        Connect target objects ->
+        Connect target ->
+            let
+                selectedCotos =
+                    App.Submodels.CotoSelection.cotosInSelectedOrder context
+            in
             App.Submodels.LocalCotos.connect
                 context.session
                 target
-                objects
+                selectedCotos
                 model.connectModal.direction
                 (getLinkingPhrase model.connectModal)
                 model
@@ -222,7 +217,7 @@ update context msg ({ connectModal } as model) =
                             context.clientId
                             (Maybe.map .key model.cotonoma)
                             target.id
-                            (List.map .id objects)
+                            (List.map .id selectedCotos)
                             model.connectModal.direction
                             (getLinkingPhrase model.connectModal)
                     )

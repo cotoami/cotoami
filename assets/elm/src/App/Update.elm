@@ -653,17 +653,10 @@ update msg model =
                 |> withoutCmd
 
         OpenConnectModalByCoto coto ->
-            App.Update.Modal.openConnectModalByCoto
-                (App.Submodels.CotoSelection.cotosInSelectedOrder model)
-                coto
-                model
+            App.Update.Modal.openConnectModalByCoto coto model
 
         OpenConnectModalByNewPost content onPosted ->
-            App.Update.Modal.openConnectModalByNewPost
-                onPosted
-                (App.Submodels.CotoSelection.cotosInSelectedOrder model)
-                content
-                model
+            App.Update.Modal.openConnectModalByNewPost onPosted content model
 
         OpenConnectionModal connection startCoto endCoto ->
             App.Update.Modal.openConnectionModal model connection startCoto endCoto model
