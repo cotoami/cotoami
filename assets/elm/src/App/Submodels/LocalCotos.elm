@@ -76,23 +76,19 @@ getCoto cotoId model =
 
 cotoIds : LocalCotos model -> Set CotoId
 cotoIds model =
-    model.timeline.posts
-        |> List.filterMap .cotoId
+    model.cotonoma
+        |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
+        |> Maybe.withDefault []
+        |> List.append (List.filterMap .cotoId model.timeline.posts)
         |> List.append (Dict.keys model.graph.cotos)
-        |> List.append
-            (model.cotonoma
-                |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
-                |> Maybe.withDefault []
-            )
         |> Set.fromList
 
 
 cotonomaKeys : LocalCotos model -> Set CotonomaKey
 cotonomaKeys model =
-    (model.cotonoma
+    model.cotonoma
         |> Maybe.map List.singleton
         |> Maybe.withDefault []
-    )
         |> List.append model.globalCotonomas
         |> List.append model.recentCotonomas
         |> List.append model.subCotonomas
