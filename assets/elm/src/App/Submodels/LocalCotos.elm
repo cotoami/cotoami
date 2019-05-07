@@ -81,6 +81,7 @@ cotoIds model =
         |> Maybe.withDefault []
         |> List.append (List.filterMap .cotoId model.timeline.posts)
         |> List.append (Dict.keys model.graph.cotos)
+        |> List.append (List.map .id model.selection)
         |> Set.fromList
 
 
