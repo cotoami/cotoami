@@ -260,7 +260,7 @@ menuItemDelete context session model =
             , span [ class "menu-title" ]
                 [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
             ]
-            (AppMsg.ConfirmDeleteCoto model.coto)
+            (AppMsg.ConfirmDeleteCoto model.coto.id)
 
     else
         Utils.HtmlUtil.none

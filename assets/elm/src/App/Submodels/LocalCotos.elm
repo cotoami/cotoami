@@ -145,12 +145,12 @@ updateCotonomaInList cotonoma cotonomas =
         cotonomas
 
 
-deleteCoto : Coto -> LocalCotos model -> LocalCotos model
-deleteCoto coto model =
+deleteCoto : CotoId -> LocalCotos model -> LocalCotos model
+deleteCoto cotoId model =
     { model
-        | timeline = App.Types.Timeline.deleteCoto coto model.timeline
-        , graph = App.Types.Graph.removeCoto coto.id model.graph
-        , selection = App.Types.Coto.removeFromList coto.id model.selection
+        | timeline = App.Types.Timeline.deleteCoto cotoId model.timeline
+        , graph = App.Types.Graph.removeCoto cotoId model.graph
+        , selection = App.Types.Coto.removeFromList cotoId model.selection
     }
 
 

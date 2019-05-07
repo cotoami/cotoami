@@ -109,10 +109,10 @@ getCoto cotoId timeline =
     App.Types.Post.getCotoFromPosts cotoId timeline.posts
 
 
-deleteCoto : Coto -> Timeline -> Timeline
-deleteCoto coto timeline =
+deleteCoto : CotoId -> Timeline -> Timeline
+deleteCoto cotoId timeline =
     timeline.posts
-        |> List.filter (\post -> not (App.Types.Post.isSelfOrPostedIn coto post))
+        |> List.filter (\post -> post.cotoId /= Just cotoId)
         |> (\posts -> { timeline | posts = posts })
 
 
@@ -199,10 +199,10 @@ setCotoSaved postId apiResponse timeline =
         timeline
 
 
-setBeingDeleted : Coto -> Timeline -> Timeline
-setBeingDeleted coto timeline =
+setBeingDeleted : CotoId -> Timeline -> Timeline
+setBeingDeleted cotoId timeline =
     updatePost_
-        (\post -> App.Types.Post.isSelfOrPostedIn coto post)
+        (\post -> post.cotoId == Just cotoId)
         (\post -> { post | beingDeleted = True })
         timeline
 

@@ -134,12 +134,12 @@ initModel version seed lang route =
     }
 
 
-deleteCoto : Coto -> Model -> Model
-deleteCoto coto model =
+deleteCoto : CotoId -> Model -> Model
+deleteCoto cotoId model =
     model
-        |> App.Submodels.LocalCotos.deleteCoto coto
-        |> App.Submodels.CotoSelection.deselect coto.id
-        |> App.Submodels.Traversals.closeTraversal coto.id
+        |> App.Submodels.LocalCotos.deleteCoto cotoId
+        |> App.Submodels.CotoSelection.deselect cotoId
+        |> App.Submodels.Traversals.closeTraversal cotoId
 
 
 openTraversal : CotoId -> Model -> Model
