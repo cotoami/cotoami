@@ -47,6 +47,7 @@ type alias LocalCotos a =
         , watchlistLoading : Bool
         , watchUpdating : Bool
         , searchResults : SearchResults
+        , selection : List Coto
     }
 
 
@@ -105,6 +106,7 @@ updateCoto coto model =
     { model
         | timeline = App.Types.Timeline.updatePost coto model.timeline
         , graph = App.Types.Graph.updateCotoContent coto model.graph
+        , selection = App.Types.Coto.replaceInList coto model.selection
     }
 
 

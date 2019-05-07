@@ -15,6 +15,7 @@ module App.Types.Coto exposing
     , getCotoFromCotonomaList
     , incrementIncoming
     , incrementOutgoing
+    , replaceInList
     , revisedBefore
     , summaryMaxlength
     , toCoto
@@ -157,6 +158,19 @@ toTopic coto =
 
                 else
                     Nothing
+
+
+replaceInList : Coto -> List Coto -> List Coto
+replaceInList newCoto list =
+    List.map
+        (\coto ->
+            if coto.id == newCoto.id then
+                newCoto
+
+            else
+                coto
+        )
+        list
 
 
 type alias Cotonoma =

@@ -9,7 +9,6 @@ module App.Submodels.CotoSelection exposing
     , isSelected
     , setBeingDeselected
     , toggleSelection
-    , updateCoto
     )
 
 import App.Types.Coto exposing (Coto, CotoId)
@@ -55,23 +54,6 @@ clear model =
 cotosInSelectedOrder : CotoSelection model -> List Coto
 cotosInSelectedOrder model =
     List.reverse model.selection
-
-
-updateCoto : Coto -> CotoSelection model -> CotoSelection model
-updateCoto newCoto model =
-    let
-        selection =
-            List.map
-                (\coto ->
-                    if coto.id == newCoto.id then
-                        newCoto
-
-                    else
-                        coto
-                )
-                model.selection
-    in
-    { model | selection = selection }
 
 
 setBeingDeselected : CotoId -> CotoSelection model -> CotoSelection model
