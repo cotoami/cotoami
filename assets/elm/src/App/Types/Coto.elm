@@ -15,6 +15,7 @@ module App.Types.Coto exposing
     , getCotoFromCotonomaList
     , incrementIncoming
     , incrementOutgoing
+    , removeFromList
     , replaceInList
     , revisedBefore
     , summaryMaxlength
@@ -171,6 +172,11 @@ replaceInList newCoto list =
                 coto
         )
         list
+
+
+removeFromList : CotoId -> List Coto -> List Coto
+removeFromList cotoId list =
+    List.filter (\coto -> coto.id /= cotoId) list
 
 
 type alias Cotonoma =

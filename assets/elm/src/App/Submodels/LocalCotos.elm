@@ -153,6 +153,7 @@ deleteCoto coto model =
     { model
         | timeline = App.Types.Timeline.deleteCoto coto model.timeline
         , graph = App.Types.Graph.removeCoto coto.id model.graph
+        , selection = App.Types.Coto.removeFromList coto.id model.selection
     }
 
 

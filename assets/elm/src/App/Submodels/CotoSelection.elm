@@ -34,7 +34,7 @@ isSelected cotoId model =
 
 deselect : CotoId -> CotoSelection model -> CotoSelection model
 deselect cotoId model =
-    { model | selection = List.filter (\coto -> coto.id /= cotoId) model.selection }
+    { model | selection = App.Types.Coto.removeFromList cotoId model.selection }
 
 
 toggleSelection : Coto -> CotoSelection model -> CotoSelection model
