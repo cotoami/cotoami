@@ -161,6 +161,7 @@ cotonomatize cotonoma cotoId model =
     { model
         | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId model.timeline
         , graph = App.Types.Graph.cotonomatize cotonoma cotoId model.graph
+        , selection = App.Types.Coto.replaceInList (App.Types.Coto.toCoto cotonoma) model.selection
     }
 
 
