@@ -2,11 +2,11 @@ module App.Submodels.LocalCotos exposing
     ( LocalCotos
     , areTimelineAndGraphLoaded
     , connect
+    , cotoIds
+    , cotonomaKeys
     , cotonomatize
     , deleteCoto
     , getCoto
-    , getCotoIdsToWatch
-    , getCotonomaKeysToWatch
     , incorporateLocalCotoInGraph
     , isNavigationEmpty
     , isStockEmpty
@@ -73,10 +73,10 @@ getCoto cotoId model =
         ]
 
 
-getCotoIdsToWatch : LocalCotos model -> Set CotoId
-getCotoIdsToWatch model =
+cotoIds : LocalCotos model -> Set CotoId
+cotoIds model =
     model.timeline.posts
-        |> List.filterMap (\post -> post.cotoId)
+        |> List.filterMap .cotoId
         |> List.append (Dict.keys model.graph.cotos)
         |> List.append
             (model.cotonoma
@@ -86,8 +86,8 @@ getCotoIdsToWatch model =
         |> Set.fromList
 
 
-getCotonomaKeysToWatch : LocalCotos model -> Set CotonomaKey
-getCotonomaKeysToWatch model =
+cotonomaKeys : LocalCotos model -> Set CotonomaKey
+cotonomaKeys model =
     (model.cotonoma
         |> Maybe.map List.singleton
         |> Maybe.withDefault []
