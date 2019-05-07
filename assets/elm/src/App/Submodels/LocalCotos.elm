@@ -56,10 +56,10 @@ getCoto cotoId model =
         [ Dict.get cotoId model.graph.cotos
         , App.Types.Timeline.getCoto cotoId model.timeline
         , App.Types.SearchResults.getCoto cotoId model.searchResults
-        , getCotoFromCotonomaList cotoId model.globalCotonomas
-        , getCotoFromCotonomaList cotoId model.recentCotonomas
-        , getCotoFromCotonomaList cotoId model.subCotonomas
-        , getCotoFromCotonomaList cotoId (List.map .cotonoma model.watchlist)
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.globalCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.recentCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.subCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId (List.map .cotonoma model.watchlist)
         , model.cotonoma
             |> Maybe.map
                 (\cotonoma ->
@@ -71,14 +71,6 @@ getCoto cotoId model =
                 )
             |> Maybe.withDefault Nothing
         ]
-
-
-getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
-getCotoFromCotonomaList cotoId cotonomas =
-    cotonomas
-        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
-        |> List.head
-        |> Maybe.map App.Types.Coto.toCoto
 
 
 getCotoIdsToWatch : LocalCotos model -> Set CotoId

@@ -12,6 +12,7 @@ module App.Types.Coto exposing
     , cotonomaNameMaxlength
     , decrementIncoming
     , decrementOutgoing
+    , getCotoFromCotonomaList
     , incrementIncoming
     , incrementOutgoing
     , revisedBefore
@@ -200,6 +201,14 @@ validateCotonomaName string =
 revisedBefore : Cotonoma -> Bool
 revisedBefore cotonoma =
     (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
+
+
+getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
+getCotoFromCotonomaList cotoId cotonomas =
+    cotonomas
+        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
+        |> List.head
+        |> Maybe.map toCoto
 
 
 type alias CotonomaStats =
