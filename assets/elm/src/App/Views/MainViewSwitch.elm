@@ -1,9 +1,10 @@
 module App.Views.MainViewSwitch exposing (view)
 
 import App.Messages as AppMsg exposing (..)
+import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
-import App.Types.Coto exposing (CotoSelection)
 import App.Types.Traversal exposing (Traversals)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,13 +13,7 @@ import Utils.HtmlUtil exposing (faIcon)
 
 
 type alias ViewModel model =
-    NarrowViewport
-        (LocalCotos
-            { model
-                | traversals : Traversals
-                , selection : CotoSelection
-            }
-        )
+    Context (NarrowViewport (LocalCotos { model | traversals : Traversals }))
 
 
 view : ViewModel model -> Html AppMsg.Msg
@@ -51,7 +46,7 @@ view model =
             "check-square-o"
             "Switch to coto selection"
             (model.narrowViewport.activeView == SelectionView)
-            (List.isEmpty model.selection)
+            (not (App.Submodels.CotoSelection.anySelection model))
             (SwitchViewInNarrowViewport SelectionView)
         , viewSwitchDiv
             "switch-to-search"

@@ -2,6 +2,7 @@ module App.Views.Cotonomas exposing (cotonomaDiv, view, watchlist)
 
 import App.Messages exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Types.Coto exposing (Cotonoma)
 import App.Types.Watch exposing (Watch)
 import App.Views.Coto
@@ -60,7 +61,7 @@ cotonomaDiv context maybeWatchlist listTitle cotonoma =
             [ ( "coto-as-cotonoma", True )
             , ( "element-focus", Just elementId == context.elementFocus )
             , ( "coto-focus", Just cotonoma.cotoId == context.cotoFocus )
-            , ( "selected", App.Submodels.Context.isSelected (Just cotonoma.cotoId) context )
+            , ( "selected", App.Submodels.CotoSelection.isSelected cotonoma.cotoId context )
             , ( "in", inCotonoma )
             , ( "not-active", not (App.Types.Coto.revisedBefore cotonoma) )
             ]

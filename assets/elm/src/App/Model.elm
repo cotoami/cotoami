@@ -17,6 +17,7 @@ import App.Modals.InviteModal
 import App.Modals.SigninModal
 import App.Route exposing (Route)
 import App.Submodels.Context
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewportState)
@@ -24,7 +25,7 @@ import App.Submodels.Traversals
 import App.Submodels.WideViewport exposing (WideViewportState)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Connection exposing (Direction(..), Reordering)
-import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Session exposing (Session)
@@ -54,7 +55,7 @@ type alias Model =
     , contentOpenElements : Set ElementId
     , reordering : Maybe Reordering
     , cotoFocus : Maybe CotoId
-    , selection : CotoSelection
+    , selection : List Coto
     , deselecting : Set CotoId
     , presences : Presences
     , confirmation : Maybe Confirmation
@@ -133,16 +134,16 @@ initModel version seed lang route =
     }
 
 
-deleteCoto : Coto -> Model -> Model
-deleteCoto coto model =
+deleteCoto : CotoId -> Model -> Model
+deleteCoto cotoId model =
     model
-        |> App.Submodels.LocalCotos.deleteCoto coto
-        |> App.Submodels.Context.deleteSelection coto.id
-        |> App.Submodels.Traversals.closeTraversal coto.id
+        |> App.Submodels.LocalCotos.deleteCoto cotoId
+        |> App.Submodels.CotoSelection.deselect cotoId
+        |> App.Submodels.Traversals.closeTraversal cotoId
 
 
 openTraversal : CotoId -> Model -> Model
 openTraversal cotoId model =
     model
-        |> App.Submodels.LocalCotos.incorporateLocalCotoInGraph cotoId
+        |> App.Submodels.LocalCotos.ensureCotoIsInGraph cotoId
         |> App.Submodels.Traversals.openTraversal cotoId

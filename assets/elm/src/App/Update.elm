@@ -26,6 +26,7 @@ import App.Server.Post
 import App.Server.Session
 import App.Server.Watch
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos
 import App.Submodels.Modals exposing (Confirmation, Modal(..))
 import App.Submodels.NarrowViewport exposing (ActiveView(..))
@@ -292,9 +293,9 @@ update msg model =
                 |> App.Submodels.Context.clearCotoFocus
                 |> withoutCmd
 
-        SelectCoto cotoId ->
+        SelectCoto coto ->
             model
-                |> App.Submodels.Context.updateSelection cotoId
+                |> App.Submodels.CotoSelection.toggleSelection coto
                 |> App.Submodels.WideViewport.closeSelectionIfEmpty model
                 |> withoutCmd
 
@@ -326,31 +327,31 @@ update msg model =
                 |> App.Submodels.Context.toggleContent elementId
                 |> withoutCmd
 
-        ConfirmDeleteCoto coto ->
+        ConfirmDeleteCoto cotoId ->
             App.Submodels.Modals.confirm
                 (Confirmation
                     (model.i18nText I18nKeys.ConfirmDeleteCoto)
-                    (DeleteCotoInServerSide coto)
+                    (DeleteCotoInServerSide cotoId)
                 )
                 model
                 |> withoutCmd
 
-        DeleteCotoInServerSide coto ->
-            { model | timeline = App.Types.Timeline.setBeingDeleted coto model.timeline }
+        DeleteCotoInServerSide cotoId ->
+            { model | timeline = App.Types.Timeline.setBeingDeleted cotoId model.timeline }
                 |> App.Submodels.Modals.clearModals
                 |> withCmd
                     (\model ->
                         Cmd.batch
-                            [ App.Server.Coto.deleteCoto model.clientId coto.id
+                            [ App.Server.Coto.deleteCoto model.clientId cotoId
                             , Process.sleep (1 * Time.second)
                                 |> Task.andThen (\_ -> Task.succeed ())
-                                |> Task.perform (\_ -> DeleteCotoInClientSide coto)
+                                |> Task.perform (\_ -> DeleteCotoInClientSide cotoId)
                             ]
                     )
 
-        DeleteCotoInClientSide coto ->
+        DeleteCotoInClientSide cotoId ->
             model
-                |> App.Model.deleteCoto coto
+                |> App.Model.deleteCoto cotoId
                 |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoDeleted (Ok _) ->
@@ -652,17 +653,10 @@ update msg model =
                 |> withoutCmd
 
         OpenConnectModalByCoto coto ->
-            App.Update.Modal.openConnectModalByCoto
-                (App.Submodels.LocalCotos.getSelectedCotos model model)
-                coto
-                model
+            App.Update.Modal.openConnectModalByCoto coto model
 
         OpenConnectModalByNewPost content onPosted ->
-            App.Update.Modal.openConnectModalByNewPost
-                onPosted
-                (App.Submodels.LocalCotos.getSelectedCotos model model)
-                content
-                model
+            App.Update.Modal.openConnectModalByNewPost onPosted content model
 
         OpenConnectionModal connection startCoto endCoto ->
             App.Update.Modal.openConnectionModal model connection startCoto endCoto model
@@ -746,7 +740,6 @@ loadHome model =
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
-        |> App.Submodels.Context.clearSelection
         |> App.Submodels.NarrowViewport.closeNav
         |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd
@@ -777,7 +770,6 @@ loadCotonoma key model =
         , watchlistLoading = True
     }
         |> App.Submodels.Context.setCotonomaLoading
-        |> App.Submodels.Context.clearSelection
         |> App.Submodels.NarrowViewport.closeNav
         |> App.Submodels.NarrowViewport.switchActiveView FlowView
         |> withCmd

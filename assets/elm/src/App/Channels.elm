@@ -1,4 +1,16 @@
-module App.Channels exposing (Payload, PresenceEntry, convertPresenceEntriesToConnCounts, cotoChannels, cotonomaChannels, decodePayload, decodePresenceDiff, decodePresenceEntries, decodePresenceState, globalChannel, timelineChannel)
+module App.Channels exposing
+    ( Payload
+    , PresenceEntry
+    , convertPresenceEntriesToConnCounts
+    , cotoChannels
+    , cotonomaChannels
+    , decodePayload
+    , decodePresenceDiff
+    , decodePresenceEntries
+    , decodePresenceState
+    , globalChannel
+    , timelineChannel
+    )
 
 import App.Messages exposing (..)
 import App.Server.Amishi

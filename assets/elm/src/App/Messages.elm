@@ -67,13 +67,13 @@ type Msg
     | CotoClick ElementId CotoId
     | CotoMouseEnter ElementId CotoId
     | CotoMouseLeave ElementId CotoId
-    | SelectCoto CotoId
+    | SelectCoto Coto
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
-    | ConfirmDeleteCoto Coto
-    | DeleteCotoInServerSide Coto
-    | DeleteCotoInClientSide Coto
+    | ConfirmDeleteCoto CotoId
+    | DeleteCotoInServerSide CotoId
+    | DeleteCotoInClientSide CotoId
     | CotoDeleted (Result Http.Error String)
     | CotoUpdated (Result Http.Error Coto)
     | ConfirmCotonomatize Coto

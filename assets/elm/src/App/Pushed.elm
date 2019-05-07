@@ -76,9 +76,8 @@ handlePost payload model =
 
 handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
 handleDelete payload model =
-    App.Submodels.LocalCotos.getCoto payload.body model
-        |> Maybe.map (\coto -> App.Model.deleteCoto coto model)
-        |> Maybe.withDefault model
+    model
+        |> App.Model.deleteCoto payload.body
         |> withCmd App.Server.Cotonoma.refreshCotonomaList
         |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
 

@@ -16,6 +16,7 @@ module App.Views.Coto exposing
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (Msg)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
@@ -42,7 +43,14 @@ cotoClassList context elementId maybeCotoId additionalClasses =
            , Maybe.map2 (==) maybeCotoId context.cotoFocus
                 |> Maybe.withDefault False
            )
-         , ( "selected", App.Submodels.Context.isSelected maybeCotoId context )
+         , ( "selected"
+           , maybeCotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        App.Submodels.CotoSelection.isSelected cotoId context
+                    )
+                |> Maybe.withDefault False
+           )
          , ( "focused-in-reordering"
            , App.Submodels.Context.isTriggerElementInReordering elementId context
            )

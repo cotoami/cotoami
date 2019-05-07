@@ -15,7 +15,7 @@ import App.Ports.Graph
 import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
-import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Types.Graph.Render
 import App.Views.Coto
