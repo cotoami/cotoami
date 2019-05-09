@@ -54,7 +54,7 @@ defmodule CotoamiWeb.ControllerHelpers do
   def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
-    |> broadcast("timelines:#{cotonoma_key}", "post", amishi, client_id)
+    |> broadcast("timelines:#{cotonoma_key || amishi.id}", "post", amishi, client_id)
   end
 
   #

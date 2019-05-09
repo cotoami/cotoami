@@ -14,8 +14,10 @@ module App.Channels exposing
 
 import App.Messages exposing (..)
 import App.Server.Amishi
+import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi, Presences)
 import App.Types.Coto exposing (CotoId, CotonomaKey)
+import App.Types.Session exposing (Session)
 import Dict
 import Json.Decode as Decode
 import Json.Encode exposing (Value)
@@ -40,8 +42,14 @@ cotonomaChannels keys =
             )
 
 
-timelineChannel : CotonomaKey -> Channel Msg
-timelineChannel key =
+timelineChannel : Context context -> Session -> Channel Msg
+timelineChannel context session =
+    let
+        key =
+            context.cotonoma
+                |> Maybe.map .key
+                |> Maybe.withDefault session.amishi.id
+    in
     Channel.init ("timelines:" ++ key)
         |> Channel.on "presence_state" CotonomaPresenceState
         |> Channel.on "presence_diff" CotonomaPresenceDiff
