@@ -26,9 +26,7 @@ defmodule CotoamiWeb.ApiCsrfProtectionPlug do
   end
 
   defp verified_request?(conn) do
-    conn.method in @unprotected_methods
-      || not cookie_authentication?(conn)
-      || csrf_safe?(conn)
+    conn.method in @unprotected_methods || not cookie_authentication?(conn) || csrf_safe?(conn)
   end
 
   defp cookie_authentication?(_conn) do
@@ -36,22 +34,23 @@ defmodule CotoamiWeb.ApiCsrfProtectionPlug do
   end
 
   defp csrf_safe?(conn) do
-    valid_host?(conn)
-      && custom_header_exists?(conn)
-      && valid_origin?(conn)
+    valid_host?(conn) && custom_header_exists?(conn) && valid_origin?(conn)
   end
 
   # DNS rebinding attack prevention
   defp valid_host?(conn) do
     %{host: host, port: port} = CotoamiWeb.Endpoint.struct_url()
     host_and_port = "#{host}:#{port}"
+
     case get_req_header(conn, "host") do
       [^host] ->
         true
+
       [^host_and_port] ->
         true
+
       [invalid_host] ->
-        Logger.info "invalid host header: #{invalid_host}"
+        Logger.info("invalid host header: #{invalid_host}")
         false
     end
   end
@@ -63,8 +62,9 @@ defmodule CotoamiWeb.ApiCsrfProtectionPlug do
     case get_req_header(conn, @custom_header) do
       [_value] ->
         true
+
       _ ->
-        Logger.info "custom header '#{@custom_header}' does not exist"
+        Logger.info("custom header '#{@custom_header}' does not exist")
         false
     end
   end
@@ -73,11 +73,20 @@ defmodule CotoamiWeb.ApiCsrfProtectionPlug do
   defp valid_origin?(conn) do
     case get_req_header(conn, "origin") do
       [origin] ->
-        Logger.info "origin header: #{origin}"
+        Logger.info("origin header: #{origin}")
         %{scheme: scheme, host: host} = CotoamiWeb.Endpoint.struct_url()
-        String.starts_with?(origin, "#{scheme}://#{host}")
+
+        ["#{scheme}://#{host}" | additional_valid_origins()]
+        |> Enum.any?(&String.starts_with?(origin, &1))
+
       _ ->
         true
     end
+  end
+
+  defp additional_valid_origins do
+    :cotoami
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:additional_valid_origins)
   end
 end

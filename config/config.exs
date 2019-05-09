@@ -20,6 +20,12 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# ApiCsrfProtectionPlug
+config :cotoami, CotoamiWeb.ApiCsrfProtectionPlug,
+  additional_valid_origins:
+    (System.get_env("COTOAMI_ADDITIONAL_VALID_ORIGINS") || "")
+    |> String.split(",", trim: true)
+
 # EmailAuth
 config :cotoami, CotoamiWeb.EmailAuthController,
   signup_enabled:
