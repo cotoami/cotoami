@@ -49,6 +49,9 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp_by_constraint_error(conn, e)
   end
 
+  def get_or_create(conn, %{"name" => name} = params, amishi) do
+  end
+
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do

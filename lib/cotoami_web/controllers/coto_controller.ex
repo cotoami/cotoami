@@ -110,7 +110,7 @@ defmodule CotoamiWeb.CotoController do
       Repo.transaction(fn ->
         case CotoService.delete!(id, amishi) do
           nil -> nil
-          posted_in -> increment_timeline_revision(posted_in)
+          coto -> increment_timeline_revision(coto.posted_in)
         end
       end)
 

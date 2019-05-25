@@ -12,7 +12,6 @@ defmodule Cotoami.CotoService do
     Coto,
     Cotonoma,
     Amishi,
-    AmishiService,
     CotonomaService,
     CotoGraphService,
     CotoSearchService
@@ -126,29 +125,15 @@ defmodule Cotoami.CotoService do
 
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
     coto
-    |> complement_cotonoma()
     |> complement_amishi(amishi)
-  end
-
-  def complement_cotonoma(%Coto{} = coto) do
-    if coto.cotonoma do
-      %{coto | cotonoma: CotonomaService.complement_owner(coto.cotonoma)}
-    else
-      coto
-    end
+    |> Repo.preload(cotonoma: :owner)
   end
 
   def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
     if coto.amishi_id == amishi_id do
       %{coto | amishi: amishi}
     else
-      case coto.amishi do
-        %Ecto.Association.NotLoaded{} ->
-          %{coto | amishi: AmishiService.get(coto.amishi_id)}
-
-        _amishi ->
-          coto
-      end
+      Repo.preload(coto, :amishi)
     end
   end
 
@@ -210,7 +195,7 @@ defmodule Cotoami.CotoService do
 
     CotoGraphService.sync(Bolt.Sips.conn(), coto)
 
-    %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in), cotonoma: cotonoma}
+    %{coto | posted_in: Repo.preload(coto.posted_in, :owner), cotonoma: cotonoma}
     |> complement_amishi(amishi)
   end
 
@@ -231,6 +216,6 @@ defmodule Cotoami.CotoService do
     Repo.delete!(coto)
     CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
 
-    CotonomaService.complement_owner(coto.posted_in)
+    coto
   end
 end

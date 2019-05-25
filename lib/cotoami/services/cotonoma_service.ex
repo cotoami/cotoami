@@ -86,7 +86,7 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto = %{
       cotonoma_coto
       | amishi: amishi,
-        posted_in: complement_owner(coto.posted_in),
+        posted_in: Repo.preload(coto.posted_in, :owner),
         cotonoma: %{cotonoma | owner: amishi, coto: cotonoma_coto}
     }
 
@@ -99,7 +99,6 @@ defmodule Cotoami.CotonomaService do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get(id)
-    |> complement_owner()
   end
 
   def get!(nil), do: nil
@@ -115,7 +114,6 @@ defmodule Cotoami.CotonomaService do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)
-    |> complement_owner()
   end
 
   def get_by_key!(nil), do: nil
@@ -127,23 +125,17 @@ defmodule Cotoami.CotonomaService do
     end
   end
 
+  def get_by_name(name, %Amishi{id: amishi_id}) do
+    Cotonoma
+    |> preload([:coto, :owner])
+    |> Repo.get_by(name: name, owner_id: amishi_id)
+  end
+
   def keys_map(keys) do
     from(c in Cotonoma, where: c.key in ^keys, select: {c.key, c})
     |> preload([:coto, :owner])
     |> Repo.all()
     |> Map.new()
-  end
-
-  def complement_owner(nil), do: nil
-
-  def complement_owner(%Cotonoma{} = cotonoma) do
-    case cotonoma.owner do
-      %Ecto.Association.NotLoaded{} ->
-        %{cotonoma | owner: AmishiService.get(cotonoma.owner_id)}
-
-      _owner ->
-        cotonoma
-    end
   end
 
   def recent_cotonomas(%Amishi{id: amishi_id}) do
