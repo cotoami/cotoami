@@ -36,11 +36,11 @@ div.content {
     margin-left: 0.5em;
     margin-right: 0.5em;
     color: #888;
+    quotes: "\201C" "\201D";
 
     &:before {
       color: #ccc;
       font-family: serif;
-      quotes: "“" "”";
       content: open-quote;
       font-size: 45px;
       line-height: 0.1em;
@@ -51,7 +51,6 @@ div.content {
     &:after {
       color: #ccc;
       font-family: serif;
-      quotes: "“" "”";
       content: close-quote;
       font-size: 45px;
       line-height: 0.1em;
