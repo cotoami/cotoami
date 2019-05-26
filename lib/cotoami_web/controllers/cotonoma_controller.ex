@@ -35,21 +35,21 @@ defmodule CotoamiWeb.CotonomaController do
         amishi
       ) do
     coto = CotonomaService.create!(amishi, name, shared, cotonoma_id)
-
-    if coto.posted_in do
-      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
-      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
-    else
-      broadcast_post(coto, nil, amishi, conn.assigns.client_id)
-    end
-
+    on_coto_created(conn, coto, amishi)
     render(conn, CotoView, "created.json", coto: coto)
   rescue
     e in Ecto.ConstraintError ->
       send_resp_by_constraint_error(conn, e)
   end
 
-  def get_or_create(conn, %{"name" => name} = params, amishi) do
+  def get_or_create(conn, %{"name" => name}, amishi) do
+    coto = CotonomaService.create!(amishi, name, false, nil)
+    on_coto_created(conn, coto, amishi)
+    render(conn, "cotonoma.json", cotonoma: coto.cotonoma)
+  rescue
+    _ in Ecto.ConstraintError ->
+      cotonoma = CotonomaService.get_by_name(name, amishi)
+      render(conn, "cotonoma.json", cotonoma: cotonoma)
   end
 
   @cotos_options ["exclude_pinned_graph"]

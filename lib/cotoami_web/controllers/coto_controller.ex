@@ -40,14 +40,7 @@ defmodule CotoamiWeb.CotoController do
         amishi
       ) do
     coto = CotoService.create!(amishi, content, summary, cotonoma_id)
-
-    if coto.posted_in do
-      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
-      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
-    else
-      broadcast_post(coto, nil, amishi, conn.assigns.client_id)
-    end
-
+    on_coto_created(conn, coto, amishi)
     render(conn, "created.json", coto: coto)
   end
 

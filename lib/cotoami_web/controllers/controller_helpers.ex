@@ -22,6 +22,15 @@ defmodule CotoamiWeb.ControllerHelpers do
     end)
   end
 
+  def on_coto_created(conn, %Coto{} = coto, %Amishi{} = amishi) do
+    if coto.posted_in do
+      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
+    else
+      broadcast_post(coto, nil, amishi, conn.assigns.client_id)
+    end
+  end
+
   defp payload_base(%Amishi{} = amishi, client_id) do
     %{
       clientId: client_id,
