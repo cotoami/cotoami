@@ -47,9 +47,15 @@ defmodule CotoamiWeb.CotonomaController do
     on_coto_created(conn, coto, amishi)
     render(conn, "cotonoma.json", cotonoma: coto.cotonoma)
   rescue
-    _ in Ecto.ConstraintError ->
-      cotonoma = CotonomaService.get_by_name(name, amishi)
-      render(conn, "cotonoma.json", cotonoma: cotonoma)
+    e in Ecto.ConstraintError ->
+      case e.constraint do
+        "cotonomas_name_owner_id_index" ->
+          cotonoma = CotonomaService.get_by_name(name, amishi)
+          render(conn, "cotonoma.json", cotonoma: cotonoma)
+
+        constraint ->
+          send_resp(conn, :bad_request, constraint)
+      end
   end
 
   @cotos_options ["exclude_pinned_graph"]
