@@ -441,7 +441,7 @@ update context msg ({ flowView, timeline } as model) =
         EditorFocus ->
             { model | flowView = openOrCloseEditor True flowView }
                 |> withCmdIf
-                    (\model -> flowView.editorOpen)
+                    (\_ -> not flowView.editorOpen)
                     (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
 
         EditorInput content ->
