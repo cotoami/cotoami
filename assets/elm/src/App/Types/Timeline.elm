@@ -157,7 +157,7 @@ isScrolledToLatest : Timeline -> Bool
 isScrolledToLatest timeline =
     timeline.scrollPos
         |> Maybe.map Utils.EventUtil.fromBottom
-        |> Maybe.map (\scrollPosFromBottom -> scrollPosFromBottom < 30)
+        |> Maybe.map (\scrollPosFromBottom -> scrollPosFromBottom < 60)
         |> Maybe.withDefault False
 
 

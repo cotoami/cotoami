@@ -115,7 +115,13 @@ div.timeline {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 10px;
-  padding-bottom: 30px;
+
+  // https://stackoverflow.com/questions/29986977/firefox-ignores-padding-when-using-overflowscroll
+  &:after {
+    content: "";
+    height: 30px;
+    display: block;
+  }
 
   @media (#{$wide-viewport}) {
     padding-left: 10px;
