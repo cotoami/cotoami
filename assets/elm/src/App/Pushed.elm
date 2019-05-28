@@ -33,6 +33,7 @@ import App.Types.Graph.Connect
 import App.Types.Graph.Reorder
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
+import App.Update.Post
 import Exts.Maybe exposing (isJust)
 import Json.Decode as Decode
 import Json.Encode exposing (Value)
@@ -71,7 +72,7 @@ handlePost payload model =
         |> withCmdIf
             (\_ -> isJust payload.body.asCotonoma)
             App.Server.Cotonoma.refreshCotonomaList
-        |> addCmd (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
+        |> addCmd App.Update.Post.scrollTimelineIfNeeded
 
 
 handleDelete : Payload CotoId -> Model -> ( Model, Cmd Msg )
