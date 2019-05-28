@@ -7,6 +7,7 @@ module App.Types.Timeline exposing
     , deletePendingPost
     , getCoto
     , isEmpty
+    , isScrolledToLatest
     , latestPost
     , nextPageIndex
     , post
@@ -150,6 +151,14 @@ setLoadingMore timeline =
 setScrollPos : ScrollPos -> Timeline -> Timeline
 setScrollPos scrollPos timeline =
     { timeline | scrollPos = Just scrollPos }
+
+
+isScrolledToLatest : Timeline -> Bool
+isScrolledToLatest timeline =
+    timeline.scrollPos
+        |> Maybe.map Utils.EventUtil.fromBottom
+        |> Maybe.map (\scrollPosFromBottom -> scrollPosFromBottom < 30)
+        |> Maybe.withDefault False
 
 
 updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline

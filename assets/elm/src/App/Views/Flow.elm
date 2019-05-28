@@ -477,7 +477,7 @@ update context msg ({ flowView, timeline } as model) =
             , Cmd.none
             )
                 |> chainIf
-                    (\_ -> isScrolledToBottom scrollPos)
+                    (\model -> App.Types.Timeline.isScrolledToLatest model.timeline)
                     (App.Update.Watch.clearUnread context)
 
         Random ->
@@ -551,14 +551,6 @@ postFromQuickEditor :
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
         |> App.Update.Post.post context content
-
-
-isScrolledToBottom : ScrollPos -> Bool
-isScrolledToBottom scrollPos =
-    scrollPos
-        |> Utils.EventUtil.fromBottom
-        --|> Debug.log "scrollPosFromBottom: "
-        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
 
 reloadRecentPosts : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
