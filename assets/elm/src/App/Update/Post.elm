@@ -1,4 +1,8 @@
-module App.Update.Post exposing (post, scrollTimelineIfNeeded)
+module App.Update.Post exposing
+    ( post
+    , postCotonoma
+    , scrollTimelineIfNeeded
+    )
 
 import App.Commands
 import App.Messages exposing (Msg)
@@ -6,13 +10,19 @@ import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (CotoContent)
+import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Views.FlowMsg
+import Http exposing (Request)
 import Utils.UpdateUtil exposing (..)
 
 
-post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd Msg )
-post context content model =
+post :
+    Context context
+    -> (Int -> Result Http.Error Post -> Msg)
+    -> CotoContent
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd Msg )
+post context tag content model =
     let
         ( newTimeline, newPost ) =
             App.Types.Timeline.post context False content model.timeline
@@ -23,11 +33,37 @@ post context content model =
                 App.Server.Post.post
                     context.clientId
                     context.cotonoma
-                    (App.Messages.FlowMsg
-                        << App.Views.FlowMsg.Posted
-                            newTimeline.postIdCounter
-                    )
+                    (tag newTimeline.postIdCounter)
                     newPost
+            )
+        |> addCmd scrollTimelineIfNeeded
+
+
+postCotonoma :
+    Context context
+    -> (Int -> Result Http.Error Post -> Msg)
+    -> Bool
+    -> String
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd Msg )
+postCotonoma context tag shared cotonomaName model =
+    let
+        ( newTimeline, _ ) =
+            App.Types.Timeline.post
+                context
+                True
+                (CotoContent cotonomaName Nothing)
+                model.timeline
+    in
+    { model | timeline = newTimeline }
+        |> withCmd
+            (\_ ->
+                App.Server.Post.postCotonoma
+                    context.clientId
+                    context.cotonoma
+                    (tag newTimeline.postIdCounter)
+                    shared
+                    cotonomaName
             )
         |> addCmd scrollTimelineIfNeeded
 

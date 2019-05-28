@@ -12,14 +12,13 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Graph
-import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
-import App.Types.Timeline
+import App.Update.Post
 import App.Views.Connection
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -223,7 +222,14 @@ update context msg ({ connectModal } as model) =
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostAndConnectToSelection content ->
-            postAndConnectToSelection context content model
+            App.Update.Post.post
+                context
+                (\postId ->
+                    AppMsg.ConnectModalMsg
+                        << PostedAndConnectToSelection postId
+                )
+                content
+                model
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostedAndConnectToSelection postId (Ok post) ->
@@ -234,29 +240,6 @@ update context msg ({ connectModal } as model) =
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd
-
-
-postAndConnectToSelection :
-    Context context
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postAndConnectToSelection context content model =
-    let
-        ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content model.timeline
-
-        tag =
-            AppMsg.ConnectModalMsg
-                << PostedAndConnectToSelection newTimeline.postIdCounter
-    in
-    { model | timeline = newTimeline }
-        |> withCmds
-            (\model ->
-                [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-                , App.Server.Post.post context.clientId context.cotonoma tag newPost
-                ]
-            )
 
 
 connectPostToSelection :

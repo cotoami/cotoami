@@ -19,7 +19,6 @@ import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Server.Coto
 import App.Server.Cotonoma
 import App.Server.Graph
-import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -29,6 +28,7 @@ import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Update.Post
 import App.Views.Coto
+import App.Views.FlowMsg
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -568,7 +568,7 @@ update context msg ({ editorModal, timeline } as model) =
             { model | editorModal = { editorModal | requestProcessing = True } }
                 |> post context
 
-        PostedAndSubordinateToCoto postId coto (Ok post) ->
+        PostedAndSubordinateToCoto coto postId (Ok post) ->
             model
                 |> App.Submodels.LocalCotos.onPosted postId post
                 |> withCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
@@ -579,7 +579,11 @@ update context msg ({ editorModal, timeline } as model) =
 
         PostCotonoma ->
             { model | editorModal = { editorModal | requestProcessing = True } }
-                |> postCotonoma context
+                |> App.Update.Post.postCotonoma
+                    context
+                    (\postId -> AppMsg.EditorModalMsg << CotonomaPosted postId)
+                    model.editorModal.shareCotonoma
+                    model.editorModal.content
 
         CotonomaPosted postId (Ok post) ->
             { model | cotonomasLoading = True }
@@ -630,37 +634,24 @@ post context ({ editorModal } as model) =
     in
     case editorModal.mode of
         NewCoto (Just source) ->
-            postSubcoto context source content model
+            App.Update.Post.post
+                context
+                (\postId ->
+                    AppMsg.EditorModalMsg
+                        << PostedAndSubordinateToCoto source postId
+                )
+                content
+                model
 
         NewCoto Nothing ->
-            App.Update.Post.post context content model
+            App.Update.Post.post
+                context
+                (\postId -> AppMsg.FlowMsg << App.Views.FlowMsg.Posted postId)
+                content
+                model
 
         _ ->
             ( model, Cmd.none )
-
-
-postSubcoto :
-    Context context
-    -> Coto
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postSubcoto context coto content model =
-    let
-        ( timeline, newPost ) =
-            model.timeline
-                |> App.Types.Timeline.post context False content
-    in
-    { model | timeline = timeline }
-        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-          , App.Server.Post.post
-                context.clientId
-                context.cotonoma
-                (AppMsg.EditorModalMsg
-                    << PostedAndSubordinateToCoto timeline.postIdCounter coto
-                )
-                newPost
-          ]
 
 
 subordinatePostToCoto :
@@ -744,29 +735,3 @@ handleShortcut context keyboardEvent model =
 
     else
         ( model, Cmd.none )
-
-
-postCotonoma : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-postCotonoma context model =
-    let
-        cotonomaName =
-            model.editorModal.content
-
-        ( timeline, _ ) =
-            App.Types.Timeline.post
-                context
-                True
-                (CotoContent cotonomaName Nothing)
-                model.timeline
-    in
-    { model | timeline = timeline }
-        ! [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-          , App.Server.Post.postCotonoma
-                context.clientId
-                context.cotonoma
-                (AppMsg.EditorModalMsg
-                    << CotonomaPosted timeline.postIdCounter
-                )
-                model.editorModal.shareCotonoma
-                cotonomaName
-          ]

@@ -550,7 +550,10 @@ postFromQuickEditor :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
-        |> App.Update.Post.post context content
+        |> App.Update.Post.post
+            context
+            (\postId -> AppMsg.FlowMsg << FlowMsg.Posted postId)
+            content
 
 
 reloadRecentPosts : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
