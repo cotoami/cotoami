@@ -462,8 +462,8 @@ update context msg ({ flowView, timeline } as model) =
 
         Posted postId (Ok post) ->
             model
-                |> App.Update.Post.onPosted context postId post
-                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+                |> App.Submodels.LocalCotos.onPosted postId post
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
 
         Posted postId (Err _) ->
             model |> withoutCmd

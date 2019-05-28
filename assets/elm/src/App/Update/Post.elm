@@ -1,4 +1,4 @@
-module App.Update.Post exposing (onPosted, post, scrollTimelineIfNeeded)
+module App.Update.Post exposing (post, scrollTimelineIfNeeded)
 
 import App.Commands
 import App.Messages exposing (Msg)
@@ -6,9 +6,7 @@ import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (CotoContent)
-import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Update.Watch
 import App.Views.FlowMsg
 import Utils.UpdateUtil exposing (..)
 
@@ -41,15 +39,3 @@ scrollTimelineIfNeeded model =
 
     else
         Cmd.none
-
-
-onPosted :
-    Context context
-    -> Int
-    -> Post
-    -> LocalCotos model
-    -> ( LocalCotos model, Cmd Msg )
-onPosted context postId post model =
-    model
-        |> App.Submodels.LocalCotos.onPosted postId post
-        |> App.Update.Watch.updateByPost context post

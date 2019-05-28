@@ -570,9 +570,9 @@ update context msg ({ editorModal, timeline } as model) =
 
         PostedAndSubordinateToCoto postId coto (Ok post) ->
             model
-                |> App.Update.Post.onPosted context postId post
+                |> App.Submodels.LocalCotos.onPosted postId post
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
                 |> chain (subordinatePostToCoto context coto post)
-                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
 
         PostedAndSubordinateToCoto postId coto (Err _) ->
             model |> withoutCmd
@@ -583,8 +583,8 @@ update context msg ({ editorModal, timeline } as model) =
 
         CotonomaPosted postId (Ok post) ->
             { model | cotonomasLoading = True }
-                |> App.Update.Post.onPosted context postId post
-                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+                |> App.Submodels.LocalCotos.onPosted postId post
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
                 |> addCmd (\_ -> App.Server.Cotonoma.refreshCotonomaList context)
 
         CotonomaPosted postId (Err error) ->

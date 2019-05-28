@@ -20,7 +20,6 @@ import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
-import App.Update.Post
 import App.Views.Connection
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -228,10 +227,10 @@ update context msg ({ connectModal } as model) =
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostedAndConnectToSelection postId (Ok post) ->
-            App.Update.Post.onPosted context postId post model
-                |> chain (connectPostToSelection context post)
-                |> addCmd (\_ -> App.Commands.sendMsg model.connectModal.onPosted)
+            App.Submodels.LocalCotos.onPosted postId post model
+                |> withCmd (\model -> App.Commands.sendMsg model.connectModal.onPosted)
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+                |> chain (connectPostToSelection context post)
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd

@@ -14,7 +14,6 @@ module App.Submodels.LocalCotos exposing
     , onPosted
     , updateCoto
     , updateCotonoma
-    , updateCotonomaMaybe
     )
 
 import App.Types.Connection exposing (Direction)
@@ -127,13 +126,6 @@ updateCotonoma cotonoma model =
     }
 
 
-updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos model -> LocalCotos model
-updateCotonomaMaybe maybeCotonoma model =
-    maybeCotonoma
-        |> Maybe.map (\cotonoma -> updateCotonoma cotonoma model)
-        |> Maybe.withDefault model
-
-
 updateCotonomaInList : Cotonoma -> List Cotonoma -> List Cotonoma
 updateCotonomaInList cotonoma cotonomas =
     if List.any (\c -> c.id == cotonoma.id) cotonomas then
@@ -230,11 +222,13 @@ isTimelineReady model =
 
 onPosted : Int -> Post -> LocalCotos model -> LocalCotos model
 onPosted postId post model =
-    { model
-        | timeline =
-            App.Types.Timeline.setCotoSaved
-                postId
-                post
-                model.timeline
-    }
-        |> updateCotonomaMaybe post.postedIn
+    let
+        timeline =
+            App.Types.Timeline.setCotoSaved postId post model.timeline
+
+        newModel =
+            { model | timeline = timeline }
+    in
+    post.postedIn
+        |> Maybe.map (\cotonoma -> updateCotonoma cotonoma newModel)
+        |> Maybe.withDefault newModel
