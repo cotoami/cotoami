@@ -53,6 +53,7 @@ type alias Model =
     { view : TimelineView
     , filter : TimelineFilter
     , random : Bool
+    , scrollPos : Maybe ScrollPos
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
@@ -64,6 +65,7 @@ defaultModel =
     { view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
     , random = False
+    , scrollPos = Nothing
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
@@ -470,11 +472,10 @@ update context msg ({ flowView, timeline } as model) =
                 |> withoutCmd
 
         Scroll scrollPos ->
-            if isScrolledToBottom scrollPos then
-                App.Update.Watch.clearUnread context model
-
-            else
-                model |> withoutCmd
+            ( { model | flowView = { flowView | scrollPos = Just scrollPos } }, Cmd.none )
+                |> chainIf
+                    (\_ -> isScrolledToBottom scrollPos)
+                    (App.Update.Watch.clearUnread context)
 
         Random ->
             ( { model | timeline = App.Types.Timeline.setLoading timeline }
