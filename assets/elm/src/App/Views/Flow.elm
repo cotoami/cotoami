@@ -568,8 +568,9 @@ post context content model =
 
 
 isScrolledToBottom : ScrollPos -> Bool
-isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
-    (contentHeight - containerHeight - scrollTop)
+isScrolledToBottom scrollPos =
+    scrollPos
+        |> Utils.EventUtil.fromBottom
         --|> Debug.log "scrollPosFromBottom: "
         |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
 
