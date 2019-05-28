@@ -3,7 +3,6 @@ module App.Views.Flow exposing
     , defaultModel
     , initScrollPos
     , openOrCloseEditor
-    , post
     , setFilter
     , update
     , view
@@ -53,7 +52,6 @@ type alias Model =
     { view : TimelineView
     , filter : TimelineFilter
     , random : Bool
-    , scrollPos : Maybe ScrollPos
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
@@ -65,7 +63,6 @@ defaultModel =
     { view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
     , random = False
-    , scrollPos = Nothing
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
@@ -452,7 +449,11 @@ update context msg ({ flowView, timeline } as model) =
                 |> withoutCmd
 
         EditorKeyDown keyboardEvent ->
-            handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
+            handleEditorShortcut
+                context
+                keyboardEvent
+                (CotoContent flowView.editorContent Nothing)
+                model
                 |> addCmd (\_ -> App.Commands.focus NoOp "quick-coto-input")
 
         Post ->
@@ -472,7 +473,9 @@ update context msg ({ flowView, timeline } as model) =
                 |> withoutCmd
 
         Scroll scrollPos ->
-            ( { model | flowView = { flowView | scrollPos = Just scrollPos } }, Cmd.none )
+            ( { model | timeline = App.Types.Timeline.setScrollPos scrollPos timeline }
+            , Cmd.none
+            )
                 |> chainIf
                     (\_ -> isScrolledToBottom scrollPos)
                     (App.Update.Watch.clearUnread context)
@@ -547,25 +550,7 @@ postFromQuickEditor :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 postFromQuickEditor context content model =
     { model | flowView = clearEditorContent model.flowView }
-        |> post context content
-
-
-post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd AppMsg.Msg )
-post context content model =
-    let
-        ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content model.timeline
-    in
-    ( { model | timeline = newTimeline }
-    , Cmd.batch
-        [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
-        , App.Server.Post.post
-            context.clientId
-            context.cotonoma
-            (AppMsg.FlowMsg << Posted newTimeline.postIdCounter)
-            newPost
-        ]
-    )
+        |> App.Update.Post.post context content
 
 
 isScrolledToBottom : ScrollPos -> Bool

@@ -17,6 +17,7 @@ module App.Types.Timeline exposing
     , setLoadingMore
     , setPaginatedPosts
     , setPosts
+    , setScrollPos
     , setScrollPosInitialized
     , updatePost
     )
@@ -27,6 +28,7 @@ import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey
 import App.Types.Post exposing (Post)
 import Exts.Maybe exposing (isJust)
 import Maybe
+import Utils.EventUtil exposing (ScrollPos)
 
 
 type alias Timeline =
@@ -37,6 +39,7 @@ type alias Timeline =
     , more : Bool
     , loadingMore : Bool
     , postIdCounter : Int
+    , scrollPos : Maybe ScrollPos
     }
 
 
@@ -49,6 +52,7 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     , postIdCounter = 0
+    , scrollPos = Nothing
     }
 
 
@@ -141,6 +145,11 @@ setLoading timeline =
 setLoadingMore : Timeline -> Timeline
 setLoadingMore timeline =
     { timeline | loadingMore = True }
+
+
+setScrollPos : ScrollPos -> Timeline -> Timeline
+setScrollPos scrollPos timeline =
+    { timeline | scrollPos = Just scrollPos }
 
 
 updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline

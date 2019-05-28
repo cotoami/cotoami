@@ -29,7 +29,6 @@ import App.Types.Post exposing (Post)
 import App.Types.Timeline
 import App.Update.Post
 import App.Views.Coto
-import App.Views.Flow
 import Exts.Maybe exposing (isJust)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -634,7 +633,7 @@ post context ({ editorModal } as model) =
             postSubcoto context source content model
 
         NewCoto Nothing ->
-            App.Views.Flow.post context content model
+            App.Update.Post.post context content model
 
         _ ->
             ( model, Cmd.none )
