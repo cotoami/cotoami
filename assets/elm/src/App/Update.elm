@@ -41,6 +41,7 @@ import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.Watch
 import App.Update.Modal
+import App.Update.Post
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.CotoToolbar
@@ -260,19 +261,20 @@ update msg model =
                 |> withoutCmd
 
         Search ->
-            { model | searchResults = App.Types.SearchResults.setLoading model.searchResults }
-                |> withCmdIf
-                    (\model -> App.Types.SearchResults.hasQuery model.searchResults)
-                    (\model -> App.Server.Post.search model.searchResults.query)
+            App.Update.Post.search model.searchResults.query model
 
-        SearchResultsFetched (Ok posts) ->
-            { model
-                | searchResults =
-                    App.Types.SearchResults.setPosts posts model.searchResults
-            }
-                |> withoutCmd
+        SearchResultsFetched searchId (Ok posts) ->
+            if model.lastSearchId == searchId then
+                { model
+                    | searchResults =
+                        App.Types.SearchResults.setPosts posts model.searchResults
+                }
+                    |> withoutCmd
 
-        SearchResultsFetched (Err _) ->
+            else
+                model |> withoutCmd
+
+        SearchResultsFetched searchId (Err _) ->
             model |> withoutCmd
 
         --

@@ -68,6 +68,7 @@ type alias Model =
     , watchlistLoading : Bool
     , watchUpdating : Bool
     , timeline : Timeline
+    , lastSearchId : Int
     , searchResults : SearchResults
     , graph : Graph
     , loadingGraph : Bool
@@ -116,6 +117,7 @@ initModel version seed lang route =
     , watchlistLoading = False
     , watchUpdating = False
     , timeline = App.Types.Timeline.defaultTimeline
+    , lastSearchId = 0
     , searchResults = App.Types.SearchResults.defaultSearchResults
     , graph = App.Types.Graph.defaultGraph
     , loadingGraph = False

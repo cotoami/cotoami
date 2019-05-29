@@ -115,13 +115,14 @@ fetchRandomPosts tag filter maybeCotonomaKey =
     Http.get url (Decode.list decodePost) |> Http.send tag
 
 
-search : String -> Cmd Msg
-search query =
+search : Int -> String -> Cmd Msg
+search searchId query =
     let
         url =
             "/api/search/" ++ query
     in
-    Http.get url (Decode.list decodePost) |> Http.send SearchResultsFetched
+    Http.get url (Decode.list decodePost)
+        |> Http.send (SearchResultsFetched searchId)
 
 
 postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post

@@ -1,7 +1,9 @@
 module App.Update.Post exposing
-    ( post
+    ( SearchModel
+    , post
     , postCotonoma
     , scrollTimelineIfNeeded
+    , search
     )
 
 import App.Commands
@@ -11,8 +13,10 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (CotoContent)
 import App.Types.Post exposing (Post)
+import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Timeline
 import Http exposing (Request)
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -75,3 +79,28 @@ scrollTimelineIfNeeded model =
 
     else
         Cmd.none
+
+
+type alias SearchModel model =
+    { model
+        | lastSearchId : Int
+        , searchResults : SearchResults
+    }
+
+
+search : String -> SearchModel model -> ( SearchModel model, Cmd Msg )
+search query model =
+    let
+        searchId =
+            model.lastSearchId + 1
+
+        searchResults =
+            App.Types.SearchResults.setQuerying query model.searchResults
+    in
+    if Utils.StringUtil.isNotBlank query then
+        { model | lastSearchId = searchId, searchResults = searchResults }
+            |> withCmd (\_ -> App.Server.Post.search searchId query)
+
+    else
+        { model | searchResults = searchResults }
+            |> withoutCmd

@@ -60,7 +60,7 @@ type Msg
     | SearchInputFocusChanged Bool
     | SearchInput String
     | Search
-    | SearchResultsFetched (Result Http.Error (List Post))
+    | SearchResultsFetched Int (Result Http.Error (List Post))
       --
       -- Coto
       --
