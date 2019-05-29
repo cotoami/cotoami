@@ -152,6 +152,12 @@ defmodule Cotoami.CotonomaService do
     |> do_query_for_cotonomas()
   end
 
+  def suggest(%Amishi{id: amishi_id}, query) do
+    from(c in Cotonoma, where: c.owner_id == ^amishi_id and ilike(c.name, ^"%#{query}%"))
+    |> limit(10)
+    |> do_query_for_cotonomas()
+  end
+
   defp do_query_for_cotonomas(query) do
     query
     |> preload([:coto, :owner])

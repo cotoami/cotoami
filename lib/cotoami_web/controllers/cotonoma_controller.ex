@@ -23,6 +23,12 @@ defmodule CotoamiWeb.CotonomaController do
     })
   end
 
+  def suggest(conn, %{"query" => query}, amishi) do
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.suggest(amishi, query)
+    })
+  end
+
   def create(
         conn,
         %{
