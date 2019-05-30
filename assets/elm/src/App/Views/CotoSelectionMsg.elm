@@ -1,6 +1,8 @@
 module App.Views.CotoSelectionMsg exposing (Msg(..))
 
 import App.Types.Coto exposing (CotoId)
+import App.Types.Post exposing (Post)
+import Http
 
 
 type Msg
@@ -9,3 +11,4 @@ type Msg
     | DeselectCoto
     | ClearSelection
     | PinAsGroup
+    | GroupingCotoPostedAndPinIt Int (Result Http.Error Post)

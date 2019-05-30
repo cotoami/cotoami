@@ -12,7 +12,8 @@ import App.Submodels.CotoSelection exposing (CotoSelection)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.WideViewport exposing (WideViewport)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, ElementId)
+import App.Update.Post
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
 import Exts.Maybe exposing (isJust)
@@ -162,7 +163,7 @@ cotoDiv context coto =
 
 
 type alias UpdateModel model =
-    Context (WideViewport (NarrowViewport (CotoSelection model)))
+    Context (LocalCotos (WideViewport (NarrowViewport (CotoSelection model))))
 
 
 update :
@@ -210,4 +211,17 @@ update context msg model =
                 |> withoutCmd
 
         PinAsGroup ->
+            App.Update.Post.post
+                context
+                (\postId ->
+                    AppMsg.CotoSelectionMsg
+                        << GroupingCotoPostedAndPinIt postId
+                )
+                (CotoContent "" Nothing)
+                model
+
+        GroupingCotoPostedAndPinIt postId (Ok post) ->
+            model |> withoutCmd
+
+        GroupingCotoPostedAndPinIt postId (Err _) ->
             model |> withoutCmd
