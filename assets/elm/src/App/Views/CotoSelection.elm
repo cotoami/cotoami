@@ -130,7 +130,16 @@ view context model =
     div [ id "coto-selection" ]
         [ div
             [ class "column-header" ]
-            []
+            [ if App.Submodels.CotoSelection.isMultiple model then
+                button
+                    [ class "button" ]
+                    [ faIcon "thumb-tack" Nothing
+                    , text (context.i18nText I18nKeys.CotoSelection_PinAsAGroup)
+                    ]
+
+              else
+                Utils.HtmlUtil.none
+            ]
         , div
             [ class "column-body" ]
             [ selectedCotosDiv context model ]

@@ -290,5 +290,8 @@ text key =
             else
                 "cotos selected"
 
+        CotoSelection_PinAsAGroup ->
+            "Pin as a group"
+
         Reorder_CloseReorderMode ->
             "Done reordering"

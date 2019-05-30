@@ -6,6 +6,7 @@ module App.Submodels.CotoSelection exposing
     , deselect
     , finishBeingDeselected
     , isBeingDeselected
+    , isMultiple
     , isSelected
     , setBeingDeselected
     , toggleSelection
@@ -25,6 +26,11 @@ type alias CotoSelection a =
 anySelection : CotoSelection model -> Bool
 anySelection model =
     not (List.isEmpty model.selection)
+
+
+isMultiple : CotoSelection model -> Bool
+isMultiple model =
+    List.length model.selection >= 2
 
 
 isSelected : CotoId -> CotoSelection model -> Bool

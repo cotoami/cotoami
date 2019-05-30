@@ -285,5 +285,8 @@ text key =
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
 
+        CotoSelection_PinAsAGroup ->
+            "グルーピングしてピン留め"
+
         Reorder_CloseReorderMode ->
             "並び替え完了"

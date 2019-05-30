@@ -93,4 +93,5 @@ type TextKey
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int
+    | CotoSelection_PinAsAGroup
     | Reorder_CloseReorderMode

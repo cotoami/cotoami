@@ -289,5 +289,8 @@ text key =
         CotoSelection_CotosSelected count ->
             "件在選擇中"
 
+        CotoSelection_PinAsAGroup ->
+            "Pin as a group"
+
         Reorder_CloseReorderMode ->
             "完成排列"

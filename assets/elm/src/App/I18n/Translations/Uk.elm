@@ -290,5 +290,8 @@ text key =
             else
                 "об'єкти вибрані"
 
+        CotoSelection_PinAsAGroup ->
+            "Pin as a group"
+
         Reorder_CloseReorderMode ->
             "Змінити порядок"
