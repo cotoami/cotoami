@@ -541,21 +541,6 @@ update msg model =
             model |> withCmd (App.Views.Stock.renderGraph model)
 
         --
-        -- PinSelectionAsGroup
-        --
-        ConfirmPinSelectionAsGroup ->
-            App.Submodels.Modals.confirm
-                (Confirmation
-                    (model.i18nText I18nKeys.ConfirmPinSelectionAsGroup)
-                    PinSelectionAsGroup
-                )
-                model
-                |> withoutCmd
-
-        PinSelectionAsGroup ->
-            model |> withoutCmd
-
-        --
         -- Pushed
         --
         PostPushed payload ->

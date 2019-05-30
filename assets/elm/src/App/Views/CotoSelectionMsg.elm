@@ -8,3 +8,4 @@ type Msg
     | DeselectingCoto CotoId
     | DeselectCoto
     | ClearSelection
+    | PinAsGroup

@@ -29,55 +29,6 @@ import Utils.StringUtil exposing (isBlank)
 import Utils.UpdateUtil exposing (..)
 
 
-type alias UpdateModel model =
-    Context (WideViewport (NarrowViewport (CotoSelection model)))
-
-
-update :
-    Context context
-    -> CotoSelectionMsg.Msg
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg model =
-    case msg of
-        ColumnToggle ->
-            model
-                |> App.Submodels.WideViewport.toggleSelection
-                |> withoutCmd
-
-        DeselectingCoto cotoId ->
-            model
-                |> App.Submodels.CotoSelection.setBeingDeselected cotoId
-                |> withCmd
-                    (\model ->
-                        Process.sleep (1 * Time.second)
-                            |> Task.andThen (\_ -> Task.succeed ())
-                            |> Task.perform (\_ -> AppMsg.CotoSelectionMsg DeselectCoto)
-                    )
-
-        DeselectCoto ->
-            model
-                |> App.Submodels.CotoSelection.finishBeingDeselected
-                |> App.Submodels.WideViewport.closeSelectionIfEmpty context
-                |> withoutCmd
-
-        ClearSelection ->
-            let
-                activeView =
-                    case model.narrowViewport.activeView of
-                        SelectionView ->
-                            FlowView
-
-                        anotherView ->
-                            anotherView
-            in
-            model
-                |> App.Submodels.CotoSelection.clear
-                |> App.Submodels.WideViewport.closeSelection
-                |> App.Submodels.NarrowViewport.switchActiveView activeView
-                |> withoutCmd
-
-
 type alias ViewModel model =
     LocalCotos (WideViewport (CotoSelection model))
 
@@ -133,7 +84,11 @@ view context model =
             [ if App.Submodels.CotoSelection.isMultiple model then
                 button
                     [ class "button"
-                    , onClick AppMsg.ConfirmPinSelectionAsGroup
+                    , onClick
+                        (AppMsg.OpenConfirmModal
+                            (context.i18nText I18nKeys.ConfirmPinSelectionAsGroup)
+                            (AppMsg.CotoSelectionMsg PinAsGroup)
+                        )
                     ]
                     [ faIcon "thumb-tack" Nothing
                     , text (context.i18nText I18nKeys.CotoSelection_PinAsGroup)
@@ -204,3 +159,55 @@ cotoDiv context coto =
             , App.Views.Coto.openTraversalButtonDiv context.graph (isJust coto.asCotonoma) coto.id
             ]
         ]
+
+
+type alias UpdateModel model =
+    Context (WideViewport (NarrowViewport (CotoSelection model)))
+
+
+update :
+    Context context
+    -> CotoSelectionMsg.Msg
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg model =
+    case msg of
+        ColumnToggle ->
+            model
+                |> App.Submodels.WideViewport.toggleSelection
+                |> withoutCmd
+
+        DeselectingCoto cotoId ->
+            model
+                |> App.Submodels.CotoSelection.setBeingDeselected cotoId
+                |> withCmd
+                    (\model ->
+                        Process.sleep (1 * Time.second)
+                            |> Task.andThen (\_ -> Task.succeed ())
+                            |> Task.perform (\_ -> AppMsg.CotoSelectionMsg DeselectCoto)
+                    )
+
+        DeselectCoto ->
+            model
+                |> App.Submodels.CotoSelection.finishBeingDeselected
+                |> App.Submodels.WideViewport.closeSelectionIfEmpty context
+                |> withoutCmd
+
+        ClearSelection ->
+            let
+                activeView =
+                    case model.narrowViewport.activeView of
+                        SelectionView ->
+                            FlowView
+
+                        anotherView ->
+                            anotherView
+            in
+            model
+                |> App.Submodels.CotoSelection.clear
+                |> App.Submodels.WideViewport.closeSelection
+                |> App.Submodels.NarrowViewport.switchActiveView activeView
+                |> withoutCmd
+
+        PinAsGroup ->
+            model |> withoutCmd
