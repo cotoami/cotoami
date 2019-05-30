@@ -4,8 +4,6 @@ defmodule CotoamiWeb.CotoController do
   import Cotoami.CotonomaService, only: [increment_timeline_revision: 1]
   alias Cotoami.{Coto, CotoService, CotonomaService, CotoGraphService}
 
-  plug(:scrub_params, "coto" when action in [:create, :update])
-
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.amishi])
   end
