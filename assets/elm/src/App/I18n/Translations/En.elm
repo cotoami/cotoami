@@ -48,6 +48,9 @@ text key =
         ConfirmCotonomatize name ->
             "You are about to promote this coto to a cotonoma named '" ++ name ++ "'"
 
+        ConfirmPinSelectionAsGroup ->
+            "You are about to pin the selected cotos as a group."
+
         UnexpectedErrorOccurred ->
             "An unexpected error has occurred."
 
@@ -290,7 +293,7 @@ text key =
             else
                 "cotos selected"
 
-        CotoSelection_PinAsAGroup ->
+        CotoSelection_PinAsGroup ->
             "Pin as a group"
 
         Reorder_CloseReorderMode ->

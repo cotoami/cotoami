@@ -48,6 +48,9 @@ text key =
         ConfirmCotonomatize name ->
             "Ви додаєте цей об'єкт до профілю об'єкту " ++ name ++ "'"
 
+        ConfirmPinSelectionAsGroup ->
+            "You are about to pin the selected cotos as a group."
+
         UnexpectedErrorOccurred ->
             "Виникла несподівана помилка."
 
@@ -290,7 +293,7 @@ text key =
             else
                 "об'єкти вибрані"
 
-        CotoSelection_PinAsAGroup ->
+        CotoSelection_PinAsGroup ->
             "Pin as a group"
 
         Reorder_CloseReorderMode ->

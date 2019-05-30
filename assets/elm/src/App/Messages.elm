@@ -97,6 +97,11 @@ type Msg
     | WatchTimestampUpdated (Result Http.Error Watch)
     | GraphChanged
       --
+      -- PinSelectionAsGroup
+      --
+    | ConfirmPinSelectionAsGroup
+    | PinSelectionAsGroup
+      --
       -- Pushed
       --
     | PostPushed Value

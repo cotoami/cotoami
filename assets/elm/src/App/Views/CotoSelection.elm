@@ -132,9 +132,11 @@ view context model =
             [ class "column-header" ]
             [ if App.Submodels.CotoSelection.isMultiple model then
                 button
-                    [ class "button" ]
+                    [ class "button"
+                    , onClick AppMsg.ConfirmPinSelectionAsGroup
+                    ]
                     [ faIcon "thumb-tack" Nothing
-                    , text (context.i18nText I18nKeys.CotoSelection_PinAsAGroup)
+                    , text (context.i18nText I18nKeys.CotoSelection_PinAsGroup)
                     ]
 
               else

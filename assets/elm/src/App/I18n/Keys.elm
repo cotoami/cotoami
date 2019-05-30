@@ -16,6 +16,7 @@ type TextKey
     | ConfirmUnpinCoto
     | ConfirmDisconnect
     | ConfirmCotonomatize String
+    | ConfirmPinSelectionAsGroup
     | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled
@@ -93,5 +94,5 @@ type TextKey
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int
-    | CotoSelection_PinAsAGroup
+    | CotoSelection_PinAsGroup
     | Reorder_CloseReorderMode
