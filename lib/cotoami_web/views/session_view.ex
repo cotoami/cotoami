@@ -9,6 +9,7 @@ defmodule CotoamiWeb.SessionView do
         lang: lang
       }) do
     %{
+      app_version: Application.spec(:cotoami, :vsn) |> to_string(),
       amishi: render_relation(amishi, AmishiView, "amishi.json"),
       token: token,
       websocket_url: websocket_url,
