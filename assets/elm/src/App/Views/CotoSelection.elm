@@ -4,15 +4,17 @@ module App.Views.CotoSelection exposing
     , view
     )
 
+import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Markdown
-import App.Messages as AppMsg exposing (..)
+import App.Messages as AppMsg
 import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection exposing (CotoSelection)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.WideViewport exposing (WideViewport)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, ElementId)
+import App.Update.Graph
 import App.Update.Post
 import App.Views.Coto
 import App.Views.CotoSelectionMsg as CotoSelectionMsg exposing (Msg(..))
@@ -235,13 +237,27 @@ update context msg model =
                     context
                     (\postId ->
                         AppMsg.CotoSelectionMsg
-                            << GroupingCotoPostedAndPinIt postId
+                            << GroupingCotoPosted postId
                     )
                     (CotoContent "" Nothing)
 
-        GroupingCotoPostedAndPinIt postId (Ok post) ->
-            App.Submodels.LocalCotos.onPosted postId post model
-                |> withoutCmd
+        GroupingCotoPosted postId (Ok post) ->
+            post.cotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        App.Submodels.LocalCotos.onPosted postId post model
+                            |> App.Update.Graph.pin
+                                model
+                                (AppMsg.CotoSelectionMsg << GroupingCotoPinned)
+                                cotoId
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
-        GroupingCotoPostedAndPinIt postId (Err _) ->
+        GroupingCotoPosted postId (Err _) ->
+            model |> withoutCmd
+
+        GroupingCotoPinned (Ok _) ->
+            model |> withCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
+
+        GroupingCotoPinned (Err _) ->
             model |> withoutCmd

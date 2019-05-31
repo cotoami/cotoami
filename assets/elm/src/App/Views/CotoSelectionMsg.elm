@@ -11,4 +11,5 @@ type Msg
     | DeselectCoto
     | ClearSelection
     | PinAsGroup
-    | GroupingCotoPostedAndPinIt Int (Result Http.Error Post)
+    | GroupingCotoPosted Int (Result Http.Error Post)
+    | GroupingCotoPinned (Result Http.Error String)
