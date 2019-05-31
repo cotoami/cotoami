@@ -13,6 +13,7 @@ import App.Submodels.CotoSelection exposing (CotoSelection)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Submodels.NarrowViewport exposing (ActiveView(..), NarrowViewport)
 import App.Submodels.WideViewport exposing (WideViewport)
+import App.Types.Connection
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, ElementId)
 import App.Update.Graph
 import App.Update.Post
@@ -257,7 +258,26 @@ update context msg model =
             model |> withoutCmd
 
         GroupingCotoPinned cotoId (Ok _) ->
-            model |> withCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
+            App.Update.Graph.connectToSelection
+                context
+                (AppMsg.CotoSelectionMsg << GroupingConnectionsCreated)
+                cotoId
+                App.Types.Connection.Outbound
+                Nothing
+                model
 
         GroupingCotoPinned cotoId (Err _) ->
+            model |> withoutCmd
+
+        GroupingConnectionsCreated (Ok _) ->
+            { model | creatingPinnedGroup = False }
+                |> App.Submodels.CotoSelection.clear
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
+                |> addCmd
+                    (\_ ->
+                        App.Commands.scrollPinnedCotosToBottom
+                            (\_ -> AppMsg.NoOp)
+                    )
+
+        GroupingConnectionsCreated (Err _) ->
             model |> withoutCmd

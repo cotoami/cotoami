@@ -13,3 +13,4 @@ type Msg
     | PinAsGroup
     | GroupingCotoPosted Int (Result Http.Error Post)
     | GroupingCotoPinned CotoId (Result Http.Error String)
+    | GroupingConnectionsCreated (Result Http.Error (List String))
