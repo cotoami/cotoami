@@ -176,16 +176,17 @@ makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhras
 
 
 connect :
-    ClientId
+    (Result Http.Error (List String) -> msg)
+    -> ClientId
     -> Maybe CotonomaKey
     -> CotoId
     -> List CotoId
     -> Direction
     -> Maybe String
-    -> Cmd Msg
-connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
+    -> Cmd msg
+connect tag clientId maybeCotonomaKey subject objects direction linkingPhrase =
     makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhrase
-        |> Task.attempt Connected
+        |> Task.attempt tag
 
 
 connectionUrl : CotoId -> CotoId -> String

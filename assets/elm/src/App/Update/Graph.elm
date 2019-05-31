@@ -1,4 +1,4 @@
-module App.Update.Graph exposing (connectToSelection, pin)
+module App.Update.Graph exposing (connect, connectToSelection, pin)
 
 import App.Commands
 import App.Messages exposing (Msg)
@@ -7,7 +7,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Direction)
-import App.Types.Coto exposing (CotoId)
+import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Graph.Connect
 import Http
 import Utils.UpdateUtil exposing (..)
@@ -49,22 +49,20 @@ pin context tag cotoId model =
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-connectToSelection :
+connect :
     Context context
+    -> (Result Http.Error (List String) -> msg)
     -> CotoId
+    -> List Coto
     -> Direction
     -> Maybe String
     -> LocalCotos model
-    -> ( LocalCotos model, Cmd Msg )
-connectToSelection context cotoId direction linkingPhrase model =
+    -> ( LocalCotos model, Cmd msg )
+connect context tag cotoId objects direction linkingPhrase model =
     model
         |> App.Submodels.LocalCotos.getCoto cotoId
         |> Maybe.map
             (\target ->
-                let
-                    objects =
-                        App.Submodels.CotoSelection.cotosInSelectedOrder context
-                in
                 ( App.Submodels.LocalCotos.connect
                     context.session
                     target
@@ -73,6 +71,7 @@ connectToSelection context cotoId direction linkingPhrase model =
                     linkingPhrase
                     model
                 , App.Server.Graph.connect
+                    tag
                     context.clientId
                     (Maybe.map .key model.cotonoma)
                     target.id
@@ -82,3 +81,22 @@ connectToSelection context cotoId direction linkingPhrase model =
                 )
             )
         |> Maybe.withDefault ( model, Cmd.none )
+
+
+connectToSelection :
+    Context context
+    -> (Result Http.Error (List String) -> msg)
+    -> CotoId
+    -> Direction
+    -> Maybe String
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd msg )
+connectToSelection context tag cotoId direction linkingPhrase model =
+    connect
+        context
+        tag
+        cotoId
+        (App.Submodels.CotoSelection.cotosInSelectedOrder context)
+        direction
+        linkingPhrase
+        model

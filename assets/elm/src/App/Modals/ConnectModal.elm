@@ -213,6 +213,7 @@ update context msg ({ connectModal } as model) =
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
+                            AppMsg.Connected
                             context.clientId
                             (Maybe.map .key model.cotonoma)
                             target.id
@@ -254,6 +255,7 @@ connectPostToSelection context post model =
             (\cotoId ->
                 App.Update.Graph.connectToSelection
                     context
+                    AppMsg.Connected
                     cotoId
                     model.connectModal.direction
                     (getLinkingPhrase model.connectModal)

@@ -18,7 +18,6 @@ import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.EditorModalMsg as EditorModalMsg exposing (Msg(..))
 import App.Server.Coto
 import App.Server.Cotonoma
-import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
@@ -26,6 +25,7 @@ import App.Types.Connection
 import App.Types.Coto exposing (Coto, CotoContent)
 import App.Types.Post exposing (Post)
 import App.Types.Timeline
+import App.Update.Graph
 import App.Update.Post
 import App.Views.Coto
 import App.Views.FlowMsg
@@ -660,26 +660,18 @@ subordinatePostToCoto :
     -> Post
     -> UpdateModel model
     -> ( UpdateModel model, Cmd AppMsg.Msg )
-subordinatePostToCoto { clientId, session } coto post model =
+subordinatePostToCoto context coto post model =
     post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
-            (\postCoto ->
-                ( App.Submodels.LocalCotos.connect
-                    session
-                    postCoto
+            (\postCotoId ->
+                App.Update.Graph.connect
+                    context
+                    AppMsg.Connected
+                    postCotoId
                     [ coto ]
                     App.Types.Connection.Inbound
                     Nothing
                     model
-                , App.Server.Graph.connect
-                    clientId
-                    (Maybe.map .key model.cotonoma)
-                    postCoto.id
-                    [ coto.id ]
-                    App.Types.Connection.Inbound
-                    Nothing
-                )
             )
         |> Maybe.withDefault ( model, Cmd.none )
 
