@@ -1,10 +1,12 @@
-module App.Update.Graph exposing (pin)
+module App.Update.Graph exposing (connectToSelection, pin)
 
 import App.Commands
 import App.Messages exposing (Msg)
 import App.Server.Graph
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
+import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (CotoId)
 import App.Types.Graph.Connect
 import Http
@@ -44,4 +46,39 @@ pin context tag cotoId model =
         )
         context.session
         (App.Submodels.LocalCotos.getCoto cotoId model)
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+connectToSelection :
+    Context context
+    -> CotoId
+    -> Direction
+    -> Maybe String
+    -> LocalCotos model
+    -> ( LocalCotos model, Cmd Msg )
+connectToSelection context cotoId direction linkingPhrase model =
+    model
+        |> App.Submodels.LocalCotos.getCoto cotoId
+        |> Maybe.map
+            (\target ->
+                let
+                    objects =
+                        App.Submodels.CotoSelection.cotosInSelectedOrder context
+                in
+                ( App.Submodels.LocalCotos.connect
+                    context.session
+                    target
+                    objects
+                    direction
+                    linkingPhrase
+                    model
+                , App.Server.Graph.connect
+                    context.clientId
+                    (Maybe.map .key model.cotonoma)
+                    target.id
+                    (List.map .id objects)
+                    direction
+                    linkingPhrase
+                )
+            )
         |> Maybe.withDefault ( model, Cmd.none )
