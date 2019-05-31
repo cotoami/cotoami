@@ -12,4 +12,4 @@ type Msg
     | ClearSelection
     | PinAsGroup
     | GroupingCotoPosted Int (Result Http.Error Post)
-    | GroupingCotoPinned (Result Http.Error String)
+    | GroupingCotoPinned CotoId (Result Http.Error String)

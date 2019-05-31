@@ -248,7 +248,7 @@ update context msg model =
                         App.Submodels.LocalCotos.onPosted postId post model
                             |> App.Update.Graph.pin
                                 model
-                                (AppMsg.CotoSelectionMsg << GroupingCotoPinned)
+                                (AppMsg.CotoSelectionMsg << GroupingCotoPinned cotoId)
                                 cotoId
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
@@ -256,8 +256,8 @@ update context msg model =
         GroupingCotoPosted postId (Err _) ->
             model |> withoutCmd
 
-        GroupingCotoPinned (Ok _) ->
+        GroupingCotoPinned cotoId (Ok _) ->
             model |> withCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
 
-        GroupingCotoPinned (Err _) ->
+        GroupingCotoPinned cotoId (Err _) ->
             model |> withoutCmd
