@@ -240,7 +240,8 @@ update context msg model =
                     (CotoContent "" Nothing)
 
         GroupingCotoPostedAndPinIt postId (Ok post) ->
-            model |> withoutCmd
+            App.Submodels.LocalCotos.onPosted postId post model
+                |> withoutCmd
 
         GroupingCotoPostedAndPinIt postId (Err _) ->
             model |> withoutCmd
