@@ -415,13 +415,14 @@ update msg model =
                 |> withoutCmd
 
         PinCoto cotoId ->
-            App.Update.Graph.pin model cotoId model
+            App.Update.Graph.pin model CotoPinned cotoId model
 
         PinCotoToMyHome cotoId ->
             App.Submodels.Modals.clearModals model
                 |> withCmd
                     (\model ->
                         App.Server.Graph.pinCotos
+                            (\_ -> NoOp)
                             model.clientId
                             Nothing
                             [ cotoId ]
