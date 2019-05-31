@@ -31,7 +31,14 @@ import Utils.UpdateUtil exposing (..)
 
 
 type alias ViewModel model =
-    LocalCotos (WideViewport (CotoSelection model))
+    LocalCotos
+        (WideViewport
+            (CotoSelection
+                { model
+                    | creatingPinnedGroup : Bool
+                }
+            )
+        )
 
 
 statusBar : Context context -> ViewModel model -> Html AppMsg.Msg
@@ -84,7 +91,8 @@ view context model =
             [ class "column-header" ]
             [ if App.Submodels.CotoSelection.isMultiple model then
                 button
-                    [ class "button"
+                    [ class "button pin-as-group"
+                    , disabled model.creatingPinnedGroup
                     , onClick
                         (AppMsg.OpenConfirmModal
                             (context.i18nText I18nKeys.ConfirmPinSelectionAsGroup)
@@ -163,7 +171,18 @@ cotoDiv context coto =
 
 
 type alias UpdateModel model =
-    Context (LocalCotos (WideViewport (NarrowViewport (CotoSelection model))))
+    Context
+        (LocalCotos
+            (WideViewport
+                (NarrowViewport
+                    (CotoSelection
+                        { model
+                            | creatingPinnedGroup : Bool
+                        }
+                    )
+                )
+            )
+        )
 
 
 update :
@@ -211,14 +230,14 @@ update context msg model =
                 |> withoutCmd
 
         PinAsGroup ->
-            App.Update.Post.post
-                context
-                (\postId ->
-                    AppMsg.CotoSelectionMsg
-                        << GroupingCotoPostedAndPinIt postId
-                )
-                (CotoContent "" Nothing)
-                model
+            { model | creatingPinnedGroup = True }
+                |> App.Update.Post.post
+                    context
+                    (\postId ->
+                        AppMsg.CotoSelectionMsg
+                            << GroupingCotoPostedAndPinIt postId
+                    )
+                    (CotoContent "" Nothing)
 
         GroupingCotoPostedAndPinIt postId (Ok post) ->
             model |> withoutCmd
