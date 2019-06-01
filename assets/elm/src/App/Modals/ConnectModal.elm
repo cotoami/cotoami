@@ -18,6 +18,7 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
+import App.Update.Graph
 import App.Update.Post
 import App.Views.Connection
 import Html exposing (..)
@@ -212,6 +213,7 @@ update context msg ({ connectModal } as model) =
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
+                            AppMsg.Connected
                             context.clientId
                             (Maybe.map .key model.cotonoma)
                             target.id
@@ -249,27 +251,14 @@ connectPostToSelection :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 connectPostToSelection context post model =
     post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
-            (\target ->
-                let
-                    objects =
-                        App.Submodels.CotoSelection.cotosInSelectedOrder context
-                in
-                ( App.Submodels.LocalCotos.connect
-                    context.session
-                    target
-                    objects
+            (\cotoId ->
+                App.Update.Graph.connectToSelection
+                    context
+                    AppMsg.Connected
+                    cotoId
                     model.connectModal.direction
                     (getLinkingPhrase model.connectModal)
                     model
-                , App.Server.Graph.connect
-                    context.clientId
-                    (Maybe.map .key model.cotonoma)
-                    target.id
-                    (List.map .id objects)
-                    model.connectModal.direction
-                    (getLinkingPhrase model.connectModal)
-                )
             )
         |> Maybe.withDefault ( model, Cmd.none )

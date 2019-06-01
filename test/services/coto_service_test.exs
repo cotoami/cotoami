@@ -16,6 +16,11 @@ defmodule Cotoami.CotoServiceTest do
     %{conn: Bolt.Sips.conn(), amishi: amishi}
   end
 
+  test "creating a coto without content", ~M{amishi} do
+    coto = CotoService.create!(amishi, nil)
+    assert %Coto{content: ""} = CotoService.get(coto.id)
+  end
+
   describe "when there is a coto" do
     setup ~M{amishi} do
       coto = CotoService.create!(amishi, "hello")

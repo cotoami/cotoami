@@ -12,6 +12,16 @@
     text-align: center;
     margin-bottom: 5px;
     padding-top: 10px;
+
+    button.pin-as-group {
+      background-color: #fff;
+
+      i {
+        margin-right: 6px;
+        font-size: 1.5rem;
+        vertical-align: -2px;
+      }
+    }
   }
 
   div.column-body {

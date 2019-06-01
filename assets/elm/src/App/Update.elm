@@ -40,6 +40,7 @@ import App.Types.SearchResults
 import App.Types.Timeline
 import App.Types.Traversal
 import App.Types.Watch
+import App.Update.Graph
 import App.Update.Modal
 import App.Update.Post
 import App.Views.AppHeader
@@ -414,36 +415,14 @@ update msg model =
                 |> withoutCmd
 
         PinCoto cotoId ->
-            Maybe.map2
-                (\session coto ->
-                    { model
-                        | graph =
-                            App.Types.Graph.Connect.pin
-                                session.amishi.id
-                                coto
-                                Nothing
-                                model.graph
-                    }
-                        |> withCmd
-                            (\model ->
-                                Cmd.batch
-                                    [ App.Server.Graph.pinCotos
-                                        model.clientId
-                                        (Maybe.map .key model.cotonoma)
-                                        [ cotoId ]
-                                    , App.Commands.scrollPinnedCotosToBottom (\_ -> NoOp)
-                                    ]
-                            )
-                )
-                model.session
-                (App.Submodels.LocalCotos.getCoto cotoId model)
-                |> Maybe.withDefault (model |> withoutCmd)
+            App.Update.Graph.pin model CotoPinned cotoId model
 
         PinCotoToMyHome cotoId ->
             App.Submodels.Modals.clearModals model
                 |> withCmd
                     (\model ->
                         App.Server.Graph.pinCotos
+                            (\_ -> NoOp)
                             model.clientId
                             Nothing
                             [ cotoId ]

@@ -10,6 +10,7 @@ module App.Views.Coto exposing
     , openTraversalButton
     , openTraversalButtonDiv
     , parentsDiv
+    , renderContent
     , subCotosDiv
     )
 
@@ -31,6 +32,7 @@ import Html.Events exposing (..)
 import Html.Keyed
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.StringUtil
 
 
 cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
@@ -147,10 +149,24 @@ contentDiv context elementId markdown model =
                             , ( "open", App.Submodels.Context.contentOpen elementId context )
                             ]
                         ]
-                        [ markdown model.content ]
+                        [ renderContent markdown model.content ]
                     ]
             )
-        |> Maybe.withDefault (markdown model.content)
+        |> Maybe.withDefault (renderContent markdown model.content)
+
+
+renderContent : (String -> Html msg) -> String -> Html msg
+renderContent renderer content =
+    if Utils.StringUtil.isBlank content then
+        blankContent
+
+    else
+        renderer content
+
+
+blankContent : Html msg
+blankContent =
+    div [ class "blank-content" ] [ materialIcon "category" Nothing ]
 
 
 
@@ -228,7 +244,12 @@ parentsDiv graph exclude childId =
                         [ class "parent"
                         , onClick (App.Messages.OpenTraversal parent.id)
                         ]
-                        [ text (abbreviate parent) ]
+                        [ if Utils.StringUtil.isBlank parent.content then
+                            blankContent
+
+                          else
+                            text (abbreviate parent)
+                        ]
                 )
                 parents
             )

@@ -32,6 +32,7 @@ import Task
 import Time
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -148,6 +149,7 @@ pinnedCotoDiv context inbound coto =
             [ ( "pinned-coto", True )
             , ( "animated", True )
             , ( "fadeIn", True )
+            , ( "blank", Utils.StringUtil.isBlank coto.content )
             ]
         , onClickWithoutPropagation (CotoClick elementId coto.id)
         , onMouseEnter (CotoMouseEnter elementId coto.id)

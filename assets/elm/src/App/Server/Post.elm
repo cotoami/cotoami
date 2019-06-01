@@ -6,18 +6,10 @@ module App.Server.Post exposing
     , fetchRandomPosts
     , post
     , postCotonoma
-    , postRequest
     , search
     )
 
-import App.Messages
-    exposing
-        ( Msg
-            ( CotonomaPostsFetched
-            , HomePostsFetched
-            , SearchResultsFetched
-            )
-        )
+import App.Messages exposing (Msg)
 import App.Server.Amishi
 import App.Server.Cotonoma
 import App.Server.Pagination exposing (PaginatedList)
@@ -72,8 +64,8 @@ fetchHomePosts pageIndex filter =
                 ++ ("?page=" ++ toString pageIndex)
                 ++ filterAsQueryString filter
     in
-    Http.send HomePostsFetched <|
-        Http.get url (App.Server.Pagination.decodePaginatedList decodePost)
+    Http.get url (App.Server.Pagination.decodePaginatedList decodePost)
+        |> Http.send App.Messages.HomePostsFetched
 
 
 fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
@@ -83,12 +75,16 @@ fetchCotonomaPosts pageIndex filter key =
             ("/api/cotonomas/" ++ key ++ "/cotos")
                 ++ ("?page=" ++ toString pageIndex)
                 ++ filterAsQueryString filter
-    in
-    Http.send CotonomaPostsFetched <|
-        Http.get url <|
+
+        decodeResponse =
             Decode.map2 (,)
                 (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
-                (Decode.field "paginated_cotos" (App.Server.Pagination.decodePaginatedList decodePost))
+                (Decode.field "paginated_cotos"
+                    (App.Server.Pagination.decodePaginatedList decodePost)
+                )
+    in
+    Http.get url decodeResponse
+        |> Http.send App.Messages.CotonomaPostsFetched
 
 
 fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
@@ -122,21 +118,16 @@ search searchId query =
             "/api/search/" ++ query
     in
     Http.get url (Decode.list decodePost)
-        |> Http.send (SearchResultsFetched searchId)
-
-
-postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
-postRequest clientId maybeCotonoma post =
-    httpPost
-        "/api/cotos"
-        clientId
-        (Http.jsonBody (encodePost maybeCotonoma post))
-        decodePost
+        |> Http.send (App.Messages.SearchResultsFetched searchId)
 
 
 post : ClientId -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
 post clientId maybeCotonoma tag post =
-    postRequest clientId maybeCotonoma post
+    let
+        body =
+            Http.jsonBody (encodePost maybeCotonoma post)
+    in
+    httpPost "/api/cotos" clientId body decodePost
         |> Http.send tag
 
 

@@ -107,8 +107,13 @@ linkingPhraseAsParam linkingPhrase =
     )
 
 
-pinCotos : ClientId -> Maybe CotonomaKey -> List CotoId -> Cmd Msg
-pinCotos clientId maybeCotonomaKey cotoIds =
+pinCotos :
+    (Result Http.Error String -> msg)
+    -> ClientId
+    -> Maybe CotonomaKey
+    -> List CotoId
+    -> Cmd msg
+pinCotos tag clientId maybeCotonomaKey cotoIds =
     let
         url =
             pinUrl maybeCotonomaKey
@@ -117,7 +122,7 @@ pinCotos clientId maybeCotonomaKey cotoIds =
             connectingParamsAsBody "coto_ids" cotoIds Nothing
     in
     httpPut url clientId body (Decode.succeed "done")
-        |> Http.send CotoPinned
+        |> Http.send tag
 
 
 unpinCoto : ClientId -> Maybe CotonomaKey -> CotoId -> Cmd Msg
@@ -171,16 +176,17 @@ makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhras
 
 
 connect :
-    ClientId
+    (Result Http.Error (List String) -> msg)
+    -> ClientId
     -> Maybe CotonomaKey
     -> CotoId
     -> List CotoId
     -> Direction
     -> Maybe String
-    -> Cmd Msg
-connect clientId maybeCotonomaKey subject objects direction linkingPhrase =
+    -> Cmd msg
+connect tag clientId maybeCotonomaKey subject objects direction linkingPhrase =
     makeConnectTask clientId maybeCotonomaKey subject objects direction linkingPhrase
-        |> Task.attempt Connected
+        |> Task.attempt tag
 
 
 connectionUrl : CotoId -> CotoId -> String

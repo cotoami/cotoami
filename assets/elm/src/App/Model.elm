@@ -57,6 +57,7 @@ type alias Model =
     , cotoFocus : Maybe CotoId
     , selection : List Coto
     , deselecting : Set CotoId
+    , creatingPinnedGroup : Bool
     , presences : Presences
     , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
@@ -106,6 +107,7 @@ initModel version seed lang route =
     , cotoFocus = Nothing
     , selection = []
     , deselecting = Set.empty
+    , creatingPinnedGroup = False
     , presences = Dict.empty
     , confirmation = Nothing
     , searchInputFocus = False
