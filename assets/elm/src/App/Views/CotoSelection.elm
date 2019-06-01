@@ -92,18 +92,7 @@ view context model =
         [ div
             [ class "column-header" ]
             [ if App.Submodels.CotoSelection.isMultiple model then
-                button
-                    [ class "button pin-as-group"
-                    , disabled model.creatingPinnedGroup
-                    , onClick
-                        (AppMsg.OpenConfirmModal
-                            (context.i18nText I18nKeys.ConfirmPinSelectionAsGroup)
-                            (AppMsg.CotoSelectionMsg PinAsGroup)
-                        )
-                    ]
-                    [ faIcon "thumb-tack" Nothing
-                    , text (context.i18nText I18nKeys.CotoSelection_PinAsGroup)
-                    ]
+                pinAsGroupButton context model
 
               else
                 Utils.HtmlUtil.none
@@ -111,6 +100,29 @@ view context model =
         , div
             [ class "column-body" ]
             [ selectedCotosDiv context model ]
+        ]
+
+
+pinAsGroupButton : Context context -> ViewModel model -> Html AppMsg.Msg
+pinAsGroupButton context model =
+    span [ id "pin-as-group-button" ]
+        [ button
+            [ class "button"
+            , disabled model.creatingPinnedGroup
+            , onClick
+                (AppMsg.OpenConfirmModal
+                    (context.i18nText I18nKeys.ConfirmPinSelectionAsGroup)
+                    (AppMsg.CotoSelectionMsg PinAsGroup)
+                )
+            ]
+            [ faIcon "thumb-tack" Nothing
+            , text (context.i18nText I18nKeys.CotoSelection_PinAsGroup)
+            ]
+        , if model.creatingPinnedGroup then
+            Utils.HtmlUtil.loadingImg
+
+          else
+            Utils.HtmlUtil.none
         ]
 
 
