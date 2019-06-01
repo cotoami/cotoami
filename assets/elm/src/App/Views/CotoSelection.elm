@@ -29,7 +29,6 @@ import Task
 import Time
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
-import Utils.StringUtil exposing (isBlank)
 import Utils.UpdateUtil exposing (..)
 
 
@@ -113,16 +112,6 @@ view context model =
             [ class "column-body" ]
             [ selectedCotosDiv context model ]
         ]
-
-
-titleMaxlength : Int
-titleMaxlength =
-    30
-
-
-validateTitle : String -> Bool
-validateTitle title =
-    not (isBlank title) && String.length title <= titleMaxlength
 
 
 selectedCotosDiv : Context context -> ViewModel model -> Html AppMsg.Msg
