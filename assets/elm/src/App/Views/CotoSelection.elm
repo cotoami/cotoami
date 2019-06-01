@@ -272,6 +272,7 @@ update context msg model =
         GroupingConnectionsCreated (Ok _) ->
             { model | creatingPinnedGroup = False }
                 |> App.Submodels.CotoSelection.clear
+                |> App.Submodels.NarrowViewport.switchActiveView StockView
                 |> withCmd (\_ -> App.Commands.sendMsg AppMsg.GraphChanged)
                 |> addCmd
                     (\_ ->
