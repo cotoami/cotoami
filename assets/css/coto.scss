@@ -66,6 +66,16 @@ div.coto-header {
   }
 }
 
+div.blank-content {
+  text-align: center;
+  color: #999;
+
+  i {
+    vertical-align: middle;
+    font-size: 1.8rem;
+  }
+}
+
 div.parents {
   color: #999;
   font-size: 80%;
@@ -80,6 +90,10 @@ div.parents {
 
     &:hover {
       background-color: #eee;
+    }
+
+    div.blank-content i {
+      font-size: 1.5rem;
     }
   }
 }
