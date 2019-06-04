@@ -72,7 +72,7 @@ Cotoami also supports this way of organizing things, but its main aim is to sepa
 
 ### Cotonomatizing
 
-During a process of chatting, posting random ideas and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as focus questions. Cotonomatizing allows you to convert them into Cotonomas to create new dedicated places in a spontaneous way.
+During a process of chatting, posting random ideas and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as independent topics. Cotonomatizing allows you to convert them into Cotonomas to create new dedicated places to discuss and research the topics in a spontaneous way.
 
 ![](docs/images/cotonomatizing.png)
 
