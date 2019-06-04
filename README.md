@@ -55,9 +55,9 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 
 ### Separation of writing and connecting
 
-In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or parent nodes in outliners. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
+In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or nodes in outliner. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
 
-Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of Cotos to find new connections.
+Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of Cotos to discover new connections.
 
 ![](docs/images/random-cotos.gif)
 
