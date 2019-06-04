@@ -7,6 +7,7 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 * [Screenshots](#screenshots)
 * [Concept](#concept)
+* [Concept Mapping](#concept-mapping)
 * [Cotoami Scraper](#cotoami-scraper)
 * [Try it](#try-it)
 * [Deploy to Heroku](#deploy-to-heroku)
@@ -27,16 +28,6 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 ### Fully usable on mobile devices
 
 ![](docs/images/screenshot-mobile.png)
-
-### Concept Mapping
-
-[What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
-
-![](docs/images/concept-map.png)
-
-The screenshot above is an example of a concept map explaining why we have seasons (originally presented in the article at Concept Maps official website: http://cmap.ihmc.us/docs/theory-of-concept-maps).
-
-If you are interested in how this concept map was created with Cotoami, here is a youtube video to demonstrate the process: "Making a concept map with Cotoami" - https://www.youtube.com/watch?v=YYQrsGnSoLU
 
 
 ## Concept
@@ -86,7 +77,7 @@ During a process of chatting, posting random ideas and creating structured conte
 
 ### Linking Phrases
 
-Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Screenshots / Concept Mapping](#concept-mapping) section above.
+Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Concept Mapping](#concept-mapping) section.
 
 ![](https://user-images.githubusercontent.com/764015/53540799-4effe780-3b5a-11e9-8b3a-7dc463aecdc9.png)
 
@@ -107,6 +98,17 @@ When a graph is relatively simple with fewer nodes and connections, it works lik
 In that phase, annotated connections become more important than plain ones because they work as highlights in the connections. You just need to focus on blue connections in a graph to grasp what you've learned so far.
 
 ![](docs/images/brexit-graph2.jpg)
+
+
+## Concept Mapping
+
+[What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
+
+![](docs/images/concept-map.png)
+
+The screenshot above is an example of a concept map explaining why we have seasons (originally presented in the article at Concept Maps official website: http://cmap.ihmc.us/docs/theory-of-concept-maps).
+
+If you are interested in how this concept map was created with Cotoami, here is a youtube video to demonstrate the process: "Making a concept map with Cotoami" - https://www.youtube.com/watch?v=YYQrsGnSoLU
 
 
 ## Cotoami Scraper
