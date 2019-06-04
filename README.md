@@ -53,6 +53,14 @@ Individual posts are called "Cotos", which is a Japanese word meaning "thing", a
 
 As you can see in the image above, Cotonomas are posted to a timeline like Cotos. Actually, you can treat Cotonomas as Cotos. They can be pinned to another Cotonoma or connected to other Cotos.
 
+## Separation of writing and connecting
+
+In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or parent nodes in outliners. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
+
+Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of things to find new connections.
+
+![](docs/images/random-cotos.gif)
+
 ### Cotoami's concept of knowledge generation
 
 ![](docs/images/cotoami-concept.png)
@@ -80,7 +88,7 @@ Why is the Linking Phrases feature so important? Concept mapping is a good way t
 
 On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
 
-Which connection is vertical or horizontal depends on you like Cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
+Whether a connection is vertical or horizontal depends on you as Cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
 
 
 ## Try it
