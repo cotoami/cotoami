@@ -84,11 +84,21 @@ Since the version 0.21.0, you can annotate connections. The term "Linking Phrase
 
 Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami. 
 
-Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should avoid annotating connections unless the relationships are obscure to you. Those obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
+Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should annotate only connections whose relationships are obscure to you. These obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
 
 On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
 
-Whether a connection is vertical or horizontal depends on you as Cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
+So whether a connection is vertical or horizontal depends on your context in the same way as Cotonomas are concepts emerged in the context of your knowledge creation.
+
+The optional linking phrases are helpful especially when your knowledge graph grows larger.
+
+When a graph is relatively simple with fewer nodes and connections, it works like a mind map. You can grasp the tree structure even if there are some crosslinks. However, when a graph grows larger and becomes more complex, it'll become difficult to follow the structure.
+
+![](docs/images/brexit-graph1.jpg)
+
+In that phase, annotated connections become more important than plain ones because they work as highlights in the connections. You just need to focus on blue connections in a graph to grasp what you've learned so far.
+
+![](docs/images/brexit-graph2.jpg)
 
 
 ## Try it
