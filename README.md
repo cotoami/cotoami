@@ -5,6 +5,14 @@
 
 Cotoami (言編み・言網) is a platform where people can weave a large network of wisdom from tiny ideas.
 
+* [Screenshots](#screenshots)
+* [Concept](#concept)
+* [Cotoami Scraper](#cotoami-scraper)
+* [Try it](#try-it)
+* [Deploy to Heroku](#deploy-to-heroku)
+* [Related URLs](#related-urls)
+* [Special Thanks](#special-thanks)
+* [License](#license)
 
 ## Screenshots
 
@@ -12,15 +20,15 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ![](docs/images/timeline-and-pinned-docs.png)
 
-## Stock rendered as a graph
+### Stock rendered as a graph
 
 ![](docs/images/timeline-and-graph.png)
 
-## Fully usable on mobile devices
+### Fully usable on mobile devices
 
 ![](docs/images/screenshot-mobile.png)
 
-## Concept Mapping
+### Concept Mapping
 
 [What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
 
