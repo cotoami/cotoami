@@ -64,7 +64,7 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 
 ### Cotonomatizing
 
-During a process of chatting, posting random ideas, and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as focus questions. Cotonomatizing allows you to convert them into Cotonomas to make the process recursive.
+During a process of chatting, posting random ideas and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as focus questions. Cotonomatizing allows you to convert them into Cotonomas to create new dedicated places in a spontaneous way.
 
 ![](docs/images/cotonomatizing.png)
 
