@@ -16,7 +16,7 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
     * [Cotonomatizing](#cotonomatizing)
     * [Linking Phrases](#linking-phrases)
 * [Concept Mapping](#concept-mapping)
-* [Cotoami Scraper](#cotoami-scraper)
+* [Cotoami Scraper 🆕](#cotoami-scraper)
 * [Try it](#try-it)
     * [Demo server](#demo-server)
     * [Launch your own server with Docker](#launch-your-own-server-with-docker)
