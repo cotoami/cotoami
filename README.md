@@ -103,11 +103,13 @@ In that phase, annotated connections become more important than plain ones becau
 
 ## Cotoami Scraper
 
-![](docs/images/cotoami-scraper.png)
-
 To discover interesting connections, you should collect as many varieties of Cotos as possible. But how? [Cotoami Scraper](https://github.com/cotoami/cotoami-scraper) helps you generate Cotos from various sources.
 
-Cotoami Scraper is a Chrome Extension that scrapes web content to generate inputs for Cotoami. It's available on [Chrome Web Store](https://chrome.google.com/webstore/detail/cotoami-scraper/mnnpilplakipdilghehcgoepcaalhlab?hl=en) and being developed as [an open source project](https://github.com/cotoami/cotoami-scraper).
+Cotoami Scraper is a Chrome Extension that scrapes web content to generate inputs for Cotoami. Currently, it supports the three types of content in web pages: Page link, Selection and Kindle highlights. The screenshot below shows scraping Kindle highlights.
+
+![](docs/images/cotoami-scraper.png)
+
+It's available on [Chrome Web Store](https://chrome.google.com/webstore/detail/cotoami-scraper/mnnpilplakipdilghehcgoepcaalhlab?hl=en) and being developed as [an open source project](https://github.com/cotoami/cotoami-scraper).
 
 
 ## Try it
