@@ -57,7 +57,7 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 
 In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or parent nodes in outliners. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
 
-Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of things to find new connections.
+Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of Cotos to find new connections.
 
 ![](docs/images/random-cotos.gif)
 
@@ -99,6 +99,15 @@ When a graph is relatively simple with fewer nodes and connections, it works lik
 In that phase, annotated connections become more important than plain ones because they work as highlights in the connections. You just need to focus on blue connections in a graph to grasp what you've learned so far.
 
 ![](docs/images/brexit-graph2.jpg)
+
+
+## Cotoami Scraper
+
+![](docs/images/cotoami-scraper.png)
+
+To discover interesting connections, you should collect as many varieties of Cotos as possible. But how? [Cotoami Scraper](https://github.com/cotoami/cotoami-scraper) helps you generate Cotos from various sources.
+
+Cotoami Scraper is a Chrome Extension that scrapes web content to generate inputs for Cotoami. It's available on [Chrome Web Store](https://chrome.google.com/webstore/detail/cotoami-scraper/mnnpilplakipdilghehcgoepcaalhlab?hl=en) and being developed as [an open source project](https://github.com/cotoami/cotoami-scraper).
 
 
 ## Try it
