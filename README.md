@@ -167,7 +167,7 @@ If there are no errors, you should be able to open the start page at the URL in 
 If you want to stop the servers, execute the following command in the same directory:
 
 ```
-$ docker-compose stop
+$ COMPOSE_PROJECT_NAME=cotoami docker-compose stop
 ```
 
 Your data will be stored in Docker's named volumes: `cotoami_postgres-data`, `cotoami_neo4j-data`.
