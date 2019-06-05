@@ -10,12 +10,14 @@ module App.Views.Coto exposing
     , openTraversalButton
     , openTraversalButtonDiv
     , parentsDiv
+    , renderContent
     , subCotosDiv
     )
 
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (Msg)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
@@ -30,6 +32,7 @@ import Html.Events exposing (..)
 import Html.Keyed
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.StringUtil
 
 
 cotoClassList : Context a -> ElementId -> Maybe CotoId -> List ( String, Bool ) -> Attribute msg
@@ -42,7 +45,14 @@ cotoClassList context elementId maybeCotoId additionalClasses =
            , Maybe.map2 (==) maybeCotoId context.cotoFocus
                 |> Maybe.withDefault False
            )
-         , ( "selected", App.Submodels.Context.isSelected maybeCotoId context )
+         , ( "selected"
+           , maybeCotoId
+                |> Maybe.map
+                    (\cotoId ->
+                        App.Submodels.CotoSelection.isSelected cotoId context
+                    )
+                |> Maybe.withDefault False
+           )
          , ( "focused-in-reordering"
            , App.Submodels.Context.isTriggerElementInReordering elementId context
            )
@@ -139,10 +149,24 @@ contentDiv context elementId markdown model =
                             , ( "open", App.Submodels.Context.contentOpen elementId context )
                             ]
                         ]
-                        [ markdown model.content ]
+                        [ renderContent markdown model.content ]
                     ]
             )
-        |> Maybe.withDefault (markdown model.content)
+        |> Maybe.withDefault (renderContent markdown model.content)
+
+
+renderContent : (String -> Html msg) -> String -> Html msg
+renderContent renderer content =
+    if Utils.StringUtil.isBlank content then
+        blankContent
+
+    else
+        renderer content
+
+
+blankContent : Html msg
+blankContent =
+    div [ class "blank-content" ] [ materialIcon "category" Nothing ]
 
 
 
@@ -220,7 +244,12 @@ parentsDiv graph exclude childId =
                         [ class "parent"
                         , onClick (App.Messages.OpenTraversal parent.id)
                         ]
-                        [ text (abbreviate parent) ]
+                        [ if Utils.StringUtil.isBlank parent.content then
+                            blankContent
+
+                          else
+                            text (abbreviate parent)
+                        ]
                 )
                 parents
             )

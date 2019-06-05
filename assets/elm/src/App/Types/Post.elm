@@ -1,18 +1,13 @@
 module App.Types.Post exposing
-    ( PaginatedPosts
-    , Post
+    ( Post
     , defaultPost
     , getCotoFromPosts
-    , isPostedInCoto
-    , isPostedInCotonoma
-    , isSelfOrPostedIn
     , toCoto
     )
 
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import Date exposing (Date)
-import Exts.Maybe exposing (isNothing)
 
 
 
@@ -65,42 +60,6 @@ toCoto post =
         )
         post.cotoId
         post.postedAt
-
-
-isPostedInCotonoma : Maybe Cotonoma -> Post -> Bool
-isPostedInCotonoma maybeCotonoma post =
-    maybeCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                post.postedIn
-                    |> Maybe.map (\postedIn -> postedIn.id == cotonoma.id)
-                    |> Maybe.withDefault False
-            )
-        |> Maybe.withDefault (isNothing post.postedIn)
-
-
-isPostedInCoto : Coto -> Post -> Bool
-isPostedInCoto coto post =
-    coto.asCotonoma
-        |> Maybe.map
-            (\cotonoma ->
-                post.postedIn
-                    |> Maybe.map (\postedIn -> postedIn.key == cotonoma.key)
-                    |> Maybe.withDefault False
-            )
-        |> Maybe.withDefault False
-
-
-isSelfOrPostedIn : Coto -> Post -> Bool
-isSelfOrPostedIn coto post =
-    post.cotoId == Just coto.id || isPostedInCoto coto post
-
-
-type alias PaginatedPosts =
-    { posts : List Post
-    , pageIndex : Int
-    , totalPages : Int
-    }
 
 
 getCotoFromPosts : CotoId -> List Post -> Maybe Coto

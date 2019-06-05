@@ -15,13 +15,13 @@ defmodule Cotoami.Coto do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "cotos" do
-    field :content, :string
-    field :long_content, :string
-    field :summary, :string
-    field :as_cotonoma, :boolean
-    belongs_to :posted_in, Cotoami.Cotonoma
-    belongs_to :amishi, Cotoami.Amishi
-    has_one :cotonoma, Cotoami.Cotonoma
+    field(:content, :string)
+    field(:long_content, :string)
+    field(:summary, :string)
+    field(:as_cotonoma, :boolean)
+    belongs_to(:posted_in, Cotoami.Cotonoma)
+    belongs_to(:amishi, Cotoami.Amishi)
+    has_one(:cotonoma, Cotoami.Cotonoma)
 
     timestamps(type: :utc_datetime)
   end
@@ -29,25 +29,28 @@ defmodule Cotoami.Coto do
   def changeset_to_insert(struct, params \\ %{}) do
     struct
     |> cast(params, [:content, :summary, :as_cotonoma, :posted_in_id, :amishi_id])
-    |> validate_required([:content, :amishi_id])
+    |> validate_required([:amishi_id])
     |> validate_length(:summary, max: @summary_max_length)
+    |> normalize_no_content()
     |> store_long_content()
   end
 
   def changeset_to_update(struct, params \\ %{}) do
     struct
     |> cast(params, [:content, :summary])
-    |> validate_required([:content])
     |> validate_length(:summary, max: @summary_max_length)
+    |> normalize_no_content()
     |> store_long_content()
   end
 
   def changeset_to_import(struct, coto_json, %Amishi{id: amishi_id}) do
-    data = Map.merge(coto_json, %{
-      "amishi_id" => amishi_id,
-      "inserted_at" => unixtime_to_datetime!(coto_json["inserted_at"]),
-      "updated_at" => unixtime_to_datetime!(coto_json["updated_at"])
-    })
+    data =
+      Map.merge(coto_json, %{
+        "amishi_id" => amishi_id,
+        "inserted_at" => unixtime_to_datetime!(coto_json["inserted_at"]),
+        "updated_at" => unixtime_to_datetime!(coto_json["updated_at"])
+      })
+
     struct
     |> cast(data, [
       :id,
@@ -63,12 +66,24 @@ defmodule Cotoami.Coto do
     |> store_long_content()
   end
 
-  # The length of cotos.content is limited to @content_max_length 
+  defp normalize_no_content(changeset) do
+    case get_field(changeset, :content) do
+      nil ->
+        put_change(changeset, :content, "")
+
+      content ->
+        put_change(changeset, :content, String.trim(content))
+    end
+  end
+
+  # The length of cotos.content is limited to @content_max_length
   # because it will be indexed and index row's maximum size is 8191 bytes.
   # So long content will be stored as a long_content field.
   defp store_long_content(changeset) do
     case get_field(changeset, :content) do
-      nil -> changeset
+      nil ->
+        changeset
+
       content ->
         if String.length(content) > @content_max_length do
           changeset
@@ -86,10 +101,10 @@ defmodule Cotoami.Coto do
   end
 
   def for_amishi(query, amishi_id) do
-    from coto in query, where: coto.amishi_id == ^amishi_id
+    from(coto in query, where: coto.amishi_id == ^amishi_id)
   end
 
   def in_cotonoma(query, cotonoma_id) do
-    from coto in query, where: coto.posted_in_id == ^cotonoma_id
+    from(coto in query, where: coto.posted_in_id == ^cotonoma_id)
   end
 end

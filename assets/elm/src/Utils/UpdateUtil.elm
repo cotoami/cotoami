@@ -2,6 +2,7 @@ module Utils.UpdateUtil exposing
     ( addCmd
     , addCmdIf
     , chain
+    , chainIf
     , withCmd
     , withCmdIf
     , withCmds
@@ -50,3 +51,12 @@ addCmdIf condition createCmd ( model, cmd ) =
 chain : (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
 chain update ( model, cmd1 ) =
     update model |> (\( model, cmd2 ) -> ( model, Cmd.batch [ cmd1, cmd2 ] ))
+
+
+chainIf : (model -> Bool) -> (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+chainIf condition update ( model, cmd1 ) =
+    if condition model then
+        chain update ( model, cmd1 )
+
+    else
+        ( model, cmd1 )

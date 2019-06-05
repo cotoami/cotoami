@@ -16,6 +16,21 @@ defmodule CotoamiWeb.ControllerHelpers do
     end
   end
 
+  def get_flags_in_params(params, keys) do
+    Enum.map(keys, fn key ->
+      {String.to_atom(key), Map.has_key?(params, key)}
+    end)
+  end
+
+  def on_coto_created(conn, %Coto{} = coto, %Amishi{} = amishi) do
+    if coto.posted_in do
+      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
+      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
+    else
+      broadcast_post(coto, nil, amishi, conn.assigns.client_id)
+    end
+  end
+
   defp payload_base(%Amishi{} = amishi, client_id) do
     %{
       clientId: client_id,
@@ -48,7 +63,7 @@ defmodule CotoamiWeb.ControllerHelpers do
   def broadcast_post(%Coto{} = coto, cotonoma_key, %Amishi{} = amishi, client_id) do
     coto
     |> Phoenix.View.render_one(CotoamiWeb.CotoView, "coto.json")
-    |> broadcast("timelines:#{cotonoma_key}", "post", amishi, client_id)
+    |> broadcast("timelines:#{cotonoma_key || amishi.id}", "post", amishi, client_id)
   end
 
   #

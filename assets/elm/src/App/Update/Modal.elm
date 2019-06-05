@@ -54,56 +54,43 @@ openEditorModalForNew : Context context -> Maybe Coto -> Model -> ( Model, Cmd M
 openEditorModalForNew context source model =
     { model | editorModal = App.Modals.EditorModal.modelForNew context source }
         |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
+        |> withCmd (\_ -> App.Commands.focus App.Messages.NoOp "editor-modal-content-input")
 
 
 openEditorModalForEdit : Coto -> Model -> ( Model, Cmd Msg )
 openEditorModalForEdit coto model =
     { model | editorModal = App.Modals.EditorModal.modelForEdit coto }
         |> App.Submodels.Modals.openModal EditorModal
-        |> withCmd (\_ -> App.Commands.focus "editor-modal-content-input" App.Messages.NoOp)
+        |> withCmd (\_ -> App.Commands.focus App.Messages.NoOp "editor-modal-content-input")
 
 
-openConnectModalByCoto : List Coto -> Coto -> Model -> ( Model, Cmd Msg )
-openConnectModalByCoto selectedCotos coto model =
-    openConnectModal selectedCotos Inbound (App.Modals.ConnectModal.Coto coto) model
+openConnectModalByCoto : Coto -> Model -> ( Model, Cmd Msg )
+openConnectModalByCoto coto model =
+    openConnectModal Inbound (App.Modals.ConnectModal.Coto coto) model
 
 
-openConnectModalByNewPost :
-    Msg
-    -> List Coto
-    -> CotoContent
-    -> Model
-    -> ( Model, Cmd Msg )
-openConnectModalByNewPost onPosted selectedCotos content model =
+openConnectModalByNewPost : Msg -> CotoContent -> Model -> ( Model, Cmd Msg )
+openConnectModalByNewPost onPosted content model =
     model
-        |> openConnectModal selectedCotos Inbound (NewPost content)
+        |> openConnectModal Inbound (NewPost content)
         |> Tuple.mapFirst
             (\({ connectModal } as model) ->
                 { model | connectModal = { connectModal | onPosted = onPosted } }
             )
 
 
-openConnectModal :
-    List Coto
-    -> Direction
-    -> ConnectingTarget
-    -> Model
-    -> ( Model, Cmd Msg )
-openConnectModal selectedCotos direction target model =
+openConnectModal : Direction -> ConnectingTarget -> Model -> ( Model, Cmd Msg )
+openConnectModal direction target model =
     { model
         | connectModal =
-            App.Modals.ConnectModal.initModel
-                target
-                selectedCotos
-                direction
+            App.Modals.ConnectModal.initModel target direction
     }
         |> App.Submodels.Modals.openModal ConnectModal
         |> withCmd
             (\_ ->
                 App.Commands.focus
-                    "connect-modal-primary-button"
                     App.Messages.NoOp
+                    "connect-modal-primary-button"
             )
 
 

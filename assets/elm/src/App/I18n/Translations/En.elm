@@ -48,6 +48,9 @@ text key =
         ConfirmCotonomatize name ->
             "You are about to promote this coto to a cotonoma named '" ++ name ++ "'"
 
+        ConfirmPinSelectionAsGroup ->
+            "You are about to pin the selected cotos as a group."
+
         UnexpectedErrorOccurred ->
             "An unexpected error has occurred."
 
@@ -104,6 +107,9 @@ text key =
 
         Flow_TileView ->
             "Tile View"
+
+        Flow_Random ->
+            "Random"
 
         Flow_NewPosts ->
             "new posts"
@@ -286,6 +292,9 @@ text key =
 
             else
                 "cotos selected"
+
+        CotoSelection_PinAsGroup ->
+            "Pin as a group"
 
         Reorder_CloseReorderMode ->
             "Done reordering"

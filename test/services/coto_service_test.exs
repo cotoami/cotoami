@@ -16,6 +16,11 @@ defmodule Cotoami.CotoServiceTest do
     %{conn: Bolt.Sips.conn(), amishi: amishi}
   end
 
+  test "creating a coto without content", ~M{amishi} do
+    coto = CotoService.create!(amishi, nil)
+    assert %Coto{content: ""} = CotoService.get(coto.id)
+  end
+
   describe "when there is a coto" do
     setup ~M{amishi} do
       coto = CotoService.create!(amishi, "hello")
@@ -60,46 +65,45 @@ defmodule Cotoami.CotoServiceTest do
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end
 
-    test "get_cotos_by_amishi should return all by default", ~M{amishi} do
+    test "all_by_amishi should return all by default", ~M{amishi} do
       assert [
                %Coto{content: "coto4"},
                %Coto{content: "coto3"},
                %Coto{content: "coto2"},
                %Coto{content: "coto1"},
                %Coto{content: "test", as_cotonoma: true}
-             ] = CotoService.get_cotos_by_amishi(amishi, 0).rows
+             ] = CotoService.all_by_amishi(amishi, 0).rows
     end
 
-    test "get_cotos_by_cotonoma", ~M{amishi, cotonoma} do
+    test "all_by_cotonoma", ~M{amishi, cotonoma} do
       assert [
                %Coto{content: "coto4"}
-             ] = CotoService.get_cotos_by_cotonoma(cotonoma.key, amishi, 0).rows
+             ] = CotoService.all_by_cotonoma(cotonoma, amishi, 0).rows
     end
 
-    test "get_cotos_by_amishi with :exclude_pinned_graph", ~M{amishi} do
+    test "all_by_amishi with :exclude_pinned_graph", ~M{amishi} do
       assert [
                %Coto{content: "coto4"},
                %Coto{content: "coto1"},
                %Coto{content: "test", as_cotonoma: true}
-             ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_pinned_graph: true).rows
+             ] = CotoService.all_by_amishi(amishi, 0, exclude_pinned_graph: true).rows
     end
 
-    test "get_cotos_by_amishi with :exclude_posts_in_cotonoma", ~M{amishi} do
+    test "all_by_amishi with :exclude_posts_in_cotonoma", ~M{amishi} do
       assert [
                %Coto{content: "coto3"},
                %Coto{content: "coto2"},
                %Coto{content: "coto1"},
                %Coto{content: "test", as_cotonoma: true}
-             ] = CotoService.get_cotos_by_amishi(amishi, 0, exclude_posts_in_cotonoma: true).rows
+             ] = CotoService.all_by_amishi(amishi, 0, exclude_posts_in_cotonoma: true).rows
     end
 
-    test "get_cotos_by_amishi with :exclude_pinned_graph and :exclude_posts_in_cotonoma",
-         ~M{amishi} do
+    test "all_by_amishi with :exclude_pinned_graph and :exclude_posts_in_cotonoma", ~M{amishi} do
       assert [
                %Coto{content: "coto1"},
                %Coto{content: "test", as_cotonoma: true}
              ] =
-               CotoService.get_cotos_by_amishi(
+               CotoService.all_by_amishi(
                  amishi,
                  0,
                  exclude_pinned_graph: true,

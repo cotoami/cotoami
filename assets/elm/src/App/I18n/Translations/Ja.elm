@@ -37,16 +37,19 @@ text key =
             "確認"
 
         ConfirmDeleteCoto ->
-            "このコトを削除してもよろしいですか？"
+            "このコトを削除しますか？"
 
         ConfirmUnpinCoto ->
-            "このピンを外してもよろしいですか？"
+            "このピンを外しますか？"
 
         ConfirmDisconnect ->
-            "この接続を削除してもよろしいですか？"
+            "この接続を削除しますか？"
 
         ConfirmCotonomatize name ->
-            "このコトを《" ++ name ++ "》という名前のコトノマに昇格させてもよろしいですか？"
+            "このコトを《" ++ name ++ "》という名前のコトノマに昇格させますか？"
+
+        ConfirmPinSelectionAsGroup ->
+            "選択中のコトをグルーピングしてピン留めしますか？"
 
         UnexpectedErrorOccurred ->
             "システムエラーが発生しました。"
@@ -107,6 +110,9 @@ text key =
 
         Flow_TileView ->
             "タイル"
+
+        Flow_Random ->
+            "ランダム"
 
         Flow_NewPosts ->
             "新しい投稿"
@@ -281,6 +287,9 @@ text key =
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
+
+        CotoSelection_PinAsGroup ->
+            "グルーピングしてピン留め"
 
         Reorder_CloseReorderMode ->
             "並び替え完了"

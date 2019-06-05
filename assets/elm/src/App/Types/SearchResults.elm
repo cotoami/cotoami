@@ -1,4 +1,14 @@
-module App.Types.SearchResults exposing (SearchResults, clearQuery, defaultSearchResults, getCoto, hasQuery, setLoading, setPosts, setQuery, setQuerying)
+module App.Types.SearchResults exposing
+    ( SearchResults
+    , clearQuery
+    , defaultSearchResults
+    , getCoto
+    , hasQuery
+    , setLoading
+    , setPosts
+    , setQuery
+    , setQuerying
+    )
 
 import App.Types.Coto exposing (Coto, CotoId)
 import App.Types.Post exposing (Post)
@@ -29,8 +39,9 @@ hasQuery searchResults =
 
 setQuerying : String -> SearchResults -> SearchResults
 setQuerying query searchResults =
-    setQuery query searchResults
-        |> (\searchResults -> { searchResults | loading = True })
+    searchResults
+        |> setQuery query
+        |> setLoading
 
 
 setQuery : String -> SearchResults -> SearchResults

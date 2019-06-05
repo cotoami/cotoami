@@ -16,6 +16,7 @@ type TextKey
     | ConfirmUnpinCoto
     | ConfirmDisconnect
     | ConfirmCotonomatize String
+    | ConfirmPinSelectionAsGroup
     | UnexpectedErrorOccurred
     | SigninModal_WelcomeTitle
     | SigninModal_SignupEnabled
@@ -35,6 +36,7 @@ type TextKey
     | Flow_Filter
     | Flow_StreamView
     | Flow_TileView
+    | Flow_Random
     | Flow_NewPosts
     | Stock_DocumentView
     | Stock_GraphView
@@ -92,4 +94,5 @@ type TextKey
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
     | CotoSelection_CotosSelected Int
+    | CotoSelection_PinAsGroup
     | Reorder_CloseReorderMode

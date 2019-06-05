@@ -48,6 +48,9 @@ text key =
         ConfirmCotonomatize name ->
             "Вы добавляете этот объект к профилю объекта " ++ name ++ "'"
 
+        ConfirmPinSelectionAsGroup ->
+            "You are about to pin the selected cotos as a group."
+
         UnexpectedErrorOccurred ->
             "Возникла неожиданная ошибка."
 
@@ -104,6 +107,9 @@ text key =
 
         Flow_TileView ->
             "Просмотр списка заголовков"
+
+        Flow_Random ->
+            "Random"
 
         Flow_NewPosts ->
             "new posts"
@@ -286,6 +292,9 @@ text key =
 
             else
                 "объекты выбраны"
+
+        CotoSelection_PinAsGroup ->
+            "Pin as a group"
 
         Reorder_CloseReorderMode ->
             "Изменить порядок"

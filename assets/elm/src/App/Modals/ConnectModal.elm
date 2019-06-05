@@ -12,13 +12,13 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
 import App.Modals.ConnectModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Graph
-import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent, CotoId)
 import App.Types.Post exposing (Post)
-import App.Types.Timeline
+import App.Update.Graph
 import App.Update.Post
 import App.Views.Connection
 import Html exposing (..)
@@ -40,7 +40,6 @@ type ConnectingTarget
 
 type alias Model =
     { target : ConnectingTarget
-    , selectedCotos : List Coto
     , direction : Direction
     , linkingPhrase : String
     , onPosted : AppMsg.Msg
@@ -50,18 +49,16 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { target = None
-    , selectedCotos = []
     , direction = Inbound
     , linkingPhrase = ""
     , onPosted = AppMsg.NoOp
     }
 
 
-initModel : ConnectingTarget -> List Coto -> Direction -> Model
-initModel target selectedCotos direction =
+initModel : ConnectingTarget -> Direction -> Model
+initModel target direction =
     { defaultModel
         | target = target
-        , selectedCotos = selectedCotos
         , direction = direction
     }
 
@@ -101,10 +98,7 @@ modalConfig context model =
                     [ id primaryButtonId
                     , class "button button-primary"
                     , autofocus True
-                    , onClick
-                        (AppMsg.ConnectModalMsg
-                            (Connect coto model.selectedCotos)
-                        )
+                    , onClick (AppMsg.ConnectModalMsg (Connect coto))
                     ]
                     [ text (context.i18nText I18nKeys.ConnectModal_Connect) ]
                 ]
@@ -128,13 +122,10 @@ modalContent : Context context -> Model -> Html AppMsg.Msg
 modalContent context model =
     let
         selectedCotosHtml =
-            Html.Keyed.node
-                "div"
-                [ class "selected-cotos" ]
-                (List.map
-                    (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
-                    model.selectedCotos
-                )
+            context
+                |> App.Submodels.CotoSelection.cotosInSelectedOrder
+                |> List.map (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
+                |> Html.Keyed.node "div" [ class "selected-cotos" ]
 
         targetHtml =
             case model.target of
@@ -207,61 +198,50 @@ update context msg ({ connectModal } as model) =
             { model | connectModal = { connectModal | linkingPhrase = input } }
                 |> withoutCmd
 
-        Connect target objects ->
+        Connect target ->
+            let
+                selectedCotos =
+                    App.Submodels.CotoSelection.cotosInSelectedOrder context
+            in
             App.Submodels.LocalCotos.connect
                 context.session
                 target
-                objects
+                selectedCotos
                 model.connectModal.direction
                 (getLinkingPhrase model.connectModal)
                 model
                 |> withCmd
                     (\model ->
                         App.Server.Graph.connect
+                            AppMsg.Connected
                             context.clientId
                             (Maybe.map .key model.cotonoma)
                             target.id
-                            (List.map .id objects)
+                            (List.map .id selectedCotos)
                             model.connectModal.direction
                             (getLinkingPhrase model.connectModal)
                     )
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostAndConnectToSelection content ->
-            postAndConnectToSelection context content model
+            App.Update.Post.post
+                context
+                (\postId ->
+                    AppMsg.ConnectModalMsg
+                        << PostedAndConnectToSelection postId
+                )
+                content
+                model
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.CloseActiveModal)
 
         PostedAndConnectToSelection postId (Ok post) ->
-            App.Update.Post.onPosted context postId post model
-                |> chain (connectPostToSelection context post)
-                |> addCmd (\_ -> App.Commands.sendMsg model.connectModal.onPosted)
+            App.Submodels.LocalCotos.onPosted postId post model
+                |> withCmd (\model -> App.Commands.sendMsg model.connectModal.onPosted)
                 |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+                |> chain (connectPostToSelection context post)
 
         PostedAndConnectToSelection postId (Err _) ->
             model |> withoutCmd
-
-
-postAndConnectToSelection :
-    Context context
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postAndConnectToSelection context content model =
-    let
-        ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content model.timeline
-
-        tag =
-            AppMsg.ConnectModalMsg
-                << PostedAndConnectToSelection newTimeline.postIdCounter
-    in
-    { model | timeline = newTimeline }
-        |> withCmds
-            (\model ->
-                [ App.Commands.scrollTimelineToBottom (\_ -> AppMsg.NoOp)
-                , App.Server.Post.post context.clientId context.cotonoma tag newPost
-                ]
-            )
 
 
 connectPostToSelection :
@@ -271,27 +251,14 @@ connectPostToSelection :
     -> ( UpdateModel model, Cmd AppMsg.Msg )
 connectPostToSelection context post model =
     post.cotoId
-        |> Maybe.andThen (\cotoId -> App.Submodels.LocalCotos.getCoto cotoId model)
         |> Maybe.map
-            (\target ->
-                let
-                    objects =
-                        App.Submodels.LocalCotos.getSelectedCotos context model
-                in
-                ( App.Submodels.LocalCotos.connect
-                    context.session
-                    target
-                    objects
+            (\cotoId ->
+                App.Update.Graph.connectToSelection
+                    context
+                    AppMsg.Connected
+                    cotoId
                     model.connectModal.direction
                     (getLinkingPhrase model.connectModal)
                     model
-                , App.Server.Graph.connect
-                    context.clientId
-                    (Maybe.map .key model.cotonoma)
-                    target.id
-                    (List.map .id objects)
-                    model.connectModal.direction
-                    (getLinkingPhrase model.connectModal)
-                )
             )
         |> Maybe.withDefault ( model, Cmd.none )

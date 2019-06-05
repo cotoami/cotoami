@@ -23,6 +23,12 @@ defmodule CotoamiWeb.CotonomaController do
     })
   end
 
+  def suggest(conn, %{"query" => query}, amishi) do
+    render(conn, "cotonomas.json", %{
+      cotonomas: CotonomaService.suggest(amishi, query)
+    })
+  end
+
   def create(
         conn,
         %{
@@ -35,34 +41,56 @@ defmodule CotoamiWeb.CotonomaController do
         amishi
       ) do
     coto = CotonomaService.create!(amishi, name, shared, cotonoma_id)
-
-    if coto.posted_in do
-      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
-      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
-    end
-
+    on_coto_created(conn, coto, amishi)
     render(conn, CotoView, "created.json", coto: coto)
   rescue
     e in Ecto.ConstraintError ->
       send_resp_by_constraint_error(conn, e)
   end
 
+  def get_or_create(conn, %{"name" => name}, amishi) do
+    coto = CotonomaService.create!(amishi, name, false, nil)
+    on_coto_created(conn, coto, amishi)
+    render(conn, "cotonoma.json", cotonoma: coto.cotonoma)
+  rescue
+    e in Ecto.ConstraintError ->
+      case e.constraint do
+        "cotonomas_name_owner_id_index" ->
+          cotonoma = CotonomaService.get_by_name(name, amishi)
+          render(conn, "cotonoma.json", cotonoma: cotonoma)
+
+        constraint ->
+          send_resp(conn, :bad_request, constraint)
+      end
+  end
+
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
-    page_index = String.to_integer(page)
-
-    options =
-      Enum.map(@cotos_options, fn key ->
-        {String.to_atom(key), Map.has_key?(params, key)}
-      end)
-
-    case CotoService.get_cotos_by_cotonoma(key, amishi, page_index, options) do
+    case CotonomaService.get_by_key(key) do
       nil ->
         send_resp(conn, :not_found, "")
 
-      paginated_results ->
-        render(conn, "cotos.json", paginated_results)
+      cotonoma ->
+        page_index = String.to_integer(page)
+        options = get_flags_in_params(params, @cotos_options)
+        paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
+        render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
+    end
+  rescue
+    _ in Cotoami.Exceptions.NoPermission ->
+      send_resp(conn, :not_found, "")
+  end
+
+  def random(conn, %{"key" => key} = params, amishi) do
+    case CotonomaService.get_by_key(key) do
+      nil ->
+        send_resp(conn, :not_found, "")
+
+      cotonoma ->
+        options = get_flags_in_params(params, @cotos_options)
+        cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
+        render(conn, "random.json", cotos: cotos)
     end
   rescue
     _ in Cotoami.Exceptions.NoPermission ->

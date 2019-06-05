@@ -48,6 +48,9 @@ text key =
         ConfirmCotonomatize name ->
             "可以把這投稿提升為《“++ name ++”》的名字的投稿室嗎？"
 
+        ConfirmPinSelectionAsGroup ->
+            "You are about to pin the selected cotos as a group."
+
         UnexpectedErrorOccurred ->
             "系統發生了錯誤。"
 
@@ -107,6 +110,9 @@ text key =
 
         Flow_TileView ->
             "平铺"
+
+        Flow_Random ->
+            "Random"
 
         Flow_NewPosts ->
             "new posts"
@@ -285,6 +291,9 @@ text key =
 
         CotoSelection_CotosSelected count ->
             "件在選擇中"
+
+        CotoSelection_PinAsGroup ->
+            "Pin as a group"
 
         Reorder_CloseReorderMode ->
             "完成排列"

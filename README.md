@@ -5,6 +5,27 @@
 
 Cotoami (言編み・言網) is a platform where people can weave a large network of wisdom from tiny ideas.
 
+* [Screenshots](#screenshots)
+    * [Flow (timeline) and Stock (structured content)](#flow-timeline-and-stock-structured-content)
+    * [Stock rendered as a graph](#stock-rendered-as-a-graph)
+    * [Fully usable on mobile devices](#fully-usable-on-mobile-devices)
+* [Concept](#concept)
+    * [Basic building blocks](#basic-building-blocks)
+    * [Separation of writing and connecting](#separation-of-writing-and-connecting)
+    * [Cotoami's concept of knowledge generation](#cotoamis-concept-of-knowledge-generation)
+    * [Cotonomatizing](#cotonomatizing)
+    * [Linking Phrases](#linking-phrases)
+* [Concept Mapping](#concept-mapping)
+* [Cotoami Scraper 🆕](#cotoami-scraper)
+* [Try it](#try-it)
+    * [Demo server](#demo-server)
+    * [Launch your own server with Docker](#launch-your-own-server-with-docker)
+    * [Official server](#official-server)
+* [Deploy to Heroku](#deploy-to-heroku)
+    * [Obtain a SendGrid API key](#obtain-a-sendgrid-api-key)
+* [Related URLs](#related-urls)
+* [Special Thanks](#special-thanks)
+* [License](#license)
 
 ## Screenshots
 
@@ -12,23 +33,13 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ![](docs/images/timeline-and-pinned-docs.png)
 
-## Stock rendered as a graph
+### Stock rendered as a graph
 
 ![](docs/images/timeline-and-graph.png)
 
-## Fully usable on mobile devices
+### Fully usable on mobile devices
 
 ![](docs/images/screenshot-mobile.png)
-
-## Concept Mapping
-
-[What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
-
-![](docs/images/concept-map.png)
-
-The screenshot above is an example of a concept map explaining why we have seasons (originally presented in the article at Concept Maps official website: http://cmap.ihmc.us/docs/theory-of-concept-maps).
-
-If you are interested in how this concept map was created with Cotoami, here is a youtube video to demonstrate the process: "Making a concept map with Cotoami" - https://www.youtube.com/watch?v=YYQrsGnSoLU
 
 
 ## Concept
@@ -53,6 +64,14 @@ Individual posts are called "Cotos", which is a Japanese word meaning "thing", a
 
 As you can see in the image above, Cotonomas are posted to a timeline like Cotos. Actually, you can treat Cotonomas as Cotos. They can be pinned to another Cotonoma or connected to other Cotos.
 
+### Separation of writing and connecting
+
+In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or nodes in outliner. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
+
+Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of Cotos to discover new connections.
+
+![](docs/images/random-cotos.gif)
+
 ### Cotoami's concept of knowledge generation
 
 ![](docs/images/cotoami-concept.png)
@@ -64,23 +83,55 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 
 ### Cotonomatizing
 
-During a process of chatting, posting random ideas, and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as focus questions. Cotonomatizing allows you to convert them into Cotonomas to make the process recursive.
+During a process of chatting, posting random ideas and creating structured content by connecting Cotos, some Cotos would collect more connections than others. Those Cotos are possibly important to you or your team and worth discussing as independent topics. Cotonomatizing allows you to convert them into Cotonomas to create new dedicated places to discuss and research the topics in a spontaneous way.
 
 ![](docs/images/cotonomatizing.png)
 
 ### Linking Phrases
 
-Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Screenshots / Concept Mapping](#concept-mapping) section above.
+Since the version 0.21.0, you can annotate connections. The term "Linking Phrases" is borrowed from Concept Maps. Actually you can create concept maps with this feature as introduced in the [Concept Mapping](#concept-mapping) section.
 
 ![](https://user-images.githubusercontent.com/764015/53540799-4effe780-3b5a-11e9-8b3a-7dc463aecdc9.png)
 
 Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami. 
 
-Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should avoid annotating connections unless the relationships are obscure to you. Those obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
+Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should annotate only connections whose relationships are obscure to you. These obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
 
 On the other hand, **Vertical Relationships** generally means inclusive or deductive relationships like "includes", "results in", or "is determined by". Simple arrow lines would be enough to express these relationships and you wouldn't feel the need for annotations in most cases.
 
-Which connection is vertical or horizontal depends on you like Cotonomas are emerged concepts during your knowledge creation. Horizontal relationships (annotated connections) are important portion of the discoveries in your knowledge-base.
+So whether a connection is vertical or horizontal depends on your context in the same way as Cotonomas are concepts emerged in the context of your knowledge creation.
+
+The optional linking phrases are helpful especially when your knowledge graph grows larger.
+
+When a graph is relatively simple with fewer nodes and connections, it works like a mind map. You can grasp the tree structure even if there are some crosslinks. However, when a graph grows larger and becomes more complex, it'll become difficult to follow the structure.
+
+![](docs/images/brexit-graph1.jpg)
+
+In that phase, annotated connections become more important than plain ones because they work as highlights in the connections. You just need to focus on blue connections in a graph to grasp what you've learned so far.
+
+![](docs/images/brexit-graph2.jpg)
+
+
+## Concept Mapping
+
+[What is a Concept Map?](http://cmap.ihmc.us/docs/conceptmap.php)
+
+![](docs/images/concept-map.png)
+
+The screenshot above is an example of a concept map explaining why we have seasons (originally presented in the article at Concept Maps official website: http://cmap.ihmc.us/docs/theory-of-concept-maps).
+
+If you are interested in how this concept map was created with Cotoami, here is a youtube video to demonstrate the process: "Making a concept map with Cotoami" - https://www.youtube.com/watch?v=YYQrsGnSoLU
+
+
+## Cotoami Scraper
+
+To discover interesting connections, you should collect as many varieties of Cotos as possible. But how? [Cotoami Scraper](https://github.com/cotoami/cotoami-scraper) helps you generate Cotos from various sources.
+
+Cotoami Scraper is a Chrome Extension that scrapes web content to generate inputs for Cotoami. Currently, it supports the three types of content in web pages: Page link, Selection and Kindle highlights. The screenshot below shows scraping Kindle highlights.
+
+![](docs/images/cotoami-scraper.png)
+
+It's available on [Chrome Web Store](https://chrome.google.com/webstore/detail/cotoami-scraper/mnnpilplakipdilghehcgoepcaalhlab?hl=en) and being developed as [an open source project](https://github.com/cotoami/cotoami-scraper).
 
 
 ## Try it
@@ -116,7 +167,7 @@ If there are no errors, you should be able to open the start page at the URL in 
 If you want to stop the servers, execute the following command in the same directory:
 
 ```
-$ docker-compose stop
+$ COMPOSE_PROJECT_NAME=cotoami docker-compose stop
 ```
 
 Your data will be stored in Docker's named volumes: `cotoami_postgres-data`, `cotoami_neo4j-data`.

@@ -8,7 +8,15 @@ defmodule CotoamiWeb.TimelineChannel do
   alias Cotoami.CotonomaService
   alias CotoamiWeb.Presence
 
-  def join("timelines:" <> cotonoma_key, _params, socket) do
+  def join("timelines:" <> amishi_id_or_cotonoma_key, _params, socket) do
+    if amishi_id_or_cotonoma_key == socket.assigns.amishi.id do
+      {:ok, socket}
+    else
+      join_cotonoma_timeline(amishi_id_or_cotonoma_key, socket)
+    end
+  end
+
+  defp join_cotonoma_timeline(cotonoma_key, socket) do
     case CotonomaService.get_by_key(cotonoma_key) do
       nil ->
         {:error, %{reason: "not-found"}}

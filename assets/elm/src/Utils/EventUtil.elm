@@ -1,5 +1,6 @@
 module Utils.EventUtil exposing
     ( ScrollPos
+    , fromBottom
     , onClickWithoutPropagation
     , onKeyDown
     , onLinkButtonClick
@@ -50,6 +51,11 @@ type alias ScrollPos =
     , contentHeight : Int
     , containerHeight : Int
     }
+
+
+fromBottom : ScrollPos -> Int
+fromBottom { scrollTop, contentHeight, containerHeight } =
+    contentHeight - containerHeight - scrollTop
 
 
 onScroll : (ScrollPos -> msg) -> Attribute msg
