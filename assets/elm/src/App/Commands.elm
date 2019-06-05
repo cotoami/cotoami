@@ -5,6 +5,7 @@ module App.Commands exposing
     , scrollPinnedCotosToBottom
     , scrollTimelineByQuickEditorOpen
     , scrollTimelineToBottom
+    , scrollTimelineToTop
     , scrollToBottom
     , scrollToRight
     , scrollToTop
@@ -26,19 +27,24 @@ sendMsg msg =
 
 scrollGraphExplorationToRight : msg -> Cmd msg
 scrollGraphExplorationToRight msg =
-    scrollToRight "graph-exploration" msg
+    scrollToRight msg "graph-exploration"
 
 
 scrollTraversalsPaginationToRight : msg -> Cmd msg
 scrollTraversalsPaginationToRight msg =
-    scrollToRight "traversals-pagination" msg
+    scrollToRight msg "traversals-pagination"
 
 
-scrollToRight : String -> msg -> Cmd msg
-scrollToRight elementId msg =
+scrollToRight : msg -> String -> Cmd msg
+scrollToRight msg elementId =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Dom.Scroll.toRight elementId)
         |> Task.attempt (\_ -> msg)
+
+
+scrollTimelineToTop : msg -> Cmd msg
+scrollTimelineToTop tag =
+    scrollToTop tag "timeline"
 
 
 scrollTimelineToBottom : (Float -> msg) -> Cmd msg
@@ -56,7 +62,7 @@ scrollTimelineByQuickEditorOpen msg =
 
 initScrollPositionOfPinnedCotos : msg -> Cmd msg
 initScrollPositionOfPinnedCotos msg =
-    scrollToTop "pinned-cotos-body" msg
+    scrollToTop msg "pinned-cotos-body"
 
 
 scrollPinnedCotosToBottom : (Float -> msg) -> Cmd msg
@@ -64,8 +70,8 @@ scrollPinnedCotosToBottom tag =
     scrollToBottom tag "pinned-cotos-body"
 
 
-scrollToTop : String -> msg -> Cmd msg
-scrollToTop elementId msg =
+scrollToTop : msg -> String -> Cmd msg
+scrollToTop msg elementId =
     Process.sleep (100 * Time.millisecond)
         |> Task.andThen (\_ -> Dom.Scroll.toTop elementId)
         |> Task.attempt (\_ -> msg)
@@ -79,7 +85,7 @@ scrollToBottom tag elementId =
         |> Task.attempt (\result -> Result.withDefault -1 result |> tag)
 
 
-focus : String -> msg -> Cmd msg
-focus elementId msg =
+focus : msg -> String -> Cmd msg
+focus msg elementId =
     Dom.focus elementId
         |> Task.attempt (\_ -> msg)

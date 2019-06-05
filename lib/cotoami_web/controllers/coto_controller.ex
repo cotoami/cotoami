@@ -14,19 +14,18 @@ defmodule CotoamiWeb.CotoController do
 
   def index(conn, %{"page" => page} = params, amishi) do
     page_index = String.to_integer(page)
+    options = get_flags_in_params(params, @index_options)
+    paginated_results = CotoService.all_by_amishi(amishi, page_index, options)
+    render(conn, "paginated_cotos.json", paginated_results)
+  end
 
-    options =
-      Enum.map(@index_options, fn key ->
-        {String.to_atom(key), Map.has_key?(params, key)}
-      end)
-
-    paginated_results = CotoService.get_cotos_by_amishi(amishi, page_index, options)
-    render(conn, "cotos.json", paginated_results)
+  def random(conn, params, amishi) do
+    options = get_flags_in_params(params, @index_options)
+    render(conn, "cotos.json", cotos: CotoService.random_by_amishi(amishi, options))
   end
 
   def search(conn, %{"query" => query}, amishi) do
-    cotos = CotoService.search(query, amishi)
-    render(conn, "cotos.json", rows: cotos, page_index: 0, total_pages: 1)
+    render(conn, "cotos.json", cotos: CotoService.search(query, amishi))
   end
 
   def create(
@@ -41,12 +40,7 @@ defmodule CotoamiWeb.CotoController do
         amishi
       ) do
     coto = CotoService.create!(amishi, content, summary, cotonoma_id)
-
-    if coto.posted_in do
-      broadcast_post(coto, coto.posted_in.key, amishi, conn.assigns.client_id)
-      broadcast_cotonoma_update(coto.posted_in, amishi, conn.assigns.client_id)
-    end
-
+    on_coto_created(conn, coto, amishi)
     render(conn, "created.json", coto: coto)
   end
 
@@ -105,12 +99,15 @@ defmodule CotoamiWeb.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
-    {:ok, _posted_in} =
+    {:ok, _} =
       Repo.transaction(fn ->
-        case CotoService.delete!(id, amishi) do
-          nil -> nil
-          posted_in -> increment_timeline_revision(posted_in)
+        coto = CotoService.delete!(id, amishi)
+
+        if coto.posted_in do
+          increment_timeline_revision(coto.posted_in)
         end
+
+        coto
       end)
 
     broadcast_delete(id, amishi, conn.assigns.client_id)

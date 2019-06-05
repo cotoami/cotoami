@@ -68,7 +68,28 @@ div.posts {
   }
 }
 
-div.timeline.stream {
+div.posts-as-stream {
+  div.posts-on-day {
+    margin-top: 20px;
+
+    div.date-header {
+      z-index: 10;
+      position: -webkit-sticky;
+      position: sticky;
+      top: -8px;
+      left: 0;
+      padding: 10px;
+      padding-left: 0;
+
+      span.date {
+        color: #999;
+        background-color: #f8f8f8;
+        padding: 10px;
+        font-size: 1.5rem;
+      }
+    }
+  }
+  
   div.coto.by-another-amishi {
     margin-left: 8px;
 
@@ -110,18 +131,24 @@ div.timeline.stream {
   }
 }
 
-div.timeline.tile div.posts {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+div.posts-as-tiles div.posts {
+  column-count: 3;
+  column-gap: 0;
+
+  @media (#{$narrow-viewport}) {
+    column-count: 2;
+  }
 
   div.coto {
-    flex: 30%;
     font-size: 1.2rem;
     border-radius: 4px;
     margin-bottom: 4px;
     margin-right: 4px;
     position: relative;
+
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
 
     div.coto-inner {
       height: 100%;
@@ -129,7 +156,19 @@ div.timeline.tile div.posts {
     }
     
     div.coto-header {
-      min-height: 6px;
+      min-height: 10px;
+    }
+
+    span.coto-tool-buttons {
+      top: 0;
+      right: -12px;
+
+      &::before {
+        content: none;
+      }
+      &::after {
+        content: none;
+      }
     }
 
     div.parents {
@@ -141,8 +180,13 @@ div.timeline.tile div.posts {
     }
 
     div.coto-body {
-      max-height: 120px;
+      max-height: 300px;
       overflow: hidden;
+      padding-bottom: 8px;
+    }
+
+    div.blank-content i {
+      font-size: 1.5rem;
     }
 
     div.post-footer {

@@ -32,11 +32,9 @@ phoenixChannelsInSession model session =
     let
         channels =
             [ [ App.Channels.globalChannel ]
-            , App.Channels.cotonomaChannels (App.Submodels.LocalCotos.getCotonomaKeysToWatch model)
-            , App.Channels.cotoChannels (App.Submodels.LocalCotos.getCotoIdsToWatch model)
-            , model.cotonoma
-                |> Maybe.map (\cotonoma -> [ App.Channels.timelineChannel cotonoma.key ])
-                |> Maybe.withDefault []
+            , App.Channels.cotonomaChannels (App.Submodels.LocalCotos.cotonomaKeys model)
+            , App.Channels.cotoChannels (App.Submodels.LocalCotos.cotoIds model)
+            , [ App.Channels.timelineChannel model session ]
             ]
                 |> List.concat
     in

@@ -7,23 +7,29 @@ module App.Types.Timeline exposing
     , deletePendingPost
     , getCoto
     , isEmpty
+    , isScrolledToLatest
     , latestPost
     , nextPageIndex
     , post
     , setBeingDeleted
     , setCotoSaved
+    , setInitializing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
+    , setPosts
+    , setScrollPos
     , setScrollPosInitialized
     , updatePost
     )
 
+import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Post exposing (Post)
 import Exts.Maybe exposing (isJust)
 import Maybe
+import Utils.EventUtil exposing (ScrollPos)
 
 
 type alias Timeline =
@@ -34,6 +40,7 @@ type alias Timeline =
     , more : Bool
     , loadingMore : Bool
     , postIdCounter : Int
+    , scrollPos : Maybe ScrollPos
     }
 
 
@@ -46,6 +53,7 @@ defaultTimeline =
     , more = False
     , loadingMore = False
     , postIdCounter = 0
+    , scrollPos = Nothing
     }
 
 
@@ -64,15 +72,26 @@ addPost post timeline =
     { timeline | posts = post :: timeline.posts }
 
 
-setPaginatedPosts : PaginatedPosts -> Timeline -> Timeline
+setPosts : List Post -> Timeline -> Timeline
+setPosts posts timeline =
+    { timeline
+        | posts = posts
+        , pageIndex = 0
+        , more = False
+        , loading = False
+        , loadingMore = False
+    }
+
+
+setPaginatedPosts : PaginatedList Post -> Timeline -> Timeline
 setPaginatedPosts paginatedPosts timeline =
     { timeline
         | posts =
             if paginatedPosts.pageIndex == 0 then
-                paginatedPosts.posts
+                paginatedPosts.list
 
             else
-                timeline.posts ++ paginatedPosts.posts
+                timeline.posts ++ paginatedPosts.list
         , pageIndex = paginatedPosts.pageIndex
         , more = paginatedPosts.totalPages > (paginatedPosts.pageIndex + 1)
         , loading = False
@@ -95,10 +114,10 @@ getCoto cotoId timeline =
     App.Types.Post.getCotoFromPosts cotoId timeline.posts
 
 
-deleteCoto : Coto -> Timeline -> Timeline
-deleteCoto coto timeline =
+deleteCoto : CotoId -> Timeline -> Timeline
+deleteCoto cotoId timeline =
     timeline.posts
-        |> List.filter (\post -> not (App.Types.Post.isSelfOrPostedIn coto post))
+        |> List.filter (\post -> post.cotoId /= Just cotoId)
         |> (\posts -> { timeline | posts = posts })
 
 
@@ -110,8 +129,8 @@ deletePendingPost postId timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-setLoading : Timeline -> Timeline
-setLoading timeline =
+setInitializing : Timeline -> Timeline
+setInitializing timeline =
     { timeline
         | posts = []
         , loading = True
@@ -119,9 +138,27 @@ setLoading timeline =
     }
 
 
+setLoading : Timeline -> Timeline
+setLoading timeline =
+    { timeline | loading = True }
+
+
 setLoadingMore : Timeline -> Timeline
 setLoadingMore timeline =
     { timeline | loadingMore = True }
+
+
+setScrollPos : ScrollPos -> Timeline -> Timeline
+setScrollPos scrollPos timeline =
+    { timeline | scrollPos = Just scrollPos }
+
+
+isScrolledToLatest : Timeline -> Bool
+isScrolledToLatest timeline =
+    timeline.scrollPos
+        |> Maybe.map Utils.EventUtil.fromBottom
+        |> Maybe.map (\scrollPosFromBottom -> scrollPosFromBottom < 60)
+        |> Maybe.withDefault False
 
 
 updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
@@ -180,10 +217,10 @@ setCotoSaved postId apiResponse timeline =
         timeline
 
 
-setBeingDeleted : Coto -> Timeline -> Timeline
-setBeingDeleted coto timeline =
+setBeingDeleted : CotoId -> Timeline -> Timeline
+setBeingDeleted cotoId timeline =
     updatePost_
-        (\post -> App.Types.Post.isSelfOrPostedIn coto post)
+        (\post -> post.cotoId == Just cotoId)
         (\post -> { post | beingDeleted = True })
         timeline
 

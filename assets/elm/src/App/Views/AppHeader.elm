@@ -7,10 +7,10 @@ module App.Views.AppHeader exposing
 
 import App.Messages as AppMsg
 import App.Model exposing (Model)
-import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos
 import App.Types.SearchResults exposing (SearchResults)
+import App.Update.Post exposing (SearchModel)
 import App.Views.AppHeaderMsg as AppHeaderMsg exposing (Msg(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -18,7 +18,6 @@ import Html.Events exposing (onBlur, onClick, onFocus, onInput, onSubmit)
 import Html.Keyed
 import Utils.EventUtil exposing (onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
-import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -141,19 +140,19 @@ navigationToggle model =
         ]
 
 
-type alias UpdateModel model =
-    { model | searchResults : SearchResults }
-
-
-update : Context context -> AppHeaderMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update :
+    Context context
+    -> AppHeaderMsg.Msg
+    -> SearchModel model
+    -> ( SearchModel model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
         ClearQuickSearchInput ->
-            { model | searchResults = App.Types.SearchResults.clearQuery model.searchResults }
+            { model
+                | searchResults =
+                    App.Types.SearchResults.clearQuery model.searchResults
+            }
                 |> withoutCmd
 
         QuickSearchInput query ->
-            { model | searchResults = App.Types.SearchResults.setQuerying query model.searchResults }
-                |> withCmdIf
-                    (\_ -> Utils.StringUtil.isNotBlank query)
-                    (\_ -> App.Server.Post.search query)
+            App.Update.Post.search query model

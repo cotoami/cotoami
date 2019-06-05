@@ -2,13 +2,12 @@ module App.Submodels.LocalCotos exposing
     ( LocalCotos
     , areTimelineAndGraphLoaded
     , connect
+    , cotoIds
+    , cotonomaKeys
     , cotonomatize
     , deleteCoto
+    , ensureCotoIsInGraph
     , getCoto
-    , getCotoIdsToWatch
-    , getCotonomaKeysToWatch
-    , getSelectedCotos
-    , incorporateLocalCotoInGraph
     , isNavigationEmpty
     , isStockEmpty
     , isTimelineReady
@@ -18,7 +17,6 @@ module App.Submodels.LocalCotos exposing
     , updateCotonomaMaybe
     )
 
-import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Direction)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import App.Types.Graph exposing (Graph)
@@ -49,20 +47,21 @@ type alias LocalCotos a =
         , watchlistLoading : Bool
         , watchUpdating : Bool
         , searchResults : SearchResults
+        , selection : List Coto
     }
 
 
-getCoto : CotoId -> LocalCotos a -> Maybe Coto
-getCoto cotoId localCotos =
+getCoto : CotoId -> LocalCotos model -> Maybe Coto
+getCoto cotoId model =
     Exts.Maybe.oneOf
-        [ Dict.get cotoId localCotos.graph.cotos
-        , App.Types.Timeline.getCoto cotoId localCotos.timeline
-        , App.Types.SearchResults.getCoto cotoId localCotos.searchResults
-        , getCotoFromCotonomaList cotoId localCotos.globalCotonomas
-        , getCotoFromCotonomaList cotoId localCotos.recentCotonomas
-        , getCotoFromCotonomaList cotoId localCotos.subCotonomas
-        , getCotoFromCotonomaList cotoId (List.map .cotonoma localCotos.watchlist)
-        , localCotos.cotonoma
+        [ Dict.get cotoId model.graph.cotos
+        , App.Types.Timeline.getCoto cotoId model.timeline
+        , App.Types.SearchResults.getCoto cotoId model.searchResults
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.globalCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.recentCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId model.subCotonomas
+        , App.Types.Coto.getCotoFromCotonomaList cotoId (List.map .cotonoma model.watchlist)
+        , model.cotonoma
             |> Maybe.map
                 (\cotonoma ->
                     if cotonoma.cotoId == cotoId then
@@ -75,81 +74,64 @@ getCoto cotoId localCotos =
         ]
 
 
-getSelectedCotos : Context a -> LocalCotos b -> List Coto
-getSelectedCotos context localCotos =
-    context.selection
-        |> List.filterMap (\cotoId -> getCoto cotoId localCotos)
-        |> List.reverse
-
-
-getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
-getCotoFromCotonomaList cotoId cotonomas =
-    cotonomas
-        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
-        |> List.head
-        |> Maybe.map App.Types.Coto.toCoto
-
-
-getCotoIdsToWatch : LocalCotos a -> Set CotoId
-getCotoIdsToWatch localCotos =
-    localCotos.timeline.posts
-        |> List.filterMap (\post -> post.cotoId)
-        |> List.append (Dict.keys localCotos.graph.cotos)
-        |> List.append
-            (localCotos.cotonoma
-                |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
-                |> Maybe.withDefault []
-            )
+cotoIds : LocalCotos model -> Set CotoId
+cotoIds model =
+    model.cotonoma
+        |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
+        |> Maybe.withDefault []
+        |> List.append (List.filterMap .cotoId model.timeline.posts)
+        |> List.append (Dict.keys model.graph.cotos)
+        |> List.append (List.map .id model.selection)
         |> Set.fromList
 
 
-getCotonomaKeysToWatch : LocalCotos a -> Set CotonomaKey
-getCotonomaKeysToWatch localCotos =
-    (localCotos.cotonoma
+cotonomaKeys : LocalCotos model -> Set CotonomaKey
+cotonomaKeys model =
+    model.cotonoma
         |> Maybe.map List.singleton
         |> Maybe.withDefault []
-    )
-        |> List.append localCotos.globalCotonomas
-        |> List.append localCotos.recentCotonomas
-        |> List.append localCotos.subCotonomas
-        |> List.append (List.map .cotonoma localCotos.watchlist)
+        |> List.append model.globalCotonomas
+        |> List.append model.recentCotonomas
+        |> List.append model.subCotonomas
+        |> List.append (List.map .cotonoma model.watchlist)
         |> List.map .key
         |> Set.fromList
 
 
-updateCoto : Coto -> LocalCotos a -> LocalCotos a
-updateCoto coto localCotos =
-    { localCotos
-        | timeline = App.Types.Timeline.updatePost coto localCotos.timeline
-        , graph = App.Types.Graph.updateCotoContent coto localCotos.graph
+updateCoto : Coto -> LocalCotos model -> LocalCotos model
+updateCoto coto model =
+    { model
+        | timeline = App.Types.Timeline.updatePost coto model.timeline
+        , graph = App.Types.Graph.updateCotoContent coto model.graph
+        , selection = App.Types.Coto.replaceInList coto model.selection
     }
 
 
-updateCotonoma : Cotonoma -> LocalCotos a -> LocalCotos a
-updateCotonoma cotonoma localCotos =
-    { localCotos
+updateCotonoma : Cotonoma -> LocalCotos model -> LocalCotos model
+updateCotonoma cotonoma model =
+    { model
         | cotonoma =
-            if Maybe.map .id localCotos.cotonoma == Just cotonoma.id then
+            if Maybe.map .id model.cotonoma == Just cotonoma.id then
                 Just cotonoma
 
             else
-                localCotos.cotonoma
-        , globalCotonomas = updateCotonomaInList cotonoma localCotos.globalCotonomas
-        , recentCotonomas = updateCotonomaInList cotonoma localCotos.recentCotonomas
-        , subCotonomas = updateCotonomaInList cotonoma localCotos.subCotonomas
+                model.cotonoma
+        , globalCotonomas = updateCotonomaInList cotonoma model.globalCotonomas
+        , recentCotonomas = updateCotonomaInList cotonoma model.recentCotonomas
+        , subCotonomas = updateCotonomaInList cotonoma model.subCotonomas
         , watchlist =
-            localCotos.watchlist
+            model.watchlist
                 |> List.Extra.updateIf
                     (\watch -> watch.cotonoma.id == cotonoma.id)
                     (\watch -> { watch | cotonoma = cotonoma })
     }
 
 
-updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos a -> LocalCotos a
-updateCotonomaMaybe maybeCotonoma localCotos =
+updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos model -> LocalCotos model
+updateCotonomaMaybe maybeCotonoma model =
     maybeCotonoma
-        |> Maybe.map (\cotonoma -> updateCotonoma cotonoma localCotos)
-        |> Maybe.withDefault localCotos
+        |> Maybe.map (\cotonoma -> updateCotonoma cotonoma model)
+        |> Maybe.withDefault model
 
 
 updateCotonomaInList : Cotonoma -> List Cotonoma -> List Cotonoma
@@ -163,47 +145,49 @@ updateCotonomaInList cotonoma cotonomas =
         cotonomas
 
 
-deleteCoto : Coto -> LocalCotos a -> LocalCotos a
-deleteCoto coto localCotos =
-    { localCotos
-        | timeline = App.Types.Timeline.deleteCoto coto localCotos.timeline
-        , graph = App.Types.Graph.removeCoto coto.id localCotos.graph
+deleteCoto : CotoId -> LocalCotos model -> LocalCotos model
+deleteCoto cotoId model =
+    { model
+        | timeline = App.Types.Timeline.deleteCoto cotoId model.timeline
+        , graph = App.Types.Graph.removeCoto cotoId model.graph
+        , selection = App.Types.Coto.removeFromList cotoId model.selection
     }
 
 
-cotonomatize : Cotonoma -> CotoId -> LocalCotos a -> LocalCotos a
-cotonomatize cotonoma cotoId localCotos =
-    { localCotos
-        | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId localCotos.timeline
-        , graph = App.Types.Graph.cotonomatize cotonoma cotoId localCotos.graph
+cotonomatize : Cotonoma -> CotoId -> LocalCotos model -> LocalCotos model
+cotonomatize cotonoma cotoId model =
+    { model
+        | timeline = App.Types.Timeline.cotonomatize cotonoma cotoId model.timeline
+        , graph = App.Types.Graph.cotonomatize cotonoma cotoId model.graph
+        , selection = App.Types.Coto.replaceInList (App.Types.Coto.toCoto cotonoma) model.selection
     }
 
 
-incorporateLocalCotoInGraph : CotoId -> LocalCotos a -> LocalCotos a
-incorporateLocalCotoInGraph cotoId localCotos =
-    { localCotos
+ensureCotoIsInGraph : CotoId -> LocalCotos model -> LocalCotos model
+ensureCotoIsInGraph cotoId model =
+    { model
         | graph =
-            if App.Types.Graph.member cotoId localCotos.graph then
-                localCotos.graph
+            if App.Types.Graph.member cotoId model.graph then
+                model.graph
 
             else
-                getCoto cotoId localCotos
-                    |> Maybe.map (\coto -> App.Types.Graph.addCoto coto localCotos.graph)
-                    |> Maybe.withDefault localCotos.graph
+                getCoto cotoId model
+                    |> Maybe.map (\coto -> App.Types.Graph.addCoto coto model.graph)
+                    |> Maybe.withDefault model.graph
     }
 
 
-isStockEmpty : LocalCotos a -> Bool
-isStockEmpty localCotos =
-    List.isEmpty localCotos.graph.rootConnections
+isStockEmpty : LocalCotos model -> Bool
+isStockEmpty model =
+    List.isEmpty model.graph.rootConnections
 
 
-isNavigationEmpty : LocalCotos a -> Bool
-isNavigationEmpty localCotos =
-    Exts.Maybe.isNothing localCotos.cotonoma
-        && List.isEmpty localCotos.globalCotonomas
-        && List.isEmpty localCotos.recentCotonomas
-        && List.isEmpty localCotos.subCotonomas
+isNavigationEmpty : LocalCotos model -> Bool
+isNavigationEmpty model =
+    Exts.Maybe.isNothing model.cotonoma
+        && List.isEmpty model.globalCotonomas
+        && List.isEmpty model.recentCotonomas
+        && List.isEmpty model.subCotonomas
 
 
 connect :
@@ -212,9 +196,9 @@ connect :
     -> List Coto
     -> Direction
     -> Maybe String
-    -> LocalCotos a
-    -> LocalCotos a
-connect maybeSession target cotos direction linkingPhrase localCotos =
+    -> LocalCotos model
+    -> LocalCotos model
+connect maybeSession target cotos direction linkingPhrase model =
     let
         graph =
             maybeSession
@@ -226,31 +210,31 @@ connect maybeSession target cotos direction linkingPhrase localCotos =
                             cotos
                             direction
                             linkingPhrase
-                            localCotos.graph
+                            model.graph
                     )
-                |> Maybe.withDefault localCotos.graph
+                |> Maybe.withDefault model.graph
     in
-    { localCotos | graph = graph }
+    { model | graph = graph }
 
 
-areTimelineAndGraphLoaded : LocalCotos a -> Bool
-areTimelineAndGraphLoaded localCotos =
-    not localCotos.timeline.loading && not localCotos.loadingGraph
+areTimelineAndGraphLoaded : LocalCotos model -> Bool
+areTimelineAndGraphLoaded model =
+    not model.timeline.loading && not model.loadingGraph
 
 
-isTimelineReady : LocalCotos a -> Bool
-isTimelineReady localCotos =
-    areTimelineAndGraphLoaded localCotos
-        && not localCotos.timeline.initializingScrollPos
+isTimelineReady : LocalCotos model -> Bool
+isTimelineReady model =
+    areTimelineAndGraphLoaded model
+        && not model.timeline.initializingScrollPos
 
 
-onPosted : Int -> Post -> LocalCotos a -> LocalCotos a
-onPosted postId post localCotos =
-    { localCotos
+onPosted : Int -> Post -> LocalCotos model -> LocalCotos model
+onPosted postId post model =
+    { model
         | timeline =
             App.Types.Timeline.setCotoSaved
                 postId
                 post
-                localCotos.timeline
+                model.timeline
     }
         |> updateCotonomaMaybe post.postedIn

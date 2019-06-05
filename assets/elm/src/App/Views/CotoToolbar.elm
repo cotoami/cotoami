@@ -6,6 +6,7 @@ module App.Views.CotoToolbar exposing
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
@@ -106,7 +107,7 @@ connectButton : Context context -> Coto -> Html AppMsg.Msg
 connectButton context coto =
     if
         not (List.isEmpty context.selection)
-            && not (App.Submodels.Context.isSelected (Just coto.id) context)
+            && not (App.Submodels.CotoSelection.isSelected coto.id context)
     then
         span [ class "connecting-buttons" ]
             [ a
@@ -233,11 +234,11 @@ selectButton context coto =
     a
         [ class "tool-button select-coto"
         , title (context.i18nText I18nKeys.CotoToolbar_Select)
-        , onLinkButtonClick (SelectCoto coto.id)
+        , onLinkButtonClick (SelectCoto coto)
         ]
         [ materialIcon
             (if
-                App.Submodels.Context.isSelected (Just coto.id) context
+                App.Submodels.CotoSelection.isSelected coto.id context
                     && not (Set.member coto.id context.deselecting)
              then
                 "check_box"

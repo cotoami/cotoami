@@ -2,7 +2,6 @@ module App.Types.Coto exposing
     ( Coto
     , CotoContent
     , CotoId
-    , CotoSelection
     , Cotonoma
     , CotonomaKey
     , CotonomaStats
@@ -13,8 +12,11 @@ module App.Types.Coto exposing
     , cotonomaNameMaxlength
     , decrementIncoming
     , decrementOutgoing
+    , getCotoFromCotonomaList
     , incrementIncoming
     , incrementOutgoing
+    , removeFromList
+    , replaceInList
     , revisedBefore
     , summaryMaxlength
     , toCoto
@@ -38,10 +40,6 @@ type alias ElementId =
 
 type alias CotoId =
     String
-
-
-type alias CotoSelection =
-    List CotoId
 
 
 type alias CotonomaKey =
@@ -163,6 +161,24 @@ toTopic coto =
                     Nothing
 
 
+replaceInList : Coto -> List Coto -> List Coto
+replaceInList newCoto list =
+    List.map
+        (\coto ->
+            if coto.id == newCoto.id then
+                newCoto
+
+            else
+                coto
+        )
+        list
+
+
+removeFromList : CotoId -> List Coto -> List Coto
+removeFromList cotoId list =
+    List.filter (\coto -> coto.id /= cotoId) list
+
+
 type alias Cotonoma =
     { id : String
     , key : CotonomaKey
@@ -205,6 +221,14 @@ validateCotonomaName string =
 revisedBefore : Cotonoma -> Bool
 revisedBefore cotonoma =
     (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
+
+
+getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
+getCotoFromCotonomaList cotoId cotonomas =
+    cotonomas
+        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
+        |> List.head
+        |> Maybe.map toCoto
 
 
 type alias CotonomaStats =

@@ -34,7 +34,11 @@ cotoContentDiv maybeSummary content =
                 (\summary ->
                     div [ class "coto-summary" ] [ text summary ]
                 )
-            |> Maybe.withDefault (App.Markdown.markdown content)
+            |> Maybe.withDefault
+                (App.Views.Coto.renderContent
+                    App.Markdown.markdown
+                    content
+                )
             |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
         ]
 

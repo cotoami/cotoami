@@ -1,18 +1,21 @@
-module App.Server.Post exposing (decodePaginatedPosts, decodePost, encodePost, fetchCotonomaPosts, fetchHomePosts, fetchPostsByContext, post, postCotonoma, postRequest, search)
+module App.Server.Post exposing
+    ( decodePost
+    , fetchCotonomaPosts
+    , fetchHomePosts
+    , fetchPostsByContext
+    , fetchRandomPosts
+    , post
+    , postCotonoma
+    , search
+    )
 
-import App.Messages
-    exposing
-        ( Msg
-            ( CotonomaPostsFetched
-            , HomePostsFetched
-            , SearchResultsFetched
-            )
-        )
+import App.Messages exposing (Msg)
 import App.Server.Amishi
 import App.Server.Cotonoma
+import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (CotoId, Cotonoma, CotonomaKey)
-import App.Types.Post exposing (PaginatedPosts, Post)
+import App.Types.Post exposing (Post)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import Date exposing (Date)
 import Http exposing (Request)
@@ -37,12 +40,20 @@ decodePost =
         |> hardcoded False
 
 
-decodePaginatedPosts : Decode.Decoder PaginatedPosts
-decodePaginatedPosts =
-    Json.Decode.Pipeline.decode PaginatedPosts
-        |> required "cotos" (Decode.list decodePost)
-        |> required "page_index" int
-        |> required "total_pages" int
+filterAsQueryString : TimelineFilter -> String
+filterAsQueryString filter =
+    [ if filter.excludePinnedGraph then
+        "&exclude_pinned_graph=true"
+
+      else
+        ""
+    , if filter.excludePostsInCotonoma then
+        "&exclude_posts_in_cotonoma=true"
+
+      else
+        ""
+    ]
+        |> List.foldl (++) ""
 
 
 fetchHomePosts : Int -> TimelineFilter -> Cmd Msg
@@ -51,21 +62,10 @@ fetchHomePosts pageIndex filter =
         url =
             "/api/cotos"
                 ++ ("?page=" ++ toString pageIndex)
-                ++ (if filter.excludePinnedGraph then
-                        "&exclude_pinned_graph=true"
-
-                    else
-                        ""
-                   )
-                ++ (if filter.excludePostsInCotonoma then
-                        "&exclude_posts_in_cotonoma=true"
-
-                    else
-                        ""
-                   )
+                ++ filterAsQueryString filter
     in
-    Http.send HomePostsFetched <|
-        Http.get url decodePaginatedPosts
+    Http.get url (App.Server.Pagination.decodePaginatedList decodePost)
+        |> Http.send App.Messages.HomePostsFetched
 
 
 fetchCotonomaPosts : Int -> TimelineFilter -> CotonomaKey -> Cmd Msg
@@ -74,18 +74,17 @@ fetchCotonomaPosts pageIndex filter key =
         url =
             ("/api/cotonomas/" ++ key ++ "/cotos")
                 ++ ("?page=" ++ toString pageIndex)
-                ++ (if filter.excludePinnedGraph then
-                        "&exclude_pinned_graph=true"
+                ++ filterAsQueryString filter
 
-                    else
-                        ""
-                   )
-    in
-    Http.send CotonomaPostsFetched <|
-        Http.get url <|
+        decodeResponse =
             Decode.map2 (,)
                 (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
-                (Decode.field "paginated_cotos" decodePaginatedPosts)
+                (Decode.field "paginated_cotos"
+                    (App.Server.Pagination.decodePaginatedList decodePost)
+                )
+    in
+    Http.get url decodeResponse
+        |> Http.send App.Messages.CotonomaPostsFetched
 
 
 fetchPostsByContext : Int -> TimelineFilter -> Context a -> Cmd Msg
@@ -95,28 +94,40 @@ fetchPostsByContext pageIndex filter context =
         |> Maybe.withDefault (fetchHomePosts pageIndex filter)
 
 
-search : String -> Cmd Msg
-search query =
+fetchRandomPosts :
+    (Result Http.Error (List Post) -> msg)
+    -> TimelineFilter
+    -> Maybe CotonomaKey
+    -> Cmd msg
+fetchRandomPosts tag filter maybeCotonomaKey =
+    let
+        url =
+            (maybeCotonomaKey
+                |> Maybe.map (\key -> "/api/cotonomas/" ++ key ++ "/cotos/random?page=0")
+                |> Maybe.withDefault "/api/cotos/random?page=0"
+            )
+                ++ filterAsQueryString filter
+    in
+    Http.get url (Decode.list decodePost) |> Http.send tag
+
+
+search : Int -> String -> Cmd Msg
+search searchId query =
     let
         url =
             "/api/search/" ++ query
     in
-    Http.send SearchResultsFetched <|
-        Http.get url decodePaginatedPosts
-
-
-postRequest : ClientId -> Maybe Cotonoma -> Post -> Request Post
-postRequest clientId maybeCotonoma post =
-    httpPost
-        "/api/cotos"
-        clientId
-        (Http.jsonBody (encodePost maybeCotonoma post))
-        decodePost
+    Http.get url (Decode.list decodePost)
+        |> Http.send (App.Messages.SearchResultsFetched searchId)
 
 
 post : ClientId -> Maybe Cotonoma -> (Result Http.Error Post -> msg) -> Post -> Cmd msg
 post clientId maybeCotonoma tag post =
-    postRequest clientId maybeCotonoma post
+    let
+        body =
+            Http.jsonBody (encodePost maybeCotonoma post)
+    in
+    httpPost "/api/cotos" clientId body decodePost
         |> Http.send tag
 
 

@@ -23,11 +23,12 @@ import App.Types.Session exposing (Session)
 import App.Views.AppHeader
 import App.Views.CotoSelection
 import App.Views.Flow
+import App.Views.FlowMsg
+import App.Views.MainViewSwitch
 import App.Views.Navigation
 import App.Views.SearchResults
 import App.Views.Stock
 import App.Views.Traversals
-import App.Views.ViewSwitch
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -60,7 +61,7 @@ view model =
                             , graphExplorationDiv model
                             , selectionColumn model
                             , searchResultsColumn model
-                            , App.Views.ViewSwitch.view model
+                            , App.Views.MainViewSwitch.view model
                             ]
                     )
                 |> Maybe.withDefault Utils.HtmlUtil.none
@@ -136,6 +137,7 @@ flowColumn session model =
             , ( "animated", activeInNarrowViewport )
             , ( "fadeIn", activeInNarrowViewport )
             , ( "hidden", model.wideViewport.flowHidden )
+            , ( "tile-view", model.flowView.view == App.Views.FlowMsg.TileView )
             ]
         ]
         [ a
@@ -213,13 +215,10 @@ selectionColumn model =
         , classList
             [ ( "main-column", True )
             , ( "active-in-narrow-viewport", activeInNarrowViewport )
+            , ( "active-in-wide-viewport", model.wideViewport.selectionOpen )
             , ( "animated", True )
             , ( "fadeIn", not (List.isEmpty model.selection) )
             , ( "empty", List.isEmpty model.selection )
-            , ( "hidden"
-              , not activeInNarrowViewport
-                    && not model.wideViewport.selectionOpen
-              )
             ]
         ]
         [ App.Views.CotoSelection.view model model ]

@@ -15,7 +15,7 @@ import App.Ports.Graph
 import App.Server.Graph
 import App.Submodels.Context exposing (Context)
 import App.Types.Connection exposing (Connection, InboundConnection, Reordering(..))
-import App.Types.Coto exposing (Coto, CotoId, CotoSelection, Cotonoma, CotonomaKey)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma)
 import App.Types.Graph exposing (Graph)
 import App.Types.Graph.Render
 import App.Views.Coto
@@ -32,6 +32,7 @@ import Task
 import Time
 import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (faIcon, materialIcon)
+import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
 
 
@@ -148,6 +149,7 @@ pinnedCotoDiv context inbound coto =
             [ ( "pinned-coto", True )
             , ( "animated", True )
             , ( "fadeIn", True )
+            , ( "blank", Utils.StringUtil.isBlank coto.content )
             ]
         , onClickWithoutPropagation (CotoClick elementId coto.id)
         , onMouseEnter (CotoMouseEnter elementId coto.id)

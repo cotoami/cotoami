@@ -3,7 +3,6 @@ module App.Views.Flow exposing
     , defaultModel
     , initScrollPos
     , openOrCloseEditor
-    , post
     , setFilter
     , update
     , view
@@ -14,6 +13,7 @@ import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (..)
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.CotoSelection
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (CotoContent, Cotonoma)
 import App.Types.Post exposing (Post, toCoto)
@@ -51,6 +51,7 @@ import Utils.UpdateUtil exposing (..)
 type alias Model =
     { view : TimelineView
     , filter : TimelineFilter
+    , random : Bool
     , editorOpen : Bool
     , editorContent : String
     , editorCounter : Int
@@ -61,6 +62,7 @@ defaultModel : Model
 defaultModel =
     { view = StreamView
     , filter = App.Types.TimelineFilter.defaultTimelineFilter
+    , random = False
     , editorOpen = False
     , editorContent = ""
     , editorCounter = 0
@@ -95,160 +97,6 @@ clearEditorContent model =
     }
 
 
-type alias UpdateModel model =
-    LocalCotos { model | flowView : Model }
-
-
-update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
-update context msg ({ flowView, timeline } as model) =
-    case msg of
-        TimelineScrollPosInitialized scrollTop ->
-            { model | timeline = App.Types.Timeline.setScrollPosInitialized timeline }
-                |> (\model ->
-                        if scrollTop == 0 then
-                            -- Clear unread because there's no scrollbar
-                            App.Update.Watch.clearUnread context model
-
-                        else
-                            ( model, Cmd.none )
-                   )
-
-        ImageLoaded ->
-            model
-                |> withCmdIf
-                    (\model -> model.timeline.pageIndex == 0)
-                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
-
-        SwitchView view ->
-            { model | flowView = switchView view flowView }
-                |> withoutCmd
-
-        LoadMorePosts ->
-            { model | timeline = App.Types.Timeline.setLoadingMore timeline }
-                |> withCmd
-                    (\model ->
-                        App.Server.Post.fetchPostsByContext
-                            (App.Types.Timeline.nextPageIndex timeline)
-                            flowView.filter
-                            context
-                    )
-
-        EditorFocus ->
-            { model | flowView = openOrCloseEditor True flowView }
-                |> withCmdIf
-                    (\model -> flowView.editorOpen)
-                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
-
-        EditorInput content ->
-            { model | flowView = setEditorContent content flowView }
-                |> withoutCmd
-
-        EditorKeyDown keyboardEvent ->
-            handleEditorShortcut context keyboardEvent (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Post ->
-            postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
-                |> addCmd (\_ -> App.Commands.focus "quick-coto-input" NoOp)
-
-        Posted postId (Ok post) ->
-            model
-                |> App.Update.Post.onPosted context postId post
-                |> addCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
-
-        Posted postId (Err _) ->
-            model |> withoutCmd
-
-        PostedByConnectModal ->
-            { model | flowView = clearEditorContent model.flowView }
-                |> withoutCmd
-
-        Scroll scrollPos ->
-            if isScrolledToBottom scrollPos then
-                App.Update.Watch.clearUnread context model
-
-            else
-                model |> withoutCmd
-
-
-initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
-initScrollPos localCotos =
-    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
-        App.Commands.scrollTimelineToBottom
-            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
-
-    else
-        Cmd.none
-
-
-handleEditorShortcut :
-    Context context
-    -> KeyboardEvent
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-handleEditorShortcut context keyboardEvent content model =
-    if
-        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
-            && isNotBlank content.content
-    then
-        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
-            postFromQuickEditor context content model
-
-        else if
-            keyboardEvent.altKey
-                && App.Submodels.Context.anySelection context
-        then
-            ( model
-            , App.Commands.sendMsg
-                (AppMsg.OpenConnectModalByNewPost
-                    content
-                    (AppMsg.FlowMsg PostedByConnectModal)
-                )
-            )
-
-        else
-            ( model, Cmd.none )
-
-    else
-        ( model, Cmd.none )
-
-
-postFromQuickEditor :
-    Context context
-    -> CotoContent
-    -> UpdateModel model
-    -> ( UpdateModel model, Cmd AppMsg.Msg )
-postFromQuickEditor context content model =
-    { model | flowView = clearEditorContent model.flowView }
-        |> post context content
-
-
-post : Context context -> CotoContent -> LocalCotos model -> ( LocalCotos model, Cmd AppMsg.Msg )
-post context content model =
-    let
-        ( newTimeline, newPost ) =
-            App.Types.Timeline.post context False content model.timeline
-    in
-    ( { model | timeline = newTimeline }
-    , Cmd.batch
-        [ App.Commands.scrollTimelineToBottom (\_ -> NoOp)
-        , App.Server.Post.post
-            context.clientId
-            context.cotonoma
-            (AppMsg.FlowMsg << Posted newTimeline.postIdCounter)
-            newPost
-        ]
-    )
-
-
-isScrolledToBottom : ScrollPos -> Bool
-isScrolledToBottom { scrollTop, contentHeight, containerHeight } =
-    (contentHeight - containerHeight - scrollTop)
-        --|> Debug.log "scrollPosFromBottom: "
-        |> (\scrollPosFromBottom -> scrollPosFromBottom < 30)
-
-
 type alias ViewModel model =
     LocalCotos
         { model
@@ -269,15 +117,15 @@ view context session model =
 
           else
             Utils.HtmlUtil.none
-        , toolbarDiv context model.flowView
+        , toolbarDiv context model.timeline model.flowView
         , timelineDiv context model
         , postEditor context session model.flowView
         , newCotoButton context model.flowView
         ]
 
 
-toolbarDiv : Context context -> Model -> Html AppMsg.Msg
-toolbarDiv context model =
+toolbarDiv : Context context -> Timeline -> Model -> Html AppMsg.Msg
+toolbarDiv context timeline model =
     div [ class "flow-toolbar" ]
         [ div [ class "tools" ]
             [ a
@@ -311,6 +159,22 @@ toolbarDiv context model =
                     ]
                     [ materialIcon "view_module" Nothing ]
                 ]
+            , if model.view == TileView then
+                span [ class "random" ]
+                    [ a
+                        [ classList
+                            [ ( "tool-button", True )
+                            , ( "random", True )
+                            , ( "disabled", timeline.loading )
+                            ]
+                        , title (context.i18nText I18nKeys.Flow_Random)
+                        , onClick (AppMsg.FlowMsg Random)
+                        ]
+                        [ faIcon "random" Nothing ]
+                    ]
+
+              else
+                Utils.HtmlUtil.none
             ]
         ]
 
@@ -321,41 +185,17 @@ timelineDiv context model =
         [ id "timeline"
         , classList
             [ ( "timeline", True )
-            , ( "stream", model.flowView.view == StreamView )
-            , ( "tile", model.flowView.view == TileView )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
             ]
         , onScroll (AppMsg.FlowMsg << Scroll)
         ]
         [ moreButton model.timeline
-        , model.timeline.posts
-            |> List.reverse
-            |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
-            |> List.map
-                (\postsOnDay ->
-                    let
-                        lang =
-                            context.session
-                                |> Maybe.map (\session -> session.lang)
-                                |> Maybe.withDefault ""
+        , case model.flowView.view of
+            StreamView ->
+                postsAsStream context model.timeline.posts
 
-                        postDateString =
-                            List.head postsOnDay
-                                |> Maybe.andThen (\post -> post.postedAt)
-                                |> Maybe.map (formatDay lang)
-                                |> Maybe.withDefault ""
-                    in
-                    ( postDateString
-                    , div
-                        [ class "posts-on-day" ]
-                        [ div
-                            [ class "date-header" ]
-                            [ span [ class "date" ] [ text postDateString ] ]
-                        , postsDiv context postsOnDay
-                        ]
-                    )
-                )
-            |> Html.Keyed.node "div" [ class "posts" ]
+            TileView ->
+                postsAsTiles context model.timeline.posts
         ]
 
 
@@ -380,22 +220,64 @@ moreButton timeline =
         Utils.HtmlUtil.none
 
 
-postsDiv : Context context -> List Post -> Html AppMsg.Msg
-postsDiv context posts =
-    Html.Keyed.node
-        "div"
-        [ class "posts" ]
-        (List.map
-            (\post ->
-                ( getKey post
-                , div []
-                    [ App.Views.Post.view context post
-                    , unreadStartLine context post
+postsAsStream : Context context -> List Post -> Html AppMsg.Msg
+postsAsStream context posts =
+    posts
+        |> List.reverse
+        |> groupWhile (\p1 p2 -> sameDay p1.postedAt p2.postedAt)
+        |> List.map
+            (\postsOnDay ->
+                let
+                    lang =
+                        context.session
+                            |> Maybe.map (\session -> session.lang)
+                            |> Maybe.withDefault ""
+
+                    postDateString =
+                        List.head postsOnDay
+                            |> Maybe.andThen (\post -> post.postedAt)
+                            |> Maybe.map (formatDay lang)
+                            |> Maybe.withDefault ""
+                in
+                ( postDateString
+                , div
+                    [ class "posts-on-day" ]
+                    [ div
+                        [ class "date-header" ]
+                        [ span [ class "date" ] [ text postDateString ] ]
+                    , Html.Keyed.node
+                        "div"
+                        [ class "posts" ]
+                        (List.map
+                            (\post ->
+                                ( getKey post
+                                , div []
+                                    [ App.Views.Post.view context post
+                                    , unreadStartLine context post
+                                    ]
+                                )
+                            )
+                            postsOnDay
+                        )
                     ]
                 )
             )
-            posts
-        )
+        |> Html.Keyed.node "div" [ class "posts-as-stream" ]
+
+
+postsAsTiles : Context context -> List Post -> Html AppMsg.Msg
+postsAsTiles context posts =
+    div [ class "posts-as-tiles" ]
+        [ posts
+            |> List.reverse
+            |> List.map
+                (\post ->
+                    ( getKey post
+                    , App.Views.Post.view context post
+                    )
+                )
+            |> Html.Keyed.node "div" [ class "posts" ]
+        ]
 
 
 unreadStartLine : Context context -> Post -> Html AppMsg.Msg
@@ -508,3 +390,182 @@ newCotoButton context model =
         , span [ class "shortcut" ]
             [ text ("(" ++ context.i18nText I18nKeys.Flow_ShortcutToOpenEditor ++ ")") ]
         ]
+
+
+type alias UpdateModel model =
+    LocalCotos { model | flowView : Model }
+
+
+update : Context context -> FlowMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ flowView, timeline } as model) =
+    case msg of
+        TimelineScrollPosInitialized scrollTop ->
+            { model
+                | timeline = App.Types.Timeline.setScrollPosInitialized timeline
+                , flowView = { flowView | random = False }
+            }
+                |> (\model ->
+                        if scrollTop == 0 then
+                            -- Clear unread because there's no scrollbar
+                            App.Update.Watch.clearUnread context model
+
+                        else
+                            ( model, Cmd.none )
+                   )
+
+        ImageLoaded ->
+            model
+                |> withCmdIf
+                    (\model -> model.timeline.pageIndex == 0 && not model.flowView.random)
+                    (\_ -> App.Commands.scrollTimelineToBottom (\_ -> NoOp))
+
+        SwitchView view ->
+            if model.flowView.random then
+                { model | flowView = switchView view flowView }
+                    |> reloadRecentPosts context
+
+            else
+                { model | flowView = switchView view flowView }
+                    |> withoutCmd
+
+        LoadMorePosts ->
+            { model | timeline = App.Types.Timeline.setLoadingMore timeline }
+                |> withCmd
+                    (\model ->
+                        App.Server.Post.fetchPostsByContext
+                            (App.Types.Timeline.nextPageIndex timeline)
+                            flowView.filter
+                            context
+                    )
+
+        EditorFocus ->
+            { model | flowView = openOrCloseEditor True flowView }
+                |> withCmdIf
+                    (\_ -> not flowView.editorOpen)
+                    (\_ -> App.Commands.scrollTimelineByQuickEditorOpen NoOp)
+
+        EditorInput content ->
+            { model | flowView = setEditorContent content flowView }
+                |> withoutCmd
+
+        EditorKeyDown keyboardEvent ->
+            handleEditorShortcut
+                context
+                keyboardEvent
+                (CotoContent flowView.editorContent Nothing)
+                model
+                |> addCmd (\_ -> App.Commands.focus NoOp "quick-coto-input")
+
+        Post ->
+            postFromQuickEditor context (CotoContent flowView.editorContent Nothing) model
+                |> addCmd (\_ -> App.Commands.focus NoOp "quick-coto-input")
+
+        Posted postId (Ok post) ->
+            model
+                |> App.Submodels.LocalCotos.onPosted postId post
+                |> withCmd (\_ -> App.Commands.sendMsg AppMsg.ClearModals)
+
+        Posted postId (Err _) ->
+            model |> withoutCmd
+
+        PostedByConnectModal ->
+            { model | flowView = clearEditorContent model.flowView }
+                |> withoutCmd
+
+        Scroll scrollPos ->
+            ( { model | timeline = App.Types.Timeline.setScrollPos scrollPos timeline }
+            , Cmd.none
+            )
+                |> chainIf
+                    (\model -> App.Types.Timeline.isScrolledToLatest model.timeline)
+                    (App.Update.Watch.clearUnread context)
+
+        Random ->
+            ( { model | timeline = App.Types.Timeline.setLoading timeline }
+            , App.Server.Post.fetchRandomPosts
+                (AppMsg.FlowMsg << RandomPostsFetched)
+                flowView.filter
+                (Maybe.map .key context.cotonoma)
+            )
+
+        RandomPostsFetched (Ok posts) ->
+            ( { model
+                | flowView = { flowView | random = True }
+                , timeline = App.Types.Timeline.setPosts posts timeline
+              }
+            , App.Commands.scrollTimelineToTop NoOp
+            )
+
+        RandomPostsFetched (Err _) ->
+            model |> withoutCmd
+
+
+initScrollPos : LocalCotos a -> Cmd AppMsg.Msg
+initScrollPos localCotos =
+    if App.Submodels.LocalCotos.areTimelineAndGraphLoaded localCotos then
+        App.Commands.scrollTimelineToBottom
+            (AppMsg.FlowMsg << TimelineScrollPosInitialized)
+
+    else
+        Cmd.none
+
+
+handleEditorShortcut :
+    Context context
+    -> KeyboardEvent
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+handleEditorShortcut context keyboardEvent content model =
+    if
+        (keyboardEvent.keyCode == Utils.Keyboard.Key.Enter)
+            && isNotBlank content.content
+    then
+        if keyboardEvent.ctrlKey || keyboardEvent.metaKey then
+            postFromQuickEditor context content model
+
+        else if
+            keyboardEvent.altKey
+                && App.Submodels.CotoSelection.anySelection context
+        then
+            ( model
+            , App.Commands.sendMsg
+                (AppMsg.OpenConnectModalByNewPost
+                    content
+                    (AppMsg.FlowMsg PostedByConnectModal)
+                )
+            )
+
+        else
+            ( model, Cmd.none )
+
+    else
+        ( model, Cmd.none )
+
+
+postFromQuickEditor :
+    Context context
+    -> CotoContent
+    -> UpdateModel model
+    -> ( UpdateModel model, Cmd AppMsg.Msg )
+postFromQuickEditor context content model =
+    { model | flowView = clearEditorContent model.flowView }
+        |> App.Update.Post.post
+            context
+            (\postId -> AppMsg.FlowMsg << FlowMsg.Posted postId)
+            content
+
+
+reloadRecentPosts : Context context -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+reloadRecentPosts context ({ flowView, timeline } as model) =
+    { model
+        | timeline = App.Types.Timeline.setInitializing timeline
+        , flowView = { flowView | random = False }
+    }
+        |> withCmd
+            (\model ->
+                context.cotonoma
+                    |> Maybe.map .key
+                    |> Maybe.map (App.Server.Post.fetchCotonomaPosts 0 model.flowView.filter)
+                    |> Maybe.withDefault (App.Server.Post.fetchHomePosts 0 model.flowView.filter)
+            )

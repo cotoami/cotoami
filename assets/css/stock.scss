@@ -164,6 +164,10 @@
         color: #aaa;
       }
     }
+
+    &.blank > div.coto-inner > div.coto-header {
+      min-height: auto; 
+    }
   }
 }
 
@@ -171,9 +175,9 @@
   #app-header,
   #main-nav,
   #main-flow,
-  #view-switch-container,
-  #open-flow,
-  #stock div.column-header {
+  #stock div.column-header,
+  #main-view-switch,
+  div.open-column-button {
     display: none !important;
   }
 

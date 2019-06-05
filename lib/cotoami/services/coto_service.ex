@@ -12,7 +12,6 @@ defmodule Cotoami.CotoService do
     Coto,
     Cotonoma,
     Amishi,
-    AmishiService,
     CotonomaService,
     CotoGraphService,
     CotoSearchService
@@ -24,13 +23,6 @@ defmodule Cotoami.CotoService do
     Coto
     |> preload([:amishi, :posted_in, :cotonoma])
     |> Repo.get(id)
-  end
-
-  def get_by_ids(coto_ids) do
-    Coto
-    |> where([c], c.id in ^coto_ids)
-    |> preload([:amishi, :posted_in, :cotonoma])
-    |> Repo.all()
   end
 
   def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
@@ -46,34 +38,59 @@ defmodule Cotoami.CotoService do
     end
   end
 
+  def all_by_ids(coto_ids) do
+    Coto
+    |> where([c], c.id in ^coto_ids)
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> Repo.all()
+  end
+
   @page_size 30
 
-  def get_cotos_by_amishi(%Amishi{id: amishi_id} = amishi, page_index, options \\ []) do
-    Coto
-    |> Coto.for_amishi(amishi_id)
+  def all_by_amishi(%Amishi{} = amishi, page_index, options \\ []) do
+    query_by_amishi(amishi, options)
     |> order_by(desc: :inserted_at)
-    |> query_to_exclude_pinned_graph(amishi_id, options)
-    |> query_to_exclude_posts_in_cotonoma(amishi, options)
-    |> preload([:posted_in, :cotonoma])
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
   end
 
-  def get_cotos_by_cotonoma(key, %Amishi{} = amishi, page_index, options \\ []) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        nil
+  def all_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, page_index, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(desc: :inserted_at)
+    |> query_with_pagination(@page_size, page_index)
+  end
 
-      cotonoma ->
-        Cotonoma.ensure_accessible_by(cotonoma, amishi)
+  @random_limit 100
 
-        Coto
-        |> Coto.in_cotonoma(cotonoma.id)
-        |> order_by(desc: :inserted_at)
-        |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
-        |> preload([:amishi, :posted_in, :cotonoma])
-        |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
-        |> Map.put(:cotonoma, cotonoma)
-    end
+  def random_by_amishi(%Amishi{} = amishi, options \\ []) do
+    query_by_amishi(amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+    |> Enum.map(&complement_amishi(&1, amishi))
+  end
+
+  def random_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options \\ []) do
+    query_by_cotonoma(cotonoma, amishi, options)
+    |> order_by(fragment("random()"))
+    |> limit(@random_limit)
+    |> Repo.all()
+  end
+
+  defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> query_to_exclude_pinned_graph(amishi_id, options)
+    |> query_to_exclude_posts_in_cotonoma(amishi, options)
+    |> preload([:posted_in, :cotonoma])
+  end
+
+  defp query_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options) do
+    Cotonoma.ensure_accessible_by(cotonoma, amishi)
+
+    Coto
+    |> Coto.in_cotonoma(cotonoma.id)
+    |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
+    |> preload([:amishi, :posted_in, :cotonoma])
   end
 
   defp query_to_exclude_pinned_graph(query, uuid, options) do
@@ -108,29 +125,15 @@ defmodule Cotoami.CotoService do
 
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
     coto
-    |> complement_cotonoma()
     |> complement_amishi(amishi)
-  end
-
-  def complement_cotonoma(%Coto{} = coto) do
-    if coto.cotonoma do
-      %{coto | cotonoma: CotonomaService.complement_owner(coto.cotonoma)}
-    else
-      coto
-    end
+    |> Repo.preload(cotonoma: :owner)
   end
 
   def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
     if coto.amishi_id == amishi_id do
       %{coto | amishi: amishi}
     else
-      case coto.amishi do
-        %Ecto.Association.NotLoaded{} ->
-          %{coto | amishi: AmishiService.get(coto.amishi_id)}
-
-        _amishi ->
-          coto
-      end
+      Repo.preload(coto, :amishi)
     end
   end
 
@@ -192,7 +195,7 @@ defmodule Cotoami.CotoService do
 
     CotoGraphService.sync(Bolt.Sips.conn(), coto)
 
-    %{coto | posted_in: CotonomaService.complement_owner(coto.posted_in), cotonoma: cotonoma}
+    %{coto | posted_in: Repo.preload(coto.posted_in, :owner), cotonoma: cotonoma}
     |> complement_amishi(amishi)
   end
 
@@ -213,6 +216,6 @@ defmodule Cotoami.CotoService do
     Repo.delete!(coto)
     CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
 
-    CotonomaService.complement_owner(coto.posted_in)
+    coto
   end
 end
