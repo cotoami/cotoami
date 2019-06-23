@@ -23,6 +23,9 @@ defmodule Cotoami.Coto do
     belongs_to(:amishi, Cotoami.Amishi)
     has_one(:cotonoma, Cotoami.Cotonoma)
 
+    has_one(:repost, Cotoami.Coto)
+    field(:reposted_in_ids, {:array, Ecto.UUID})
+
     timestamps(type: :utc_datetime)
   end
 
