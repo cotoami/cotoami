@@ -125,7 +125,7 @@ defmodule Cotoami.CotoGraphServiceTest do
 
   describe "when a cotonoma is pinned to an amishi" do
     setup ~M{conn, amishi} do
-      coto = CotonomaService.create!(amishi, "cotonoma coto", false)
+      coto = CotonomaService.create!("cotonoma coto", false, amishi)
       CotoGraphService.pin(conn, coto, nil, amishi)
       ~M{coto}
     end
@@ -165,7 +165,7 @@ defmodule Cotoami.CotoGraphServiceTest do
   describe "when a coto is pinned to a cotonoma" do
     setup ~M{conn, amishi} do
       cotonoma_owner = AmishiService.insert_or_update!(%EmailUser{email: "cotonoma@example.com"})
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!(cotonoma_owner, "test", false)
+      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, cotonoma_owner)
 
       coto_amishi = AmishiService.insert_or_update!(%EmailUser{email: "coto@example.com"})
       coto = CotoService.create!("hello", nil, coto_amishi, cotonoma)

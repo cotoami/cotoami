@@ -35,7 +35,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there is a cotonoma" do
     setup ~M{amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
+      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
       ~M{cotonoma}
     end
 
@@ -54,7 +54,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there are various cotos" do
     setup ~M{conn, amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
+      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
 
       coto1 = CotoService.create!("coto1", nil, amishi)
       coto2 = CotoService.create!("coto2", nil, amishi)

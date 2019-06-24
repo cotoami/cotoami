@@ -29,18 +29,15 @@ defmodule CotoamiWeb.CotonomaController do
     })
   end
 
-  def create(
-        conn,
-        %{
-          "cotonoma" => %{
-            "cotonoma_id" => cotonoma_id,
-            "name" => name,
-            "shared" => shared
-          }
-        },
-        amishi
-      ) do
-    coto = CotonomaService.create!(amishi, name, shared, cotonoma_id)
+  def create(conn, %{"cotonoma" => cotonoma_params}, amishi) do
+    %{"name" => name, "shared" => shared} = cotonoma_params
+
+    coto =
+      case get_cotonoma_if_specified!(cotonoma_params, amishi) do
+        nil -> CotonomaService.create!(name, shared, amishi)
+        cotonoma -> CotonomaService.create!(name, shared, amishi, cotonoma)
+      end
+
     on_coto_created(conn, coto, amishi)
     render(conn, CotoView, "created.json", coto: coto)
   rescue
@@ -49,7 +46,7 @@ defmodule CotoamiWeb.CotonomaController do
   end
 
   def get_or_create(conn, %{"name" => name}, amishi) do
-    coto = CotonomaService.create!(amishi, name, false, nil)
+    coto = CotonomaService.create!(name, false, amishi)
     on_coto_created(conn, coto, amishi)
     render(conn, "cotonoma.json", cotonoma: coto.cotonoma)
   rescue

@@ -15,7 +15,7 @@ defmodule Cotoami.CotoSearchServiceTest do
   setup do
     amishi_a = AmishiService.insert_or_update!(%EmailUser{email: "amishi_a@example.com"})
     amishi_b = AmishiService.insert_or_update!(%EmailUser{email: "amishi_b@example.com"})
-    %Coto{cotonoma: cotonoma_a} = CotonomaService.create!(amishi_a, "cotonoma a", false)
+    %Coto{cotonoma: cotonoma_a} = CotonomaService.create!("cotonoma a", false, amishi_a)
     ~M{amishi_a, amishi_b, cotonoma_a}
   end
 

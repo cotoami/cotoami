@@ -23,7 +23,13 @@ defmodule Cotoami.CotonomaService do
     |> Keyword.get(:global_cotonomas_holder)
   end
 
-  def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
+  def create!(name, shared, %Amishi{} = amishi),
+    do: do_create!(name, shared, amishi, nil)
+
+  def create!(name, shared, %Amishi{} = amishi, %Cotonoma{id: cotonoma_id}),
+    do: do_create!(name, shared, amishi, cotonoma_id)
+
+  defp do_create!(name, shared, %Amishi{} = amishi, cotonoma_id) do
     {:ok, coto} =
       Repo.transaction(fn ->
         # create a coto
