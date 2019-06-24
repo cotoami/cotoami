@@ -188,7 +188,9 @@ defmodule Cotoami.CotoService do
     coto = Coto.peel!(coto)
 
     if cotonoma_id &&
-         (coto.posted_in.id == cotonoma_id || Enum.member?(coto.reposted_in_ids, cotonoma_id)) do
+         (coto.posted_in.id == cotonoma_id ||
+            Enum.member?(coto.reposted_in_ids, cotonoma_id)) do
+      raise Cotoami.Exceptions.DuplicateRepost
     end
 
     {:ok, repost} =
