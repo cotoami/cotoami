@@ -173,11 +173,4 @@ defmodule CotoamiWeb.CotoGraphController do
       coto -> coto
     end
   end
-
-  defp get_cotonoma_if_specified!(params, amishi) do
-    case params do
-      %{"cotonoma_key" => key} -> CotonomaService.get_by_key!(key, amishi)
-      _ -> nil
-    end
-  end
 end

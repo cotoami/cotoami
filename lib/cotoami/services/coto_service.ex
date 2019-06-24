@@ -146,7 +146,13 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
-  def create!(%Amishi{id: amishi_id} = amishi, content, summary \\ nil, cotonoma_id \\ nil) do
+  def create!(content, summary, %Amishi{} = amishi),
+    do: do_create!(content, summary, amishi, nil)
+
+  def create!(content, summary, %Amishi{} = amishi, %Cotonoma{id: cotonoma_id}),
+    do: do_create!(content, summary, amishi, cotonoma_id)
+
+  defp do_create!(content, summary, %Amishi{id: amishi_id} = amishi, cotonoma_id) do
     {:ok, coto} =
       Repo.transaction(fn ->
         Coto.changeset_to_insert(%{
@@ -172,7 +178,8 @@ defmodule Cotoami.CotoService do
     end
   end
 
-  def repost!(%Coto{} = coto, %Amishi{} = amishi), do: do_repost!(coto, amishi, nil)
+  def repost!(%Coto{} = coto, %Amishi{} = amishi),
+    do: do_repost!(coto, amishi, nil)
 
   def repost!(%Coto{} = coto, %Amishi{} = amishi, %Cotonoma{id: cotonoma_id}),
     do: do_repost!(coto, amishi, cotonoma_id)

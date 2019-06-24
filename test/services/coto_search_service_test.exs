@@ -21,8 +21,8 @@ defmodule Cotoami.CotoSearchServiceTest do
 
   describe "when there are private cotos by amishi_a" do
     setup ~M{amishi_a, cotonoma_a} do
-      CotoService.create!(amishi_a, "Search has become an important feature.")
-      CotoService.create!(amishi_a, "You are often asked to add search.", nil, cotonoma_a.id)
+      CotoService.create!("Search has become an important feature.", nil, amishi_a)
+      CotoService.create!("You are often asked to add search.", nil, amishi_a, cotonoma_a)
       :ok
     end
 

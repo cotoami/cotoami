@@ -36,7 +36,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
 
   describe "a coto pinned to home" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      coto = CotoService.create!(amishi, "hello")
+      coto = CotoService.create!("hello", nil, amishi)
       CotoGraphService.pin(bolt_conn, coto, nil, amishi)
       %{coto: coto}
     end
@@ -74,7 +74,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
     end
 
     test "PUT /api/graph/pin", %{conn: conn, amishi: amishi, coto: coto} do
-      coto2 = CotoService.create!(amishi, "plain coto")
+      coto2 = CotoService.create!("plain coto", nil, amishi)
       coto3 = CotonomaService.create!(amishi, "cotonoma coto", false)
 
       put(conn, "/api/graph/pin", %{"coto_ids" => [coto2.id, coto3.id]})
@@ -121,7 +121,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
       coto: coto,
       bolt_conn: bolt_conn
     } do
-      coto2 = CotoService.create!(amishi, "bye")
+      coto2 = CotoService.create!("bye", nil, amishi)
 
       put(conn, "/api/graph/connections/#{coto.id}", %{"end_ids" => [coto2.id]})
 
@@ -146,8 +146,8 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
 
   describe "a coto pinned to home with one connection" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
-      coto1 = CotoService.create!(amishi, "hello")
-      coto2 = CotoService.create!(amishi, "bye")
+      coto1 = CotoService.create!("hello", nil, amishi)
+      coto2 = CotoService.create!("bye", nil, amishi)
       CotoGraphService.pin(bolt_conn, coto1, nil, amishi)
       CotoGraphService.connect(bolt_conn, coto1, coto2, nil, amishi)
       %{coto1: coto1, coto2: coto2}
@@ -219,7 +219,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
   describe "a coto pinned to a cotonoma" do
     setup %{bolt_conn: bolt_conn, amishi: amishi} do
       %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
-      coto = CotoService.create!(amishi, "hello", nil, cotonoma.id)
+      coto = CotoService.create!("hello", nil, amishi, cotonoma)
       CotoGraphService.pin(bolt_conn, coto, cotonoma, nil, amishi)
       %{coto: coto, cotonoma: cotonoma}
     end
@@ -272,8 +272,8 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
       coto: coto,
       cotonoma: cotonoma
     } do
-      coto2 = CotoService.create!(amishi, "Mario", nil, cotonoma.id)
-      coto3 = CotoService.create!(amishi, "Luigi", nil, cotonoma.id)
+      coto2 = CotoService.create!("Mario", nil, amishi, cotonoma)
+      coto3 = CotoService.create!("Luigi", nil, amishi, cotonoma)
 
       put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id, coto3.id]})
 
@@ -303,7 +303,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
       cotonoma: cotonoma
     } do
       amishi2 = AmishiService.insert_or_update!(%EmailUser{email: "amishi2@example.com"})
-      coto2 = CotoService.create!(amishi2, "bye", nil, cotonoma.id)
+      coto2 = CotoService.create!("bye", nil, amishi2, cotonoma)
 
       put(conn, "/api/graph/#{cotonoma.key}/pin", %{"coto_ids" => [coto2.id]})
 
@@ -346,7 +346,7 @@ defmodule CotoamiWeb.CotoGraphControllerTest do
       coto: coto,
       cotonoma: cotonoma
     } do
-      coto2 = CotoService.create!(amishi, "bye", nil, cotonoma.id)
+      coto2 = CotoService.create!("bye", nil, amishi, cotonoma)
 
       put(conn, "/api/graph/#{cotonoma.key}/connections/#{coto.id}", %{"end_ids" => [coto2.id]})
 

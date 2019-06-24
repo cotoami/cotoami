@@ -28,18 +28,15 @@ defmodule CotoamiWeb.CotoController do
     render(conn, "cotos.json", cotos: CotoService.search(query, amishi))
   end
 
-  def create(
-        conn,
-        %{
-          "coto" => %{
-            "content" => content,
-            "summary" => summary,
-            "cotonoma_id" => cotonoma_id
-          }
-        },
-        amishi
-      ) do
-    coto = CotoService.create!(amishi, content, summary, cotonoma_id)
+  def create(conn, %{"coto" => coto_params}, amishi) do
+    %{"content" => content, "summary" => summary} = coto_params
+
+    coto =
+      case get_cotonoma_if_specified!(coto_params, amishi) do
+        nil -> CotoService.create!(content, summary, amishi)
+        cotonoma -> CotoService.create!(content, summary, amishi, cotonoma)
+      end
+
     on_coto_created(conn, coto, amishi)
     render(conn, "created.json", coto: coto)
   end

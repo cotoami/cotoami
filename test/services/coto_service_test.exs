@@ -18,13 +18,13 @@ defmodule Cotoami.CotoServiceTest do
   end
 
   test "creating a coto without content", ~M{amishi} do
-    coto = CotoService.create!(amishi, nil)
+    coto = CotoService.create!(nil, nil, amishi)
     assert %Coto{content: ""} = CotoService.get(coto.id)
   end
 
   describe "when there is a coto" do
     setup ~M{amishi} do
-      coto = CotoService.create!(amishi, "hello")
+      coto = CotoService.create!("hello", nil, amishi)
       ~M{coto}
     end
 
@@ -42,7 +42,7 @@ defmodule Cotoami.CotoServiceTest do
     test "posting a coto to it", ~M{amishi, cotonoma} do
       assert cotonoma.timeline_revision == 0
 
-      coto = CotoService.create!(amishi, "hello", nil, cotonoma.id)
+      coto = CotoService.create!("hello", nil, amishi, cotonoma)
       assert coto.content == "hello"
       assert coto.posted_in.id == cotonoma.id
 
@@ -56,12 +56,12 @@ defmodule Cotoami.CotoServiceTest do
     setup ~M{conn, amishi} do
       %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
 
-      coto1 = CotoService.create!(amishi, "coto1")
-      coto2 = CotoService.create!(amishi, "coto2")
+      coto1 = CotoService.create!("coto1", nil, amishi)
+      coto2 = CotoService.create!("coto2", nil, amishi)
       CotoGraphService.pin(conn, coto2, nil, amishi)
-      coto3 = CotoService.create!(amishi, "coto3")
+      coto3 = CotoService.create!("coto3", nil, amishi)
       CotoGraphService.connect(conn, coto2, coto3, nil, amishi)
-      coto4 = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
+      coto4 = CotoService.create!("coto4", nil, amishi, cotonoma)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end

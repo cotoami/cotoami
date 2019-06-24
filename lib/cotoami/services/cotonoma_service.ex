@@ -86,15 +86,24 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto
   end
 
-  def get_by_key!(key, %Amishi{} = amishi) do
-    cotonoma =
-      Cotonoma
-      |> preload([:coto, :owner])
-      |> Repo.get_by(key: key)
+  def get!(id, %Amishi{} = amishi) do
+    Cotonoma
+    |> preload([:coto, :owner])
+    |> Repo.get(id)
+    |> check_permission!(amishi)
+  end
 
+  def get_by_key!(key, %Amishi{} = amishi) do
+    Cotonoma
+    |> preload([:coto, :owner])
+    |> Repo.get_by(key: key)
+    |> check_permission!(amishi)
+  end
+
+  defp check_permission!(cotonoma, amishi) do
     case cotonoma do
       nil ->
-        raise Cotoami.Exceptions.NotFound, "cotonoma: key<#{key}>"
+        raise Cotoami.Exceptions.NotFound
 
       cotonoma ->
         Cotonoma.ensure_accessible_by(cotonoma, amishi)
