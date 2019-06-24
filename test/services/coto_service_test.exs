@@ -5,6 +5,7 @@ defmodule Cotoami.CotoServiceTest do
   alias Cotoami.{
     EmailUser,
     Coto,
+    Cotonoma,
     AmishiService,
     CotoService,
     CotonomaService,
@@ -45,7 +46,7 @@ defmodule Cotoami.CotoServiceTest do
       assert coto.content == "hello"
       assert coto.posted_in.id == cotonoma.id
 
-      cotonoma = CotonomaService.get(cotonoma.id)
+      cotonoma = Repo.get!(Cotonoma, cotonoma.id)
       assert cotonoma.timeline_revision == 1
       assert cotonoma.last_post_timestamp == coto.inserted_at
     end

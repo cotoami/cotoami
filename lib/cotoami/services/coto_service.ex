@@ -149,29 +149,26 @@ defmodule Cotoami.CotoService do
   def create!(%Amishi{id: amishi_id} = amishi, content, summary \\ nil, cotonoma_id \\ nil) do
     {:ok, coto} =
       Repo.transaction(fn ->
-        # create a coto
-        coto =
-          Coto.changeset_to_insert(%{
-            content: content,
-            summary: summary,
-            as_cotonoma: false,
-            posted_in_id: cotonoma_id,
-            amishi_id: amishi_id
-          })
-          |> Repo.insert!()
-          |> on_created(cotonoma_id)
+        Coto.changeset_to_insert(%{
+          content: content,
+          summary: summary,
+          as_cotonoma: false,
+          posted_in_id: cotonoma_id,
+          amishi_id: amishi_id
+        })
+        |> Repo.insert!()
+        |> on_created()
       end)
 
     %{coto | amishi: amishi}
   end
 
-  def on_created(%Coto{} = coto, cotonoma_id) do
-    case CotonomaService.get!(cotonoma_id) do
-      nil ->
-        %{coto | posted_in: nil}
+  def on_created(%Coto{} = coto) do
+    coto = Repo.preload(coto, :posted_in)
 
-      cotonoma ->
-        %{coto | posted_in: CotonomaService.update_on_post(cotonoma, coto)}
+    case coto.posted_in do
+      nil -> %{coto | posted_in: nil}
+      cotonoma -> %{coto | posted_in: CotonomaService.update_on_post(cotonoma, coto)}
     end
   end
 
@@ -205,7 +202,7 @@ defmodule Cotoami.CotoService do
         repost =
           Coto.changeset_to_repost(coto, amishi, cotonoma_id)
           |> Repo.insert!()
-          |> on_created(cotonoma_id)
+          |> on_created()
 
         %{repost | repost: coto}
       end)

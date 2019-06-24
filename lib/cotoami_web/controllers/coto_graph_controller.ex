@@ -10,33 +10,23 @@ defmodule CotoamiWeb.CotoGraphController do
   end
 
   def index(conn, params, amishi) do
-    case get_cotonoma_if_specified(params) do
+    case get_cotonoma_if_specified!(params, amishi) do
       nil ->
         json(conn, CotoGraphService.get_graph_in_amishi(Sips.conn(), amishi))
 
       cotonoma ->
         json(conn, CotoGraphService.get_graph_in_cotonoma(Sips.conn(), cotonoma, amishi))
     end
-  rescue
-    _ in Cotoami.Exceptions.NoPermission ->
-      send_resp(conn, :not_found, "")
   end
 
   def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
-    case CotonomaService.get_by_key(cotonoma_key) do
-      nil ->
-        send_resp(conn, :not_found, "")
-
-      cotonoma ->
-        json(conn, CotoGraphService.get_graph_from_cotonoma(Sips.conn(), cotonoma, amishi))
-    end
-  rescue
-    _ in Cotoami.Exceptions.NoPermission ->
-      send_resp(conn, :not_found, "")
+    cotonoma = CotonomaService.get_by_key!(cotonoma_key, amishi)
+    graph = CotoGraphService.get_graph_from_cotonoma(Sips.conn(), cotonoma, amishi)
+    json(conn, graph)
   end
 
   def pin(conn, %{"coto_ids" => coto_ids} = params, amishi) do
-    cotonoma = get_cotonoma_if_specified(params)
+    cotonoma = get_cotonoma_if_specified!(params, amishi)
     linking_phrase = params["linking_phrase"]
 
     results =
@@ -65,7 +55,7 @@ defmodule CotoamiWeb.CotoGraphController do
   end
 
   def unpin(conn, %{"coto_id" => coto_id} = params, amishi) do
-    cotonoma = get_cotonoma_if_specified(params)
+    cotonoma = get_cotonoma_if_specified!(params, amishi)
     coto = ensure_to_get_coto(coto_id)
 
     case cotonoma do
@@ -81,7 +71,7 @@ defmodule CotoamiWeb.CotoGraphController do
   end
 
   def connect(conn, %{"start_id" => start_id, "end_ids" => end_ids} = params, amishi) do
-    cotonoma = get_cotonoma_if_specified(params)
+    cotonoma = get_cotonoma_if_specified!(params, amishi)
     start_coto = ensure_to_get_coto(start_id)
     linking_phrase = params["linking_phrase"]
 
@@ -163,7 +153,7 @@ defmodule CotoamiWeb.CotoGraphController do
         broadcast_reorder(start_id, end_ids, amishi, conn.assigns.client_id)
 
       _ ->
-        case get_cotonoma_if_specified(params) do
+        case get_cotonoma_if_specified!(params, amishi) do
           nil ->
             CotoGraphService.reorder_connections(Sips.conn(), amishi, end_ids)
 
@@ -184,13 +174,10 @@ defmodule CotoamiWeb.CotoGraphController do
     end
   end
 
-  defp get_cotonoma_if_specified(params) do
+  defp get_cotonoma_if_specified!(params, amishi) do
     case params do
-      %{"cotonoma_key" => cotonoma_key} ->
-        CotonomaService.get_by_key!(cotonoma_key)
-
-      _ ->
-        nil
+      %{"cotonoma_key" => key} -> CotonomaService.get_by_key!(key, amishi)
+      _ -> nil
     end
   end
 end

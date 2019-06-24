@@ -4,20 +4,13 @@ defmodule CotoamiWeb.CotonomaChannel do
   """
 
   use CotoamiWeb, :channel
-  alias Cotoami.Cotonoma
   alias Cotoami.CotonomaService
 
   def join("cotonomas:" <> cotonoma_key, _params, socket) do
-    case CotonomaService.get_by_key(cotonoma_key) do
-      nil ->
-        {:error, %{reason: "not-found"}}
-
-      cotonoma ->
-        if Cotonoma.accessible_by?(cotonoma, socket.assigns.amishi) do
-          {:ok, socket}
-        else
-          {:error, %{reason: "no-permission"}}
-        end
-    end
+    CotonomaService.get_by_key!(cotonoma_key, socket.assigns.amishi)
+    {:ok, socket}
+  rescue
+    _ in Cotoami.Exceptions.NotFound -> {:error, %{reason: "not-found"}}
+    _ in Cotoami.Exceptions.NoPermission -> {:error, %{reason: "no-permission"}}
   end
 end

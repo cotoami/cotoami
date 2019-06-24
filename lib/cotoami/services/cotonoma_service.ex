@@ -14,9 +14,7 @@ defmodule Cotoami.CotonomaService do
     Amishi,
     AmishiService,
     CotoService,
-    CotonomaService,
-    CotoGraphService,
-    Exceptions.NotFound
+    CotoGraphService
   }
 
   def global_cotonomas_holder do
@@ -41,9 +39,8 @@ defmodule Cotoami.CotonomaService do
         # create a cotonoma
         cotonoma = create_cotonoma!(coto, name, amishi.id, shared)
 
-        coto =
-          %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
-          |> CotoService.on_created(cotonoma_id)
+        %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
+        |> CotoService.on_created()
       end)
 
     %{coto | amishi: amishi}
@@ -89,33 +86,19 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto
   end
 
-  def get(id) do
-    Cotonoma
-    |> preload([:coto, :owner])
-    |> Repo.get(id)
-  end
+  def get_by_key!(key, %Amishi{} = amishi) do
+    cotonoma =
+      Cotonoma
+      |> preload([:coto, :owner])
+      |> Repo.get_by(key: key)
 
-  def get!(nil), do: nil
+    case cotonoma do
+      nil ->
+        raise Cotoami.Exceptions.NotFound, "cotonoma: key<#{key}>"
 
-  def get!(id) do
-    case get(id) do
-      nil -> raise NotFound, "cotonoma: id<#{id}>"
-      cotonoma -> cotonoma
-    end
-  end
-
-  def get_by_key(key) do
-    Cotonoma
-    |> preload([:coto, :owner])
-    |> Repo.get_by(key: key)
-  end
-
-  def get_by_key!(nil), do: nil
-
-  def get_by_key!(key) do
-    case get_by_key(key) do
-      nil -> raise NotFound, "cotonoma: key<#{key}>"
-      cotonoma -> cotonoma
+      cotonoma ->
+        Cotonoma.ensure_accessible_by(cotonoma, amishi)
+        cotonoma
     end
   end
 

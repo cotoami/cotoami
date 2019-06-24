@@ -14,8 +14,6 @@ defmodule Cotoami.WatchService do
     Watch
   }
 
-  alias Cotoami.Exceptions.{InvalidOperation, NotFound}
-
   def get_or_create!(%Amishi{id: amishi_id}, %Cotonoma{
         id: cotonoma_id,
         last_post_timestamp: last_post_timestamp,
@@ -53,7 +51,7 @@ defmodule Cotoami.WatchService do
       ) do
     case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
       nil ->
-        raise NotFound
+        raise Cotoami.Exceptions.NotFound
 
       watch ->
         if watch.last_post_timestamp == nil or
@@ -65,7 +63,7 @@ defmodule Cotoami.WatchService do
           |> Repo.update!()
           |> (&%{&1 | cotonoma: cotonoma}).()
         else
-          raise InvalidOperation
+          raise Cotoami.Exceptions.InvalidOperation
         end
     end
   end
