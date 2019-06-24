@@ -4,7 +4,7 @@ defmodule CotoamiWeb.ControllerHelpers do
   """
 
   import Plug.Conn, only: [send_resp: 3]
-  alias Cotoami.{Amishi, Coto, Cotonoma, CotonomaService}
+  alias Cotoami.{Helpers, Amishi, Coto, Cotonoma, CotonomaService}
 
   def send_resp_by_constraint_error(conn, %Ecto.ConstraintError{} = e, content \\ nil) do
     case e.constraint do
@@ -23,7 +23,7 @@ defmodule CotoamiWeb.ControllerHelpers do
   end
 
   def get_cotonoma_if_specified!(params, amishi) do
-    case params do
+    case params |> Helpers.drop_nil() do
       %{"cotonoma_id" => id} -> CotonomaService.get!(id, amishi)
       %{"cotonoma_key" => key} -> CotonomaService.get_by_key!(key, amishi)
       _ -> nil
