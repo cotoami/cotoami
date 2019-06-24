@@ -40,6 +40,23 @@ defmodule Cotoami.Coto do
     |> store_long_content()
   end
 
+  def changeset_to_repost(
+        %Coto{id: coto_id, repost: nil},
+        %Amishi{id: amishi_id},
+        cotonoma_id \\ nil
+      ) do
+    %Coto{}
+    |> change(
+      repost_id: coto_id,
+      content: nil,
+      summary: nil,
+      as_cotonoma: false,
+      amishi_id: amishi_id,
+      posted_in_id: cotonoma_id
+    )
+    |> normalize_no_content()
+  end
+
   def changeset_to_update(struct, params \\ %{}) do
     struct
     |> cast(params, [:content, :summary])
@@ -111,5 +128,13 @@ defmodule Cotoami.Coto do
 
   def in_cotonoma(query, cotonoma_id) do
     from(coto in query, where: coto.posted_in_id == ^cotonoma_id)
+  end
+
+  def peel!(%Coto{} = coto) do
+    case coto.repost do
+      nil -> coto
+      %Ecto.Association.NotLoaded{} -> raise "coto.repost not loaded"
+      repost -> repost
+    end
   end
 end

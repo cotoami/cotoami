@@ -5,6 +5,7 @@ defmodule Cotoami.CotoService do
 
   require Logger
   import Ecto.Query
+  import Ecto.Changeset
   import Cotoami.ServiceHelpers
 
   alias Cotoami.{
@@ -158,18 +159,58 @@ defmodule Cotoami.CotoService do
             amishi_id: amishi_id
           })
           |> Repo.insert!()
-
-        # set last_post_timestamp and timeline_revision to the posted_in cotonoma
-        case CotonomaService.get!(cotonoma_id) do
-          nil ->
-            %{coto | posted_in: nil}
-
-          posted_in ->
-            %{coto | posted_in: CotonomaService.on_post(posted_in, coto)}
-        end
+          |> on_created(cotonoma_id)
       end)
 
     %{coto | amishi: amishi}
+  end
+
+  def on_created(%Coto{} = coto, cotonoma_id) do
+    case CotonomaService.get!(cotonoma_id) do
+      nil ->
+        %{coto | posted_in: nil}
+
+      cotonoma ->
+        %{coto | posted_in: CotonomaService.update_on_post(cotonoma, coto)}
+    end
+  end
+
+  def repost!(%Coto{} = coto, %Amishi{} = amishi), do: do_repost!(coto, amishi, nil)
+
+  def repost!(%Coto{} = coto, %Amishi{} = amishi, %Cotonoma{id: cotonoma_id}),
+    do: do_repost!(coto, amishi, cotonoma_id)
+
+  defp do_repost!(coto, amishi, cotonoma_id) do
+    coto = Coto.peel!(coto)
+
+    if cotonoma_id &&
+         (coto.posted_in.id == cotonoma_id || Enum.member?(coto.reposted_in_ids, cotonoma_id)) do
+    end
+
+    {:ok, repost} =
+      Repo.transaction(fn ->
+        # update reposted_in_ids of the reposted coto
+        coto =
+          case cotonoma_id do
+            nil ->
+              coto
+
+            cotonoma_id ->
+              coto
+              |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
+              |> Repo.update!()
+              |> complement(amishi)
+          end
+
+        repost =
+          Coto.changeset_to_repost(coto, amishi, cotonoma_id)
+          |> Repo.insert!()
+          |> on_created(cotonoma_id)
+
+        %{repost | repost: coto}
+      end)
+
+    %{repost | amishi: amishi}
   end
 
   def update!(id, %{"content" => _, "shared" => shared} = params, %Amishi{id: amishi_id} = amishi) do

@@ -13,6 +13,7 @@ defmodule Cotoami.CotonomaService do
     Cotonoma,
     Amishi,
     AmishiService,
+    CotoService,
     CotonomaService,
     CotoGraphService,
     Exceptions.NotFound
@@ -39,16 +40,10 @@ defmodule Cotoami.CotonomaService do
 
         # create a cotonoma
         cotonoma = create_cotonoma!(coto, name, amishi.id, shared)
-        coto = %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
 
-        # set last_post_timestamp and timeline_revision to the posted_in cotonoma
-        case get!(cotonoma_id) do
-          nil ->
-            %{coto | posted_in: nil}
-
-          posted_in ->
-            %{coto | posted_in: CotonomaService.on_post(posted_in, coto)}
-        end
+        coto =
+          %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
+          |> CotoService.on_created(cotonoma_id)
       end)
 
     %{coto | amishi: amishi}
@@ -164,7 +159,7 @@ defmodule Cotoami.CotonomaService do
     |> Repo.all()
   end
 
-  def on_post(%Cotonoma{} = cotonoma, %Coto{inserted_at: coto_inserted_at}) do
+  def update_on_post(%Cotonoma{} = cotonoma, %Coto{inserted_at: coto_inserted_at}) do
     cotonoma
     |> change(last_post_timestamp: coto_inserted_at)
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
