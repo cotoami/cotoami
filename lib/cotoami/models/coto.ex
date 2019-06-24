@@ -8,6 +8,8 @@ defmodule Cotoami.Coto do
   import Ecto.Query, warn: false
   import Cotoami.Helpers
   alias Cotoami.Amishi
+  alias Cotoami.Coto
+  alias Cotoami.Cotonoma
 
   @summary_max_length 200
   @content_max_length 2500
@@ -19,18 +21,18 @@ defmodule Cotoami.Coto do
     field(:long_content, :string)
     field(:summary, :string)
     field(:as_cotonoma, :boolean)
-    belongs_to(:posted_in, Cotoami.Cotonoma)
-    belongs_to(:amishi, Cotoami.Amishi)
-    has_one(:cotonoma, Cotoami.Cotonoma)
+    belongs_to(:posted_in, Cotonoma)
+    belongs_to(:amishi, Amishi)
+    has_one(:cotonoma, Cotonoma)
 
-    has_one(:repost, Cotoami.Coto)
+    has_one(:repost, Coto)
     field(:reposted_in_ids, {:array, Ecto.UUID})
 
     timestamps(type: :utc_datetime)
   end
 
-  def changeset_to_insert(struct, params \\ %{}) do
-    struct
+  def changeset_to_insert(params \\ %{}) do
+    %Coto{}
     |> cast(params, [:content, :summary, :as_cotonoma, :posted_in_id, :amishi_id])
     |> validate_required([:amishi_id])
     |> validate_length(:summary, max: @summary_max_length)

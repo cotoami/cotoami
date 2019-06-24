@@ -29,8 +29,7 @@ defmodule Cotoami.CotonomaService do
       Repo.transaction(fn ->
         # create a coto
         coto =
-          %Coto{}
-          |> Coto.changeset_to_insert(%{
+          Coto.changeset_to_insert(%{
             content: name,
             as_cotonoma: true,
             posted_in_id: cotonoma_id,

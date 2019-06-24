@@ -150,8 +150,7 @@ defmodule Cotoami.CotoService do
       Repo.transaction(fn ->
         # create a coto
         coto =
-          %Coto{}
-          |> Coto.changeset_to_insert(%{
+          Coto.changeset_to_insert(%{
             content: content,
             summary: summary,
             as_cotonoma: false,
