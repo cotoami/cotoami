@@ -41,6 +41,36 @@ defmodule CotoamiWeb.CotoController do
     render(conn, "created.json", coto: coto)
   end
 
+  def repost(conn, %{"id" => id, "cotonoma_name" => cotonoma_name}, amishi) do
+    cotonoma =
+      try do
+        cotonoma_coto = CotonomaService.create!(cotonoma_name, false, amishi)
+        on_coto_created(conn, cotonoma_coto, amishi)
+        cotonoma_coto.cotonoma
+      rescue
+        _ in Ecto.ConstraintError ->
+          CotonomaService.get_by_name(cotonoma_name, amishi)
+      end
+
+    repost =
+      Coto
+      |> Repo.get!(id)
+      |> CotoService.repost!(amishi, cotonoma)
+
+    on_coto_created(conn, repost, amishi)
+    render(conn, "created.json", coto: repost)
+  end
+
+  def repost(conn, %{"id" => id}, amishi) do
+    repost =
+      Coto
+      |> Repo.get!(id)
+      |> CotoService.repost!(amishi)
+
+    on_coto_created(conn, repost, amishi)
+    render(conn, "created.json", coto: repost)
+  end
+
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
     {:ok, coto} =
       Repo.transaction(fn ->

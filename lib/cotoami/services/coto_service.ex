@@ -234,7 +234,6 @@ defmodule Cotoami.CotoService do
               coto
               |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
               |> Repo.update!()
-              |> complement(amishi)
           end
 
         repost =
@@ -242,7 +241,7 @@ defmodule Cotoami.CotoService do
           |> Repo.insert!()
           |> on_created()
 
-        %{repost | repost: coto}
+        %{repost | repost: coto |> complement(amishi)}
       end)
 
     %{repost | amishi: amishi}
