@@ -28,6 +28,8 @@ defmodule CotoamiWeb.CotoView do
   end
 
   def render("coto.json", %{coto: coto}) do
+    reposted_in = Map.get(coto, :reposted_in, [])
+
     %{
       id: coto.id,
       content: Coto.get_content(coto),
@@ -37,6 +39,7 @@ defmodule CotoamiWeb.CotoView do
       as_cotonoma: coto.as_cotonoma,
       cotonoma: render_relation(coto.cotonoma, CotonomaView, "cotonoma.json"),
       repost: render_relation(coto.repost, CotoView, "coto.json"),
+      reposted_in: render_relations(reposted_in, CotonomaView, "cotonoma.json"),
       inserted_at: coto.inserted_at |> to_unixtime(),
       updated_at: coto.updated_at |> to_unixtime()
     }

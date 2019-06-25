@@ -52,12 +52,14 @@ defmodule Cotoami.CotoService do
     query_by_amishi(amishi, options)
     |> order_by(desc: :inserted_at)
     |> query_with_pagination(@page_size, page_index, &complement_amishi(&1, amishi))
+    |> set_reposted_in(amishi)
   end
 
   def all_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, page_index, options \\ []) do
     query_by_cotonoma(cotonoma, amishi, options)
     |> order_by(desc: :inserted_at)
     |> query_with_pagination(@page_size, page_index)
+    |> set_reposted_in(amishi)
   end
 
   @random_limit 100
@@ -68,6 +70,7 @@ defmodule Cotoami.CotoService do
     |> limit(@random_limit)
     |> Repo.all()
     |> Enum.map(&complement_amishi(&1, amishi))
+    |> set_reposted_in(amishi)
   end
 
   def random_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options \\ []) do
@@ -75,6 +78,7 @@ defmodule Cotoami.CotoService do
     |> order_by(fragment("random()"))
     |> limit(@random_limit)
     |> Repo.all()
+    |> set_reposted_in(amishi)
   end
 
   defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
@@ -122,6 +126,7 @@ defmodule Cotoami.CotoService do
     |> limit(@page_size)
     |> Repo.all()
     |> Enum.map(&complement_amishi(&1, amishi))
+    |> set_reposted_in(amishi)
   end
 
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
@@ -144,6 +149,29 @@ defmodule Cotoami.CotoService do
     |> order_by(asc: :inserted_at)
     |> preload([:cotonoma])
     |> Repo.all()
+  end
+
+  defp set_reposted_in(cotos, %Amishi{} = amishi) when is_list(cotos) do
+    cotonomas =
+      cotos
+      |> Enum.map(& &1.reposted_in_ids)
+      |> List.flatten()
+      |> Enum.uniq()
+      |> CotonomaService.map_by_ids()
+
+    cotos
+    |> Enum.map(fn coto ->
+      reposted_in =
+        coto.reposted_in_ids
+        |> Enum.map(&cotonomas[&1])
+        |> Enum.filter(&(&1 && Cotonoma.accessible_by?(&1, amishi)))
+
+      Map.put(coto, :reposted_in, reposted_in)
+    end)
+  end
+
+  defp set_reposted_in(%{rows: rows} = paginated_cotos, %Amishi{} = amishi) do
+    %{paginated_cotos | rows: set_reposted_in(rows, amishi)}
   end
 
   def create!(content, summary, %Amishi{} = amishi),
