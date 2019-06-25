@@ -1,7 +1,7 @@
 defmodule CotoamiWeb.CotoView do
   use CotoamiWeb, :view
   alias Cotoami.{Coto}
-  alias CotoamiWeb.{CotonomaView, AmishiView}
+  alias CotoamiWeb.{CotoView, CotonomaView, AmishiView}
 
   def render("cotos.json", %{cotos: cotos}) do
     render_many(cotos, __MODULE__, "coto.json")
@@ -36,6 +36,7 @@ defmodule CotoamiWeb.CotoView do
       posted_in: render_relation(coto.posted_in, CotonomaView, "cotonoma.json"),
       as_cotonoma: coto.as_cotonoma,
       cotonoma: render_relation(coto.cotonoma, CotonomaView, "cotonoma.json"),
+      repost: render_relation(coto.repost, CotoView, "coto.json"),
       inserted_at: coto.inserted_at |> to_unixtime(),
       updated_at: coto.updated_at |> to_unixtime()
     }
