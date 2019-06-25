@@ -185,11 +185,12 @@ defmodule Cotoami.CotoService do
     do: do_repost!(coto, amishi, cotonoma_id)
 
   defp do_repost!(coto, amishi, cotonoma_id) do
-    coto = Coto.peel!(coto)
+    coto =
+      coto
+      |> Repo.preload(:repost)
+      |> Coto.peel!()
 
-    if cotonoma_id &&
-         (coto.posted_in.id == cotonoma_id ||
-            Enum.member?(coto.reposted_in_ids, cotonoma_id)) do
+    if Coto.posted_in(coto, cotonoma_id) do
       raise Cotoami.Exceptions.DuplicateRepost
     end
 

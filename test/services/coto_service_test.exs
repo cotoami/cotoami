@@ -4,6 +4,7 @@ defmodule Cotoami.CotoServiceTest do
 
   alias Cotoami.{
     EmailUser,
+    Amishi,
     Coto,
     Cotonoma,
     AmishiService,
@@ -30,6 +31,28 @@ defmodule Cotoami.CotoServiceTest do
 
     test "the coto can be gotten by id", ~M{coto} do
       assert %Coto{content: "hello"} = CotoService.get(coto.id)
+    end
+
+    test "reposting it to another cotonoma", ~M{amishi, coto} do
+      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
+      %Cotonoma{id: cotonoma_id} = cotonoma
+
+      repost = CotoService.repost!(coto, amishi, cotonoma)
+
+      # repost container
+      assert %Coto{
+               content: "",
+               as_cotonoma: false,
+               repost: %Coto{content: "hello"},
+               posted_in: %Cotonoma{name: "test"},
+               amishi: %Amishi{email: "amishi@example.com"}
+             } = repost
+
+      # reposted coto
+      assert %Coto{
+               content: "hello",
+               reposted_in_ids: [^cotonoma_id]
+             } = CotoService.get(coto.id)
     end
   end
 

@@ -38,6 +38,7 @@ defmodule Cotoami.Coto do
     |> validate_length(:summary, max: @summary_max_length)
     |> normalize_no_content()
     |> store_long_content()
+    |> put_change(:reposted_in_ids, [])
   end
 
   def changeset_to_repost(
@@ -136,5 +137,11 @@ defmodule Cotoami.Coto do
       %Ecto.Association.NotLoaded{} -> raise "coto.repost not loaded"
       repost -> repost
     end
+  end
+
+  def posted_in(%Coto{} = coto, cotonoma_id) do
+    cotonoma_id &&
+      ((coto.posted_in && coto.posted_in.id == cotonoma_id) ||
+         Enum.member?(coto.reposted_in_ids, cotonoma_id))
   end
 end
