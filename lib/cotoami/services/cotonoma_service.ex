@@ -123,7 +123,14 @@ defmodule Cotoami.CotonomaService do
     |> Repo.get_by(name: name, owner_id: amishi_id)
   end
 
-  def keys_map(keys) do
+  def map_by_ids(ids) do
+    from(c in Cotonoma, where: c.id in ^ids, select: {c.id, c})
+    |> preload([:coto, :owner])
+    |> Repo.all()
+    |> Map.new()
+  end
+
+  def map_by_keys(keys) do
     from(c in Cotonoma, where: c.key in ^keys, select: {c.key, c})
     |> preload([:coto, :owner])
     |> Repo.all()
@@ -197,7 +204,7 @@ defmodule Cotoami.CotonomaService do
 
       amishi ->
         keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn(), amishi)
-        cotonomas = keys_map(keys)
+        cotonomas = map_by_keys(keys)
         for key <- keys, cotonomas[key], do: cotonomas[key]
     end
   end
