@@ -61,11 +61,15 @@ defmodule CotoamiWeb.CotoController do
     render(conn, "created.json", coto: repost)
   end
 
-  def repost(conn, %{"id" => id}, amishi) do
+  def repost(conn, %{"id" => id} = params, amishi) do
+    coto = Repo.get!(Coto, id)
+    cotonoma = get_cotonoma_if_specified!(params, amishi)
+
     repost =
-      Coto
-      |> Repo.get!(id)
-      |> CotoService.repost!(amishi)
+      case cotonoma do
+        nil -> CotoService.repost!(coto, amishi)
+        cotonoma -> CotoService.repost!(coto, amishi, cotonoma)
+      end
 
     on_coto_created(conn, repost, amishi)
     render(conn, "created.json", coto: repost)
