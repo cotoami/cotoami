@@ -51,6 +51,7 @@ defmodule Cotoami.CotoServiceTest do
       # reposted coto
       assert %Coto{
                content: "hello",
+               posted_in: nil,
                reposted_in_ids: [^cotonoma_id]
              } = CotoService.get(coto.id)
     end
