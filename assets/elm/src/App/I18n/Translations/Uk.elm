@@ -21,6 +21,9 @@ text key =
         Posting ->
             "Надсилання"
 
+        Edit ->
+            "Редагувати"
+
         Save ->
             "Зберегти"
 
@@ -132,9 +135,6 @@ text key =
         EditorModal_Preview ->
             "Перегляд"
 
-        EditorModal_Edit ->
-            "Редагувати"
-
         EditorModal_CotonomaHelp ->
             "Профіль це теж об'єкт, що має складну будову"
                 ++ " тут можна об'єднати зусилля для вичерпного опису об'єкту."
@@ -205,9 +205,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикріпити до поточного профілю"
 
-        CotoToolbar_Edit ->
-            "Редагувати"
-
         CotoToolbar_Repost ->
             "Repost"
 
@@ -243,9 +240,6 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "Відкріпити від існуючого профілю об‘єкта чи теми"
-
-        CotoMenuModal_Edit ->
-            "Редагувати"
 
         CotoMenuModal_AddSubCoto ->
             "Додати складову"

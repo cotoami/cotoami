@@ -7,6 +7,7 @@ type TextKey
     | MyHome
     | Post
     | Posting
+    | Edit
     | Save
     | Saving
     | Hide
@@ -44,7 +45,6 @@ type TextKey
     | EditorModal_Content
     | EditorModal_CotonomaName
     | EditorModal_Preview
-    | EditorModal_Edit
     | EditorModal_CotonomaHelp
     | EditorModal_ShareCotonoma
     | EditorModal_ShareCotonomaNote
@@ -66,7 +66,6 @@ type TextKey
     | InviteModal_InvitesRemaining Int
     | CotoToolbar_Connect
     | CotoToolbar_Pin
-    | CotoToolbar_Edit
     | CotoToolbar_Repost
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
@@ -79,7 +78,6 @@ type TextKey
     | CotoMenuModal_UnpinFromMyHome
     | CotoMenuModal_PinToCotonoma
     | CotoMenuModal_UnpinFromCotonoma
-    | CotoMenuModal_Edit
     | CotoMenuModal_AddSubCoto
     | CotoMenuModal_Repost
     | CotoMenuModal_Cotonomatize

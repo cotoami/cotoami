@@ -211,7 +211,7 @@ editButton context session coto =
     if App.Types.Coto.checkWritePermission session coto then
         a
             [ class "tool-button edit-coto"
-            , title (context.i18nText I18nKeys.CotoToolbar_Edit)
+            , title (context.i18nText I18nKeys.Edit)
             , onLinkButtonClick (OpenEditorModal coto)
             ]
             [ materialIcon "edit" Nothing ]

@@ -167,7 +167,7 @@ menuItemEdit context session model =
             "edit"
             [ materialIcon "edit" Nothing
             , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_Edit) ]
+                [ text (context.i18nText I18nKeys.Edit) ]
             ]
             (AppMsg.OpenEditorModal model.coto)
 

@@ -21,6 +21,9 @@ text key =
         Posting ->
             "Posting"
 
+        Edit ->
+            "Edit"
+
         Save ->
             "Save"
 
@@ -132,9 +135,6 @@ text key =
         EditorModal_Preview ->
             "Preview"
 
-        EditorModal_Edit ->
-            "Edit"
-
         EditorModal_CotonomaHelp ->
             "A Cotonoma is a special Coto that has a dedicated chat timeline"
                 ++ " where you can discuss with others about a topic described by its name."
@@ -205,9 +205,6 @@ text key =
         CotoToolbar_Pin ->
             "Pin to the current cotonoma"
 
-        CotoToolbar_Edit ->
-            "Edit"
-
         CotoToolbar_Repost ->
             "Repost"
 
@@ -243,9 +240,6 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "Unpin from the current Cotonoma"
-
-        CotoMenuModal_Edit ->
-            "Edit"
 
         CotoMenuModal_AddSubCoto ->
             "Add a sub-coto"

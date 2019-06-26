@@ -21,6 +21,9 @@ text key =
         Posting ->
             "投稿中"
 
+        Edit ->
+            "编辑"
+
         Save ->
             "保存"
 
@@ -135,9 +138,6 @@ text key =
         EditorModal_Preview ->
             "预览"
 
-        EditorModal_Edit ->
-            "编辑"
-
         EditorModal_CotonomaHelp ->
             "投稿室是具有专用的时间线和留带的空间、在Cotoami里面是信息整理的单位的容器。"
                 ++ "要进行讨论或收集新的主题的信息的时候，建议创建新的投稿室。"
@@ -208,9 +208,6 @@ text key =
         CotoToolbar_Pin ->
             "用别针固定现在的投稿室"
 
-        CotoToolbar_Edit ->
-            "编辑"
-
         CotoToolbar_Repost ->
             "Repost"
 
@@ -246,9 +243,6 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "摘下投稿室的别针"
-
-        CotoMenuModal_Edit ->
-            "编辑"
 
         CotoMenuModal_AddSubCoto ->
             "添加投稿的子项目"

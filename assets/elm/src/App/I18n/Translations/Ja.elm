@@ -21,6 +21,9 @@ text key =
         Posting ->
             "投稿中"
 
+        Edit ->
+            "編集"
+
         Save ->
             "保存"
 
@@ -135,9 +138,6 @@ text key =
         EditorModal_Preview ->
             "プレビュー"
 
-        EditorModal_Edit ->
-            "編集"
-
         EditorModal_CotonomaHelp ->
             "コトノマは、専用のタイムラインとピン留めのスペースを持つ、Cotoamiにおいて情報整理の単位となる入れ物です。"
                 ++ "新しいテーマについて議論したり情報を集めるときは専用のコトノマを作りましょう。"
@@ -204,9 +204,6 @@ text key =
         CotoToolbar_Pin ->
             "現在のコトノマにピン留め"
 
-        CotoToolbar_Edit ->
-            "編集"
-
         CotoToolbar_Repost ->
             "リポスト"
 
@@ -248,9 +245,6 @@ text key =
 
         CotoMenuModal_Unwatch ->
             "ウォッチリストから削除"
-
-        CotoMenuModal_Edit ->
-            "編集"
 
         CotoMenuModal_AddSubCoto ->
             "子コトを追加"

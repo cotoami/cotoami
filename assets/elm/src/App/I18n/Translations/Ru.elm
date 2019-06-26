@@ -21,6 +21,9 @@ text key =
         Posting ->
             "Передача"
 
+        Edit ->
+            "Изменить"
+
         Save ->
             "Сохранить"
 
@@ -132,9 +135,6 @@ text key =
         EditorModal_Preview ->
             "Просмотр"
 
-        EditorModal_Edit ->
-            "Изменить"
-
         EditorModal_CotonomaHelp ->
             "Профиль это тоже объект, имеющий сложное строение"
                 ++ " здесь можно объединить усилия для исчерпывающего описания объекта."
@@ -205,9 +205,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикрепить к текущему профилюф"
 
-        CotoToolbar_Edit ->
-            "Изменить"
-
         CotoToolbar_Repost ->
             "Repost"
 
@@ -243,9 +240,6 @@ text key =
 
         CotoMenuModal_UnpinFromCotonoma ->
             "Открепите от существующего профиля объекта или темы"
-
-        CotoMenuModal_Edit ->
-            "Изменить"
 
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
