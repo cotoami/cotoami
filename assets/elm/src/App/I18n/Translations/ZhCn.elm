@@ -21,6 +21,12 @@ text key =
         Posting ->
             "投稿中"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
         Edit ->
             "编辑"
 
@@ -211,9 +217,6 @@ text key =
         CotoToolbar_Pin ->
             "用别针固定现在的投稿室"
 
-        CotoToolbar_Repost ->
-            "Repost"
-
         CotoToolbar_AddSubCoto ->
             "添加投稿的子项目"
 
@@ -249,9 +252,6 @@ text key =
 
         CotoMenuModal_AddSubCoto ->
             "添加投稿的子项目"
-
-        CotoMenuModal_Repost ->
-            "Repost"
 
         CotoMenuModal_Cotonomatize ->
             "升级到投稿室"

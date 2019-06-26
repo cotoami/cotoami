@@ -234,7 +234,7 @@ repostButton : Context context -> Coto -> Html AppMsg.Msg
 repostButton context coto =
     a
         [ class "tool-button repost"
-        , title (context.i18nText I18nKeys.CotoToolbar_Repost)
+        , title (context.i18nText I18nKeys.Repost)
         , onLinkButtonClick (OpenRepostModal coto)
         ]
         [ materialIcon "repeat" Nothing ]

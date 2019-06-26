@@ -21,6 +21,12 @@ text key =
         Posting ->
             "Передача"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
         Edit ->
             "Изменить"
 
@@ -208,9 +214,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикрепить к текущему профилюф"
 
-        CotoToolbar_Repost ->
-            "Repost"
-
         CotoToolbar_AddSubCoto ->
             "Добавить к присоединенному объекту"
 
@@ -246,9 +249,6 @@ text key =
 
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
-
-        CotoMenuModal_Repost ->
-            "Repost"
 
         CotoMenuModal_Cotonomatize ->
             "Преобразовать в тему"

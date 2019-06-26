@@ -21,6 +21,12 @@ text key =
         Posting ->
             "Posting"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
         Edit ->
             "Edit"
 
@@ -208,9 +214,6 @@ text key =
         CotoToolbar_Pin ->
             "Pin to the current cotonoma"
 
-        CotoToolbar_Repost ->
-            "Repost"
-
         CotoToolbar_AddSubCoto ->
             "Add a sub-coto"
 
@@ -246,9 +249,6 @@ text key =
 
         CotoMenuModal_AddSubCoto ->
             "Add a sub-coto"
-
-        CotoMenuModal_Repost ->
-            "Repost"
 
         CotoMenuModal_Cotonomatize ->
             "Promote to a Cotonoma"

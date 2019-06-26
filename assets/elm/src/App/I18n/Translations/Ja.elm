@@ -21,6 +21,12 @@ text key =
         Posting ->
             "投稿中"
 
+        Repost ->
+            "リポスト"
+
+        Reposting ->
+            "リポスト中"
+
         Edit ->
             "編集"
 
@@ -207,9 +213,6 @@ text key =
         CotoToolbar_Pin ->
             "現在のコトノマにピン留め"
 
-        CotoToolbar_Repost ->
-            "リポスト"
-
         CotoToolbar_AddSubCoto ->
             "子コトを追加"
 
@@ -251,9 +254,6 @@ text key =
 
         CotoMenuModal_AddSubCoto ->
             "子コトを追加"
-
-        CotoMenuModal_Repost ->
-            "リポスト"
 
         CotoMenuModal_Cotonomatize ->
             "コトノマに昇格"

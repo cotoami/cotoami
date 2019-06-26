@@ -194,7 +194,7 @@ menuItemRepost context model =
         "repost"
         [ materialIcon "repeat" Nothing
         , span [ class "menu-title" ]
-            [ text (context.i18nText I18nKeys.CotoMenuModal_Repost) ]
+            [ text (context.i18nText I18nKeys.Repost) ]
         ]
         (AppMsg.OpenRepostModal model.coto)
 

@@ -21,6 +21,12 @@ text key =
         Posting ->
             "Надсилання"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
         Edit ->
             "Редагувати"
 
@@ -208,9 +214,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикріпити до поточного профілю"
 
-        CotoToolbar_Repost ->
-            "Repost"
-
         CotoToolbar_AddSubCoto ->
             "Додати до приєднаного об'єкту"
 
@@ -246,9 +249,6 @@ text key =
 
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
-
-        CotoMenuModal_Repost ->
-            "Repost"
 
         CotoMenuModal_Cotonomatize ->
             "Перетворити в тему"

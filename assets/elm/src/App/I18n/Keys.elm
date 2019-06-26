@@ -7,6 +7,8 @@ type TextKey
     | MyHome
     | Post
     | Posting
+    | Repost
+    | Reposting
     | Edit
     | Save
     | Saving
@@ -67,7 +69,6 @@ type TextKey
     | InviteModal_InvitesRemaining Int
     | CotoToolbar_Connect
     | CotoToolbar_Pin
-    | CotoToolbar_Repost
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
     | CotoToolbar_More
@@ -80,7 +81,6 @@ type TextKey
     | CotoMenuModal_PinToCotonoma
     | CotoMenuModal_UnpinFromCotonoma
     | CotoMenuModal_AddSubCoto
-    | CotoMenuModal_Repost
     | CotoMenuModal_Cotonomatize
     | CotoMenuModal_Watch
     | CotoMenuModal_Unwatch
