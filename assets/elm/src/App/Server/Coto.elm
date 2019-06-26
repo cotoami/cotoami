@@ -11,7 +11,7 @@ import App.Server.Cotonoma
 import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma)
 import Date
 import Http exposing (Request)
-import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode as Decode exposing (bool, float, int, list, maybe, string)
 import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 import Utils.HttpUtil exposing (ClientId, httpDelete, httpPut)
@@ -27,6 +27,7 @@ decodeCoto =
         |> optional "posted_in" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
         |> required "inserted_at" (Decode.map Date.fromTime float)
         |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
+        |> required "reposted_in" (list App.Server.Cotonoma.decodeCotonoma)
         |> optional "incoming" (maybe int) Nothing
         |> optional "outgoing" (maybe int) Nothing
 

@@ -11,6 +11,7 @@ module App.Server.Post exposing
 
 import App.Messages exposing (Msg)
 import App.Server.Amishi
+import App.Server.Coto
 import App.Server.Cotonoma
 import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
@@ -19,7 +20,7 @@ import App.Types.Post exposing (Post)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import Date exposing (Date)
 import Http exposing (Request)
-import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode as Decode exposing (bool, float, int, list, maybe, string)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import Utils.HttpUtil exposing (ClientId, httpPost)
@@ -37,6 +38,8 @@ decodePost =
         |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing
         |> required "as_cotonoma" bool
         |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
+        |> optional "repost" (maybe App.Server.Coto.decodeCoto) Nothing
+        |> required "reposted_in" (list App.Server.Cotonoma.decodeCotonoma)
         |> hardcoded False
 
 

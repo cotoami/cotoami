@@ -54,6 +54,7 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    , repostedIn : List Cotonoma
     , incomings : Maybe Int
     , outgoings : Maybe Int
     }
@@ -203,6 +204,7 @@ toCoto cotonoma =
     , postedIn = Nothing
     , postedAt = cotonoma.postedAt
     , asCotonoma = Just cotonoma
+    , repostedIn = []
     , incomings = Nothing
     , outgoings = Nothing
     }

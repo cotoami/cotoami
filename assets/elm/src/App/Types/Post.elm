@@ -24,6 +24,8 @@ type alias Post =
     , postedAt : Maybe Date
     , isCotonoma : Bool
     , asCotonoma : Maybe Cotonoma
+    , repost : Maybe Coto
+    , repostedIn : List Cotonoma
     , beingDeleted : Bool
     }
 
@@ -39,6 +41,8 @@ defaultPost =
     , postedAt = Nothing
     , isCotonoma = False
     , asCotonoma = Nothing
+    , repost = Nothing
+    , repostedIn = []
     , beingDeleted = False
     }
 
@@ -54,6 +58,7 @@ toCoto post =
             , postedIn = post.postedIn
             , postedAt = postedAt
             , asCotonoma = post.asCotonoma
+            , repostedIn = post.repostedIn
             , incomings = Nothing
             , outgoings = Nothing
             }
