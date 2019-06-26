@@ -642,6 +642,10 @@ update msg model =
         OpenConnectionModal connection startCoto endCoto ->
             App.Update.Modal.openConnectionModal model connection startCoto endCoto model
 
+        OpenRepostModal coto ->
+            App.Update.Modal.openRepostModal coto model
+                |> withoutCmd
+
         OpenInviteModal ->
             App.Update.Modal.openInviteModal model
 

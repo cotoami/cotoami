@@ -80,6 +80,7 @@ type TextKey
     | CotoMenuModal_UnpinFromCotonoma
     | CotoMenuModal_Edit
     | CotoMenuModal_AddSubCoto
+    | CotoMenuModal_Repost
     | CotoMenuModal_Cotonomatize
     | CotoMenuModal_Delete
     | CotoMenuModal_Watch

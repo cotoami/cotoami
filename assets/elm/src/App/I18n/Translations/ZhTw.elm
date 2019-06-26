@@ -250,6 +250,9 @@ text key =
         CotoMenuModal_AddSubCoto ->
             "添加投稿的子项目"
 
+        CotoMenuModal_Repost ->
+            "Repost"
+
         CotoMenuModal_Cotonomatize ->
             "陞級到投稿室"
 

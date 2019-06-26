@@ -127,6 +127,7 @@ type Msg
     | OpenConnectModalByCoto Coto
     | OpenConnectModalByNewPost CotoContent Msg
     | OpenConnectionModal Connection Coto Coto
+    | OpenRepostModal Coto
     | OpenInviteModal
       --
       -- Sub components

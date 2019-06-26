@@ -67,6 +67,7 @@ modalConfig context session model =
             ]
         , [ menuItemEdit context session model
           , menuItemAddCoto context model
+          , menuItemRepost context model
           , menuItemCotonomatize context session model
           , menuItemDelete context session model
           ]
@@ -184,6 +185,18 @@ menuItemAddCoto context model =
             [ text (context.i18nText I18nKeys.CotoMenuModal_AddSubCoto) ]
         ]
         (AppMsg.OpenNewEditorModalWithSourceCoto model.coto)
+
+
+menuItemRepost : Context context -> Model -> Html AppMsg.Msg
+menuItemRepost context model =
+    menuItem
+        False
+        "repost"
+        [ materialIcon "repeat" Nothing
+        , span [ class "menu-title" ]
+            [ text (context.i18nText I18nKeys.CotoMenuModal_Repost) ]
+        ]
+        (AppMsg.OpenRepostModal model.coto)
 
 
 menuItemCotonomatize : Context context -> Session -> Model -> Html AppMsg.Msg

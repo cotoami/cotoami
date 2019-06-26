@@ -252,6 +252,9 @@ text key =
         CotoMenuModal_AddSubCoto ->
             "子コトを追加"
 
+        CotoMenuModal_Repost ->
+            "リポスト"
+
         CotoMenuModal_Cotonomatize ->
             "コトノマに昇格"
 

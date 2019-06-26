@@ -247,6 +247,9 @@ text key =
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
 
+        CotoMenuModal_Repost ->
+            "Repost"
+
         CotoMenuModal_Cotonomatize ->
             "Преобразовать в тему"
 

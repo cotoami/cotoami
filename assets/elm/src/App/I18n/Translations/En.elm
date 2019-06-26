@@ -247,6 +247,9 @@ text key =
         CotoMenuModal_AddSubCoto ->
             "Add a sub-coto"
 
+        CotoMenuModal_Repost ->
+            "Repost"
+
         CotoMenuModal_Cotonomatize ->
             "Promote to a Cotonoma"
 
