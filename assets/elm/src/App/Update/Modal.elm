@@ -8,6 +8,7 @@ module App.Update.Modal exposing
     , openEditorModalForNew
     , openImportModal
     , openInviteModal
+    , openRepostModal
     , openSigninModal
     )
 
@@ -20,6 +21,7 @@ import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Model exposing (Model)
 import App.Ports.ImportFile exposing (ImportFile)
@@ -103,6 +105,12 @@ openConnectionModal context connection startCoto endCoto model =
     { model | connectionModal = Just modal }
         |> App.Submodels.Modals.openModal ConnectionModal
         |> withCmd (\_ -> App.Modals.ConnectionModal.sendInit)
+
+
+openRepostModal : Coto -> Model -> Model
+openRepostModal coto model =
+    { model | repostModal = Just (App.Modals.RepostModal.initModel coto) }
+        |> App.Submodels.Modals.openModal RepostModal
 
 
 openImportModal : ImportFile -> Model -> Model

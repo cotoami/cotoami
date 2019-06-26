@@ -289,6 +289,9 @@ text key =
         ConnectionModal_Disconnect ->
             "解除连接"
 
+        RepostModal_Title ->
+            "Repost"
+
         CotoSelection_CotosSelected count ->
             "件在选择中"
 

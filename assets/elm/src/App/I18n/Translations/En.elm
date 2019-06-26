@@ -286,6 +286,9 @@ text key =
         ConnectionModal_Disconnect ->
             "Disconnect"
 
+        RepostModal_Title ->
+            "Repost"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "coto selected"

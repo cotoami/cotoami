@@ -12,6 +12,7 @@ import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
 import App.Modals.ProfileModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
 import App.Model exposing (..)
@@ -287,6 +288,11 @@ modals model =
                 ( ConnectionModal, _ ) ->
                     model.connectionModal
                         |> Maybe.map (App.Modals.ConnectionModal.view model)
+                        |> Maybe.withDefault Utils.HtmlUtil.none
+
+                ( RepostModal, _ ) ->
+                    model.repostModal
+                        |> Maybe.map (App.Modals.RepostModal.view model)
                         |> Maybe.withDefault Utils.HtmlUtil.none
 
                 ( ImportModal, _ ) ->

@@ -285,6 +285,9 @@ text key =
         ConnectionModal_Disconnect ->
             "接続を解除"
 
+        RepostModal_Title ->
+            "リポスト"
+
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
 

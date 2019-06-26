@@ -286,6 +286,9 @@ text key =
         ConnectionModal_Disconnect ->
             "Роз'єднати"
 
+        RepostModal_Title ->
+            "Repost"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "об'єкт вибрано"

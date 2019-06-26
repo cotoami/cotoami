@@ -14,6 +14,7 @@ import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Route exposing (Route)
 import App.Submodels.Context
@@ -83,6 +84,7 @@ type alias Model =
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , connectModal : App.Modals.ConnectModal.Model
     , connectionModal : Maybe App.Modals.ConnectionModal.Model
+    , repostModal : Maybe App.Modals.RepostModal.Model
     , importModal : Maybe App.Modals.ImportModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     }
@@ -133,6 +135,7 @@ initModel version seed lang route =
     , cotoModal = Nothing
     , connectModal = App.Modals.ConnectModal.defaultModel
     , connectionModal = Nothing
+    , repostModal = Nothing
     , importModal = Nothing
     , inviteModal = App.Modals.InviteModal.defaultModel
     }

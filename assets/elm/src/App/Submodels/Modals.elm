@@ -23,6 +23,7 @@ type Modal
     | CotoModal
     | ConnectModal
     | ConnectionModal
+    | RepostModal
     | ImportModal
     | TimelineFilterModal
 

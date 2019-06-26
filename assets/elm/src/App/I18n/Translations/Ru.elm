@@ -286,6 +286,9 @@ text key =
         ConnectionModal_Disconnect ->
             "Отсоединить"
 
+        RepostModal_Title ->
+            "Repost"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "объект выбран"

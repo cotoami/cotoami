@@ -93,6 +93,7 @@ type TextKey
     | ConnectModal_Reverse
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
+    | RepostModal_Title
     | CotoSelection_CotosSelected Int
     | CotoSelection_PinAsGroup
     | Reorder_CloseReorderMode
