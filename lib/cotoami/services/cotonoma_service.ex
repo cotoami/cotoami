@@ -49,7 +49,7 @@ defmodule Cotoami.CotonomaService do
         |> CotoService.on_created()
       end)
 
-    %{coto | amishi: amishi}
+    %{coto | amishi: amishi, repost: nil}
   end
 
   defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do

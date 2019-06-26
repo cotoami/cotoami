@@ -3,6 +3,7 @@ defmodule Cotoami.CotoServiceTest do
   import ShorterMaps
 
   alias Cotoami.{
+    Fixtures,
     EmailUser,
     Amishi,
     Coto,
@@ -25,7 +26,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there is a coto" do
     setup ~M{amishi} do
-      coto = CotoService.create!("hello", nil, amishi)
+      coto = Fixtures.create_coto!("hello", amishi)
       ~M{coto}
     end
 
@@ -34,7 +35,7 @@ defmodule Cotoami.CotoServiceTest do
     end
 
     test "reposting it to another cotonoma", ~M{amishi, coto} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
       %Cotonoma{id: cotonoma_id} = cotonoma
 
       repost = CotoService.repost!(coto, amishi, cotonoma)
@@ -59,7 +60,7 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there is a cotonoma" do
     setup ~M{amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
       ~M{cotonoma}
     end
 
@@ -78,14 +79,14 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there are various cotos" do
     setup ~M{conn, amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!("test", false, amishi)
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
 
-      coto1 = CotoService.create!("coto1", nil, amishi)
-      coto2 = CotoService.create!("coto2", nil, amishi)
+      coto1 = Fixtures.create_coto!("coto1", amishi)
+      coto2 = Fixtures.create_coto!("coto2", amishi)
       CotoGraphService.pin(conn, coto2, nil, amishi)
-      coto3 = CotoService.create!("coto3", nil, amishi)
+      coto3 = Fixtures.create_coto!("coto3", amishi)
       CotoGraphService.connect(conn, coto2, coto3, nil, amishi)
-      coto4 = CotoService.create!("coto4", nil, amishi, cotonoma)
+      coto4 = Fixtures.create_coto!("coto4", amishi, cotonoma)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end

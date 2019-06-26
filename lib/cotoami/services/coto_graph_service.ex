@@ -247,7 +247,7 @@ defmodule Cotoami.CotoGraphService do
     end
   end
 
-  def pin(bolt_conn, %Coto{} = coto, linking_phrase, %Amishi{} = amishi) do
+  def pin(bolt_conn, %Coto{repost: nil} = coto, linking_phrase, %Amishi{} = amishi) do
     bolt_conn
     |> register(amishi)
     |> register(coto)
@@ -259,7 +259,13 @@ defmodule Cotoami.CotoGraphService do
     )
   end
 
-  def pin(bolt_conn, %Coto{} = coto, %Cotonoma{} = cotonoma, linking_phrase, %Amishi{} = amishi) do
+  def pin(
+        bolt_conn,
+        %Coto{repost: nil} = coto,
+        %Cotonoma{} = cotonoma,
+        linking_phrase,
+        %Amishi{} = amishi
+      ) do
     bolt_conn
     |> register(cotonoma)
     |> register(coto)
@@ -308,8 +314,8 @@ defmodule Cotoami.CotoGraphService do
 
   def connect(
         bolt_conn,
-        %Coto{} = source,
-        %Coto{} = target,
+        %Coto{repost: nil} = source,
+        %Coto{repost: nil} = target,
         linking_phrase,
         %Amishi{} = amishi,
         %Cotonoma{} = cotonoma
@@ -468,7 +474,7 @@ defmodule Cotoami.CotoGraphService do
     Neo4jService.delete_node_with_relationships(bolt_conn, coto_id)
   end
 
-  def sync(bolt_conn, %Coto{id: uuid} = coto) do
+  def sync(bolt_conn, %Coto{id: uuid, repost: nil} = coto) do
     case Neo4jService.replace_node_properties(bolt_conn, uuid, node_props(coto)) do
       {:ok, node} ->
         cond do
@@ -490,7 +496,7 @@ defmodule Cotoami.CotoGraphService do
       else: [@label_coto]
   end
 
-  defp node_props(%Coto{} = coto) do
+  defp node_props(%Coto{repost: nil} = coto) do
     %{
       content: coto.content,
       summary: coto.summary,
@@ -522,8 +528,8 @@ defmodule Cotoami.CotoGraphService do
     bolt_conn
   end
 
-  defp register(bolt_conn, %Coto{} = coto) do
-    Neo4jService.get_or_create_node(bolt_conn, coto.id, node_labels(coto), node_props(coto))
+  defp register(bolt_conn, %Coto{id: coto_id, repost: nil} = coto) do
+    Neo4jService.get_or_create_node(bolt_conn, coto_id, node_labels(coto), node_props(coto))
     bolt_conn
   end
 

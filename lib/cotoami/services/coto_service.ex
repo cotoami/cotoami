@@ -194,15 +194,15 @@ defmodule Cotoami.CotoService do
         |> on_created()
       end)
 
-    %{coto | amishi: amishi}
+    %{coto | amishi: amishi, repost: nil}
   end
 
   def on_created(%Coto{} = coto) do
     coto = Repo.preload(coto, :posted_in)
 
     case coto.posted_in do
-      nil -> %{coto | posted_in: nil}
-      cotonoma -> %{coto | posted_in: CotonomaService.update_on_post(cotonoma, coto)}
+      nil -> coto
+      posted_in -> %{coto | posted_in: CotonomaService.update_on_post(posted_in, coto)}
     end
   end
 
