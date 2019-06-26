@@ -30,6 +30,9 @@ text key =
         Saving ->
             "Збереження"
 
+        Delete ->
+            "Видалити"
+
         Hide ->
             "Hide"
 
@@ -249,9 +252,6 @@ text key =
 
         CotoMenuModal_Cotonomatize ->
             "Перетворити в тему"
-
-        CotoMenuModal_Delete ->
-            "Видалити"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"

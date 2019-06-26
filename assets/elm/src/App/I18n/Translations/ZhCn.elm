@@ -30,6 +30,9 @@ text key =
         Saving ->
             "保存中"
 
+        Delete ->
+            "删除"
+
         Hide ->
             "Hide"
 
@@ -252,9 +255,6 @@ text key =
 
         CotoMenuModal_Cotonomatize ->
             "升级到投稿室"
-
-        CotoMenuModal_Delete ->
-            "删除"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"

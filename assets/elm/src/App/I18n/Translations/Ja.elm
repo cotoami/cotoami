@@ -30,6 +30,9 @@ text key =
         Saving ->
             "保存中"
 
+        Delete ->
+            "削除"
+
         Hide ->
             "隠す"
 
@@ -254,9 +257,6 @@ text key =
 
         CotoMenuModal_Cotonomatize ->
             "コトノマに昇格"
-
-        CotoMenuModal_Delete ->
-            "削除"
 
         TimelineFilterModal_Title ->
             "タイムラインフィルタ"

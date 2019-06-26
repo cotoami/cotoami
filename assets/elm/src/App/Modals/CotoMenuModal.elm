@@ -271,7 +271,7 @@ menuItemDelete context session model =
             "delete"
             [ materialIcon "delete" Nothing
             , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.CotoMenuModal_Delete) ]
+                [ text (context.i18nText I18nKeys.Delete) ]
             ]
             (AppMsg.ConfirmDeleteCoto model.coto.id)
 

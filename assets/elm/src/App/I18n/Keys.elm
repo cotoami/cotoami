@@ -10,6 +10,7 @@ type TextKey
     | Edit
     | Save
     | Saving
+    | Delete
     | Hide
     | Connection_LinkingPhraseInput
     | Confirm
@@ -81,7 +82,6 @@ type TextKey
     | CotoMenuModal_AddSubCoto
     | CotoMenuModal_Repost
     | CotoMenuModal_Cotonomatize
-    | CotoMenuModal_Delete
     | CotoMenuModal_Watch
     | CotoMenuModal_Unwatch
     | TimelineFilterModal_Title

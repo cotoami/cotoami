@@ -30,6 +30,9 @@ text key =
         Saving ->
             "Saving"
 
+        Delete ->
+            "Delete"
+
         Hide ->
             "Hide"
 
@@ -249,9 +252,6 @@ text key =
 
         CotoMenuModal_Cotonomatize ->
             "Promote to a Cotonoma"
-
-        CotoMenuModal_Delete ->
-            "Delete"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"
