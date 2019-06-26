@@ -208,6 +208,9 @@ text key =
         CotoToolbar_Edit ->
             "Редагувати"
 
+        CotoToolbar_Repost ->
+            "Repost"
+
         CotoToolbar_AddSubCoto ->
             "Додати до приєднаного об'єкту"
 

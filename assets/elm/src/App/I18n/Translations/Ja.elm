@@ -207,6 +207,9 @@ text key =
         CotoToolbar_Edit ->
             "編集"
 
+        CotoToolbar_Repost ->
+            "リポスト"
+
         CotoToolbar_AddSubCoto ->
             "子コトを追加"
 

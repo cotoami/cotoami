@@ -42,6 +42,7 @@ view context session maybeInbound elementId coto =
                 pinButton context coto
             , editButton context session coto
             , addSubCotoButton context coto
+            , repostButton context coto
             , selectButton context coto
             , openCotoMenuButton context coto
             ]
@@ -227,6 +228,16 @@ addSubCotoButton context coto =
         , onLinkButtonClick (OpenNewEditorModalWithSourceCoto coto)
         ]
         [ materialIcon "add" Nothing ]
+
+
+repostButton : Context context -> Coto -> Html AppMsg.Msg
+repostButton context coto =
+    a
+        [ class "tool-button repost"
+        , title (context.i18nText I18nKeys.CotoToolbar_Repost)
+        , onLinkButtonClick (OpenRepostModal coto)
+        ]
+        [ materialIcon "repeat" Nothing ]
 
 
 selectButton : Context context -> Coto -> Html AppMsg.Msg

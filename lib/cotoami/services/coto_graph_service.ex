@@ -18,7 +18,7 @@ defmodule Cotoami.CotoGraphService do
 
   @type_connection "HAS_A"
 
-  def get_graph_in_amishi(bolt_conn, %Amishi{id: amishi_id}) do
+  def get_graph_in_amishi(bolt_conn, %Amishi{id: amishi_id} = amishi) do
     query =
       query_graph_from_uuid() <>
         ~s"""
@@ -37,7 +37,7 @@ defmodule Cotoami.CotoGraphService do
 
     bolt_conn
     |> Bolt.Sips.query!(query, %{uuid: amishi_id, created_by: amishi_id})
-    |> build_graph_from_query_result(amishi_id, true)
+    |> build_graph_from_query_result(amishi_id, true, amishi)
   end
 
   def get_graph_in_cotonoma(
@@ -64,13 +64,13 @@ defmodule Cotoami.CotoGraphService do
 
     bolt_conn
     |> Bolt.Sips.query!(query, %{uuid: cotonoma_coto_id, created_in: cotonoma_id})
-    |> build_graph_from_query_result(cotonoma_coto_id, true)
+    |> build_graph_from_query_result(cotonoma_coto_id, true, amishi)
   end
 
-  def get_graph_from_uuid(bolt_conn, uuid) do
+  def get_graph_from_uuid(bolt_conn, uuid, %Amishi{} = amishi) do
     bolt_conn
     |> Bolt.Sips.query!(query_graph_from_uuid(), %{uuid: uuid})
-    |> build_graph_from_query_result(uuid, false)
+    |> build_graph_from_query_result(uuid, false, amishi)
   end
 
   def get_graph_from_cotonoma(
@@ -79,7 +79,7 @@ defmodule Cotoami.CotoGraphService do
         %Amishi{} = amishi
       ) do
     Cotonoma.ensure_accessible_by(cotonoma, amishi)
-    get_graph_from_uuid(bolt_conn, cotonoma_coto_id)
+    get_graph_from_uuid(bolt_conn, cotonoma_coto_id, amishi)
   end
 
   # start with the uuid node and traverse HAS_A relationships
@@ -97,31 +97,34 @@ defmodule Cotoami.CotoGraphService do
     """
   end
 
-  defp build_graph_from_query_result(query_result, start_uuid, from_root) do
+  defp build_graph_from_query_result(query_result, start_uuid, from_root, amishi) do
     query_result
-    |> Enum.reduce(%CotoGraph{}, fn %{"parent" => parent, "has" => has, "child" => child}, graph ->
-      graph = %{
-        graph
-        | cotos:
-            graph.cotos
-            |> add_coto(parent)
-            |> add_coto(child)
-      }
+    |> Enum.reduce(
+      %CotoGraph{},
+      fn %{"parent" => parent, "has" => has, "child" => child}, graph ->
+        graph = %{
+          graph
+          | cotos:
+              graph.cotos
+              |> add_coto(parent)
+              |> add_coto(child)
+        }
 
-      parent_id = parent.properties["uuid"]
-      child_id = child.properties["uuid"]
+        parent_id = parent.properties["uuid"]
+        child_id = child.properties["uuid"]
 
-      connection = make_connection_json(has, parent_id, child_id)
+        connection = make_connection_json(has, parent_id, child_id)
 
-      if from_root && parent_id == start_uuid do
-        %{graph | root_connections: [connection | graph.root_connections]}
-      else
-        parent_connections = [connection | Map.get(graph.connections, parent_id, [])]
-        connections = Map.put(graph.connections, parent_id, parent_connections)
-        %{graph | connections: connections}
+        if from_root && parent_id == start_uuid do
+          %{graph | root_connections: [connection | graph.root_connections]}
+        else
+          parent_connections = [connection | Map.get(graph.connections, parent_id, [])]
+          connections = Map.put(graph.connections, parent_id, parent_connections)
+          %{graph | connections: connections}
+        end
       end
-    end)
-    |> convert_coto_nodes_into_coto_jsons()
+    )
+    |> convert_coto_nodes_into_coto_jsons(amishi)
   end
 
   defp make_connection_json(%Relationship{id: id, properties: properties}, start_uuid, end_uuid) do
@@ -145,17 +148,24 @@ defmodule Cotoami.CotoGraphService do
            cotos: id_to_coto_nodes,
            root_connections: root_connections,
            connections: id_to_connections
-         } = graph
+         } = graph,
+         amishi
        ) do
     coto_nodes = Map.values(id_to_coto_nodes)
-    amishi_jsons = get_amishi_jsons_in_coto_nodes(coto_nodes)
-    posted_in_jsons = get_posted_in_jsons_in_coto_nodes(coto_nodes)
-    cotonoma_jsons = get_cotonoma_jsons_in_coto_nodes(coto_nodes)
+    amishi_map = load_associated_amishis(coto_nodes)
+    cotonoma_map_by_id = load_associated_cotonomas_by_id(coto_nodes)
+    cotonoma_map_by_key = load_associated_cotonomas_by_key(coto_nodes)
     connections = Map.values(id_to_connections) |> List.flatten()
 
     id_to_coto =
       id_to_coto_nodes
       |> Enum.map(fn {coto_id, node} ->
+        reposted_in =
+          node
+          |> Map.get("reposted_in_ids", [])
+          |> Enum.map(&cotonoma_map_by_id[&1])
+          |> Enum.filter(&(&1 && Cotonoma.accessible_by?(&1, amishi)))
+
         incoming =
           Enum.count(root_connections, &(&1["end"] == coto_id)) +
             Enum.count(connections, &(&1["end"] == coto_id))
@@ -165,10 +175,11 @@ defmodule Cotoami.CotoGraphService do
         {coto_id,
          node
          |> Map.put("id", coto_id)
-         |> Map.put("amishi", amishi_jsons[node["amishi_id"]])
-         |> Map.put("posted_in", posted_in_jsons[node["posted_in_id"]])
+         |> Map.put("amishi", amishi_map[node["amishi_id"]])
+         |> Map.put("posted_in", cotonoma_map_by_id[node["posted_in_id"]])
          |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
-         |> Map.put("cotonoma", cotonoma_jsons[node["cotonoma_key"]])
+         |> Map.put("cotonoma", cotonoma_map_by_key[node["cotonoma_key"]])
+         |> Map.put("reposted_in", reposted_in)
          |> Map.put("incoming", incoming)
          |> Map.put("outgoing", outgoing)}
       end)
@@ -177,7 +188,7 @@ defmodule Cotoami.CotoGraphService do
     %{graph | cotos: id_to_coto}
   end
 
-  defp get_amishi_jsons_in_coto_nodes(coto_nodes) do
+  defp load_associated_amishis(coto_nodes) do
     coto_nodes
     |> Enum.map(& &1["amishi_id"])
     |> Enum.filter(& &1)
@@ -187,9 +198,10 @@ defmodule Cotoami.CotoGraphService do
     |> Map.new()
   end
 
-  defp get_posted_in_jsons_in_coto_nodes(coto_nodes) do
+  defp load_associated_cotonomas_by_id(coto_nodes) do
     coto_nodes
-    |> Enum.map(& &1["posted_in_id"])
+    |> Enum.map(&[&1["posted_in_id"] | Map.get(&1, "reposted_in_ids", [])])
+    |> List.flatten()
     |> Enum.filter(& &1)
     |> Enum.uniq()
     |> (fn ids -> Repo.all(from(c in Cotonoma, where: c.id in ^ids)) end).()
@@ -197,7 +209,7 @@ defmodule Cotoami.CotoGraphService do
     |> Map.new()
   end
 
-  defp get_cotonoma_jsons_in_coto_nodes(coto_nodes) do
+  defp load_associated_cotonomas_by_key(coto_nodes) do
     coto_nodes
     |> Enum.map(& &1["cotonoma_key"])
     |> Enum.filter(& &1)
@@ -485,19 +497,21 @@ defmodule Cotoami.CotoGraphService do
       amishi_id: coto.amishi_id,
       cotonoma_key: if(coto.as_cotonoma, do: coto.cotonoma.key, else: nil),
       posted_in_id: coto.posted_in_id,
+      reposted_in_ids: coto.reposted_in_ids,
       inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: coto.updated_at |> DateTime.to_unix(:millisecond)
     }
     |> drop_nil
   end
 
-  defp node_props(%Cotonoma{} = cotonoma) do
+  defp node_props(%Cotonoma{coto: coto} = cotonoma) do
     %{
       content: cotonoma.name,
-      amishi_id: cotonoma.coto.amishi_id,
+      amishi_id: coto.amishi_id,
       cotonoma_key: cotonoma.key,
-      posted_in_id: cotonoma.coto.posted_in_id,
-      inserted_at: cotonoma.coto.inserted_at |> DateTime.to_unix(:millisecond),
+      posted_in_id: coto.posted_in_id,
+      reposted_in_ids: coto.reposted_in_ids,
+      inserted_at: coto.inserted_at |> DateTime.to_unix(:millisecond),
       updated_at: cotonoma.updated_at |> DateTime.to_unix(:millisecond)
     }
     |> drop_nil

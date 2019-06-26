@@ -346,7 +346,7 @@ defmodule Cotoami.CotoGraphServiceTest do
                    }
                  ]
                }
-             } = CotoGraphService.get_graph_from_uuid(conn, source.id)
+             } = CotoGraphService.get_graph_from_uuid(conn, source.id, amishi)
     end
 
     test "the linking phrase can be updated", ~M{conn, amishi, source, target} do

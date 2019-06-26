@@ -84,7 +84,7 @@ defmodule Cotoami.CotoService do
   defp query_by_amishi(%Amishi{id: amishi_id} = amishi, options) do
     Coto
     |> Coto.for_amishi(amishi_id)
-    |> query_to_exclude_pinned_graph(amishi_id, options)
+    |> query_to_exclude_pinned_graph(amishi_id, options, amishi)
     |> query_to_exclude_posts_in_cotonoma(amishi, options)
     |> preload([:posted_in, :cotonoma, :repost])
   end
@@ -94,14 +94,14 @@ defmodule Cotoami.CotoService do
 
     Coto
     |> Coto.in_cotonoma(cotonoma.id)
-    |> query_to_exclude_pinned_graph(cotonoma.coto.id, options)
+    |> query_to_exclude_pinned_graph(cotonoma.coto.id, options, amishi)
     |> preload([:amishi, :posted_in, :cotonoma, :repost])
   end
 
-  defp query_to_exclude_pinned_graph(query, uuid, options) do
+  defp query_to_exclude_pinned_graph(query, uuid, options, amishi) do
     if Keyword.get(options, :exclude_pinned_graph, false) do
       coto_ids =
-        CotoGraphService.get_graph_from_uuid(Bolt.Sips.conn(), uuid)
+        CotoGraphService.get_graph_from_uuid(Bolt.Sips.conn(), uuid, amishi)
         |> Map.get(:cotos)
         |> Map.keys()
 
@@ -152,7 +152,7 @@ defmodule Cotoami.CotoService do
   end
 
   defp set_reposted_in(cotos, %Amishi{} = amishi) when is_list(cotos) do
-    cotonomas =
+    cotonoma_map_by_id =
       cotos
       |> Enum.map(& &1.reposted_in_ids)
       |> List.flatten()
@@ -163,7 +163,7 @@ defmodule Cotoami.CotoService do
     |> Enum.map(fn coto ->
       reposted_in =
         coto.reposted_in_ids
-        |> Enum.map(&cotonomas[&1])
+        |> Enum.map(&cotonoma_map_by_id[&1])
         |> Enum.filter(&(&1 && Cotonoma.accessible_by?(&1, amishi)))
 
       Map.put(coto, :reposted_in, reposted_in)

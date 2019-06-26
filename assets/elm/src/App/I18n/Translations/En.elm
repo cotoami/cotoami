@@ -208,6 +208,9 @@ text key =
         CotoToolbar_Edit ->
             "Edit"
 
+        CotoToolbar_Repost ->
+            "Repost"
+
         CotoToolbar_AddSubCoto ->
             "Add a sub-coto"
 

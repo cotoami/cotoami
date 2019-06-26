@@ -67,6 +67,7 @@ type TextKey
     | CotoToolbar_Connect
     | CotoToolbar_Pin
     | CotoToolbar_Edit
+    | CotoToolbar_Repost
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
     | CotoToolbar_More

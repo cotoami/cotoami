@@ -211,6 +211,9 @@ text key =
         CotoToolbar_Edit ->
             "编辑"
 
+        CotoToolbar_Repost ->
+            "Repost"
+
         CotoToolbar_AddSubCoto ->
             "添加投稿的子项目"
 

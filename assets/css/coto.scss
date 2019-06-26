@@ -222,7 +222,8 @@ span.coto-tool-buttons {
   }
 
   @media (max-width: 400px) {
-    a.pin-coto {
+    a.pin-coto,
+    a.repost {
       display: none;
     }
   }
