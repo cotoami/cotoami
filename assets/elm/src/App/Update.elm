@@ -11,6 +11,7 @@ import App.Modals.CotoMenuModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
 import App.Model exposing (Model)
@@ -697,6 +698,12 @@ update msg model =
                     (\( ( modal, graph ), cmd ) ->
                         ( { model | connectionModal = Just modal, graph = graph }, cmd )
                     )
+                |> Maybe.withDefault ( model, Cmd.none )
+
+        RepostModalMsg subMsg ->
+            model.repostModal
+                |> Maybe.map (App.Modals.RepostModal.update model subMsg)
+                |> Maybe.map (Tuple.mapFirst (\modal -> { model | repostModal = Just modal }))
                 |> Maybe.withDefault ( model, Cmd.none )
 
         InviteModalMsg subMsg ->

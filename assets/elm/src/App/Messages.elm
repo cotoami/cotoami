@@ -6,6 +6,7 @@ import App.Modals.CotoMenuModalMsg
 import App.Modals.EditorModalMsg
 import App.Modals.ImportModalMsg
 import App.Modals.InviteModalMsg
+import App.Modals.RepostModalMsg
 import App.Modals.SigninModalMsg
 import App.Modals.TimelineFilterModalMsg
 import App.Ports.ImportFile exposing (ImportFile)
@@ -144,6 +145,7 @@ type Msg
     | CotoMenuModalMsg App.Modals.CotoMenuModalMsg.Msg
     | ConnectModalMsg App.Modals.ConnectModalMsg.Msg
     | ConnectionModalMsg App.Modals.ConnectionModalMsg.Msg
+    | RepostModalMsg App.Modals.RepostModalMsg.Msg
     | InviteModalMsg App.Modals.InviteModalMsg.Msg
     | ImportModalMsg App.Modals.ImportModalMsg.Msg
     | TimelineFilterModalMsg App.Modals.TimelineFilterModalMsg.Msg
