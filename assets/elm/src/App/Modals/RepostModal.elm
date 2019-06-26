@@ -49,7 +49,7 @@ modalConfig context model =
                 [ input
                     [ type_ "text"
                     , class "cotonoma-name u-full-width"
-                    , placeholder "Cotonoma name"
+                    , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
                     ]
                     []
                 ]
@@ -63,10 +63,10 @@ modalConfig context model =
                 )
             ]
             [ if model.requestProcessing then
-                text (context.i18nText I18nKeys.InviteModal_Sending ++ "...")
+                text (context.i18nText I18nKeys.Reposting ++ "...")
 
               else
-                text (context.i18nText I18nKeys.InviteModal_SendInvite)
+                text (context.i18nText I18nKeys.Repost)
             ]
         ]
     }

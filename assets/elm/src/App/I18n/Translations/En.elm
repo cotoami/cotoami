@@ -289,6 +289,9 @@ text key =
         RepostModal_Title ->
             "Repost"
 
+        RepostModal_CotonomaName ->
+            "Cotonoma name"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "coto selected"

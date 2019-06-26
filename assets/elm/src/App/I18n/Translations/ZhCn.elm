@@ -292,6 +292,9 @@ text key =
         RepostModal_Title ->
             "Repost"
 
+        RepostModal_CotonomaName ->
+            "投稿室的名字"
+
         CotoSelection_CotosSelected count ->
             "件在选择中"
 

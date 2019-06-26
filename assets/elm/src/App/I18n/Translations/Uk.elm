@@ -289,6 +289,9 @@ text key =
         RepostModal_Title ->
             "Repost"
 
+        RepostModal_CotonomaName ->
+            "Назва теми"
+
         CotoSelection_CotosSelected count ->
             if count == 1 then
                 "об'єкт вибрано"

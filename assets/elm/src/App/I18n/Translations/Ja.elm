@@ -288,6 +288,9 @@ text key =
         RepostModal_Title ->
             "リポスト"
 
+        RepostModal_CotonomaName ->
+            "リポスト先のコトノマ名"
+
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"
 
