@@ -16,12 +16,17 @@ import Markdown.Block as Block exposing (Block(..))
 import Markdown.Inline as Inline exposing (Inline(..))
 import Utils.DateUtil
 import Utils.EventUtil exposing (onLoad)
-import Utils.HtmlUtil
+import Utils.HtmlUtil exposing (materialIcon)
 
 
 view : Context a -> Post -> Html Msg
 view context post =
     let
+        ( maybeCoto, maybeRepostId ) =
+            post.repost
+                |> Maybe.map (\repost -> ( Just repost, post.cotoId ))
+                |> Maybe.withDefault ( App.Types.Post.toCoto post, Nothing )
+
         elementId =
             "timeline-" ++ Maybe.withDefault "none" post.cotoId
     in
@@ -29,7 +34,8 @@ view context post =
         (postDivAttrs context elementId post)
         [ div
             [ class "coto-inner" ]
-            [ headerDiv context elementId post
+            [ repostHeaderDiv context post
+            , headerDiv context elementId post
             , post.cotoId
                 |> Maybe.map
                     (\cotoId ->
@@ -94,6 +100,23 @@ isAuthor context post =
         |> Maybe.withDefault False
 
 
+repostHeaderDiv : Context context -> Post -> Html Msg
+repostHeaderDiv context post =
+    post.repost
+        |> Maybe.map
+            (\repost ->
+                div [ class "repost-header" ]
+                    [ div [ class "repost-icon" ] [ materialIcon "repeat" Nothing ]
+                    , if isAuthor context post then
+                        Utils.HtmlUtil.none
+
+                      else
+                        authorDiv context post
+                    ]
+            )
+        |> Maybe.withDefault Utils.HtmlUtil.none
+
+
 headerDiv : Context a -> ElementId -> Post -> Html Msg
 headerDiv context elementId post =
     toCoto post
@@ -101,7 +124,7 @@ headerDiv context elementId post =
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
-authorDiv : Context a -> Post -> Html Msg
+authorDiv : Context context -> Post -> Html Msg
 authorDiv context post =
     Maybe.map2
         (\session author ->
