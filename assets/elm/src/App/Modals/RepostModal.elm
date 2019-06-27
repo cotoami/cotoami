@@ -8,6 +8,7 @@ module App.Modals.RepostModal exposing
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg
 import App.Modals.RepostModalMsg as ModalMsg exposing (Msg(..))
+import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto)
 import App.Views.Coto
@@ -63,6 +64,7 @@ modalConfig context model =
                 , div [ class "repost-button" ]
                     [ button
                         [ title (context.i18nText I18nKeys.Repost)
+                        , onClick (AppMsg.RepostModalMsg Repost)
                         , disabled
                             (Utils.StringUtil.isBlank model.cotonomaName
                                 || model.requestProcessing
@@ -71,6 +73,15 @@ modalConfig context model =
                         [ materialIcon "repeat" Nothing ]
                     ]
                 ]
+            , div [ class "reposted-in" ]
+                (List.map
+                    (\cotonoma ->
+                        App.Views.Coto.simplifiedCotonomaDiv
+                            cotonoma.owner
+                            cotonoma
+                    )
+                    model.coto.repostedIn
+                )
             ]
     , buttons = []
     }
@@ -82,3 +93,22 @@ update context msg model =
         CotonomaNameInput name ->
             { model | cotonomaName = name }
                 |> withoutCmd
+
+        Repost ->
+            ( { model | requestProcessing = True }
+            , App.Server.Post.repost context.clientId
+                (AppMsg.RepostModalMsg << Reposted)
+                model.cotonomaName
+                model.coto.id
+            )
+
+        Reposted (Ok post) ->
+            { model
+                | coto = Maybe.withDefault model.coto post.repost
+                , cotonomaName = ""
+                , requestProcessing = False
+            }
+                |> withoutCmd
+
+        Reposted (Err error) ->
+            model |> withoutCmd

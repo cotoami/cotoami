@@ -21,9 +21,15 @@ defmodule Cotoami.CotoService do
   alias Cotoami.Exceptions.InvalidOperation
 
   def get(id) do
+    get!(id)
+  rescue
+    _ in Ecto.NoResultsError -> nil
+  end
+
+  def get!(id) do
     Coto
     |> preload([:amishi, :posted_in, :cotonoma, :repost])
-    |> Repo.get(id)
+    |> Repo.get!(id)
   end
 
   def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do

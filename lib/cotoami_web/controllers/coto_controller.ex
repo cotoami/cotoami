@@ -53,8 +53,7 @@ defmodule CotoamiWeb.CotoController do
       end
 
     repost =
-      Coto
-      |> Repo.get!(id)
+      CotoService.get!(id)
       |> CotoService.repost!(amishi, cotonoma)
 
     on_coto_created(conn, repost, amishi)
