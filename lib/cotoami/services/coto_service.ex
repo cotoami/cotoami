@@ -170,21 +170,32 @@ defmodule Cotoami.CotoService do
   end
 
   defp set_reposted_in(cotos, %Amishi{} = amishi) when is_list(cotos) do
-    cotonoma_map_by_id =
+    reposted_cotonomas =
       cotos
+      |> Enum.map(&Coto.peel!/1)
       |> Enum.map(& &1.reposted_in_ids)
       |> List.flatten()
       |> Enum.uniq()
       |> CotonomaService.map_by_ids(amishi)
 
+    collect_reposted_in = fn coto, cotonomas ->
+      coto.reposted_in_ids
+      |> Enum.map(&cotonomas[&1])
+      |> Enum.filter(& &1)
+    end
+
     cotos
     |> Enum.map(fn coto ->
-      reposted_in =
-        coto.reposted_in_ids
-        |> Enum.map(&cotonoma_map_by_id[&1])
-        |> Enum.filter(& &1)
+      case coto do
+        %Coto{repost: nil} ->
+          reposted_in = collect_reposted_in.(coto, reposted_cotonomas)
+          Map.put(coto, :reposted_in, reposted_in)
 
-      Map.put(coto, :reposted_in, reposted_in)
+        %Coto{repost: repost} ->
+          reposted_in = collect_reposted_in.(repost, reposted_cotonomas)
+          repost = Map.put(repost, :reposted_in, reposted_in)
+          %{coto | repost: repost}
+      end
     end)
   end
 
