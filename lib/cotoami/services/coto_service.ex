@@ -260,10 +260,14 @@ defmodule Cotoami.CotoService do
               coto
 
             cotonoma_id ->
+              coto =
+                coto
+                |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
+                |> Repo.update!()
+                |> set_reposted_in(amishi)
+
+              CotoGraphService.sync(Bolt.Sips.conn(), coto)
               coto
-              |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
-              |> Repo.update!()
-              |> set_reposted_in(amishi)
           end
 
         repost =
