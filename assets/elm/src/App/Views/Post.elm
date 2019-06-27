@@ -3,6 +3,7 @@ module App.Views.Post exposing (authorDiv, headerDiv, postDivAttrs, view)
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
+import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (ElementId)
 import App.Types.Graph
 import App.Types.Post exposing (Post, toCoto)
@@ -25,8 +26,11 @@ view context post =
         elementId =
             "timeline-" ++ Maybe.withDefault "none" post.cotoId
 
+        originalCoto =
+            App.Types.Post.toCoto post
+
         originalCotoId =
-            App.Types.Post.toCoto post |> Maybe.map .id
+            Maybe.map .id originalCoto
     in
     div
         (postDivAttrs context elementId post)
@@ -37,11 +41,14 @@ view context post =
             , originalCotoId
                 |> Maybe.map (App.Views.Coto.parentsDiv context.graph Nothing)
                 |> Maybe.withDefault Utils.HtmlUtil.none
-            , if post.isCotonoma then
-                Utils.HtmlUtil.none
-
-              else
-                authorDiv context post
+            , originalCoto
+                |> Maybe.map
+                    (\coto ->
+                        coto.asCotonoma
+                            |> Maybe.map (\_ -> Utils.HtmlUtil.none)
+                            |> Maybe.withDefault (authorDiv context coto.amishi)
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             , post.repost
                 |> Maybe.map (App.Views.Coto.bodyDiv context Nothing elementId markdown)
                 |> Maybe.withDefault (App.Views.Coto.bodyDiv context Nothing elementId markdown post)
@@ -111,7 +118,7 @@ repostHeaderDiv context post =
                         Utils.HtmlUtil.none
 
                       else
-                        authorDiv context post
+                        authorDiv context post.amishi
                     ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
@@ -124,8 +131,8 @@ headerDiv context elementId post =
         |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
-authorDiv : Context context -> Post -> Html Msg
-authorDiv context post =
+authorDiv : Context context -> Maybe Amishi -> Html Msg
+authorDiv context maybeAmishi =
     Maybe.map2
         (\session author ->
             if author.id /= session.amishi.id then
@@ -138,7 +145,7 @@ authorDiv context post =
                 Utils.HtmlUtil.none
         )
         context.session
-        post.amishi
+        maybeAmishi
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 

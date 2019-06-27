@@ -84,7 +84,7 @@ postDiv context post =
                 Utils.HtmlUtil.none
 
               else
-                App.Views.Post.authorDiv context post
+                App.Views.Post.authorDiv context post.amishi
             , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown post
             , footerDiv context post
             , post.cotoId

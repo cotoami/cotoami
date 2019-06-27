@@ -20,6 +20,8 @@ defmodule Cotoami.CotoService do
 
   alias Cotoami.Exceptions.InvalidOperation
 
+  @preload_repost [repost: [:amishi, :posted_in, :cotonoma]]
+
   def get(id) do
     get!(id)
   rescue
@@ -28,7 +30,8 @@ defmodule Cotoami.CotoService do
 
   def get!(id) do
     Coto
-    |> preload([:amishi, :posted_in, :cotonoma, :repost])
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> preload(^@preload_repost)
     |> Repo.get!(id)
   end
 
@@ -36,7 +39,8 @@ defmodule Cotoami.CotoService do
     coto =
       Coto
       |> Coto.for_amishi(amishi_id)
-      |> preload([:posted_in, :cotonoma, :repost])
+      |> preload([:posted_in, :cotonoma])
+      |> preload(^@preload_repost)
       |> Repo.get(id)
 
     case coto do
@@ -48,7 +52,8 @@ defmodule Cotoami.CotoService do
   def all_by_ids(coto_ids) do
     Coto
     |> where([c], c.id in ^coto_ids)
-    |> preload([:amishi, :posted_in, :cotonoma, :repost])
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> preload(^@preload_repost)
     |> Repo.all()
   end
 
@@ -92,7 +97,8 @@ defmodule Cotoami.CotoService do
     |> Coto.for_amishi(amishi_id)
     |> query_to_exclude_pinned_graph(amishi_id, options, amishi)
     |> query_to_exclude_posts_in_cotonoma(amishi, options)
-    |> preload([:posted_in, :cotonoma, :repost])
+    |> preload([:posted_in, :cotonoma])
+    |> preload(^@preload_repost)
   end
 
   defp query_by_cotonoma(%Cotonoma{} = cotonoma, %Amishi{} = amishi, options) do
@@ -101,7 +107,8 @@ defmodule Cotoami.CotoService do
     Coto
     |> Coto.in_cotonoma(cotonoma.id)
     |> query_to_exclude_pinned_graph(cotonoma.coto.id, options, amishi)
-    |> preload([:amishi, :posted_in, :cotonoma, :repost])
+    |> preload([:amishi, :posted_in, :cotonoma])
+    |> preload(^@preload_repost)
   end
 
   defp query_to_exclude_pinned_graph(query, uuid, options, amishi) do
@@ -226,7 +233,7 @@ defmodule Cotoami.CotoService do
   defp do_repost!(coto, amishi, cotonoma_id) do
     coto =
       coto
-      |> Repo.preload(:repost)
+      |> Repo.preload(@preload_repost)
       |> Coto.peel!()
 
     if Coto.posted_in(coto, cotonoma_id) do
