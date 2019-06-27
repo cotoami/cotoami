@@ -157,6 +157,11 @@ defmodule Cotoami.CotoService do
     |> Repo.all()
   end
 
+  defp set_reposted_in(%Coto{} = coto, %Amishi{} = amishi) do
+    [updated_coto] = set_reposted_in([coto], %Amishi{} = amishi)
+    updated_coto
+  end
+
   defp set_reposted_in(cotos, %Amishi{} = amishi) when is_list(cotos) do
     cotonoma_map_by_id =
       cotos
@@ -240,6 +245,7 @@ defmodule Cotoami.CotoService do
               coto
               |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
               |> Repo.update!()
+              |> set_reposted_in(amishi)
           end
 
         repost =

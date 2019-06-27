@@ -38,6 +38,18 @@
     }
   }
 
+  div.reposted-in {
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+
+    div.simplified-cotonoma {
+      margin-bottom: 1rem;
+    }
+  }
+
   hr.modal-buttons-seperator {
     display: none;
   }

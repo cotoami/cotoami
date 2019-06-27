@@ -57,6 +57,7 @@ modalConfig context model =
                         [ type_ "text"
                         , class "cotonoma-name u-full-width"
                         , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
+                        , value model.cotonomaName
                         , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
                         ]
                         []
