@@ -46,7 +46,12 @@ view context post =
                     (\coto ->
                         coto.asCotonoma
                             |> Maybe.map (\_ -> Utils.HtmlUtil.none)
-                            |> Maybe.withDefault (authorDiv context coto.amishi)
+                            |> Maybe.withDefault
+                                (div []
+                                    [ authorDiv context coto.amishi
+                                    , authorIconInTile context coto.amishi
+                                    ]
+                                )
                     )
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , post.repost
@@ -56,7 +61,6 @@ view context post =
             , originalCotoId
                 |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
                 |> Maybe.withDefault Utils.HtmlUtil.none
-            , authorIcon context post
             ]
         ]
 
@@ -149,8 +153,8 @@ authorDiv context maybeAmishi =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-authorIcon : Context a -> Post -> Html Msg
-authorIcon context post =
+authorIconInTile : Context context -> Maybe Amishi -> Html Msg
+authorIconInTile context maybeAmishi =
     Maybe.map2
         (\session author ->
             if author.id /= session.amishi.id then
@@ -165,7 +169,7 @@ authorIcon context post =
                 Utils.HtmlUtil.none
         )
         context.session
-        post.amishi
+        maybeAmishi
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
