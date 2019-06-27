@@ -9,7 +9,36 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  div.cotonoma-name-input {
+  div.repost-form {
     margin-top: 1.5rem;
+    display: flex;
+    flex-direction: row;
+
+    div.cotonoma-name-input {
+      flex: 1;
+
+      input {
+        border-radius: 4px 0 0 4px;
+        border-right-style: none;
+      }
+    }
+
+    div.repost-button {
+      width: 42px;
+
+      button {
+        padding-left: 8px;
+        padding-right: 8px;
+        border-radius: 0 4px 4px 0;
+      }
+
+      i {
+        vertical-align: -8px;
+      }
+    }
+  }
+
+  hr.modal-buttons-seperator {
+    display: none;
   }
 }

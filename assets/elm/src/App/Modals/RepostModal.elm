@@ -14,6 +14,7 @@ import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Utils.HtmlUtil exposing (materialIcon)
 import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
@@ -49,31 +50,29 @@ modalConfig context model =
         div []
             [ div [ class "target-coto" ]
                 [ App.Views.Coto.simplifiedCotoDiv model.coto ]
-            , div [ class "cotonoma-name-input" ]
-                [ input
-                    [ type_ "text"
-                    , class "cotonoma-name u-full-width"
-                    , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
-                    , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
+            , div [ class "repost-form" ]
+                [ div [ class "cotonoma-name-input" ]
+                    [ input
+                        [ type_ "text"
+                        , class "cotonoma-name u-full-width"
+                        , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
+                        , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
+                        ]
+                        []
                     ]
-                    []
+                , div [ class "repost-button" ]
+                    [ button
+                        [ title (context.i18nText I18nKeys.Repost)
+                        , disabled
+                            (Utils.StringUtil.isBlank model.cotonomaName
+                                || model.requestProcessing
+                            )
+                        ]
+                        [ materialIcon "repeat" Nothing ]
+                    ]
                 ]
             ]
-    , buttons =
-        [ button
-            [ class "button button-primary"
-            , disabled
-                (Utils.StringUtil.isBlank model.cotonomaName
-                    || model.requestProcessing
-                )
-            ]
-            [ if model.requestProcessing then
-                text (context.i18nText I18nKeys.Reposting ++ "...")
-
-              else
-                text (context.i18nText I18nKeys.Repost)
-            ]
-        ]
+    , buttons = []
     }
 
 
