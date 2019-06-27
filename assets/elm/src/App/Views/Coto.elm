@@ -11,6 +11,9 @@ module App.Views.Coto exposing
     , openTraversalButtonDiv
     , parentsDiv
     , renderContent
+    , simplifiedCotoDiv
+    , simplifiedCotonomaDiv
+    , simplifiedPlainCotoDiv
     , subCotosDiv
     )
 
@@ -435,6 +438,39 @@ linkingPhraseDiv context inbound coto =
         inbound.parent
         inbound.connection.linkingPhrase
         |> Maybe.withDefault Utils.HtmlUtil.none
+
+
+
+--
+-- Simplified
+--
+
+
+simplifiedCotoDiv : Coto -> Html msg
+simplifiedCotoDiv coto =
+    coto.asCotonoma
+        |> Maybe.map (simplifiedCotonomaDiv coto.amishi)
+        |> Maybe.withDefault (simplifiedPlainCotoDiv coto.summary coto.content)
+
+
+simplifiedCotonomaDiv : Maybe Amishi -> Cotonoma -> Html msg
+simplifiedCotonomaDiv maybeOwner cotonoma =
+    div [ class "simplified-cotonoma" ]
+        [ cotonomaLabel maybeOwner cotonoma ]
+
+
+simplifiedPlainCotoDiv : Maybe String -> String -> Html msg
+simplifiedPlainCotoDiv maybeSummary content =
+    div [ class "simplified-coto" ]
+        [ maybeSummary
+            |> Maybe.map
+                (\summary ->
+                    div [ class "coto-summary" ] [ text summary ]
+                )
+            |> Maybe.withDefault
+                (renderContent App.Markdown.markdown content)
+            |> (\contentDiv -> div [ class "coto-inner" ] [ contentDiv ])
+        ]
 
 
 
