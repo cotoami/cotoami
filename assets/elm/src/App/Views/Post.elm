@@ -1,12 +1,11 @@
-module App.Views.Post exposing (authorDiv, headerDiv, postDivAttrs, view)
+module App.Views.Post exposing (authorDiv, postDivAttrs, view)
 
 import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
-import App.Types.Coto exposing (ElementId)
 import App.Types.Graph
-import App.Types.Post exposing (Post, toCoto)
+import App.Types.Post exposing (Post)
 import App.Views.Coto
 import App.Views.FlowMsg
 import Exts.Maybe exposing (isJust, isNothing)
@@ -37,7 +36,9 @@ view context post =
         [ div
             [ class "coto-inner" ]
             [ repostHeaderDiv context post
-            , headerDiv context elementId post
+            , originalCoto
+                |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
+                |> Maybe.withDefault (div [ class "coto-header" ] [])
             , originalCotoId
                 |> Maybe.map (App.Views.Coto.parentsDiv context.graph Nothing)
                 |> Maybe.withDefault Utils.HtmlUtil.none
@@ -126,13 +127,6 @@ repostHeaderDiv context post =
                     ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none
-
-
-headerDiv : Context a -> ElementId -> Post -> Html Msg
-headerDiv context elementId post =
-    toCoto post
-        |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
-        |> Maybe.withDefault (div [ class "coto-header" ] [])
 
 
 authorDiv : Context context -> Maybe Amishi -> Html Msg

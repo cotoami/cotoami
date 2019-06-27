@@ -76,7 +76,9 @@ postDiv context post =
         (App.Views.Post.postDivAttrs context elementId post)
         [ div
             [ class "coto-inner" ]
-            [ App.Views.Post.headerDiv context elementId post
+            [ App.Types.Post.toCoto post
+                |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
+                |> Maybe.withDefault (div [ class "coto-header" ] [])
             , post.cotoId
                 |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv context.graph Nothing cotoId)
                 |> Maybe.withDefault (div [] [])
