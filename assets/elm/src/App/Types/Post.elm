@@ -8,6 +8,7 @@ module App.Types.Post exposing
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import Date exposing (Date)
+import Utils.ListUtil
 
 
 
@@ -73,7 +74,17 @@ toCoto post =
 
 getCotoFromPosts : CotoId -> List Post -> Maybe Coto
 getCotoFromPosts cotoId posts =
-    posts
-        |> List.filter (\post -> post.cotoId == Just cotoId)
-        |> List.head
-        |> Maybe.andThen toCoto
+    Utils.ListUtil.findValue
+        (\post ->
+            toCoto post
+                |> Maybe.map
+                    (\coto ->
+                        if coto.id == cotoId then
+                            Just coto
+
+                        else
+                            Nothing
+                    )
+                |> Maybe.withDefault Nothing
+        )
+        posts
