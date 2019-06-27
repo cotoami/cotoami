@@ -49,22 +49,26 @@ defaultPost =
 
 toCoto : Post -> Maybe Coto
 toCoto post =
-    Maybe.map2
-        (\cotoId postedAt ->
-            { id = cotoId
-            , content = post.content
-            , summary = post.summary
-            , amishi = post.amishi
-            , postedIn = post.postedIn
-            , postedAt = postedAt
-            , asCotonoma = post.asCotonoma
-            , repostedIn = post.repostedIn
-            , incomings = Nothing
-            , outgoings = Nothing
-            }
-        )
-        post.cotoId
-        post.postedAt
+    post.repost
+        |> Maybe.map Just
+        |> Maybe.withDefault
+            (Maybe.map2
+                (\cotoId postedAt ->
+                    { id = cotoId
+                    , content = post.content
+                    , summary = post.summary
+                    , amishi = post.amishi
+                    , postedIn = post.postedIn
+                    , postedAt = postedAt
+                    , asCotonoma = post.asCotonoma
+                    , repostedIn = post.repostedIn
+                    , incomings = Nothing
+                    , outgoings = Nothing
+                    }
+                )
+                post.cotoId
+                post.postedAt
+            )
 
 
 getCotoFromPosts : CotoId -> List Post -> Maybe Coto

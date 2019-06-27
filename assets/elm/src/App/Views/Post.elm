@@ -22,13 +22,11 @@ import Utils.HtmlUtil exposing (materialIcon)
 view : Context a -> Post -> Html Msg
 view context post =
     let
-        ( maybeCoto, maybeRepostId ) =
-            post.repost
-                |> Maybe.map (\repost -> ( Just repost, post.cotoId ))
-                |> Maybe.withDefault ( App.Types.Post.toCoto post, Nothing )
-
         elementId =
             "timeline-" ++ Maybe.withDefault "none" post.cotoId
+
+        originalCotoId =
+            App.Types.Post.toCoto post |> Maybe.map .id
     in
     div
         (postDivAttrs context elementId post)
@@ -36,20 +34,19 @@ view context post =
             [ class "coto-inner" ]
             [ repostHeaderDiv context post
             , headerDiv context elementId post
-            , post.cotoId
-                |> Maybe.map
-                    (\cotoId ->
-                        App.Views.Coto.parentsDiv context.graph Nothing cotoId
-                    )
+            , originalCotoId
+                |> Maybe.map (App.Views.Coto.parentsDiv context.graph Nothing)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , if post.isCotonoma then
                 Utils.HtmlUtil.none
 
               else
                 authorDiv context post
-            , App.Views.Coto.bodyDiv context Nothing elementId markdown post
+            , post.repost
+                |> Maybe.map (App.Views.Coto.bodyDiv context Nothing elementId markdown)
+                |> Maybe.withDefault (App.Views.Coto.bodyDiv context Nothing elementId markdown post)
             , footerDiv post
-            , post.cotoId
+            , originalCotoId
                 |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , authorIcon context post
@@ -57,18 +54,21 @@ view context post =
         ]
 
 
-postDivAttrs : Context a -> String -> Post -> List (Attribute Msg)
+postDivAttrs : Context context -> String -> Post -> List (Attribute Msg)
 postDivAttrs context elementId post =
     let
+        originalCotoId =
+            App.Types.Post.toCoto post |> Maybe.map .id
+
         classAttr =
             App.Views.Coto.cotoClassList context
                 elementId
-                post.cotoId
+                originalCotoId
                 [ ( "posting", isJust context.session && isNothing post.cotoId )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "by-another-amishi", not (isAuthor context post) )
                 , ( "in-pinned-graph"
-                  , post.cotoId
+                  , originalCotoId
                         |> Maybe.map
                             (\cotoId ->
                                 App.Types.Graph.reachableFromPins cotoId context.graph
@@ -78,7 +78,7 @@ postDivAttrs context elementId post =
                 ]
 
         eventAttrs =
-            post.cotoId
+            originalCotoId
                 |> Maybe.map
                     (\cotoId ->
                         [ onClick (CotoClick elementId cotoId)
