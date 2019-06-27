@@ -96,9 +96,9 @@ defmodule Cotoami.Cotonoma do
   end
 
   def in_cotonoma(query, cotonoma_id) do
-    from(c in query,
-      join: coto in assoc(c, :coto),
-      where: coto.posted_in_id == ^cotonoma_id
+    from(cotonoma in query,
+      join: coto in assoc(cotonoma, :coto),
+      where: coto.posted_in_id == ^cotonoma_id or ^cotonoma_id in coto.reposted_in_ids
     )
   end
 

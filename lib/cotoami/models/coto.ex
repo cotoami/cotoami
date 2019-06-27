@@ -128,11 +128,7 @@ defmodule Cotoami.Coto do
   end
 
   def in_cotonoma(query, cotonoma_id) do
-    from(coto in query,
-      where:
-        coto.posted_in_id == ^cotonoma_id or
-          ^cotonoma_id in coto.reposted_in_ids
-    )
+    from(coto in query, where: coto.posted_in_id == ^cotonoma_id)
   end
 
   def peel!(%Coto{} = coto) do
