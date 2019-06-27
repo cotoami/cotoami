@@ -10,6 +10,7 @@ import App.Messages as AppMsg
 import App.Modals.RepostModalMsg as ModalMsg exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto)
+import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Utils.Modal
@@ -45,7 +46,9 @@ modalConfig context model =
     , title = text (context.i18nText I18nKeys.RepostModal_Title)
     , content =
         div []
-            [ div []
+            [ div [ class "target-coto" ]
+                [ App.Views.Coto.simplifiedCotoDiv model.coto ]
+            , div [ class "cotonoma-name-input" ]
                 [ input
                     [ type_ "text"
                     , class "cotonoma-name u-full-width"

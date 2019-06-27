@@ -2,4 +2,14 @@
   .modal-content {
     width: 80vw;
   }
+
+  div.target-coto div.simplified-coto {
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div.cotonoma-name-input {
+    margin-top: 1.5rem;
+  }
 }

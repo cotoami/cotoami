@@ -368,3 +368,16 @@ span.not-accessible {
     vertical-align: -4px;
   }
 }
+
+div.simplified-coto {
+  border: 1px solid #ddd;
+
+  div.coto-inner {
+    padding-top: 10px;
+  }
+
+  div.coto-summary {
+    font-weight: bold;
+    opacity: .5;
+  }
+}
