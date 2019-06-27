@@ -1,6 +1,7 @@
 module App.Types.Timeline exposing
     ( Timeline
     , addPost
+    , cotoIds
     , cotonomatize
     , defaultTimeline
     , deleteCoto
@@ -55,6 +56,14 @@ defaultTimeline =
     , postIdCounter = 0
     , scrollPos = Nothing
     }
+
+
+cotoIds : Timeline -> List CotoId
+cotoIds timeline =
+    timeline.posts
+        |> List.map (\post -> [ post.cotoId, Maybe.map .id post.repost ])
+        |> List.concat
+        |> List.filterMap identity
 
 
 setScrollPosInitialized : Timeline -> Timeline

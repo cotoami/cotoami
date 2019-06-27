@@ -79,7 +79,7 @@ cotoIds model =
     model.cotonoma
         |> Maybe.map (\cotonoma -> [ cotonoma.cotoId ])
         |> Maybe.withDefault []
-        |> List.append (List.filterMap .cotoId model.timeline.posts)
+        |> List.append (App.Types.Timeline.cotoIds model.timeline)
         |> List.append (Dict.keys model.graph.cotos)
         |> List.append (List.map .id model.selection)
         |> Set.fromList
