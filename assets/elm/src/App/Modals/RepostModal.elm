@@ -13,6 +13,7 @@ import App.Types.Coto exposing (Coto)
 import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Utils.Modal
 import Utils.StringUtil
 import Utils.UpdateUtil exposing (..)
@@ -53,6 +54,7 @@ modalConfig context model =
                     [ type_ "text"
                     , class "cotonoma-name u-full-width"
                     , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
+                    , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
                     ]
                     []
                 ]
@@ -78,5 +80,6 @@ modalConfig context model =
 update : Context context -> ModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update context msg model =
     case msg of
-        NoOp ->
-            model |> withoutCmd
+        CotonomaNameInput name ->
+            { model | cotonomaName = name }
+                |> withoutCmd
