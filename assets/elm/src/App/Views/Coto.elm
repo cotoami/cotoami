@@ -178,7 +178,7 @@ blankContent =
 --
 
 
-headerDiv : Context a -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
+headerDiv : Context context -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
 headerDiv context maybeInbound elementId coto =
     div
         [ class "coto-header" ]
@@ -197,21 +197,7 @@ headerDiv context maybeInbound elementId coto =
                     |> Maybe.withDefault
                         Utils.HtmlUtil.none
                 )
-        , coto.postedIn
-            |> Maybe.map
-                (\postedIn ->
-                    if App.Submodels.Context.orignatedHere coto context then
-                        Utils.HtmlUtil.none
-
-                    else
-                        a
-                            [ class "posted-in"
-                            , href ("/cotonomas/" ++ postedIn.key)
-                            , onLinkButtonClick (App.Messages.CotonomaClick postedIn.key)
-                            ]
-                            [ text postedIn.name ]
-                )
-            |> Maybe.withDefault Utils.HtmlUtil.none
+        , postedCotonomasSpan context coto
         , if App.Types.Graph.pinned coto.id context.graph then
             faIcon "thumb-tack" (Just "coto-status pinned")
 
@@ -221,6 +207,28 @@ headerDiv context maybeInbound elementId coto =
           else
             Utils.HtmlUtil.none
         ]
+
+
+postedCotonomasSpan : Context context -> Coto -> Html Msg
+postedCotonomasSpan context coto =
+    coto.postedIn
+        |> Maybe.map List.singleton
+        |> Maybe.map (List.append coto.repostedIn)
+        |> Maybe.withDefault coto.repostedIn
+        |> List.filter
+            (\cotonoma ->
+                Just cotonoma.id /= Maybe.map .id context.cotonoma
+            )
+        |> List.map
+            (\cotonoma ->
+                a
+                    [ class "posted-in"
+                    , href ("/cotonomas/" ++ cotonoma.key)
+                    , onLinkButtonClick (App.Messages.CotonomaClick cotonoma.key)
+                    ]
+                    [ text cotonoma.name ]
+            )
+        |> span [ class "posted-cotonomas" ]
 
 
 

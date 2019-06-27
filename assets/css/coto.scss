@@ -50,10 +50,13 @@ div.coto-header {
   min-height: 12px;
   text-align: right;
 
-  a.posted-in {
-    font-size: 12px;
-    color: #000;
-    opacity: .3;
+  span.posted-cotonomas {
+    a.posted-in {
+      margin-left: 5px;
+      font-size: 12px;
+      color: #000;
+      opacity: .3;
+    }
   }
 
   i.coto-status {
