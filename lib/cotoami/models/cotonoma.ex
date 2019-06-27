@@ -102,7 +102,7 @@ defmodule Cotoami.Cotonoma do
     )
   end
 
-  def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
+  def copy_associations(%Cotonoma{} = target, %Cotonoma{} = from) do
     %{target | coto: from.coto, owner: from.owner}
   end
 

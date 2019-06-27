@@ -175,14 +175,14 @@ defmodule Cotoami.CotoService do
       |> Enum.map(& &1.reposted_in_ids)
       |> List.flatten()
       |> Enum.uniq()
-      |> CotonomaService.map_by_ids()
+      |> CotonomaService.map_by_ids(amishi)
 
     cotos
     |> Enum.map(fn coto ->
       reposted_in =
         coto.reposted_in_ids
         |> Enum.map(&cotonoma_map_by_id[&1])
-        |> Enum.filter(&(&1 && Cotonoma.accessible_by?(&1, amishi)))
+        |> Enum.filter(& &1)
 
       Map.put(coto, :reposted_in, reposted_in)
     end)

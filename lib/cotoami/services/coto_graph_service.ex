@@ -9,7 +9,7 @@ defmodule Cotoami.CotoGraphService do
   alias Phoenix.View
   alias Bolt.Sips.Types.Node
   alias Bolt.Sips.Types.Relationship
-  alias Cotoami.{Repo, Coto, Amishi, Cotonoma, CotoGraph, Neo4jService}
+  alias Cotoami.{Repo, Coto, Amishi, Cotonoma, CotoGraph, Neo4jService, CotonomaService}
   alias CotoamiWeb.{AmishiView, CotonomaView}
 
   @label_amishi "Amishi"
@@ -152,9 +152,9 @@ defmodule Cotoami.CotoGraphService do
          amishi
        ) do
     coto_nodes = Map.values(id_to_coto_nodes)
-    amishi_map = load_associated_amishis(coto_nodes)
-    cotonoma_map_by_id = load_associated_cotonomas_by_id(coto_nodes)
-    cotonoma_map_by_key = load_associated_cotonomas_by_key(coto_nodes)
+    amishis = load_amishis(coto_nodes)
+    posted_cotonomas = load_posted_cotonomas(coto_nodes, amishi)
+    cotonomas = load_cotonomas(coto_nodes)
     connections = Map.values(id_to_connections) |> List.flatten()
 
     id_to_coto =
@@ -163,8 +163,8 @@ defmodule Cotoami.CotoGraphService do
         reposted_in =
           node
           |> Map.get("reposted_in_ids", [])
-          |> Enum.map(&cotonoma_map_by_id[&1])
-          |> Enum.filter(&(&1 && Cotonoma.accessible_by?(&1, amishi)))
+          |> Enum.map(&posted_cotonomas[&1])
+          |> Enum.filter(& &1)
 
         incoming =
           Enum.count(root_connections, &(&1["end"] == coto_id)) +
@@ -175,10 +175,10 @@ defmodule Cotoami.CotoGraphService do
         {coto_id,
          node
          |> Map.put("id", coto_id)
-         |> Map.put("amishi", amishi_map[node["amishi_id"]])
-         |> Map.put("posted_in", cotonoma_map_by_id[node["posted_in_id"]])
+         |> Map.put("amishi", amishis[node["amishi_id"]])
+         |> Map.put("posted_in", posted_cotonomas[node["posted_in_id"]])
          |> Map.put("as_cotonoma", node["cotonoma_key"] != nil)
-         |> Map.put("cotonoma", cotonoma_map_by_key[node["cotonoma_key"]])
+         |> Map.put("cotonoma", cotonomas[node["cotonoma_key"]])
          |> Map.put("reposted_in", reposted_in)
          |> Map.put("incoming", incoming)
          |> Map.put("outgoing", outgoing)}
@@ -188,7 +188,7 @@ defmodule Cotoami.CotoGraphService do
     %{graph | cotos: id_to_coto}
   end
 
-  defp load_associated_amishis(coto_nodes) do
+  defp load_amishis(coto_nodes) do
     coto_nodes
     |> Enum.map(& &1["amishi_id"])
     |> Enum.filter(& &1)
@@ -198,23 +198,23 @@ defmodule Cotoami.CotoGraphService do
     |> Map.new()
   end
 
-  defp load_associated_cotonomas_by_id(coto_nodes) do
+  defp load_posted_cotonomas(coto_nodes, amishi) do
     coto_nodes
     |> Enum.map(&[&1["posted_in_id"] | Map.get(&1, "reposted_in_ids", [])])
     |> List.flatten()
     |> Enum.filter(& &1)
     |> Enum.uniq()
-    |> (fn ids -> Repo.all(from(c in Cotonoma, where: c.id in ^ids)) end).()
+    |> CotonomaService.all_by_ids(amishi)
     |> Enum.map(&{&1.id, View.render_one(&1, CotonomaView, "cotonoma.json")})
     |> Map.new()
   end
 
-  defp load_associated_cotonomas_by_key(coto_nodes) do
+  defp load_cotonomas(coto_nodes) do
     coto_nodes
     |> Enum.map(& &1["cotonoma_key"])
     |> Enum.filter(& &1)
     |> Enum.uniq()
-    |> (fn keys -> Repo.all(from(c in Cotonoma, where: c.key in ^keys)) end).()
+    |> CotonomaService.all_by_keys()
     |> Enum.map(&{&1.key, View.render_one(&1, CotonomaView, "cotonoma.json")})
     |> Map.new()
   end

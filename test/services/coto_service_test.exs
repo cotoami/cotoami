@@ -10,7 +10,6 @@ defmodule Cotoami.CotoServiceTest do
     Cotonoma,
     AmishiService,
     CotoService,
-    CotonomaService,
     CotoGraphService
   }
 

@@ -123,10 +123,33 @@ defmodule Cotoami.CotonomaService do
     |> Repo.get_by(name: name, owner_id: amishi_id)
   end
 
+  def all_by_ids(ids) do
+    from(c in Cotonoma, where: c.id in ^ids)
+    |> preload([:coto, :owner])
+    |> Repo.all()
+  end
+
+  def all_by_ids(ids, %Amishi{} = amishi) do
+    all_by_ids(ids)
+    |> Enum.filter(&Cotonoma.accessible_by?(&1, amishi))
+  end
+
+  def all_by_keys(keys) do
+    from(c in Cotonoma, where: c.key in ^keys)
+    |> preload([:coto, :owner])
+    |> Repo.all()
+  end
+
   def map_by_ids(ids) do
     from(c in Cotonoma, where: c.id in ^ids, select: {c.id, c})
     |> preload([:coto, :owner])
     |> Repo.all()
+    |> Map.new()
+  end
+
+  def map_by_ids(ids, %Amishi{} = amishi) do
+    map_by_ids(ids)
+    |> Enum.filter(fn {_, c} -> Cotonoma.accessible_by?(c, amishi) end)
     |> Map.new()
   end
 
@@ -169,21 +192,21 @@ defmodule Cotoami.CotonomaService do
     |> change(last_post_timestamp: coto_inserted_at)
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def increment_graph_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def stats(%Cotonoma{id: cotonoma_id, key: key} = cotonoma) do
