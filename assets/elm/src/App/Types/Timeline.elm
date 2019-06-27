@@ -184,6 +184,7 @@ updatePost coto timeline =
                 | content = coto.content
                 , summary = coto.summary
                 , asCotonoma = coto.asCotonoma
+                , repostedIn = coto.repostedIn
             }
         )
         timeline

@@ -57,6 +57,7 @@ defmodule CotoamiWeb.CotoController do
       |> CotoService.repost!(amishi, cotonoma)
 
     on_coto_created(conn, repost, amishi)
+    broadcast_coto_update(repost.repost, amishi, conn.assigns.client_id)
     render(conn, "created.json", coto: repost)
   end
 
@@ -71,6 +72,7 @@ defmodule CotoamiWeb.CotoController do
       end
 
     on_coto_created(conn, repost, amishi)
+    broadcast_coto_update(repost.repost, amishi, conn.assigns.client_id)
     render(conn, "created.json", coto: repost)
   end
 
