@@ -74,12 +74,15 @@ modalConfig context model =
                         [ materialIcon "repeat" Nothing ]
                     ]
                 ]
-            , div [ class "reposted-in" ]
+            , div [ class "reposted-cotonomas" ]
                 (List.map
                     (\cotonoma ->
-                        App.Views.Coto.simplifiedCotonomaDiv
-                            cotonoma.owner
-                            cotonoma
+                        div [ class "reposted-in" ]
+                            [ div [ class "repost-icon" ] [ materialIcon "repeat" Nothing ]
+                            , App.Views.Coto.simplifiedCotonomaDiv
+                                cotonoma.owner
+                                cotonoma
+                            ]
                     )
                     model.coto.repostedIn
                 )

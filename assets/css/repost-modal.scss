@@ -20,6 +20,7 @@
       input {
         border-radius: 4px 0 0 4px;
         border-right-style: none;
+        margin-bottom: 0;
       }
     }
 
@@ -38,15 +39,35 @@
     }
   }
 
-  div.reposted-in {
+  div.reposted-cotonomas {
     max-height: 15vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-left: 1rem;
     padding-bottom: 1rem;
 
-    div.simplified-cotonoma {
-      margin-bottom: 1rem;
+    div.reposted-in {
+      display: flex;
+      flex-direction: row;
+
+      div.repost-icon {
+        width: 30px;
+
+        i {
+          color: #ccc;
+          vertical-align: middle;
+        }
+      }
+
+      div.simplified-cotonoma {
+        flex: 1;
+        margin-bottom: 0.5rem;
+  
+        img.avatar {
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
   }
 
