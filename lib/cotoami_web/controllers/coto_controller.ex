@@ -145,7 +145,8 @@ defmodule CotoamiWeb.CotoController do
     broadcast_delete(id, amishi, conn.assigns.client_id)
 
     if coto.repost do
-      broadcast_coto_update(coto.repost, amishi, conn.assigns.client_id)
+      # By sending an empty client_id, force all clients to handle the derived update
+      broadcast_coto_update(coto.repost, amishi, "")
     end
 
     send_resp(conn, :no_content, "")

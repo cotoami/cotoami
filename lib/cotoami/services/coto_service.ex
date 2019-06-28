@@ -146,7 +146,8 @@ defmodule Cotoami.CotoService do
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
     coto
     |> complement_amishi(amishi)
-    |> Repo.preload(cotonoma: :owner)
+    |> Repo.preload([posted_in: [], cotonoma: [:owner]] ++ @preload_repost)
+    |> set_reposted_in(amishi)
   end
 
   def complement_amishi(%Coto{} = coto, %Amishi{id: amishi_id} = amishi) do
@@ -258,14 +259,14 @@ defmodule Cotoami.CotoService do
         coto =
           case cotonoma_id do
             nil ->
-              coto
+              coto |> complement(amishi)
 
             cotonoma_id ->
               coto =
                 coto
                 |> change(reposted_in_ids: [cotonoma_id | coto.reposted_in_ids])
                 |> Repo.update!()
-                |> set_reposted_in(amishi)
+                |> complement(amishi)
 
               CotoGraphService.sync(Bolt.Sips.conn(), coto)
               coto
@@ -276,7 +277,7 @@ defmodule Cotoami.CotoService do
           |> Repo.insert!()
           |> on_created()
 
-        %{repost | repost: coto |> complement(amishi)}
+        %{repost | repost: coto}
       end)
 
     %{repost | amishi: amishi}
@@ -315,16 +316,21 @@ defmodule Cotoami.CotoService do
 
         repost =
           if coto.repost && coto.posted_in do
-            # update reposted_in_ids of the reposted coto
-            reposted_in_ids = List.delete(coto.reposted_in_ids, coto.posted_in.id)
+            # update reposted_in_ids if the coto is a repost
+            repost =
+              coto.repost
+              |> change(
+                reposted_in_ids:
+                  coto.repost.reposted_in_ids
+                  |> List.delete(coto.posted_in.id)
+              )
+              |> Repo.update!()
+              |> complement(amishi)
 
-            coto.repost
-            |> change(reposted_in_ids: reposted_in_ids)
-            |> Repo.update!()
-
-            get!(coto.repost.id)
+            CotoGraphService.sync(Bolt.Sips.conn(), repost)
+            repost
           else
-            coto.repost
+            coto.repost |> complement(amishi)
           end
 
         if coto.cotonoma do
