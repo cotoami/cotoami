@@ -8,6 +8,7 @@ module App.Modals.RepostModal exposing
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg
 import App.Modals.RepostModalMsg as ModalMsg exposing (Msg(..))
+import App.Server.Cotonoma
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto)
@@ -107,12 +108,13 @@ update context msg model =
             )
 
         Reposted (Ok post) ->
-            { model
+            ( { model
                 | coto = Maybe.withDefault model.coto post.repost
                 , cotonomaName = ""
                 , requestProcessing = False
-            }
-                |> withoutCmd
+              }
+            , App.Server.Cotonoma.refreshCotonomaList context
+            )
 
         Reposted (Err error) ->
             model |> withoutCmd
