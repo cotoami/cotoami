@@ -2,6 +2,7 @@ module App.Types.Post exposing
     ( Post
     , defaultPost
     , getCotoFromPosts
+    , getOriginalCotoId
     , toCoto
     )
 
@@ -70,6 +71,13 @@ toCoto post =
                 post.cotoId
                 post.postedAt
             )
+
+
+getOriginalCotoId : Post -> Maybe CotoId
+getOriginalCotoId post =
+    post.repost
+        |> Maybe.map (\repost -> Just repost.id)
+        |> Maybe.withDefault post.cotoId
 
 
 getCotoFromPosts : CotoId -> List Post -> Maybe Coto

@@ -101,7 +101,7 @@ cotonomaKeys model =
 updateCoto : Coto -> LocalCotos model -> LocalCotos model
 updateCoto coto model =
     { model
-        | timeline = App.Types.Timeline.updatePost coto model.timeline
+        | timeline = App.Types.Timeline.updateCoto coto model.timeline
         , graph = App.Types.Graph.updateCotoContent coto model.graph
         , selection = App.Types.Coto.replaceInList coto model.selection
     }

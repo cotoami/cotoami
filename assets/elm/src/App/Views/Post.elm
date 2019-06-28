@@ -70,7 +70,7 @@ postDivAttrs : Context context -> String -> Post -> List (Attribute Msg)
 postDivAttrs context elementId post =
     let
         originalCotoId =
-            App.Types.Post.toCoto post |> Maybe.map .id
+            App.Types.Post.getOriginalCotoId post
 
         classAttr =
             App.Views.Coto.cotoClassList context

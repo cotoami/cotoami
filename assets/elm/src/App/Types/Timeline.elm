@@ -21,7 +21,7 @@ module App.Types.Timeline exposing
     , setPosts
     , setScrollPos
     , setScrollPosInitialized
-    , updatePost
+    , updateCoto
     )
 
 import App.Server.Pagination exposing (PaginatedList)
@@ -170,8 +170,8 @@ isScrolledToLatest timeline =
         |> Maybe.withDefault False
 
 
-update : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
-update predicate update timeline =
+updateByPredicate : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+updateByPredicate predicate update timeline =
     timeline.posts
         |> List.map
             (\post ->
@@ -184,10 +184,22 @@ update predicate update timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-updatePost : Coto -> Timeline -> Timeline
-updatePost coto timeline =
-    update
-        (\post -> post.cotoId == Just coto.id)
+updateByCotoId : CotoId -> (Post -> Post) -> (Coto -> Coto) -> Timeline -> Timeline
+updateByCotoId cotoId updatePost updateCoto timeline =
+    updateByPredicate
+        (\post -> App.Types.Post.getOriginalCotoId post == Just cotoId)
+        (\post ->
+            post.repost
+                |> Maybe.map (\repost -> { post | repost = Just (updateCoto repost) })
+                |> Maybe.withDefault (updatePost post)
+        )
+        timeline
+
+
+updateCoto : Coto -> Timeline -> Timeline
+updateCoto coto timeline =
+    updateByCotoId
+        coto.id
         (\post ->
             { post
                 | content = coto.content
@@ -196,25 +208,29 @@ updatePost coto timeline =
                 , repostedIn = coto.repostedIn
             }
         )
+        (\_ -> coto)
         timeline
 
 
 cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
 cotonomatize cotonoma cotoId timeline =
-    update
-        (\post -> post.cotoId == Just cotoId)
+    updateByCotoId
+        cotoId
         (\post ->
             { post
                 | isCotonoma = True
                 , asCotonoma = Just cotonoma
             }
         )
+        (\coto ->
+            { coto | asCotonoma = Just cotonoma }
+        )
         timeline
 
 
 setPostSaved : Int -> Post -> Timeline -> Timeline
 setPostSaved postId apiResponse timeline =
-    update
+    updateByPredicate
         (\post -> post.postId == Just postId)
         (\post ->
             { post
@@ -229,7 +245,7 @@ setPostSaved postId apiResponse timeline =
 
 setBeingDeleted : CotoId -> Timeline -> Timeline
 setBeingDeleted cotoId timeline =
-    update
+    updateByPredicate
         (\post -> post.cotoId == Just cotoId)
         (\post -> { post | beingDeleted = True })
         timeline
