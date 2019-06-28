@@ -150,7 +150,7 @@ defmodule Cotoami.CotoService do
   def complement(%Coto{} = coto, %Amishi{} = amishi) do
     coto
     |> complement_amishi(amishi)
-    |> Repo.preload([posted_in: [], cotonoma: [:owner]] ++ @preload_repost)
+    |> Repo.preload([posted_in: [:owner], cotonoma: [:owner]] ++ @preload_repost)
     |> set_reposted_in(amishi)
   end
 
@@ -233,7 +233,7 @@ defmodule Cotoami.CotoService do
   end
 
   def on_created(%Coto{} = coto) do
-    coto = Repo.preload(coto, :posted_in)
+    coto = Repo.preload(coto, posted_in: [:owner])
 
     case coto.posted_in do
       nil -> coto
