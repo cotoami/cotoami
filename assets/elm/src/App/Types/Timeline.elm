@@ -13,11 +13,11 @@ module App.Types.Timeline exposing
     , nextPageIndex
     , post
     , setBeingDeleted
-    , setCotoSaved
     , setInitializing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
+    , setPostSaved
     , setPosts
     , setScrollPos
     , setScrollPosInitialized
@@ -170,8 +170,8 @@ isScrolledToLatest timeline =
         |> Maybe.withDefault False
 
 
-updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
-updatePost_ predicate update timeline =
+update : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+update predicate update timeline =
     timeline.posts
         |> List.map
             (\post ->
@@ -186,7 +186,7 @@ updatePost_ predicate update timeline =
 
 updatePost : Coto -> Timeline -> Timeline
 updatePost coto timeline =
-    updatePost_
+    update
         (\post -> post.cotoId == Just coto.id)
         (\post ->
             { post
@@ -201,7 +201,7 @@ updatePost coto timeline =
 
 cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
 cotonomatize cotonoma cotoId timeline =
-    updatePost_
+    update
         (\post -> post.cotoId == Just cotoId)
         (\post ->
             { post
@@ -212,9 +212,9 @@ cotonomatize cotonoma cotoId timeline =
         timeline
 
 
-setCotoSaved : Int -> Post -> Timeline -> Timeline
-setCotoSaved postId apiResponse timeline =
-    updatePost_
+setPostSaved : Int -> Post -> Timeline -> Timeline
+setPostSaved postId apiResponse timeline =
+    update
         (\post -> post.postId == Just postId)
         (\post ->
             { post
@@ -229,7 +229,7 @@ setCotoSaved postId apiResponse timeline =
 
 setBeingDeleted : CotoId -> Timeline -> Timeline
 setBeingDeleted cotoId timeline =
-    updatePost_
+    update
         (\post -> post.cotoId == Just cotoId)
         (\post -> { post | beingDeleted = True })
         timeline

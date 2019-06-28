@@ -232,7 +232,7 @@ onPosted : Int -> Post -> LocalCotos model -> LocalCotos model
 onPosted postId post model =
     { model
         | timeline =
-            App.Types.Timeline.setCotoSaved
+            App.Types.Timeline.setPostSaved
                 postId
                 post
                 model.timeline
