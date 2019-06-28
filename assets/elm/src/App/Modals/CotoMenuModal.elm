@@ -261,7 +261,7 @@ menuItemUnwatch context cotonoma =
 menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemDelete context session model =
     let
-        undeletable =
+        isNonEmptyCotonoma =
             model.cotonomaStats
                 |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
                 |> Maybe.withDefault (isJust model.coto.asCotonoma)
@@ -286,7 +286,7 @@ menuItemDelete context session model =
             |> Maybe.map
                 (\cotoId ->
                     menuItem
-                        undeletable
+                        (not isRepost && isNonEmptyCotonoma)
                         "delete"
                         [ materialIcon "delete" Nothing
                         , span [ class "menu-title" ]
