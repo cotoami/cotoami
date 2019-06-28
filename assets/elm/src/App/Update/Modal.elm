@@ -109,7 +109,7 @@ openConnectionModal context connection startCoto endCoto model =
 
 openRepostModal : Coto -> Model -> Model
 openRepostModal coto model =
-    { model | repostModal = Just (App.Modals.RepostModal.initModel coto) }
+    { model | repostModal = App.Modals.RepostModal.initModel coto }
         |> App.Submodels.Modals.openModal RepostModal
 
 

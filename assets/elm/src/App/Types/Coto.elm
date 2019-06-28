@@ -12,6 +12,7 @@ module App.Types.Coto exposing
     , cotonomaNameMaxlength
     , decrementIncoming
     , decrementOutgoing
+    , defaultCoto
     , getCotoFromCotonomaList
     , incrementIncoming
     , incrementOutgoing
@@ -57,6 +58,21 @@ type alias Coto =
     , repostedIn : List Cotonoma
     , incomings : Maybe Int
     , outgoings : Maybe Int
+    }
+
+
+defaultCoto : Coto
+defaultCoto =
+    { id = ""
+    , content = ""
+    , summary = Nothing
+    , amishi = Nothing
+    , postedIn = Nothing
+    , postedAt = Date.fromTime 0
+    , asCotonoma = Nothing
+    , repostedIn = []
+    , incomings = Nothing
+    , outgoings = Nothing
     }
 
 

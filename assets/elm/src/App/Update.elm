@@ -701,10 +701,8 @@ update msg model =
                 |> Maybe.withDefault ( model, Cmd.none )
 
         RepostModalMsg subMsg ->
-            model.repostModal
-                |> Maybe.map (App.Modals.RepostModal.update model subMsg)
-                |> Maybe.map (Tuple.mapFirst (\modal -> { model | repostModal = Just modal }))
-                |> Maybe.withDefault ( model, Cmd.none )
+            App.Modals.RepostModal.update model subMsg model.repostModal
+                |> Tuple.mapFirst (\modal -> { model | repostModal = modal })
 
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal

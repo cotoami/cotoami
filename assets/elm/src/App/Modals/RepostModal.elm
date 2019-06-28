@@ -1,5 +1,6 @@
 module App.Modals.RepostModal exposing
     ( Model
+    , defaultModel
     , initModel
     , update
     , view
@@ -29,12 +30,17 @@ type alias Model =
     }
 
 
-initModel : Coto -> Model
-initModel coto =
-    { coto = coto
+defaultModel : Model
+defaultModel =
+    { coto = App.Types.Coto.defaultCoto
     , cotonomaName = ""
     , requestProcessing = False
     }
+
+
+initModel : Coto -> Model
+initModel coto =
+    { defaultModel | coto = coto }
 
 
 view : Context a -> Model -> Html AppMsg.Msg

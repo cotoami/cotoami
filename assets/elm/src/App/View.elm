@@ -291,9 +291,7 @@ modals model =
                         |> Maybe.withDefault Utils.HtmlUtil.none
 
                 ( RepostModal, _ ) ->
-                    model.repostModal
-                        |> Maybe.map (App.Modals.RepostModal.view model)
-                        |> Maybe.withDefault Utils.HtmlUtil.none
+                    App.Modals.RepostModal.view model model.repostModal
 
                 ( ImportModal, _ ) ->
                     model.importModal
