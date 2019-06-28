@@ -131,7 +131,7 @@ defmodule CotoamiWeb.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
-    {:ok, _} =
+    {:ok, coto} =
       Repo.transaction(fn ->
         coto = CotoService.delete!(id, amishi)
 
@@ -143,6 +143,11 @@ defmodule CotoamiWeb.CotoController do
       end)
 
     broadcast_delete(id, amishi, conn.assigns.client_id)
+
+    if coto.repost do
+      broadcast_coto_update(coto.repost, amishi, conn.assigns.client_id)
+    end
+
     send_resp(conn, :no_content, "")
   end
 end
