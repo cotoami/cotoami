@@ -313,6 +313,20 @@ defmodule Cotoami.CotoService do
       Repo.transaction(fn ->
         coto = get_by_amishi!(id, amishi)
 
+        repost =
+          if coto.repost && coto.posted_in do
+            # update reposted_in_ids of the reposted coto
+            reposted_in_ids = List.delete(coto.reposted_in_ids, coto.posted_in.id)
+
+            coto.repost
+            |> change(reposted_in_ids: reposted_in_ids)
+            |> Repo.update!()
+
+            get!(coto.repost.id)
+          else
+            coto.repost
+          end
+
         if coto.cotonoma do
           case CotonomaService.stats(coto.cotonoma) do
             %{cotos: 0, connections: 0} -> Repo.delete!(coto.cotonoma)
@@ -322,6 +336,8 @@ defmodule Cotoami.CotoService do
 
         Repo.delete!(coto)
         CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
+
+        %{coto | repost: repost}
       end)
 
     coto
