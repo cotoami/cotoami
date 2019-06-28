@@ -126,8 +126,13 @@ update context msg ({ repostModal } as model) =
                         , cotonomaName = ""
                         , requestProcessing = False
                     }
+
+                model_ =
+                    { model | repostModal = modal }
             in
-            ( { model | repostModal = modal }
+            ( post.repost
+                |> Maybe.map (\repost -> App.Submodels.LocalCotos.updateCoto repost model_)
+                |> Maybe.withDefault model_
             , App.Server.Cotonoma.refreshCotonomaList context
             )
 
