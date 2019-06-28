@@ -25,6 +25,9 @@ view context post =
         elementId =
             "timeline-" ++ Maybe.withDefault "none" post.cotoId
 
+        repostContainer =
+            post.repost |> Maybe.map (\_ -> post)
+
         originalCoto =
             App.Types.Post.toCoto post
 
@@ -37,7 +40,13 @@ view context post =
             [ class "coto-inner" ]
             [ repostHeaderDiv context post
             , originalCoto
-                |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
+                |> Maybe.map
+                    (App.Views.Coto.headerDiv
+                        context
+                        Nothing
+                        elementId
+                        repostContainer
+                    )
                 |> Maybe.withDefault (div [ class "coto-header" ] [])
             , originalCotoId
                 |> Maybe.map (App.Views.Coto.parentsDiv context.graph Nothing)
@@ -56,11 +65,28 @@ view context post =
                     )
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , post.repost
-                |> Maybe.map (App.Views.Coto.bodyDiv context Nothing elementId markdown)
-                |> Maybe.withDefault (App.Views.Coto.bodyDiv context Nothing elementId markdown post)
+                |> Maybe.map
+                    (App.Views.Coto.bodyDiv
+                        context
+                        Nothing
+                        elementId
+                        markdown
+                    )
+                |> Maybe.withDefault
+                    (App.Views.Coto.bodyDiv
+                        context
+                        Nothing
+                        elementId
+                        markdown
+                        post
+                    )
             , footerDiv post
             , originalCotoId
-                |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
+                |> Maybe.map
+                    (App.Views.Coto.openTraversalButtonDiv
+                        context.graph
+                        post.isCotonoma
+                    )
                 |> Maybe.withDefault Utils.HtmlUtil.none
             ]
         ]

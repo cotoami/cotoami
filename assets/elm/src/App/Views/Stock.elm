@@ -158,7 +158,7 @@ pinnedCotoDiv context inbound coto =
         [ div
             [ class "coto-inner" ]
             [ pinDiv context inbound.connection coto
-            , App.Views.Coto.headerDiv context (Just inbound) elementId coto
+            , App.Views.Coto.headerDiv context (Just inbound) elementId Nothing coto
             , App.Views.Coto.parentsDiv context.graph cotonomaCotoId coto.id
             , App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto
             , if inbound.reordering then

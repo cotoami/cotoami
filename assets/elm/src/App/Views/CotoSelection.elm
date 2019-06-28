@@ -167,9 +167,22 @@ cotoDiv context coto =
                     )
                     Nothing
                 ]
-            , App.Views.Coto.headerDiv context Nothing elementId coto
-            , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown coto
-            , App.Views.Coto.openTraversalButtonDiv context.graph (isJust coto.asCotonoma) coto.id
+            , App.Views.Coto.headerDiv
+                context
+                Nothing
+                elementId
+                Nothing
+                coto
+            , App.Views.Coto.bodyDiv
+                context
+                Nothing
+                elementId
+                App.Markdown.markdown
+                coto
+            , App.Views.Coto.openTraversalButtonDiv
+                context.graph
+                (isJust coto.asCotonoma)
+                coto.id
             ]
         ]
 

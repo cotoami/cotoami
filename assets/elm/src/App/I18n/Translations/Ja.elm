@@ -51,6 +51,9 @@ text key =
         ConfirmDeleteCoto ->
             "このコトを削除しますか？"
 
+        ConfirmDeleteRepost ->
+            "このリポストを削除しますか？"
+
         ConfirmUnpinCoto ->
             "このピンを外しますか？"
 

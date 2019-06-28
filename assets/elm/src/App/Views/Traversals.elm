@@ -171,7 +171,7 @@ stepCotoDiv context connections step coto =
         , onMouseLeave (CotoMouseLeave elementId coto.id)
         ]
         [ div [ class "coto-inner" ]
-            [ App.Views.Coto.headerDiv context Nothing elementId coto
+            [ App.Views.Coto.headerDiv context Nothing elementId Nothing coto
             , App.Views.Coto.bodyDivByCoto context Nothing elementId coto
             , div [ class "main-sub-border" ] []
             , loadingSubgraphDiv context step coto
@@ -292,7 +292,7 @@ subCotoDiv context traversalStep parentElementId inbound coto =
         [ div
             [ class "coto-inner" ]
             [ App.Views.Coto.linkingPhraseDiv context inbound coto
-            , App.Views.Coto.headerDiv context (Just inbound) elementId coto
+            , App.Views.Coto.headerDiv context (Just inbound) elementId Nothing coto
             , App.Views.Coto.parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ App.Views.Coto.bodyDivByCoto context (Just inbound) elementId coto

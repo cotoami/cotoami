@@ -72,7 +72,7 @@ type Msg
     | OpenTraversal CotoId
     | CotonomaClick CotonomaKey
     | ToggleCotoContent ElementId
-    | ConfirmDeleteCoto CotoId
+    | ConfirmDeleteCoto CotoId Bool
     | DeleteCotoInServerSide CotoId
     | DeleteCotoInClientSide CotoId
     | CotoDeleted (Result Http.Error String)
@@ -118,7 +118,7 @@ type Msg
     | OpenAppInfoModal
     | OpenSigninModal
     | OpenProfileModal
-    | OpenCotoMenuModal Coto
+    | OpenCotoMenuModal Coto (Maybe Post)
     | OpenNewEditorModal
     | OpenNewEditorModalWithSourceCoto Coto
     | OpenEditorModal Coto

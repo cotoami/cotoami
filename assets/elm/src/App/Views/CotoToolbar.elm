@@ -11,6 +11,7 @@ import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
 import App.Types.Graph exposing (Graph)
+import App.Types.Post exposing (Post)
 import App.Types.Session exposing (Session)
 import App.Views.CotoToolbarMsg as CotoToolbarMsg exposing (Msg(..))
 import Html exposing (..)
@@ -26,9 +27,10 @@ view :
     -> Session
     -> Maybe InboundConnection
     -> ElementId
+    -> Maybe Post
     -> Coto
     -> Html AppMsg.Msg
-view context session maybeInbound elementId coto =
+view context session maybeInbound elementId repost coto =
     span [ class "coto-tool-buttons" ]
         [ connectButton context coto
         , maybeInbound
@@ -44,7 +46,7 @@ view context session maybeInbound elementId coto =
             , addSubCotoButton context coto
             , repostButton context coto
             , selectButton context coto
-            , openCotoMenuButton context coto
+            , openCotoMenuButton context repost coto
             ]
         ]
 
@@ -261,12 +263,12 @@ selectButton context coto =
         ]
 
 
-openCotoMenuButton : Context context -> Coto -> Html AppMsg.Msg
-openCotoMenuButton context coto =
+openCotoMenuButton : Context context -> Maybe Post -> Coto -> Html AppMsg.Msg
+openCotoMenuButton context repost coto =
     a
         [ class "tool-button open-coto-menu"
         , title (context.i18nText I18nKeys.CotoToolbar_More)
-        , onLinkButtonClick (AppMsg.OpenCotoMenuModal coto)
+        , onLinkButtonClick (AppMsg.OpenCotoMenuModal coto repost)
         ]
         [ materialIcon "more_horiz" Nothing ]
 

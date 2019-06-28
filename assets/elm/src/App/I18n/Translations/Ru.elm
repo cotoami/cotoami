@@ -51,6 +51,9 @@ text key =
         ConfirmDeleteCoto ->
             "Вы уверены в необходимости удаления объекта?"
 
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
+
         ConfirmUnpinCoto ->
             "Вы уверены, что хотите открепить этот объект?"
 

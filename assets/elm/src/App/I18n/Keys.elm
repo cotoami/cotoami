@@ -17,6 +17,7 @@ type TextKey
     | Connection_LinkingPhraseInput
     | Confirm
     | ConfirmDeleteCoto
+    | ConfirmDeleteRepost
     | ConfirmUnpinCoto
     | ConfirmDisconnect
     | ConfirmCotonomatize String

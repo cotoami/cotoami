@@ -51,6 +51,9 @@ text key =
         ConfirmDeleteCoto ->
             "Are you sure you want to delete this coto?"
 
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
+
         ConfirmUnpinCoto ->
             "Are you sure you want to unpin this coto?"
 

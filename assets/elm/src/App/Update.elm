@@ -331,10 +331,15 @@ update msg model =
                 |> App.Submodels.Context.toggleContent elementId
                 |> withoutCmd
 
-        ConfirmDeleteCoto cotoId ->
+        ConfirmDeleteCoto cotoId isRepost ->
             App.Submodels.Modals.confirm
                 (Confirmation
-                    (model.i18nText I18nKeys.ConfirmDeleteCoto)
+                    (if isRepost then
+                        model.i18nText I18nKeys.ConfirmDeleteRepost
+
+                     else
+                        model.i18nText I18nKeys.ConfirmDeleteCoto
+                    )
                     (DeleteCotoInServerSide cotoId)
                 )
                 model
@@ -609,8 +614,8 @@ update msg model =
             App.Submodels.Modals.openModal ProfileModal model
                 |> withoutCmd
 
-        OpenCotoMenuModal coto ->
-            App.Update.Modal.openCotoMenuModal coto model
+        OpenCotoMenuModal coto repost ->
+            App.Update.Modal.openCotoMenuModal repost coto model
 
         OpenNewEditorModal ->
             App.Update.Modal.openEditorModalForNew model Nothing model

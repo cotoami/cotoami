@@ -14,6 +14,7 @@ import App.Server.Cotonoma
 import App.Submodels.Context exposing (Context)
 import App.Types.Coto exposing (Coto, Cotonoma, CotonomaStats)
 import App.Types.Graph exposing (Graph)
+import App.Types.Post exposing (Post)
 import App.Types.Session exposing (Session)
 import Exts.Maybe exposing (isJust, isNothing)
 import Html exposing (..)
@@ -26,13 +27,15 @@ import Utils.UpdateUtil exposing (..)
 
 type alias Model =
     { coto : Coto
+    , repost : Maybe Post
     , cotonomaStats : Maybe CotonomaStats
     }
 
 
-initModel : Coto -> Model
-initModel coto =
+initModel : Maybe Post -> Coto -> Model
+initModel repost coto =
     { coto = coto
+    , repost = repost
     , cotonomaStats = Nothing
     }
 
@@ -76,11 +79,6 @@ modalConfig context session model =
             |> div []
     , buttons = []
     }
-
-
-checkWritePermission : Session -> Model -> Bool
-checkWritePermission session model =
-    App.Types.Coto.checkWritePermission session model.coto
 
 
 menuItemInfo : Context context -> Model -> Html AppMsg.Msg
@@ -161,7 +159,7 @@ pinOrUnpinMenuTitle context pinOrUnpin =
 
 menuItemEdit : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemEdit context session model =
-    if checkWritePermission session model then
+    if App.Types.Coto.checkWritePermission session model.coto then
         menuItem
             False
             "edit"
@@ -201,7 +199,10 @@ menuItemRepost context model =
 
 menuItemCotonomatize : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemCotonomatize context session model =
-    if isNothing model.coto.asCotonoma && checkWritePermission session model then
+    if
+        isNothing model.coto.asCotonoma
+            && App.Types.Coto.checkWritePermission session model.coto
+    then
         menuItem
             False
             "cotonomatize"
@@ -260,20 +261,40 @@ menuItemUnwatch context cotonoma =
 menuItemDelete : Context context -> Session -> Model -> Html AppMsg.Msg
 menuItemDelete context session model =
     let
-        nonEmptyCotonoma =
+        undeletable =
             model.cotonomaStats
                 |> Maybe.map (\stats -> not (isCotonomaEmpty stats))
                 |> Maybe.withDefault (isJust model.coto.asCotonoma)
+
+        ( cotoId, permission, isRepost ) =
+            model.repost
+                |> Maybe.map
+                    (\repost ->
+                        ( repost.cotoId
+                        , App.Types.Coto.checkWritePermission session repost
+                        , True
+                        )
+                    )
+                |> Maybe.withDefault
+                    ( Just model.coto.id
+                    , App.Types.Coto.checkWritePermission session model.coto
+                    , False
+                    )
     in
-    if checkWritePermission session model then
-        menuItem
-            nonEmptyCotonoma
-            "delete"
-            [ materialIcon "delete" Nothing
-            , span [ class "menu-title" ]
-                [ text (context.i18nText I18nKeys.Delete) ]
-            ]
-            (AppMsg.ConfirmDeleteCoto model.coto.id)
+    if permission then
+        cotoId
+            |> Maybe.map
+                (\cotoId ->
+                    menuItem
+                        undeletable
+                        "delete"
+                        [ materialIcon "delete" Nothing
+                        , span [ class "menu-title" ]
+                            [ text (context.i18nText I18nKeys.Delete) ]
+                        ]
+                        (AppMsg.ConfirmDeleteCoto cotoId isRepost)
+                )
+            |> Maybe.withDefault Utils.HtmlUtil.none
 
     else
         Utils.HtmlUtil.none

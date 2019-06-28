@@ -29,6 +29,7 @@ import App.Submodels.Context exposing (Context)
 import App.Submodels.Modals exposing (Modal(..))
 import App.Types.Connection exposing (Connection, Direction(..))
 import App.Types.Coto exposing (Coto, CotoContent)
+import App.Types.Post exposing (Post)
 import App.Types.Session exposing (AuthSettings)
 import Utils.UpdateUtil exposing (..)
 
@@ -39,9 +40,9 @@ openSigninModal authSettings model =
         |> App.Submodels.Modals.openModal SigninModal
 
 
-openCotoMenuModal : Coto -> Model -> ( Model, Cmd Msg )
-openCotoMenuModal coto model =
-    { model | cotoMenuModal = Just (App.Modals.CotoMenuModal.initModel coto) }
+openCotoMenuModal : Maybe Post -> Coto -> Model -> ( Model, Cmd Msg )
+openCotoMenuModal repost coto model =
+    { model | cotoMenuModal = Just (App.Modals.CotoMenuModal.initModel repost coto) }
         |> App.Submodels.Modals.openModal CotoMenuModal
         |> withCmd (\_ -> App.Modals.CotoMenuModal.sendInit)
 

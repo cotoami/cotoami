@@ -25,6 +25,7 @@ import App.Types.Amishi exposing (Amishi)
 import App.Types.Connection exposing (Connection, Direction(..), InboundConnection, Reordering(..))
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey, ElementId)
 import App.Types.Graph exposing (Graph)
+import App.Types.Post exposing (Post)
 import App.Views.CotoToolbar
 import App.Views.Reorder
 import Dict
@@ -178,8 +179,14 @@ blankContent =
 --
 
 
-headerDiv : Context context -> Maybe InboundConnection -> ElementId -> Coto -> Html Msg
-headerDiv context maybeInbound elementId coto =
+headerDiv :
+    Context context
+    -> Maybe InboundConnection
+    -> ElementId
+    -> Maybe Post
+    -> Coto
+    -> Html Msg
+headerDiv context maybeInbound elementId repost coto =
     div
         [ class "coto-header" ]
         [ App.Views.Reorder.maybeReorderTools context maybeInbound elementId
@@ -192,6 +199,7 @@ headerDiv context maybeInbound elementId coto =
                                 session
                                 maybeInbound
                                 elementId
+                                repost
                                 coto
                         )
                     |> Maybe.withDefault
@@ -379,7 +387,7 @@ connectionsDiv context parentElementId parentCoto connections =
         |> Html.Keyed.node "div" [ class "sub-cotos" ]
 
 
-subCotoDiv : Context a -> ElementId -> InboundConnection -> Coto -> Html Msg
+subCotoDiv : Context context -> ElementId -> InboundConnection -> Coto -> Html Msg
 subCotoDiv context parentElementId inbound coto =
     let
         elementId =
@@ -397,7 +405,7 @@ subCotoDiv context parentElementId inbound coto =
         [ div
             [ class "coto-inner" ]
             [ linkingPhraseDiv context inbound coto
-            , headerDiv context (Just inbound) elementId coto
+            , headerDiv context (Just inbound) elementId Nothing coto
             , parentsDiv context.graph maybeParentId coto.id
             , div [ class "sub-coto-body" ]
                 [ bodyDivByCoto context (Just inbound) elementId coto

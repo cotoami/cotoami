@@ -77,20 +77,41 @@ postDiv context post =
         [ div
             [ class "coto-inner" ]
             [ App.Types.Post.toCoto post
-                |> Maybe.map (App.Views.Coto.headerDiv context Nothing elementId)
+                |> Maybe.map
+                    (App.Views.Coto.headerDiv
+                        context
+                        Nothing
+                        elementId
+                        Nothing
+                    )
                 |> Maybe.withDefault (div [ class "coto-header" ] [])
             , post.cotoId
-                |> Maybe.map (\cotoId -> App.Views.Coto.parentsDiv context.graph Nothing cotoId)
+                |> Maybe.map
+                    (\cotoId ->
+                        App.Views.Coto.parentsDiv
+                            context.graph
+                            Nothing
+                            cotoId
+                    )
                 |> Maybe.withDefault (div [] [])
             , if post.isCotonoma then
                 Utils.HtmlUtil.none
 
               else
                 App.Views.Post.authorDiv context post.amishi
-            , App.Views.Coto.bodyDiv context Nothing elementId App.Markdown.markdown post
+            , App.Views.Coto.bodyDiv
+                context
+                Nothing
+                elementId
+                App.Markdown.markdown
+                post
             , footerDiv context post
             , post.cotoId
-                |> Maybe.map (App.Views.Coto.openTraversalButtonDiv context.graph post.isCotonoma)
+                |> Maybe.map
+                    (App.Views.Coto.openTraversalButtonDiv
+                        context.graph
+                        post.isCotonoma
+                    )
                 |> Maybe.withDefault Utils.HtmlUtil.none
             ]
         ]

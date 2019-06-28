@@ -86,6 +86,7 @@ cotonomaDiv context maybeWatchlist listTitle cotonoma =
                         session
                         Nothing
                         elementId
+                        Nothing
                         (App.Types.Coto.toCoto cotonoma)
                 )
             |> Maybe.withDefault Utils.HtmlUtil.none

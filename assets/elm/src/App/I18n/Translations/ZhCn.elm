@@ -51,6 +51,9 @@ text key =
         ConfirmDeleteCoto ->
             "可以删除这件投稿吗？"
 
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
+
         ConfirmUnpinCoto ->
             "可以摘下这个别针吗？"
 
