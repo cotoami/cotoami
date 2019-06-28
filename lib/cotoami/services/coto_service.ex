@@ -50,6 +50,10 @@ defmodule Cotoami.CotoService do
     |> (&%{&1 | amishi: amishi}).()
   end
 
+  def repost_ids(id) do
+    from(coto in Coto, where: coto.repost_id == ^id, select: coto.id) |> Repo.all()
+  end
+
   def all_by_ids(coto_ids) do
     Coto
     |> where([c], c.id in ^coto_ids)
@@ -330,7 +334,7 @@ defmodule Cotoami.CotoService do
             CotoGraphService.sync(Bolt.Sips.conn(), repost)
             repost
           else
-            coto.repost |> complement(amishi)
+            coto.repost
           end
 
         if coto.cotonoma do

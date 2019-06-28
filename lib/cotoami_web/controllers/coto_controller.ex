@@ -131,6 +131,9 @@ defmodule CotoamiWeb.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
+    # all the reposts will be deleted by cascade
+    repost_ids = CotoService.repost_ids(id)
+
     {:ok, coto} =
       Repo.transaction(fn ->
         coto = CotoService.delete!(id, amishi)
@@ -143,9 +146,11 @@ defmodule CotoamiWeb.CotoController do
       end)
 
     broadcast_delete(id, amishi, conn.assigns.client_id)
+    # By sending an empty client_id, force all clients to handle reposts delete
+    repost_ids |> Enum.each(&broadcast_delete(&1, amishi, ""))
 
     if coto.repost do
-      # By sending an empty client_id, force all clients to handle the derived update
+      # Force all clients to handle derived update
       broadcast_coto_update(coto.repost, amishi, "")
     end
 
