@@ -35,18 +35,19 @@ defmodule Cotoami.CotoService do
     |> Repo.get!(id)
   end
 
-  def get_by_amishi(id, %Amishi{id: amishi_id} = amishi) do
-    coto =
-      Coto
-      |> Coto.for_amishi(amishi_id)
-      |> preload([:posted_in, :cotonoma])
-      |> preload(^@preload_repost)
-      |> Repo.get(id)
+  def get_by_amishi(id, %Amishi{} = amishi) do
+    get_by_amishi!(id, amishi)
+  rescue
+    _ in Ecto.NoResultsError -> nil
+  end
 
-    case coto do
-      nil -> nil
-      coto -> %{coto | amishi: amishi}
-    end
+  def get_by_amishi!(id, %Amishi{id: amishi_id} = amishi) do
+    Coto
+    |> Coto.for_amishi(amishi_id)
+    |> preload([:posted_in, :cotonoma])
+    |> preload(^@preload_repost)
+    |> Repo.get!(id)
+    |> (&%{&1 | amishi: amishi}).()
   end
 
   def all_by_ids(coto_ids) do
@@ -307,22 +308,21 @@ defmodule Cotoami.CotoService do
     |> complement_amishi(amishi)
   end
 
-  def delete!(id, %Amishi{id: amishi_id}) do
-    coto =
-      Coto
-      |> Coto.for_amishi(amishi_id)
-      |> preload([:posted_in, :cotonoma])
-      |> Repo.get!(id)
+  def delete!(id, %Amishi{} = amishi) do
+    {:ok, coto} =
+      Repo.transaction(fn ->
+        coto = get_by_amishi!(id, amishi)
 
-    if coto.cotonoma do
-      case CotonomaService.stats(coto.cotonoma) do
-        %{cotos: 0, connections: 0} -> Repo.delete!(coto.cotonoma)
-        _ -> raise InvalidOperation
-      end
-    end
+        if coto.cotonoma do
+          case CotonomaService.stats(coto.cotonoma) do
+            %{cotos: 0, connections: 0} -> Repo.delete!(coto.cotonoma)
+            _ -> raise InvalidOperation
+          end
+        end
 
-    Repo.delete!(coto)
-    CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
+        Repo.delete!(coto)
+        CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
+      end)
 
     coto
   end
