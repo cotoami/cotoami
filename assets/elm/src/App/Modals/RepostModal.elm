@@ -44,7 +44,20 @@ initModel coto =
     { defaultModel | coto = coto }
 
 
-view : Context a -> Model -> Html AppMsg.Msg
+validateCotonomaName : Context context -> Model -> Bool
+validateCotonomaName context model =
+    let
+        existingNames =
+            model.coto.repostedIn
+                |> List.map (\cotonoma -> Just cotonoma.name)
+                |> (::) (Maybe.map .name model.coto.postedIn)
+                |> List.filterMap identity
+    in
+    Utils.StringUtil.isNotBlank model.cotonomaName
+        && not (List.member model.cotonomaName existingNames)
+
+
+view : Context context -> Model -> Html AppMsg.Msg
 view context model =
     model
         |> modalConfig context
@@ -75,7 +88,7 @@ modalConfig context model =
                         [ title (context.i18nText I18nKeys.Repost)
                         , onClick (AppMsg.RepostModalMsg Repost)
                         , disabled
-                            (Utils.StringUtil.isBlank model.cotonomaName
+                            (not (validateCotonomaName context model)
                                 || model.requestProcessing
                             )
                         ]
@@ -133,6 +146,7 @@ update context msg ({ repostModal } as model) =
             ( post.repost
                 |> Maybe.map (\repost -> App.Submodels.LocalCotos.updateCoto repost model_)
                 |> Maybe.withDefault model_
+                |> App.Submodels.LocalCotos.addPostIfPostedHere post
             , App.Server.Cotonoma.refreshCotonomaList context
             )
 

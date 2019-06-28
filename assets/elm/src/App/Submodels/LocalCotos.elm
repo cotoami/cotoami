@@ -1,5 +1,6 @@
 module App.Submodels.LocalCotos exposing
     ( LocalCotos
+    , addPostIfPostedHere
     , areTimelineAndGraphLoaded
     , connect
     , cotoIds
@@ -96,6 +97,15 @@ cotonomaKeys model =
         |> List.append (List.map .cotonoma model.watchlist)
         |> List.map .key
         |> Set.fromList
+
+
+addPostIfPostedHere : Post -> LocalCotos model -> LocalCotos model
+addPostIfPostedHere post model =
+    if Maybe.map .id model.cotonoma == Maybe.map .id post.postedIn then
+        { model | timeline = App.Types.Timeline.addPost post model.timeline }
+
+    else
+        model
 
 
 updateCoto : Coto -> LocalCotos model -> LocalCotos model
