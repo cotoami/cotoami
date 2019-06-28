@@ -12,6 +12,7 @@ import App.Modals.RepostModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Cotonoma
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
+import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (Coto)
 import App.Views.Coto
 import Html exposing (..)
@@ -98,27 +99,35 @@ modalConfig context model =
     }
 
 
-update : Context context -> ModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update context msg model =
+type alias UpdateModel model =
+    LocalCotos { model | repostModal : Model }
+
+
+update : Context context -> ModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
+update context msg ({ repostModal } as model) =
     case msg of
         CotonomaNameInput name ->
-            { model | cotonomaName = name }
+            { model | repostModal = { repostModal | cotonomaName = name } }
                 |> withoutCmd
 
         Repost ->
-            ( { model | requestProcessing = True }
+            ( { model | repostModal = { repostModal | requestProcessing = True } }
             , App.Server.Post.repost context.clientId
                 (AppMsg.RepostModalMsg << Reposted)
-                model.cotonomaName
-                model.coto.id
+                repostModal.cotonomaName
+                repostModal.coto.id
             )
 
         Reposted (Ok post) ->
-            ( { model
-                | coto = Maybe.withDefault model.coto post.repost
-                , cotonomaName = ""
-                , requestProcessing = False
-              }
+            let
+                modal =
+                    { repostModal
+                        | coto = Maybe.withDefault repostModal.coto post.repost
+                        , cotonomaName = ""
+                        , requestProcessing = False
+                    }
+            in
+            ( { model | repostModal = modal }
             , App.Server.Cotonoma.refreshCotonomaList context
             )
 
