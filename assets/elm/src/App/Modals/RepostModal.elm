@@ -80,8 +80,14 @@ modalConfig context model =
             [ div [ class "target-coto" ]
                 [ App.Views.Coto.simplifiedCotoDiv model.coto ]
             , div [ class "repost-form" ]
-                [ div [ class "cotonoma-name-input" ]
-                    [ input
+                [ div
+                    [ classList
+                        [ ( "cotonoma-name-input", True )
+                        , ( "blank", Utils.StringUtil.isBlank model.cotonomaName )
+                        ]
+                    ]
+                    [ cotonomaNameStatusSpan model
+                    , input
                         [ type_ "text"
                         , class "cotonoma-name u-full-width"
                         , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
@@ -117,6 +123,22 @@ modalConfig context model =
             ]
     , buttons = []
     }
+
+
+cotonomaNameStatusSpan : Model -> Html AppMsg.Msg
+cotonomaNameStatusSpan model =
+    span [ class "status" ]
+        [ model.cotonoma
+            |> Maybe.map cotonomaOwnerImg
+            |> Maybe.withDefault (materialIcon "fiber_new" Nothing)
+        ]
+
+
+cotonomaOwnerImg : Cotonoma -> Html AppMsg.Msg
+cotonomaOwnerImg cotonoma =
+    cotonoma.owner
+        |> Maybe.map (\owner -> img [ class "avatar", src owner.avatarUrl ] [])
+        |> Maybe.withDefault Utils.HtmlUtil.none
 
 
 type alias UpdateModel model =

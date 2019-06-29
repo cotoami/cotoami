@@ -16,11 +16,41 @@
 
     div.cotonoma-name-input {
       flex: 1;
+      position: relative;
 
       input {
         border-radius: 4px 0 0 4px;
         border-right-style: none;
         margin-bottom: 0;
+        padding-left: 34px;
+      }
+
+      span.status {
+        position: absolute;
+        left: 6px;
+
+        i {
+          margin-top: 7px;
+          opacity: 0.3;
+        }
+
+        img.avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 4px;
+          margin-top: 7px;
+          padding: 0;
+        }
+      }
+
+      &.blank {
+        input {
+          padding-left: 10px;
+        }
+
+        span.status {
+          display: none;
+        }
       }
     }
 
