@@ -160,30 +160,33 @@ defmodule Cotoami.CotonomaService do
     |> Map.new()
   end
 
-  def recent_cotonomas(%Amishi{id: amishi_id}) do
+  def recent_cotonomas(%Amishi{id: amishi_id} = amishi) do
     Cotonoma
     |> where([c], c.owner_id == ^amishi_id)
     |> limit(100)
-    |> do_query_for_cotonomas()
+    |> do_query_for_cotonomas(amishi)
   end
 
-  def sub_cotonomas(cotonoma_id) do
+  def sub_cotonomas(cotonoma_id, %Amishi{} = amishi) do
     Cotonoma
     |> Cotonoma.in_cotonoma(cotonoma_id)
     |> limit(100)
-    |> do_query_for_cotonomas()
+    |> do_query_for_cotonomas(amishi)
+  end
+
+  defp do_query_for_cotonomas(query, amishi) do
+    query
+    |> preload(coto: [:posted_in], owner: [])
+    |> order_by(desc: :updated_at)
+    |> Repo.all()
+    |> set_reposted_in(amishi)
   end
 
   def suggest(%Amishi{id: amishi_id}, query) do
     from(c in Cotonoma, where: c.owner_id == ^amishi_id and ilike(c.name, ^"%#{query}%"))
-    |> limit(10)
-    |> do_query_for_cotonomas()
-  end
-
-  defp do_query_for_cotonomas(query) do
-    query
-    |> preload([:coto, :owner])
+    |> preload([:owner])
     |> order_by(desc: :updated_at)
+    |> limit(10)
     |> Repo.all()
   end
 
@@ -246,5 +249,24 @@ defmodule Cotoami.CotonomaService do
             AmishiService.get_by_email(id_or_email)
         end
     end
+  end
+
+  defp set_reposted_in(cotonomas, %Amishi{} = amishi) when is_list(cotonomas) do
+    all_reposted_cotonomas =
+      cotonomas
+      |> Enum.map(& &1.coto.reposted_in_ids)
+      |> List.flatten()
+      |> Enum.uniq()
+      |> map_by_ids(amishi)
+
+    cotonomas
+    |> Enum.map(fn cotonoma ->
+      reposted_in =
+        cotonoma.coto.reposted_in_ids
+        |> Enum.map(&all_reposted_cotonomas[&1])
+        |> Enum.filter(& &1)
+
+      Map.put(cotonoma, :reposted_in, reposted_in)
+    end)
   end
 end

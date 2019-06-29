@@ -1,6 +1,6 @@
 defmodule CotoamiWeb.CotonomaView do
   use CotoamiWeb, :view
-  alias CotoamiWeb.{CotoView, AmishiView}
+  alias CotoamiWeb.{CotonomaView, CotoView, AmishiView}
 
   def render("index.json", %{
         global: global_cotonomas,
@@ -17,6 +17,15 @@ defmodule CotoamiWeb.CotonomaView do
   end
 
   def render("cotonoma.json", %{cotonoma: cotonoma}) do
+    posted_in =
+      case cotonoma.coto do
+        nil -> nil
+        %Ecto.Association.NotLoaded{} -> nil
+        coto -> render_relation(coto.posted_in, CotonomaView, "cotonoma.json")
+      end
+
+    reposted_in = Map.get(cotonoma, :reposted_in, [])
+
     %{
       id: cotonoma.id,
       key: cotonoma.key,
@@ -27,6 +36,8 @@ defmodule CotoamiWeb.CotonomaView do
       graph_revision: cotonoma.graph_revision,
       coto_id: cotonoma.coto_id,
       owner: render_relation(cotonoma.owner, AmishiView, "amishi.json"),
+      posted_in: posted_in,
+      reposted_in: render_relations(reposted_in, CotonomaView, "cotonoma.json"),
       inserted_at: cotonoma.inserted_at |> to_unixtime(),
       updated_at: cotonoma.updated_at |> to_unixtime(),
       last_post_timestamp: cotonoma.last_post_timestamp |> to_unixtime()

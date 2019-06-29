@@ -211,6 +211,13 @@ type alias Cotonoma =
     }
 
 
+type alias CotonomaHolder =
+    { cotonoma : Cotonoma
+    , postedIn : Maybe Cotonoma
+    , repostedIn : List Cotonoma
+    }
+
+
 toCoto : Cotonoma -> Coto
 toCoto cotonoma =
     { id = cotonoma.cotoId
