@@ -3,6 +3,7 @@ module App.Server.Cotonoma exposing
     , decodeCotonomaHolder
     , decodeStats
     , encodeCotonoma
+    , fetchCotonomaByName
     , fetchCotonomas
     , fetchStats
     , fetchSubCotonomas
@@ -44,6 +45,12 @@ decodeCotonomaHolder =
         |> required "reposted_in" (list decodeCotonoma)
 
 
+fetchCotonomaByName : (Result Http.Error Cotonoma -> msg) -> String -> Cmd msg
+fetchCotonomaByName tag name =
+    Http.get ("/api/cotonomas/name/" ++ name) decodeCotonoma
+        |> Http.send tag
+
+
 fetchCotonomas : Cmd Msg
 fetchCotonomas =
     let
@@ -56,7 +63,7 @@ fetchCotonomas =
         |> Http.send CotonomasFetched
 
 
-fetchSubCotonomas : Context a -> Cmd Msg
+fetchSubCotonomas : Context context -> Cmd Msg
 fetchSubCotonomas context =
     context.cotonoma
         |> Maybe.map

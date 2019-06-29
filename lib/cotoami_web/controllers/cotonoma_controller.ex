@@ -48,6 +48,13 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp_by_constraint_error(conn, e)
   end
 
+  def get(conn, %{"name" => name}, amishi) do
+    case CotonomaService.get_by_name(name, amishi) do
+      nil -> send_resp(conn, :not_found, "")
+      cotonoma -> render(conn, "cotonoma.json", cotonoma: cotonoma)
+    end
+  end
+
   def get_or_create(conn, %{"name" => name}, amishi) do
     coto = CotonomaService.create!(name, false, amishi)
     on_coto_created(conn, coto, amishi)
