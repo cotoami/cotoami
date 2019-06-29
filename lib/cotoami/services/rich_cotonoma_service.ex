@@ -20,14 +20,14 @@ defmodule Cotoami.RichCotonomaService do
   end
 
   def map_by_ids(ids, %Amishi{} = amishi) do
-    from(cotonoma in Cotonoma, where: cotonoma.id in ^ids)
+    from(c in Cotonoma, where: c.id in ^ids)
     |> do_query_for_cotonomas(amishi)
     |> Enum.map(&{&1.id, &1})
     |> Map.new()
   end
 
   def map_by_keys(keys, %Amishi{} = amishi) do
-    from(cotonoma in Cotonoma, where: cotonoma.key in ^keys)
+    from(c in Cotonoma, where: c.key in ^keys)
     |> do_query_for_cotonomas(amishi)
     |> Enum.map(&{&1.key, &1})
     |> Map.new()
@@ -35,7 +35,7 @@ defmodule Cotoami.RichCotonomaService do
 
   def recent_cotonomas(%Amishi{id: amishi_id} = amishi) do
     Cotonoma
-    |> where([cotonoma], cotonoma.owner_id == ^amishi_id)
+    |> where([c], c.owner_id == ^amishi_id)
     |> limit(100)
     |> do_query_for_cotonomas(amishi)
   end
