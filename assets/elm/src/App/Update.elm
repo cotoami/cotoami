@@ -190,17 +190,18 @@ update msg model =
         HomePostsFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
+        CotonomaPostsFetched (Ok ( cotonomaHolder, paginatedPosts )) ->
             { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
                 |> App.Submodels.NarrowViewport.closeNav
-                |> App.Submodels.Context.setCotonoma (Just cotonoma)
+                |> App.Submodels.Context.setCotonoma (Just cotonomaHolder)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
                     (\model ->
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
                             , App.Server.Cotonoma.fetchSubCotonomas model
-                            , App.Server.Watch.fetchWatchlist (WatchlistOnCotonomaLoad cotonoma)
+                            , App.Server.Watch.fetchWatchlist
+                                (WatchlistOnCotonomaLoad cotonomaHolder.cotonoma)
                             ]
                     )
 

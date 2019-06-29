@@ -13,7 +13,16 @@ import App.Ports.ImportFile exposing (ImportFile)
 import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.NarrowViewport exposing (ActiveView)
 import App.Types.Connection exposing (Connection, Reordering)
-import App.Types.Coto exposing (Coto, CotoContent, CotoId, Cotonoma, CotonomaKey, ElementId)
+import App.Types.Coto
+    exposing
+        ( Coto
+        , CotoContent
+        , CotoId
+        , Cotonoma
+        , CotonomaHolder
+        , CotonomaKey
+        , ElementId
+        )
 import App.Types.Graph exposing (Graph)
 import App.Types.Post exposing (Post)
 import App.Types.Session exposing (Session)
@@ -48,9 +57,9 @@ type Msg
     | CotonomaPresenceDiff Value
     | SessionFetched (Result Http.Error Session)
     | HomePostsFetched (Result Http.Error (PaginatedList Post))
-    | CotonomaPostsFetched (Result Http.Error ( Cotonoma, PaginatedList Post ))
-    | CotonomasFetched (Result Http.Error ( List Cotonoma, List Cotonoma ))
-    | SubCotonomasFetched (Result Http.Error (List Cotonoma))
+    | CotonomaPostsFetched (Result Http.Error ( CotonomaHolder, PaginatedList Post ))
+    | CotonomasFetched (Result Http.Error ( List CotonomaHolder, List CotonomaHolder ))
+    | SubCotonomasFetched (Result Http.Error (List CotonomaHolder))
     | GraphFetched (Result Http.Error Graph)
     | LoadSubgraph CotonomaKey
     | SubgraphFetched CotonomaKey (Result Http.Error Graph)

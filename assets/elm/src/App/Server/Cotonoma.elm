@@ -1,5 +1,6 @@
 module App.Server.Cotonoma exposing
     ( decodeCotonoma
+    , decodeCotonomaHolder
     , decodeStats
     , encodeCotonoma
     , fetchCotonomas
@@ -48,8 +49,8 @@ fetchCotonomas =
     let
         decodeResponse =
             Decode.map2 (,)
-                (Decode.field "global" (Decode.list decodeCotonoma))
-                (Decode.field "recent" (Decode.list decodeCotonoma))
+                (Decode.field "global" (Decode.list decodeCotonomaHolder))
+                (Decode.field "recent" (Decode.list decodeCotonomaHolder))
     in
     Http.get "/api/cotonomas" decodeResponse
         |> Http.send CotonomasFetched
@@ -60,7 +61,7 @@ fetchSubCotonomas context =
     context.cotonoma
         |> Maybe.map
             (\cotonoma ->
-                Decode.list decodeCotonoma
+                Decode.list decodeCotonomaHolder
                     |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/cotonomas")
                     |> Http.send SubCotonomasFetched
             )

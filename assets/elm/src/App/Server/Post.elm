@@ -82,7 +82,7 @@ fetchCotonomaPosts pageIndex filter key =
 
         decodeResponse =
             Decode.map2 (,)
-                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
+                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonomaHolder)
                 (Decode.field "paginated_cotos"
                     (App.Server.Pagination.decodePaginatedList decodePost)
                 )

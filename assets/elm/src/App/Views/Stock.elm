@@ -188,7 +188,7 @@ pinDiv context connection coto =
                 || (isJust maybeAmishiId && maybeAmishiId == maybeCotonomaOwnerId)
 
         msgOnClick =
-            context.cotonoma
+            context.cotonomaHolder
                 |> Maybe.map
                     (\cotonoma ->
                         AppMsg.OpenConnectionModal

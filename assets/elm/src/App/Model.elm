@@ -26,7 +26,7 @@ import App.Submodels.Traversals
 import App.Submodels.WideViewport exposing (WideViewportState)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Connection exposing (Direction(..), Reordering)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaHolder, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Session exposing (Session)
@@ -50,6 +50,7 @@ type alias Model =
     , narrowViewport : NarrowViewportState
     , wideViewport : WideViewportState
     , cotonoma : Maybe Cotonoma
+    , cotonomaHolder : Maybe CotonomaHolder
     , cotonomaLoading : Bool
     , watchStateOnCotonomaLoad : Maybe Watch
     , elementFocus : Maybe ElementId
@@ -62,10 +63,10 @@ type alias Model =
     , presences : Presences
     , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
-    , globalCotonomas : List Cotonoma
-    , recentCotonomas : List Cotonoma
+    , globalCotonomas : List CotonomaHolder
+    , recentCotonomas : List CotonomaHolder
     , cotonomasLoading : Bool
-    , subCotonomas : List Cotonoma
+    , subCotonomas : List CotonomaHolder
     , watchlist : List Watch
     , watchlistLoading : Bool
     , watchUpdating : Bool
@@ -101,6 +102,7 @@ initModel version seed lang route =
     , narrowViewport = App.Submodels.NarrowViewport.defaultNarrowViewportState
     , wideViewport = App.Submodels.WideViewport.defaultWideViewportState
     , cotonoma = Nothing
+    , cotonomaHolder = Nothing
     , cotonomaLoading = False
     , watchStateOnCotonomaLoad = Nothing
     , elementFocus = Nothing

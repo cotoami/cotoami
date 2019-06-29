@@ -14,7 +14,7 @@ module App.Types.Coto exposing
     , decrementIncoming
     , decrementOutgoing
     , defaultCoto
-    , getCotoFromCotonomaList
+    , getCotoFromCotonomaHolders
     , incrementIncoming
     , incrementOutgoing
     , removeFromList
@@ -24,6 +24,8 @@ module App.Types.Coto exposing
     , toCoto
     , toTopic
     , updateContent
+    , updateCotonomaInHolders
+    , updateInList
     , validateCotonomaName
     )
 
@@ -180,11 +182,24 @@ toTopic coto =
 
 
 replaceInList : Coto -> List Coto -> List Coto
-replaceInList newCoto list =
+replaceInList replacement list =
     List.map
         (\coto ->
-            if coto.id == newCoto.id then
-                newCoto
+            if coto.id == replacement.id then
+                replacement
+
+            else
+                coto
+        )
+        list
+
+
+updateInList : CotoId -> (Coto -> Coto) -> List Coto -> List Coto
+updateInList cotoId update list =
+    List.map
+        (\coto ->
+            if coto.id == cotoId then
+                update coto
 
             else
                 coto
@@ -219,16 +234,16 @@ type alias CotonomaHolder =
     }
 
 
-toCoto : Cotonoma -> Coto
-toCoto cotonoma =
+toCoto : CotonomaHolder -> Coto
+toCoto { cotonoma, postedIn, repostedIn } =
     { id = cotonoma.cotoId
     , content = cotonoma.name
     , summary = Nothing
     , amishi = cotonoma.owner
-    , postedIn = Nothing
+    , postedIn = postedIn
     , postedAt = cotonoma.postedAt
     , asCotonoma = Just cotonoma
-    , repostedIn = []
+    , repostedIn = repostedIn
     , incomings = Nothing
     , outgoings = Nothing
     }
@@ -249,12 +264,25 @@ revisedBefore cotonoma =
     (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
 
 
-getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
-getCotoFromCotonomaList cotoId cotonomas =
-    cotonomas
-        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
+getCotoFromCotonomaHolders : CotoId -> List CotonomaHolder -> Maybe Coto
+getCotoFromCotonomaHolders cotoId holders =
+    holders
+        |> List.filter (\holder -> holder.cotonoma.cotoId == cotoId)
         |> List.head
         |> Maybe.map toCoto
+
+
+updateCotonomaInHolders : Cotonoma -> List CotonomaHolder -> List CotonomaHolder
+updateCotonomaInHolders cotonoma holders =
+    List.map
+        (\holder ->
+            if holder.cotonoma.id == cotonoma.id then
+                { holder | cotonoma = cotonoma }
+
+            else
+                holder
+        )
+        holders
 
 
 type alias CotonomaStats =
