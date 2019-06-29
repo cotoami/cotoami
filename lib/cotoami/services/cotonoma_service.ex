@@ -7,21 +7,12 @@ defmodule Cotoami.CotonomaService do
   import Ecto.Changeset, only: [change: 2]
   import Ecto.Query, warn: false
 
-  alias Cotoami.{
-    Repo,
-    Coto,
-    Cotonoma,
-    Amishi,
-    AmishiService,
-    CotoService,
-    CotoGraphService
-  }
-
-  def global_cotonomas_holder do
-    :cotoami
-    |> Application.get_env(__MODULE__, [])
-    |> Keyword.get(:global_cotonomas_holder)
-  end
+  alias Cotoami.Repo
+  alias Cotoami.Amishi
+  alias Cotoami.Coto
+  alias Cotoami.Cotonoma
+  alias Cotoami.CotoService
+  alias Cotoami.CotoGraphService
 
   def create!(name, shared, %Amishi{} = amishi),
     do: do_create!(name, shared, amishi, nil)
@@ -153,35 +144,6 @@ defmodule Cotoami.CotonomaService do
     |> Map.new()
   end
 
-  def map_by_keys(keys) do
-    from(c in Cotonoma, where: c.key in ^keys, select: {c.key, c})
-    |> preload([:coto, :owner])
-    |> Repo.all()
-    |> Map.new()
-  end
-
-  def recent_cotonomas(%Amishi{id: amishi_id} = amishi) do
-    Cotonoma
-    |> where([c], c.owner_id == ^amishi_id)
-    |> limit(100)
-    |> do_query_for_cotonomas(amishi)
-  end
-
-  def sub_cotonomas(cotonoma_id, %Amishi{} = amishi) do
-    Cotonoma
-    |> Cotonoma.in_cotonoma(cotonoma_id)
-    |> limit(100)
-    |> do_query_for_cotonomas(amishi)
-  end
-
-  defp do_query_for_cotonomas(query, amishi) do
-    query
-    |> preload(coto: [:posted_in], owner: [])
-    |> order_by(desc: :updated_at)
-    |> Repo.all()
-    |> set_reposted_in(amishi)
-  end
-
   def suggest(%Amishi{id: amishi_id}, query) do
     from(c in Cotonoma, where: c.owner_id == ^amishi_id and ilike(c.name, ^"%#{query}%"))
     |> preload([:owner])
@@ -221,52 +183,5 @@ defmodule Cotoami.CotonomaService do
         |> Repo.aggregate(:count, :id),
       connections: CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn(), cotonoma)
     }
-  end
-
-  def global_cotonomas do
-    case global_cotonomas_holder_amishi() do
-      nil ->
-        []
-
-      amishi ->
-        keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn(), amishi)
-        cotonomas = map_by_keys(keys)
-        for key <- keys, cotonomas[key], do: cotonomas[key]
-    end
-  end
-
-  defp global_cotonomas_holder_amishi do
-    case global_cotonomas_holder() do
-      nil ->
-        nil
-
-      id_or_email ->
-        case UUID.info(id_or_email) do
-          {:ok, _info} ->
-            AmishiService.get(id_or_email)
-
-          {:error, _reason} ->
-            AmishiService.get_by_email(id_or_email)
-        end
-    end
-  end
-
-  defp set_reposted_in(cotonomas, %Amishi{} = amishi) when is_list(cotonomas) do
-    all_reposted_cotonomas =
-      cotonomas
-      |> Enum.map(& &1.coto.reposted_in_ids)
-      |> List.flatten()
-      |> Enum.uniq()
-      |> map_by_ids(amishi)
-
-    cotonomas
-    |> Enum.map(fn cotonoma ->
-      reposted_in =
-        cotonoma.coto.reposted_in_ids
-        |> Enum.map(&all_reposted_cotonomas[&1])
-        |> Enum.filter(& &1)
-
-      Map.put(cotonoma, :reposted_in, reposted_in)
-    end)
   end
 end

@@ -7,13 +7,17 @@ defmodule CotoamiWeb.CotonomaView do
         recent: recent_cotonomas
       }) do
     %{
-      global: render_many(global_cotonomas, __MODULE__, "cotonoma.json"),
-      recent: render_many(recent_cotonomas, __MODULE__, "cotonoma.json")
+      global: render_many(global_cotonomas, __MODULE__, "cotonoma_holder.json"),
+      recent: render_many(recent_cotonomas, __MODULE__, "cotonoma_holder.json")
     }
   end
 
   def render("cotonomas.json", %{cotonomas: cotonomas}) do
     render_many(cotonomas, __MODULE__, "cotonoma.json")
+  end
+
+  def render("cotonoma_holders.json", %{cotonomas: cotonomas}) do
+    render_many(cotonomas, __MODULE__, "cotonoma_holder.json")
   end
 
   def render("cotonoma_holder.json", %{cotonoma: cotonoma}) do
@@ -67,7 +71,7 @@ defmodule CotoamiWeb.CotonomaView do
 
   def render("cotos.json", %{cotonoma: cotonoma} = paginated_cotos) do
     %{
-      cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
+      cotonoma: render_one(cotonoma, __MODULE__, "cotonoma_holder.json"),
       paginated_cotos: render(CotoView, "paginated_cotos.json", paginated_cotos)
     }
   end

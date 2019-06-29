@@ -171,7 +171,7 @@ defmodule Cotoami.CotoService do
   end
 
   defp set_reposted_in(%Coto{} = coto, %Amishi{} = amishi) do
-    [updated_coto] = set_reposted_in([coto], %Amishi{} = amishi)
+    [updated_coto] = set_reposted_in([coto], amishi)
     updated_coto
   end
 

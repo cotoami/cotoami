@@ -1,7 +1,10 @@
 defmodule CotoamiWeb.CotonomaController do
   use CotoamiWeb, :controller
   require Logger
-  alias Cotoami.{Cotonoma, CotoService, CotonomaService}
+  alias Cotoami.Cotonoma
+  alias Cotoami.CotoService
+  alias Cotoami.CotonomaService
+  alias Cotoami.RichCotonomaService
   alias CotoamiWeb.CotoView
 
   plug(:scrub_params, "cotonoma" when action in [:create])
@@ -12,14 +15,14 @@ defmodule CotoamiWeb.CotonomaController do
 
   def index(conn, _params, amishi) do
     render(conn, "index.json", %{
-      global: CotonomaService.global_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(amishi)
+      global: RichCotonomaService.global_cotonomas(amishi),
+      recent: RichCotonomaService.recent_cotonomas(amishi)
     })
   end
 
   def sub(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
-    render(conn, "cotonomas.json", %{
-      cotonomas: CotonomaService.sub_cotonomas(cotonoma_id, amishi)
+    render(conn, "cotonoma_holders.json", %{
+      cotonomas: RichCotonomaService.sub_cotonomas(cotonoma_id, amishi)
     })
   end
 
@@ -64,11 +67,15 @@ defmodule CotoamiWeb.CotonomaController do
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
-    cotonoma = CotonomaService.get_by_key!(key, amishi)
+    cotonoma = RichCotonomaService.get_by_key!(key, amishi)
     page_index = String.to_integer(page)
     options = get_flags_in_params(params, @cotos_options)
-    paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
-    render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
+
+    paginated_cotos =
+      CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
+      |> Map.put(:cotonoma, cotonoma)
+
+    render(conn, "cotos.json", paginated_cotos)
   end
 
   def random(conn, %{"key" => key} = params, amishi) do
