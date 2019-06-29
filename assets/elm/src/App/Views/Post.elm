@@ -103,6 +103,7 @@ postDivAttrs context elementId post =
                 elementId
                 originalCotoId
                 [ ( "posting", isJust context.session && isNothing post.cotoId )
+                , ( "repost", isJust post.repost )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "by-another-amishi", not (isAuthor context post) )
                 , ( "in-pinned-graph"
@@ -151,9 +152,11 @@ repostHeaderDiv context post =
                       else
                         authorDiv context post.amishi
                     , if isNothing context.cotonoma then
-                        post.postedIn
-                            |> Maybe.map (App.Views.Coto.postedCotonomaLink context)
-                            |> Maybe.withDefault Utils.HtmlUtil.none
+                        div [ class "reposted-in" ]
+                            [ post.postedIn
+                                |> Maybe.map (App.Views.Coto.postedCotonomaLink context)
+                                |> Maybe.withDefault Utils.HtmlUtil.none
+                            ]
 
                       else
                         Utils.HtmlUtil.none

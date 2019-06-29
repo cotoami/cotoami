@@ -38,6 +38,7 @@ div.posts {
   }
 
   div.repost-header {
+    margin-bottom: 8px;
     display: flex;
     flex-direction: row;
     padding-top: 0.5rem;
@@ -66,11 +67,8 @@ div.posts {
       }
     }
 
-    a.posted-in {
-      position: absolute;
-      top: 7px;
-      right: 0;
-      color: #ccc;
+    div.reposted-in {
+      flex: 1;
     }
   }
 
