@@ -13,7 +13,7 @@ import App.Server.Cotonoma
 import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
-import App.Types.Coto exposing (Coto)
+import App.Types.Coto exposing (Coto, Cotonoma)
 import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -27,6 +27,8 @@ import Utils.UpdateUtil exposing (..)
 type alias Model =
     { coto : Coto
     , cotonomaName : String
+    , lastCheckRequestId : Int
+    , cotonoma : Maybe Cotonoma
     , requestProcessing : Bool
     }
 
@@ -35,6 +37,8 @@ defaultModel : Model
 defaultModel =
     { coto = App.Types.Coto.defaultCoto
     , cotonomaName = ""
+    , lastCheckRequestId = 0
+    , cotonoma = Nothing
     , requestProcessing = False
     }
 
@@ -123,8 +127,21 @@ update : Context context -> ModalMsg.Msg -> UpdateModel model -> ( UpdateModel m
 update context msg ({ repostModal } as model) =
     case msg of
         CotonomaNameInput name ->
-            { model | repostModal = { repostModal | cotonomaName = name } }
-                |> withoutCmd
+            let
+                requestId =
+                    repostModal.lastCheckRequestId + 1
+
+                modal =
+                    { repostModal
+                        | cotonomaName = name
+                        , lastCheckRequestId = requestId
+                    }
+            in
+            ( { model | repostModal = modal }
+            , App.Server.Cotonoma.fetchCotonomaByName
+                (AppMsg.RepostModalMsg << CotonomaFetched requestId)
+                (String.trim name)
+            )
 
         Repost ->
             ( { model | repostModal = { repostModal | requestProcessing = True } }
@@ -156,3 +173,19 @@ update context msg ({ repostModal } as model) =
 
         Reposted (Err error) ->
             model |> withoutCmd
+
+        CotonomaFetched requestId (Ok cotonoma) ->
+            if repostModal.lastCheckRequestId == requestId then
+                { model | repostModal = { repostModal | cotonoma = Just cotonoma } }
+                    |> withoutCmd
+
+            else
+                model |> withoutCmd
+
+        CotonomaFetched requestId (Err _) ->
+            if repostModal.lastCheckRequestId == requestId then
+                { model | repostModal = { repostModal | cotonoma = Nothing } }
+                    |> withoutCmd
+
+            else
+                model |> withoutCmd
