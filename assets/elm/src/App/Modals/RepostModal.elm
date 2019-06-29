@@ -47,14 +47,17 @@ initModel coto =
 validateCotonomaName : Context context -> Model -> Bool
 validateCotonomaName context model =
     let
+        cotonomaName =
+            String.trim model.cotonomaName
+
         existingNames =
             model.coto.repostedIn
                 |> List.map (\cotonoma -> Just cotonoma.name)
                 |> (::) (Maybe.map .name model.coto.postedIn)
                 |> List.filterMap identity
     in
-    Utils.StringUtil.isNotBlank model.cotonomaName
-        && not (List.member model.cotonomaName existingNames)
+    Utils.StringUtil.isNotBlank cotonomaName
+        && not (List.member cotonomaName existingNames)
 
 
 view : Context context -> Model -> Html AppMsg.Msg
@@ -125,9 +128,10 @@ update context msg ({ repostModal } as model) =
 
         Repost ->
             ( { model | repostModal = { repostModal | requestProcessing = True } }
-            , App.Server.Post.repost context.clientId
+            , App.Server.Post.repost
+                context.clientId
                 (AppMsg.RepostModalMsg << Reposted)
-                repostModal.cotonomaName
+                (String.trim repostModal.cotonomaName)
                 repostModal.coto.id
             )
 
