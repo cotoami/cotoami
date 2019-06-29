@@ -19,9 +19,23 @@ defmodule Cotoami.RichCotonomaService do
     |> set_reposted_in(amishi)
   end
 
+  def map_by_ids(ids, %Amishi{} = amishi) do
+    from(cotonoma in Cotonoma, where: cotonoma.id in ^ids)
+    |> do_query_for_cotonomas(amishi)
+    |> Enum.map(&{&1.id, &1})
+    |> Map.new()
+  end
+
+  def map_by_keys(keys, %Amishi{} = amishi) do
+    from(cotonoma in Cotonoma, where: cotonoma.key in ^keys)
+    |> do_query_for_cotonomas(amishi)
+    |> Enum.map(&{&1.key, &1})
+    |> Map.new()
+  end
+
   def recent_cotonomas(%Amishi{id: amishi_id} = amishi) do
     Cotonoma
-    |> where([c], c.owner_id == ^amishi_id)
+    |> where([cotonoma], cotonoma.owner_id == ^amishi_id)
     |> limit(100)
     |> do_query_for_cotonomas(amishi)
   end
@@ -65,13 +79,6 @@ defmodule Cotoami.RichCotonomaService do
             AmishiService.get_by_email(id_or_email)
         end
     end
-  end
-
-  defp map_by_keys(keys, amishi) do
-    from(c in Cotonoma, where: c.key in ^keys)
-    |> do_query_for_cotonomas(amishi)
-    |> Enum.map(&{&1.key, &1})
-    |> Map.new()
   end
 
   defp do_query_for_cotonomas(query, amishi) do
