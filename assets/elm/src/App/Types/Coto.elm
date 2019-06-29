@@ -3,6 +3,7 @@ module App.Types.Coto exposing
     , CotoContent
     , CotoId
     , Cotonoma
+    , CotonomaHolder
     , CotonomaKey
     , CotonomaStats
     , ElementId

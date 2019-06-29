@@ -11,10 +11,10 @@ module App.Server.Cotonoma exposing
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Submodels.Context exposing (Context)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
+import App.Types.Coto exposing (Cotonoma, CotonomaHolder, CotonomaKey, CotonomaStats)
 import Date
 import Http
-import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode as Decode exposing (bool, float, int, list, maybe, string)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 
@@ -33,6 +33,14 @@ decodeCotonoma =
         |> required "timeline_revision" int
         |> required "graph_revision" int
         |> optional "last_post_timestamp" (maybe float) Nothing
+
+
+decodeCotonomaHolder : Decode.Decoder CotonomaHolder
+decodeCotonomaHolder =
+    Json.Decode.Pipeline.decode CotonomaHolder
+        |> required "cotonoma" decodeCotonoma
+        |> optional "posted_in" (maybe decodeCotonoma) Nothing
+        |> required "reposted_in" (list decodeCotonoma)
 
 
 fetchCotonomas : Cmd Msg

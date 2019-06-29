@@ -16,7 +16,7 @@ defmodule CotoamiWeb.CotonomaView do
     render_many(cotonomas, __MODULE__, "cotonoma.json")
   end
 
-  def render("cotonoma.json", %{cotonoma: cotonoma}) do
+  def render("cotonoma_holder.json", %{cotonoma: cotonoma}) do
     posted_in =
       case cotonoma.coto do
         nil -> nil
@@ -27,6 +27,14 @@ defmodule CotoamiWeb.CotonomaView do
     reposted_in = Map.get(cotonoma, :reposted_in, [])
 
     %{
+      cotonoma: render_one(cotonoma, __MODULE__, "cotonoma.json"),
+      posted_in: posted_in,
+      reposted_in: render_relations(reposted_in, CotonomaView, "cotonoma.json")
+    }
+  end
+
+  def render("cotonoma.json", %{cotonoma: cotonoma}) do
+    %{
       id: cotonoma.id,
       key: cotonoma.key,
       name: cotonoma.name,
@@ -36,8 +44,6 @@ defmodule CotoamiWeb.CotonomaView do
       graph_revision: cotonoma.graph_revision,
       coto_id: cotonoma.coto_id,
       owner: render_relation(cotonoma.owner, AmishiView, "amishi.json"),
-      posted_in: posted_in,
-      reposted_in: render_relations(reposted_in, CotonomaView, "cotonoma.json"),
       inserted_at: cotonoma.inserted_at |> to_unixtime(),
       updated_at: cotonoma.updated_at |> to_unixtime(),
       last_post_timestamp: cotonoma.last_post_timestamp |> to_unixtime()
