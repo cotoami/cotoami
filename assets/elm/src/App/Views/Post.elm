@@ -150,6 +150,13 @@ repostHeaderDiv context post =
 
                       else
                         authorDiv context post.amishi
+                    , if isNothing context.cotonoma then
+                        post.postedIn
+                            |> Maybe.map (App.Views.Coto.postedCotonomaLink context)
+                            |> Maybe.withDefault Utils.HtmlUtil.none
+
+                      else
+                        Utils.HtmlUtil.none
                     ]
             )
         |> Maybe.withDefault Utils.HtmlUtil.none

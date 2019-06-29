@@ -10,6 +10,7 @@ module App.Views.Coto exposing
     , openTraversalButton
     , openTraversalButtonDiv
     , parentsDiv
+    , postedCotonomaLink
     , renderContent
     , simplifiedCotoDiv
     , simplifiedCotonomaDiv
@@ -227,16 +228,18 @@ postedCotonomasSpan context coto =
             (\cotonoma ->
                 Just cotonoma.id /= Maybe.map .id context.cotonoma
             )
-        |> List.map
-            (\cotonoma ->
-                a
-                    [ class "posted-in"
-                    , href ("/cotonomas/" ++ cotonoma.key)
-                    , onLinkButtonClick (App.Messages.CotonomaClick cotonoma.key)
-                    ]
-                    [ text cotonoma.name ]
-            )
+        |> List.map (postedCotonomaLink context)
         |> span [ class "posted-cotonomas" ]
+
+
+postedCotonomaLink : Context context -> Cotonoma -> Html Msg
+postedCotonomaLink context cotonoma =
+    a
+        [ class "posted-in"
+        , href ("/cotonomas/" ++ cotonoma.key)
+        , onLinkButtonClick (App.Messages.CotonomaClick cotonoma.key)
+        ]
+        [ text cotonoma.name ]
 
 
 

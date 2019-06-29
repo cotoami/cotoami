@@ -41,6 +41,7 @@ div.posts {
     display: flex;
     flex-direction: row;
     padding-top: 0.5rem;
+    position: relative;
 
     div.repost-icon {
       width: 25px;
@@ -63,6 +64,12 @@ div.posts {
       span.name {
         font-size: 1.3rem;
       }
+    }
+
+    a.posted-in {
+      position: absolute;
+      top: 6px;
+      right: 0;
     }
   }
 
