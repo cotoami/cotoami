@@ -13,8 +13,8 @@ defmodule Cotoami.RichCotonomaService do
   alias Cotoami.AmishiService
   alias Cotoami.CotoGraphService
 
-  def get_by_key!(key, %Amishi{} = amishi) do
-    CotonomaService.get_by_key!(key, amishi)
+  def get_accessible_by_key!(key, %Amishi{} = amishi) do
+    CotonomaService.get_accessible_by_key!(key, amishi)
     |> Repo.preload(coto: [:posted_in])
     |> set_reposted_in(amishi)
   end

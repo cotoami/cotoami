@@ -83,14 +83,14 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto
   end
 
-  def get!(id, %Amishi{} = amishi) do
+  def get_accessible!(id, %Amishi{} = amishi) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get(id)
     |> check_permission!(amishi)
   end
 
-  def get_by_key!(key, %Amishi{} = amishi) do
+  def get_accessible_by_key!(key, %Amishi{} = amishi) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)

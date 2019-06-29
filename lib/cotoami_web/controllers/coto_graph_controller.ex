@@ -20,7 +20,7 @@ defmodule CotoamiWeb.CotoGraphController do
   end
 
   def subgraph(conn, %{"cotonoma_key" => cotonoma_key}, amishi) do
-    cotonoma = CotonomaService.get_by_key!(cotonoma_key, amishi)
+    cotonoma = CotonomaService.get_accessible_by_key!(cotonoma_key, amishi)
     graph = CotoGraphService.get_graph_from_cotonoma(Sips.conn(), cotonoma, amishi)
     json(conn, graph)
   end

@@ -16,7 +16,7 @@ defmodule CotoamiWeb.TimelineChannel do
   end
 
   defp join_cotonoma_timeline(cotonoma_key, socket) do
-    CotonomaService.get_by_key!(cotonoma_key, socket.assigns.amishi)
+    CotonomaService.get_accessible_by_key!(cotonoma_key, socket.assigns.amishi)
     send(self(), :after_join)
     {:ok, socket}
   rescue

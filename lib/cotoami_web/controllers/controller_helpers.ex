@@ -24,8 +24,8 @@ defmodule CotoamiWeb.ControllerHelpers do
 
   def get_cotonoma_if_specified!(params, amishi) do
     case params |> Helpers.drop_nil() do
-      %{"cotonoma_id" => id} -> CotonomaService.get!(id, amishi)
-      %{"cotonoma_key" => key} -> CotonomaService.get_by_key!(key, amishi)
+      %{"cotonoma_id" => id} -> CotonomaService.get_accessible!(id, amishi)
+      %{"cotonoma_key" => key} -> CotonomaService.get_accessible_by_key!(key, amishi)
       _ -> nil
     end
   end
