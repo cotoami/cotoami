@@ -204,7 +204,7 @@ defmodule Cotoami.CotoGraphService do
     |> List.flatten()
     |> Enum.filter(& &1)
     |> Enum.uniq()
-    |> CotonomaService.all_by_ids(amishi)
+    |> CotonomaService.accessibles_by_ids(amishi)
     |> Enum.map(&{&1.id, View.render_one(&1, CotonomaView, "cotonoma.json")})
     |> Map.new()
   end

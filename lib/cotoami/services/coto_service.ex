@@ -182,7 +182,7 @@ defmodule Cotoami.CotoService do
       |> Enum.map(& &1.reposted_in_ids)
       |> List.flatten()
       |> Enum.uniq()
-      |> CotonomaService.map_by_ids(amishi)
+      |> CotonomaService.accessible_map_by_ids(amishi)
 
     collect_reposted_in = fn coto, cotonomas ->
       coto.reposted_in_ids

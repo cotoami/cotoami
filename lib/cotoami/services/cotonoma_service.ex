@@ -120,7 +120,7 @@ defmodule Cotoami.CotonomaService do
     |> Repo.all()
   end
 
-  def all_by_ids(ids, %Amishi{} = amishi) do
+  def accessibles_by_ids(ids, %Amishi{} = amishi) do
     all_by_ids(ids)
     |> Enum.filter(&Cotonoma.accessible_by?(&1, amishi))
   end
@@ -138,7 +138,7 @@ defmodule Cotoami.CotonomaService do
     |> Map.new()
   end
 
-  def map_by_ids(ids, %Amishi{} = amishi) do
+  def accessible_map_by_ids(ids, %Amishi{} = amishi) do
     map_by_ids(ids)
     |> Enum.filter(fn {_, c} -> Cotonoma.accessible_by?(c, amishi) end)
     |> Map.new()

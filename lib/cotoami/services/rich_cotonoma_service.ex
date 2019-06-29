@@ -100,7 +100,7 @@ defmodule Cotoami.RichCotonomaService do
       |> Enum.map(& &1.coto.reposted_in_ids)
       |> List.flatten()
       |> Enum.uniq()
-      |> CotonomaService.map_by_ids(amishi)
+      |> CotonomaService.accessible_map_by_ids(amishi)
 
     cotonomas
     |> Enum.map(fn cotonoma ->
