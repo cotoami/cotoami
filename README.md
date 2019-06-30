@@ -44,7 +44,7 @@ Cotoami (言編み・言網) is a platform where people can weave a large networ
 
 ## Concept
 
-In Cotoami, you post your ideas and thoughts like chatting. The timeline actually has a chatting feature where you can chat with other users sharing the same space.
+In Cotoami, you post your ideas and thoughts in a collaborative chat format. The timeline actually has a feature where you can chat with other users sharing the same space.
 
 ![](docs/images/anime/anime1-posting-cotos.gif)
 
