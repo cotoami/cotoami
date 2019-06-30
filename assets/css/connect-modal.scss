@@ -10,15 +10,15 @@
     text-align: right;
   }
 
-  div.target-coto div.coto-in-connection,
-  div.target-new-post div.coto-in-connection {
+  div.target-coto div.simplified-coto,
+  div.target-new-post div.simplified-coto {
     border-width: 2px;
     max-height: 15vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  div.target-new-post div.coto-in-connection {
+  div.target-new-post div.simplified-coto {
     border-style: dashed;
   }
 
@@ -27,8 +27,8 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 
-    div.coto-in-connection,
-    div.cotonoma-in-connection {
+    div.simplified-coto,
+    div.simplified-cotonoma {
       border: 2px solid #ffa500 !important;
       margin-top: 10px;
 
@@ -37,7 +37,7 @@
       }
     }
 
-    div.cotonoma-in-connection {
+    div.simplified-cotonoma {
       padding: 2px;
     }
   }

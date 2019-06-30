@@ -15,14 +15,14 @@ defmodule Cotoami.CotoSearchServiceTest do
   setup do
     amishi_a = AmishiService.insert_or_update!(%EmailUser{email: "amishi_a@example.com"})
     amishi_b = AmishiService.insert_or_update!(%EmailUser{email: "amishi_b@example.com"})
-    %Coto{cotonoma: cotonoma_a} = CotonomaService.create!(amishi_a, "cotonoma a", false)
+    %Coto{cotonoma: cotonoma_a} = CotonomaService.create!("cotonoma a", false, amishi_a)
     ~M{amishi_a, amishi_b, cotonoma_a}
   end
 
   describe "when there are private cotos by amishi_a" do
     setup ~M{amishi_a, cotonoma_a} do
-      CotoService.create!(amishi_a, "Search has become an important feature.")
-      CotoService.create!(amishi_a, "You are often asked to add search.", nil, cotonoma_a.id)
+      CotoService.create!("Search has become an important feature.", nil, amishi_a)
+      CotoService.create!("You are often asked to add search.", nil, amishi_a, cotonoma_a)
       :ok
     end
 

@@ -21,7 +21,7 @@ decodeWatch : Decode.Decoder Watch
 decodeWatch =
     Json.Decode.Pipeline.decode Watch
         |> required "id" string
-        |> required "cotonoma" App.Server.Cotonoma.decodeCotonoma
+        |> required "cotonoma" App.Server.Cotonoma.decodeCotonomaHolder
         |> optional "last_post_timestamp" (maybe float) Nothing
 
 

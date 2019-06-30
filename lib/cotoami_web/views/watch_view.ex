@@ -13,7 +13,7 @@ defmodule CotoamiWeb.WatchView do
   def render("watch.json", %{watch: watch}) do
     %{
       id: watch.id,
-      cotonoma: render_relation(watch.cotonoma, CotonomaView, "cotonoma.json"),
+      cotonoma: render_relation(watch.cotonoma, CotonomaView, "cotonoma_holder.json"),
       last_post_timestamp: watch.last_post_timestamp |> to_unixtime()
     }
   end

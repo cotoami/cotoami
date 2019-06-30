@@ -3,11 +3,13 @@ defmodule Cotoami.CotoServiceTest do
   import ShorterMaps
 
   alias Cotoami.{
+    Fixtures,
     EmailUser,
+    Amishi,
     Coto,
+    Cotonoma,
     AmishiService,
     CotoService,
-    CotonomaService,
     CotoGraphService
   }
 
@@ -17,35 +19,58 @@ defmodule Cotoami.CotoServiceTest do
   end
 
   test "creating a coto without content", ~M{amishi} do
-    coto = CotoService.create!(amishi, nil)
+    coto = CotoService.create!(nil, nil, amishi)
     assert %Coto{content: ""} = CotoService.get(coto.id)
   end
 
   describe "when there is a coto" do
     setup ~M{amishi} do
-      coto = CotoService.create!(amishi, "hello")
+      coto = Fixtures.create_coto!("hello", amishi)
       ~M{coto}
     end
 
     test "the coto can be gotten by id", ~M{coto} do
       assert %Coto{content: "hello"} = CotoService.get(coto.id)
     end
+
+    test "reposting it to another cotonoma", ~M{amishi, coto} do
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
+      %Cotonoma{id: cotonoma_id} = cotonoma
+
+      repost = CotoService.repost!(coto, amishi, cotonoma)
+
+      # repost container
+      assert %Coto{
+               content: "",
+               as_cotonoma: false,
+               repost: %Coto{content: "hello"},
+               posted_in: %Cotonoma{name: "test"},
+               amishi: %Amishi{email: "amishi@example.com"}
+             } = repost
+
+      # reposted coto
+      assert %Coto{
+               content: "hello",
+               posted_in: nil,
+               reposted_in_ids: [^cotonoma_id]
+             } = CotoService.get(coto.id)
+    end
   end
 
   describe "when there is a cotonoma" do
     setup ~M{amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
       ~M{cotonoma}
     end
 
     test "posting a coto to it", ~M{amishi, cotonoma} do
       assert cotonoma.timeline_revision == 0
 
-      coto = CotoService.create!(amishi, "hello", nil, cotonoma.id)
+      coto = CotoService.create!("hello", nil, amishi, cotonoma)
       assert coto.content == "hello"
       assert coto.posted_in.id == cotonoma.id
 
-      cotonoma = CotonomaService.get(cotonoma.id)
+      cotonoma = Repo.get!(Cotonoma, cotonoma.id)
       assert cotonoma.timeline_revision == 1
       assert cotonoma.last_post_timestamp == coto.inserted_at
     end
@@ -53,14 +78,14 @@ defmodule Cotoami.CotoServiceTest do
 
   describe "when there are various cotos" do
     setup ~M{conn, amishi} do
-      %Coto{cotonoma: cotonoma} = CotonomaService.create!(amishi, "test", false)
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
 
-      coto1 = CotoService.create!(amishi, "coto1")
-      coto2 = CotoService.create!(amishi, "coto2")
+      coto1 = Fixtures.create_coto!("coto1", amishi)
+      coto2 = Fixtures.create_coto!("coto2", amishi)
       CotoGraphService.pin(conn, coto2, nil, amishi)
-      coto3 = CotoService.create!(amishi, "coto3")
+      coto3 = Fixtures.create_coto!("coto3", amishi)
       CotoGraphService.connect(conn, coto2, coto3, nil, amishi)
-      coto4 = CotoService.create!(amishi, "coto4", nil, cotonoma.id)
+      coto4 = Fixtures.create_coto!("coto4", amishi, cotonoma)
 
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end

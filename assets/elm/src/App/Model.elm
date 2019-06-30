@@ -14,6 +14,7 @@ import App.Modals.CotoModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Route exposing (Route)
 import App.Submodels.Context
@@ -25,7 +26,7 @@ import App.Submodels.Traversals
 import App.Submodels.WideViewport exposing (WideViewportState)
 import App.Types.Amishi exposing (Amishi, AmishiId, Presences)
 import App.Types.Connection exposing (Direction(..), Reordering)
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaHolder, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.SearchResults exposing (SearchResults)
 import App.Types.Session exposing (Session)
@@ -49,6 +50,7 @@ type alias Model =
     , narrowViewport : NarrowViewportState
     , wideViewport : WideViewportState
     , cotonoma : Maybe Cotonoma
+    , cotonomaHolder : Maybe CotonomaHolder
     , cotonomaLoading : Bool
     , watchStateOnCotonomaLoad : Maybe Watch
     , elementFocus : Maybe ElementId
@@ -61,10 +63,10 @@ type alias Model =
     , presences : Presences
     , confirmation : Maybe Confirmation
     , searchInputFocus : Bool
-    , globalCotonomas : List Cotonoma
-    , recentCotonomas : List Cotonoma
+    , globalCotonomas : List CotonomaHolder
+    , recentCotonomas : List CotonomaHolder
     , cotonomasLoading : Bool
-    , subCotonomas : List Cotonoma
+    , subCotonomas : List CotonomaHolder
     , watchlist : List Watch
     , watchlistLoading : Bool
     , watchUpdating : Bool
@@ -83,6 +85,7 @@ type alias Model =
     , cotoModal : Maybe App.Modals.CotoModal.Model
     , connectModal : App.Modals.ConnectModal.Model
     , connectionModal : Maybe App.Modals.ConnectionModal.Model
+    , repostModal : App.Modals.RepostModal.Model
     , importModal : Maybe App.Modals.ImportModal.Model
     , inviteModal : App.Modals.InviteModal.Model
     }
@@ -99,6 +102,7 @@ initModel version seed lang route =
     , narrowViewport = App.Submodels.NarrowViewport.defaultNarrowViewportState
     , wideViewport = App.Submodels.WideViewport.defaultWideViewportState
     , cotonoma = Nothing
+    , cotonomaHolder = Nothing
     , cotonomaLoading = False
     , watchStateOnCotonomaLoad = Nothing
     , elementFocus = Nothing
@@ -133,6 +137,7 @@ initModel version seed lang route =
     , cotoModal = Nothing
     , connectModal = App.Modals.ConnectModal.defaultModel
     , connectionModal = Nothing
+    , repostModal = App.Modals.RepostModal.defaultModel
     , importModal = Nothing
     , inviteModal = App.Modals.InviteModal.defaultModel
     }

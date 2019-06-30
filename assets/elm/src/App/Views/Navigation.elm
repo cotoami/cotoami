@@ -10,7 +10,7 @@ module App.Views.Navigation exposing
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (Msg(MoveToHome, ToggleNavInWideViewport))
 import App.Submodels.Context exposing (Context)
-import App.Types.Coto exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma, CotonomaHolder)
 import App.Views.Cotonomas
 import Exts.Maybe exposing (isNothing)
 import Html exposing (..)
@@ -22,9 +22,9 @@ import Utils.HtmlUtil exposing (faIcon, materialIcon)
 type alias ViewModel model =
     Context
         { model
-            | globalCotonomas : List Cotonoma
-            , recentCotonomas : List Cotonoma
-            , subCotonomas : List Cotonoma
+            | globalCotonomas : List CotonomaHolder
+            , recentCotonomas : List CotonomaHolder
+            , subCotonomas : List CotonomaHolder
         }
 
 
@@ -36,7 +36,7 @@ view model =
             |> Maybe.withDefault Utils.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
-            [ model.cotonoma
+            [ model.cotonomaHolder
                 |> Maybe.map (currentCotonomaNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , globalCotonomasDiv model
@@ -66,8 +66,8 @@ homeNav model =
         ]
 
 
-currentCotonomaNav : ViewModel model -> Cotonoma -> Html Msg
-currentCotonomaNav model cotonoma =
+currentCotonomaNav : ViewModel model -> CotonomaHolder -> Html Msg
+currentCotonomaNav model cotonomaHolder =
     div [ class "current-cotonoma" ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
@@ -75,7 +75,7 @@ currentCotonomaNav model cotonoma =
             model
             Nothing
             "current-cotonoma"
-            cotonoma
+            cotonomaHolder
         , div [ class "sub-cotonomas" ]
             [ App.Views.Cotonomas.view model "sub-cotonomas" model.subCotonomas
             ]

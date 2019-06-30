@@ -6,11 +6,13 @@ module App.Server.Post exposing
     , fetchRandomPosts
     , post
     , postCotonoma
+    , repost
     , search
     )
 
 import App.Messages exposing (Msg)
 import App.Server.Amishi
+import App.Server.Coto
 import App.Server.Cotonoma
 import App.Server.Pagination exposing (PaginatedList)
 import App.Submodels.Context exposing (Context)
@@ -19,10 +21,10 @@ import App.Types.Post exposing (Post)
 import App.Types.TimelineFilter exposing (TimelineFilter)
 import Date exposing (Date)
 import Http exposing (Request)
-import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode as Decode exposing (bool, float, int, list, maybe, string)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
-import Utils.HttpUtil exposing (ClientId, httpPost)
+import Utils.HttpUtil exposing (ClientId)
 
 
 decodePost : Decode.Decoder Post
@@ -37,6 +39,8 @@ decodePost =
         |> optional "inserted_at" (maybe (Decode.map Date.fromTime float)) Nothing
         |> required "as_cotonoma" bool
         |> optional "cotonoma" (maybe App.Server.Cotonoma.decodeCotonoma) Nothing
+        |> optional "repost" (maybe App.Server.Coto.decodeCoto) Nothing
+        |> required "reposted_in" (list App.Server.Cotonoma.decodeCotonoma)
         |> hardcoded False
 
 
@@ -78,7 +82,7 @@ fetchCotonomaPosts pageIndex filter key =
 
         decodeResponse =
             Decode.map2 (,)
-                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonoma)
+                (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonomaHolder)
                 (Decode.field "paginated_cotos"
                     (App.Server.Pagination.decodePaginatedList decodePost)
                 )
@@ -127,7 +131,7 @@ post clientId maybeCotonoma tag post =
         body =
             Http.jsonBody (encodePost maybeCotonoma post)
     in
-    httpPost "/api/cotos" clientId body decodePost
+    Utils.HttpUtil.httpPost "/api/cotos" clientId body decodePost
         |> Http.send tag
 
 
@@ -144,7 +148,7 @@ postCotonoma clientId maybeCotonoma tag shared name =
             App.Server.Cotonoma.encodeCotonoma maybeCotonoma shared name
                 |> Http.jsonBody
     in
-    httpPost "/api/cotonomas" clientId body decodePost
+    Utils.HttpUtil.httpPost "/api/cotonomas" clientId body decodePost
         |> Http.send tag
 
 
@@ -167,3 +171,17 @@ encodePost maybeCotonoma post =
                 ]
           )
         ]
+
+
+repost : ClientId -> (Result Http.Error Post -> msg) -> String -> CotoId -> Cmd msg
+repost clientId tag cotonomaName cotoId =
+    let
+        url =
+            "/api/cotos/" ++ cotoId ++ "/repost"
+
+        body =
+            Encode.object [ ( "cotonoma_name", Encode.string cotonomaName ) ]
+                |> Http.jsonBody
+    in
+    Utils.HttpUtil.httpPut url clientId body decodePost
+        |> Http.send tag

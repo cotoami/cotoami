@@ -3,7 +3,7 @@ module App.Views.Cotonomas exposing (cotonomaDiv, view, watchlist)
 import App.Messages exposing (Msg(..))
 import App.Submodels.Context exposing (Context)
 import App.Submodels.CotoSelection
-import App.Types.Coto exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma, CotonomaHolder)
 import App.Types.Watch exposing (Watch)
 import App.Views.Coto
 import App.Views.CotoToolbar
@@ -15,18 +15,18 @@ import Utils.EventUtil exposing (onClickWithoutPropagation, onLinkButtonClick)
 import Utils.HtmlUtil exposing (materialIcon)
 
 
-view : Context a -> String -> List Cotonoma -> Html Msg
-view context title cotonomas =
+view : Context a -> String -> List CotonomaHolder -> Html Msg
+view context title cotonomaHolders =
     Html.Keyed.node
         "div"
         [ class "cotonomas" ]
         (List.map
-            (\cotonoma ->
-                ( toString cotonoma.id
-                , cotonomaDiv context Nothing title cotonoma
+            (\holder ->
+                ( toString holder.cotonoma.id
+                , cotonomaDiv context Nothing title holder
                 )
             )
-            cotonomas
+            cotonomaHolders
         )
 
 
@@ -36,18 +36,21 @@ watchlist context watchlist =
         "div"
         [ class "cotonomas" ]
         (List.map
-            (\cotonoma ->
-                ( toString cotonoma.id
-                , cotonomaDiv context (Just watchlist) "watchlist" cotonoma
+            (\cotonomaHolder ->
+                ( toString cotonomaHolder.cotonoma.id
+                , cotonomaDiv context (Just watchlist) "watchlist" cotonomaHolder
                 )
             )
-            (List.map (\watch -> watch.cotonoma) watchlist)
+            (List.map (\watch -> watch.cotonomaHolder) watchlist)
         )
 
 
-cotonomaDiv : Context a -> Maybe (List Watch) -> String -> Cotonoma -> Html Msg
-cotonomaDiv context maybeWatchlist listTitle cotonoma =
+cotonomaDiv : Context a -> Maybe (List Watch) -> String -> CotonomaHolder -> Html Msg
+cotonomaDiv context maybeWatchlist listTitle cotonomaHolder =
     let
+        cotonoma =
+            cotonomaHolder.cotonoma
+
         elementId =
             listTitle ++ cotonoma.cotoId
 
@@ -86,7 +89,8 @@ cotonomaDiv context maybeWatchlist listTitle cotonoma =
                         session
                         Nothing
                         elementId
-                        (App.Types.Coto.toCoto cotonoma)
+                        Nothing
+                        (App.Types.Coto.toCoto cotonomaHolder)
                 )
             |> Maybe.withDefault Utils.HtmlUtil.none
         ]

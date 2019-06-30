@@ -21,11 +21,23 @@ text key =
         Posting ->
             "Передача"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
+        Edit ->
+            "Изменить"
+
         Save ->
             "Сохранить"
 
         Saving ->
             "Сохранение"
+
+        Delete ->
+            "Удалить"
 
         Hide ->
             "Hide"
@@ -38,6 +50,9 @@ text key =
 
         ConfirmDeleteCoto ->
             "Вы уверены в необходимости удаления объекта?"
+
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
 
         ConfirmUnpinCoto ->
             "Вы уверены, что хотите открепить этот объект?"
@@ -132,9 +147,6 @@ text key =
         EditorModal_Preview ->
             "Просмотр"
 
-        EditorModal_Edit ->
-            "Изменить"
-
         EditorModal_CotonomaHelp ->
             "Профиль это тоже объект, имеющий сложное строение"
                 ++ " здесь можно объединить усилия для исчерпывающего описания объекта."
@@ -205,9 +217,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикрепить к текущему профилюф"
 
-        CotoToolbar_Edit ->
-            "Изменить"
-
         CotoToolbar_AddSubCoto ->
             "Добавить к присоединенному объекту"
 
@@ -241,17 +250,11 @@ text key =
         CotoMenuModal_UnpinFromCotonoma ->
             "Открепите от существующего профиля объекта или темы"
 
-        CotoMenuModal_Edit ->
-            "Изменить"
-
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
 
         CotoMenuModal_Cotonomatize ->
             "Преобразовать в тему"
-
-        CotoMenuModal_Delete ->
-            "Удалить"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"
@@ -285,6 +288,12 @@ text key =
 
         ConnectionModal_Disconnect ->
             "Отсоединить"
+
+        RepostModal_Title ->
+            "Repost"
+
+        RepostModal_CotonomaName ->
+            "Название темы"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

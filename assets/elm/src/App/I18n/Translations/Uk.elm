@@ -21,11 +21,23 @@ text key =
         Posting ->
             "Надсилання"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
+        Edit ->
+            "Редагувати"
+
         Save ->
             "Зберегти"
 
         Saving ->
             "Збереження"
+
+        Delete ->
+            "Видалити"
 
         Hide ->
             "Hide"
@@ -38,6 +50,9 @@ text key =
 
         ConfirmDeleteCoto ->
             "Ви впевнені в необхідності видалення об'єкту?"
+
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
 
         ConfirmUnpinCoto ->
             "Ви впевнені, що хочете відкріпити цей об'єкт?"
@@ -132,9 +147,6 @@ text key =
         EditorModal_Preview ->
             "Перегляд"
 
-        EditorModal_Edit ->
-            "Редагувати"
-
         EditorModal_CotonomaHelp ->
             "Профіль це теж об'єкт, що має складну будову"
                 ++ " тут можна об'єднати зусилля для вичерпного опису об'єкту."
@@ -205,9 +217,6 @@ text key =
         CotoToolbar_Pin ->
             "Прикріпити до поточного профілю"
 
-        CotoToolbar_Edit ->
-            "Редагувати"
-
         CotoToolbar_AddSubCoto ->
             "Додати до приєднаного об'єкту"
 
@@ -241,17 +250,11 @@ text key =
         CotoMenuModal_UnpinFromCotonoma ->
             "Відкріпити від існуючого профілю об‘єкта чи теми"
 
-        CotoMenuModal_Edit ->
-            "Редагувати"
-
         CotoMenuModal_AddSubCoto ->
             "Додати складову"
 
         CotoMenuModal_Cotonomatize ->
             "Перетворити в тему"
-
-        CotoMenuModal_Delete ->
-            "Видалити"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"
@@ -285,6 +288,12 @@ text key =
 
         ConnectionModal_Disconnect ->
             "Роз'єднати"
+
+        RepostModal_Title ->
+            "Repost"
+
+        RepostModal_CotonomaName ->
+            "Назва теми"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

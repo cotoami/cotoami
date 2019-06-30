@@ -8,6 +8,8 @@ defmodule Cotoami.Coto do
   import Ecto.Query, warn: false
   import Cotoami.Helpers
   alias Cotoami.Amishi
+  alias Cotoami.Coto
+  alias Cotoami.Cotonoma
 
   @summary_max_length 200
   @content_max_length 2500
@@ -19,20 +21,41 @@ defmodule Cotoami.Coto do
     field(:long_content, :string)
     field(:summary, :string)
     field(:as_cotonoma, :boolean)
-    belongs_to(:posted_in, Cotoami.Cotonoma)
-    belongs_to(:amishi, Cotoami.Amishi)
-    has_one(:cotonoma, Cotoami.Cotonoma)
+    belongs_to(:posted_in, Cotonoma)
+    belongs_to(:amishi, Amishi)
+    has_one(:cotonoma, Cotonoma)
+
+    belongs_to(:repost, Coto)
+    field(:reposted_in_ids, {:array, Ecto.UUID})
 
     timestamps(type: :utc_datetime)
   end
 
-  def changeset_to_insert(struct, params \\ %{}) do
-    struct
+  def changeset_to_insert(params \\ %{}) do
+    %Coto{}
     |> cast(params, [:content, :summary, :as_cotonoma, :posted_in_id, :amishi_id])
     |> validate_required([:amishi_id])
     |> validate_length(:summary, max: @summary_max_length)
     |> normalize_no_content()
     |> store_long_content()
+    |> put_change(:reposted_in_ids, [])
+  end
+
+  def changeset_to_repost(
+        %Coto{id: coto_id, repost: nil},
+        %Amishi{id: amishi_id},
+        cotonoma_id \\ nil
+      ) do
+    %Coto{}
+    |> change(
+      repost_id: coto_id,
+      content: nil,
+      summary: nil,
+      as_cotonoma: false,
+      amishi_id: amishi_id,
+      posted_in_id: cotonoma_id
+    )
+    |> normalize_no_content()
   end
 
   def changeset_to_update(struct, params \\ %{}) do
@@ -106,5 +129,19 @@ defmodule Cotoami.Coto do
 
   def in_cotonoma(query, cotonoma_id) do
     from(coto in query, where: coto.posted_in_id == ^cotonoma_id)
+  end
+
+  def peel!(%Coto{} = coto) do
+    case coto.repost do
+      nil -> coto
+      %Ecto.Association.NotLoaded{} -> raise "coto.repost not loaded"
+      repost -> repost
+    end
+  end
+
+  def posted_in(%Coto{} = coto, cotonoma_id) do
+    cotonoma_id &&
+      ((coto.posted_in && coto.posted_in.id == cotonoma_id) ||
+         Enum.member?(coto.reposted_in_ids, cotonoma_id))
   end
 end

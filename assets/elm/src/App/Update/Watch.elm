@@ -59,8 +59,8 @@ updateTimestamp context timestamp watch model =
             watchlist =
                 model.watchlist
                     |> List.Extra.updateIf
-                        (\w -> w.cotonoma.id == watch.cotonoma.id)
-                        (\w -> { w | lastPostTimestamp = Just timestamp })
+                        (App.Types.Watch.sameCotonoma watch)
+                        (\watch -> { watch | lastPostTimestamp = Just timestamp })
         in
         { model | watchlist = watchlist, watchUpdating = True }
             |> withCmd
@@ -68,7 +68,7 @@ updateTimestamp context timestamp watch model =
                     App.Server.Watch.updateLastPostTimestamp
                         WatchTimestampUpdated
                         context.clientId
-                        watch.cotonoma.key
+                        watch.cotonomaHolder.cotonoma.key
                         timestamp
                 )
 
