@@ -143,6 +143,7 @@ defmodule Cotoami.CotoService do
     Coto
     |> CotoSearchService.search(amishi, query)
     |> preload([:amishi, :posted_in, :cotonoma])
+    |> preload(^@preload_repost)
     |> limit(@page_size)
     |> Repo.all()
     |> Enum.map(&complement_amishi(&1, amishi))
