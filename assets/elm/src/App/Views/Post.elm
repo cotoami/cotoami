@@ -4,6 +4,7 @@ import App.Markdown exposing (extractTextFromMarkdown)
 import App.Messages exposing (..)
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
+import App.Types.Coto
 import App.Types.Graph
 import App.Types.Post exposing (Post)
 import App.Views.Coto
@@ -106,6 +107,7 @@ postDivAttrs context elementId post =
                 , ( "repost", isJust post.repost )
                 , ( "being-hidden", post.beingDeleted )
                 , ( "by-another-amishi", not (isAuthor context post) )
+                , ( "posted-in-any-cotonoma", App.Types.Coto.postedInAnyCotonoma post )
                 , ( "in-pinned-graph"
                   , originalCotoId
                         |> Maybe.map

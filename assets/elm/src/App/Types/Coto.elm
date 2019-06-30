@@ -17,6 +17,7 @@ module App.Types.Coto exposing
     , getCotoFromCotonomaHolders
     , incrementIncoming
     , incrementOutgoing
+    , postedInAnyCotonoma
     , removeFromList
     , replaceInList
     , revisedBefore
@@ -290,3 +291,15 @@ type alias CotonomaStats =
     , cotos : Int
     , connections : Int
     }
+
+
+type alias CotonomaPostable postable =
+    { postable
+        | postedIn : Maybe Cotonoma
+        , repostedIn : List Cotonoma
+    }
+
+
+postedInAnyCotonoma : CotonomaPostable postable -> Bool
+postedInAnyCotonoma postable =
+    isJust postable.postedIn || not (List.isEmpty postable.repostedIn)

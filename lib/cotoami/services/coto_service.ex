@@ -131,7 +131,9 @@ defmodule Cotoami.CotoService do
 
   defp query_to_exclude_posts_in_cotonoma(query, %Amishi{}, options) do
     if Keyword.get(options, :exclude_posts_in_cotonoma, false) do
-      from(coto in query, where: is_nil(coto.posted_in_id))
+      from(coto in query,
+        where: is_nil(coto.posted_in_id) and fragment("? = '{}'", coto.reposted_in_ids)
+      )
     else
       query
     end

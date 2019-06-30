@@ -186,6 +186,11 @@ timelineDiv context model =
         , classList
             [ ( "timeline", True )
             , ( "exclude-pinned-graph", model.flowView.filter.excludePinnedGraph )
+            , ( "exclude-posts-in-cotonoma"
+              , context.cotonoma
+                    |> Maybe.map (\_ -> False)
+                    |> Maybe.withDefault model.flowView.filter.excludePostsInCotonoma
+              )
             ]
         , onScroll (AppMsg.FlowMsg << Scroll)
         ]
