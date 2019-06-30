@@ -93,6 +93,7 @@ modalConfig context model =
                         , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
                         , value model.cotonomaName
                         , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
+                        , disabled model.requestProcessing
                         ]
                         []
                     ]
@@ -108,6 +109,11 @@ modalConfig context model =
                         [ materialIcon "repeat" Nothing ]
                     ]
                 ]
+            , if model.requestProcessing then
+                div [ class "reposting" ] [ Utils.HtmlUtil.loadingHorizontalImg ]
+
+              else
+                Utils.HtmlUtil.none
             , div [ class "reposted-cotonomas" ]
                 (List.map
                     (\cotonoma ->
