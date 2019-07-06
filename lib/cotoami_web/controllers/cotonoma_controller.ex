@@ -55,6 +55,13 @@ defmodule CotoamiWeb.CotonomaController do
     end
   end
 
+  def get(conn, %{"key_or_name" => key_or_name}, amishi) do
+    case CotonomaService.get_accessible_by_key_or_name(key_or_name, amishi) do
+      nil -> send_resp(conn, :not_found, "")
+      cotonoma -> render(conn, "cotonoma.json", cotonoma: cotonoma)
+    end
+  end
+
   def get_or_create(conn, %{"name" => name}, amishi) do
     coto = CotonomaService.create!(name, false, amishi)
     on_coto_created(conn, coto, amishi)
