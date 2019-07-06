@@ -8,8 +8,6 @@ defmodule Cotoami.CotoSearchServiceTest do
     EmailUser,
     Coto,
     AmishiService,
-    CotoService,
-    CotonomaService,
     CotoSearchService
   }
 
