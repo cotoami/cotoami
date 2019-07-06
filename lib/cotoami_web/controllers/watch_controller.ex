@@ -1,6 +1,7 @@
 defmodule CotoamiWeb.WatchController do
   use CotoamiWeb, :controller
   require Logger
+  alias Cotoami.Cotonoma
   alias Cotoami.WatchService
   alias Cotoami.CotonomaService
 
