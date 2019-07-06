@@ -2,6 +2,7 @@ defmodule Cotoami.CotonomaServiceTest do
   use Cotoami.DataCase
   import ShorterMaps
 
+  alias Cotoami.Fixtures
   alias Cotoami.EmailUser
   alias Cotoami.Amishi
   alias Cotoami.Coto
@@ -34,5 +35,18 @@ defmodule Cotoami.CotonomaServiceTest do
            } = cotonoma_coto
 
     assert String.length(key) == 16
+  end
+
+  describe "when there is a cotonoma" do
+    setup ~M{amishi} do
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
+      ~M{cotonoma}
+    end
+
+    test "get_accessible_by_key_or_name", ~M{amishi, cotonoma} do
+      assert CotonomaService.get_accessible_by_key_or_name("no-such-cotonoma", amishi) == nil
+      assert CotonomaService.get_accessible_by_key_or_name("test", amishi).id == cotonoma.id
+      assert CotonomaService.get_accessible_by_key_or_name(cotonoma.key, amishi).id == cotonoma.id
+    end
   end
 end

@@ -121,7 +121,7 @@ defmodule Cotoami.CotonomaService do
       get_by_name(key_or_name, amishi)
     end
   rescue
-    _ in Ecto.NoResultsError -> get_by_name(key_or_name, amishi)
+    _ in Cotoami.Exceptions.NotFound -> get_by_name(key_or_name, amishi)
   end
 
   def all_by_ids(ids) do
