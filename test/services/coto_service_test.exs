@@ -23,7 +23,7 @@ defmodule Cotoami.CotoServiceTest do
     assert %Coto{content: ""} = CotoService.get(coto.id)
   end
 
-  describe "when there is a coto" do
+  describe "when there is a coto in home" do
     setup ~M{amishi} do
       coto = Fixtures.create_coto!("hello", amishi)
       ~M{coto}
@@ -33,7 +33,7 @@ defmodule Cotoami.CotoServiceTest do
       assert %Coto{content: "hello"} = CotoService.get(coto.id)
     end
 
-    test "reposting it to another cotonoma", ~M{amishi, coto} do
+    test "reposting it to a cotonoma", ~M{amishi, coto} do
       cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
       %Cotonoma{id: cotonoma_id} = cotonoma
 
@@ -76,7 +76,43 @@ defmodule Cotoami.CotoServiceTest do
     end
   end
 
-  describe "when there are various cotos" do
+  describe "when there is a coto in a cotonoma" do
+    setup ~M{amishi} do
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
+      coto = Fixtures.create_coto!("hello", amishi, cotonoma)
+      ~M{cotonoma, coto}
+    end
+
+    test "deleting the only coto should reset the last_post_timestamp to nil",
+         ~M{amishi, cotonoma, coto} do
+      CotoService.delete!(coto.id, amishi)
+      cotonoma = Repo.get!(Cotonoma, cotonoma.id)
+      assert cotonoma.last_post_timestamp == nil
+    end
+  end
+
+  describe "when there are cotos in a cotonoma" do
+    setup ~M{amishi} do
+      cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
+      coto1 = Fixtures.create_coto!("coto1", amishi, cotonoma)
+      coto2 = Fixtures.create_coto!("coto2", amishi, cotonoma)
+      coto3 = Fixtures.create_coto!("coto3", amishi, cotonoma)
+      ~M{cotonoma, coto1, coto2, coto3}
+    end
+
+    test "deleting the last coto should update the last_post_timestamp to the previous one",
+         ~M{amishi, cotonoma, coto2, coto3} do
+      cotonoma = Repo.get!(Cotonoma, cotonoma.id)
+      assert cotonoma.last_post_timestamp == coto3.inserted_at
+
+      CotoService.delete!(coto3.id, amishi)
+
+      cotonoma = Repo.get!(Cotonoma, cotonoma.id)
+      assert cotonoma.last_post_timestamp == coto2.inserted_at
+    end
+  end
+
+  describe "when there are cotos by an amishi" do
     setup ~M{conn, amishi} do
       cotonoma = Fixtures.create_cotonoma!("test", false, amishi)
 
@@ -90,7 +126,7 @@ defmodule Cotoami.CotoServiceTest do
       ~M{cotonoma, coto1, coto2, coto3, coto4}
     end
 
-    test "all_by_amishi should return all by default", ~M{amishi} do
+    test "all_by_amishi", ~M{amishi} do
       assert [
                %Coto{content: "coto4"},
                %Coto{content: "coto3"},

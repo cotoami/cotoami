@@ -160,6 +160,31 @@ defmodule Cotoami.CotonomaService do
     |> Cotonoma.copy_associations(cotonoma)
   end
 
+  def update_on_delete(
+        %Cotonoma{id: cotonoma_id} = cotonoma,
+        %Coto{inserted_at: coto_inserted_at}
+      ) do
+    # last_post_timestamp should be updated if the deleted coto is the last post.
+    last_post_timestamp =
+      case DateTime.compare(coto_inserted_at, cotonoma.last_post_timestamp) do
+        :lt ->
+          cotonoma.last_post_timestamp
+
+        _ ->
+          from(c in Coto,
+            where: c.posted_in_id == ^cotonoma_id,
+            select: max(c.inserted_at)
+          )
+          |> Repo.one()
+      end
+
+    cotonoma
+    |> change(last_post_timestamp: last_post_timestamp)
+    |> change(timeline_revision: cotonoma.timeline_revision + 1)
+    |> Repo.update!()
+    |> Cotonoma.copy_associations(cotonoma)
+  end
+
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)

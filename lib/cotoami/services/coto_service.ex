@@ -350,7 +350,15 @@ defmodule Cotoami.CotoService do
         Repo.delete!(coto)
         CotoGraphService.delete_coto(Bolt.Sips.conn(), id)
 
-        %{coto | repost: repost}
+        %{
+          coto
+          | repost: repost,
+            posted_in:
+              case coto.posted_in do
+                nil -> nil
+                posted_in -> CotonomaService.update_on_delete(posted_in, coto)
+              end
+        }
       end)
 
     coto
