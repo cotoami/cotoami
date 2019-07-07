@@ -2,13 +2,17 @@ defmodule CotoamiWeb.CotonomaView do
   use CotoamiWeb, :view
   alias CotoamiWeb.{CotonomaView, CotoView, AmishiView}
 
-  def render("index.json", %{
-        global: global_cotonomas,
-        recent: recent_cotonomas
-      }) do
+  def render("index.json", %{global: global_cotonomas, recent: recent_cotonomas}) do
     %{
       global: render_many(global_cotonomas, __MODULE__, "cotonoma_holder.json"),
       recent: render_many(recent_cotonomas, __MODULE__, "cotonoma_holder.json")
+    }
+  end
+
+  def render("super_and_sub.json", %{super: super_cotonomas, sub: sub_cotonomas}) do
+    %{
+      super: render_many(super_cotonomas, __MODULE__, "cotonoma_holder.json"),
+      sub: render_many(sub_cotonomas, __MODULE__, "cotonoma_holder.json")
     }
   end
 
@@ -69,13 +73,9 @@ defmodule CotoamiWeb.CotonomaView do
     }
   end
 
-  def render(
-        "cotos.json",
-        %{cotonoma: cotonoma, super_cotonomas: super_cotonomas} = paginated_cotos
-      ) do
+  def render("cotos.json", %{cotonoma: cotonoma} = paginated_cotos) do
     %{
       cotonoma: render_one(cotonoma, __MODULE__, "cotonoma_holder.json"),
-      super_cotonomas: render_many(super_cotonomas, __MODULE__, "cotonoma_holder.json"),
       paginated_cotos: render(CotoView, "paginated_cotos.json", paginated_cotos)
     }
   end

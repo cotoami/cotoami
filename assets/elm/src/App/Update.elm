@@ -193,11 +193,8 @@ update msg model =
         HomePostsFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomaPostsFetched (Ok ( cotonoma, superCotonomas, paginatedPosts )) ->
-            { model
-                | superCotonomas = superCotonomas
-                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
-            }
+        CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
+            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
                 |> App.Submodels.NarrowViewport.closeNav
                 |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
@@ -205,7 +202,7 @@ update msg model =
                     (\model ->
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
-                            , App.Server.Cotonoma.fetchSubCotonomas model
+                            , App.Server.Cotonoma.fetchSuperAndSubCotonomas model
                             , App.Server.Watch.fetchWatchlist
                                 (WatchlistOnCotonomaLoad cotonoma.cotonoma)
                             ]
@@ -225,10 +222,11 @@ update msg model =
         CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } |> withoutCmd
 
-        SubCotonomasFetched (Ok cotonomas) ->
-            { model | subCotonomas = cotonomas } |> withoutCmd
+        SuperAndSubCotonomasFetched (Ok ( super, sub )) ->
+            { model | superCotonomas = super, subCotonomas = sub }
+                |> withoutCmd
 
-        SubCotonomasFetched (Err _) ->
+        SuperAndSubCotonomasFetched (Err _) ->
             model |> withoutCmd
 
         GraphFetched (Ok graph) ->

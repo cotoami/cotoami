@@ -20,9 +20,12 @@ defmodule CotoamiWeb.CotonomaController do
     })
   end
 
-  def sub(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
-    render(conn, "cotonoma_holders.json", %{
-      cotonomas: RichCotonomaService.sub_cotonomas(cotonoma_id, amishi)
+  def super_and_sub(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
+    cotonoma = CotonomaService.get_accessible!(cotonoma_id, amishi)
+
+    render(conn, "super_and_sub.json", %{
+      super: RichCotonomaService.super_cotonomas(cotonoma, amishi),
+      sub: RichCotonomaService.sub_cotonomas(cotonoma.id, amishi)
     })
   end
 
@@ -82,14 +85,12 @@ defmodule CotoamiWeb.CotonomaController do
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
     cotonoma = RichCotonomaService.get_accessible_by_key!(key, amishi)
-    super_cotonomas = RichCotonomaService.super_cotonomas(cotonoma, amishi)
     page_index = String.to_integer(page)
     options = get_flags_in_params(params, @cotos_options)
 
     paginated_cotos =
       CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
       |> Map.put(:cotonoma, cotonoma)
-      |> Map.put(:super_cotonomas, super_cotonomas)
 
     render(conn, "cotos.json", paginated_cotos)
   end
