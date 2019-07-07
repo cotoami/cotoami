@@ -291,14 +291,13 @@ defmodule Cotoami.CotoService do
   end
 
   def update!(id, %{"content" => _, "shared" => shared} = params, %Amishi{id: amishi_id} = amishi) do
-    Coto
-    |> Coto.for_amishi(amishi_id)
-    |> Repo.get!(id)
-    |> Coto.changeset_to_update(params)
-    |> Repo.update!()
-
-    # updated struct with the relations
-    coto = get(id)
+    coto =
+      Coto
+      |> Coto.for_amishi(amishi_id)
+      |> Repo.get!(id)
+      |> Coto.changeset_to_update(params)
+      |> Repo.update!()
+      |> complement(amishi)
 
     cotonoma =
       if coto.as_cotonoma do
@@ -312,8 +311,7 @@ defmodule Cotoami.CotoService do
 
     CotoGraphService.sync(Bolt.Sips.conn(), coto)
 
-    %{coto | posted_in: Repo.preload(coto.posted_in, :owner), cotonoma: cotonoma}
-    |> complement_amishi(amishi)
+    %{coto | cotonoma: cotonoma}
   end
 
   def delete!(id, %Amishi{} = amishi) do
