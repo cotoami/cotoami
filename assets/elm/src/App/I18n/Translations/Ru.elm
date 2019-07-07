@@ -292,8 +292,8 @@ text key =
         RepostModal_Title ->
             "Repost"
 
-        RepostModal_CotonomaName ->
-            "Название темы"
+        RepostModal_CotonomaKeyOrName ->
+            "Cotonoma name or ID"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

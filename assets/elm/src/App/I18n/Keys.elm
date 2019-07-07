@@ -95,7 +95,7 @@ type TextKey
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
     | RepostModal_Title
-    | RepostModal_CotonomaName
+    | RepostModal_CotonomaKeyOrName
     | CotoSelection_CotosSelected Int
     | CotoSelection_PinAsGroup
     | Reorder_CloseReorderMode

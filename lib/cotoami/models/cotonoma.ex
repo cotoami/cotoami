@@ -9,7 +9,6 @@ defmodule Cotoami.Cotonoma do
   import Cotoami.Helpers
   alias Cotoami.{Amishi, Cotonoma}
 
-  @key_length 10
   @name_max_length 50
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -87,12 +86,16 @@ defmodule Cotoami.Cotonoma do
   end
 
   defp generate_key(changeset) do
+    # key length = 10 * 1.6
     key =
-      @key_length
-      |> :crypto.strong_rand_bytes()
+      :crypto.strong_rand_bytes(10)
       |> Base.hex_encode32(case: :lower)
 
     changeset |> put_change(:key, key)
+  end
+
+  def is_possibly_key(string) do
+    String.length(string) == 16
   end
 
   def in_cotonoma(query, cotonoma_id) do

@@ -81,6 +81,7 @@ defmodule CotoamiWeb.Router do
     get("/cotonomas/:key/stats", CotonomaController, :stats)
     get("/cotonomas/name/:name", CotonomaController, :get)
     put("/cotonomas/name/:name", CotonomaController, :get_or_create)
+    get("/cotonomas/key-or-name/:key_or_name", CotonomaController, :get)
     get("/cotonomas/suggestions/:query", CotonomaController, :suggest)
 
     get("/watchlist", WatchController, :index)

@@ -6,7 +6,8 @@ module App.Server.Post exposing
     , fetchRandomPosts
     , post
     , postCotonoma
-    , repost
+    , repostByCotonomaKey
+    , repostByCotonomaName
     , search
     )
 
@@ -173,15 +174,38 @@ encodePost maybeCotonoma post =
         ]
 
 
-repost : ClientId -> (Result Http.Error Post -> msg) -> String -> CotoId -> Cmd msg
-repost clientId tag cotonomaName cotoId =
-    let
-        url =
-            "/api/cotos/" ++ cotoId ++ "/repost"
+repostUrl : CotoId -> String
+repostUrl cotoId =
+    "/api/cotos/" ++ cotoId ++ "/repost"
 
+
+repostByCotonomaKey :
+    ClientId
+    -> (Result Http.Error Post -> msg)
+    -> CotonomaKey
+    -> CotoId
+    -> Cmd msg
+repostByCotonomaKey clientId tag cotonomaKey cotoId =
+    let
+        body =
+            Encode.object [ ( "cotonoma_key", Encode.string cotonomaKey ) ]
+                |> Http.jsonBody
+    in
+    Utils.HttpUtil.httpPut (repostUrl cotoId) clientId body decodePost
+        |> Http.send tag
+
+
+repostByCotonomaName :
+    ClientId
+    -> (Result Http.Error Post -> msg)
+    -> String
+    -> CotoId
+    -> Cmd msg
+repostByCotonomaName clientId tag cotonomaName cotoId =
+    let
         body =
             Encode.object [ ( "cotonoma_name", Encode.string cotonomaName ) ]
                 |> Http.jsonBody
     in
-    Utils.HttpUtil.httpPut url clientId body decodePost
+    Utils.HttpUtil.httpPut (repostUrl cotoId) clientId body decodePost
         |> Http.send tag

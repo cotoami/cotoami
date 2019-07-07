@@ -290,8 +290,8 @@ modals model =
                         |> Maybe.map (App.Modals.ConnectionModal.view model)
                         |> Maybe.withDefault Utils.HtmlUtil.none
 
-                ( RepostModal, _ ) ->
-                    App.Modals.RepostModal.view model model.repostModal
+                ( RepostModal, Just session ) ->
+                    App.Modals.RepostModal.view model session model.repostModal
 
                 ( ImportModal, _ ) ->
                     model.importModal

@@ -114,6 +114,16 @@ defmodule Cotoami.CotonomaService do
     |> Repo.get_by(name: name, owner_id: amishi_id)
   end
 
+  def get_accessible_by_key_or_name(key_or_name, %Amishi{} = amishi) do
+    if Cotonoma.is_possibly_key(key_or_name) do
+      get_accessible_by_key!(key_or_name, amishi)
+    else
+      get_by_name(key_or_name, amishi)
+    end
+  rescue
+    _ in Cotoami.Exceptions.NotFound -> get_by_name(key_or_name, amishi)
+  end
+
   def all_by_ids(ids) do
     from(c in Cotonoma, where: c.id in ^ids)
     |> preload([:coto, :owner])

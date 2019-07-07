@@ -3,6 +3,7 @@ module App.Server.Cotonoma exposing
     , decodeCotonomaHolder
     , decodeStats
     , encodeCotonoma
+    , fetchCotonomaByKeyOrName
     , fetchCotonomaByName
     , fetchCotonomas
     , fetchStats
@@ -48,6 +49,12 @@ decodeCotonomaHolder =
 fetchCotonomaByName : (Result Http.Error Cotonoma -> msg) -> String -> Cmd msg
 fetchCotonomaByName tag name =
     Http.get ("/api/cotonomas/name/" ++ name) decodeCotonoma
+        |> Http.send tag
+
+
+fetchCotonomaByKeyOrName : (Result Http.Error Cotonoma -> msg) -> String -> Cmd msg
+fetchCotonomaByKeyOrName tag keyOrName =
+    Http.get ("/api/cotonomas/key-or-name/" ++ keyOrName) decodeCotonoma
         |> Http.send tag
 
 

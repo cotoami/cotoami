@@ -62,7 +62,7 @@ defmodule CotoamiWeb.CotoController do
   end
 
   def repost(conn, %{"id" => id} = params, amishi) do
-    coto = Repo.get!(Coto, id)
+    coto = CotoService.get!(id)
     cotonoma = get_cotonoma_if_specified!(params, amishi)
 
     repost =
