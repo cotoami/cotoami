@@ -61,7 +61,7 @@ defmodule Cotoami.RichCotonomaService do
 
   def super_cotonomas(%Cotonoma{coto: coto}, %Amishi{} = amishi) do
     super_cotonoma_ids =
-      [coto.posted_in | Enum.reverse(coto.reposted_in_ids)]
+      [coto.posted_in_id | Enum.reverse(coto.reposted_in_ids)]
       |> Enum.filter(& &1)
 
     super_cotonomas = map_by_ids(super_cotonoma_ids, amishi)

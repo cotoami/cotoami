@@ -82,8 +82,9 @@ fetchCotonomaPosts pageIndex filter key =
                 ++ filterAsQueryString filter
 
         decodeResponse =
-            Decode.map2 (,)
+            Decode.map3 (,,)
                 (Decode.field "cotonoma" App.Server.Cotonoma.decodeCotonomaHolder)
+                (Decode.field "super_cotonomas" (list App.Server.Cotonoma.decodeCotonomaHolder))
                 (Decode.field "paginated_cotos"
                     (App.Server.Pagination.decodePaginatedList decodePost)
                 )
