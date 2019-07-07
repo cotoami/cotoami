@@ -377,12 +377,10 @@ update msg model =
         CotoUpdated (Ok coto) ->
             model
                 |> App.Submodels.LocalCotos.updateCoto coto
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.asCotonoma
                 |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.postedIn
                 |> App.Submodels.Modals.clearModals
-                |> withCmdIf
-                    (\_ -> isJust coto.asCotonoma)
-                    App.Server.Cotonoma.refreshCotonomaList
-                |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoUpdated (Err error) ->
             model.editorModal

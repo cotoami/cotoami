@@ -122,21 +122,30 @@ updateCoto coto model =
     }
 
 
+updateCurrentCotonomaContent : Cotonoma -> LocalCotos model -> LocalCotos model
+updateCurrentCotonomaContent cotonoma ({ cotonomaHolder } as model) =
+    if Maybe.map .id model.cotonoma == Just cotonoma.id then
+        { model
+            | cotonoma = Just cotonoma
+            , cotonomaHolder =
+                cotonomaHolder
+                    |> Maybe.map (\holder -> { holder | cotonoma = cotonoma })
+        }
+
+    else
+        model
+
+
 updateCotonoma : Cotonoma -> LocalCotos model -> LocalCotos model
 updateCotonoma cotonoma model =
     { model
-        | cotonoma =
-            if Maybe.map .id model.cotonoma == Just cotonoma.id then
-                Just cotonoma
-
-            else
-                model.cotonoma
-        , globalCotonomas = updateCotonomaInList cotonoma model.globalCotonomas
+        | globalCotonomas = updateCotonomaInList cotonoma model.globalCotonomas
         , recentCotonomas = updateCotonomaInList cotonoma model.recentCotonomas
         , superCotonomas = updateCotonomaInList cotonoma model.superCotonomas
         , subCotonomas = updateCotonomaInList cotonoma model.subCotonomas
         , watchlist = App.Types.Watch.updateCotonomaInWatchlist cotonoma model.watchlist
     }
+        |> updateCurrentCotonomaContent cotonoma
 
 
 updateCotonomaMaybe : Maybe Cotonoma -> LocalCotos model -> LocalCotos model
