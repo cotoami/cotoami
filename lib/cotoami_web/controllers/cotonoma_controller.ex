@@ -82,12 +82,14 @@ defmodule CotoamiWeb.CotonomaController do
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
     cotonoma = RichCotonomaService.get_accessible_by_key!(key, amishi)
+    super_cotonomas = RichCotonomaService.super_cotonomas(cotonoma, amishi)
     page_index = String.to_integer(page)
     options = get_flags_in_params(params, @cotos_options)
 
     paginated_cotos =
       CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
       |> Map.put(:cotonoma, cotonoma)
+      |> Map.put(:super_cotonomas, super_cotonomas)
 
     render(conn, "cotos.json", paginated_cotos)
   end
