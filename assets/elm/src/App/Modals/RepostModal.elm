@@ -61,14 +61,24 @@ isRepostable context model =
         cotonomaName =
             getCotonomaName model
 
-        existingNames =
-            model.coto.repostedIn
-                |> List.map (\cotonoma -> Just cotonoma.name)
-                |> (::) (Maybe.map .name model.coto.postedIn)
-                |> List.filterMap identity
+        alreadyPostedIn =
+            model.coto.postedIn
+                |> Maybe.map (\postedIn -> postedIn :: model.coto.repostedIn)
+                |> Maybe.withDefault model.coto.repostedIn
+
+        alreadyPostedInIds =
+            List.map .id alreadyPostedIn
+
+        alreadyPostedInNames =
+            List.map .name alreadyPostedIn
     in
-    Utils.StringUtil.isNotBlank cotonomaName
-        && not (List.member cotonomaName existingNames)
+    if Utils.StringUtil.isBlank cotonomaName then
+        False
+
+    else
+        model.cotonoma
+            |> Maybe.map (\cotonoma -> not (List.member cotonoma.id alreadyPostedInIds))
+            |> Maybe.withDefault (not (List.member cotonomaName alreadyPostedInNames))
 
 
 view : Context context -> Model -> Html AppMsg.Msg
