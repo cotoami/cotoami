@@ -9,6 +9,7 @@ module App.Types.Coto exposing
     , ElementId
     , addIncomings
     , addOutgoings
+    , allPostedInCotonomas
     , checkWritePermission
     , cotonomaNameMaxlength
     , decrementIncoming
@@ -228,6 +229,21 @@ type alias Cotonoma =
     }
 
 
+cotonomaNameMaxlength : Int
+cotonomaNameMaxlength =
+    50
+
+
+validateCotonomaName : String -> Bool
+validateCotonomaName string =
+    not (isBlank string) && String.length string <= cotonomaNameMaxlength
+
+
+revisedBefore : Cotonoma -> Bool
+revisedBefore cotonoma =
+    (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
+
+
 type alias CotonomaHolder =
     { cotonoma : Cotonoma
     , postedIn : Maybe Cotonoma
@@ -248,21 +264,6 @@ toCoto { cotonoma, postedIn, repostedIn } =
     , incomings = Nothing
     , outgoings = Nothing
     }
-
-
-cotonomaNameMaxlength : Int
-cotonomaNameMaxlength =
-    50
-
-
-validateCotonomaName : String -> Bool
-validateCotonomaName string =
-    not (isBlank string) && String.length string <= cotonomaNameMaxlength
-
-
-revisedBefore : Cotonoma -> Bool
-revisedBefore cotonoma =
-    (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
 
 
 getCotoFromCotonomaHolders : CotoId -> List CotonomaHolder -> Maybe Coto
@@ -300,6 +301,13 @@ type alias CotonomaPostable postable =
     }
 
 
+allPostedInCotonomas : CotonomaPostable postable -> List Cotonoma
+allPostedInCotonomas postable =
+    postable.postedIn
+        |> Maybe.map (\postedIn -> postedIn :: List.reverse postable.repostedIn)
+        |> Maybe.withDefault postable.repostedIn
+
+
 postedInAnyCotonoma : CotonomaPostable postable -> Bool
 postedInAnyCotonoma postable =
-    isJust postable.postedIn || not (List.isEmpty postable.repostedIn)
+    not <| List.isEmpty <| allPostedInCotonomas postable

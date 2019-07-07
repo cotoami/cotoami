@@ -7,7 +7,7 @@ module App.Server.Cotonoma exposing
     , fetchCotonomaByName
     , fetchCotonomas
     , fetchStats
-    , fetchSubCotonomas
+    , fetchSuperAndSubCotonomas
     , refreshCotonomaList
     )
 
@@ -70,14 +70,20 @@ fetchCotonomas =
         |> Http.send CotonomasFetched
 
 
-fetchSubCotonomas : Context context -> Cmd Msg
-fetchSubCotonomas context =
+fetchSuperAndSubCotonomas : Context context -> Cmd Msg
+fetchSuperAndSubCotonomas context =
+    let
+        decodeResponse =
+            Decode.map2 (,)
+                (Decode.field "super" (Decode.list decodeCotonomaHolder))
+                (Decode.field "sub" (Decode.list decodeCotonomaHolder))
+    in
     context.cotonoma
         |> Maybe.map
             (\cotonoma ->
-                Decode.list decodeCotonomaHolder
-                    |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/cotonomas")
-                    |> Http.send SubCotonomasFetched
+                decodeResponse
+                    |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/super-and-sub")
+                    |> Http.send SuperAndSubCotonomasFetched
             )
         |> Maybe.withDefault Cmd.none
 
@@ -117,5 +123,5 @@ refreshCotonomaList : Context a -> Cmd Msg
 refreshCotonomaList context =
     Cmd.batch
         [ fetchCotonomas
-        , fetchSubCotonomas context
+        , fetchSuperAndSubCotonomas context
         ]

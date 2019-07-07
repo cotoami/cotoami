@@ -43,6 +43,7 @@ type alias LocalCotos a =
         , loadingGraph : Bool
         , globalCotonomas : List CotonomaHolder
         , recentCotonomas : List CotonomaHolder
+        , superCotonomas : List CotonomaHolder
         , subCotonomas : List CotonomaHolder
         , cotonomasLoading : Bool
         , watchlist : List Watch
@@ -61,6 +62,7 @@ getCoto cotoId model =
         , App.Types.SearchResults.getCoto cotoId model.searchResults
         , App.Types.Coto.getCotoFromCotonomaHolders cotoId model.globalCotonomas
         , App.Types.Coto.getCotoFromCotonomaHolders cotoId model.recentCotonomas
+        , App.Types.Coto.getCotoFromCotonomaHolders cotoId model.superCotonomas
         , App.Types.Coto.getCotoFromCotonomaHolders cotoId model.subCotonomas
         , model.watchlist
             |> List.map .cotonomaHolder
@@ -131,6 +133,7 @@ updateCotonoma cotonoma model =
                 model.cotonoma
         , globalCotonomas = updateCotonomaInList cotonoma model.globalCotonomas
         , recentCotonomas = updateCotonomaInList cotonoma model.recentCotonomas
+        , superCotonomas = updateCotonomaInList cotonoma model.superCotonomas
         , subCotonomas = updateCotonomaInList cotonoma model.subCotonomas
         , watchlist = App.Types.Watch.updateCotonomaInWatchlist cotonoma model.watchlist
     }

@@ -59,7 +59,7 @@ type Msg
     | HomePostsFetched (Result Http.Error (PaginatedList Post))
     | CotonomaPostsFetched (Result Http.Error ( CotonomaHolder, PaginatedList Post ))
     | CotonomasFetched (Result Http.Error ( List CotonomaHolder, List CotonomaHolder ))
-    | SubCotonomasFetched (Result Http.Error (List CotonomaHolder))
+    | SuperAndSubCotonomasFetched (Result Http.Error ( List CotonomaHolder, List CotonomaHolder ))
     | GraphFetched (Result Http.Error Graph)
     | LoadSubgraph CotonomaKey
     | SubgraphFetched CotonomaKey (Result Http.Error Graph)

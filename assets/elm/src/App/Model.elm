@@ -66,6 +66,7 @@ type alias Model =
     , globalCotonomas : List CotonomaHolder
     , recentCotonomas : List CotonomaHolder
     , cotonomasLoading : Bool
+    , superCotonomas : List CotonomaHolder
     , subCotonomas : List CotonomaHolder
     , watchlist : List Watch
     , watchlistLoading : Bool
@@ -118,6 +119,7 @@ initModel version seed lang route =
     , globalCotonomas = []
     , recentCotonomas = []
     , cotonomasLoading = False
+    , superCotonomas = []
     , subCotonomas = []
     , watchlist = []
     , watchlistLoading = False

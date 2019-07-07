@@ -59,6 +59,19 @@ defmodule Cotoami.RichCotonomaService do
     end
   end
 
+  def super_cotonomas(%Cotonoma{coto: coto}, %Amishi{} = amishi) do
+    super_cotonoma_ids =
+      [coto.posted_in_id | Enum.reverse(coto.reposted_in_ids)]
+      |> Enum.filter(& &1)
+
+    super_cotonomas = map_by_ids(super_cotonoma_ids, amishi)
+
+    super_cotonoma_ids
+    |> Enum.map(&super_cotonomas[&1])
+    |> Enum.filter(& &1)
+    |> Enum.filter(&Cotonoma.accessible_by?(&1, amishi))
+  end
+
   defp global_cotonomas_holder do
     :cotoami
     |> Application.get_env(__MODULE__, [])

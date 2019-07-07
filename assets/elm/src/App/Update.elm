@@ -181,7 +181,10 @@ update msg model =
                     model |> withoutCmd
 
         HomePostsFetched (Ok paginatedPosts) ->
-            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
+            { model
+                | superCotonomas = []
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
+            }
                 |> App.Submodels.Context.setCotonoma Nothing
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
@@ -190,18 +193,18 @@ update msg model =
         HomePostsFetched (Err _) ->
             model |> withoutCmd
 
-        CotonomaPostsFetched (Ok ( cotonomaHolder, paginatedPosts )) ->
+        CotonomaPostsFetched (Ok ( cotonoma, paginatedPosts )) ->
             { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
                 |> App.Submodels.NarrowViewport.closeNav
-                |> App.Submodels.Context.setCotonoma (Just cotonomaHolder)
+                |> App.Submodels.Context.setCotonoma (Just cotonoma)
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
                     (\model ->
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
-                            , App.Server.Cotonoma.fetchSubCotonomas model
+                            , App.Server.Cotonoma.fetchSuperAndSubCotonomas model
                             , App.Server.Watch.fetchWatchlist
-                                (WatchlistOnCotonomaLoad cotonomaHolder.cotonoma)
+                                (WatchlistOnCotonomaLoad cotonoma.cotonoma)
                             ]
                     )
 
@@ -219,10 +222,11 @@ update msg model =
         CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } |> withoutCmd
 
-        SubCotonomasFetched (Ok cotonomas) ->
-            { model | subCotonomas = cotonomas } |> withoutCmd
+        SuperAndSubCotonomasFetched (Ok ( super, sub )) ->
+            { model | superCotonomas = super, subCotonomas = sub }
+                |> withoutCmd
 
-        SubCotonomasFetched (Err _) ->
+        SuperAndSubCotonomasFetched (Err _) ->
             model |> withoutCmd
 
         GraphFetched (Ok graph) ->
@@ -727,6 +731,7 @@ loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model
         | cotonomasLoading = True
+        , superCotonomas = []
         , subCotonomas = []
         , timeline = App.Types.Timeline.setInitializing model.timeline
         , graph = App.Types.Graph.defaultGraph

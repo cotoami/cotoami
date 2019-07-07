@@ -21,4 +21,9 @@ defmodule Cotoami.Fixtures do
     %Coto{cotonoma: cotonoma} = CotonomaService.create!(name, shared, amishi)
     cotonoma
   end
+
+  def create_cotonoma!(name, shared, amishi, cotonoma) do
+    %Coto{cotonoma: cotonoma} = CotonomaService.create!(name, shared, amishi, cotonoma)
+    cotonoma
+  end
 end
