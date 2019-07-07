@@ -14,6 +14,7 @@ import App.Server.Post
 import App.Submodels.Context exposing (Context)
 import App.Submodels.LocalCotos exposing (LocalCotos)
 import App.Types.Coto exposing (Coto, Cotonoma)
+import App.Types.Session exposing (Session)
 import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -81,15 +82,15 @@ isRepostable context model =
             |> Maybe.withDefault (not (List.member cotonomaName alreadyPostedInNames))
 
 
-view : Context context -> Model -> Html AppMsg.Msg
-view context model =
+view : Context context -> Session -> Model -> Html AppMsg.Msg
+view context session model =
     model
-        |> modalConfig context
+        |> modalConfig context session
         |> Utils.Modal.view "repost-modal"
 
 
-modalConfig : Context context -> Model -> Utils.Modal.Config AppMsg.Msg
-modalConfig context model =
+modalConfig : Context context -> Session -> Model -> Utils.Modal.Config AppMsg.Msg
+modalConfig context session model =
     { closeMessage = AppMsg.CloseModal
     , title = text (context.i18nText I18nKeys.RepostModal_Title)
     , content =
@@ -103,7 +104,7 @@ modalConfig context model =
                         , ( "blank", Utils.StringUtil.isBlank model.cotonomaKeyOrName )
                         ]
                     ]
-                    [ cotonomaNameStatusSpan model
+                    [ cotonomaInputStatusSpan model
                     , input
                         [ type_ "text"
                         , class "cotonoma-key-or-name u-full-width"
@@ -126,6 +127,17 @@ modalConfig context model =
                         [ materialIcon "repeat" Nothing ]
                     ]
                 ]
+            , model.cotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        if String.trim model.cotonomaKeyOrName /= cotonoma.name then
+                            div [ class "cotonoma-name-display" ]
+                                [ div [ class "cotonoma-name" ] [ text cotonoma.name ] ]
+
+                        else
+                            Utils.HtmlUtil.none
+                    )
+                |> Maybe.withDefault Utils.HtmlUtil.none
             , if model.requestProcessing then
                 div [ class "reposting" ] [ Utils.HtmlUtil.loadingHorizontalImg ]
 
@@ -148,8 +160,8 @@ modalConfig context model =
     }
 
 
-cotonomaNameStatusSpan : Model -> Html AppMsg.Msg
-cotonomaNameStatusSpan model =
+cotonomaInputStatusSpan : Model -> Html AppMsg.Msg
+cotonomaInputStatusSpan model =
     span [ class "status" ]
         [ model.cotonoma
             |> Maybe.map cotonomaOwnerImg
@@ -214,6 +226,7 @@ update context msg ({ repostModal } as model) =
                     { repostModal
                         | coto = Maybe.withDefault repostModal.coto post.repost
                         , cotonomaKeyOrName = ""
+                        , cotonoma = Nothing
                         , requestProcessing = False
                     }
 

@@ -69,6 +69,51 @@
     }
   }
 
+  div.cotonoma-name-display  {
+    margin-bottom: 1rem;
+
+    div.cotonoma-name {
+      display: inline-block;
+      margin-left: 30px;
+      padding: 3px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: 10px;
+        top: -50px;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid #ddd;
+        border-right: 10px solid transparent;
+        border-left: 10px solid transparent;
+      }
+    
+      &::after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: 10px;
+        top: -48px;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid #fff;
+        border-right: 10px solid transparent;
+        border-left: 10px solid transparent;
+      }
+    }
+  }
+
   div.reposting {
     margin-top: 4px;
     text-align: center;
