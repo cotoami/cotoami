@@ -68,7 +68,16 @@ homeNav model =
 
 currentCotonomaNav : ViewModel model -> CotonomaHolder -> Html Msg
 currentCotonomaNav model cotonomaHolder =
-    div [ class "current-cotonoma" ]
+    let
+        postedInCotonomas =
+            App.Types.Coto.allPostedInCotonomas cotonomaHolder
+    in
+    div
+        [ classList
+            [ ( "current-cotonoma", True )
+            , ( "posted-in-other", not (List.isEmpty postedInCotonomas) )
+            ]
+        ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
         , App.Views.Cotonomas.cotonomaDiv
