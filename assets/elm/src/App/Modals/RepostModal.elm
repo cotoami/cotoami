@@ -26,8 +26,8 @@ import Utils.UpdateUtil exposing (..)
 
 type alias Model =
     { coto : Coto
-    , cotonomaName : String
-    , lastCheckRequestId : Int
+    , cotonomaKeyOrName : String
+    , lastFetchRequestId : Int
     , cotonoma : Maybe Cotonoma
     , requestProcessing : Bool
     }
@@ -36,8 +36,8 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { coto = App.Types.Coto.defaultCoto
-    , cotonomaName = ""
-    , lastCheckRequestId = 0
+    , cotonomaKeyOrName = ""
+    , lastFetchRequestId = 0
     , cotonoma = Nothing
     , requestProcessing = False
     }
@@ -48,11 +48,18 @@ initModel coto =
     { defaultModel | coto = coto }
 
 
-validateCotonomaName : Context context -> Model -> Bool
-validateCotonomaName context model =
+getCotonomaName : Model -> String
+getCotonomaName model =
+    model.cotonoma
+        |> Maybe.map .name
+        |> Maybe.withDefault (String.trim model.cotonomaKeyOrName)
+
+
+isRepostable : Context context -> Model -> Bool
+isRepostable context model =
     let
         cotonomaName =
-            String.trim model.cotonomaName
+            getCotonomaName model
 
         existingNames =
             model.coto.repostedIn
@@ -82,17 +89,17 @@ modalConfig context model =
             , div [ class "repost-form" ]
                 [ div
                     [ classList
-                        [ ( "cotonoma-name-input", True )
-                        , ( "blank", Utils.StringUtil.isBlank model.cotonomaName )
+                        [ ( "cotonoma-key-or-name-input", True )
+                        , ( "blank", Utils.StringUtil.isBlank model.cotonomaKeyOrName )
                         ]
                     ]
                     [ cotonomaNameStatusSpan model
                     , input
                         [ type_ "text"
-                        , class "cotonoma-name u-full-width"
-                        , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaName)
-                        , value model.cotonomaName
-                        , onInput (AppMsg.RepostModalMsg << CotonomaNameInput)
+                        , class "cotonoma-key-or-name u-full-width"
+                        , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaKeyOrName)
+                        , value model.cotonomaKeyOrName
+                        , onInput (AppMsg.RepostModalMsg << CotonomaKeyOrNameInput)
                         , disabled model.requestProcessing
                         ]
                         []
@@ -102,7 +109,7 @@ modalConfig context model =
                         [ title (context.i18nText I18nKeys.Repost)
                         , onClick (AppMsg.RepostModalMsg Repost)
                         , disabled
-                            (not (validateCotonomaName context model)
+                            (not (isRepostable context model)
                                 || model.requestProcessing
                             )
                         ]
@@ -154,30 +161,41 @@ type alias UpdateModel model =
 update : Context context -> ModalMsg.Msg -> UpdateModel model -> ( UpdateModel model, Cmd AppMsg.Msg )
 update context msg ({ repostModal } as model) =
     case msg of
-        CotonomaNameInput name ->
+        CotonomaKeyOrNameInput keyOrName ->
             let
                 requestId =
-                    repostModal.lastCheckRequestId + 1
+                    repostModal.lastFetchRequestId + 1
 
                 modal =
                     { repostModal
-                        | cotonomaName = name
-                        , lastCheckRequestId = requestId
+                        | cotonomaKeyOrName = keyOrName
+                        , lastFetchRequestId = requestId
                     }
             in
             ( { model | repostModal = modal }
-            , App.Server.Cotonoma.fetchCotonomaByName
+            , App.Server.Cotonoma.fetchCotonomaByKeyOrName
                 (AppMsg.RepostModalMsg << CotonomaFetched requestId)
-                (String.trim name)
+                (String.trim keyOrName)
             )
 
         Repost ->
             ( { model | repostModal = { repostModal | requestProcessing = True } }
-            , App.Server.Post.repost
-                context.clientId
-                (AppMsg.RepostModalMsg << Reposted)
-                (String.trim repostModal.cotonomaName)
-                repostModal.coto.id
+            , repostModal.cotonoma
+                |> Maybe.map
+                    (\cotonoma ->
+                        App.Server.Post.repostByCotonomaKey
+                            context.clientId
+                            (AppMsg.RepostModalMsg << Reposted)
+                            cotonoma.key
+                            repostModal.coto.id
+                    )
+                |> Maybe.withDefault
+                    (App.Server.Post.repostByCotonomaName
+                        context.clientId
+                        (AppMsg.RepostModalMsg << Reposted)
+                        (getCotonomaName repostModal)
+                        repostModal.coto.id
+                    )
             )
 
         Reposted (Ok post) ->
@@ -185,7 +203,7 @@ update context msg ({ repostModal } as model) =
                 modal =
                     { repostModal
                         | coto = Maybe.withDefault repostModal.coto post.repost
-                        , cotonomaName = ""
+                        , cotonomaKeyOrName = ""
                         , requestProcessing = False
                     }
 
@@ -203,7 +221,7 @@ update context msg ({ repostModal } as model) =
             model |> withoutCmd
 
         CotonomaFetched requestId (Ok cotonoma) ->
-            if repostModal.lastCheckRequestId == requestId then
+            if repostModal.lastFetchRequestId == requestId then
                 { model | repostModal = { repostModal | cotonoma = Just cotonoma } }
                     |> withoutCmd
 
@@ -211,7 +229,7 @@ update context msg ({ repostModal } as model) =
                 model |> withoutCmd
 
         CotonomaFetched requestId (Err _) ->
-            if repostModal.lastCheckRequestId == requestId then
+            if repostModal.lastFetchRequestId == requestId then
                 { model | repostModal = { repostModal | cotonoma = Nothing } }
                     |> withoutCmd
 

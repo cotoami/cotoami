@@ -6,7 +6,7 @@ import Http
 
 
 type Msg
-    = CotonomaNameInput String
+    = CotonomaKeyOrNameInput String
     | Repost
     | Reposted (Result Http.Error Post)
     | CotonomaFetched Int (Result Http.Error Cotonoma)
