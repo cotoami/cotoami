@@ -66,7 +66,7 @@ As you can see in the image above, Cotonomas are posted to a timeline like Cotos
 
 ### Separation of writing and connecting
 
-In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or nodes in outliner. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure. 
+In many cases of note-taking, writing and connecting things are happening at the same time. You put things into categories, which are represented as, for example, sections in a notebook, folders/directories on an operating system or nodes in outliner. You almost connect things unconsciously just following **Vertical Relationships**, which will be explained later, to make a tree structure.
 
 Cotoami also supports this way of organizing things, but its main aim is to separate writing and connecting to make the latter a more conscious step. For example, Cotoami has a random/shuffle feature to encourage you to observe a variety of Cotos to discover new connections.
 
@@ -93,7 +93,7 @@ Since the version 0.21.0, you can annotate connections. The term "Linking Phrase
 
 ![](https://user-images.githubusercontent.com/764015/53540799-4effe780-3b5a-11e9-8b3a-7dc463aecdc9.png)
 
-Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami. 
+Cotonomas (Cotonomatizing) and Linking Phrases are the most two important features so far in Cotoami.
 
 Why is the Linking Phrases feature so important? Concept mapping is a good way to demonstrate this feature, but an important difference is that Cotoami's linking phrases are optional. That means you should annotate only connections whose relationships are obscure to you. These obscure relationships are possibly valuable knowledge for you (since you didn't know them well before), and should be highlighted in your knowledge-base (that's why annotated connections are rendered so that they stand out). I personally call them **Horizontal Relationships**.
 
@@ -147,7 +147,7 @@ It may be slow to respond at first because it's run by Heroku free plan (which p
 * [Install Docker Desktop for Mac \| Docker Documentation](https://docs.docker.com/docker-for-mac/install/)
 * [Install Docker Desktop for Windows \| Docker Documentation](https://docs.docker.com/docker-for-windows/install/)
 
-The easiest way to launch your own Cotoami server is to use Docker. If you have a Docker environment running 
+The easiest way to launch your own Cotoami server is to use Docker. If you have a Docker environment running
 (`docker info` outputs some info), just one single command below will launch a whole environment, which contains an app server and several backend services, with default configuration:
 
 ```
@@ -178,6 +178,20 @@ $ docker volume inspect cotoami_postgres-data
 $ docker volume inspect cotoami_neo4j-data
 ```
 
+#### Cotoami Scraper
+
+To test Cotoami Scraper, you have to add
+
+```
+COTOAMI_ADDITIONAL_VALID_ORIGINS: chrome-extension://
+```
+
+to `/launch/docker-compose.yml` environment variables in the cotoami service. Then you can start Cotoami with
+
+```
+COMPOSE_PROJECT_NAME=cotoami COTOAMI_VERSION="v0.23.0" COTOAMI_HOST="127.0.0.1" docker-compose up -d
+```
+
 ### Official server
 
 Cotoami project also runs a fully-managed official server. You can get an account of it by becoming a patron at https://www.patreon.com/cotoami
@@ -206,7 +220,7 @@ On the "Create New App" page, set the app name and replace the highlighted value
     * Specify owner email addresses (comma separated).
 
 You should know the limitations of Cotoami on Heroku as described in: https://hexdocs.pm/phoenix/heroku.html#limitations
-    
+
 ### Obtain a SendGrid API key
 
 1. First, you need to get SendGrid's username and password by deploying an app (Click the "Deploy app" button in the Heroku site).
