@@ -34,6 +34,7 @@
     "braces": ">=2.3.1",
     "clean-css": ">=4.1.11",
     "lodash": ">=4.17.13",
+    "lodash.mergewith": ">=4.6.2",
     "stringstream": ">=0.0.6"
   }
 }
