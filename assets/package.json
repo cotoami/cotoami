@@ -32,6 +32,8 @@
     "tunnel-agent": ">=0.6.0",
     "sshpk": ">=1.13.2",
     "braces": ">=2.3.1",
-    "clean-css": ">=4.1.11"
+    "clean-css": ">=4.1.11",
+    "lodash": ">=4.17.13",
+    "stringstream": ">=0.0.6"
   }
 }
