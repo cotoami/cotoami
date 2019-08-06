@@ -178,20 +178,6 @@ $ docker volume inspect cotoami_postgres-data
 $ docker volume inspect cotoami_neo4j-data
 ```
 
-#### Cotoami Scraper
-
-To test Cotoami Scraper, you have to add
-
-```
-COTOAMI_ADDITIONAL_VALID_ORIGINS: chrome-extension://
-```
-
-to `/launch/docker-compose.yml` environment variables in the cotoami service. Then you can start Cotoami with
-
-```
-COMPOSE_PROJECT_NAME=cotoami COTOAMI_VERSION="v0.23.0" COTOAMI_HOST="127.0.0.1" docker-compose up -d
-```
-
 ### Official server
 
 Cotoami project also runs a fully-managed official server. You can get an account of it by becoming a patron at https://www.patreon.com/cotoami
