@@ -19,6 +19,7 @@ import App.Types.Coto exposing (Coto)
 import App.Types.Graph exposing (Graph)
 import App.Views.Amishi
 import App.Views.Connection
+import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -114,7 +115,7 @@ modalContent context model =
         , div
             [ class "start" ]
             [ span [ class "node-title" ] [ text "From:" ]
-            , App.Views.Connection.cotoDiv model.startCoto
+            , App.Views.Coto.simplifiedCotoDiv model.startCoto
             ]
         , App.Views.Connection.linkingPhraseInputDiv
             context
@@ -123,7 +124,7 @@ modalContent context model =
         , div
             [ class "end" ]
             [ span [ class "node-title" ] [ text "To:" ]
-            , App.Views.Connection.cotoDiv model.endCoto
+            , App.Views.Coto.simplifiedCotoDiv model.endCoto
             ]
         ]
 

@@ -194,7 +194,7 @@ cotoEditorConfig context model =
             , onClick (AppMsg.EditorModalMsg TogglePreview)
             ]
             [ if model.preview then
-                text (context.i18nText I18nKeys.EditorModal_Edit)
+                text (context.i18nText I18nKeys.Edit)
 
               else
                 text (context.i18nText I18nKeys.EditorModal_Preview)

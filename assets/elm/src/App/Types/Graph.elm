@@ -212,6 +212,7 @@ updateCotoContent coto graph =
                 | content = coto.content
                 , summary = coto.summary
                 , asCotonoma = coto.asCotonoma
+                , repostedIn = coto.repostedIn
             }
         )
         graph

@@ -21,11 +21,23 @@ text key =
         Posting ->
             "投稿中"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
+        Edit ->
+            "編輯"
+
         Save ->
             "保存"
 
         Saving ->
             "保存中"
+
+        Delete ->
+            "删除"
 
         Hide ->
             "Hide"
@@ -38,6 +50,9 @@ text key =
 
         ConfirmDeleteCoto ->
             "可以删除這件投稿嗎？"
+
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
 
         ConfirmUnpinCoto ->
             "可以摘下這個別針嗎？"
@@ -135,9 +150,6 @@ text key =
         EditorModal_Preview ->
             "預覽"
 
-        EditorModal_Edit ->
-            "編輯"
-
         EditorModal_CotonomaHelp ->
             "投稿室是具有專用的時間線和留帶的空間、在Cotoami裡面是資訊整理的組織的容器。"
                 ++ "要進行討論或收集新的主題的資訊的時候，建議創建新的投稿室。"
@@ -208,9 +220,6 @@ text key =
         CotoToolbar_Pin ->
             "用別針固定現在的投稿室"
 
-        CotoToolbar_Edit ->
-            "編輯"
-
         CotoToolbar_AddSubCoto ->
             "添加投稿的子项目"
 
@@ -244,17 +253,11 @@ text key =
         CotoMenuModal_UnpinFromCotonoma ->
             "摘下投稿室的别针"
 
-        CotoMenuModal_Edit ->
-            "編輯"
-
         CotoMenuModal_AddSubCoto ->
             "添加投稿的子项目"
 
         CotoMenuModal_Cotonomatize ->
             "陞級到投稿室"
-
-        CotoMenuModal_Delete ->
-            "删除"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"
@@ -288,6 +291,12 @@ text key =
 
         ConnectionModal_Disconnect ->
             "解除連接"
+
+        RepostModal_Title ->
+            "Repost"
+
+        RepostModal_CotonomaKeyOrName ->
+            "投稿室的名字/ID"
 
         CotoSelection_CotosSelected count ->
             "件在選擇中"

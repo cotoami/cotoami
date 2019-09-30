@@ -2,12 +2,14 @@ module App.Types.Post exposing
     ( Post
     , defaultPost
     , getCotoFromPosts
+    , getOriginalCotoId
     , toCoto
     )
 
 import App.Types.Amishi exposing (Amishi)
 import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaKey)
 import Date exposing (Date)
+import Utils.ListUtil
 
 
 
@@ -24,6 +26,8 @@ type alias Post =
     , postedAt : Maybe Date
     , isCotonoma : Bool
     , asCotonoma : Maybe Cotonoma
+    , repost : Maybe Coto
+    , repostedIn : List Cotonoma
     , beingDeleted : Bool
     }
 
@@ -39,32 +43,56 @@ defaultPost =
     , postedAt = Nothing
     , isCotonoma = False
     , asCotonoma = Nothing
+    , repost = Nothing
+    , repostedIn = []
     , beingDeleted = False
     }
 
 
 toCoto : Post -> Maybe Coto
 toCoto post =
-    Maybe.map2
-        (\cotoId postedAt ->
-            { id = cotoId
-            , content = post.content
-            , summary = post.summary
-            , amishi = post.amishi
-            , postedIn = post.postedIn
-            , postedAt = postedAt
-            , asCotonoma = post.asCotonoma
-            , incomings = Nothing
-            , outgoings = Nothing
-            }
-        )
-        post.cotoId
-        post.postedAt
+    post.repost
+        |> Maybe.map Just
+        |> Maybe.withDefault
+            (Maybe.map2
+                (\cotoId postedAt ->
+                    { id = cotoId
+                    , content = post.content
+                    , summary = post.summary
+                    , amishi = post.amishi
+                    , postedIn = post.postedIn
+                    , postedAt = postedAt
+                    , asCotonoma = post.asCotonoma
+                    , repostedIn = post.repostedIn
+                    , incomings = Nothing
+                    , outgoings = Nothing
+                    }
+                )
+                post.cotoId
+                post.postedAt
+            )
+
+
+getOriginalCotoId : Post -> Maybe CotoId
+getOriginalCotoId post =
+    post.repost
+        |> Maybe.map (\repost -> Just repost.id)
+        |> Maybe.withDefault post.cotoId
 
 
 getCotoFromPosts : CotoId -> List Post -> Maybe Coto
 getCotoFromPosts cotoId posts =
-    posts
-        |> List.filter (\post -> post.cotoId == Just cotoId)
-        |> List.head
-        |> Maybe.andThen toCoto
+    Utils.ListUtil.findValue
+        (\post ->
+            toCoto post
+                |> Maybe.map
+                    (\coto ->
+                        if coto.id == cotoId then
+                            Just coto
+
+                        else
+                            Nothing
+                    )
+                |> Maybe.withDefault Nothing
+        )
+        posts

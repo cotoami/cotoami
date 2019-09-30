@@ -7,12 +7,17 @@ type TextKey
     | MyHome
     | Post
     | Posting
+    | Repost
+    | Reposting
+    | Edit
     | Save
     | Saving
+    | Delete
     | Hide
     | Connection_LinkingPhraseInput
     | Confirm
     | ConfirmDeleteCoto
+    | ConfirmDeleteRepost
     | ConfirmUnpinCoto
     | ConfirmDisconnect
     | ConfirmCotonomatize String
@@ -44,7 +49,6 @@ type TextKey
     | EditorModal_Content
     | EditorModal_CotonomaName
     | EditorModal_Preview
-    | EditorModal_Edit
     | EditorModal_CotonomaHelp
     | EditorModal_ShareCotonoma
     | EditorModal_ShareCotonomaNote
@@ -66,7 +70,6 @@ type TextKey
     | InviteModal_InvitesRemaining Int
     | CotoToolbar_Connect
     | CotoToolbar_Pin
-    | CotoToolbar_Edit
     | CotoToolbar_AddSubCoto
     | CotoToolbar_Select
     | CotoToolbar_More
@@ -78,10 +81,8 @@ type TextKey
     | CotoMenuModal_UnpinFromMyHome
     | CotoMenuModal_PinToCotonoma
     | CotoMenuModal_UnpinFromCotonoma
-    | CotoMenuModal_Edit
     | CotoMenuModal_AddSubCoto
     | CotoMenuModal_Cotonomatize
-    | CotoMenuModal_Delete
     | CotoMenuModal_Watch
     | CotoMenuModal_Unwatch
     | TimelineFilterModal_Title
@@ -93,6 +94,8 @@ type TextKey
     | ConnectModal_Reverse
     | ConnectionModal_Title
     | ConnectionModal_Disconnect
+    | RepostModal_Title
+    | RepostModal_CotonomaKeyOrName
     | CotoSelection_CotosSelected Int
     | CotoSelection_PinAsGroup
     | Reorder_CloseReorderMode

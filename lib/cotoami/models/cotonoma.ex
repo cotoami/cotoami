@@ -9,30 +9,29 @@ defmodule Cotoami.Cotonoma do
   import Cotoami.Helpers
   alias Cotoami.{Amishi, Cotonoma}
 
-  @key_length 10
   @name_max_length 50
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "cotonomas" do
-    field :key, :string
-    field :name, :string
-    field :shared, :boolean
-    field :pinned, :boolean
-    field :timeline_revision, :integer
-    field :graph_revision, :integer
-    field :last_post_timestamp, :utc_datetime
+    field(:key, :string)
+    field(:name, :string)
+    field(:shared, :boolean)
+    field(:pinned, :boolean)
+    field(:timeline_revision, :integer)
+    field(:graph_revision, :integer)
+    field(:last_post_timestamp, :utc_datetime)
 
-    belongs_to :coto, Cotoami.Coto
-    belongs_to :owner, Cotoami.Amishi
+    belongs_to(:coto, Cotoami.Coto)
+    belongs_to(:owner, Cotoami.Amishi)
 
-    has_many :cotos, Cotoami.Coto
+    has_many(:cotos, Cotoami.Coto)
 
     timestamps(type: :utc_datetime)
   end
 
   def validate_name(changeset) do
-    validate_length(changeset, :name, max: @name_max_length)
+    validate_length(changeset, :name, min: 1, max: @name_max_length)
   end
 
   def changeset_to_insert(struct, params \\ %{}) do
@@ -54,28 +53,31 @@ defmodule Cotoami.Cotonoma do
   end
 
   def changeset_to_import(
-    struct,
-    %{"as_cotonoma" => true} = coto_json,
-    %Amishi{id: amishi_id}
-  ) do
+        struct,
+        %{"as_cotonoma" => true} = coto_json,
+        %Amishi{id: amishi_id}
+      ) do
     cotonoma_json = coto_json["cotonoma"]
-    data = Map.merge(cotonoma_json, %{
-      "coto_id" => coto_json["id"],
-      "owner_id" => amishi_id,
-      "inserted_at" => unixtime_to_datetime!(cotonoma_json["inserted_at"]),
-      "updated_at" => unixtime_to_datetime!(cotonoma_json["updated_at"])
-    })
+
+    data =
+      Map.merge(cotonoma_json, %{
+        "coto_id" => coto_json["id"],
+        "owner_id" => amishi_id,
+        "inserted_at" => unixtime_to_datetime!(cotonoma_json["inserted_at"]),
+        "updated_at" => unixtime_to_datetime!(cotonoma_json["updated_at"])
+      })
+
     struct
     |> cast(data, [
       :id,
       :key,
-      :name, 
+      :name,
       :shared,
       :pinned,
       :timeline_revision,
       :graph_revision,
-      :coto_id, 
-      :owner_id, 
+      :coto_id,
+      :owner_id,
       :inserted_at,
       :updated_at
     ])
@@ -84,20 +86,26 @@ defmodule Cotoami.Cotonoma do
   end
 
   defp generate_key(changeset) do
+    # key length = 10 * 1.6
     key =
-      @key_length
-      |> :crypto.strong_rand_bytes()
+      :crypto.strong_rand_bytes(10)
       |> Base.hex_encode32(case: :lower)
+
     changeset |> put_change(:key, key)
   end
 
-  def in_cotonoma(query, cotonoma_id) do
-    from c in query,
-      join: coto in assoc(c, :coto),
-      where: coto.posted_in_id == ^cotonoma_id
+  def is_possibly_key(string) do
+    String.length(string) == 16
   end
 
-  def copy_belongings(%__MODULE__{} = target, %__MODULE__{} = from) do
+  def in_cotonoma(query, cotonoma_id) do
+    from(cotonoma in query,
+      join: coto in assoc(cotonoma, :coto),
+      where: coto.posted_in_id == ^cotonoma_id or ^cotonoma_id in coto.reposted_in_ids
+    )
+  end
+
+  def copy_associations(%Cotonoma{} = target, %Cotonoma{} = from) do
     %{target | coto: from.coto, owner: from.owner}
   end
 

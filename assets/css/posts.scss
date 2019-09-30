@@ -37,6 +37,41 @@ div.posts {
     }
   }
 
+  div.repost-header {
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    padding-top: 0.5rem;
+    position: relative;
+
+    div.repost-icon {
+      width: 25px;
+
+      i {
+        font-size: 2rem;
+        color: #ccc;
+        vertical-align: middle;
+      }
+    }
+
+    div.amishi {
+      flex: 1;
+
+      img.avatar {
+        width: 18px;
+        height: 18px;
+      }
+
+      span.name {
+        font-size: 1.3rem;
+      }
+    }
+
+    div.reposted-in {
+      flex: 1;
+    }
+  }
+
   div.author {
     margin-bottom: 8px;
 
@@ -196,6 +231,10 @@ div.posts-as-tiles div.posts {
     &.coto-focus > div.coto-inner,
     &.selected > div.coto-inner {
       border-radius: 4px;
+    }
+
+    div.repost-icon i {
+      font-size: 1.6rem;
     }
 
     div.author {

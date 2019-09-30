@@ -20,7 +20,7 @@ module App.Submodels.Context exposing
 
 import App.I18n.Keys exposing (TextKey)
 import App.Types.Connection exposing (Reordering(..))
-import App.Types.Coto exposing (Coto, CotoId, Cotonoma, ElementId)
+import App.Types.Coto exposing (Coto, CotoId, Cotonoma, CotonomaHolder, ElementId)
 import App.Types.Graph exposing (Graph)
 import App.Types.Session exposing (Session)
 import App.Types.Watch exposing (Watch)
@@ -38,6 +38,7 @@ type alias Context a =
         , i18nText : TextKey -> String
         , session : Maybe Session
         , cotonoma : Maybe Cotonoma
+        , cotonomaHolder : Maybe CotonomaHolder
         , cotonomaLoading : Bool
         , watchStateOnCotonomaLoad : Maybe Watch
         , elementFocus : Maybe ElementId
@@ -119,9 +120,13 @@ setCotonomaLoading context =
     }
 
 
-setCotonoma : Maybe Cotonoma -> Context a -> Context a
-setCotonoma maybeCotonoma context =
-    { context | cotonoma = maybeCotonoma, cotonomaLoading = False }
+setCotonoma : Maybe CotonomaHolder -> Context a -> Context a
+setCotonoma cotonomaHolder context =
+    { context
+        | cotonoma = Maybe.map .cotonoma cotonomaHolder
+        , cotonomaHolder = cotonomaHolder
+        , cotonomaLoading = False
+    }
 
 
 orignatedHere : Coto -> Context a -> Bool
@@ -181,7 +186,9 @@ isTriggerElementInReordering elementId context =
 
 isWatched : Cotonoma -> Context a -> Bool
 isWatched cotonoma context =
-    List.any (\watch -> watch.cotonoma.id == cotonoma.id) context.watchlist
+    List.any
+        (\watch -> watch.cotonomaHolder.cotonoma.id == cotonoma.id)
+        context.watchlist
 
 
 findWatchForCurrentCotonoma : Context a -> Maybe Watch

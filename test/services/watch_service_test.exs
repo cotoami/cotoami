@@ -12,8 +12,8 @@ defmodule Cotoami.WatchServiceTest do
   setup do
     amishi1 = Fixtures.create_amishi_with_email!("amishi1@example.com")
     amishi2 = Fixtures.create_amishi_with_email!("amishi2@example.com")
-    shared_cotonoma1 = Fixtures.create_cotonoma!(amishi2, "shared cotonoma1", true)
-    shared_cotonoma2 = Fixtures.create_cotonoma!(amishi2, "shared cotonoma2", true)
+    shared_cotonoma1 = Fixtures.create_cotonoma!("shared cotonoma1", true, amishi2)
+    shared_cotonoma2 = Fixtures.create_cotonoma!("shared cotonoma2", true, amishi2)
     ~M{amishi1, amishi2, shared_cotonoma1, shared_cotonoma2}
   end
 

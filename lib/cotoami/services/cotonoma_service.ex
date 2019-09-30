@@ -7,30 +7,25 @@ defmodule Cotoami.CotonomaService do
   import Ecto.Changeset, only: [change: 2]
   import Ecto.Query, warn: false
 
-  alias Cotoami.{
-    Repo,
-    Coto,
-    Cotonoma,
-    Amishi,
-    AmishiService,
-    CotonomaService,
-    CotoGraphService,
-    Exceptions.NotFound
-  }
+  alias Cotoami.Repo
+  alias Cotoami.Amishi
+  alias Cotoami.Coto
+  alias Cotoami.Cotonoma
+  alias Cotoami.CotoService
+  alias Cotoami.CotoGraphService
 
-  def global_cotonomas_holder do
-    :cotoami
-    |> Application.get_env(__MODULE__, [])
-    |> Keyword.get(:global_cotonomas_holder)
-  end
+  def create!(name, shared, %Amishi{} = amishi),
+    do: do_create!(name, shared, amishi, nil)
 
-  def create!(%Amishi{} = amishi, name, shared, cotonoma_id \\ nil) do
+  def create!(name, shared, %Amishi{} = amishi, %Cotonoma{id: cotonoma_id}),
+    do: do_create!(name, shared, amishi, cotonoma_id)
+
+  defp do_create!(name, shared, %Amishi{} = amishi, cotonoma_id) do
     {:ok, coto} =
       Repo.transaction(fn ->
         # create a coto
         coto =
-          %Coto{}
-          |> Coto.changeset_to_insert(%{
+          Coto.changeset_to_insert(%{
             content: name,
             as_cotonoma: true,
             posted_in_id: cotonoma_id,
@@ -40,19 +35,12 @@ defmodule Cotoami.CotonomaService do
 
         # create a cotonoma
         cotonoma = create_cotonoma!(coto, name, amishi.id, shared)
-        coto = %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
 
-        # set last_post_timestamp and timeline_revision to the posted_in cotonoma
-        case get!(cotonoma_id) do
-          nil ->
-            %{coto | posted_in: nil}
-
-          posted_in ->
-            %{coto | posted_in: CotonomaService.on_post(posted_in, coto)}
-        end
+        %{coto | cotonoma: %{cotonoma | owner: amishi, coto: coto}}
+        |> CotoService.on_created()
       end)
 
-    %{coto | amishi: amishi}
+    %{coto | amishi: amishi, repost: nil}
   end
 
   defp create_cotonoma!(%Coto{as_cotonoma: true} = coto, name, amishi_id, shared) do
@@ -95,33 +83,28 @@ defmodule Cotoami.CotonomaService do
     cotonoma_coto
   end
 
-  def get(id) do
+  def get_accessible!(id, %Amishi{} = amishi) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get(id)
+    |> check_permission!(amishi)
   end
 
-  def get!(nil), do: nil
-
-  def get!(id) do
-    case get(id) do
-      nil -> raise NotFound, "cotonoma: id<#{id}>"
-      cotonoma -> cotonoma
-    end
-  end
-
-  def get_by_key(key) do
+  def get_accessible_by_key!(key, %Amishi{} = amishi) do
     Cotonoma
     |> preload([:coto, :owner])
     |> Repo.get_by(key: key)
+    |> check_permission!(amishi)
   end
 
-  def get_by_key!(nil), do: nil
+  defp check_permission!(cotonoma, amishi) do
+    case cotonoma do
+      nil ->
+        raise Cotoami.Exceptions.NotFound
 
-  def get_by_key!(key) do
-    case get_by_key(key) do
-      nil -> raise NotFound, "cotonoma: key<#{key}>"
-      cotonoma -> cotonoma
+      cotonoma ->
+        Cotonoma.ensure_accessible_by(cotonoma, amishi)
+        cotonoma
     end
   end
 
@@ -131,60 +114,99 @@ defmodule Cotoami.CotonomaService do
     |> Repo.get_by(name: name, owner_id: amishi_id)
   end
 
-  def keys_map(keys) do
-    from(c in Cotonoma, where: c.key in ^keys, select: {c.key, c})
+  def get_accessible_by_key_or_name(key_or_name, %Amishi{} = amishi) do
+    if Cotonoma.is_possibly_key(key_or_name) do
+      get_accessible_by_key!(key_or_name, amishi)
+    else
+      get_by_name(key_or_name, amishi)
+    end
+  rescue
+    _ in Cotoami.Exceptions.NotFound -> get_by_name(key_or_name, amishi)
+  end
+
+  def all_by_ids(ids) do
+    from(c in Cotonoma, where: c.id in ^ids)
+    |> preload([:coto, :owner])
+    |> Repo.all()
+  end
+
+  def accessibles_by_ids(ids, %Amishi{} = amishi) do
+    all_by_ids(ids)
+    |> Enum.filter(&Cotonoma.accessible_by?(&1, amishi))
+  end
+
+  def all_by_keys(keys) do
+    from(c in Cotonoma, where: c.key in ^keys)
+    |> preload([:coto, :owner])
+    |> Repo.all()
+  end
+
+  def map_by_ids(ids) do
+    from(c in Cotonoma, where: c.id in ^ids, select: {c.id, c})
     |> preload([:coto, :owner])
     |> Repo.all()
     |> Map.new()
   end
 
-  def recent_cotonomas(%Amishi{id: amishi_id}) do
-    Cotonoma
-    |> where([c], c.owner_id == ^amishi_id)
-    |> limit(100)
-    |> do_query_for_cotonomas()
-  end
-
-  def sub_cotonomas(cotonoma_id) do
-    Cotonoma
-    |> Cotonoma.in_cotonoma(cotonoma_id)
-    |> limit(100)
-    |> do_query_for_cotonomas()
+  def accessible_map_by_ids(ids, %Amishi{} = amishi) do
+    map_by_ids(ids)
+    |> Enum.filter(fn {_, c} -> Cotonoma.accessible_by?(c, amishi) end)
+    |> Map.new()
   end
 
   def suggest(%Amishi{id: amishi_id}, query) do
     from(c in Cotonoma, where: c.owner_id == ^amishi_id and ilike(c.name, ^"%#{query}%"))
-    |> limit(10)
-    |> do_query_for_cotonomas()
-  end
-
-  defp do_query_for_cotonomas(query) do
-    query
-    |> preload([:coto, :owner])
+    |> preload([:owner])
     |> order_by(desc: :updated_at)
+    |> limit(10)
     |> Repo.all()
   end
 
-  def on_post(%Cotonoma{} = cotonoma, %Coto{inserted_at: coto_inserted_at}) do
+  def update_on_post(%Cotonoma{} = cotonoma, %Coto{inserted_at: coto_inserted_at}) do
     cotonoma
     |> change(last_post_timestamp: coto_inserted_at)
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
+  end
+
+  def update_on_delete(
+        %Cotonoma{id: cotonoma_id} = cotonoma,
+        %Coto{inserted_at: coto_inserted_at}
+      ) do
+    # last_post_timestamp should be updated if the deleted coto is the last post.
+    last_post_timestamp =
+      case DateTime.compare(coto_inserted_at, cotonoma.last_post_timestamp) do
+        :lt ->
+          cotonoma.last_post_timestamp
+
+        _ ->
+          from(c in Coto,
+            where: c.posted_in_id == ^cotonoma_id,
+            select: max(c.inserted_at)
+          )
+          |> Repo.one()
+      end
+
+    cotonoma
+    |> change(last_post_timestamp: last_post_timestamp)
+    |> change(timeline_revision: cotonoma.timeline_revision + 1)
+    |> Repo.update!()
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def increment_timeline_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(timeline_revision: cotonoma.timeline_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def increment_graph_revision(%Cotonoma{} = cotonoma) do
     cotonoma
     |> change(graph_revision: cotonoma.graph_revision + 1)
     |> Repo.update!()
-    |> Cotonoma.copy_belongings(cotonoma)
+    |> Cotonoma.copy_associations(cotonoma)
   end
 
   def stats(%Cotonoma{id: cotonoma_id, key: key} = cotonoma) do
@@ -196,33 +218,5 @@ defmodule Cotoami.CotonomaService do
         |> Repo.aggregate(:count, :id),
       connections: CotoGraphService.count_connections_in_cotonoma(Bolt.Sips.conn(), cotonoma)
     }
-  end
-
-  def global_cotonomas do
-    case global_cotonomas_holder_amishi() do
-      nil ->
-        []
-
-      amishi ->
-        keys = CotoGraphService.pinned_cotonoma_keys(Bolt.Sips.conn(), amishi)
-        cotonomas = keys_map(keys)
-        for key <- keys, cotonomas[key], do: cotonomas[key]
-    end
-  end
-
-  defp global_cotonomas_holder_amishi do
-    case global_cotonomas_holder() do
-      nil ->
-        nil
-
-      id_or_email ->
-        case UUID.info(id_or_email) do
-          {:ok, _info} ->
-            AmishiService.get(id_or_email)
-
-          {:error, _reason} ->
-            AmishiService.get_by_email(id_or_email)
-        end
-    end
   end
 end

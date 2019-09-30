@@ -1,16 +1,13 @@
 module App.Views.Navigation exposing
-    ( currentCotonomaNav
-    , globalCotonomasDiv
-    , homeNav
+    ( homeNav
     , recentCotonomasDiv
     , view
-    , watchlistDiv
     )
 
 import App.I18n.Keys as I18nKeys
 import App.Messages exposing (Msg(MoveToHome, ToggleNavInWideViewport))
 import App.Submodels.Context exposing (Context)
-import App.Types.Coto exposing (Cotonoma)
+import App.Types.Coto exposing (Cotonoma, CotonomaHolder)
 import App.Views.Cotonomas
 import Exts.Maybe exposing (isNothing)
 import Html exposing (..)
@@ -22,9 +19,10 @@ import Utils.HtmlUtil exposing (faIcon, materialIcon)
 type alias ViewModel model =
     Context
         { model
-            | globalCotonomas : List Cotonoma
-            , recentCotonomas : List Cotonoma
-            , subCotonomas : List Cotonoma
+            | globalCotonomas : List CotonomaHolder
+            , recentCotonomas : List CotonomaHolder
+            , superCotonomas : List CotonomaHolder
+            , subCotonomas : List CotonomaHolder
         }
 
 
@@ -36,8 +34,8 @@ view model =
             |> Maybe.withDefault Utils.HtmlUtil.none
         , div
             [ class "cotonomas-nav" ]
-            [ model.cotonoma
-                |> Maybe.map (currentCotonomaNav model)
+            [ model.cotonomaHolder
+                |> Maybe.map (currentNav model)
                 |> Maybe.withDefault Utils.HtmlUtil.none
             , globalCotonomasDiv model
             , watchlistDiv model
@@ -66,18 +64,24 @@ homeNav model =
         ]
 
 
-currentCotonomaNav : ViewModel model -> Cotonoma -> Html Msg
-currentCotonomaNav model cotonoma =
-    div [ class "current-cotonoma" ]
+currentNav : ViewModel model -> CotonomaHolder -> Html Msg
+currentNav model cotonomaHolder =
+    div
+        [ classList
+            [ ( "current", True )
+            , ( "has-super-cotonomas", not (List.isEmpty model.superCotonomas) )
+            ]
+        ]
         [ div [ class "navigation-title" ]
             [ text (model.i18nText I18nKeys.Navigation_Current) ]
-        , App.Views.Cotonomas.cotonomaDiv
-            model
-            Nothing
-            "current-cotonoma"
-            cotonoma
-        , div [ class "sub-cotonomas" ]
-            [ App.Views.Cotonomas.view model "sub-cotonomas" model.subCotonomas
+        , div [ class "super-cotonomas" ]
+            [ App.Views.Cotonomas.view model "super-cotonomas" model.superCotonomas
+            ]
+        , div [ class "this-cotonoma" ]
+            [ App.Views.Cotonomas.cotonomaDiv model Nothing "current-cotonoma" cotonomaHolder
+            , div [ class "sub-cotonomas" ]
+                [ App.Views.Cotonomas.view model "sub-cotonomas" model.subCotonomas
+                ]
             ]
         ]
 

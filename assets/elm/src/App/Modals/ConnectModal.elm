@@ -21,6 +21,7 @@ import App.Types.Post exposing (Post)
 import App.Update.Graph
 import App.Update.Post
 import App.Views.Connection
+import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -124,7 +125,12 @@ modalContent context model =
         selectedCotosHtml =
             context
                 |> App.Submodels.CotoSelection.cotosInSelectedOrder
-                |> List.map (\coto -> ( toString coto.id, App.Views.Connection.cotoDiv coto ))
+                |> List.map
+                    (\coto ->
+                        ( toString coto.id
+                        , App.Views.Coto.simplifiedCotoDiv coto
+                        )
+                    )
                 |> Html.Keyed.node "div" [ class "selected-cotos" ]
 
         targetHtml =
@@ -134,11 +140,14 @@ modalContent context model =
 
                 Coto coto ->
                     div [ class "target-coto" ]
-                        [ App.Views.Connection.cotoDiv coto ]
+                        [ App.Views.Coto.simplifiedCotoDiv coto ]
 
                 NewPost content ->
                     div [ class "target-new-post" ]
-                        [ App.Views.Connection.cotoContentDiv content.summary content.content ]
+                        [ App.Views.Coto.simplifiedPlainCotoDiv
+                            content.summary
+                            content.content
+                        ]
 
         ( start, end ) =
             case model.direction of

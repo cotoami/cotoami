@@ -21,11 +21,23 @@ text key =
         Posting ->
             "Posting"
 
+        Repost ->
+            "Repost"
+
+        Reposting ->
+            "Reposting"
+
+        Edit ->
+            "Edit"
+
         Save ->
             "Save"
 
         Saving ->
             "Saving"
+
+        Delete ->
+            "Delete"
 
         Hide ->
             "Hide"
@@ -38,6 +50,9 @@ text key =
 
         ConfirmDeleteCoto ->
             "Are you sure you want to delete this coto?"
+
+        ConfirmDeleteRepost ->
+            "Are you sure you want to delete this repost?"
 
         ConfirmUnpinCoto ->
             "Are you sure you want to unpin this coto?"
@@ -132,9 +147,6 @@ text key =
         EditorModal_Preview ->
             "Preview"
 
-        EditorModal_Edit ->
-            "Edit"
-
         EditorModal_CotonomaHelp ->
             "A Cotonoma is a special Coto that has a dedicated chat timeline"
                 ++ " where you can discuss with others about a topic described by its name."
@@ -205,9 +217,6 @@ text key =
         CotoToolbar_Pin ->
             "Pin to the current cotonoma"
 
-        CotoToolbar_Edit ->
-            "Edit"
-
         CotoToolbar_AddSubCoto ->
             "Add a sub-coto"
 
@@ -241,17 +250,11 @@ text key =
         CotoMenuModal_UnpinFromCotonoma ->
             "Unpin from the current Cotonoma"
 
-        CotoMenuModal_Edit ->
-            "Edit"
-
         CotoMenuModal_AddSubCoto ->
             "Add a sub-coto"
 
         CotoMenuModal_Cotonomatize ->
             "Promote to a Cotonoma"
-
-        CotoMenuModal_Delete ->
-            "Delete"
 
         CotoMenuModal_Watch ->
             "Watch this Cotonoma"
@@ -285,6 +288,12 @@ text key =
 
         ConnectionModal_Disconnect ->
             "Disconnect"
+
+        RepostModal_Title ->
+            "Repost"
+
+        RepostModal_CotonomaKeyOrName ->
+            "Cotonoma name or ID"
 
         CotoSelection_CotosSelected count ->
             if count == 1 then

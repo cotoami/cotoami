@@ -30,6 +30,11 @@
     "tar-fs": ">=1.16.2",
     "fstream": ">=1.0.12",
     "tunnel-agent": ">=0.6.0",
-    "sshpk": ">=1.13.2"
+    "sshpk": ">=1.13.2",
+    "braces": ">=2.3.1",
+    "clean-css": ">=4.1.11",
+    "lodash": ">=4.17.13",
+    "lodash.mergewith": ">=4.6.2",
+    "stringstream": ">=0.0.6"
   }
 }

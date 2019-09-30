@@ -21,11 +21,23 @@ text key =
         Posting ->
             "投稿中"
 
+        Repost ->
+            "リポスト"
+
+        Reposting ->
+            "リポスト中"
+
+        Edit ->
+            "編集"
+
         Save ->
             "保存"
 
         Saving ->
             "保存中"
+
+        Delete ->
+            "削除"
 
         Hide ->
             "隠す"
@@ -38,6 +50,9 @@ text key =
 
         ConfirmDeleteCoto ->
             "このコトを削除しますか？"
+
+        ConfirmDeleteRepost ->
+            "このリポストを削除しますか？"
 
         ConfirmUnpinCoto ->
             "このピンを外しますか？"
@@ -135,9 +150,6 @@ text key =
         EditorModal_Preview ->
             "プレビュー"
 
-        EditorModal_Edit ->
-            "編集"
-
         EditorModal_CotonomaHelp ->
             "コトノマは、専用のタイムラインとピン留めのスペースを持つ、Cotoamiにおいて情報整理の単位となる入れ物です。"
                 ++ "新しいテーマについて議論したり情報を集めるときは専用のコトノマを作りましょう。"
@@ -204,9 +216,6 @@ text key =
         CotoToolbar_Pin ->
             "現在のコトノマにピン留め"
 
-        CotoToolbar_Edit ->
-            "編集"
-
         CotoToolbar_AddSubCoto ->
             "子コトを追加"
 
@@ -246,17 +255,11 @@ text key =
         CotoMenuModal_Unwatch ->
             "ウォッチリストから削除"
 
-        CotoMenuModal_Edit ->
-            "編集"
-
         CotoMenuModal_AddSubCoto ->
             "子コトを追加"
 
         CotoMenuModal_Cotonomatize ->
             "コトノマに昇格"
-
-        CotoMenuModal_Delete ->
-            "削除"
 
         TimelineFilterModal_Title ->
             "タイムラインフィルタ"
@@ -284,6 +287,12 @@ text key =
 
         ConnectionModal_Disconnect ->
             "接続を解除"
+
+        RepostModal_Title ->
+            "リポスト"
+
+        RepostModal_CotonomaKeyOrName ->
+            "コトノマ名あるいはID"
 
         CotoSelection_CotosSelected count ->
             "件のコトを選択中"

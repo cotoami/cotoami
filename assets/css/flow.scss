@@ -128,7 +128,8 @@ div.timeline {
     padding-right: 10px;
   }
 
-  &.exclude-pinned-graph div.coto.in-pinned-graph {
+  &.exclude-pinned-graph div.coto.in-pinned-graph,
+  &.exclude-posts-in-cotonoma div.coto.posted-in-any-cotonoma {
     display: none;
   }
 
