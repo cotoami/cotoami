@@ -19,6 +19,7 @@ import App.Views.Coto
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Html.Keyed
 import Utils.HtmlUtil exposing (materialIcon)
 import Utils.Modal
 import Utils.StringUtil
@@ -28,6 +29,7 @@ import Utils.UpdateUtil exposing (..)
 type alias Model =
     { coto : Coto
     , cotonomaKeyOrName : String
+    , inputCounter : Int
     , lastFetchRequestId : Int
     , cotonoma : Maybe Cotonoma
     , requestProcessing : Bool
@@ -38,6 +40,7 @@ defaultModel : Model
 defaultModel =
     { coto = App.Types.Coto.defaultCoto
     , cotonomaKeyOrName = ""
+    , inputCounter = 0
     , lastFetchRequestId = 0
     , cotonoma = Nothing
     , requestProcessing = False
@@ -54,6 +57,14 @@ getCotonomaName model =
     model.cotonoma
         |> Maybe.map .name
         |> Maybe.withDefault (String.trim model.cotonomaKeyOrName)
+
+
+clearInput : Model -> Model
+clearInput model =
+    { model
+        | cotonomaKeyOrName = ""
+        , inputCounter = model.inputCounter + 1
+    }
 
 
 isRepostable : Context context -> Model -> Bool
@@ -105,15 +116,21 @@ modalConfig context session model =
                         ]
                     ]
                     [ cotonomaInputStatusSpan model
-                    , input
-                        [ type_ "text"
-                        , class "cotonoma-key-or-name u-full-width"
-                        , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaKeyOrName)
-                        , value model.cotonomaKeyOrName
-                        , onInput (AppMsg.RepostModalMsg << CotonomaKeyOrNameInput)
-                        , disabled model.requestProcessing
-                        ]
+                    , Html.Keyed.node
+                        "div"
                         []
+                        [ ( toString model.inputCounter
+                          , input
+                                [ type_ "text"
+                                , class "cotonoma-key-or-name u-full-width"
+                                , placeholder (context.i18nText I18nKeys.RepostModal_CotonomaKeyOrName)
+                                , defaultValue model.cotonomaKeyOrName
+                                , onInput (AppMsg.RepostModalMsg << CotonomaKeyOrNameInput)
+                                , disabled model.requestProcessing
+                                ]
+                                []
+                          )
+                        ]
                     ]
                 , div [ class "repost-button" ]
                     [ button
@@ -194,11 +211,14 @@ update context msg ({ repostModal } as model) =
                         , lastFetchRequestId = requestId
                     }
             in
-            ( { model | repostModal = modal }
-            , App.Server.Cotonoma.fetchCotonomaByKeyOrName
-                (AppMsg.RepostModalMsg << CotonomaFetched requestId)
-                (String.trim keyOrName)
-            )
+            { model | repostModal = modal }
+                |> withCmdIf
+                    (\_ -> Utils.StringUtil.isNotBlank keyOrName)
+                    (\_ ->
+                        App.Server.Cotonoma.fetchCotonomaByKeyOrName
+                            (AppMsg.RepostModalMsg << CotonomaFetched requestId)
+                            (String.trim keyOrName)
+                    )
 
         Repost ->
             ( { model | repostModal = { repostModal | requestProcessing = True } }
@@ -225,10 +245,10 @@ update context msg ({ repostModal } as model) =
                 modal =
                     { repostModal
                         | coto = Maybe.withDefault repostModal.coto post.repost
-                        , cotonomaKeyOrName = ""
                         , cotonoma = Nothing
                         , requestProcessing = False
                     }
+                        |> clearInput
 
                 model_ =
                     { model | repostModal = modal }
