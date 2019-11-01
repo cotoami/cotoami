@@ -36,14 +36,14 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cotoami
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
 
   neo4j:
     image: neo4j:3.2.2
     environment:
       NEO4J_AUTH: none
     volumes:
-      - neo4j-data:/data 
+      - ./neo4j-data:/data 
 
   maildev:
     image: djfarrelly/maildev:latest
