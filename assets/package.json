@@ -26,7 +26,7 @@
     "elm-format": "0.8.1",
     "elm-github-install": "1.6.1",
     "cryptiles": ">=4.1.2",
-    "tar": ">=4.4.8",
+    "tar": ">=4.4.15",
     "tar-fs": ">=1.16.2",
     "fstream": ">=1.0.12",
     "tunnel-agent": ">=0.6.0",
