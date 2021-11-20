@@ -7,14 +7,11 @@ defmodule Cotoami.WatchService do
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
-  alias Cotoami.{
-    Repo,
-    Amishi,
-    Cotonoma,
-    Watch
-  }
-
-  alias Cotoami.Exceptions.{InvalidOperation, NotFound}
+  alias Cotoami.Repo
+  alias Cotoami.Amishi
+  alias Cotoami.Cotonoma
+  alias Cotoami.Watch
+  alias Cotoami.RichCotonomaService
 
   def get_or_create!(%Amishi{id: amishi_id}, %Cotonoma{
         id: cotonoma_id,
@@ -36,14 +33,22 @@ defmodule Cotoami.WatchService do
     end
   end
 
-  def get_watchlist(%Amishi{id: amishi_id}) do
-    from(
-      w in Watch,
-      where: w.amishi_id == ^amishi_id,
-      order_by: [desc: w.updated_at]
-    )
-    |> preload(cotonoma: :owner)
-    |> Repo.all()
+  def get_watchlist(%Amishi{id: amishi_id} = amishi) do
+    watchlist =
+      from(
+        watch in Watch,
+        where: watch.amishi_id == ^amishi_id,
+        order_by: [desc: watch.updated_at]
+      )
+      |> Repo.all()
+
+    cotonoma_map =
+      watchlist
+      |> Enum.map(& &1.cotonoma_id)
+      |> RichCotonomaService.map_by_ids(amishi)
+
+    watchlist
+    |> Enum.map(&%{&1 | cotonoma: cotonoma_map[&1.cotonoma_id]})
   end
 
   def update_last_post_timestamp!(
@@ -53,7 +58,7 @@ defmodule Cotoami.WatchService do
       ) do
     case Repo.get_by(Watch, amishi_id: amishi_id, cotonoma_id: cotonoma_id) do
       nil ->
-        raise NotFound
+        raise Cotoami.Exceptions.NotFound
 
       watch ->
         if watch.last_post_timestamp == nil or
@@ -65,7 +70,7 @@ defmodule Cotoami.WatchService do
           |> Repo.update!()
           |> (&%{&1 | cotonoma: cotonoma}).()
         else
-          raise InvalidOperation
+          raise Cotoami.Exceptions.InvalidOperation
         end
     end
   end

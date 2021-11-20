@@ -1,0 +1,159 @@
+#repost-modal {
+  .modal-content {
+    width: 80vw;
+  }
+
+  div.target-coto div.simplified-coto {
+    max-height: 15vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div.repost-form {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: row;
+
+    div.cotonoma-key-or-name-input {
+      flex: 1;
+      position: relative;
+
+      input {
+        border-radius: 4px 0 0 4px;
+        border-right-style: none;
+        margin-bottom: 0;
+        padding-left: 34px;
+      }
+
+      span.status {
+        position: absolute;
+        left: 6px;
+
+        i {
+          margin-top: 7px;
+          opacity: 0.3;
+        }
+
+        img.avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 4px;
+          margin-top: 7px;
+          padding: 0;
+        }
+      }
+
+      &.blank {
+        input {
+          padding-left: 10px;
+        }
+
+        span.status {
+          display: none;
+        }
+      }
+    }
+
+    div.repost-button {
+      width: 42px;
+
+      button {
+        padding-left: 8px;
+        padding-right: 8px;
+        border-radius: 0 4px 4px 0;
+      }
+
+      i {
+        vertical-align: -8px;
+      }
+    }
+  }
+
+  div.cotonoma-name-display  {
+    margin-top: -6px;
+    margin-bottom: 1rem;
+
+    div.cotonoma-name {
+      display: inline-block;
+      margin-left: 30px;
+      padding: 3px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: 10px;
+        top: -50px;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid #ddd;
+        border-right: 10px solid transparent;
+        border-left: 10px solid transparent;
+      }
+    
+      &::after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        left: 10px;
+        top: -48px;
+        bottom: 0;
+        margin: auto;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid #fff;
+        border-right: 10px solid transparent;
+        border-left: 10px solid transparent;
+      }
+    }
+  }
+
+  div.reposting {
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  div.reposted-cotonomas {
+    max-height: 30vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+
+    div.reposted-in {
+      display: flex;
+      flex-direction: row;
+
+      div.repost-icon {
+        width: 30px;
+
+        i {
+          color: #ccc;
+          vertical-align: middle;
+        }
+      }
+
+      div.simplified-cotonoma {
+        flex: 1;
+        margin-bottom: 0.5rem;
+  
+        img.avatar {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
+  hr.modal-buttons-seperator {
+    display: none;
+  }
+}

@@ -3,18 +3,14 @@ defmodule Cotoami.Exceptions do
   Exceptions
   """
 
-  # credo:disable-for-next-line Credo.Check.Consistency.ExceptionNames
   defmodule NoPermission do
     @moduledoc """
     raised when the amishi has no permission for the operation
     """
-    defexception [
-      message: "You have no permission to do this operation.",
-      plug_status: 403
-    ]
+    defexception message: "You have no permission to do this operation.",
+                 plug_status: 403
   end
 
-  # credo:disable-for-next-line Credo.Check.Consistency.ExceptionNames
   defmodule NotFound do
     @moduledoc """
     raised when the requested entity is not found.
@@ -26,14 +22,19 @@ defmodule Cotoami.Exceptions do
     end
   end
 
-  # credo:disable-for-next-line Credo.Check.Consistency.ExceptionNames
   defmodule InvalidOperation do
     @moduledoc """
     raised when an invalid operation has been requested.
     """
-    defexception [
-      message: "This operation is not supported.",
-      plug_status: 405
-    ]
+    defexception message: "This operation is not supported.",
+                 plug_status: 405
+  end
+
+  defmodule DuplicateRepost do
+    @moduledoc """
+    raised when reposting a coto that has already been posted in the cotonoma
+    """
+    defexception message: "This coto has already been posted in the cotonoma",
+                 plug_status: 405
   end
 end

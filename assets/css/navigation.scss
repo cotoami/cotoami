@@ -37,10 +37,14 @@
     font-weight: bold;
   }
 
-  div.current-cotonoma {
+  div.current {
     margin-bottom: 20px;
 
     div.sub-cotonomas {
+      margin-left: 10px;
+    }
+
+    &.has-super-cotonomas div.this-cotonoma {
       margin-left: 10px;
     }
   }

@@ -1,7 +1,10 @@
 defmodule CotoamiWeb.CotonomaController do
   use CotoamiWeb, :controller
   require Logger
-  alias Cotoami.{Cotonoma, CotoService, CotonomaService}
+  alias Cotoami.Cotonoma
+  alias Cotoami.CotoService
+  alias Cotoami.CotonomaService
+  alias Cotoami.RichCotonomaService
   alias CotoamiWeb.CotoView
 
   plug(:scrub_params, "cotonoma" when action in [:create])
@@ -12,14 +15,17 @@ defmodule CotoamiWeb.CotonomaController do
 
   def index(conn, _params, amishi) do
     render(conn, "index.json", %{
-      global: CotonomaService.global_cotonomas(),
-      recent: CotonomaService.recent_cotonomas(amishi)
+      global: RichCotonomaService.global_cotonomas(amishi),
+      recent: RichCotonomaService.recent_cotonomas(amishi)
     })
   end
 
-  def sub(conn, %{"cotonoma_id" => cotonoma_id}, _amishi) do
-    render(conn, "cotonomas.json", %{
-      cotonomas: CotonomaService.sub_cotonomas(cotonoma_id)
+  def super_and_sub(conn, %{"cotonoma_id" => cotonoma_id}, amishi) do
+    cotonoma = CotonomaService.get_accessible!(cotonoma_id, amishi)
+
+    render(conn, "super_and_sub.json", %{
+      super: RichCotonomaService.super_cotonomas(cotonoma, amishi),
+      sub: RichCotonomaService.sub_cotonomas(cotonoma.id, amishi)
     })
   end
 
@@ -29,18 +35,15 @@ defmodule CotoamiWeb.CotonomaController do
     })
   end
 
-  def create(
-        conn,
-        %{
-          "cotonoma" => %{
-            "cotonoma_id" => cotonoma_id,
-            "name" => name,
-            "shared" => shared
-          }
-        },
-        amishi
-      ) do
-    coto = CotonomaService.create!(amishi, name, shared, cotonoma_id)
+  def create(conn, %{"cotonoma" => cotonoma_params}, amishi) do
+    %{"name" => name, "shared" => shared} = cotonoma_params
+
+    coto =
+      case get_cotonoma_if_specified!(cotonoma_params, amishi) do
+        nil -> CotonomaService.create!(name, shared, amishi)
+        cotonoma -> CotonomaService.create!(name, shared, amishi, cotonoma)
+      end
+
     on_coto_created(conn, coto, amishi)
     render(conn, CotoView, "created.json", coto: coto)
   rescue
@@ -48,8 +51,22 @@ defmodule CotoamiWeb.CotonomaController do
       send_resp_by_constraint_error(conn, e)
   end
 
+  def get(conn, %{"name" => name}, amishi) do
+    case CotonomaService.get_by_name(name, amishi) do
+      nil -> send_resp(conn, :not_found, "")
+      cotonoma -> render(conn, "cotonoma.json", cotonoma: cotonoma)
+    end
+  end
+
+  def get(conn, %{"key_or_name" => key_or_name}, amishi) do
+    case CotonomaService.get_accessible_by_key_or_name(key_or_name, amishi) do
+      nil -> send_resp(conn, :not_found, "")
+      cotonoma -> render(conn, "cotonoma.json", cotonoma: cotonoma)
+    end
+  end
+
   def get_or_create(conn, %{"name" => name}, amishi) do
-    coto = CotonomaService.create!(amishi, name, false, nil)
+    coto = CotonomaService.create!(name, false, amishi)
     on_coto_created(conn, coto, amishi)
     render(conn, "cotonoma.json", cotonoma: coto.cotonoma)
   rescue
@@ -67,34 +84,22 @@ defmodule CotoamiWeb.CotonomaController do
   @cotos_options ["exclude_pinned_graph"]
 
   def cotos(conn, %{"key" => key, "page" => page} = params, amishi) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        send_resp(conn, :not_found, "")
+    cotonoma = RichCotonomaService.get_accessible_by_key!(key, amishi)
+    page_index = String.to_integer(page)
+    options = get_flags_in_params(params, @cotos_options)
 
-      cotonoma ->
-        page_index = String.to_integer(page)
-        options = get_flags_in_params(params, @cotos_options)
-        paginated_cotos = CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
-        render(conn, "cotos.json", paginated_cotos |> Map.put(:cotonoma, cotonoma))
-    end
-  rescue
-    _ in Cotoami.Exceptions.NoPermission ->
-      send_resp(conn, :not_found, "")
+    paginated_cotos =
+      CotoService.all_by_cotonoma(cotonoma, amishi, page_index, options)
+      |> Map.put(:cotonoma, cotonoma)
+
+    render(conn, "cotos.json", paginated_cotos)
   end
 
   def random(conn, %{"key" => key} = params, amishi) do
-    case CotonomaService.get_by_key(key) do
-      nil ->
-        send_resp(conn, :not_found, "")
-
-      cotonoma ->
-        options = get_flags_in_params(params, @cotos_options)
-        cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
-        render(conn, "random.json", cotos: cotos)
-    end
-  rescue
-    _ in Cotoami.Exceptions.NoPermission ->
-      send_resp(conn, :not_found, "")
+    cotonoma = CotonomaService.get_accessible_by_key!(key, amishi)
+    options = get_flags_in_params(params, @cotos_options)
+    cotos = CotoService.random_by_cotonoma(cotonoma, amishi, options)
+    render(conn, "random.json", cotos: cotos)
   end
 
   def stats(conn, %{"key" => key}, _amishi) do

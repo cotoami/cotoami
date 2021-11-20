@@ -1,20 +1,23 @@
 module App.Server.Cotonoma exposing
     ( decodeCotonoma
+    , decodeCotonomaHolder
     , decodeStats
     , encodeCotonoma
+    , fetchCotonomaByKeyOrName
+    , fetchCotonomaByName
     , fetchCotonomas
     , fetchStats
-    , fetchSubCotonomas
+    , fetchSuperAndSubCotonomas
     , refreshCotonomaList
     )
 
 import App.Messages exposing (Msg(..))
 import App.Server.Amishi exposing (decodeAmishi)
 import App.Submodels.Context exposing (Context)
-import App.Types.Coto exposing (Cotonoma, CotonomaKey, CotonomaStats)
+import App.Types.Coto exposing (Cotonoma, CotonomaHolder, CotonomaKey, CotonomaStats)
 import Date
 import Http
-import Json.Decode as Decode exposing (bool, float, int, maybe, string)
+import Json.Decode as Decode exposing (bool, float, int, list, maybe, string)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 
@@ -35,26 +38,52 @@ decodeCotonoma =
         |> optional "last_post_timestamp" (maybe float) Nothing
 
 
+decodeCotonomaHolder : Decode.Decoder CotonomaHolder
+decodeCotonomaHolder =
+    Json.Decode.Pipeline.decode CotonomaHolder
+        |> required "cotonoma" decodeCotonoma
+        |> optional "posted_in" (maybe decodeCotonoma) Nothing
+        |> required "reposted_in" (list decodeCotonoma)
+
+
+fetchCotonomaByName : (Result Http.Error Cotonoma -> msg) -> String -> Cmd msg
+fetchCotonomaByName tag name =
+    Http.get ("/api/cotonomas/name/" ++ name) decodeCotonoma
+        |> Http.send tag
+
+
+fetchCotonomaByKeyOrName : (Result Http.Error Cotonoma -> msg) -> String -> Cmd msg
+fetchCotonomaByKeyOrName tag keyOrName =
+    Http.get ("/api/cotonomas/key-or-name/" ++ keyOrName) decodeCotonoma
+        |> Http.send tag
+
+
 fetchCotonomas : Cmd Msg
 fetchCotonomas =
     let
         decodeResponse =
             Decode.map2 (,)
-                (Decode.field "global" (Decode.list decodeCotonoma))
-                (Decode.field "recent" (Decode.list decodeCotonoma))
+                (Decode.field "global" (Decode.list decodeCotonomaHolder))
+                (Decode.field "recent" (Decode.list decodeCotonomaHolder))
     in
     Http.get "/api/cotonomas" decodeResponse
         |> Http.send CotonomasFetched
 
 
-fetchSubCotonomas : Context a -> Cmd Msg
-fetchSubCotonomas context =
+fetchSuperAndSubCotonomas : Context context -> Cmd Msg
+fetchSuperAndSubCotonomas context =
+    let
+        decodeResponse =
+            Decode.map2 (,)
+                (Decode.field "super" (Decode.list decodeCotonomaHolder))
+                (Decode.field "sub" (Decode.list decodeCotonomaHolder))
+    in
     context.cotonoma
         |> Maybe.map
             (\cotonoma ->
-                Decode.list decodeCotonoma
-                    |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/cotonomas")
-                    |> Http.send SubCotonomasFetched
+                decodeResponse
+                    |> Http.get ("/api/cotonomas/" ++ cotonoma.id ++ "/super-and-sub")
+                    |> Http.send SuperAndSubCotonomasFetched
             )
         |> Maybe.withDefault Cmd.none
 
@@ -94,5 +123,5 @@ refreshCotonomaList : Context a -> Cmd Msg
 refreshCotonomaList context =
     Cmd.batch
         [ fetchCotonomas
-        , fetchSubCotonomas context
+        , fetchSuperAndSubCotonomas context
         ]

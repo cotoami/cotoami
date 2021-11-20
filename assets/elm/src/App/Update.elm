@@ -11,6 +11,7 @@ import App.Modals.CotoMenuModal
 import App.Modals.EditorModal
 import App.Modals.ImportModal
 import App.Modals.InviteModal
+import App.Modals.RepostModal
 import App.Modals.SigninModal
 import App.Modals.TimelineFilterModal
 import App.Model exposing (Model)
@@ -180,7 +181,10 @@ update msg model =
                     model |> withoutCmd
 
         HomePostsFetched (Ok paginatedPosts) ->
-            { model | timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline }
+            { model
+                | superCotonomas = []
+                , timeline = App.Types.Timeline.setPaginatedPosts paginatedPosts model.timeline
+            }
                 |> App.Submodels.Context.setCotonoma Nothing
                 |> withCmdIf
                     (\_ -> paginatedPosts.pageIndex == 0)
@@ -198,8 +202,9 @@ update msg model =
                     (\model ->
                         Cmd.batch
                             [ App.Views.Flow.initScrollPos model
-                            , App.Server.Cotonoma.fetchSubCotonomas model
-                            , App.Server.Watch.fetchWatchlist (WatchlistOnCotonomaLoad cotonoma)
+                            , App.Server.Cotonoma.fetchSuperAndSubCotonomas model
+                            , App.Server.Watch.fetchWatchlist
+                                (WatchlistOnCotonomaLoad cotonoma.cotonoma)
                             ]
                     )
 
@@ -217,10 +222,11 @@ update msg model =
         CotonomasFetched (Err _) ->
             { model | cotonomasLoading = False } |> withoutCmd
 
-        SubCotonomasFetched (Ok cotonomas) ->
-            { model | subCotonomas = cotonomas } |> withoutCmd
+        SuperAndSubCotonomasFetched (Ok ( super, sub )) ->
+            { model | superCotonomas = super, subCotonomas = sub }
+                |> withoutCmd
 
-        SubCotonomasFetched (Err _) ->
+        SuperAndSubCotonomasFetched (Err _) ->
             model |> withoutCmd
 
         GraphFetched (Ok graph) ->
@@ -330,10 +336,15 @@ update msg model =
                 |> App.Submodels.Context.toggleContent elementId
                 |> withoutCmd
 
-        ConfirmDeleteCoto cotoId ->
+        ConfirmDeleteCoto cotoId isRepost ->
             App.Submodels.Modals.confirm
                 (Confirmation
-                    (model.i18nText I18nKeys.ConfirmDeleteCoto)
+                    (if isRepost then
+                        model.i18nText I18nKeys.ConfirmDeleteRepost
+
+                     else
+                        model.i18nText I18nKeys.ConfirmDeleteCoto
+                    )
                     (DeleteCotoInServerSide cotoId)
                 )
                 model
@@ -366,12 +377,10 @@ update msg model =
         CotoUpdated (Ok coto) ->
             model
                 |> App.Submodels.LocalCotos.updateCoto coto
+                |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.asCotonoma
                 |> App.Submodels.LocalCotos.updateCotonomaMaybe coto.postedIn
                 |> App.Submodels.Modals.clearModals
-                |> withCmdIf
-                    (\_ -> isJust coto.asCotonoma)
-                    App.Server.Cotonoma.refreshCotonomaList
-                |> addCmd (\_ -> App.Commands.sendMsg GraphChanged)
+                |> withCmd (\_ -> App.Commands.sendMsg GraphChanged)
 
         CotoUpdated (Err error) ->
             model.editorModal
@@ -608,8 +617,8 @@ update msg model =
             App.Submodels.Modals.openModal ProfileModal model
                 |> withoutCmd
 
-        OpenCotoMenuModal coto ->
-            App.Update.Modal.openCotoMenuModal coto model
+        OpenCotoMenuModal coto repost ->
+            App.Update.Modal.openCotoMenuModal repost coto model
 
         OpenNewEditorModal ->
             App.Update.Modal.openEditorModalForNew model Nothing model
@@ -641,6 +650,10 @@ update msg model =
 
         OpenConnectionModal connection startCoto endCoto ->
             App.Update.Modal.openConnectionModal model connection startCoto endCoto model
+
+        OpenRepostModal coto ->
+            App.Update.Modal.openRepostModal coto model
+                |> withoutCmd
 
         OpenInviteModal ->
             App.Update.Modal.openInviteModal model
@@ -695,6 +708,9 @@ update msg model =
                     )
                 |> Maybe.withDefault ( model, Cmd.none )
 
+        RepostModalMsg subMsg ->
+            App.Modals.RepostModal.update model subMsg model
+
         InviteModalMsg subMsg ->
             App.Modals.InviteModal.update subMsg model.inviteModal
                 |> Tuple.mapFirst (\modal -> { model | inviteModal = modal })
@@ -713,6 +729,7 @@ loadHome : Model -> ( Model, Cmd Msg )
 loadHome model =
     { model
         | cotonomasLoading = True
+        , superCotonomas = []
         , subCotonomas = []
         , timeline = App.Types.Timeline.setInitializing model.timeline
         , graph = App.Types.Graph.defaultGraph

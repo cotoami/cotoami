@@ -28,20 +28,52 @@ defmodule CotoamiWeb.CotoController do
     render(conn, "cotos.json", cotos: CotoService.search(query, amishi))
   end
 
-  def create(
-        conn,
-        %{
-          "coto" => %{
-            "content" => content,
-            "summary" => summary,
-            "cotonoma_id" => cotonoma_id
-          }
-        },
-        amishi
-      ) do
-    coto = CotoService.create!(amishi, content, summary, cotonoma_id)
+  def create(conn, %{"coto" => coto_params}, amishi) do
+    %{"content" => content, "summary" => summary} = coto_params
+
+    coto =
+      case get_cotonoma_if_specified!(coto_params, amishi) do
+        nil -> CotoService.create!(content, summary, amishi)
+        cotonoma -> CotoService.create!(content, summary, amishi, cotonoma)
+      end
+
     on_coto_created(conn, coto, amishi)
     render(conn, "created.json", coto: coto)
+  end
+
+  def repost(conn, %{"id" => id, "cotonoma_name" => cotonoma_name}, amishi) do
+    cotonoma =
+      try do
+        cotonoma_coto = CotonomaService.create!(cotonoma_name, false, amishi)
+        on_coto_created(conn, cotonoma_coto, amishi)
+        cotonoma_coto.cotonoma
+      rescue
+        _ in Ecto.ConstraintError ->
+          CotonomaService.get_by_name(cotonoma_name, amishi)
+      end
+
+    repost =
+      CotoService.get!(id)
+      |> CotoService.repost!(amishi, cotonoma)
+
+    on_coto_created(conn, repost, amishi)
+    broadcast_coto_update(repost.repost, amishi, conn.assigns.client_id)
+    render(conn, "created.json", coto: repost)
+  end
+
+  def repost(conn, %{"id" => id} = params, amishi) do
+    coto = CotoService.get!(id)
+    cotonoma = get_cotonoma_if_specified!(params, amishi)
+
+    repost =
+      case cotonoma do
+        nil -> CotoService.repost!(coto, amishi)
+        cotonoma -> CotoService.repost!(coto, amishi, cotonoma)
+      end
+
+    on_coto_created(conn, repost, amishi)
+    broadcast_coto_update(repost.repost, amishi, conn.assigns.client_id)
+    render(conn, "created.json", coto: repost)
   end
 
   def update(conn, %{"id" => id, "coto" => coto_params}, amishi) do
@@ -99,7 +131,10 @@ defmodule CotoamiWeb.CotoController do
   end
 
   def delete(conn, %{"id" => id}, amishi) do
-    {:ok, _} =
+    # all the reposts will be deleted by cascade
+    repost_ids = CotoService.repost_ids(id)
+
+    {:ok, coto} =
       Repo.transaction(fn ->
         coto = CotoService.delete!(id, amishi)
 
@@ -111,6 +146,14 @@ defmodule CotoamiWeb.CotoController do
       end)
 
     broadcast_delete(id, amishi, conn.assigns.client_id)
+    # By sending an empty client_id, force all clients to handle reposts delete
+    repost_ids |> Enum.each(&broadcast_delete(&1, amishi, ""))
+
+    if coto.repost do
+      # Force all clients to handle derived update
+      broadcast_coto_update(coto.repost, amishi, "")
+    end
+
     send_resp(conn, :no_content, "")
   end
 end

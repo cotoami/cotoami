@@ -1,6 +1,7 @@
 module App.Types.Timeline exposing
     ( Timeline
     , addPost
+    , cotoIds
     , cotonomatize
     , defaultTimeline
     , deleteCoto
@@ -12,15 +13,15 @@ module App.Types.Timeline exposing
     , nextPageIndex
     , post
     , setBeingDeleted
-    , setCotoSaved
     , setInitializing
     , setLoading
     , setLoadingMore
     , setPaginatedPosts
+    , setPostSaved
     , setPosts
     , setScrollPos
     , setScrollPosInitialized
-    , updatePost
+    , updateCoto
     )
 
 import App.Server.Pagination exposing (PaginatedList)
@@ -55,6 +56,14 @@ defaultTimeline =
     , postIdCounter = 0
     , scrollPos = Nothing
     }
+
+
+cotoIds : Timeline -> List CotoId
+cotoIds timeline =
+    timeline.posts
+        |> List.map (\post -> [ post.cotoId, Maybe.map .id post.repost ])
+        |> List.concat
+        |> List.filterMap identity
 
 
 setScrollPosInitialized : Timeline -> Timeline
@@ -161,8 +170,8 @@ isScrolledToLatest timeline =
         |> Maybe.withDefault False
 
 
-updatePost_ : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
-updatePost_ predicate update timeline =
+updateByPredicate : (Post -> Bool) -> (Post -> Post) -> Timeline -> Timeline
+updateByPredicate predicate update timeline =
     timeline.posts
         |> List.map
             (\post ->
@@ -175,36 +184,53 @@ updatePost_ predicate update timeline =
         |> (\posts -> { timeline | posts = posts })
 
 
-updatePost : Coto -> Timeline -> Timeline
-updatePost coto timeline =
-    updatePost_
-        (\post -> post.cotoId == Just coto.id)
+updateByCotoId : CotoId -> (Post -> Post) -> (Coto -> Coto) -> Timeline -> Timeline
+updateByCotoId cotoId updatePost updateCoto timeline =
+    updateByPredicate
+        (\post -> App.Types.Post.getOriginalCotoId post == Just cotoId)
+        (\post ->
+            post.repost
+                |> Maybe.map (\repost -> { post | repost = Just (updateCoto repost) })
+                |> Maybe.withDefault (updatePost post)
+        )
+        timeline
+
+
+updateCoto : Coto -> Timeline -> Timeline
+updateCoto coto timeline =
+    updateByCotoId
+        coto.id
         (\post ->
             { post
                 | content = coto.content
                 , summary = coto.summary
                 , asCotonoma = coto.asCotonoma
+                , repostedIn = coto.repostedIn
             }
         )
+        (\_ -> coto)
         timeline
 
 
 cotonomatize : Cotonoma -> CotoId -> Timeline -> Timeline
 cotonomatize cotonoma cotoId timeline =
-    updatePost_
-        (\post -> post.cotoId == Just cotoId)
+    updateByCotoId
+        cotoId
         (\post ->
             { post
                 | isCotonoma = True
                 , asCotonoma = Just cotonoma
             }
         )
+        (\coto ->
+            { coto | asCotonoma = Just cotonoma }
+        )
         timeline
 
 
-setCotoSaved : Int -> Post -> Timeline -> Timeline
-setCotoSaved postId apiResponse timeline =
-    updatePost_
+setPostSaved : Int -> Post -> Timeline -> Timeline
+setPostSaved postId apiResponse timeline =
+    updateByPredicate
         (\post -> post.postId == Just postId)
         (\post ->
             { post
@@ -219,7 +245,7 @@ setCotoSaved postId apiResponse timeline =
 
 setBeingDeleted : CotoId -> Timeline -> Timeline
 setBeingDeleted cotoId timeline =
-    updatePost_
+    updateByPredicate
         (\post -> post.cotoId == Just cotoId)
         (\post -> { post | beingDeleted = True })
         timeline

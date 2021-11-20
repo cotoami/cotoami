@@ -72,13 +72,16 @@ defmodule CotoamiWeb.Router do
     resources("/cotos", CotoController, only: [:index, :create, :update, :delete])
     get("/cotos/random", CotoController, :random)
     put("/cotos/:id/cotonomatize", CotoController, :cotonomatize)
+    put("/cotos/:id/repost", CotoController, :repost)
 
     resources("/cotonomas", CotonomaController, only: [:index, :create])
-    get("/cotonomas/:cotonoma_id/cotonomas", CotonomaController, :sub)
+    get("/cotonomas/:cotonoma_id/super-and-sub", CotonomaController, :super_and_sub)
     get("/cotonomas/:key/cotos", CotonomaController, :cotos)
     get("/cotonomas/:key/cotos/random", CotonomaController, :random)
     get("/cotonomas/:key/stats", CotonomaController, :stats)
+    get("/cotonomas/name/:name", CotonomaController, :get)
     put("/cotonomas/name/:name", CotonomaController, :get_or_create)
+    get("/cotonomas/key-or-name/:key_or_name", CotonomaController, :get)
     get("/cotonomas/suggestions/:query", CotonomaController, :suggest)
 
     get("/watchlist", WatchController, :index)

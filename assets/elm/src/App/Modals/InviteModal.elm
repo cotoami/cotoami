@@ -9,7 +9,7 @@ module App.Modals.InviteModal exposing
 import App.Commands
 import App.I18n.Keys as I18nKeys
 import App.Messages as AppMsg exposing (Msg(CloseModal))
-import App.Modals.InviteModalMsg as InviteModalMsg exposing (Msg(..))
+import App.Modals.InviteModalMsg as ModalMsg exposing (Msg(..))
 import App.Server.Amishi
 import App.Submodels.Context exposing (Context)
 import App.Types.Amishi exposing (Amishi)
@@ -194,7 +194,7 @@ inviteesDiv model =
         |> Maybe.withDefault Utils.HtmlUtil.none
 
 
-update : InviteModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
+update : ModalMsg.Msg -> Model -> ( Model, Cmd AppMsg.Msg )
 update msg model =
     case msg of
         Init ->

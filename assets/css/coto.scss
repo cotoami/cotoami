@@ -43,18 +43,18 @@ div.coto-inner {
       background-color: rgba(255, 255, 255, .9);
     }
   }
+
+  a.posted-in {
+    margin-left: 5px;
+    font-size: 12px;
+    color: #ccc;
+  }
 }
 
 div.coto-header {
   position: relative;
   min-height: 12px;
   text-align: right;
-
-  a.posted-in {
-    font-size: 12px;
-    color: #000;
-    opacity: .3;
-  }
 
   i.coto-status {
     margin-left: 10px;
@@ -64,6 +64,10 @@ div.coto-header {
   i.in-pinned-graph {
     display: none;
   }
+}
+
+.repost div.coto-header {
+  min-height: auto;
 }
 
 div.blank-content {
@@ -222,7 +226,8 @@ span.coto-tool-buttons {
   }
 
   @media (max-width: 400px) {
-    a.pin-coto {
+    a.pin-coto,
+    a.repost {
       display: none;
     }
   }
@@ -365,5 +370,18 @@ span.not-accessible {
     margin-left: 4px;
     font-size: 18px;
     vertical-align: -4px;
+  }
+}
+
+div.simplified-coto {
+  border: 1px solid #ddd;
+
+  div.coto-inner {
+    padding-top: 10px;
+  }
+
+  div.coto-summary {
+    font-weight: bold;
+    opacity: .5;
   }
 }

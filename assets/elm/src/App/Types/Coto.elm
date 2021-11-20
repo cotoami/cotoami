@@ -3,18 +3,22 @@ module App.Types.Coto exposing
     , CotoContent
     , CotoId
     , Cotonoma
+    , CotonomaHolder
     , CotonomaKey
     , CotonomaStats
     , ElementId
     , addIncomings
     , addOutgoings
+    , allPostedInCotonomas
     , checkWritePermission
     , cotonomaNameMaxlength
     , decrementIncoming
     , decrementOutgoing
-    , getCotoFromCotonomaList
+    , defaultCoto
+    , getCotoFromCotonomaHolders
     , incrementIncoming
     , incrementOutgoing
+    , postedInAnyCotonoma
     , removeFromList
     , replaceInList
     , revisedBefore
@@ -22,6 +26,8 @@ module App.Types.Coto exposing
     , toCoto
     , toTopic
     , updateContent
+    , updateCotonomaInHolders
+    , updateInList
     , validateCotonomaName
     )
 
@@ -54,8 +60,24 @@ type alias Coto =
     , postedIn : Maybe Cotonoma
     , postedAt : Date
     , asCotonoma : Maybe Cotonoma
+    , repostedIn : List Cotonoma
     , incomings : Maybe Int
     , outgoings : Maybe Int
+    }
+
+
+defaultCoto : Coto
+defaultCoto =
+    { id = ""
+    , content = ""
+    , summary = Nothing
+    , amishi = Nothing
+    , postedIn = Nothing
+    , postedAt = Date.fromTime 0
+    , asCotonoma = Nothing
+    , repostedIn = []
+    , incomings = Nothing
+    , outgoings = Nothing
     }
 
 
@@ -162,11 +184,24 @@ toTopic coto =
 
 
 replaceInList : Coto -> List Coto -> List Coto
-replaceInList newCoto list =
+replaceInList replacement list =
     List.map
         (\coto ->
-            if coto.id == newCoto.id then
-                newCoto
+            if coto.id == replacement.id then
+                replacement
+
+            else
+                coto
+        )
+        list
+
+
+updateInList : CotoId -> (Coto -> Coto) -> List Coto -> List Coto
+updateInList cotoId update list =
+    List.map
+        (\coto ->
+            if coto.id == cotoId then
+                update coto
 
             else
                 coto
@@ -194,20 +229,6 @@ type alias Cotonoma =
     }
 
 
-toCoto : Cotonoma -> Coto
-toCoto cotonoma =
-    { id = cotonoma.cotoId
-    , content = cotonoma.name
-    , summary = Nothing
-    , amishi = cotonoma.owner
-    , postedIn = Nothing
-    , postedAt = cotonoma.postedAt
-    , asCotonoma = Just cotonoma
-    , incomings = Nothing
-    , outgoings = Nothing
-    }
-
-
 cotonomaNameMaxlength : Int
 cotonomaNameMaxlength =
     50
@@ -223,12 +244,47 @@ revisedBefore cotonoma =
     (cotonoma.timelineRevision > 0) || (cotonoma.graphRevision > 0)
 
 
-getCotoFromCotonomaList : CotoId -> List Cotonoma -> Maybe Coto
-getCotoFromCotonomaList cotoId cotonomas =
-    cotonomas
-        |> List.filter (\cotonoma -> cotonoma.cotoId == cotoId)
+type alias CotonomaHolder =
+    { cotonoma : Cotonoma
+    , postedIn : Maybe Cotonoma
+    , repostedIn : List Cotonoma
+    }
+
+
+toCoto : CotonomaHolder -> Coto
+toCoto { cotonoma, postedIn, repostedIn } =
+    { id = cotonoma.cotoId
+    , content = cotonoma.name
+    , summary = Nothing
+    , amishi = cotonoma.owner
+    , postedIn = postedIn
+    , postedAt = cotonoma.postedAt
+    , asCotonoma = Just cotonoma
+    , repostedIn = repostedIn
+    , incomings = Nothing
+    , outgoings = Nothing
+    }
+
+
+getCotoFromCotonomaHolders : CotoId -> List CotonomaHolder -> Maybe Coto
+getCotoFromCotonomaHolders cotoId holders =
+    holders
+        |> List.filter (\holder -> holder.cotonoma.cotoId == cotoId)
         |> List.head
         |> Maybe.map toCoto
+
+
+updateCotonomaInHolders : Cotonoma -> List CotonomaHolder -> List CotonomaHolder
+updateCotonomaInHolders cotonoma holders =
+    List.map
+        (\holder ->
+            if holder.cotonoma.id == cotonoma.id then
+                { holder | cotonoma = cotonoma }
+
+            else
+                holder
+        )
+        holders
 
 
 type alias CotonomaStats =
@@ -236,3 +292,22 @@ type alias CotonomaStats =
     , cotos : Int
     , connections : Int
     }
+
+
+type alias CotonomaPostable postable =
+    { postable
+        | postedIn : Maybe Cotonoma
+        , repostedIn : List Cotonoma
+    }
+
+
+allPostedInCotonomas : CotonomaPostable postable -> List Cotonoma
+allPostedInCotonomas postable =
+    postable.postedIn
+        |> Maybe.map (\postedIn -> postedIn :: List.reverse postable.repostedIn)
+        |> Maybe.withDefault postable.repostedIn
+
+
+postedInAnyCotonoma : CotonomaPostable postable -> Bool
+postedInAnyCotonoma postable =
+    not <| List.isEmpty <| allPostedInCotonomas postable

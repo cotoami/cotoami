@@ -4,7 +4,6 @@ defmodule CotoamiWeb.TimelineChannel do
   """
 
   use CotoamiWeb, :channel
-  alias Cotoami.Cotonoma
   alias Cotoami.CotonomaService
   alias CotoamiWeb.Presence
 
@@ -17,18 +16,12 @@ defmodule CotoamiWeb.TimelineChannel do
   end
 
   defp join_cotonoma_timeline(cotonoma_key, socket) do
-    case CotonomaService.get_by_key(cotonoma_key) do
-      nil ->
-        {:error, %{reason: "not-found"}}
-
-      cotonoma ->
-        if Cotonoma.accessible_by?(cotonoma, socket.assigns.amishi) do
-          send(self(), :after_join)
-          {:ok, socket}
-        else
-          {:error, %{reason: "no-permission"}}
-        end
-    end
+    CotonomaService.get_accessible_by_key!(cotonoma_key, socket.assigns.amishi)
+    send(self(), :after_join)
+    {:ok, socket}
+  rescue
+    _ in Cotoami.Exceptions.NotFound -> {:error, %{reason: "not-found"}}
+    _ in Cotoami.Exceptions.NoPermission -> {:error, %{reason: "no-permission"}}
   end
 
   def handle_info(:after_join, socket) do
