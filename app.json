@@ -1,17 +1,24 @@
 {
+  "stack": "heroku-18",
   "name": "Cotoami",
   "description": "Cotoami is a platform where people can weave a large network of wisdom from tiny ideas.",
   "repository": "https://github.com/cotoami/cotoami",
-  "keywords": ["ideation", "graph", "neo4j", "elixir", "Elm"],
+  "keywords": [
+    "knowledge-base",
+    "graph",
+    "neo4j",
+    "elixir",
+    "Elm"
+  ],
   "addons": [
     {
       "plan": "heroku-postgresql",
       "options": {
-        "version": "9.6"
+        "version": "13.4"
       }
-    }, 
-    "heroku-redis", 
-    "graphenedb", 
+    },
+    "heroku-redis",
+    "graphenedb",
     "sendgrid"
   ],
   "buildpacks": [
