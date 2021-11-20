@@ -21,7 +21,7 @@
     "clean-css-brunch": "2.10.0",
     "uglify-js-brunch": "2.10.0",
     "sass-brunch": "2.10.8",
-    "elm": "0.18.0",
+    "elm": "latest-0.18.0",
     "elm-brunch": "0.12.0",
     "elm-format": "0.8.1",
     "elm-github-install": "1.6.1",
