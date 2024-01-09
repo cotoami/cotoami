@@ -1,5 +1,5 @@
 {
-  "stack": "heroku-18",
+  "stack": "heroku-22",
   "name": "Cotoami",
   "description": "Cotoami is a platform where people can weave a large network of wisdom from tiny ideas.",
   "repository": "https://github.com/cotoami/cotoami",
