@@ -1,4 +1,4 @@
-FROM cotoami/cotoami-elixir:1.7
+FROM cotoami/cotoami-elixir:1.10-focal
 
 ENV APP_PORT 4000
 
