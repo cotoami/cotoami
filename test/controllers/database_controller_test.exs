@@ -46,6 +46,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                   "updated_at": 1537943597410,
                   "summary": null,
                   "posted_in_id": null,
+                  "repost_id": null,
+                  "reposted_in_ids": [],
                   "inserted_at": 1537943597410,
                   "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
                   "cotonoma": null,
@@ -75,6 +77,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537943597410,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537943597410,
                   "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
@@ -113,6 +117,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537943597410,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537943597410,
                   "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
@@ -123,6 +129,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537944841347,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537944841347,
                   "id": "bd9f96df-9639-4986-8473-392a993f3bc3",
@@ -168,6 +176,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537943597410,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537943597410,
                   "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
@@ -178,6 +188,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537944841347,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537944841347,
                   "id": "bd9f96df-9639-4986-8473-392a993f3bc3",
@@ -188,6 +200,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537945267093,
                   "summary": "summary",
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537945267093,
                   "id": "30c2c1e7-6e32-479f-bf35-359c02302ed5",
@@ -240,6 +254,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537949021935,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": null,
                   "inserted_at": 1537943597410,
                   "id": "e4910f38-5756-4ac4-a995-09d14cfa5874",
@@ -261,6 +277,8 @@ defmodule CotoamiWeb.DatabaseControllerTest do
                 {
                   "updated_at": 1537949085717,
                   "summary": null,
+                  "reposted_in_ids": [],
+                  "repost_id": null,
                   "posted_in_id": "a2cad024-d353-4ba7-9945-5372e0bfb263",
                   "inserted_at": 1537949085717,
                   "id": "936058c0-10d0-4dd1-958f-86f4d0bd76a6",

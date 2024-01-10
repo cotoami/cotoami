@@ -53,6 +53,8 @@ defmodule CotoamiWeb.CotoView do
       posted_in_id: coto.posted_in_id,
       as_cotonoma: coto.as_cotonoma,
       cotonoma: render_relation(coto.cotonoma, CotonomaView, "export.json"),
+      repost_id: coto.repost_id,
+      reposted_in_ids: coto.reposted_in_ids,
       inserted_at: coto.inserted_at |> to_unixtime(),
       updated_at: coto.updated_at |> to_unixtime()
     }
