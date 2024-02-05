@@ -61,7 +61,7 @@ defmodule Cotoami.Mixfile do
       {:uuid, "~> 1.1"},
       {:shorter_maps, "~> 2.2"},
       {:logster, "~> 0.6"},
-      {:oauth2, "~> 0.9"}
+      {:oauth2, "~> 0.9.4"}
     ]
   end
 
