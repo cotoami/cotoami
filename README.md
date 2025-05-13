@@ -1,5 +1,6 @@
 <p align="center"><img src="assets/static/images/logo/vertical.png" alt="cotoami" height="200px"></p>
 
+> Cotoami has been reborn as [Cotoami Remake](https://github.com/cotoami/cotoami-remake). While preserving its core concepts, Cotoami has evolved into a more user-friendly standalone desktop application. It features a built-in world map and introduces an entirely new architecture that enables collaboration by connecting databases.
 
 [![CircleCI](https://circleci.com/gh/cotoami/cotoami.svg?style=svg)](https://circleci.com/gh/cotoami/cotoami)
 
